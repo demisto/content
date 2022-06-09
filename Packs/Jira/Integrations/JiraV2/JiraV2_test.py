@@ -339,7 +339,7 @@ def test_module(mocker):
     client = mock_client()
     mocker.patch.object(client, 'send_request', return_value=user_data)
     mocker.patch("JiraV2.run_query", return_value={})
-    result = module()
+    result = module(client)
     assert result == "ok"
 
 
@@ -1303,7 +1303,7 @@ def test_get_issue_outputs(mocker):
     from test_data.expected_results import GET_ISSUE_OUTPUTS_RESULT
     from JiraV2 import get_issue
     client = mock_client()
-    mocker.patch.object(client, 'send_request',  return_value=GET_ISSUE_RESPONSE)
+    mocker.patch.object(client, 'send_request', return_value=GET_ISSUE_RESPONSE)
 
     _, outputs, _ = get_issue(client, 'id')
 

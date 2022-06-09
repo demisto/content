@@ -90,105 +90,6 @@ class Client(BaseClient):
         return result
 
 
-# def jira_req(method: str, resource_url: str, body: str = '', link: bool = False, resp_type: str = 'text', headers: Optional[dict] = None, files: Optional[dict] = None):
-#
-#     # call class init in api module then get its auth
-#     params = demisto.params()
-#     atlassian_client = AtlassianClient(
-#         access_token=params.get('accessToken'),
-#         api_token=params.get('APItoken') or (params.get('credentials') or {}).get('password'),
-#         username=params.get('username'),
-#         password=params.get('password'),
-#         consumer_key=params.get('consumerKey'),
-#         private_key=params.get('privateKey')
-#     )
-#     auth = atlassian_client.get_auth()
-#
-#     url = resource_url if link else (BASE_URL + resource_url)
-#     if headers and HEADERS.get('Authorization'):
-#         headers['Authorization'] = HEADERS.get('Authorization')
-#     try:
-#         result = requests.request(
-#             method=method,
-#             url=url,
-#             data=body,
-#             auth=auth,
-#             headers=headers if headers else HEADERS,
-#             verify=USE_SSL,
-#             files=files
-#         )
-#     except ValueError:
-#         raise ValueError("Could not deserialize privateKey")
-#
-#     if not result.ok:
-#         demisto.debug(result.text)
-#         try:
-#             rj = result.json()
-#             if rj.get('errorMessages'):
-#                 return_error(f'Status code: {result.status_code}\nMessage: {",".join(rj["errorMessages"])}')
-#             elif rj.get('errors'):
-#                 return_error(f'Status code: {result.status_code}\nMessage: {",".join(rj["errors"].values())}')
-#             else:
-#                 return_error(f'Status code: {result.status_code}\nError text: {result.text}')
-#         except ValueError as ve:
-#             demisto.debug(str(ve))
-#             if result.status_code == 401:
-#                 return_error('Unauthorized request, please check authentication related parameters.'
-#                              f'{BASIC_AUTH_ERROR_MSG}')
-#             elif result.status_code == 404:
-#                 return_error("Could not connect to the Jira server. Verify that the server URL is correct.")
-#             elif result.status_code == 500 and files:
-#                 return_error(f"Failed to execute request, status code: 500\nBody: {result.text}"
-#                              f"\nMake sure file name doesn't contain any special characters")
-#             else:
-#                 return_error(
-#                     f"Failed reaching the server. status code: {result.status_code}")
-#
-#     if resp_type == 'json':
-#         return result.json()
-#     return result
-
-
-# def generate_oauth1():
-#     oauth = OAuth1(
-#         client_key=demisto.getParam('consumerKey'),
-#         rsa_key=demisto.getParam('privateKey'),
-#         signature_method='RSA-SHA1',
-#         resource_owner_key=demisto.getParam('accessToken'),
-#     )
-#     return oauth
-#
-#
-# def generate_basic_oauth():
-#     return USERNAME, (API_TOKEN or PASSWORD)
-#
-#
-# def get_auth():
-#     access_token = demisto.getParam('accessToken')
-#     is_basic = USERNAME and (PASSWORD or API_TOKEN)
-#     is_oauth1 = demisto.getParam('consumerKey') and access_token and demisto.getParam('privateKey')
-#     is_bearer = access_token and not is_oauth1
-#
-#     if is_basic:
-#         return generate_basic_oauth()
-#
-#     elif is_oauth1:
-#         HEADERS.update({'X-Atlassian-Token': 'nocheck'})
-#         return generate_oauth1()
-#
-#     elif is_bearer:
-#         # Personal Access Token Authentication
-#         HEADERS.update({'Authorization': f'Bearer {access_token}'})
-#         return
-#
-#     return_error(
-#         'Please provide the required Authorization information:'
-#         '- Basic Authentication requires user name and password or API token'
-#         '- OAuth 1.0 requires ConsumerKey, AccessToken and PrivateKey'
-#         '- Personal Access Tokens requires AccessToken'
-#     )
-
-
 def get_custom_field_names(client: Client):
     """
     This function returns all custom fields.
@@ -327,7 +228,7 @@ def expand_urls(client: Client, data, depth=0):
             # search deeper
             else:
                 if isinstance(value, dict):
-                    return expand_urls(value, depth + 1)
+                    return expand_urls(client, value, depth + 1)
 
 
 def search_user(client: Client, query: str, max_results: str = '50', is_jirav2api: bool = False):
@@ -417,7 +318,7 @@ def get_account_id_from_attribute(
     )
 
 
-def generate_md_context_get_issue(data, customfields=None, nofields=None):
+def generate_md_context_get_issue(client, data, customfields=None, nofields=None):
     get_issue_obj: dict = {"md": [], "context": []}
     if not isinstance(data, list):
         data = [data]
@@ -436,7 +337,7 @@ def generate_md_context_get_issue(data, customfields=None, nofields=None):
         # Parse custom fields into their original names
         custom_fields = [i for i in demisto.get(element, "fields") if "custom" in i]
         if custom_fields and customfields and not nofields:
-            field_mappings = get_custom_field_names()
+            field_mappings = get_custom_field_names(client)
             for field_returned in custom_fields:
                 readable_field_name = field_mappings.get(field_returned)
                 if readable_field_name:
@@ -743,7 +644,7 @@ def get_issue(client: Client, issue_id, headers=None, expand_links=False, is_upd
             filename, attachments_zip = get_attachment_data(client, attachment)
             demisto.results(fileResult(filename=filename, data=attachments_zip))
 
-    md_and_context = generate_md_context_get_issue(j_res)
+    md_and_context = generate_md_context_get_issue(client, j_res)
     human_readable = tableToMarkdown(demisto.command(), md_and_context['md'], argToList(headers))
     if is_update:
         human_readable += f'Issue #{issue_id} was updated successfully'
@@ -763,7 +664,7 @@ def issue_query_command(client, query, start_at='', max_results=None, headers=''
         human_readable = 'No issues matched the query.'
     else:
         issues = demisto.get(j_res, 'issues')
-        md_and_context = generate_md_context_get_issue(issues, extra_fields, nofields)
+        md_and_context = generate_md_context_get_issue(client, issues, extra_fields, nofields)
         human_readable = tableToMarkdown(demisto.command(), t=md_and_context['md'], headers=argToList(headers))
         contents = j_res
         outputs = {'Ticket(val.Id == obj.Id)': md_and_context['context']}
@@ -794,7 +695,7 @@ def edit_issue_command(client: Client, issue_id, mirroring=False, headers=None, 
     elif transition:
         edit_transition(client, issue_id, transition)
 
-    return get_issue(issue_id, headers, is_update=True)
+    return get_issue(client, issue_id, headers, is_update=True)
 
 
 def edit_status(client: Client, issue_id, status):
@@ -1095,9 +996,10 @@ def get_attachment_data(client: Client, attachment):
     return filename, attachments_zip
 
 
-def get_attachments(attachments, incident_modified_date, only_new=True):
+def get_attachments(client: Client, attachments, incident_modified_date, only_new=True):
     """
     Get incident attachments as fileResults objects
+    :param client: the client
     :param attachments: the issue's attachments
     :param incident_modified_date: the date the incident was last updated
     :param only_new: if 'True', getting only attachments that was added after the incident_modified_date
@@ -1108,14 +1010,14 @@ def get_attachments(attachments, incident_modified_date, only_new=True):
     if attachments:
         if not only_new:
             for attachment in attachments:
-                filename, attachments_zip = get_attachment_data(attachment)
+                filename, attachments_zip = get_attachment_data(client, attachment)
                 file_results.append(fileResult(filename=filename, data=attachments_zip))
         else:
             for attachment in attachments:
                 attachment_modified_date: datetime = \
                     parse(dict_safe_get(attachment, ['created'], "", str))  # type: ignore
                 if incident_modified_date < attachment_modified_date:
-                    filename, attachments_zip = get_attachment_data(attachment)
+                    filename, attachments_zip = get_attachment_data(client, attachment)
                     file_results.append(fileResult(filename=filename, data=attachments_zip))
     return file_results
 
@@ -1161,7 +1063,7 @@ def get_incident_entries(client: Client, issue, incident_modified_date, only_new
     if should_get_attachments:
         attachments = demisto.get(issue, 'fields.attachment')
         if attachments:
-            file_results = get_attachments(attachments, incident_modified_date, only_new)
+            file_results = get_attachments(client, attachments, incident_modified_date, only_new)
             if file_results:
                 entries['attachments'] = file_results
     return entries
@@ -1279,9 +1181,8 @@ def get_modified_remote_data_command(client: Client, args):
     """
     remote_args = GetModifiedRemoteDataArgs(args)
     modified_issues_ids = []
-    HEADERS['Accept'] = "application/json"
     try:
-        res = get_user_info_data()
+        res = get_user_info_data(client)
     except Exception as e:
         demisto.error(f'Could not get Jira\'s timezone for get-modified-remote-data. failed because: {e}')
     else:
@@ -1328,7 +1229,7 @@ def get_remote_data_command(client: Client, args) -> GetRemoteDataResponse:
     parsed_args = GetRemoteDataArgs(args)
     try:
         # Get raw response on issue ID
-        _, _, issue_raw_response = get_issue(issue_id=parsed_args.remote_incident_id)
+        _, _, issue_raw_response = get_issue(client, issue_id=parsed_args.remote_incident_id)
         demisto.info('get remote data')
         # Timestamp - Issue last modified in jira server side
         jira_modified_date: datetime = \
@@ -1396,7 +1297,7 @@ def main():
     params = demisto.params()
     args = demisto.args()
     client = Client(base_url=params.get('url').rstrip('/') + '/',
-                    api_token=params.get('APItoken') or (params.get('credentials') or {}).get('password'),
+                    api_token=params.get('APItoken') or (params.get('credentials', {})).get('password'),  # type: ignore
                     access_token=params.get('accessToken'),
                     username=params.get('username'),
                     password=params.get('password'),

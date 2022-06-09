@@ -7,7 +7,7 @@ from requests_oauthlib import OAuth1
 class AtlassianClient(BaseClient):
 
     def __init__(self, access_token: str = '', api_token: str = '', username: str = '',
-                 password: str = '', consumer_key: str = '',  private_key: str = '', headers: dict = {}):
+                 password: str = '', consumer_key: str = '', private_key: str = '', headers: dict = {}):
         """
         ServiceNow Client class. The class can use either basic authorization with username and password, or OAuth2.
         Args:
@@ -58,12 +58,10 @@ class AtlassianClient(BaseClient):
     def get_headers(self):
         return self.headers
 
-    def http_request(self, method, full_url=None, headers=None, verify=False, json_data=None,
-                     params=None, data=None, files=None, timeout=10, resp_type='json', ok_codes=None):
+    def http_request(self, method, full_url=None, headers=None, verify=False,
+                     params=None, data=None, files=None):
 
         try:
-            # if headers and self.headers.get('Authorization'):
-            #     headers['Authorization'] = self.headers.get('Authorization')
             result = requests.request(
                 method=method,
                 url=full_url,
