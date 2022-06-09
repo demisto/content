@@ -3,13 +3,9 @@ from pathlib import Path
 from typing import Iterable, Optional
 
 from demisto_sdk.commands.common.constants import MarketplaceVersions
-
-from Tests.scripts.collect_tests.constants import \
-    DEBUG_ID_SET_PATH  # todo remove
-from Tests.scripts.collect_tests.utils import (DictBased, DictFileBased,
-                                               PackManager, to_tuple)
-
 from logger import logger
+
+from Tests.scripts.collect_tests.utils import (DictBased, DictFileBased, PackManager, to_tuple)
 
 
 class IdSetItem(DictBased):
@@ -45,8 +41,8 @@ class IdSetItem(DictBased):
 
 
 class IdSet(DictFileBased):
-    def __init__(self, marketplace: MarketplaceVersions):
-        super().__init__(DEBUG_ID_SET_PATH, is_infrastructure=True)  # todo use real content_item
+    def __init__(self, marketplace: MarketplaceVersions, id_set_path: Path):
+        super().__init__(id_set_path, is_infrastructure=True)
         self.marketplace = marketplace
 
         # Content items mentioned in the file

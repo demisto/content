@@ -1,7 +1,6 @@
 from collections import defaultdict
+from pathlib import Path
 
-from Tests.scripts.collect_tests.constants import \
-    DEBUG_CONF_PATH  # todo remove
 from Tests.scripts.collect_tests.utils import (DictBased, DictFileBased,
                                                to_tuple)
 
@@ -9,8 +8,8 @@ from Tests.scripts.collect_tests.utils import (DictBased, DictFileBased,
 class TestConf(DictFileBased):
     __test__ = False  # prevents pytest from running it
 
-    def __init__(self):
-        super().__init__(DEBUG_CONF_PATH, is_infrastructure=True)  # todo not use debug
+    def __init__(self, conf_path: Path):
+        super().__init__(conf_path, is_infrastructure=True)  # todo not use debug
         self.tests = tuple(TestConfItem(value) for value in self['tests'])
         self.test_ids = {test.playbook_id for test in self.tests}
 

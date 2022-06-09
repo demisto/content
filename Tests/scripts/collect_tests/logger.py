@@ -1,5 +1,6 @@
 import logging
 from logging import getLogger
+
 logger = getLogger('collect_tests')
 
 formatter = logging.Formatter('%(levelname)s [%(filename)s:%(lineno)s %(funcName)s() ] %(message)s')

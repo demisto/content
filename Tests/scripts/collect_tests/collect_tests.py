@@ -1,42 +1,42 @@
-import re
-
-import os
-
-import git
-from argparse import ArgumentParser
-
 import functools
+import os
 import sys
 from abc import ABC, abstractmethod
+from argparse import ArgumentParser
 from enum import Enum
 from pathlib import Path
 from typing import Iterable, Optional
 
+from Tests.scripts.collect_tests.constants import _calculate_excluded_files
+from constants import (DEFAULT_MARKETPLACE_WHEN_MISSING,
+                       DEFAULT_REPUTATION_TESTS, ONLY_INSTALL_PACK, SKIPPED_CONTENT_ITEMS, XSOAR_SANITY_TEST_NAMES)
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
-from demisto_sdk.commands.common.tools import find_type_by_path, str2bool, run_command
+from demisto_sdk.commands.common.tools import (find_type_by_path, run_command,
+                                               str2bool)
+from exceptions import (DeprecatedPackException, EmptyMachineListException,
+                        InexistentPackException, NonDictException,
+                        NoTestsConfiguredException, NothingToCollectException,
+                        NotUnderPackException, SkippedPackException,
+                        UnsupportedPackException)
 from git import Repo
-
-from Tests.scripts.collect_tests.constants import (
-    CONTENT_PATH, DEFAULT_MARKETPLACE_WHEN_MISSING, DEFAULT_REPUTATION_TESTS,
-    EXCLUDED_FILES, SKIPPED_CONTENT_ITEMS, XSOAR_SANITY_TEST_NAMES, ARTIFACTS_PATH, ONLY_INSTALL_PACK,
-    OUTPUT_TESTS_FILE,
-    OUTPUT_PACKS_FILE)
-from Tests.scripts.collect_tests.exceptions import (DeprecatedPackException,
-                                                    EmptyMachineListException,
-                                                    InexistentPackException,
-                                                    NonDictException,
-                                                    NoTestsConfiguredException,
-                                                    NothingToCollectException,
-                                                    NotUnderPackException,
-                                                    SkippedPackException,
-                                                    UnsupportedPackException)
-from Tests.scripts.collect_tests.id_set import IdSet
-from Tests.scripts.collect_tests.test_conf import TestConf
-from Tests.scripts.collect_tests.utils import (ContentItem, Machine,
-                                               PackManager, VersionRange,
-                                               find_pack_folder)
-
+from id_set import IdSet
 from logger import logger
+from test_conf import TestConf
+
+from utils import (ContentItem, Machine, PackManager, VersionRange,
+                   find_pack_folder)
+
+# Constants that are not part of the constants file, to allow unit-testing.
+CONTENT_PATH = Path(__file__).absolute().parents[3]
+PACKS_PATH = CONTENT_PATH / 'Packs'
+ARTIFACTS_PATH = Path(os.getenv('ARTIFACTS_FOLDER', './artifacts'))
+ARTIFACTS_ID_SET_PATH = ARTIFACTS_PATH / 'id_set.json'  # todo use
+ARTIFACTS_CONF_PATH = ARTIFACTS_PATH / 'conf.json'  # todo use
+DEBUG_ID_SET_PATH = CONTENT_PATH / 'Tests' / 'id_set.json'
+DEBUG_CONF_PATH = CONTENT_PATH / 'Tests' / 'conf.json'
+OUTPUT_TESTS_FILE = ARTIFACTS_PATH / 'filter_file.txt'
+OUTPUT_PACKS_FILE = ARTIFACTS_PATH / 'content_packs_to_install.txt'
+EXCLUDED_FILES = _calculate_excluded_files(CONTENT_PATH)
 
 
 # from Tests.Marketplace.marketplace_services import get_last_commit_from_index # todo uncomment
@@ -45,7 +45,7 @@ def get_last_commit_from_index(*args, **kwargs):  # todo remove
 
 
 IS_GITLAB = False  # todo replace
-PACK_MANAGER = PackManager()
+PACK_MANAGER = PackManager(PACKS_PATH)
 COMMIT = 'ds-test-collection'  # todo use arg
 
 
@@ -144,8 +144,8 @@ class CollectedTests:
 class TestCollector(ABC):
     def __init__(self, marketplace: MarketplaceVersions):
         self.marketplace = marketplace
-        self.id_set = IdSet(marketplace)
-        self.conf = TestConf()
+        self.id_set = IdSet(marketplace, DEBUG_ID_SET_PATH)  # todo change
+        self.conf = TestConf(DEBUG_CONF_PATH)  # todo change
         # todo FAILED_
 
     @property
@@ -272,7 +272,7 @@ class BranchTestCollector(TestCollector):
         yml = ContentItem(content_item.with_suffix('.yml'))
         # todo handle yml-free python files
         if not yml.path.exists():
-            raise FileNotFoundError(f'could not find yml matching {PackManager.relative_to_packs(content_item)}')
+            raise FileNotFoundError(f'could not find yml matching {PackManager.relative_to_packs()}')
 
         match containing_folder := yml.path.parents[1].name:
             case 'Integrations':
@@ -298,13 +298,13 @@ class BranchTestCollector(TestCollector):
 
                     if not tests:
                         original_type: str = find_type_by_path(content_item).value
-                        relative_path = str(PackManager.relative_to_packs(yml.path))
+                        relative_path = str(PackManager.relative_to_packs())
                         logger.warning(f'{original_type} {relative_path} '
                                        f'has `No Tests` configured, and no tests in id_set')
             case _:
                 raise RuntimeError(f'Unexpected content type original_file_path {containing_folder} '
                                    f'(expected `Integrations`, `Scripts`, etc)')
-        relative_path = PackManager.relative_to_packs(content_item)
+        relative_path = PackManager.relative_to_packs()
         # creating an object for each, as CollectedTests require #packs==#tests
         return CollectedTests.union([CollectedTests(tests=(test,), packs=yml.pack_tuple, reason=reason,
                                                     version_range=yml.version_range,
@@ -313,7 +313,7 @@ class BranchTestCollector(TestCollector):
 
     def _collect_single(self, path) -> CollectedTests:
         file_type = find_type_by_path(path)
-        reason_description = relative_path = PackManager.relative_to_packs(path)
+        reason_description = relative_path = PackManager.relative_to_packs()
 
         try:
             content_item = ContentItem(path)

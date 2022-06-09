@@ -5,10 +5,10 @@ from typing import Any, Optional
 
 from demisto_sdk.commands.common.constants import MarketplaceVersions
 from demisto_sdk.commands.common.tools import json, yaml
+from logger import logger
 from packaging import version
 from packaging.version import Version
 
-from Tests.scripts.collect_tests.constants import PACKS_PATH
 from Tests.scripts.collect_tests.exceptions import (DeprecatedPackException,
                                                     InexistentPackException,
                                                     InvalidPackNameException,
@@ -17,8 +17,6 @@ from Tests.scripts.collect_tests.exceptions import (DeprecatedPackException,
                                                     NotUnderPackException,
                                                     SkippedPackException,
                                                     UnsupportedPackException)
-
-from logger import logger
 
 
 def find_pack_folder(path: Path) -> Path:
@@ -174,13 +172,14 @@ class ContentItem(DictFileBased):
 class PackManager:
     skipped_packs = {'DeprecatedContent', 'NonSupported', 'ApiModules'}
 
-    def __init__(self):
+    def __init__(self, packs_path: Path):
+        self.packs_path = packs_path
         self.pack_name_to_pack_metadata: dict[str, ContentItem] = {}
         self.pack_folder_to_pack_metadata: dict[Path, ContentItem] = {}
         self.deprecated_packs: set[str] = set()
 
-        for folder in (folder.name for folder in PACKS_PATH.glob('*') if folder.is_dir()):
-            metadata = ContentItem(PACKS_PATH / folder / 'pack_metadata.json')
+        for folder in (folder.name for folder in self.packs_path.glob('*') if folder.is_dir()):
+            metadata = ContentItem(self.packs_path / folder / 'pack_metadata.json')
             self.pack_name_to_pack_metadata[metadata.name] = metadata
             self.pack_folder_to_pack_metadata[metadata.path.parent] = metadata
 
@@ -201,9 +200,10 @@ class PackManager:
     def relative_to_packs(path: Path | str):
         if isinstance(path, str):
             path = Path(path)
-        if path.parts[0] == 'Packs':
-            return Path(*path.parts[1:])
-        return path.relative_to(PACKS_PATH)
+        parts = path.parts
+        if 'Packs' not in parts:
+            raise ValueError('path is not relative to Packs')
+        return Path(*path.parts[path.parts.index('Packs') + 1:])
 
     def validate_pack(self, pack: str) -> None:
         """ raises InvalidPackException if the pack name is not valid."""

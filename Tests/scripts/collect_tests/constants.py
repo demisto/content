@@ -1,19 +1,8 @@
-import os
 from pathlib import Path
 from typing import Iterable
 
-from demisto_sdk.commands.common.constants import MarketplaceVersions, FileType
+from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
 
-MASTER = 'master'  # todo use
-CONTENT_PATH = Path(__file__).absolute().parents[3]
-PACKS_PATH = CONTENT_PATH / 'Packs'
-ARTIFACTS_PATH = Path(os.getenv('ARTIFACTS_FOLDER', './artifacts'))
-ARTIFACTS_ID_SET_PATH = ARTIFACTS_PATH / 'id_set.json'  # todo use
-ARTIFACTS_CONF_PATH = ARTIFACTS_PATH / 'conf.json'  # todo use
-DEBUG_ID_SET_PATH = CONTENT_PATH / 'Tests' / 'id_set.json'
-DEBUG_CONF_PATH = CONTENT_PATH / 'Tests' / 'conf.json'
-OUTPUT_TESTS_FILE = ARTIFACTS_PATH / 'filter_file.txt'
-OUTPUT_PACKS_FILE = ARTIFACTS_PATH / 'content_packs_to_install.txt'
 XSOAR_SANITY_TEST_NAMES = (
     'Sanity Test - Playbook with integration',
     'Sanity Test - Playbook with no integration',
@@ -33,11 +22,11 @@ SKIPPED_CONTENT_ITEMS = {
 }
 
 
-def _calculate_excluded_files() -> set[Path]:
+def _calculate_excluded_files(content_path:Path) -> set[Path]:
     def glob(paths: Iterable[str]):
         result = []
         for partial_path in paths:
-            path = CONTENT_PATH / partial_path
+            path = content_path / partial_path
 
             if path.is_dir():
                 result.extend(path.glob('*'))
@@ -67,8 +56,6 @@ def _calculate_excluded_files() -> set[Path]:
 
     return excluded - not_excluded
 
-
-EXCLUDED_FILES = _calculate_excluded_files()
 
 ONLY_INSTALL_PACK = {
     # upon collection, no tests are collected, but the pack is installed.
