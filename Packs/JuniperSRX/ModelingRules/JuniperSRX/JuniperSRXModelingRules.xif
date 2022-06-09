@@ -1,6 +1,4 @@
 [MODEL: dataset="Juniper_SRX_raw", model="Audit"] 
-
-[MODEL: dataset=Juniper_audit , model="Audit"] 
 alter event_type = arrayindex(regextract(_raw_log,"(\w+\[\d+\])\:\s"),0)
 | filter event_type contains "["
 | alter timestamp = arrayindex(regextract(_raw_log ,"(\d+\:\d+:\d+\.\d+)"), 0)
