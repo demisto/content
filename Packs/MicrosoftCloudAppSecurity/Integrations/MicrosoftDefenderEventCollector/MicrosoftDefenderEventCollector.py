@@ -282,7 +282,7 @@ class DefenderGetEvents(IntegrationGetEvents):
             after = demisto.getLastRun().get(event_type_name) or self.client.after
             # add the time filter
             if after:
-                filters['date'] = {'gte': after}
+                filters['date'] = {'gte': after}  # type: ignore
 
             self.client.request.params['filters'] = json.dumps(filters)
             response = self.client.call(self.client.request).json()
