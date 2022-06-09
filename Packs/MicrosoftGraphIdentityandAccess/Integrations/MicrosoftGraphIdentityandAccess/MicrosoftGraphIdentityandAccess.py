@@ -2,6 +2,7 @@
 An integration to MS Graph Identity and Access endpoint.
 https://docs.microsoft.com/en-us/graph/api/resources/serviceprincipal?view=graph-rest-1.0
 """
+from typing import Tuple
 
 import urllib3
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
@@ -9,28 +10,33 @@ from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
 
 
-class Client:
+class Client:  # pragma: no cover
     def __init__(self, app_id: str, verify: bool, proxy: bool,
-                 azure_ad_endpoint: str = 'https://login.microsoftonline.com'):
+                 azure_ad_endpoint: str = 'https://login.microsoftonline.com', client_credentials: bool = False,
+                 tenant_id: str = None, enc_key: str = None):
         if '@' in app_id:
             app_id, refresh_token = app_id.split('@')
             integration_context = get_integration_context()
             integration_context['current_refresh_token'] = refresh_token
             set_integration_context(integration_context)
-
-        self.ms_client = MicrosoftClient(
-            self_deployed=True,
-            auth_id=app_id,
-            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
-            grant_type=DEVICE_CODE,
-            base_url='https://graph.microsoft.com',
-            verify=verify,
-            proxy=proxy,
-            scope='offline_access RoleManagement.ReadWrite.Directory',
-            azure_ad_endpoint=azure_ad_endpoint
-        )
+        args = {
+            "azure_ad_endpoint": azure_ad_endpoint,
+            "self_deployed": True,
+            "auth_id": app_id,
+            "grant_type": CLIENT_CREDENTIALS if client_credentials else DEVICE_CODE,
+            "base_url": 'https://graph.microsoft.com',
+            "verify": verify,
+            "proxy": proxy,
+            "tenant_id": tenant_id,
+            "enc_key": enc_key
+        }
+        self.ms_client = MicrosoftClient(**args)
+        if not client_credentials:
+            args["scope"] = 'offline_access RoleManagement.ReadWrite.Directory'
+            args["token_retrieval_url"] = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
 
     def get_directory_roles(self, limit: int) -> list:
         """Get all service principals.
@@ -156,7 +162,7 @@ class Client:
 
 
         Docs:
-            https://docs.microsoft.com/en-us/graph/api/riskyuser-dismiss?view=graph-rest-1.0&tabs=http # noqa
+            https://docs.microsoft.com/en-us/graph/api/riskyuser-dismiss?view=graph-rest-1.0&tabs=http
         """
         return self.ms_client.http_request(
             'POST', 'v1.0/identityProtection/riskyUsers/dismiss', json_data=data, return_empty_response=True)
@@ -181,35 +187,36 @@ class Client:
         if page:
             odata_query += f'$skip={page}&'
         if odata:
-            odata_query += odata
+            odata_query += f'{odata}&'
         return self.ms_client.http_request(
             'GET', f'v1.0/identity/conditionalAccess/namedLocations{odata_query}')['value']
 
-    def list_risk_detections(self, limit: str, page: str, odata: str) -> list:
+    def list_risk_detections(self, limit: str, odata: str, odata_filter: str) -> list:
         """Get a list of all risk detections
 
         Args:
             limit: Maximum IP named locations to get.
             page: The page to take the data from.
             odata: An odata query to use in the api call.
+            odata_filter: An odata filter
 
         Returns:
             a list of dictionaries with the object from the api
 
         Docs:
-            https://docs.microsoft.com/en-us/graph/api/riskdetection-list?view=graph-rest-1.0&tabs=http # noqa
+            https://docs.microsoft.com/en-us/graph/api/riskdetection-list?view=graph-rest-1.0&tabs=http
         """
         odata_query = '?'
         if limit:
             odata_query += f'$top={limit}&'
-        if page:
-            odata_query += f'$skip={page}&'
         if odata:
             odata_query += odata
+        if odata_filter:
+            odata_query += f'filter={odata_filter}'
         return self.ms_client.http_request(
             'GET', f'v1.0/identityProtection/riskDetections{odata_query}')['value']
 
-    def list_risky_users(self, limit: str, page: str, odata: str) -> list:
+    def list_risky_users(self, limit: str, odata: str) -> list:
         """Get a list of all risky users
 
         Args:
@@ -226,14 +233,12 @@ class Client:
         odata_query = '?'
         if limit:
             odata_query += f'$top={limit}&'
-        if page:
-            odata_query += f'$skip={page}&'
         if odata:
             odata_query += odata
         return self.ms_client.http_request(
             'GET', f'v1.0/identityProtection/riskyUsers{odata_query}')['value']
 
-    def list_risky_users_history(self, limit: str, page: str, odata: str, user_id) -> list:
+    def list_risky_users_history(self, limit: str, odata: str, user_id: str) -> list:
         """Get a list of all risky user history
 
         Args:
@@ -251,8 +256,6 @@ class Client:
         odata_query = '?'
         if limit:
             odata_query += f'$top={limit}&'
-        if page:
-            odata_query += f'$skip={page}&'
         if odata:
             odata_query += odata
         return self.ms_client.http_request(
@@ -394,8 +397,8 @@ def list_role_members_command(ms_client: Client, args: dict) -> CommandResults:
         limit = int(limit_str)
     except ValueError:
         raise DemistoException(f'Limit must be an integer, not "{limit_str}"')
-    role_id = args['role_id']
-    if results := ms_client.get_role_members(role_id, limit):
+    role_id = args.get('role_id')
+    if results := ms_client.get_role_members(role_id, limit):  # type: ignore
         ids = [member['id'] for member in results]
         context = {
             'role_id': role_id,
@@ -415,9 +418,9 @@ def list_role_members_command(ms_client: Client, args: dict) -> CommandResults:
         return CommandResults(readable_output=f"No members found in {role_id}")
 
 
-def activate_directory_role_command(ms_client: Client, args: dict) -> CommandResults:
-    template_id = args['role_template_id']
-    results = ms_client.activate_directory_role(template_id)
+def activate_directory_role_command(ms_client: Client, args: dict) -> CommandResults:  # pragma: no cover
+    template_id = args.get('role_template_id')
+    results = ms_client.activate_directory_role(template_id)  # type: ignore
     return CommandResults(
         "MSGraphIdentity.Role",
         "id",
@@ -430,21 +433,21 @@ def activate_directory_role_command(ms_client: Client, args: dict) -> CommandRes
     )
 
 
-def add_member_to_role_command(client: Client, args: dict) -> str:
-    user_id = args['user_id']
-    role_object_id = args['role_id']
-    client.add_member_to_role(role_object_id, user_id)
+def add_member_to_role_command(client: Client, args: dict) -> str:  # pragma: no cover
+    user_id = args.get('user_id')
+    role_object_id = args.get('role_id')
+    client.add_member_to_role(role_object_id, user_id)  # type: ignore
     return f"User ID {user_id} has been added to role {role_object_id}"
 
 
-def remove_member_from_role(client: Client, args: dict) -> str:
-    role_object_id = args['role_id']
-    user_id = args['user_id']
-    client.remove_member_from_role(role_object_id, user_id)
+def remove_member_from_role(client: Client, args: dict) -> str:  # pragma: no cover
+    role_object_id = args.get('role_id')
+    user_id = args.get('user_id')
+    client.remove_member_from_role(role_object_id, user_id)  # type: ignore
     return f"User ID {user_id} has been removed from role {role_object_id}"
 
 
-def ip_named_location_get(ms_client: Client, args: dict) -> CommandResults:
+def ip_named_location_get(ms_client: Client, args: dict) -> CommandResults:  # pragma: no cover
     ip_id = args.get('ip_id')
     if results := ms_client.get_ip_named_location(ip_id):  # type: ignore
         context = {
@@ -469,7 +472,7 @@ def ip_named_location_get(ms_client: Client, args: dict) -> CommandResults:
     return CommandResults(readable_output=f"No IP location found for {ip_id}")
 
 
-def ip_named_location_update(ms_client: Client, args: dict) -> CommandResults:
+def ip_named_location_update(ms_client: Client, args: dict) -> CommandResults:  # pragma: no cover
     ip_id = args.get('ip_id')
     if results := ms_client.get_ip_named_location(ip_id):  # type: ignore
         data = {
@@ -500,7 +503,7 @@ def ip_named_location_update(ms_client: Client, args: dict) -> CommandResults:
     return CommandResults(readable_output=f'Could not update IP named location \'{ip_id}\'')
 
 
-def ip_named_location_create(ms_client: Client, args: dict) -> CommandResults:
+def ip_named_location_create(ms_client: Client, args: dict) -> CommandResults:  # pragma: no cover
     ips = args.get('ips')
     is_trusted = args.get('is_trusted')
     display_name = args.get('display_name')
@@ -537,9 +540,8 @@ def ip_named_location_create(ms_client: Client, args: dict) -> CommandResults:
     return CommandResults(readable_output="Could not create IP named location")
 
 
-def azure_ad_identity_protection_confirm_compromised_command(ms_client: Client, args: dict) -> CommandResults:
+def azure_ad_identity_protection_confirm_compromised_command(ms_client: Client, args: dict) -> CommandResults:  # pragma: no cover  # noqa
     user_ids = str(args.get('user_ids')).split(',')
-    print(f'ids: {user_ids}')
     data = {
         'userIds': user_ids
     }
@@ -556,9 +558,9 @@ def azure_ad_identity_protection_confirm_compromised_command(ms_client: Client, 
     except Exception as e:
         return CommandResults(readable_output=f"Could not compromised {str(user_ids)}:\n{e}")
 
-def azure_ad_identity_protection_risky_users_dismiss_command(ms_client: Client, args: dict) -> CommandResults:
+
+def azure_ad_identity_protection_risky_users_dismiss_command(ms_client: Client, args: dict) -> CommandResults:  # pragma: no cover  # noqa
     user_ids = str(args.get('user_ids')).split(',')
-    print(f'ids: {user_ids}')
     data = {
         'userIds': user_ids
     }
@@ -576,7 +578,7 @@ def azure_ad_identity_protection_risky_users_dismiss_command(ms_client: Client, 
         return CommandResults(readable_output=f"Could not dismiss {str(user_ids)}:\n{e}")
 
 
-def ip_named_location_delete(ms_client: Client, args: dict) -> CommandResults:
+def ip_named_location_delete(ms_client: Client, args: dict) -> CommandResults:  # pragma: no cover
     ip_id = args.get('ip_id')
     if results := ms_client.delete_ip_named_location(ip_id):  # type: ignore
         return CommandResults(
@@ -590,11 +592,11 @@ def ip_named_location_delete(ms_client: Client, args: dict) -> CommandResults:
     return CommandResults(readable_output=f'Could not delete IP named location \'{ip_id}\'')
 
 
-def ip_named_location_list(ms_client: Client, args: dict) -> CommandResults:
+def ip_named_location_list(ms_client: Client, args: dict) -> CommandResults:  # pragma: no cover
     limit = args.get('limit')
     page = args.get('page')
     odata = args.get('odata_query')
-    if results := ms_client.list_ip_named_location(limit, page, odata):
+    if results := ms_client.list_ip_named_location(limit, page, odata):  # type: ignore
         ip_named_locations = []
         for result in results:
             ip_named_location = {
@@ -624,11 +626,10 @@ def ip_named_location_list(ms_client: Client, args: dict) -> CommandResults:
         return CommandResults(readable_output="could not list IP named locations")
 
 
-def azure_ad_identity_protection_risky_users_list(ms_client: Client, args: dict) -> CommandResults:
+def azure_ad_identity_protection_risky_users_list(ms_client: Client, args: dict) -> CommandResults:  # pragma: no cover  # noqa
     limit = args.get('limit')
-    page = args.get('page')
     odata = args.get('odata_query')
-    if results := ms_client.list_risky_users(limit, page, odata):
+    if results := ms_client.list_risky_users(limit, odata):  # type: ignore
         risky_users = []
         for result in results:
             risky_user = {
@@ -661,12 +662,11 @@ def azure_ad_identity_protection_risky_users_list(ms_client: Client, args: dict)
         return CommandResults(readable_output="could not list IP named locations")
 
 
-def azure_ad_identity_protection_risky_users_history_list(ms_client: Client, args: dict) -> CommandResults:
+def azure_ad_identity_protection_risky_users_history_list(ms_client: Client, args: dict) -> CommandResults:  # pragma: no cover  # noqa
     limit = args.get('limit')
-    page = args.get('page')
     odata = args.get('odata_query')
     user_id = args.get('user_id')
-    if results := ms_client.list_risky_users_history(limit, page, odata, user_id):
+    if results := ms_client.list_risky_users_history(limit, odata, user_id):  # type: ignore
         risky_users = []
         for result in results:
             risky_user = {
@@ -702,11 +702,11 @@ def azure_ad_identity_protection_risky_users_history_list(ms_client: Client, arg
         return CommandResults(readable_output="could not list IP named locations")
 
 
-def azure_ad_identity_protection_risk_detection_list(ms_client: Client, args: dict) -> CommandResults:
+def azure_ad_identity_protection_risk_detection_list(ms_client: Client, args: dict) -> CommandResults:  # pragma: no cover  # noqa
     limit = args.get('limit')
-    page = args.get('page')
     odata = args.get('odata_query')
-    if results := ms_client.list_risk_detections(limit, page, odata):
+    odata_filter = args.get('filter')
+    if results := ms_client.list_risk_detections(limit, odata, odata_filter):  # type: ignore
         risks = []
         for result in results:
             risk = {
@@ -766,7 +766,105 @@ def ms_ip_string_to_list(ips: str) -> list:
     return ips_arr
 
 
-def main():
+def get_last_fetch_time(last_run: dict, params: dict) -> datetime:
+    last_fetch = last_run.get('latest_detection_found')
+    if not last_fetch:
+        demisto.debug('[AzureADIdentityProtection] First run')
+        # handle first time fetch
+        first_fetch = f"{params.get('first_fetch') or '1 days'} ago"
+        default_fetch_datetime = dateparser.parse(date_string=first_fetch, date_formats=[DATE_FORMAT])
+        assert default_fetch_datetime is not None, f'failed parsing {first_fetch}'
+        last_fetch = str(default_fetch_datetime.isoformat(timespec='milliseconds')) + 'Z'
+
+    demisto.debug(f'[AzureADIdentityProtection] last_fetch: {last_fetch}')
+    return last_fetch
+
+
+def date_str_to_azure_format(date_str: str) -> str:
+    """
+    Given a string representing a date in some general format, modifies the date to Azure format.
+    That means removing the Z at the end and adding nanoseconds if they don't exist.
+    Moreover, sometimes the date has too many digits for
+    """
+    date_str = date_str[:-1] if date_str[-1].lower() == 'z' else date_str
+    if '.' not in date_str:
+        date_str = f'{date_str}.000'
+    else:
+        date_without_ns, ns = date_str.split('.')
+        ns = ns[:6]
+        date_str = f'{date_without_ns}.{ns}'
+
+    return date_str
+
+
+def detection_to_incident(detection: dict, detection_date: str) -> dict:
+    detection_id: str = detection.get('id', '')
+    detection_type: str = detection.get('riskEventType', '')
+    detection_detail: str = detection.get('riskDetail', '')
+    incident = {
+        'name': f'Azure AD:'
+                f' {detection_id} {detection_type} {detection_detail}',
+        'occurred': f'{detection_date}Z',
+        'rawJSON': json.dumps(detection)
+    }
+    return incident
+
+
+def detections_to_incidents(detections: List[Dict[str, str]], last_fetch_datetime: str) -> \
+        Tuple[List[Dict[str, str]], str]:
+    """
+    Given the detections retrieved from Azure Identity Protection, transforms their data to incidents format.
+    """
+    incidents: List[Dict[str, str]] = []
+    latest_incident_time = last_fetch_datetime
+
+    for detection in detections:
+        detection_datetime = detection.get('detectedDateTime', '')
+        detection_datetime_in_azure_format = date_str_to_azure_format(detection_datetime)
+        incident = detection_to_incident(detection, detection_datetime_in_azure_format)
+        incidents.append(incident)
+
+        if datetime.strptime(detection_datetime_in_azure_format, DATE_FORMAT) > \
+                datetime.strptime(date_str_to_azure_format(latest_incident_time), DATE_FORMAT):
+            latest_incident_time = detection_datetime
+
+    return incidents, latest_incident_time
+
+
+def build_filter(last_fetch: str, params: dict) -> str:
+    start_time_enforcing_filter = f"detectedDateTime gt {last_fetch}"
+    user_supplied_filter = params.get('fetch_filter_expression', '')
+    query_filter = f'({user_supplied_filter}) and {start_time_enforcing_filter}' if user_supplied_filter \
+        else start_time_enforcing_filter
+    demisto.debug(f'[AzureADIdentityProtection] query_filter: {query_filter}')
+    return query_filter
+
+
+def fetch_incidents(client: Client, params: Dict[str, str]):
+    last_run: Dict[str, str] = demisto.getLastRun()
+    demisto.debug(f'[AzureIdentityProtection] last run: {last_run}')
+
+    last_fetch = get_last_fetch_time(last_run, params)
+    query_filter = build_filter(last_fetch, params)
+    demisto.debug(f'last fetch is: {last_fetch}, filter is: {query_filter}')
+
+    limit = params.get('max_fetch', '50')
+    filter_expression = query_filter
+
+    detections: list = client.list_risk_detections(limit, None, filter_expression)  # type: ignore
+
+    incidents, latest_detection_time = detections_to_incidents(detections, last_fetch_datetime=last_fetch)
+    demisto.debug(f'Fetched {len(incidents)} incidents')
+
+    demisto.debug(f'next run latest_detection_found: {latest_detection_time}')
+    last_run = {
+        'latest_detection_found': latest_detection_time,
+    }
+
+    return incidents, last_run
+
+
+def main():  # pragma: no cover
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
         command = demisto.command()
@@ -778,7 +876,10 @@ def main():
             verify=not params.get('insecure', False),
             proxy=params.get('proxy', False),
             azure_ad_endpoint=params.get('azure_ad_endpoint',
-                                         'https://login.microsoftonline.com') or 'https://login.microsoftonline.com'
+                                         'https://login.microsoftonline.com') or 'https://login.microsoftonline.com',
+            tenant_id=params.get("tenant_id"),
+            client_credentials=params.get("client_credentials", False),
+            enc_key=(params.get('credentials') or {}).get('password')
         )
         if command == 'test-module':
             return_results('The test module is not functional, run the msgraph-identity-auth-start command instead.')
@@ -820,10 +921,10 @@ def main():
             return_results(azure_ad_identity_protection_confirm_compromised_command(client, args))
         elif command == 'msgraph-identity-protection-risky-user-dismiss':
             return_results(azure_ad_identity_protection_risky_users_dismiss_command(client, args))
-        # elif command == 'fetch-incidents':
-        #     incidents, last_run = fetch_incidents(client, params)
-        #     demisto.incidents(incidents)
-        #     demisto.setLastRun(last_run)
+        elif command == 'fetch-incidents':
+            incidents, last_run = fetch_incidents(client, params)
+            demisto.incidents(incidents)
+            demisto.setLastRun(last_run)
         else:
             raise NotImplementedError(f"Command '{command}' not found.")
 
@@ -839,3 +940,4 @@ from MicrosoftApiModule import *  # noqa: E402
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
+
