@@ -225,4 +225,32 @@ def test_check_width_and_height(width, height, expected_width, expected_height):
     assert h == expected_height
 
 
+def test_full_screen_true(mocker):
+    """
+        Given:
+
+        When:
+            - Running the 'heck_width_and_height' function.
+        Then:
+            Verify that
+    """
+    from rasterize import get_image
+
+    driver = {}
+
+    mocker.patch.object(demisto, 'info')
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch.object(driver, 'execute_script')
+    mocker.patch('driver.execute_script', return_value=None)
+    mocker.patch('driver.get_screenshot_as_png', return_value=None)
+    mocker.patch('driver.quit', return_value=None)
+    mocker.patch('check_width_and_height', return_value=None)
+    result = mocker.patch('driver.set_window_size', return_value=None)
+
+    get_image(driver=driver, width=100, height=200, full_screen=True)
+
+    assert result == None
+
+
+
 
