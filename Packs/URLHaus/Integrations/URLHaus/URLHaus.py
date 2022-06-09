@@ -217,7 +217,7 @@ def url_create_tags(urlhaus_data: dict) -> List[str]:
             urlhaus_data (dict): The data retrieved from URLHaus db.
 
         Returns:
-            tags (list): a list of tags to add .
+            tags (list): a list of tags to add  .
     """
     tags = urlhaus_data.get('Tags', [])
     if urlhaus_data.get('Threat'):
