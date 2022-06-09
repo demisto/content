@@ -87,7 +87,6 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
       defaultValue: 'False'
       description: 'Get the full page. The maximal width and height values are 8000px.
         (Marking full_screen as true means that the values for width and height arguments
@@ -157,7 +156,6 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
       defaultValue: 'False'
       description: 'Get the full page. The maximal width and height values are 8000px.
         (Marking full_screen as true means that the values for width and height arguments
@@ -203,7 +201,6 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      default: true
       defaultValue: 'False'
       description: 'Get the full page. The maximal width and height values are 8000px.
         (Marking full_screen as true means that the values for width and height arguments
@@ -263,7 +260,7 @@ script:
     description: Converts a PDF file to an image file.
     execution: false
     name: rasterize-pdf
-  dockerimage: demisto/chromium:1.0.0.30170
+  dockerimage: demisto/chromium:1.0.0.30388
   feed: false
   isfetch: false
   longRunning: false
