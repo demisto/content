@@ -6,6 +6,7 @@ import tempfile
 import time
 import traceback
 from io import BytesIO
+from typing import Tuple
 
 import demistomock as demisto  # noqa: F401
 import numpy as np
@@ -54,6 +55,21 @@ DEFAULT_CHROME_OPTIONS = [
 
 USER_CHROME_OPTIONS = demisto.params().get('chrome_options', "")
 PAGES_LIMITATION = 20
+
+
+def check_width_and_height(width: int, height: int) -> Tuple[int, int]:
+    """
+    Verifies that the width and height are not greater than the safeguard limit.
+    Args:
+        width: The given width.
+        height: The given height.
+
+    Returns: The checked width and height values - [width, height]
+    """
+    w = min(width, MAX_FULLSCREEN_W)
+    h = min(height, MAX_FULLSCREEN_H)
+
+    return w, h
 
 
 def return_err_or_warn(msg):
@@ -227,27 +243,21 @@ def get_image(driver, width: int, height: int, full_screen: bool):
     driver.set_window_size(width, height)
 
     if full_screen:
-        # Calculates the width and height using the scrollbar of the window (the calculated values will be always
-        # larger then the given width and height and smaller than the safeguard limits).
-        calc_width = min(driver.execute_script('return document.body.parentNode.scrollWidth'), MAX_FULLSCREEN_W)
-        calc_height = min(driver.execute_script('return document.body.parentNode.scrollHeight'), MAX_FULLSCREEN_H)
+        # Convention: the calculated values are always larger then the given width and height and smaller than the
+        # safeguard limits
+
+        # Calculates the width and height using the scrollbar of the window:
+        calc_width = driver.execute_script('return document.body.parentNode.scrollWidth')
+        calc_height = driver.execute_script('return document.body.parentNode.scrollHeight')
+
+        # Check that the width and height meet the safeguard limit:
+        calc_width, calc_height = check_width_and_height(calc_width, calc_height)
+        demisto.info(f'Calculated snapshot width is {calc_width}, calculated snapshot height is {calc_height}.')
 
         # Reset window size
         driver.set_window_size(calc_width, calc_height)
 
-        # This can throw an exception of height 0 if the html contains only javascript
-        try:
-            # Screenshot the content of the tag HTML to avoid multiple footer
-            image = driver.find_element_by_tag_name('html').screenshot_as_png
-
-        except WebDriverException as ex:
-            demisto.error(f'Unexpected WebDriverException in driver - Error: {ex}')
-            demisto.debug('The error Might be related to a non HTML website.')
-            image = driver.get_screenshot_as_png()
-
-    else:
-        # Snapshot size is determined according to the given width and height
-        image = driver.get_screenshot_as_png()
+    image = driver.get_screenshot_as_png()
 
     driver.quit()
 
@@ -344,9 +354,7 @@ def rasterize_command():
     file_name = demisto.args().get('file_name', 'url')
     full_screen = argToBoolean(demisto.args().get('full_screen', False))
 
-    # Checks that the width and height are not greater than the safeguard limit:
-    w = min(w, MAX_FULLSCREEN_W)
-    h = min(h, MAX_FULLSCREEN_H)
+    w, h = check_width_and_height(w, h)  # Check that the width and height meet the safeguard limit
 
     if not (url.startswith('http')):
         url = f'http://{url}'
@@ -373,9 +381,7 @@ def rasterize_image_command():
     file_name = args.get('file_name', entry_id)
     full_screen = argToBoolean(demisto.args().get('full_screen', False))
 
-    # Checks that the width and height are not greater than the safeguard limit:
-    w = min(w, MAX_FULLSCREEN_W)
-    h = min(h, MAX_FULLSCREEN_H)
+    w, h = check_width_and_height(w, h)  # Check that the width and height meet the safeguard limit
 
     file_path = demisto.getFilePath(entry_id).get('path')
     file_name = f'{file_name}.pdf'
@@ -397,9 +403,7 @@ def rasterize_email_command():
     html_load = int(demisto.args().get('max_page_load_time', DEFAULT_PAGE_LOAD_TIME))
     full_screen = argToBoolean(demisto.args().get('full_screen', False))
 
-    # Checks that the width and height are not greater than the safeguard limit:
-    w = min(w, MAX_FULLSCREEN_W)
-    h = min(h, MAX_FULLSCREEN_H)
+    w, h = check_width_and_height(w, h) # Check that the width and height meet the safeguard limit
 
     file_name = f'{file_name}.{"pdf" if r_type.lower() == "pdf" else "png"}'  # type: ignore
     with open('htmlBody.html', 'w') as f:

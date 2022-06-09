@@ -151,7 +151,7 @@ def http_wait_server():
 @pytest.mark.filterwarnings('ignore::ResourceWarning')
 def test_rasterize_url_long_load(mocker, http_wait_server):
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
-    time.sleep(1)  # give time to the servrer to start
+    time.sleep(1)  # give time to the server to start
     rasterize('http://localhost:10888', width=250, height=250, r_type='png', max_page_load_time=5)
     assert return_error_mock.call_count == 1
     # call_args last call with a tuple of args list and kwargs
@@ -198,3 +198,31 @@ def test_convert_pdf_to_jpeg(file_path, max_pages, expected_length):
 
     assert type(res) == list
     assert len(res) == expected_length
+
+
+@pytest.mark.parametrize('width, height, expected_width, expected_height', [
+    (8001, 700, 8000, 700),
+    (700, 80001, 700, 8000),
+    (700, 600, 700, 600)
+])
+def test_check_width_and_height(width, height, expected_width, expected_height):
+    """
+        Given:
+            1. A width that is larger than the safeguard limit, and a valid height
+            2. A height that is larger than the safeguard limit, and a valid width
+            3. Valid width and height
+        When:
+            - Running the 'heck_width_and_height' function.
+        Then:
+            Verify that:
+            1. The resulted width is the safeguard limit (8000px) and the height remains as it was.
+            2. The resulted height is the safeguard limit (8000px) and the width remains as it was.
+            3. Both width and height remain as they were.
+    """
+    from rasterize import check_width_and_height
+    w, h = check_width_and_height(width, height)
+    assert w == expected_width
+    assert h == expected_height
+
+
+
