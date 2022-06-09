@@ -60,7 +60,8 @@ class DropboxEventsGetter(IntegrationGetEvents):
 
     def get_last_run(self: Any, events: list[dict]) -> dict:  # type: ignore
         last_datetime = max([datetime.strptime(event.get('timestamp'), DATETIME_FORMAT) for event in events])
-        return {'start_time': datetime.strftime(last_datetime, DATETIME_FORMAT)}
+        last_datetime_with_delta = last_datetime + timedelta(milliseconds=1)
+        return {'start_time': datetime.strftime(last_datetime_with_delta, DATETIME_FORMAT)}
 
     def _iter_events(self):
         self.client.get_access_token()
