@@ -1,23 +1,23 @@
 id: ACTI Block High Severity Indicators
 version: -1
 name: ACTI Block High Severity Indicators
-description: Sends indicators imported from ACTI feeds with a severity rating of 5 or higher to your firewall to be blocked.
-starttaskid: "0"
+description: Deprecated. No available replacement.
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: a8850535-59b1-4392-88f3-860af95e14c2
     type: start
     task:
       id: a8850535-59b1-4392-88f3-860af95e14c2
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "9"
+      - '9'
     separatecontext: false
     view: |-
       {
@@ -33,8 +33,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     taskid: 888eb018-2021-4fec-8eed-ef16fcf2547e
     type: playbook
     task:
@@ -43,7 +43,6 @@ tasks:
       name: Block IP - Generic v2
       description: |-
         This playbook blocks malicious IPs using all integrations that are enabled.
-
         Supported integrations for this playbook:
         * Check Point Firewall
         * Palo Alto Networks Minemeld
@@ -53,21 +52,21 @@ tasks:
       playbookName: Block IP - Generic v2
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
     scriptarguments:
       AutoCommit:
-        simple: "No"
+        simple: No
       CustomBlockRule:
-        simple: "True"
+        simple: 'True'
       IP:
         simple: ${inputs.IP}
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 100
     view: |-
@@ -84,8 +83,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     taskid: 7f6dc456-8214-430c-8d0c-df6e35f18b36
     type: playbook
     task:
@@ -94,7 +93,6 @@ tasks:
       name: Block URL - Generic
       description: |-
         This playbook blocks malicious URLs using all integrations that are enabled.
-
         Supported integrations for this playbook:
         * Palo Alto Networks Minemeld
         * Palo Alto Networks PAN-OS
@@ -102,13 +100,13 @@ tasks:
       playbookName: Block URL - Generic
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
     scriptarguments:
       AutoCommit:
-        simple: "No"
+        simple: No
       CustomURLCategory:
         simple: Demisto Remediation - Malicious URLs
       URL:
@@ -118,7 +116,7 @@ tasks:
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 100
     view: |-
@@ -135,8 +133,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
+  '7':
+    id: '7'
     taskid: 4e698be5-bb0b-4822-8907-0a3c024a1baf
     type: playbook
     task:
@@ -145,7 +143,6 @@ tasks:
       name: Block Domain - Generic
       description: |-
         This playbook blocks malicious Domains using all integrations that are enabled.
-
         Supported integrations for this playbook:
         * Zscaler
         * Symantec Messaging Gateway
@@ -155,17 +152,17 @@ tasks:
       playbookName: Block Domain - Generic
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
     scriptarguments:
       Domain:
         simple: ${inputs.Domain}
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 100
     view: |-
@@ -182,8 +179,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
+  '8':
+    id: '8'
     taskid: b1d239b3-9da1-4497-8645-0253b790a700
     type: title
     task:
@@ -192,8 +189,8 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ""
-      description: 'Title'
+      brand: ''
+      description: Title
     separatecontext: false
     view: |-
       {
@@ -209,8 +206,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "9":
-    id: "9"
+  '9':
+    id: '9'
     taskid: 87a9378e-0548-4b40-8fa5-ec33b8640297
     type: collection
     task:
@@ -219,11 +216,11 @@ tasks:
       name: Blocking indicator user choice
       type: collection
       iscommand: false
-      brand: ""
-      description: 'User input required for blocking indicators if there are any.'
+      brand: ''
+      description: User input required for blocking indicators if there are any.
     nexttasks:
       '#none#':
-      - "10"
+      - '10'
     separatecontext: false
     view: |-
       {
@@ -236,31 +233,29 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
+      to:
+      subject:
       body:
         simple: |-
           Do you want to block these indicators:
-
           ${inputs.IP}
           ${inputs.URL}
           ${inputs.Domain}
       methods: []
-      format: ""
-      bcc: null
-      cc: null
+      format: ''
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
         completeafterreplies: 1
     form:
       questions:
-      - id: "0"
-        label: ""
+      - id: '0'
+        label: ''
         labelarg:
           simple: |-
             Do you want to block these indicators:
-
             ${inputs.IP}
             ${inputs.URL}
             ${inputs.Domain}
@@ -270,23 +265,23 @@ tasks:
         type: singleSelect
         options: []
         optionsarg:
-        - simple: "No"
-        - simple: "Yes"
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
+        - simple: No
+        - simple: Yes
+        fieldassociated: ''
+        placeholder: ''
+        tooltip: ''
         readonly: false
       title: ACTIBlockChoice
-      description: ""
-      sender: ""
+      description: ''
+      sender: ''
       expired: false
       totalanswers: 0
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "10":
-    id: "10"
+  '10':
+    id: '10'
     taskid: 96b68ea3-5c51-490a-858e-220d79ec8e08
     type: condition
     task:
@@ -295,18 +290,18 @@ tasks:
       name: Branching condition for user choice
       type: condition
       iscommand: false
-      brand: ""
-      description: 'Branching condition based on user input (Yes/No).'
+      brand: ''
+      description: Branching condition based on user input (Yes/No).
     nexttasks:
       '#default#':
-      - "8"
-      "yes":
-      - "5"
-      - "6"
-      - "7"
+      - '8'
+      yes:
+      - '5'
+      - '6'
+      - '7'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -315,7 +310,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "Yes"
+              simple: Yes
     view: |-
       {
         "position": {
@@ -363,7 +358,7 @@ inputs:
             iscontext: true
           right:
             value:
-              simple: "3"
+              simple: '3'
       - - operator: isEqualString
           left:
             value:
@@ -377,7 +372,7 @@ inputs:
       - operator: uniq
   required: false
   description: Considers IP(s) which have severity 5 or more
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: URL
   value:
     complex:
@@ -398,7 +393,7 @@ inputs:
             iscontext: true
           right:
             value:
-              simple: "3"
+              simple: '3'
       - - operator: isEqualString
           left:
             value:
@@ -412,7 +407,7 @@ inputs:
       - operator: uniq
   required: false
   description: Considers URL(s) which have severity 5 or more
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Domain
   value:
     complex:
@@ -433,7 +428,7 @@ inputs:
             iscontext: true
           right:
             value:
-              simple: "3"
+              simple: '3'
       - - operator: isEqualString
           left:
             value:
@@ -447,8 +442,9 @@ inputs:
       - operator: uniq
   required: false
   description: Considers Domain(s) which have severity 5 or more
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
+deprecated: true
