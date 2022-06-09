@@ -1,10 +1,10 @@
 import json
-from datetime import date, timedelta
-
 import requests
+from datetime import date, timedelta
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import dateparser
 
 ''' IMPORTS '''
 
@@ -789,10 +789,16 @@ def close_incident_command():
 
 
 def search_quarantine():
+    arg_time = dateparser.parse(demisto.args().get('time'))
+    if isinstance(arg_time, datetime):
+        emailTAPtime = int(arg_time.timestamp())
+    else:
+        raise Exception("Timestamp was bad")
+
     lstAlert = []
     mid = demisto.args().get('message_id')
     recipient = demisto.args().get('recipient')
-    emailTAPtime = int(datetime.strptime(demisto.args().get('time'), TIME_FORMAT_UTC).timestamp())
+
     incidents_list = get_incidents_request({})
     found = {'email': False, 'mid': False, 'quarantine': False}
     resQ = []
@@ -814,15 +820,19 @@ def search_quarantine():
                                 'quarantine_results': incident.get('quarantine_results')
                             })
                     else:
-                        demisto.results(f'Message ID found but no messageDeliveryTime found in :{json.dumps(email, indent=2)}')
+                        return_results(f'Message ID found but no messageDeliveryTime found in :{json.dumps(email, indent=2)}')
     quarantineFoundcpt = 0
     for alert in lstAlert:
         for quarantine in alert.get('quarantine_results'):
             if quarantine.get('messageId') == mid and quarantine.get('recipient') == recipient:
                 found['quarantine'] = True
-                tsquarantine = datetime.strptime(quarantine.get("startTime"), "%Y-%m-%dT%H:%M:%S.%f%z")
-                tsalert = datetime.strptime(alert.get("alerttime"), TIME_FORMAT_UTC)
-                diff = (tsquarantine - tsalert).total_seconds()
+                tsquarantine = dateparser.parse(quarantine.get("startTime"))
+                tsalert = dateparser.parse(alert.get("alerttime"))
+                if isinstance(tsquarantine, datetime) and isinstance(tsalert, datetime):
+                    delt = tsquarantine - tsalert
+                else:
+                    raise Exception("Timestamp was bad")
+                diff = delt.total_seconds()
                 if 0 < diff < 120:
                     resQ.append({
                         'quarantine': quarantine,
@@ -839,17 +849,17 @@ def search_quarantine():
                     quarantineFoundcpt += 1
 
     if quarantineFoundcpt > 0:
-        demisto.results(f"{mid} Message ID matches to {quarantineFoundcpt} emails quarantined but time alert does not match")
+        return_results(f"{mid} Message ID matches to {quarantineFoundcpt} emails quarantined but time alert does not match")
     if found['mid']:
         midtxt = f'{mid} Message ID found in TRAP alerts, '
         if not found['email']:
-            demisto.results(f"{midtxt}but timestamp between email delivery time and time given as argument doesn't match")
+            return_results(f"{midtxt}but timestamp between email delivery time and time given as argument doesn't match")
         elif not found['quarantine']:
-            demisto.results(f"{midtxt}but not in the quarantine list meaning that email has not be quarantined.")
+            return_results(f"{midtxt}but not in the quarantine list meaning that email has not be quarantined.")
             for alt in lstAlert:
-                demisto.results(json.dumps(alt, indent=4))
+                return_results(json.dumps(alt, indent=4))
     else:
-        demisto.results(f"Message ID {mid} not found in TRAP incidents")
+        return_results(f"Message ID {mid} not found in TRAP incidents")
     command_results = CommandResults(
         outputs_prefix='ProofPointTRAP.Quarantine',
         outputs=resQ,
