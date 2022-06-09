@@ -123,7 +123,7 @@ subtype: python3
 system: false
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.1.26972
+dockerimage: demisto/python3:3.10.4.29342
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0

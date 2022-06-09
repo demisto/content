@@ -5,7 +5,6 @@ import pyshark
 from datetime import datetime
 import re
 import sys
-import traceback
 try:
     from StringIO import StringIO  # for Python 2
 except ImportError:
@@ -421,7 +420,6 @@ def main():
                          "Contents": markdown_output,
                          "EntryContext": {"PcapHTTPFlows": context_output}})
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error('Failed to execute PcapHTTPExtractor Script. Error: {}'.format(str(e)))
     finally:
         sys.stderr = serr

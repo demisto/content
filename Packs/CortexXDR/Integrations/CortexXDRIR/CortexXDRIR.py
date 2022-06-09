@@ -1329,7 +1329,6 @@ def main():  # pragma: no cover
             return_results(remove_allowlist_files_command(client, args))
 
     except Exception as err:
-        demisto.error(traceback.format_exc())
         return_error(str(err))
 
 

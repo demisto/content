@@ -3,7 +3,6 @@ from requests import Response
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 import requests
-import traceback
 from typing import Dict, Any, Callable
 
 # Disable insecure warnings
@@ -513,7 +512,6 @@ def main() -> None:
         return_results(command_func(client, args))
 
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto_command} command_func.\nError:\n{str(e)}')
 
 

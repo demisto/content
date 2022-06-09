@@ -373,7 +373,6 @@ def main():  # pragma: no cover
             return_results(get_dynamic_analysis_command(client, args))
 
     except Exception as err:
-        demisto.error(traceback.format_exc())
         return_error(str(err))
 
 

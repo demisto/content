@@ -33,3 +33,4 @@ fromversion: 6.0.0
 comment: 'Joining values by index from 2 list according to a given format.'
 tests:
 - No tests (auto formatted)
+

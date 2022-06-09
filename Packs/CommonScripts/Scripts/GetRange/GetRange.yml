@@ -26,5 +26,5 @@ tags:
 - entirelist
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.1.25933
+dockerimage: demisto/python3:3.10.4.29342
 fromversion: 5.5.0

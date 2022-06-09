@@ -25,6 +25,6 @@ outputs:
 scripttarget: 0
 runonce: false
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.4.28442
+dockerimage: demisto/python3:3.10.4.29342
 tests:
 - IPToHost - Test

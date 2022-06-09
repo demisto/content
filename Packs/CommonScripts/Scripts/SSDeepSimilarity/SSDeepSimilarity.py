@@ -1,4 +1,3 @@
-import traceback
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -106,7 +105,6 @@ def main():
         return_results(res)
 
     except Exception as ex:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to compare ssdeep hashes. Error: {str(ex)}')
 
 
