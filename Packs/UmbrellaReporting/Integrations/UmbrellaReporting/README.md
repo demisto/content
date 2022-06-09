@@ -1,5 +1,5 @@
 Fetch reports from Cisco Umbrella that provides visibility into your core network and security activities and Umbrella logs.
-This integration was integrated and tested with version xx of Cisco Umbrella Reporting
+This integration was integrated and tested with version 2 of Cisco Umbrella Reporting APIs
 
 ## Configure Cisco Umbrella Reporting on Cortex XSOAR
 
