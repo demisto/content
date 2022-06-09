@@ -219,7 +219,7 @@ def url_create_tags(urlhaus_data: dict) -> List[str]:
         Returns:
             tags (list): a list of tags to add.
     """
-    tags = urlhaus_data.get('Tags', [])
+    tags = urlhaus_data.get('Tags')
     if urlhaus_data.get('Threat'):
         tags.append(urlhaus_data.get('Threat'))
     return tags
