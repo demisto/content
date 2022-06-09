@@ -22,7 +22,7 @@
 | alter XDM.Network.Source.ipv4 =source_ip
 | alter XDM.Network.Source.user.username =Username;
 
-//[MODEL: dataset=" nginx_raw", model="Audit"] 
+[MODEL: dataset=" nginx_raw", model="Audit"] 
 
 [MODEL: dataset=" nginx_audit_log", model="Audit"] 
 alter timestamp = arrayindex(regextract(_raw_log , "(\d+\/\d+\/\d+\s\d+\:\d+\:\d+) ") , 0)
