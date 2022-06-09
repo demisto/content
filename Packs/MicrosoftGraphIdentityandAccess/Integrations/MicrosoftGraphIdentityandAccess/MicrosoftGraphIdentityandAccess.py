@@ -33,7 +33,7 @@ class Client:  # pragma: no cover
             "tenant_id": tenant_id,
             "enc_key": enc_key
         }
-        self.ms_client = MicrosoftClient(**args)
+        self.ms_client = MicrosoftClient(**args)  # type: ignore
         if not client_credentials:
             args["scope"] = 'offline_access RoleManagement.ReadWrite.Directory'
             args["token_retrieval_url"] = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
@@ -578,7 +578,7 @@ def azure_ad_identity_protection_risky_users_dismiss_command(ms_client: Client, 
         return CommandResults(readable_output=f"Could not dismiss {str(user_ids)}:\n{e}")
 
 
-def ip_named_location_delete(ms_client: Client, args: dict) -> CommandResults:  # pragma: no cover
+def ip_named_location_delete(ms_client: Client, args: dict) -> CommandResults:  # pragma: no cover  # noqa
     ip_id = args.get('ip_id')
     if results := ms_client.delete_ip_named_location(ip_id):  # type: ignore
         return CommandResults(
@@ -766,7 +766,7 @@ def ms_ip_string_to_list(ips: str) -> list:
     return ips_arr
 
 
-def get_last_fetch_time(last_run: dict, params: dict) -> datetime:
+def get_last_fetch_time(last_run: dict, params: dict):
     last_fetch = last_run.get('latest_detection_found')
     if not last_fetch:
         demisto.debug('[AzureADIdentityProtection] First run')
@@ -831,7 +831,7 @@ def detections_to_incidents(detections: List[Dict[str, str]], last_fetch_datetim
     return incidents, latest_incident_time
 
 
-def build_filter(last_fetch: str, params: dict) -> str:
+def build_filter(last_fetch: datetime, params: dict) -> str:
     start_time_enforcing_filter = f"detectedDateTime gt {last_fetch}"
     user_supplied_filter = params.get('fetch_filter_expression', '')
     query_filter = f'({user_supplied_filter}) and {start_time_enforcing_filter}' if user_supplied_filter \
@@ -853,7 +853,7 @@ def fetch_incidents(client: Client, params: Dict[str, str]):
 
     detections: list = client.list_risk_detections(limit, None, filter_expression)  # type: ignore
 
-    incidents, latest_detection_time = detections_to_incidents(detections, last_fetch_datetime=last_fetch)
+    incidents, latest_detection_time = detections_to_incidents(detections, last_fetch_datetime=last_fetch)  # type: ignore
     demisto.debug(f'Fetched {len(incidents)} incidents')
 
     demisto.debug(f'next run latest_detection_found: {latest_detection_time}')
