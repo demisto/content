@@ -66,9 +66,8 @@ class Client(BaseClient):
             if is_test:
                 return res
 
-            return_error('Failed to execute command.\nURL: {}, Status Code: {}\nResponse: {}'.format(urljoin(self.base_url, url_suffix),
-                                                                                                     res.status_code,
-                                                                                                     res.text))
+            return_error('Failed to execute command.\nURL: {}, Status Code: {}\nResponse: {}'.format(urljoin(
+                self.base_url, url_suffix), res.status_code, res.text))
 
         if is_test:
             return res
@@ -541,39 +540,6 @@ def main():
     except Exception as e:
         return_error(str(e))
 
-
-    # try:
-    #     handle_proxy()
-    #     if demisto.command() == 'test-module':
-    #         """
-    #         demisto.command() will return 'test-module' when the Test button in integration page clicked
-    #         """
-    #         test(client)
-    #
-    #     elif demisto.command() == 'confluence-create-space':
-    #         create_space_command()
-    #
-    #     elif demisto.command() == 'confluence-create-content':
-    #         create_content_command()
-    #
-    #     elif demisto.command() == 'confluence-get-content':
-    #         get_content_command()
-    #
-    #     elif demisto.command() == 'confluence-list-spaces':
-    #         list_spaces_command()
-    #
-    #     elif demisto.command() == 'confluence-delete-content':
-    #         delete_content_command()
-    #
-    #     elif demisto.command() == 'confluence-update-content':
-    #         update_content_command()
-    #
-    #     elif demisto.command() == 'confluence-search-content':
-    #         search_content_command()
-    #
-    # except Exception as e:
-    #     return_error(str(e))
-    #
 
 from AtlassianApiModule import *  # noqa: E402
 
