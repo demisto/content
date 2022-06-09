@@ -1121,7 +1121,7 @@ This is visible
 - **Field Name 2**
 </~XSOAR>
 - **Field Name 3**
-''', 'marketplacev2', "#### Scripts\n##### Script Name\n- Fixed script\n\n#### Incident Fields\n- **Field Name 1**"),
+''', 'marketplacev2', "#### Incident Fields\n- **Field Name 1**\n\n#### Scripts\n##### Script Name\n- Fixed script"),
         ('''
 #### Integrations
 ##### Integration Display Name
