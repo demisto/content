@@ -958,6 +958,13 @@ def get_endpoints_by_status_command(client: Client, args: Dict) -> CommandResult
         raw_response=raw_res)
 
 
+def file_details_results(client: Client, args: Dict) -> None:
+    return_entry, file_results = retrieve_file_details_command(client, args)
+    demisto.results(return_entry)
+    if file_results:
+        demisto.results(file_results)
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -1185,22 +1192,23 @@ def main():  # pragma: no cover
             return_results(retrieve_files_command(client, args))
 
         elif command == 'xdr-file-retrieve':
-            return_results(run_polling_command(client=client,
-                                               args=args,
-                                               cmd="xdr-file-retrieve",
-                                               command_function=retrieve_files_command,
-                                               command_decision_field="action_id",
-                                               results_function=action_status_get_command,
-                                               polling_field="status",
-                                               polling_value=["PENDING",
-                                                              "IN_PROGRESS",
-                                                              "PENDING_ABORT"]))
+            polling = run_polling_command(client=client,
+                                          args=args,
+                                          cmd="xdr-file-retrieve",
+                                          command_function=retrieve_files_command,
+                                          command_decision_field="action_id",
+                                          results_function=action_status_get_command,
+                                          polling_field="status",
+                                          polling_value=["PENDING",
+                                                         "IN_PROGRESS",
+                                                         "PENDING_ABORT"])
+            if polling.scheduled_command:
+                return_results(polling)
+            else:
+                file_details_results(client, args)
 
         elif command == 'xdr-retrieve-file-details':
-            return_entry, file_results = retrieve_file_details_command(client, args)
-            demisto.results(return_entry)
-            if file_results:
-                demisto.results(file_results)
+            file_details_results(client, args)
 
         elif command == 'xdr-get-scripts':
             return_outputs(*get_scripts_command(client, args))
