@@ -1,3 +1,4 @@
+import subprocess
 import traceback
 import ssh_agent_setup
 import demistomock as demisto  # noqa: F401
@@ -87,6 +88,11 @@ def main() -> None:
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+    finally:
+        logging.info('killing previously started ssh-agent')
+        subprocess.run(['ssh-agent', '-k'])
+        del os.environ['SSH_AUTH_SOCK']
+        del os.environ['SSH_AGENT_PID']
 
 
 # ENTRY POINT
