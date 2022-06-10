@@ -32,7 +32,7 @@ def overall_classification_command(args: Dict[str, Any]) -> CommandResults:
     a1000_classification = a1000_result.get('threat_status', 'nema a1000').upper()
 
     if a1000_classification_report.get('sha1') != a1000_result.get('sha1'):
-        return {"Message": "Hash mismatch!"}
+        return CommandResults(readable_output="Hash mismatch!")
 
     if a1000_classification == "UNKNOWN":
         overall_classification = cloud_classification

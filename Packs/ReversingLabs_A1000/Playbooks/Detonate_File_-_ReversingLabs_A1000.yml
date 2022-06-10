@@ -1,24 +1,23 @@
 id: Detonate File - ReversingLabs A1000
-version: 25
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Detonate File - ReversingLabs A1000
-description: Upload sample to ReversingLabs A1000 appliance and automatically retrieve
-  full & classification reports. Calculate final classification.
-starttaskid: "0"
+description: Upload sample to ReversingLabs A1000 appliance and automatically retrieve full & classification reports. Calculate final classification.
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 60abf0ab-9aa6-46aa-8ed0-58240e5dc3d9
     type: start
     task:
       id: 60abf0ab-9aa6-46aa-8ed0-58240e5dc3d9
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     separatecontext: false
     view: |-
       {
@@ -34,8 +33,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: af5879c4-cc27-4566-8c0d-77983c335110
     type: condition
     task:
@@ -44,15 +43,16 @@ tasks:
       name: Is ReversingLabs A1000 v2 enabled?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#default#':
-      - "3"
-      "yes":
-      - "4"
+      - '3'
+      yes:
+      - '4'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -93,8 +93,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     taskid: 3f9f0052-6637-48d4-8b50-020626bac857
     type: title
     task:
@@ -103,7 +103,8 @@ tasks:
       name: done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -119,8 +120,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     taskid: 0522b01a-7123-4d41-8be1-85ba8fa2626d
     type: condition
     task:
@@ -129,15 +130,16 @@ tasks:
       name: Is there a file  to detonate?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#default#':
-      - "3"
-      "yes":
-      - "5"
+      - '3'
+      yes:
+      - '5'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -159,8 +161,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     taskid: 67d9a923-4d43-4c68-86d1-703f84a34d11
     type: regular
     task:
@@ -174,7 +176,7 @@ tasks:
       brand: ReversingLabs A1000 v2
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
     scriptarguments:
       entryId:
         simple: ${inputs.EntryID}
@@ -193,8 +195,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     taskid: 8f9178a3-70f3-4d90-84c0-e5dcb93bd81e
     type: regular
     task:
@@ -208,7 +210,7 @@ tasks:
       brand: ReversingLabs A1000 v2
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
     scriptarguments:
       hash:
         simple: ${File.SHA1}
@@ -227,23 +229,22 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
+  '7':
+    id: '7'
     taskid: d155a788-800a-4a35-8878-a50e69b95e95
     type: regular
     task:
       id: d155a788-800a-4a35-8878-a50e69b95e95
       version: -1
       name: A1000FinalClassification
-      description: Calculates A1000 final classification based on A1000 classification
-        and A1000 full reports.
+      description: Calculates A1000 final classification based on A1000 classification and A1000 full reports.
       scriptName: A1000FinalClassification
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     scriptarguments:
       a1000_classification_report:
         simple: ${ReversingLabs.a1000_classification_report}
@@ -282,7 +283,7 @@ inputs:
     simple: ${File.EntryID}
   required: false
   description: The Entry ID.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: File.SHA256
   description: The SHA256 hash of the file.
