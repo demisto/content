@@ -82,12 +82,28 @@
                     }
                 },
                 "severity": {
-                    "complex": {
-                        "filters": [],
-                        "root": "riskSeverity",
-                        "transformers": []
-                    }
-                }
+					"complex": {
+						"filters": [],
+						"root": "riskSeverity",
+						"transformers": [
+							{
+								"args": {
+									"input_values": {
+										"value": {
+											"simple": "MODERATE"
+										}
+									},
+									"mapped_values": {
+										"value": {
+											"simple": "MEDIUM"
+										}
+									}
+								},
+								"operator": "MapValuesTransformer"
+							}
+						]
+					}
+				}
             }
         }
     },
