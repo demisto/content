@@ -15,12 +15,9 @@ from py42.sdk.queries.fileevents.file_event_query import FileEventQuery
 from py42.sdk.queries.fileevents.filters import (
     MD5,
     SHA256,
-    Actor,
-    EventTimestamp,
     OSHostname,
     DeviceUsername,
     ExposureType,
-    EventType,
     FileCategory,
 )
 from py42.sdk.queries.fileevents.util import FileEventFilterStringField
