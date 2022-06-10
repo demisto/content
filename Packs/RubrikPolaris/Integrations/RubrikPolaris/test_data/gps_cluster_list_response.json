@@ -85,18 +85,16 @@
               }
             }
           }
-        ],
-        "pageInfo": {
-          "startCursor": "Y3Vyc29yOmludDow",
-          "endCursor": "Y3Vyc29yOmludDow",
-          "hasNextPage": false,
-          "hasPreviousPage": false
-        }
+        ]
       }
     }
   },
   "empty_response": {
-    "data": {}
+    "data": {
+      "clusterConnection": {
+        "edges": []
+      }
+    }
   },
   "outputs": [
     {
@@ -179,10 +177,5 @@
         "wasSonarEverEnabled": true
       }
     }
-  ],
-  "page_token": {
-    "next_page_token": "Y3Vyc29yOmludDow",
-    "has_next_page": false,
-    "name": "rubrik-gps-cluster-list"
-  }
+  ]
 }

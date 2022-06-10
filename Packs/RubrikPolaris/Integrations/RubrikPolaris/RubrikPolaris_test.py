@@ -1103,22 +1103,16 @@ def test_gps_vm_export_when_invalid_arguments_are_provided(client, args, error):
     assert str(e.value) == error
 
 
-@pytest.mark.parametrize("object_type, show_cluster_slas_only, limit, exception, error",
-                         [("ABC_OBJECT", "", "100", ValueError,
+@pytest.mark.parametrize("object_type, show_cluster_slas_only, exception, error",
+                         [("ABC_OBJECT", "", ValueError,
                            SDK_ERROR_MESSAGES['INVALID_SLA_LIST_OBJECT_TYPE'].format(['ABC_OBJECT'])),
-                          ("ABC_OBJECT, DEF_OBJECT", "", "100", ValueError,
+                          ("ABC_OBJECT, DEF_OBJECT", "", ValueError,
                            SDK_ERROR_MESSAGES['INVALID_SLA_LIST_OBJECT_TYPE'].format(['ABC_OBJECT', 'DEF_OBJECT'])),
-                          ("FILESET_OBJECT_TYPE", "abc", "", ValueError,
-                           ERROR_MESSAGES['INVALID_BOOLEAN'].format("abc", "show_cluster_slas_only")),
-                          ("FILESET_OBJECT_TYPE, VSPHERE_OBJECT_TYPE", "", "abc", ValueError,
-                           "\"abc\" is not a valid number"),
-                          ("VSPHERE_OBJECT_TYPE, FILESET_OBJECT_TYPE", "", "1001", ValueError,
-                           ERROR_MESSAGES['INVALID_LIMIT'].format("1001")),
-                          ("VSPHERE_OBJECT_TYPE", "", "-2", ValueError, ERROR_MESSAGES['INVALID_LIMIT'].format("-2")),
-                          ("VSPHERE_OBJECT_TYPE", "", "0", ValueError, ERROR_MESSAGES['INVALID_LIMIT'].format("0"))
+                          ("FILESET_OBJECT_TYPE", "abc", ValueError,
+                           ERROR_MESSAGES['INVALID_BOOLEAN'].format("abc", "show_cluster_slas_only"))
                           ])
-def test_gps_sla_domain_list_when_invalid_input(client, requests_mock, object_type, show_cluster_slas_only,
-                                                limit, exception, error):
+def test_gps_sla_domain_list_when_invalid_input(client, requests_mock, object_type, show_cluster_slas_only, exception,
+                                                error):
     """Tests rubrik_gps_sla_domain_list when inputs are invalid."""
     from RubrikPolaris import rubrik_gps_sla_domain_list
 
@@ -1140,7 +1134,6 @@ def test_gps_sla_domain_list_when_invalid_input(client, requests_mock, object_ty
         "show_cluster_slas_only": show_cluster_slas_only,
         "sort_by": "",
         "sort_order": "",
-        "limit": limit,
         "next_page_token": ""
     }
 
@@ -1207,7 +1200,8 @@ def test_gps_sla_domain_list_when_success_response(client, requests_mock):
     }
     gps_sla_domain_list_command_results = rubrik_gps_sla_domain_list(client, args)
 
-    assert gps_sla_domain_list_command_results.raw_response == raw_response
+    assert gps_sla_domain_list_command_results.raw_response == [edge["node"] for edge in
+                                                                raw_response["data"]["globalSlaConnection"]["edges"]]
     assert gps_sla_domain_list_command_results.readable_output == gps_sla_domain_list_hr
     assert gps_sla_domain_list_command_results.outputs == gps_sla_domain_list_outputs
 
@@ -2263,22 +2257,15 @@ def test_gps_cluster_list_command_success(client, requests_mock, empty_response)
         requests_mock.post(BASE_URL_GRAPHQL, responses)
         response = rubrik_gps_cluster_list_command(client, args=args)
 
-        assert response.raw_response == gps_cluster_list_response.get('raw_response')
-        assert response.outputs.get(f'{OUTPUT_PREFIX["GPS_CLUSTER"]}(val.id == obj.id)') \
-               == remove_empty_elements(gps_cluster_list_response.get('outputs'))
-        assert response.outputs.get(f"{OUTPUT_PREFIX['PAGE_TOKEN_GPS_CLUSTER']}(val.name == obj.name)") \
-               == remove_empty_elements(gps_cluster_list_response.get('page_token'))
+        assert response.raw_response == [edge["node"] for edge in
+                                         gps_cluster_list_response.get('raw_response')["data"]["clusterConnection"]["edges"]]
+        assert response.outputs == remove_empty_elements(gps_cluster_list_response.get('outputs'))
         assert response.readable_output == gps_cluster_list_hr
 
 
-@pytest.mark.parametrize("args, error", [
-    ({"limit": "a"}, '"a" is not a valid number'),
-    ({"limit": -1}, ERROR_MESSAGES['INVALID_LIMIT'].format(-1)),
-    ({"sort_order": "asc"}, SDK_ERROR_MESSAGES['INVALID_OBJECT_SNAPSHOT_SORT_ORDER'].format('asc'))
-])
-def test_gps_cluster_list_command_when_invalid_arguments_are_provided(client, requests_mock, args, error):
+def test_gps_cluster_list_command_when_invalid_argument_is_provided(client, requests_mock):
     """
-    Test case scenario for invalid arguments for rubrik-gps-cluster-list.
+    Test case scenario for invalid argument for rubrik-gps-cluster-list.
 
     Given:
         -args: contains arguments for the command
@@ -2296,8 +2283,8 @@ def test_gps_cluster_list_command_when_invalid_arguments_are_provided(client, re
     ]
     requests_mock.post(BASE_URL_GRAPHQL, responses)
     with pytest.raises(ValueError) as e:
-        rubrik_gps_cluster_list_command(client, args=args)
-    assert str(e.value) == error
+        rubrik_gps_cluster_list_command(client, args={"sort_order": "asc"})
+    assert str(e.value) == SDK_ERROR_MESSAGES['INVALID_OBJECT_SNAPSHOT_SORT_ORDER'].format('asc')
 
 
 @pytest.mark.parametrize("args, error", [
