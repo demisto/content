@@ -1,7 +1,8 @@
 id: Download-close-file
 version: -1
 name: Download-close-file
-description: This playbook aborts a file download operation which is in progress based on the Malop ID and username provided.
+description: This playbook aborts a file download operation which is in progress based
+  on the Malop ID and username provided.
 starttaskid: "0"
 tasks:
   "0":

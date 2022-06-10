@@ -1,7 +1,8 @@
 id: Download_File
 version: -1
 name: Download_File
-description: This playbook starts the file download operation and finally give an option to download the file if possible based on the Malop ID and username provided.
+description: This playbook starts the file download operation and finally give an
+  option to download the file if possible based on the Malop ID and username provided.
 starttaskid: "0"
 tasks:
   "0":
