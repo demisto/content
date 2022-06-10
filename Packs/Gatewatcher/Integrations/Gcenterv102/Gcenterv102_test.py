@@ -136,7 +136,7 @@ def test_gw_list_alerts(client, requests_mock, ltype, prefix_mapping, raw_alerts
         status_code=200
     )
     response = gw_list_alerts(client, args)
-    assert response.outputs == raw_alerts_list
+    assert response.outputs == raw_alerts_list["results"]
     assert response.outputs_prefix == prefix_mapping[
         inspect.stack()[0][3].replace("test_", "")
     ]

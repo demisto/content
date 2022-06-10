@@ -1,7 +1,6 @@
 """Base Integration for Cortex XSOAR (aka Demisto)"""
 import io
 import requests
-import traceback
 from typing import (
     Any,
     Dict,
@@ -280,7 +279,8 @@ class GwClient(GwRequests):
             return False
 
     def list_alerts(self) -> dict:
-        """Get the first 20 elasticsearch alerts.
+        """Get the latest elasticsearch alerts sorted by date
+        in descending order (most recent first in the list).
 
         Returns:
             Alerts lists.
@@ -293,7 +293,7 @@ class GwClient(GwRequests):
         )
         if response.status_code == 200:
             demisto.info(f"List alerts on GCenter {self.ip}: [OK]")
-            return response.json()
+            return response.json()["results"]
         else:
             raise GwAPIException(
                 f"List alerts on GCenter {self.ip}: [FAILED]",
@@ -329,7 +329,7 @@ class GwClient(GwRequests):
         """Add malcore whitelist/blacklist entry.
 
         Args:
-            ltype: List type bewteen white and black.
+            ltype: List type either white or black.
             sha256: Sha256 to be added.
 
         Returns:
@@ -363,8 +363,8 @@ class GwClient(GwRequests):
         """Del malcore whitelist/blacklist entry.
 
         Args:
-            ltype: List type bewteen white and black.
-            sha256: Sha256 to be added.
+            ltype: List type either white or black.
+            sha256: Sha256 to be deleted.
 
         Raises:
             GwAPIException: If status_code != 204.
@@ -388,7 +388,7 @@ class GwClient(GwRequests):
         """Add malcore whitelist/blacklist entry.
 
         Args:
-            ltype: List type bewteen white and black.
+            ltype: List type either white or black.
             domain: Domain name to be added.
 
         Returns:
@@ -421,8 +421,8 @@ class GwClient(GwRequests):
         """Del malcore whitelist/blacklist entry.
 
         Args:
-            ltype: List type bewteen white and black.
-            domain: Domain name to be added.
+            ltype: List type either white or black.
+            domain: Domain name to be deleted.
 
         Raises:
             GwAPIException: If status_code != 204.
@@ -448,7 +448,7 @@ class GwClient(GwRequests):
         Args:
             index: Index name between suricata, codebreaker, malware,
                     netdata, syslog.
-            query: Query in dictionnary format.
+            query: Query in a dictionary format.
 
         Returns:
             The elacticsearch response.
@@ -520,7 +520,6 @@ class GwClient(GwRequests):
         Args:
             mac: Mac address name.
             start: Will be ignored if they start with this name.
-            end: Will be ignored if they end with this name.
 
         Returns:
             Asset ignored.
@@ -804,19 +803,24 @@ def test_module(client: GwClient) -> str:  # noqa: E501
 
 
 def gw_list_alerts(client: GwClient, args: Optional[Dict[Any, Any]]) -> CommandResults:  # noqa: E501
-    """List elasticsearch alerts command.
+    """Get the latest elasticsearch alerts sorted by date in
+    descending order (most recent first in the list) command.
 
     Args:
         client: Client to interact with the GCenter.
         args: Command arguments.
 
     Returns:
-        CommandResults object with the 'GCenter.Alerts.List' prefix.
+        CommandResults object with the "GCenter.Alerts.List" prefix.
     """
     result = client.list_alerts()
+    readable_result = tableToMarkdown("Elasticsearch alerts list", result)
     return CommandResults(
+        readable_output=readable_result,
         outputs_prefix="GCenter.Alerts.List",
-        outputs=result
+        outputs_key_field="id",
+        outputs=result,
+        raw_response=result
     )
 
 
@@ -828,14 +832,18 @@ def gw_get_alert(client: GwClient, args: Optional[Dict[Any, Any]]) -> CommandRes
         args: Command arguments.
 
     Returns:
-        CommandResults object with the 'GCenter.Alerts.Single' prefix.
+        CommandResults object with the "GCenter.Alerts.Single" prefix.
     """
     result = client.get_alert(
         uid=args.get("uid")  # type: ignore
     )
+    readable_result = tableToMarkdown("Elasticsearch alert entry", result)
     return CommandResults(
+        readable_output=readable_result,
         outputs_prefix="GCenter.Alerts.Single",
-        outputs=result
+        outputs_key_field="id",
+        outputs=result,
+        raw_response=result
     )
 
 
@@ -847,7 +855,7 @@ def gw_add_malcore_list_entry(client: GwClient, args: Optional[Dict[Any, Any]]) 
         args: Command arguments.
 
     Returns:
-        CommandResults object with the 'GCenter.Malcore' prefix.
+        CommandResults object with the "GCenter.Malcore" prefix.
     """
     result = client.add_malcore_list_entry(
         ltype=args.get("type"),  # type: ignore
@@ -855,9 +863,13 @@ def gw_add_malcore_list_entry(client: GwClient, args: Optional[Dict[Any, Any]]) 
         comment=args.get("comment", "added by cortex"),  # type: ignore
         threat=args.get("threat", "unknown")  # type: ignore
     )
+    readable_result = tableToMarkdown("Malcore whitelist/blacklist entry", result)
     return CommandResults(
+        readable_output=readable_result,
         outputs_prefix="GCenter.Malcore",
-        outputs=result
+        outputs_key_field="sha256",
+        outputs=result,
+        raw_response=result
     )
 
 
@@ -869,15 +881,18 @@ def gw_del_malcore_list_entry(client: GwClient, args: Optional[Dict[Any, Any]]) 
         args: Command arguments.
 
     Returns:
-        CommandResults object with the 'GCenter.Malcore' prefix.
+        CommandResults object with the "GCenter.Malcore" prefix.
     """
     client.del_malcore_list_entry(
         ltype=args.get("type"),  # type: ignore
         sha256=args.get("sha256")  # type: ignore
     )
     return CommandResults(
+        readable_output=None,
         outputs_prefix="GCenter.Malcore",
-        outputs=None
+        outputs_key_field=None,
+        outputs=None,
+        raw_response=None
     )
 
 
@@ -889,16 +904,20 @@ def gw_add_dga_list_entry(client: GwClient, args: Optional[Dict[Any, Any]]) -> C
         args: Command arguments.
 
     Returns:
-        CommandResults object with the 'GCenter.Dga' prefix.
+        CommandResults object with the "GCenter.Dga" prefix.
     """
     result = client.add_dga_list_entry(
         ltype=args.get("type"),  # type: ignore
         domain=args.get("domain"),  # type: ignore
         comment=args.get("comment", "added by cortex")  # type: ignore
     )
+    readable_result = tableToMarkdown("DGA whitelist/blacklist entry", result)
     return CommandResults(
+        readable_output=readable_result,
         outputs_prefix="GCenter.Dga",
-        outputs=result
+        outputs_key_field="domain_name",
+        outputs=result,
+        raw_response=result
     )
 
 
@@ -910,15 +929,18 @@ def gw_del_dga_list_entry(client: GwClient, args: Optional[Dict[Any, Any]]) -> C
         args: Command arguments.
 
     Returns:
-        CommandResults object with the 'GCenter.Dga' prefix.
+        CommandResults object with the "GCenter.Dga" prefix.
     """
     client.del_dga_list_entry(
         ltype=args.get("type"),  # type: ignore
         domain=args.get("domain")  # type: ignore
     )
     return CommandResults(
+        readable_output=None,
         outputs_prefix="GCenter.Dga",
-        outputs=None
+        outputs_key_field=None,
+        outputs=None,
+        raw_response=None
     )
 
 
@@ -930,15 +952,19 @@ def gw_es_query(client: GwClient, args: Optional[Dict[Any, Any]]) -> CommandResu
         args: Command arguments.
 
     Returns:
-        CommandResults object with the 'GCenter.Elastic' prefix.
+        CommandResults object with the "GCenter.Elastic" prefix.
     """
     result = client.get_es_query(
         index=args.get("index"),  # type: ignore
         query=args.get("query")  # type: ignore
     )
+    readable_result = tableToMarkdown("Elasticsearch query result", result)
     return CommandResults(
+        readable_output=readable_result,
         outputs_prefix="GCenter.Elastic",
-        outputs=result
+        outputs_key_field=None,
+        outputs=result,
+        raw_response=result
     )
 
 
@@ -950,16 +976,20 @@ def gw_add_ignore_asset_name(client: GwClient, args: Optional[Dict[Any, Any]]) -
         args: Command arguments.
 
     Returns:
-        CommandResults object with the 'GCenter.Ignore.AssetName' prefix.
+        CommandResults object with the "GCenter.Ignore.AssetName" prefix.
     """
     result = client.ignore_asset_name(
         name=args.get("name"),  # type: ignore
         start=args.get("start"),  # type: ignore
         end=args.get("end")  # type: ignore
     )
+    readable_result = tableToMarkdown("Asset name entry", result)
     return CommandResults(
+        readable_output=readable_result,
         outputs_prefix="GCenter.Ignore.AssetName",
-        outputs=result
+        outputs_key_field="id",
+        outputs=result,
+        raw_response=result
     )
 
 
@@ -971,14 +1001,18 @@ def gw_add_ignore_kuser_ip(client: GwClient, args: Optional[Dict[Any, Any]]) -> 
         args: Command arguments.
 
     Returns:
-        CommandResults object with the 'GCenter.Ignore.KuserIP' prefix.
+        CommandResults object with the "GCenter.Ignore.KuserIP" prefix.
     """
     result = client.ignore_kuser_ip(
         ip=args.get("ip")  # type: ignore
     )
+    readable_result = tableToMarkdown("Kuser IP entry", result)
     return CommandResults(
+        readable_output=readable_result,
         outputs_prefix="GCenter.Ignore.KuserIP",
-        outputs=result
+        outputs_key_field="id",
+        outputs=result,
+        raw_response=result
     )
 
 
@@ -990,16 +1024,20 @@ def gw_add_ignore_kuser_name(client: GwClient, args: Optional[Dict[Any, Any]]) -
         args: Command arguments.
 
     Returns:
-        CommandResults object with the 'GCenter.Ignore.KuserName' prefix.
+        CommandResults object with the "GCenter.Ignore.KuserName" prefix.
     """
     result = client.ignore_kuser_name(
         name=args.get("name"),  # type: ignore
         start=args.get("start"),  # type: ignore
         end=args.get("end")  # type: ignore
     )
+    readable_result = tableToMarkdown("Kuser name entry", result)
     return CommandResults(
+        readable_output=readable_result,
         outputs_prefix="GCenter.Ignore.KuserName",
-        outputs=result
+        outputs_key_field="id",
+        outputs=result,
+        raw_response=result
     )
 
 
@@ -1011,15 +1049,19 @@ def gw_add_ignore_mac_address(client: GwClient, args: Optional[Dict[Any, Any]]) 
         args: Command arguments.
 
     Returns:
-        CommandResults object with the 'GCenter.Ignore' prefix.
+        CommandResults object with the "GCenter.Ignore" prefix.
     """
     result = client.ignore_mac_address(
         mac=args.get("mac"),  # type: ignore
         start=args.get("start")  # type: ignore
     )
+    readable_result = tableToMarkdown("MAC adrress entry", result)
     return CommandResults(
+        readable_output=readable_result,
         outputs_prefix="GCenter.Ignore.MacAddress",
-        outputs=result
+        outputs_key_field="id",
+        outputs=result,
+        raw_response=result
     )
 
 
@@ -1031,14 +1073,18 @@ def gw_del_ignore_asset_name(client: GwClient, args: Optional[Dict[Any, Any]]) -
         args: Command arguments.
 
     Returns:
-        CommandResults object with the 'GCenter.Ignore.AssetName' prefix.
+        CommandResults object with the "GCenter.Ignore.AssetName" prefix.
     """
     result = client.del_ignore_asset_name(
         ignore_id=int(args.get("ignore_id"))  # type: ignore
     )
+    readable_result = tableToMarkdown("Asset name entry", result)
     return CommandResults(
+        readable_output=readable_result,
         outputs_prefix="GCenter.Ignore.AssetName",
-        outputs=result
+        outputs_key_field=None,
+        outputs=result,
+        raw_response=result
     )
 
 
@@ -1050,14 +1096,18 @@ def gw_del_ignore_kuser_ip(client: GwClient, args: Optional[Dict[Any, Any]]) -> 
         args: Command arguments.
 
     Returns:
-        CommandResults object with the 'GCenter.Ignore.KuserIP' prefix.
+        CommandResults object with the "GCenter.Ignore.KuserIP" prefix.
     """
     result = client.del_ignore_kuser_ip(
         ignore_id=int(args.get("ignore_id"))  # type: ignore
     )
+    readable_result = tableToMarkdown("Kuser IP entry", result)
     return CommandResults(
+        readable_output=readable_result,
         outputs_prefix="GCenter.Ignore.KuserIP",
-        outputs=result
+        outputs_key_field=None,
+        outputs=result,
+        raw_response=result
     )
 
 
@@ -1069,14 +1119,18 @@ def gw_del_ignore_kuser_name(client: GwClient, args: Optional[Dict[Any, Any]]) -
         args: Command arguments.
 
     Returns:
-        CommandResults object with the 'GCenter.Ignore.KuserName' prefix.
+        CommandResults object with the "GCenter.Ignore.KuserName" prefix.
     """
     result = client.del_ignore_kuser_name(
         ignore_id=int(args.get("ignore_id"))  # type: ignore
     )
+    readable_result = tableToMarkdown("Kuser name entry", result)
     return CommandResults(
+        readable_output=readable_result,
         outputs_prefix="GCenter.Ignore.KuserName",
-        outputs=result
+        outputs_key_field=None,
+        outputs=result,
+        raw_response=result
     )
 
 
@@ -1088,14 +1142,18 @@ def gw_del_ignore_mac_address(client: GwClient, args: Optional[Dict[Any, Any]]) 
         args: Command arguments.
 
     Returns:
-        CommandResults object with the 'GCenter.Ignore.MacAddress' prefix.
+        CommandResults object with the "GCenter.Ignore.MacAddress" prefix.
     """
     result = client.del_ignore_mac_address(
         ignore_id=int(args.get("ignore_id"))  # type: ignore
     )
+    readable_result = tableToMarkdown("MAC address entry", result)
     return CommandResults(
+        readable_output=readable_result,
         outputs_prefix="GCenter.Ignore.MacAddress",
-        outputs=result
+        outputs_key_field=None,
+        outputs=result,
+        raw_response=result
     )
 
 
@@ -1107,15 +1165,19 @@ def gw_send_malware(client: GwClient, args: Optional[Dict[Any, Any]]) -> Command
         args: Command arguments.
 
     Returns:
-        CommandResults object with the 'GCenter.Gscan.Malware' prefix.
+        CommandResults object with the "GCenter.Gscan.Malware" prefix.
     """
     result = client.send_malware(
         name=args.get("name"),  # type: ignore
         content=args.get("content")  # type: ignore
     )
+    readable_result = tableToMarkdown("Malcore analysis result", result)
     return CommandResults(
+        readable_output=readable_result,
         outputs_prefix="GCenter.Gscan.Malware",
-        outputs=result
+        outputs_key_field="id",
+        outputs=result,
+        raw_response=result
     )
 
 
@@ -1127,15 +1189,19 @@ def gw_send_powershell(client: GwClient, args: Optional[Dict[Any, Any]]) -> Comm
         args: Command arguments.
 
     Returns:
-        CommandResults object with the 'GCenter.Gscan.Powershell' prefix.
+        CommandResults object with the "GCenter.Gscan.Powershell" prefix.
     """
     result = client.send_powershell(
         name=args.get("name"),  # type: ignore
         content=args.get("content")  # type: ignore
     )
+    readable_result = tableToMarkdown("Powershell analysis result", result)
     return CommandResults(
+        readable_output=readable_result,
         outputs_prefix="GCenter.Gscan.Powershell",
-        outputs=result
+        outputs_key_field="id",
+        outputs=result,
+        raw_response=result
     )
 
 
@@ -1147,7 +1213,7 @@ def gw_send_shellcode(client: GwClient, args: Optional[Dict[Any, Any]]) -> Comma
         args: Command arguments.
 
     Returns:
-        CommandResults object with the 'GCenter.Gscan.Shellcode' prefix.
+        CommandResults object with the "GCenter.Gscan.Shellcode" prefix.
     """
     result = client.send_shellcode(
         name=args.get("name"),  # type: ignore
@@ -1155,22 +1221,30 @@ def gw_send_shellcode(client: GwClient, args: Optional[Dict[Any, Any]]) -> Comma
         deep=args.get("deep"),  # type: ignore
         timeout=int(args.get("timeout"))  # type: ignore
     )
+    readable_result = tableToMarkdown("Shellcode analysis result", result)
     return CommandResults(
+        readable_output=readable_result,
         outputs_prefix="GCenter.Gscan.Shellcode",
-        outputs=result
+        outputs_key_field="id",
+        outputs=result,
+        raw_response=result
     )
 
 
 def main() -> None:
     """Main function, parses params and runs command functions."""
 
-    ip = demisto.params().get("ip")
-    token = demisto.params().get("token", None)
-    user = demisto.params().get("credentials", {}).get("identifier", None)
-    password = demisto.params().get("credentials", {}).get("password", None)
-    check_cert = demisto.params().get("check_cert", False)
+    params = demisto.params()
+    command = demisto.command()
+    args = demisto.args()
 
-    demisto.debug(f"Command being called is {demisto.command()}")
+    ip = params.get("ip")
+    token = params.get("token", None)
+    user = params.get("credentials", {}).get("identifier", None)
+    password = params.get("credentials", {}).get("password", None)
+    check_cert = params.get("check_cert", False)
+
+    demisto.debug(f"Command being called is {command}")
     try:
         client = GwClient(ip=ip, check_cert=check_cert)
         client.auth(
@@ -1178,86 +1252,85 @@ def main() -> None:
             password=password if password != "" else None,
             token=token
         )
-        if demisto.command() == "test-module":
+        if command == "test-module":
             return_results(
                 test_module(client=client)
             )
-        elif demisto.command() == "gw-list-alerts":
+        elif command == "gw-list-alerts":
             return_results(
-                gw_list_alerts(client=client, args=demisto.args())
+                gw_list_alerts(client=client, args=args)
             )
-        elif demisto.command() == "gw-get-alert":
+        elif command == "gw-get-alert":
             return_results(
-                gw_get_alert(client=client, args=demisto.args())
+                gw_get_alert(client=client, args=args)
             )
-        elif demisto.command() == "gw-add-malcore-list-entry":
+        elif command == "gw-add-malcore-list-entry":
             return_results(
-                gw_add_malcore_list_entry(client=client, args=demisto.args())
+                gw_add_malcore_list_entry(client=client, args=args)
             )
-        elif demisto.command() == "gw-del-malcore-list-entry":
+        elif command == "gw-del-malcore-list-entry":
             return_results(
-                gw_del_malcore_list_entry(client=client, args=demisto.args())
+                gw_del_malcore_list_entry(client=client, args=args)
             )
-        elif demisto.command() == "gw-add-dga-list-entry":
+        elif command == "gw-add-dga-list-entry":
             return_results(
-                gw_add_dga_list_entry(client=client, args=demisto.args())
+                gw_add_dga_list_entry(client=client, args=args)
             )
-        elif demisto.command() == "gw-del-dga-list-entry":
+        elif command == "gw-del-dga-list-entry":
             return_results(
-                gw_del_dga_list_entry(client=client, args=demisto.args())
+                gw_del_dga_list_entry(client=client, args=args)
             )
-        elif demisto.command() == "gw-es-query":
+        elif command == "gw-es-query":
             return_results(
-                gw_es_query(client=client, args=demisto.args())
+                gw_es_query(client=client, args=args)
             )
-        elif demisto.command() == "gw-add-ignore-asset-name":
+        elif command == "gw-add-ignore-asset-name":
             return_results(
-                gw_add_ignore_asset_name(client=client, args=demisto.args())
+                gw_add_ignore_asset_name(client=client, args=args)
             )
-        elif demisto.command() == "gw-add-ignore-kuser-ip":
+        elif command == "gw-add-ignore-kuser-ip":
             return_results(
-                gw_add_ignore_kuser_ip(client=client, args=demisto.args())
+                gw_add_ignore_kuser_ip(client=client, args=args)
             )
-        elif demisto.command() == "gw-add-ignore-kuser-name":
+        elif command == "gw-add-ignore-kuser-name":
             return_results(
-                gw_add_ignore_kuser_name(client=client, args=demisto.args())
+                gw_add_ignore_kuser_name(client=client, args=args)
             )
-        elif demisto.command() == "gw-add-ignore-mac-address":
+        elif command == "gw-add-ignore-mac-address":
             return_results(
-                gw_add_ignore_mac_address(client=client, args=demisto.args())
+                gw_add_ignore_mac_address(client=client, args=args)
             )
-        elif demisto.command() == "gw-del-ignore-asset-name":
+        elif command == "gw-del-ignore-asset-name":
             return_results(
-                gw_del_ignore_asset_name(client=client, args=demisto.args())
+                gw_del_ignore_asset_name(client=client, args=args)
             )
-        elif demisto.command() == "gw-del-ignore-kuser-ip":
+        elif command == "gw-del-ignore-kuser-ip":
             return_results(
-                gw_del_ignore_kuser_ip(client=client, args=demisto.args())
+                gw_del_ignore_kuser_ip(client=client, args=args)
             )
-        elif demisto.command() == "gw-del-ignore-kuser-name":
+        elif command == "gw-del-ignore-kuser-name":
             return_results(
-                gw_del_ignore_kuser_name(client=client, args=demisto.args())
+                gw_del_ignore_kuser_name(client=client, args=args)
             )
-        elif demisto.command() == "gw-del-ignore-mac-address":
+        elif command == "gw-del-ignore-mac-address":
             return_results(
-                gw_del_ignore_mac_address(client=client, args=demisto.args())
+                gw_del_ignore_mac_address(client=client, args=args)
             )
-        elif demisto.command() == "gw-send-malware":
+        elif command == "gw-send-malware":
             return_results(
-                gw_send_malware(client=client, args=demisto.args())
+                gw_send_malware(client=client, args=args)
             )
-        elif demisto.command() == "gw-send-powershell":
+        elif command == "gw-send-powershell":
             return_results(
-                gw_send_powershell(client=client, args=demisto.args())
+                gw_send_powershell(client=client, args=args)
             )
-        elif demisto.command() == "gw-send-shellcode":
+        elif command == "gw-send-shellcode":
             return_results(
-                gw_send_shellcode(client=client, args=demisto.args())
+                gw_send_shellcode(client=client, args=args)
             )
     except Exception as e:
-        demisto.error(traceback.format_exc())
         return_error(
-            f"Failed to execute {demisto.command()} command.\nError: {str(e)}"
+            f"Failed to execute {command} command.\nError: {str(e)}"
         )
 
 
