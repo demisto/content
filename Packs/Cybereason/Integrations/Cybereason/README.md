@@ -23,6 +23,755 @@ This integration was integrated and tested with version 21.2 of Cybereason
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+### cybereason-query-processes
+***
+Searches for processes with various filters.
+
+
+#### Base Command
+
+`cybereason-query-processes`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| machine | The hostname of the machine. | Optional | 
+| onlySuspicious | Show only suspicious processes. Possible values are: true, false. Default is false. | Optional | 
+| limit | Maximum number of results to retrieve. Default is 10000. | Optional | 
+| processName | Process name to filter by. | Optional | 
+| saveToContext | If true, save the result to the context. Possible values are: true, false. Default is false. | Optional | 
+| hasIncomingConnection | Filter only processes with incoming connections. Possible values are: true, false. Default is false. | Optional | 
+| hasOutgoingConnection | Filter only processes with outgoing connections. Possible values are: true, false. Default is false. | Optional | 
+| hasExternalConnection | If process has external connection. Possible values are: true, false. | Optional | 
+| unsignedUnknownReputation | If process is not known to reputation services and its image file is unsigned. Possible values are: true, false. | Optional | 
+| fromTemporaryFolder | If process is running from temporary folder. Possible values are: true, false. | Optional | 
+| privilegesEscalation | If process was identified elevating its privileges to local system user. Possible values are: true, false. | Optional | 
+| maliciousPsExec | If the process was executed by PsExec service and is suspicious as being executed maliciously. Possible values are: true, false. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Process.Name | Unknown | The process name | 
+| Process.Malicious | Unknown | Malicious status of the process | 
+| Process.CreationTime | Unknown | The process creation time | 
+| Process.EndTime | Unknown | The process end time | 
+| Process.CommandLine | Unknown | The command line of the process | 
+| Process.SignedAndVerified | Unknown | Is the process signed and verified | 
+| Process.ProductType | Unknown | The product type | 
+| Process.Children | Unknown | Children of the process | 
+| Process.Parent | Unknown | The parent process | 
+| Process.OwnerMachine | Unknown | The machine's hostname | 
+| Process.User | Unknown | The user who ran the process | 
+| Process.ImageFile | Unknown | Image file of the process | 
+| Process.SHA1 | Unknown | SHA1 of the process file | 
+| Process.MD5 | Unknown | MD5 of the process file | 
+| Process.CompanyName | Unknown | The company's name | 
+| Process.ProductName | Unknown | The product's name | 
+
+#### Command example
+```!cybereason-query-processes machine=desktop-vg9ke2u hasOutgoingConnection=true hasIncomingConnection=true```
+#### Context Example
+```json
+{
+    "Process": [
+        {
+            "Children": null,
+            "CommandLine": "C:\\WINDOWS\\system32\\svchost.exe -k LocalService -s W32Time",
+            "CompanyName": "Microsoft Corporation",
+            "CreationTime": "2022-05-06T04:15:33.939000",
+            "EndTime": "",
+            "ImageFile": "svchost.exe",
+            "MD5": "cd10cb894be2128fca0bf0e2b0c27c16",
+            "Malicious": "indifferent",
+            "Name": "svchost.exe",
+            "OwnerMachine": "desktop-vg9ke2u",
+            "Parent": "services.exe",
+            "ProductName": "Microsoft\u00ae Windows\u00ae Operating System",
+            "ProductType": "SVCHOST",
+            "SHA1": "1f912d4bec338ef10b7c9f19976286f8acc4eb97",
+            "SignedandVerified": "true",
+            "User": "desktop-vg9ke2u\\local service"
+        }
+    ]
+}
+```
+
+#### Human Readable Output
+
+>### Cybereason Processes
+>|Name|Malicious|Creation Time|End Time|Command Line|Signed and Verified|Product Type|Children|Parent|Owner Machine|User|Image File|SHA1|MD5|Company Name|Product Name|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| svchost.exe | indifferent | 2022-05-06T04:15:33.939000 |  | C:\WINDOWS\system32\svchost.exe -k LocalService -s W32Time | true | SVCHOST |  | services.exe | desktop-vg9ke2u | desktop-vg9ke2u\local service | svchost.exe | 1f912d4bec338ef10b7c9f19976286f8acc4eb97 | cd10cb894be2128fca0bf0e2b0c27c16 | Microsoft Corporation | Microsoft® Windows® Operating System |
+
+### cybereason-is-probe-connected
+***
+Checks if the machine is currently connected to the Cybereason server
+
+
+#### Base Command
+
+`cybereason-is-probe-connected`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| machine | The hostname of the machine to check. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cybereason.Machine.isConnected | boolean | true if machine is connected, else false | 
+| Cybereason.Machine.Name | string | Machine name | 
+
+#### Command example
+```!cybereason-is-probe-connected machine=desktop-vg9ke2u```
+#### Context Example
+```json
+{
+    "Cybereason": {
+        "Machine": {
+            "Name": "desktop-vg9ke2u",
+            "isConnected": true
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>true
+
+### cybereason-query-connections
+***
+Searches for connections.
+
+
+#### Base Command
+
+`cybereason-query-connections`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ip | Filter connections which contain this IP (in or out). | Optional | 
+| machine | Filter connections on the given machine. | Optional | 
+| saveToContext | If true, save the result to the context. Possible values are: true, false. Default is false. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Connection.Name | Unknown | The connection's name | 
+| Connection.Direction | Unknown | OUTGOING/INCOMING | 
+| Connection.ServerAddress | Unknown | Address of the Cybereason machine | 
+| Connection.ServerPort | Unknown | Port of the Cybereason machine | 
+| Connection.PortType | Unknown | Type of the connection | 
+| Connection.ReceivedBytes | Unknown | Received bytes count | 
+| Connection.TransmittedBytes | Unknown | Transmitted bytes count | 
+| Connection.RemoteCountry | Unknown | The connection's remote country | 
+| Connection.OwnerMachine | Unknown | The machine's hostname | 
+| Connection.OwnerProcess | Unknown | The process which performed the connection | 
+| Connection.CreationTime | Unknown | Creation time of the connection | 
+| Connection.EndTime | Unknown | End time of the connection | 
+
+#### Command example
+```!cybereason-query-connections ip=192.168.1.103```
+#### Context Example
+```json
+{
+    "Connection": [
+        {
+            "CreationTime": "2021-04-20T03:38:56.386000",
+            "Direction": "OUTGOING",
+            "EndTime": "2021-04-20T03:40:04.466000",
+            "Name": "172.30.201.181:50755 > 192.168.1.103:137",
+            "OwnerMachine": "siemplify-cyber",
+            "OwnerProcess": "nbtscan.exe",
+            "PortType": "SERVICE_WINDOWS",
+            "ReceivedBytes": "0",
+            "RemoteCountry": null,
+            "ServerAddress": "192.168.1.103",
+            "ServerPort": "137",
+            "TransmittedBytes": "50"
+        }
+    ]
+}
+```
+
+#### Human Readable Output
+
+>### Cybereason Connections for: 192.168.1.103
+>|Creation Time|Direction|End Time|Name|Owner Machine|Owner Process|Port Type|Received Bytes|Remote Country|Server Address|Server Port|Transmitted Bytes|
+>|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 2021-04-20T03:38:56.386000 | OUTGOING | 2021-04-20T03:40:04.466000 | 172.30.201.181:50755 > 192.168.1.103:137 | siemplify-cyber | nbtscan.exe | SERVICE_WINDOWS | 0 |  | 192.168.1.103 | 137 | 50 |
+
+### cybereason-isolate-machine
+***
+Isolates a machine that has been infected from the rest of the network
+
+
+#### Base Command
+
+`cybereason-isolate-machine`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| machine | Machine name to be isolated. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cybereason.Machine | string | Machine name | 
+| Cybereason.IsIsolated | boolean | Is the machine isolated | 
+| Endpoint.Hostname | string | Machine name | 
+
+#### Command example
+```!cybereason-isolate-machine machine=desktop-vg9ke2u```
+#### Context Example
+```json
+{
+    "Cybereason": {
+        "IsIsolated": true,
+        "Machine": "desktop-vg9ke2u"
+    },
+    "Endpoint": {
+        "Hostname": "desktop-vg9ke2u"
+    }
+}
+```
+
+#### Human Readable Output
+
+>Machine was isolated successfully.
+
+### cybereason-unisolate-machine
+***
+Stops isolation of a machine
+
+
+#### Base Command
+
+`cybereason-unisolate-machine`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| machine | Machine name to be un-isolated. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cybereason.Machine | string | Machine name | 
+| Cybereason.IsIsolated | boolean | Is the machine isolated | 
+| Endpoint.Hostname | string | Machine name | 
+
+#### Command example
+```!cybereason-unisolate-machine machine=desktop-vg9ke2u```
+#### Context Example
+```json
+{
+    "Cybereason": {
+        "IsIsolated": false,
+        "Machine": "desktop-vg9ke2u"
+    },
+    "Endpoint": {
+        "Hostname": "desktop-vg9ke2u"
+    }
+}
+```
+
+#### Human Readable Output
+
+>Machine was un-isolated successfully.
+
+### cybereason-query-malops
+***
+Returns a list of all Malops and details on the Malops.
+
+
+#### Base Command
+
+`cybereason-query-malops`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| filters | Filter to filter response by, given in Cybereason API syntax. | Optional | 
+| totalResultLimit | The total number of results to return for your Server. Ensure you make the limit a reasonable number to maximize Server performance and not to overload the system. | Optional | 
+| perGroupLimit | The number of items to return per Malop group. | Optional | 
+| templateContext | The level of detail to provide in the response. Possible values include:  SPECIFIC:  References value contain only the count in the ElementValues class. The Suspicions map is calculated for each results, with the suspicion name and the first time the suspicion appeared. The Evidence map is not calculated for the results. CUSTOM:  Reference values contain the specific Elements, up to the limit defined in the perFeatureLimit parameter. The Suspicions map is not calculated for the results. The Evidence map is not calculated for the results. DETAILS:  Reference values contain the specific Elements, up to the limit defined in the perFeatureLimit parameter. The Suspicions map is calculated for each result, containing the suspicion name and the first time the suspicion appeared. The Evidence map is not calculated for the results. Possible values are: MALOP, SPECIFIC, CUSTOM, DETAILS, OVERVIEW. Default is MALOP. | Optional | 
+| withinLastDays | Return all the malops within the last days. | Optional | 
+| malopGuid | Malop GUIDs to filter by (Comma separated values supported, e.g. 11.5681864988155542407,11.1773255057963879999). | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cybereason.Malops.GUID | string | The unique globally unique identifier \(guid\) for the Malop. | 
+| Cybereason.Malops.CreationTime | string | The time reported as when the malicious behavior began on the system. This is not the time that the Malop was first detected by Cybereason. | 
+| Cybereason.Malops.DecisionFeature | string | The reason that Cybereason has raised the Malop. | 
+| Cybereason.Malops.Link | string | Link to the Malop on Cybereason. | 
+| Cybereason.Malops.Suspects | string | Malop suspect type and name | 
+| Cybereason.Malops.LastUpdatedTime | string | Last updated time of malop | 
+| Cybereason.Malops.AffectedMachine | string | List of machines affected by this Malop | 
+| Cybereason.Malops.InvolvedHash | string | List of file hashes involved in this Malop | 
+| Cybereason.Malops.Status | string | Malop managemant status | 
+
+#### Command example
+```!cybereason-query-malops```
+#### Context Example
+```json
+{
+    "Cybereason": {
+        "Malops": [
+            {
+                "AffectedMachine": [
+                    "win10-cybereaso",
+                    "marketing"
+                ],
+                "CreationTime": "2021-07-12T09:11:42.641000",
+                "DecisionFailure": "blackListedFileHash",
+                "GUID": "11.3651150229438589171",
+                "InvolvedHash": [
+                    1
+                ],
+                "LastUpdateTime": "2021-08-28T23:19:12.430000",
+                "Link": "https://integration.cybereason.net:8443/#/malop/11.3651150229438589171",
+                "Status": "OPEN",
+                "Suspects": "Process: viagra_.exe"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Cybereason Malops
+>|GUID|Link|CreationTime|Status|LastUpdateTime|DecisionFailure|Suspects|AffectedMachine|InvolvedHash|
+>|---|---|---|---|---|---|---|---|---|
+>| 11.3651150229438589171 | https:<span>//</span>integration.cybereason.net:8443/#/malop/11.3651150229438589171 | 2021-07-12T09:11:42.641000 | OPEN | 2021-08-28T23:19:12.430000 | blackListedFileHash | Process: viagra_.exe | win10-cybereaso,<br/>marketing | 1 |
+
+### cybereason-malop-processes
+***
+Returns a list of malops
+
+
+#### Base Command
+
+`cybereason-malop-processes`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| malopGuids | Array of malop GUIDs separated by comma. (Malop GUID can be retrieved with the command cybereason-query-malops command). | Required | 
+| machineName | Machine names which were affected by malop. Comma separated values supported (e.g., machine1,machine2). | Optional | 
+| dateTime | Starting Date and Time to filter the Processes based on their creation date. The format for the input is ("YYYY/MM/DD HH:MM:SS"). | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Process.Name | string | The process name | 
+| Process.Malicious | Unknown | Malicious status of the process | 
+| Process.CreationTime | date | The process creation time | 
+| Process.EndTime | date | The process end time | 
+| Process.CommandLine | string | The command line of the process | 
+| Process.SignedAndVerified | Unknown | Is the process signed and verified | 
+| Process.ProductType | Unknown | The product type | 
+| Process.Children | Unknown | Children of the process | 
+| Process.Parent | Unknown | The parent process | 
+| Process.OwnerMachine | Unknown | The machine's hostname | 
+| Process.User | string | The user who ran the process | 
+| Process.ImageFile | Unknown | Image file of the process | 
+| Process.SHA1 | string | SHA1 of the process file | 
+| Process.MD5 | string | MD5 of the process file | 
+| Process.CompanyName | string | The company's name | 
+| Process.ProductName | string | The product's name | 
+
+#### Command example
+```!cybereason-malop-processes malopGuids=11.-7780537507363356527```
+#### Context Example
+```json
+{
+    "Process": [
+        {
+            "Children": null,
+            "CommandLine": "\"C:\\Users\\prase\\Downloads\\winrar-x64-602.pdf.exe\"",
+            "CompanyName": "Alexander Roshal",
+            "CreationTime": "2022-03-14T13:25:56.309000",
+            "EndTime": "2022-03-14T13:26:01.712000",
+            "ImageFile": "winrar-x64-602.pdf.exe",
+            "MD5": "fc61fdcad5a9d52a01bd2d596f2c92b9",
+            "Malicious": "indifferent",
+            "Name": "winrar-x64-602.pdf.exe",
+            "OwnerMachine": "desktop-vg9ke2u",
+            "Parent": "explorer.exe",
+            "ProductName": "WinRAR",
+            "ProductType": null,
+            "SHA1": "77ab1e20c685e716b82c7c90b373316fc84cde23",
+            "SignedandVerified": null,
+            "User": "desktop-vg9ke2u\\prase"
+        }
+    ]
+}
+```
+
+#### Human Readable Output
+
+>### Cybereason Malop Processes
+>|Name|Malicious|Creation Time|End Time|Command Line|Parent|Owner Machine|User|Image File|SHA1|MD5|Company Name|Product Name|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| winrar-x64-602.pdf.exe | indifferent | 2022-03-14T13:25:56.309000 | 2022-03-14T13:26:01.712000 | "C:\Users\prase\Downloads\winrar-x64-602.pdf.exe" | explorer.exe | desktop-vg9ke2u | desktop-vg9ke2u\prase | winrar-x64-602.pdf.exe | 77ab1e20c685e716b82c7c90b373316fc84cde23 | fc61fdcad5a9d52a01bd2d596f2c92b9 | Alexander Roshal | WinRAR |
+
+### cybereason-add-comment
+***
+Add new comment to malop
+
+
+#### Base Command
+
+`cybereason-add-comment`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| comment | Comment to add to the malop. | Required | 
+| malopGuid | Malop GUID to add comment to. (Malop GUID can be retrieved with the command cybereason-query-malops command). | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!cybereason-add-comment comment=NewComment malopGuid=11.-7780537507363356527```
+#### Human Readable Output
+
+>Comment added successfully
+
+### cybereason-update-malop-status
+***
+Updates malop status
+
+
+#### Base Command
+
+`cybereason-update-malop-status`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| malopGuid | Malop GUID to update its status. | Required | 
+| status | Status to update. Possible values are: To Review, Unread, Remediated, Not Relevant, Open. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cybereason.Malops.GUID | string | Malop GUID | 
+| Cybereason.Malops.Status | string | Malop status: To Review,Unread,Remediated,Not Relevant | 
+
+#### Command example
+```!cybereason-update-malop-status malopGuid=11.-7780537507363356527 status="To Review"```
+#### Context Example
+```json
+{
+    "Cybereason": {
+        "Malops": {
+            "GUID": "11.-7780537507363356527",
+            "Status": "To Review"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Successfully updated malop 11.-7780537507363356527 to status To Review
+
+### cybereason-prevent-file
+***
+Prevent malop process file
+
+
+#### Base Command
+
+`cybereason-prevent-file`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| md5 | Malop process file MD5 to prevent. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Process.MD5 | string | Process file MD5 | 
+| Process.Prevent | boolean | True if process file is prevented, else false | 
+
+#### Command example
+```!cybereason-prevent-file md5=fc61fdcad5a9d52a01bd2d596f2c92b9```
+#### Context Example
+```json
+{
+    "Process": {
+        "MD5": "fc61fdcad5a9d52a01bd2d596f2c92b9",
+        "Prevent": true
+    }
+}
+```
+
+#### Human Readable Output
+
+>File was prevented successfully
+
+### cybereason-unprevent-file
+***
+Unprevent malop process file
+
+
+#### Base Command
+
+`cybereason-unprevent-file`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| md5 | Malop process file MD5 to unprevent. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Process.MD5 | string | Process file MD5 | 
+| Process.Prevent | boolean | True if process file is prevented, else false | 
+
+#### Command example
+```!cybereason-unprevent-file md5=fc61fdcad5a9d52a01bd2d596f2c92b9```
+#### Context Example
+```json
+{
+    "Process": {
+        "MD5": "fc61fdcad5a9d52a01bd2d596f2c92b9",
+        "Prevent": false
+    }
+}
+```
+
+#### Human Readable Output
+
+>File was unprevented successfully
+
+### cybereason-query-file
+***
+Query files as part of investigation
+
+
+#### Base Command
+
+`cybereason-query-file`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file_hash | File hash (SHA-1 and MD5 supported). | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cybereason.File.Path | string | File path | 
+| Cybereason.File.SHA1 | string | File SHA-1 hash | 
+| Cybereason.File.Machine | string | Machine name on which file is located | 
+| Cybereason.File.SuspicionsCount | number | File suspicions count | 
+| Cybereason.File.Name | string | File name | 
+| Cybereason.File.CreationTime | date | File creation time | 
+| Cybereason.File.Suspicion | string | File suspicions object of suspicion as key and detected date as value | 
+| Cybereason.File.OSVersion | string | Machine OS version on which file is located | 
+| Cybereason.File.ModifiedTime | date | File modified date | 
+| Cybereason.File.Malicious | boolean | Is file malicious | 
+| Cybereason.File.Company | string | Company name | 
+| Cybereason.File.MD5 | string | File MD5 hash | 
+| Cybereason.File.IsConnected | boolean | Is machine connected to Cybereason | 
+| Cybereason.File.Signed | boolean | Is file signed | 
+| Cybereason.File.Evidence | string | File evidences | 
+| Endpoint.Hostname | string | Hostname on which file is located | 
+| Endpoint.OSVersion | string | Machine OS version on which file is located | 
+| File.Hostname | string | Hostname on which file is located | 
+| File.MD5 | string | File MD5 hash | 
+| File.SHA1 | string | File SHA-1 hash | 
+| File.Name | string | File name | 
+| File.Path | string | File path | 
+
+#### Command example
+```!cybereason-query-file file_hash=77ab1e20c685e716b82c7c90b373316fc84cde23```
+#### Context Example
+```json
+{
+    "Cybereason": {
+        "File": {
+            "Company": "Alexander Roshal",
+            "CreationTime": "2022-02-28T07:03:48.000Z",
+            "Evidence": [],
+            "IsConnected": false,
+            "MD5": "fc61fdcad5a9d52a01bd2d596f2c92b9",
+            "Machine": "desktop-vg9ke2u",
+            "Malicious": false,
+            "ModifiedTime": "2022-05-09T16:21:18.000Z",
+            "Name": "winrar-x64-602.pdf.exe",
+            "OSVersion": null,
+            "Path": "c:\\users\\prase\\downloads\\winrar-x64-602.pdf.exe",
+            "SHA1": "77ab1e20c685e716b82c7c90b373316fc84cde23",
+            "Signed": true,
+            "Suspicion": {},
+            "SuspicionsCount": null
+        }
+    },
+    "Endpoint": {
+        "Hostname": "desktop-vg9ke2u",
+        "OSVersion": null
+    },
+    "File": {
+        "Hostname": "desktop-vg9ke2u",
+        "MD5": "fc61fdcad5a9d52a01bd2d596f2c92b9",
+        "Name": "-1845090846.-1424333057657783286",
+        "Path": "c:\\users\\prase\\downloads\\winrar-x64-602.pdf.exe",
+        "SHA1": "77ab1e20c685e716b82c7c90b373316fc84cde23"
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Cybereason file query results for the file hash: 77ab1e20c685e716b82c7c90b373316fc84cde23
+>|Company|CreationTime|IsConnected|MD5|Machine|Malicious|ModifiedTime|Name|Path|SHA1|Signed|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| Alexander Roshal | 2022-02-28T07:03:48.000Z | false | fc61fdcad5a9d52a01bd2d596f2c92b9 | desktop-vg9ke2u | false | 2022-05-09T16:21:18.000Z | winrar-x64-602.pdf.exe | c:\users\prase\downloads\winrar-x64-602.pdf.exe | 77ab1e20c685e716b82c7c90b373316fc84cde23 | true |
+
+### cybereason-query-domain
+***
+Query domains as part of investigation
+
+
+#### Base Command
+
+`cybereason-query-domain`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain | Domain to query. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cybereason.Domain.Name | string | Domain name | 
+| Cybereason.Domain.Malicious | boolean | Is domain malicious | 
+| Cybereason.Domain.IsInternalDomain | boolean | Is domain internal | 
+| Cybereason.Domain.Reputation | string | Domain reputation | 
+| Cybereason.Domain.SuspicionsCount | number | Domain suspicions count | 
+| Cybereason.Domain.WasEverResolved | boolean | Was domain ever resolved | 
+| Cybereason.Domain.WasEverResolvedAsASecondLevelDomain | boolean | Was domain ever resolved as a second level domain | 
+| Domain.Name | string | Domain name | 
+
+#### Command example
+```!cybereason-query-domain domain=www2.bing.com```
+#### Context Example
+```json
+{
+    "Cybereason": {
+        "Domain": {
+            "IsInternalDomain": false,
+            "Malicious": false,
+            "Name": "www2.bing.com",
+            "Reputation": null,
+            "SuspicionsCount": 0,
+            "WasEverResolved": false,
+            "WasEverResolvedAsASecondLevelDomain": true
+        }
+    },
+    "Domain": {
+        "Name": "www2.bing.com"
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Cybereason domain query results for the domain: www2.bing.com
+>|Name|Reputation|IsInternalDomain|WasEverResolved|WasEverResolvedAsASecondLevelDomain|Malicious|SuspicionsCount|
+>|---|---|---|---|---|---|---|
+>| www2.bing.com | indifferent | false | false | true | false | 0 |
+>| www2.bing.com |  | false | false | true | false | 0 |
+
+### cybereason-query-user
+***
+Query users as part of investigation
+
+
+#### Base Command
+
+`cybereason-query-user`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| username | Username to query. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cybereason.User.Username | string | User name | 
+| Cybereason.User.Domain | string | User domain | 
+| Cybereason.User.LastMachineLoggedInTo | string | Last machine which user logged in to | 
+| Cybereason.User.LocalSystem | boolean | Is local system | 
+| Cybereason.User.Organization | string | User organization | 
+
+#### Command example
+```!cybereason-query-user username="desktop-vg9ke2u\\prase"```
+#### Context Example
+```json
+{
+    "Cybereason": {
+        "User": {
+            "Domain": "desktop-vg9ke2u",
+            "LastMachineLoggedInTo": "desktop-vg9ke2u",
+            "LocalSystem": false,
+            "Organization": "INTEGRATION",
+            "Username": "desktop-vg9ke2u\\prase"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Cybereason user query results for the username: desktop-vg9ke2u\prase
+>|Username|Domain|LastMachineLoggedInTo|Organization|LocalSystem|
+>|---|---|---|---|---|
+>| desktop-vg9ke2u\prase | desktop-vg9ke2u | desktop-vg9ke2u | INTEGRATION | false |
+
 ### cybereason-archive-sensor
 ***
 Archives a Sensor.
@@ -96,408 +845,6 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Sensor deleted successfully.
-
-### cybereason-query-processes
-***
-Searches for processes with various filters.
-
-
-#### Base Command
-
-`cybereason-query-processes`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| machine | The hostname of the machine. | Optional | 
-| onlySuspicious | Show only suspicious processes. Possible values are: true, false. Default is false. | Optional | 
-| limit | Maximum number of results to retrieve. Default is 10000. | Optional | 
-| processName | Process name to filter by. | Optional | 
-| saveToContext | If true, save the result to the context. Possible values are: true, false. Default is false. | Optional | 
-| hasIncomingConnection | Filter only processes with incoming connections. Possible values are: true, false. Default is false. | Optional | 
-| hasOutgoingConnection | Filter only processes with outgoing connections. Possible values are: true, false. Default is false. | Optional | 
-| hasExternalConnection | If process has external connection. Possible values are: true, false. | Optional | 
-| unsignedUnknownReputation | If process is not known to reputation services and its image file is unsigned. Possible values are: true, false. | Optional | 
-| fromTemporaryFolder | If process is running from temporary folder. Possible values are: true, false. | Optional | 
-| privilegesEscalation | If process was identified elevating its privileges to local system user. Possible values are: true, false. | Optional | 
-| maliciousPsExec | If the process was executed by PsExec service and is suspicious as being executed maliciously. Possible values are: true, false. | Optional | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Process.Name | Unknown | The process name | 
-| Process.Malicious | Unknown | Malicious status of the process | 
-| Process.CreationTime | Unknown | The process creation time | 
-| Process.EndTime | Unknown | The process end time | 
-| Process.CommandLine | Unknown | The command line of the process | 
-| Process.SignedAndVerified | Unknown | Is the process signed and verified | 
-| Process.ProductType | Unknown | The product type | 
-| Process.Children | Unknown | Children of the process | 
-| Process.Parent | Unknown | The parent process | 
-| Process.OwnerMachine | Unknown | The machine's hostname | 
-| Process.User | Unknown | The user who ran the process | 
-| Process.ImageFile | Unknown | Image file of the process | 
-| Process.SHA1 | Unknown | SHA1 of the process file | 
-| Process.MD5 | Unknown | MD5 of the process file | 
-| Process.CompanyName | Unknown | The company's name | 
-| Process.ProductName | Unknown | The product's name | 
-
-### cybereason-is-probe-connected
-***
-Checks if the machine is currently connected to the Cybereason server
-
-
-#### Base Command
-
-`cybereason-is-probe-connected`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| machine | The hostname of the machine to check. | Required | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Cybereason.Machine.isConnected | boolean | true if machine is connected, else false | 
-| Cybereason.Machine.Name | string | Machine name | 
-
-### cybereason-query-connections
-***
-Searches for connections.
-
-
-#### Base Command
-
-`cybereason-query-connections`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| ip | Filter connections which contain this IP (in or out). | Optional | 
-| machine | Filter connections on the given machine. | Optional | 
-| saveToContext | If true, save the result to the context. Possible values are: true, false. Default is false. | Optional | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Connection.Name | Unknown | The connection's name | 
-| Connection.Direction | Unknown | OUTGOING/INCOMING | 
-| Connection.ServerAddress | Unknown | Address of the Cybereason machine | 
-| Connection.ServerPort | Unknown | Port of the Cybereason machine | 
-| Connection.PortType | Unknown | Type of the connection | 
-| Connection.ReceivedBytes | Unknown | Received bytes count | 
-| Connection.TransmittedBytes | Unknown | Transmitted bytes count | 
-| Connection.RemoteCountry | Unknown | The connection's remote country | 
-| Connection.OwnerMachine | Unknown | The machine's hostname | 
-| Connection.OwnerProcess | Unknown | The process which performed the connection | 
-| Connection.CreationTime | Unknown | Creation time of the connection | 
-| Connection.EndTime | Unknown | End time of the connection | 
-
-### cybereason-isolate-machine
-***
-Isolates a machine that has been infected from the rest of the network
-
-
-#### Base Command
-
-`cybereason-isolate-machine`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| machine | Machine name to be isolated. | Required | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Cybereason.Machine | string | Machine name | 
-| Cybereason.IsIsolated | boolean | Is the machine isolated | 
-| Endpoint.Hostname | string | Machine name | 
-
-### cybereason-unisolate-machine
-***
-Stops isolation of a machine
-
-
-#### Base Command
-
-`cybereason-unisolate-machine`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| machine | Machine name to be un-isolated. | Required | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Cybereason.Machine | string | Machine name | 
-| Cybereason.IsIsolated | boolean | Is the machine isolated | 
-| Endpoint.Hostname | string | Machine name | 
-
-### cybereason-query-malops
-***
-Returns a list of all Malops and details on the Malops.
-
-
-#### Base Command
-
-`cybereason-query-malops`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| filters | Filter to filter response by, given in Cybereason API syntax. | Optional | 
-| totalResultLimit | The total number of results to return for your Server. Ensure you make the limit a reasonable number to maximize Server performance and not to overload the system. | Optional | 
-| perGroupLimit | The number of items to return per Malop group. | Optional | 
-| templateContext | The level of detail to provide in the response. Possible values include:  SPECIFIC:  References value contain only the count in the ElementValues class. The Suspicions map is calculated for each results, with the suspicion name and the first time the suspicion appeared. The Evidence map is not calculated for the results. CUSTOM:  Reference values contain the specific Elements, up to the limit defined in the perFeatureLimit parameter. The Suspicions map is not calculated for the results. The Evidence map is not calculated for the results. DETAILS:  Reference values contain the specific Elements, up to the limit defined in the perFeatureLimit parameter. The Suspicions map is calculated for each result, containing the suspicion name and the first time the suspicion appeared. The Evidence map is not calculated for the results. Possible values are: MALOP, SPECIFIC, CUSTOM, DETAILS, OVERVIEW. Default is MALOP. | Optional | 
-| withinLastDays | Return all the malops within the last days. | Optional | 
-| malopGuid | Malop GUIDs to filter by (Comma separated values supported, e.g. 11.5681864988155542407,11.1773255057963879999). | Optional | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Cybereason.Malops.GUID | string | The unique globally unique identifier \(guid\) for the Malop. | 
-| Cybereason.Malops.CreationTime | string | The time reported as when the malicious behavior began on the system. This is not the time that the Malop was first detected by Cybereason. | 
-| Cybereason.Malops.DecisionFeature | string | The reason that Cybereason has raised the Malop. | 
-| Cybereason.Malops.Link | string | Link to the Malop on Cybereason. | 
-| Cybereason.Malops.Suspects | string | Malop suspect type and name | 
-| Cybereason.Malops.LastUpdatedTime | string | Last updated time of malop | 
-| Cybereason.Malops.AffectedMachine | string | List of machines affected by this Malop | 
-| Cybereason.Malops.InvolvedHash | string | List of file hashes involved in this Malop | 
-| Cybereason.Malops.Status | string | Malop managemant status | 
-
-### cybereason-malop-processes
-***
-Returns a list of malops
-
-
-#### Base Command
-
-`cybereason-malop-processes`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| malopGuids | Array of malop GUIDs separated by comma. (Malop GUID can be retrieved with the command cybereason-query-malops command). | Required | 
-| machineName | Machine names which were affected by malop. Comma separated values supported (e.g., machine1,machine2). | Optional | 
-| dateTime | Starting Date and Time to filter the Processes based on their creation date. The format for the input is ("YYYY/MM/DD HH:MM:SS"). | Optional | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Process.Name | string | The process name | 
-| Process.Malicious | Unknown | Malicious status of the process | 
-| Process.CreationTime | date | The process creation time | 
-| Process.EndTime | date | The process end time | 
-| Process.CommandLine | string | The command line of the process | 
-| Process.SignedAndVerified | Unknown | Is the process signed and verified | 
-| Process.ProductType | Unknown | The product type | 
-| Process.Children | Unknown | Children of the process | 
-| Process.Parent | Unknown | The parent process | 
-| Process.OwnerMachine | Unknown | The machine's hostname | 
-| Process.User | string | The user who ran the process | 
-| Process.ImageFile | Unknown | Image file of the process | 
-| Process.SHA1 | string | SHA1 of the process file | 
-| Process.MD5 | string | MD5 of the process file | 
-| Process.CompanyName | string | The company's name | 
-| Process.ProductName | string | The product's name | 
-
-### cybereason-add-comment
-***
-Add new comment to malop
-
-
-#### Base Command
-
-`cybereason-add-comment`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| comment | Comment to add to the malop. | Required | 
-| malopGuid | Malop GUID to add comment to. (Malop GUID can be retrieved with the command cybereason-query-malops command). | Required | 
-
-
-#### Context Output
-
-There is no context output for this command.
-### cybereason-update-malop-status
-***
-Updates malop status
-
-
-#### Base Command
-
-`cybereason-update-malop-status`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| malopGuid | Malop GUID to update its status. | Required | 
-| status | Status to update. Possible values are: To Review, Unread, Remediated, Not Relevant, Open. | Required | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Cybereason.Malops.GUID | string | Malop GUID | 
-| Cybereason.Malops.Status | string | Malop status: To Review,Unread,Remediated,Not Relevant | 
-
-### cybereason-prevent-file
-***
-Prevent malop process file
-
-
-#### Base Command
-
-`cybereason-prevent-file`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| md5 | Malop process file MD5 to prevent. | Required | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Process.MD5 | string | Process file MD5 | 
-| Process.Prevent | boolean | True if process file is prevented, else false | 
-
-### cybereason-unprevent-file
-***
-Unprevent malop process file
-
-
-#### Base Command
-
-`cybereason-unprevent-file`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| md5 | Malop process file MD5 to unprevent. | Required | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Process.MD5 | string | Process file MD5 | 
-| Process.Prevent | boolean | True if process file is prevented, else false | 
-
-### cybereason-query-file
-***
-Query files as part of investigation
-
-
-#### Base Command
-
-`cybereason-query-file`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| file_hash | File hash (SHA-1 and MD5 supported). | Required | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Cybereason.File.Path | string | File path | 
-| Cybereason.File.SHA1 | string | File SHA-1 hash | 
-| Cybereason.File.Machine | string | Machine name on which file is located | 
-| Cybereason.File.SuspicionsCount | number | File suspicions count | 
-| Cybereason.File.Name | string | File name | 
-| Cybereason.File.CreationTime | date | File creation time | 
-| Cybereason.File.Suspicion | string | File suspicions object of suspicion as key and detected date as value | 
-| Cybereason.File.OSVersion | string | Machine OS version on which file is located | 
-| Cybereason.File.ModifiedTime | date | File modified date | 
-| Cybereason.File.Malicious | boolean | Is file malicious | 
-| Cybereason.File.Company | string | Company name | 
-| Cybereason.File.MD5 | string | File MD5 hash | 
-| Cybereason.File.IsConnected | boolean | Is machine connected to Cybereason | 
-| Cybereason.File.Signed | boolean | Is file signed | 
-| Cybereason.File.Evidence | string | File evidences | 
-| Endpoint.Hostname | string | Hostname on which file is located | 
-| Endpoint.OSVersion | string | Machine OS version on which file is located | 
-| File.Hostname | string | Hostname on which file is located | 
-| File.MD5 | string | File MD5 hash | 
-| File.SHA1 | string | File SHA-1 hash | 
-| File.Name | string | File name | 
-| File.Path | string | File path | 
-
-### cybereason-query-domain
-***
-Query domains as part of investigation
-
-
-#### Base Command
-
-`cybereason-query-domain`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| domain | Domain to query. | Required | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Cybereason.Domain.Name | string | Domain name | 
-| Cybereason.Domain.Malicious | boolean | Is domain malicious | 
-| Cybereason.Domain.IsInternalDomain | boolean | Is domain internal | 
-| Cybereason.Domain.Reputation | string | Domain reputation | 
-| Cybereason.Domain.SuspicionsCount | number | Domain suspicions count | 
-| Cybereason.Domain.WasEverResolved | boolean | Was domain ever resolved | 
-| Cybereason.Domain.WasEverResolvedAsASecondLevelDomain | boolean | Was domain ever resolved as a second level domain | 
-| Domain.Name | string | Domain name | 
-
-### cybereason-query-user
-***
-Query users as part of investigation
-
-
-#### Base Command
-
-`cybereason-query-user`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| username | Username to query. | Required | 
-
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Cybereason.User.Username | string | User name | 
-| Cybereason.User.Domain | string | User domain | 
-| Cybereason.User.LastMachineLoggedInTo | string | Last machine which user logged in to | 
-| Cybereason.User.LocalSystem | boolean | Is local system | 
-| Cybereason.User.Organization | string | User organization | 
 
 ### cybereason-start-fetchfile
 ***
@@ -640,6 +987,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Successfully aborts a file download operation that is in progress.
+
 ### cybereason-available-remediation-actions
 ***
 Get all remediation action details whatever available for that malop
