@@ -1,15 +1,16 @@
 id: ACTI Incident Enrichment
 version: -1
 name: ACTI Incident Enrichment
-description: This playbook automatically queries Accenture IntelGraph API to pull context for IOC and associated intelligence reports into XSOAR incidents.
+description: This playbook enriches Intelligence Alerts, Intelligence Reports, Malware
+  Families, Threat Actors, Threat Groups & Threat Campaigns
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: a9d496ac-764a-46be-88a2-61923870e6b9
+    taskid: ca91ceab-2a21-4811-894f-6f1ed01af071
     type: start
     task:
-      id: a9d496ac-764a-46be-88a2-61923870e6b9
+      id: ca91ceab-2a21-4811-894f-6f1ed01af071
       version: -1
       name: ""
       iscommand: false
@@ -17,12 +18,17 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "2"
+      - "8"
+      - "9"
+      - "10"
+      - "11"
+      - "12"
+      - "13"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 1287.5,
           "y": 50
         }
       }
@@ -35,25 +41,30 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: efe21c25-a55f-4000-87f9-2c19ceedeedb
-    type: title
+    taskid: 35ed57f7-6a6b-45da-8943-b7e22e520eb7
+    type: regular
     task:
-      id: efe21c25-a55f-4000-87f9-2c19ceedeedb
+      id: 35ed57f7-6a6b-45da-8943-b7e22e520eb7
       version: -1
-      name: Enrich Indicator using ACTI integrations
-      type: title
-      iscommand: false
-      brand: ""
-      description: 'Enrich Indicator using ACTI integrations'
+      name: Enrich IA
+      description: Fetches Intelligence Alerts & Intelligence Reports.
+      script: ACTI Indicator Query|||acti-getThreatIntelReport
+      type: regular
+      iscommand: true
+      brand: ACTI Indicator Query
     nexttasks:
       '#none#':
-      - "9"
+      - "2"
+    scriptarguments:
+      uuid:
+        simple: ${inputs.ia_uuid}
+    reputationcalc: 2
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 370
+          "x": 162.5,
+          "y": 360
         }
       }
     note: false
@@ -65,29 +76,57 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: f3758ee6-8dc4-4064-87b8-4448eaec2098
-    type: regular
+    taskid: 05988938-b1b3-4d1e-8082-b4fbcf6f3b85
+    type: title
     task:
-      id: f3758ee6-8dc4-4064-87b8-4448eaec2098
+      id: 05988938-b1b3-4d1e-8082-b4fbcf6f3b85
       version: -1
-      name: Extracting indicators from incident
-      description: Extract all indicators according to server indicators configuration
-      script: Builtin|||extractIndicators
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "1"
-    scriptarguments:
-      text:
-        simple: ${incident}
+      name: END
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 195
+          "x": 1287.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: b8e15caa-d254-41d1-84c2-ae143ad76500
+    type: regular
+    task:
+      id: b8e15caa-d254-41d1-84c2-ae143ad76500
+      version: -1
+      name: Enrich IR
+      description: Fetches Intelligence Alerts & Intelligence Reports.
+      script: ACTI Indicator Query|||acti-getThreatIntelReport
+      type: regular
+      iscommand: true
+      brand: ACTI Indicator Query
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      uuid:
+        simple: ${inputs.ir_uuid}
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 360
         }
       }
     note: false
@@ -99,22 +138,139 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 5b6006fb-ce66-4c4a-8658-720f8b2ea86d
-    type: title
+    taskid: fb422c08-2c1f-42a1-84f2-56fc6313e1ca
+    type: regular
     task:
-      id: 5b6006fb-ce66-4c4a-8658-720f8b2ea86d
+      id: fb422c08-2c1f-42a1-84f2-56fc6313e1ca
       version: -1
-      name: Done
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
+      name: Enrich Malware Family
+      description: Checks reputation of a specific Malware Family/ Threat Campaign/
+        Threat Group/ Threat Actor.
+      script: ACTI Indicator Query|||acti-get-fundamentals-by-uuid
+      type: regular
+      iscommand: true
+      brand: ACTI Indicator Query
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      uuid:
+        simple: ${inputs.MalwareFamily_uuid}
+    reputationcalc: 2
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1365
+          "x": 1062.5,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 23f032fd-7066-4f48-82a9-eb01160f9f4f
+    type: regular
+    task:
+      id: 23f032fd-7066-4f48-82a9-eb01160f9f4f
+      version: -1
+      name: Enrich Threat Group
+      description: Checks reputation of a specific Malware Family/ Threat Campaign/
+        Threat Group/ Threat Actor.
+      script: ACTI Indicator Query|||acti-get-fundamentals-by-uuid
+      type: regular
+      iscommand: true
+      brand: ACTI Indicator Query
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      uuid:
+        simple: ${inputs.ThreatGroup_uuid}
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1512.5,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 87e02af2-63e5-4cc6-8f73-f52fe9eac225
+    type: regular
+    task:
+      id: 87e02af2-63e5-4cc6-8f73-f52fe9eac225
+      version: -1
+      name: Enrich Threat Actor
+      description: Checks reputation of a specific Malware Family/ Threat Campaign/
+        Threat Group/ Threat Actor.
+      script: ACTI Indicator Query|||acti-get-fundamentals-by-uuid
+      type: regular
+      iscommand: true
+      brand: ACTI Indicator Query
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      uuid:
+        simple: ${inputs.ThreatActor_uuid}
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1962.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 86da01c7-124d-40e7-85b4-2518a5565f78
+    type: regular
+    task:
+      id: 86da01c7-124d-40e7-85b4-2518a5565f78
+      version: -1
+      name: Enrich Threat Campaign
+      description: Checks reputation of a specific Malware Family/ Threat Campaign/
+        Threat Group/ Threat Actor.
+      script: ACTI Indicator Query|||acti-get-fundamentals-by-uuid
+      type: regular
+      iscommand: true
+      brand: ACTI Indicator Query
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      uuid:
+        simple: ${inputs.ThreatCampaign_uuid}
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2412.5,
+          "y": 370
         }
       }
     note: false
@@ -126,61 +282,35 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: da31e1f5-ca0f-4b89-87dc-48d0e36eb9be
-    type: playbook
+    taskid: bec1aa96-441a-4e76-8b31-4f420d69f301
+    type: condition
     task:
-      id: da31e1f5-ca0f-4b89-87dc-48d0e36eb9be
+      id: bec1aa96-441a-4e76-8b31-4f420d69f301
       version: -1
-      name: Create Relationships
-      playbookName: ACTI Create Report-Indicator Associations
-      type: playbook
+      name: Is IA present?
+      type: condition
       iscommand: false
       brand: ""
-      description: 'Creates report-indicator associations'
+      description: ''
     nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      Domain:
-        complex:
-          root: ${Domain
-          accessor: Name}
-          transformers:
-          - operator: uniq
-      IA:
-        complex:
-          root: ${intelligence_alerts}
-          transformers:
-          - operator: uniq
-      IP:
-        complex:
-          root: ${IP
-          accessor: Address}
-          transformers:
-          - operator: uniq
-      IR:
-        complex:
-          root: ${intelligence_reports}
-          transformers:
-          - operator: uniq
-      URL:
-        complex:
-          root: ${URL
-          accessor: Data}
-          transformers:
-          - operator: uniq
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-      forEach: true
+      '#default#':
+      - "2"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.ia_uuid
+            iscontext: true
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1160
+          "x": 162.5,
+          "y": 195
         }
       }
     note: false
@@ -192,38 +322,35 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: d094d918-daf9-47c9-861f-ee02e481fa93
-    type: playbook
+    taskid: cf92c2f1-0725-47d7-8738-cf2e02b4fbe9
+    type: condition
     task:
-      id: d094d918-daf9-47c9-861f-ee02e481fa93
+      id: cf92c2f1-0725-47d7-8738-cf2e02b4fbe9
       version: -1
-      name: ACTI Indicator Enrichment
-      playbookName: ACTI Indicator Enrichment
-      type: playbook
+      name: Is IR present?
+      type: condition
       iscommand: false
       brand: ""
-      description: 'ACTI Indicator Enrichment is a sub-playbook used to enrich indicators using ACTI Indicator Query integration'
+      description: ''
     nexttasks:
-      '#none#':
-      - "10"
-    scriptarguments:
-      Domain_Pre_Enrich:
-        simple: ${ExtractedIndicators.Domain}
-      IP_Pre_Enrich:
-        simple: ${ExtractedIndicators.IP}
-      URL_Pre_Enrich:
-        simple: ${ExtractedIndicators.URL}
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
+      '#default#':
+      - "2"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.ir_uuid
+            iscontext: true
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 515
+          "x": 612.5,
+          "y": 195
         }
       }
     note: false
@@ -235,35 +362,78 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: c9dfb0b7-3a7c-4309-84e2-c32067b57c45
-    type: regular
+    taskid: 68f8a124-8f6b-4ca9-82f3-fcff8874b24a
+    type: condition
     task:
-      id: c9dfb0b7-3a7c-4309-84e2-c32067b57c45
+      id: 68f8a124-8f6b-4ca9-82f3-fcff8874b24a
       version: -1
-      name: Sleep message
-      description: Prints text to war room (Markdown supported)
-      scriptName: Print
-      type: regular
+      name: Is Malware Family present?
+      type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
-      '#none#':
-      - "12"
-    scriptarguments:
-      execution-timeout:
-        simple: "4"
-      value:
-        simple: '### Sleeping for 5 seconds for proper creation of relationships!'
-    reputationcalc: 2
+      '#default#':
+      - "2"
+      "yes":
+      - "4"
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.MalwareFamily_uuid
+            iscontext: true
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 690
+          "x": 1062.5,
+          "y": 195
         }
       }
-    note: true
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 9aa44f9f-d90a-45d4-8532-e4b70924329f
+    type: condition
+    task:
+      id: 9aa44f9f-d90a-45d4-8532-e4b70924329f
+      version: -1
+      name: Is Threat Group present?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.ThreatGroup_uuid
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1512.5,
+          "y": 195
+        }
+      }
+    note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
@@ -272,32 +442,38 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 5a0b081e-159b-41d0-8fc6-473afdb75e86
-    type: regular
+    taskid: 41cce8d8-1d32-4b85-80fd-7f54bcfccce9
+    type: condition
     task:
-      id: 5a0b081e-159b-41d0-8fc6-473afdb75e86
+      id: 41cce8d8-1d32-4b85-80fd-7f54bcfccce9
       version: -1
-      name: Sleep
-      description: Sleep for X seconds
-      scriptName: Sleep
-      type: regular
+      name: Is Threat Actor present?
+      type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
-      '#none#':
-      - "13"
-    scriptarguments:
-      seconds:
-        simple: "5"
+      '#default#':
+      - "2"
+      "yes":
+      - "6"
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.ThreatActor_uuid
+            iscontext: true
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 865
+          "x": 1962.5,
+          "y": 195
         }
       }
-    note: true
+    note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
@@ -306,34 +482,38 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 7b6244a8-3af8-402e-8289-539d4501f432
-    type: regular
+    taskid: 6a22c567-27d9-4e13-87de-ad44972762da
+    type: condition
     task:
-      id: 7b6244a8-3af8-402e-8289-539d4501f432
+      id: 6a22c567-27d9-4e13-87de-ad44972762da
       version: -1
-      name: Create Relationship message
-      description: Prints text to war room (Markdown supported)
-      scriptName: Print
-      type: regular
+      name: Is Threat Campaign present?
+      type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      value:
-        simple: |-
-          ## I'm back !!
-          ## Invoking ACTI Create Report-Indicator Associations sub-playbook
+      '#default#':
+      - "2"
+      "yes":
+      - "7"
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.ThreatCampaign_uuid
+            iscontext: true
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1010
+          "x": 2412.5,
+          "y": 195
         }
       }
-    note: true
+    note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
@@ -345,15 +525,68 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1380,
-        "width": 380,
-        "x": 50,
+        "height": 560,
+        "width": 2630,
+        "x": 162.5,
         "y": 50
       }
     }
   }
-inputs: []
-outputs: []
+inputs:
+- key: ia_uuid
+  value:
+    complex:
+      root: ${intelligence_alerts}
+      transformers:
+      - operator: uniq
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: ir_uuid
+  value:
+    complex:
+      root: ${intelligence_reports}
+      transformers:
+      - operator: uniq
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: MalwareFamily_uuid
+  value:
+    complex:
+      root: ${acti_malware_family_uuid}
+      transformers:
+      - operator: uniq
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: ThreatGroup_uuid
+  value:
+    complex:
+      root: ${acti_threat_groups_uuid}
+      transformers:
+      - operator: uniq
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: ThreatCampaign_uuid
+  value:
+    complex:
+      root: ${acti_threat_campaigns_uuid}
+      transformers:
+      - operator: uniq
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: ThreatActor_uuid
+  value:
+    complex:
+      root: ${acti_threat_actors_uuid}
+      transformers:
+      - operator: uniq
+  required: false
+  description: ""
+  playbookInputQuery: null
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0

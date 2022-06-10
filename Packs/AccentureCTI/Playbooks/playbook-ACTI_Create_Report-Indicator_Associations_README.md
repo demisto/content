@@ -1,3 +1,4 @@
+- NOTE: This playbook is deprecated.
 - This sub-playbook makes the connections between ACTI indicators (from ACTI Indicator API) and ACTI intelligence reports (from ACTI Report API) that have pulled into an XSOAR incident via the _**Enrich Incidents with Indicators**_ and _**Enrich Incidents with Intelligence Reports**_ sub-playbooks.
 - This sub-playbook _**cannot**_ be integrated into generic XSOAR playbooks and playbooks from other vendors by itself. It is dependent upon the _**Enrich Incidents with Indicators**_ and _**Enrich Incidents with Intelligence Reports**_ sub-playbooks.
 
@@ -11,9 +12,9 @@ This playbook does not use any sub-playbooks.
 This playbook does not use any integrations.
 
 ### Scripts
-* CreateIndicatorRelationship
 * GetIndicatorDBotScore
 * Exists
+* CreateIndicatorRelationship
 
 ### Commands
 This playbook does not use any commands.
@@ -23,11 +24,15 @@ This playbook does not use any commands.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| IP | IP address after enrichment. | ${IP.Address} | Optional |
-| IA | Intelligence Alert uuid(s). | ${intelligence_alerts}.None | Optional |
-| IR | Intelligence Report uuid(s). | ${intelligence_reports}.None | Optional |
-| URL | URL address after enrichment. | ${URL.Data} | Optional |
-| Domain | Domain name after enrichment. | ${Domain.Name} | Optional |
+| IP | The extracted IP address. | ${IP.Address} | Optional |
+| IA | The Intelligence Alert associated with the indicator. | ${intelligence_alerts}.None | Optional |
+| IR | The Intelligence Report associated with the indicator. | ${intelligence_reports}.None | Optional |
+| URL | The extracted URL. | ${URL.Data} | Optional |
+| Domain | The extracted Domain. | ${Domain.Name} | Optional |
+| MFam | The Malware Family associated with the indicator. | acti_malware_family_uuid.None | Optional |
+| TA | The Threat Actor associated with the indicator. | acti_threat_actors_uuid.None | Optional |
+| TG | The Threat Group associated with the indicator. | acti_threat_groups_uuid.None | Optional |
+| TC | The Threat Campaign associated with the indicator. | acti_threat_campaigns_uuid.None | Optional |
 
 ## Playbook Outputs
 ---
@@ -35,4 +40,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![ACTI Create Report-Indicator Associations](https://user-images.githubusercontent.com/40510780/163230465-e6d61102-93e9-4676-8a8a-30821b58bbba.png)
+![ACTI Create Report-Indicator Associations](https://user-images.githubusercontent.com/40510780/164019981-8da85350-7c55-4c40-bd69-e1177119e64e.png)

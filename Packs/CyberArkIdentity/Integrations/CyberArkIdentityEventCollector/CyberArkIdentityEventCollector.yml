@@ -18,22 +18,22 @@ configuration:
   name: credentials
   required: true
   type: 9
-- display: The vendor corresponding to the integration that originated the events
+- display: Vendor name
   name: vendor
   type: 0
   defaultvalue: cyberark
   required: false
-- display: The product corresponding to the integration that originated the events
+- display: Product name
   name: product
   type: 0
   defaultvalue: identity
 - defaultvalue: 3 days
-  display: First fetch time (<number> <time unit>, e.g., 12 hours, 1 day, 3 months). default is 3 days.
+  display: First fetch time
   name: from
   required: true
   type: 0
-- defaultvalue: 100
-  display: The maximum number of events per fetch. Default is 100.
+- defaultvalue: 1000
+  display: Maximum number of events per fetch
   name: limit
   required: true
   type: 0
@@ -55,12 +55,13 @@ script:
     execution: false
     name: cyberarkidentity-get-events
     arguments:
-    - description: The maximum number of incidents per fetch. Default is 100.
+    - description: The maximum number of events per fetch. Default is 1000.
+      defaultValue: 1000
       isArray: true
       name: limit
       required: false
       secret: false
-    - description: Set this argument to True in order to create events, otherwise the command will only display them.
+    - description: Set this argument to True to create events, otherwise events will only be displayed.
       auto: PREDEFINED
       defaultValue: 'False'
       isArray: false
@@ -69,7 +70,7 @@ script:
         - 'True'
         - 'False'
       required: true
-    - description: First fetch time (<number> <time unit>, e.g., 12 hours, 1 day, 3 months). Default is 3 days.
+    - description: First fetch time (<number> <time unit>, for example 12 hours, 1 day, 3 months). Default is 3 days.
       isArray: true
       name: from
       required: false
