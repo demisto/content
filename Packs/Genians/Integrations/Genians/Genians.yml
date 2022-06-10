@@ -29,7 +29,6 @@ configuration:
   required: true
 - display: Fetch indicators
   name: feed
-  defaultvalue: ""
   type: 8
   required: false
 script:

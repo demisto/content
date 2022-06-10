@@ -1,0 +1,1110 @@
+category: Endpoint
+commonfields:
+  id: Automox
+  version: -1
+configuration:
+- display: Organization ID
+  additionalinfo: When specified, data pulled from Automox will only belong to this organization; otherwise, the default permissions for this API key will be used.
+  name: org_id
+  required: false
+  type: 0
+- displaypassword: API Key
+  additionalinfo: The API Key to use for connection
+  name: credentials
+  required: true
+  hiddenusername: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: 'Administrate your IT organization from XSOAR with comprehensive commands for the Automox platform.'
+display: Automox
+name: Automox
+script:
+  commands:
+  - name: automox-devices-list
+    description: 'List all devices in Automox based on group and organization permissions.'
+    arguments:
+    - name: org_id
+      description: 'Organization ID'
+      default: false
+      isArray: false
+      required: false
+      secret: false
+    - name: group_id
+      description: 'Group ID'
+      default: false
+      isArray: false
+      required: false
+      secret: false
+    - name: limit
+      description: 'The maximum number of results to return per page.'
+      type: 'number'
+      isArray: false
+      required: false
+      default: false
+      defaultValue: 50
+      secret: false
+    - name: page
+      description: 'The page of results to return.'
+      type: 'number'
+      isArray: false
+      required: false
+      default: false
+      defaultValue: 0
+      secret: false
+    deprecated: false
+    execution: false
+    outputs:
+    - contextPath: Automox.Devices.id
+      description: 'Identifier of device'
+      type: Number
+    - contextPath: Automox.Devices.server_group_id
+      description: 'Identifier of server group'
+      type: Number
+    - contextPath: Automox.Devices.organization_id
+      description: 'Identifier of organization'
+      type: Number
+    - contextPath: Automox.Devices.uuid
+      description: 'The Automox UUID of a device'
+      type: String
+    - contextPath: Automox.Devices.name
+      description: 'The name of a device'
+      type: String
+    - contextPath: Automox.Devices.refresh_interval
+      description: 'Frequency of device refreshes in minutes'
+      type: Number
+    - contextPath: Automox.Devices.last_update_time
+      description: 'The last time a device was updated in Automox'
+      type: String
+    - contextPath: Automox.Devices.last_refresh_time
+      description: 'The last time a device was refreshed in Automox'
+      type: String
+    - contextPath: Automox.Devices.uptime
+      description: 'The device uptime in minutes'
+      type: Number
+    - contextPath: Automox.Devices.needs_reboot
+      description: 'Whether a device needs to be rebooted'
+      type: Boolean
+    - contextPath: Automox.Devices.timezone
+      description: 'The device timezone'
+      type: String
+    - contextPath: Automox.Devices.tags
+      description: 'List of tags for the device'
+      type: String
+    - contextPath: Automox.Devices.deleted
+      description: 'Whether a device is deleted'
+      type: Boolean
+    - contextPath: Automox.Devices.create_time
+      description: 'The time a device was created in Automox'
+      type: Date
+    - contextPath: Automox.Devices.os_version
+      description: 'The operating system version of a device'
+      type: String
+    - contextPath: Automox.Devices.os_name
+      description: 'The operating system name of a device'
+      type: String
+    - contextPath: Automox.Devices.os_family
+      description: 'the operating system family of a device'
+      type: String
+    - contextPath: Automox.Devices.ip_addrs
+      description: 'List of IP addresses for a device'
+      type: String
+    - contextPath: Automox.Devices.ip_addrs_private
+      description: 'List of private IP addresses for a device'
+      type: String
+    - contextPath: Automox.Devices.patches
+      description: 'The number of patches currently identified for a device'
+      type: Number
+    - contextPath: Automox.Devices.agent_version
+      description: 'The version of the Automox agent on the device'
+      type: String
+    - contextPath: Automox.Devices.custom_name
+      description: 'The Automox specific custom name for the device'
+      type: String
+    - contextPath: Automox.Devices.is_compatible
+      description: 'Whether a device is compatible with Automox'
+      type: Boolean
+    - contextPath: Automox.Devices.policy_status.id
+      description: 'Identifier of policy'
+      type: Number
+    - contextPath: Automox.Devices.policy_status.organization_id
+      description: 'Identifier of organization'
+      type: Number
+    - contextPath: Automox.Devices.policy_status.policy_name
+      description: 'Name of the policy'
+      type: String
+    - contextPath: Automox.Devices.policy_status.policy_type_name
+      description: 'Type of the policy'
+      type: String
+    - contextPath: Automox.Devices.policy_status.status
+      description: 'Current status of the policy'
+      type: Number
+    - contextPath: Automox.Devices.policy_status.result
+      description: 'Result of the policy'
+      type: String
+    - contextPath: Automox.Devices.policy_status.create_time
+      description: 'Policy created datetime'
+      type: Datetime
+    - contextPath: Automox.Devices.last_scan_failed
+      description: 'Whether the last scan failed on a device'
+      type: Boolean
+    - contextPath: Automox.Devices.pending
+      description: 'Whether work is pending on a device'
+      type: Boolean
+    - contextPath: Automox.Devices.compliant
+      description: 'Whether a device is compliant'
+      type: Boolean
+    - contextPath: Automox.Devices.display_name
+      description: 'The display name of a device'
+      type: String
+    - contextPath: Automox.Devices.commands.command_type_name
+      description: 'The type of a command previously issued on a device'
+      type: String
+    - contextPath: Automox.Devices.commands.args
+      description: 'The arguments of a command previously issued on a device'
+      type: String
+    - contextPath: Automox.Devices.commands.exec_time
+      description: 'The execution time of a command previously issued on a device'
+      type: Date
+    - contextPath: Automox.Devices.pending_patches
+      description: 'The number of pending patches for a device'
+      type: Number
+    - contextPath: Automox.Devices.connected
+      description: 'Whether a device is currently connected to Automox'
+      type: Boolean
+    - contextPath: Automox.Devices.last_process_time
+      description: 'The last time the device was processed'
+      type: String
+    - contextPath: Automox.Devices.next_patch_time
+      description: 'The next time the device is patched'
+      type: String
+    - contextPath: Automox.Devices.notification_count
+      description: 'The number of notifications for the device'
+      type: Number
+    - contextPath: Automox.Devices.reboot_notification_count
+      description: 'The number of reboot notifications for a device'
+      type: Number
+    - contextPath: Automox.Devices.patch_deferral_count
+      description: 'The number of patch deferrals for a device'
+      type: Number
+    - contextPath: Automox.Devices.is_delayed_by_notification
+      description: 'Whether a patch is delayed by notifications'
+      type: Boolean
+    - contextPath: Automox.Devices.reboot_is_delayed_by_notification
+      description: 'Whether a reboot is delayed by notifications'
+      type: Boolean
+    - contextPath: Automox.Devices.is_delayed_by_user
+      description: 'Whether a patch is delayed by the user'
+      type: Boolean
+    - contextPath: Automox.Devices.reboot_is_delayed_by_user
+      description: 'Whether a reboot is delayed by the user'
+      type: Boolean
+    - contextPath: Automox.Devices.last_disconnect_time
+      description: 'Last time a device disconnected from Automox'
+      type: Date
+    - contextPath: Automox.Devices.needs_attention
+      description: 'Whether a device currently needs attention'
+      type: Boolean
+    - contextPath: Automox.Devices.serial_number
+      description: 'The device serial number'
+      type: String
+    - contextPath: Automox.Devices.status.device_status
+      description: 'The status of a device'
+      type: String
+    - contextPath: Automox.Devices.status.agent_status
+      description: 'The status of a device agent'
+      type: String
+    - contextPath: Automox.Devices.status.policy_status
+      description: 'The overall status of all policies assigned to a device'
+      type: String
+    - contextPath: Automox.Devices.status.policy_statuses.id
+      description: 'The identifier of the policy'
+      type: Number
+    - contextPath: Automox.Devices.status.policy_statuses.compliant
+      description: 'Whether a device is compliant to a given status'
+      type: Boolean
+    - contextPath: Automox.Devices.last_logged_in_user
+      description: 'The last logged in user of a device'
+      type: String
+  - name: automox-organizations-list
+    arguments:
+    - name: limit
+      description: 'The maximum number of results to return per page.'
+      type: 'number'
+      isArray: false
+      required: false
+      default: false
+      defaultValue: 50
+      secret: false
+    - name: page
+      description: 'The page of results to return.'
+      type: 'number'
+      isArray: false
+      required: false
+      default: false
+      defaultValue: 0
+      secret: false
+    deprecated: false
+    description: 'List all Automox organizations based on user permissions.'
+    execution: false
+    outputs:
+    - contextPath: Automox.Organizations.id
+      description: 'Identifier of organization'
+      type: Number
+    - contextPath: Automox.Organizations.name
+      description: 'Name of organization'
+      type: String
+    - contextPath: Automox.Organizations.create_time
+      description: 'The datetime when the organization was created'
+      type: Date
+    - contextPath: Automox.Organizations.server_limit
+      description: 'The organization server limit'
+      type: Number
+    - contextPath: Automox.Organizations.parent_id
+      description: 'The organization parent id'
+      type: Number
+    - contextPath: Automox.Organizations.device_limit
+      description: 'The organization device limit'
+      type: Number
+    - contextPath: Automox.Organizations.device_count
+      description: 'The organization device count'
+      type: Number
+  - name: automox-organization-users-list
+    description: 'List all Automox users within an organization.'
+    arguments:
+    - name: org_id
+      description: 'Organization identifier'
+      type: 'number'
+      isArray: false
+      required: false
+      default: false
+      secret: false
+    - name: limit
+      description: 'The maximum number of results to return per page.'
+      type: 'number'
+      isArray: false
+      required: false
+      default: false
+      defaultValue: 50
+      secret: false
+    - name: page
+      description: 'The page of results to return.'
+      type: 'number'
+      isArray: false
+      required: false
+      default: false
+      defaultValue: 0
+      secret: false
+    deprecated: false
+    execution: false
+    outputs:
+    - contextPath: Automox.Users.id
+      description: 'Identifier of user'
+      type: Number
+    - contextPath: Automox.Users.firstname
+      description: 'The first name of the user'
+      type: String
+    - contextPath: Automox.Users.lastname
+      description: 'The last name of the user'
+      type: String
+    - contextPath: Automox.Users.email
+      description: 'The email of the user'
+      type: String
+    - contextPath: Automox.Users.orgs.id
+      description: 'Identifier of organization'
+      type: Number
+    - contextPath: Automox.Users.orgs.name
+      description: 'Name of organization'
+      type: String
+    - contextPath: Automox.Users.tags
+      description: 'User tags'
+      type: String
+    - contextPath: Automox.Users.saml_enabled
+      description: 'Whether SAML has been enabled for the user'
+      type: Boolean
+    - contextPath: Automox.Users.rbac_roles.id
+      description: 'The RBAC role identifier'
+      type: Number
+    - contextPath: Automox.Users.rbac_roles.name
+      description: 'The RBAC role name'
+      type: String
+    - contextPath: Automox.Users.rbac_roles.organization_id
+      description: 'Identifier of organization'
+      type: Number
+  - name: automox-vulnerability-sync-batch-action
+    description: 'Perform an action on an Automox Vulnerability Sync batch.'
+    arguments:
+    - name: org_id
+      description: 'Organization identifier'
+      type: 'number'
+      isArray: false
+      required: false
+      default: false
+      secret: false
+    - name: batch_id
+      description: 'Batch identifier'
+      type: 'number'
+      isArray: false
+      required: true
+      default: false
+      secret: false
+    - name: action
+      description: 'Action to perform on the batch specified. Options are "accept" or "reject".'
+      auto: PREDEFINED
+      predefined:
+      - accept
+      - reject
+      isArray: false
+      required: true
+      default: false
+      secret: false
+    deprecated: false
+    execution: false
+  - name: automox-vulnerability-sync-task-action
+    description: 'Perform an action on an Automox task.'
+    arguments:
+    - name: org_id
+      description: 'Organization identifier'
+      type: 'number'
+      isArray: false
+      required: false
+      default: false
+      secret: false
+    - name: batch_id
+      description: 'Batch identifier'
+      type: 'number'
+      isArray: false
+      required: true
+      default: false
+      secret: false
+    - name: action
+      description: 'Action to perform on the batch specified. Options are "accept" or "reject".'
+      auto: PREDEFINED
+      predefined:
+      - accept
+      - reject
+      isArray: false
+      required: true
+      default: false
+      secret: false
+    deprecated: false
+    execution: false
+  - name: automox-vulnerability-sync-batch-get
+    description: 'Get details about a Vulnerability Sync batch.'
+    arguments:
+    - name: org_id
+      description: 'Organization identifier'
+      type: 'number'
+      isArray: false
+      required: false
+      default: false
+      secret: false
+    - name: batch_id
+      description: 'Batch identifier'
+      type: 'number'
+      isArray: false
+      required: true
+      default: false
+      secret: false
+    outputs:
+    - contextPath: Automox.VulnSyncBatch.id
+      description: 'Identifier of batch'
+      type: Number
+    - contextPath: Automox.VulnSyncBatch.organization_id
+      description: 'Identifier of organization'
+      type: Number
+    - contextPath: Automox.VulnSyncBatch.status
+      description: 'Status of batch'
+      type: String
+    - contextPath: Automox.VulnSyncBatch.source
+      description: 'Originating vendor of vulnerability information'
+      type: String
+    - contextPath: Automox.VulnSyncBatch.created_by.id
+      description: 'The identifier of the user who created this batch'
+      type: Number
+    - contextPath: Automox.VulnSyncBatch.created_by.firstname
+      description: 'The first name of the user who created this batch'
+      type: String
+    - contextPath: Automox.VulnSyncBatch.created_by.lastname
+      description: 'The last name of the user who created this batch'
+      type: String
+    - contextPath: Automox.VulnSyncBatch.created_by.email
+      description: 'The email of the user who created this batch'
+      type: String
+    - contextPath: Automox.VulnSyncBatch.updated_by.id
+      description: 'The identifier of the user who last updated this batch'
+      type: Number
+    - contextPath: Automox.VulnSyncBatch.updated_by.firstname
+      description: 'The first name of the user who last updated this batch'
+      type: String
+    - contextPath: Automox.VulnSyncBatch.updated_by.lastname
+      description: 'The last name of the user who last updated this batch'
+      type: String
+    - contextPath: Automox.VulnSyncBatch.updated_by.email
+      description: 'The email of the user who last updated this batch'
+      type: String
+    - contextPath: Automox.VulnSyncBatch.uploaded_at
+      description: 'Datetime of initial upload'
+      type: Date
+    - contextPath: Automox.VulnSyncBatch.task_count
+      description: 'Number of tasks related to batch'
+      type: Number
+    - contextPath: Automox.VulnSyncBatch.unknown_host_count
+      description: 'Number of hosts that are unknown within batch'
+      type: Number
+    - contextPath: Automox.VulnSyncBatch.impacted_device_count
+      description: 'Number of devices impacted by batch'
+      type: Number
+    - contextPath: Automox.VulnSyncBatch.issue_count
+      description: 'Number of issues identified with batch'
+      type: Number
+    - contextPath: Automox.VulnSyncBatch.cve_count
+      description: 'Number of CVEs impacted by batch'
+      type: Number
+  - name: automox-vulnerability-sync-batches-list
+    description: 'Get a list of Vulnerability Sync batches.'
+    arguments:
+    - name: org_id
+      description: 'Organization identifier'
+      type: 'number'
+      isArray: false
+      required: false
+      default: false
+      secret: false
+    - name: limit
+      description: 'The maximum number of results to return per page.'
+      type: 'number'
+      isArray: false
+      required: false
+      default: false
+      defaultValue: 50
+      secret: false
+    - name: page
+      description: 'The page of results to return.'
+      type: 'number'
+      isArray: false
+      required: false
+      default: false
+      defaultValue: 0
+      secret: false
+    outputs:
+    - contextPath: Automox.VulnSyncBatches.id
+      description: 'Identifier of batch'
+      type: Number
+    - contextPath: Automox.VulnSyncBatches.organization_id
+      description: 'Identifier of organization'
+      type: Number
+    - contextPath: Automox.VulnSyncBatches.status
+      description: 'Status of batch'
+      type: String
+    - contextPath: Automox.VulnSyncBatches.source
+      description: 'Source of batch'
+      type: String
+    - contextPath: Automox.VulnSyncBatches.created_by.id
+      description: 'Identifier of user who created the batch'
+      type: Number
+    - contextPath: Automox.VulnSyncBatches.created_by.firstname
+      description: 'First name of the user who created the batch'
+      type: String
+    - contextPath: Automox.VulnSyncBatches.created_by.lastname
+      description: 'Last name of the user who created the batch'
+      type: String
+    - contextPath: Automox.VulnSyncBatches.created_by.email
+      description: 'Email of the user who created the batch'
+      type: String
+    - contextPath: Automox.VulnSyncBatches.updated_by.id
+      description: 'Identifier of the user who last updated the batch'
+      type: Number
+    - contextPath: Automox.VulnSyncBatches.updated_by.firstname
+      description: 'First name of the user who last updated the batch'
+      type: String
+    - contextPath: Automox.VulnSyncBatches.updated_by.lastname
+      description: 'Last name of the user who last updated the batch'
+      type: String
+    - contextPath: Automox.VulnSyncBatches.updated_by.email
+      description: 'Email off the user who last updated the batch'
+      type: String
+    - contextPath: Automox.VulnSyncBatches.uploaded_at
+      description: 'Datetime the batch was uploaded'
+      type: Date
+    - contextPath: Automox.VulnSyncBatches.task_count
+      description: 'Number of tasks related to batch'
+      type: Number
+    - contextPath: Automox.VulnSyncBatches.unknown_host_count
+      description: 'number of hosts that are unknown within batch'
+      type: Number
+    - contextPath: Automox.VulnSyncBatches.impacted_device_count
+      description: 'Number of devices that are impacted by batch'
+      type: Number
+    - contextPath: Automox.VulnSyncBatches.issue_count
+      description: 'Number of issues identified with batch'
+      type: Number
+    - contextPath: Automox.VulnSyncBatches.cve_count
+      description: 'Number of CVEs that are impacted by batch'
+      type: Number
+  - name: automox-vulnerability-sync-tasks-list
+    description: 'Get a list of Automox tasks.'
+    arguments:
+    - name: org_id
+      description: 'Organization identifier'
+      type: 'number'
+      isArray: false
+      required: false
+      default: false
+      secret: false
+    - name: batch_id
+      description: 'Batch identifier'
+      type: 'number'
+      isArray: false
+      required: false
+      default: false
+      secret: false
+    - name: status
+      description: 'Filter by status of tasks'
+      type: 'string'
+      auto: PREDEFINED
+      predefined:
+      - pending
+      - in_progress
+      - completed
+      - canceled
+      isArray: false
+      required: false
+      default: false
+      secret: false
+    - name: limit
+      description: 'The maximum number of results to return per page.'
+      type: 'number'
+      isArray: false
+      required: false
+      default: false
+      defaultValue: 50
+      secret: false
+    - name: page
+      description: 'The page of results to return.'
+      type: 'number'
+      isArray: false
+      required: false
+      default: false
+      defaultValue: 0
+      secret: false
+    outputs:
+    - contextPath: Automox.VulnSyncTasks.id
+      description: 'Identifier of task'
+      type: Number
+    - contextPath: Automox.VulnSyncTasks.organization_id
+      description: 'Identifier of organization'
+      type: Number
+    - contextPath: Automox.VulnSyncTasks.task_type
+      description: 'Type of task'
+      type: String
+    - contextPath: Automox.VulnSyncTasks.payload.patch_id
+      description: 'Identifier of patch associated with the task'
+      type: String
+    - contextPath: Automox.VulnSyncTasks.payload.severity
+      description: 'Severity of patch associated with the task'
+      type: String
+    - contextPath: Automox.VulnSyncTasks.payload.package_versions.id
+      description: 'Identifier of package associated with the task'
+      type: String
+    - contextPath: Automox.VulnSyncTasks.payload.package_versions.name
+      description: 'Name of the package associated with the task'
+      type: String
+    - contextPath: Automox.VulnSyncTasks.payload.package_versions.version
+      description: 'Version of the package associated with the task'
+      type: String
+    - contextPath: Automox.VulnSyncTasks.payload.package_versions.display_name
+      description: 'Display name of the package associated with the task'
+      type: String
+    - contextPath: Automox.VulnSyncTasks.payload.package_versions.requires_reboot
+      description: 'Whether the package installed by the task will require a reboot'
+      type: Boolean
+    - contextPath: Automox.VulnSyncTasks.source
+      description: 'Source of task'
+      type: String
+    - contextPath: Automox.VulnSyncTasks.notes
+      description: 'Notes associated with task'
+      type: String
+    - contextPath: Automox.VulnSyncTasks.status
+      description: 'Status of task'
+      type: String
+    - contextPath: Automox.VulnSyncTasks.created_by_user.id
+      description: 'Identifier of user who created the task'
+      type: Number
+    - contextPath: Automox.VulnSyncTasks.created_by_user.email
+      description: 'Email of user who created the task'
+      type: String
+    - contextPath: Automox.VulnSyncTasks.created_by_user.firstname
+      description: 'First name of user who created the task'
+      type: String
+    - contextPath: Automox.VulnSyncTasks.created_by_user.lastname
+      description: 'Last name of user who created the task'
+      type: String
+    - contextPath: Automox.VulnSyncTasks.last_updated_by_user.id
+      description: 'Identifier of user who last updated the task'
+      type: Number
+    - contextPath: Automox.VulnSyncTasks.last_updated_by_user.email
+      description: 'Email of user who last updated the task'
+      type: String
+    - contextPath: Automox.VulnSyncTasks.last_updated_by_user.firstname
+      description: 'First name of user who last updated the task'
+      type: String
+    - contextPath: Automox.VulnSyncTasks.last_updated_by_user.lastname
+      description: 'Last name of user who last updated the task'
+      type: String
+    - contextPath: Automox.VulnSyncTasks.created_at
+      description: 'Datetime the task was created at'
+      type: Date
+    - contextPath: Automox.VulnSyncTasks.updated_at
+      description: 'Datetime the task was last updated at'
+      type: Date
+    - contextPath: Automox.VulnSyncTasks.completed_at
+      description: 'Datetime the task was completed'
+      type: Date
+  - name: automox-vulnerability-sync-file-upload
+    description: 'Upload a vulnerability report to Automox Vulnerability Sync.'
+    arguments:
+    - name: org_id
+      description: 'Organization identifier'
+      type: 'number'
+      isArray: false
+      required: false
+      default: false
+      secret: false
+    - name: entry_id
+      description: 'Entry ID of the CSV file to upload'
+      type: 'string'
+      isArray: false
+      required: true
+      default: false
+      secret: false
+    - name: csv_file_name
+      description: 'Name for CSV file uploaded and shown within Automox.'
+      type: 'string'
+      isArray: false
+      required: false
+      default: false
+      defaultValue: 'XSOAR-uploaded-report.csv'
+      secret: false
+    - name: reports_source
+      description: 'The third-party source of the vulnerability report.'
+      type: 'string'
+      isArray: false
+      required: false
+      default: false
+      defaultValue: 'Generic Report'
+      secret: false
+    - name: type
+      description: 'The type of task to create.'
+      type: 'string'
+      isArray: false
+      required: false
+      default: false
+      defaultValue: 'patch'
+      secret: false
+    deprecated: false
+    execution: false
+    outputs:
+    - contextPath: Automox.VulnUpload.batch_id
+      description: 'Identifier of batch'
+      type: Number
+  - name: automox-policies-list
+    description: 'Retrieve a list of Automox policies belonging to an organization.'
+    arguments:
+    - name: org_id
+      description: 'Organization identifier'
+      type: 'number'
+      isArray: false
+      required: false
+      default: false
+      secret: false
+    - name: limit
+      description: 'The maximum number of results to return per page.'
+      type: 'number'
+      isArray: false
+      required: false
+      default: false
+      defaultValue: 50
+      secret: false
+    - name: page
+      description: 'The page of results to return.'
+      type: 'number'
+      isArray: false
+      required: false
+      default: false
+      defaultValue: 0
+      secret: false
+    deprecated: false
+    execution: false
+    outputs:
+    - contextPath: Automox.Policies.id
+      description: 'Identifier of policy'
+      type: Number
+    - contextPath: Automox.Policies.organization_id
+      description: 'Identifier of organization'
+      type: Number
+    - contextPath: Automox.Policies.name
+      description: 'Name of policy'
+      type: String
+    - contextPath: Automox.Policies.policy_type_name
+      description: 'Policy type name'
+      type: String
+    - contextPath: Automox.Policies.server_groups
+      description: 'List of identifiers for device groups assigned to the policy'
+      type: Number
+  - name: automox-command-run
+    description: 'Run a command on a device in Automox'
+    arguments:
+    - name: org_id
+      description: 'Organization identifier'
+      type: 'number'
+      isArray: false
+      required: false
+      default: false
+      secret: false
+    - name: device_id
+      description: 'Device identifier'
+      type: 'number'
+      isArray: false
+      required: true
+      default: false
+      secret: false
+    - name: patches
+      description: 'List of patches to be installed by name. (Note: this only works with the InstallUpdate command)'
+      type: 'string'
+      isArray: true
+      required: false
+      default: false
+      secret: false
+    - name: command
+      description: 'Command to run on device'
+      type: 'String'
+      auto: PREDEFINED
+      predefined:
+      - GetOS
+      - InstallUpdate
+      - InstallAllUpdates
+      - Reboot
+      isArray: false
+      required: true
+      default: false
+      secret: false
+    deprecated: false
+    execution: false
+    outputs:
+  - name: automox-device-delete
+    description: "Delete a device from Automox"
+    arguments:
+    - name: org_id
+      description: 'Organization identifier'
+      type: 'number'
+      isArray: false
+      required: false
+      default: false
+      secret: false
+    - name: device_id
+      description: 'Device identifier'
+      type: 'number'
+      isArray: false
+      required: true
+      default: false
+      secret: false
+    deprecated: false
+    execution: false
+  - name: automox-device-update
+    description: "Update a device's information in Automox"
+    arguments:
+    - name: org_id
+      description: 'Organization identifier'
+      type: 'number'
+      isArray: false
+      required: false
+      default: false
+      secret: false
+    - name: device_id
+      description: 'Device identifier'
+      type: 'number'
+      isArray: false
+      required: true
+      default: false
+      secret: false
+    - name: custom_name
+      description: 'Custom name to set on device'
+      type: 'string'
+      isArray: false
+      required: false
+      default: false
+      secret: false
+    - name: exception
+      description: 'Exclude the device from reports and statistics'
+      type: Boolean
+      isArray: false
+      required: true
+      default: false
+      defaultValue: false
+      secret: false
+    - name: server_group_id
+      description: 'Identifier of server group'
+      type: Number
+      isArray: false
+      required: true
+      default: false
+      secret: false
+    - name: tags
+      description: 'List of tags to associate with the device'
+      type: String
+      isArray: true
+      required: false
+      default: false
+      secret: false
+    - name: ip_addrs
+      description: 'IP address of the device'
+      type: String
+      isArray: false
+      required: false
+      default: false
+      secret: false
+    deprecated: false
+    execution: false
+  - name: automox-groups-list
+    description: "List all groups in Automox based on organization permissions."
+    arguments:
+    - name: org_id
+      description: 'Organization identifier'
+      type: 'number'
+      isArray: false
+      required: false
+      default: false
+      secret: false
+    - name: limit
+      description: 'The maximum number of results to return per page.'
+      type: 'number'
+      isArray: false
+      required: false
+      default: false
+      defaultValue: 50
+      secret: false
+    - name: page
+      description: 'The page of results to return.'
+      type: 'number'
+      isArray: false
+      required: false
+      default: false
+      defaultValue: 0
+      secret: false
+    deprecated: false
+    execution: false
+    outputs:
+    - contextPath: Automox.Groups.id
+      description: 'Identifier of the created group'
+      type: Number
+    - contextPath: Automox.Groups.organization_id
+      description: 'Identifier of organization'
+      type: Number
+    - contextPath: Automox.Groups.name
+      description: 'The name of the group'
+      type: String
+    - contextPath: Automox.Groups.refresh_interval
+      description: 'Frequency of device refreshes in minutes.'
+      type: Number
+    - contextPath: Automox.Groups.parent_server_group_id
+      description: 'Identifier of parent group'
+      type: Number
+    - contextPath: Automox.Groups.ui_color
+      description: 'Automox console highlight color for the group'
+      type: String
+    - contextPath: Automox.Groups.notes
+      description: 'Notes defined for the group'
+      type: String
+    - contextPath: Automox.Groups.enable_os_auto_update
+      description: 'Enable operating system auto updates'
+      type: Boolean
+    - contextPath: Automox.Groups.server_count
+      description: 'Number of devices assigned to group'
+      type: Number
+    - contextPath: Automox.Groups.policies
+      description: 'List of policies assigned to group'
+      type: Number
+    - contextPath: Automox.Groups.deleted
+      description: 'Whether a group is deleted'
+      type: Boolean
+  - name: automox-group-create
+    description: "Create a group in Automox"
+    arguments:
+    - name: org_id
+      description: 'Organization identifier'
+      type: 'number'
+      isArray: false
+      required: false
+      default: false
+      secret: false
+    - name: name
+      description: 'Name of the group'
+      type: String
+      isArray: false
+      required: true
+      default: false
+      secret: false
+    - name: notes
+      description: 'Define notes for the group'
+      type: String
+      isArray: false
+      required: false
+      default: false
+      secret: false
+    - name: parent_server_group_id
+      description: 'Identifier of the parent group. Defaults to default group id if omitted.'
+      type: Number
+      isArray: false
+      required: false
+      default: false
+      secret: false
+    - name: policies
+      description: 'List of policy identifiers to assign to group'
+      type: Number
+      isArray: true
+      required: false
+      default: false
+      secret: false
+    - name: refresh_interval
+      description: 'Frequency of device refreshes in minutes. (Must be between 360 and 1440)'
+      type: Number
+      isArray: false
+      required: true
+      default: false
+      secret: false
+    - name: color
+      description: 'Automox console highlight color for the group. Value should be a valid Hex color code'
+      type: String
+      isArray: false
+      required: false
+      default: false
+      secret: false
+    deprecated: false
+    execution: false
+    outputs:
+    - contextPath: Automox.CreatedGroups.id
+      description: 'Identifier of the created group'
+      type: Number
+    - contextPath: Automox.CreatedGroups.organization_id
+      description: 'Identifier of organization'
+      type: Number
+    - contextPath: Automox.CreatedGroups.name
+      description: 'The name of the group'
+      type: String
+    - contextPath: Automox.CreatedGroups.refresh_interval
+      description: 'Frequency of device refreshes in minutes'
+      type: Number
+    - contextPath: Automox.CreatedGroups.parent_server_group_id
+      description: 'Identifier of parent group'
+      type: Number
+    - contextPath: Automox.CreatedGroups.ui_color
+      description: 'Automox console highlight color for the group'
+      type: String
+    - contextPath: Automox.CreatedGroups.notes
+      description: 'Notes defined for the group'
+      type: String
+    - contextPath: Automox.CreatedGroups.enable_os_auto_update
+      description: 'Enable operating system auto updates'
+      type: Boolean
+    - contextPath: Automox.CreatedGroups.server_count
+      description: 'Number of devices assigned to group'
+      type: Number
+    - contextPath: Automox.CreatedGroups.policies
+      description: 'List of policies assigned to group'
+      type: Number
+  - name: automox-group-update
+    description: "Update a group's information in Automox"
+    arguments:
+    - name: org_id
+      description: 'Organization identifier'
+      type: 'number'
+      isArray: false
+      required: false
+      default: false
+      secret: false
+    - name: group_id
+      description: 'Group identifier'
+      type: 'number'
+      isArray: false
+      required: true
+      default: false
+      secret: false
+    - name: name
+      description: 'Name of the group'
+      type: String
+      isArray: false
+      required: false
+      default: false
+      secret: false
+    - name: notes
+      description: 'Define notes for the group'
+      type: String
+      isArray: false
+      required: false
+      default: false
+      secret: false
+    - name: parent_server_group_id
+      description: 'Identifier of the parent group. Defaults to default group id if omitted.'
+      type: Number
+      isArray: false
+      required: false
+      default: false
+      secret: false
+    - name: policies
+      description: 'List of policy identifiers to assign to group'
+      type: Number
+      isArray: true
+      required: false
+      default: false
+      secret: false
+    - name: refresh_interval
+      description: 'Frequency of device refreshes in minutes'
+      type: Number
+      isArray: false
+      required: false
+      default: false
+      secret: false
+    - name: color
+      description: 'Automox console highlight color for the group. Value should be a valid Hex color code'
+      type: String
+      isArray: false
+      required: false
+      default: false
+      secret: false
+    deprecated: false
+    execution: false
+  - name: automox-group-delete
+    description: "Delete a group from Automox"
+    arguments:
+    - name: org_id
+      description: 'Organization identifier'
+      type: Number
+      isArray: false
+      required: false
+      default: false
+      secret: false
+    - name: group_id
+      description: 'Group identifier'
+      type: Number
+      isArray: false
+      required: true
+      default: false
+      secret: false
+    deprecated: false
+    execution: false
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.4.29342
+fromversion: 6.0.0
+tests:
+- No tests

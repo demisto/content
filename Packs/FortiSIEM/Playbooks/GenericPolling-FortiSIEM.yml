@@ -1,0 +1,358 @@
+id: GenericPolling-FortiSIEM
+version: -1
+name: GenericPolling-FortiSIEM
+description: This playbook executes a search query to retrieve FortiSIEM Events.  
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2dc5932f-5ccb-4f37-8e92-4fe5023bd3fa
+    type: start
+    task:
+      id: 2dc5932f-5ccb-4f37-8e92-4fe5023bd3fa
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 22df050e-c6c7-4e0a-8ada-5e2c7af7bd91
+    type: playbook
+    task:
+      id: 22df050e-c6c7-4e0a-8ada-5e2c7af7bd91
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (Optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      AdditionalPollingCommandArgNames: {}
+      AdditionalPollingCommandArgValues: {}
+      Ids:
+        simple: ${FortiSIEM.EventsSearchInit.search_id}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: search_id
+      PollingCommandName:
+        simple: fortisiem-event-search-status
+      Timeout:
+        simple: "10"
+      dt:
+        simple: FortiSIEM.EventsSearchStatus(val.percentage_status!==100).search_id
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 288368cb-2aa5-48e9-85b9-46052d108a62
+    type: title
+    task:
+      id: 288368cb-2aa5-48e9-85b9-46052d108a62
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 0043fd5c-e965-41be-8819-7881fb03b1e0
+    type: regular
+    task:
+      id: 0043fd5c-e965-41be-8819-7881fb03b1e0
+      version: -1
+      name: Initialize Search
+      description: Initiate search process on events. The events are retrieved according to a constraint determined either by the query argument or by the filtering arguments. When using filtering arguments, an 'AND' operator is used between them. If the query argument is filled, it overrides the values in the filtering arguments.
+      script: '|||fortisiem-event-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      destAction: {}
+      destDomain: {}
+      destIpAddr: {}
+      destMACAddr: {}
+      destUser: {}
+      eventId: {}
+      eventType: {}
+      extended_data: {}
+      from_time:
+        simple: ${inputs.Start time}
+      interval_in_seconds: {}
+      limit:
+        complex:
+          root: inputs.limit
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: "50"
+      page:
+        complex:
+          root: inputs.page
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: "1"
+      polling: {}
+      query:
+        simple: ${inputs.query}
+      reptDevIpAddr: {}
+      search_id: {}
+      srcDomain: {}
+      srcGeoCountry: {}
+      srcIpAddr: {}
+      srcMACAddr: {}
+      timeout_in_seconds: {}
+      to_time:
+        simple: ${inputs.To Time}
+      user: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 81eab0eb-a9f0-44ea-8695-0570dc708e24
+    type: regular
+    task:
+      id: 81eab0eb-a9f0-44ea-8695-0570dc708e24
+      version: -1
+      name: fortisiem-event-search-status
+      description: Status of search process on events.
+      script: '|||fortisiem-event-search-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      search_id:
+        simple: ${FortiSIEM.EventsSearchInit.search_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 0
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: ff7267ab-5584-4c71-89d9-2e775e1ca4ee
+    type: condition
+    task:
+      id: ff7267ab-5584-4c71-89d9-2e775e1ca4ee
+      version: -1
+      name: Fetch Completed?
+      type: condition
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "1"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: percentage_status
+            iscontext: true
+          right:
+            value:
+              simple: "100"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: b70580be-cdfd-473b-8187-407fc0fe8ddb
+    type: regular
+    task:
+      id: b70580be-cdfd-473b-8187-407fc0fe8ddb
+      version: -1
+      name: Fetch Events
+      description: The results of the specified search query.
+      script: '|||fortisiem-event-search-results'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      limit:
+        complex:
+          root: inputs.limit
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: "50"
+      page:
+        complex:
+          root: inputs.page
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: "1"
+      search_id:
+        simple: ${FortiSIEM.EventsSearchInit.search_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1245,
+        "width": 790,
+        "x": 110,
+        "y": -330
+      }
+    }
+  }
+inputs:
+- key: query
+  value: {}
+  required: false
+  description: The query for filtering the relevant events. For example, "eventId=9071234812319593968 AND eventType='type'". You can retrieve the attributes' names using the command's filtering arguments or using the event attributes returned in the context output.
+  playbookInputQuery:
+- key: limit
+  value: {}
+  required: false
+  description: The number of results to retrieve. Minimum value is 1. Default value is 50.
+  playbookInputQuery:
+- key: page
+  value: {}
+  required: false
+  description: The page number of the results to retrieve. Minimum value is 1. Default value is 1.
+  playbookInputQuery:
+- key: Start time
+  value: {}
+  required: true
+  description: Start of the time filter for events. For example, "3 days ago", "1 month", "2019-10-10T12:22:00", "2019-10-10".
+  playbookInputQuery:
+- key: To Time
+  value: {}
+  required: true
+  description: End of the time filter for events. For example, "3 days ago", "1 month", "2019-10-10T12:22:00", "2019-10-10".
+  playbookInputQuery:
+outputs:
+- contextPath: FortiSIEM.Event
+  description: The events retrieved from the search query.
+  type: unknown
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

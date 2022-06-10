@@ -12,3 +12,6 @@ ignore=PA129
 
 [file:PreprocessEmail.yml]
 ignore=SC106
+
+[known_words]
+SendEmailReply

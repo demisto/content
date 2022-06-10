@@ -10,15 +10,4 @@ Using this pack, you can monitor and prevent phishing attacks by controlling the
 - Query the following PAN-OS log types: traffic, threat, url, data-filtering, and Wildfire.
 - Manage External Dynamic Lists (EDLs).
 
-As part of this pack, you will get several playbooks to facilitate your workflows. 
-### Pack Contributors:
-
----
- - Adam Baumeister
-
-Contributions are welcome and appreciated. For more info, visit our [Contribution Guide](https://xsoar.pan.dev/docs/contributing/contributing).### Pack Contributors:
-
----
- - Adam Baumeister
-
-Contributions are welcome and appreciated. For more info, visit our [Contribution Guide](https://xsoar.pan.dev/docs/contributing/contributing).
+As part of this pack, you will get several playbooks to facilitate your workflows.

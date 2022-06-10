@@ -13,21 +13,53 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-def test_send_reply(mocker):
-    """Unit test
-        Given
-        - Raw response of an email reply.
-        When
-        - The result is a successful reply with email recipients and cc.
-        Then
-        - Validate that the successful message is returned.
-        """
-    from SendEmailReply import send_reply
+def test_validate_email_sent(mocker):
+    """
+    Given
+    - Raw response of an email reply.
+
+    When
+    - The result is a successful reply with email recipients and cc.
+
+    Then
+    - Validate that the successful message is returned.
+    """
+    from SendEmailReply import validate_email_sent
     email_reply_response = util_load_json('test_data/email_reply.json')
-    mocker.patch("SendEmailReply.send_mail_request", return_value=email_reply_response)
-    result = send_reply('123', 'email_subject', 'test1@gmail.com,test2@gmail.com', 'reply_body', 'test.onmicrosoft.com',
-                        'test3@gmail.com', 'reply_html_body', {}, 'item_id', '12345678')
-    assert "Mail sent successfully. To: test1@gmail.com,test2@gmail.com Cc: test3@gmail.com" == result
+    mocker.patch("SendEmailReply.execute_reply_mail", return_value=email_reply_response)
+    result = validate_email_sent(
+        '123',
+        'email_subject',
+        'test1@gmail.com,test2@gmail.com',
+        'reply_body',
+        'test.onmicrosoft.com',
+        'test3@gmail.com',
+        'reply_html_body',
+        {},
+        'item_id',
+        '12345678'
+    )
+    assert "Mail sent successfully to test1@gmail.com,test2@gmail.com" == result
+
+
+def test_validate_email_sent_fails(mocker):
+    """
+    Given -
+        a random error message which is returned from reply-mail executed command.
+
+    When -
+        executing the 'send_reply' function
+
+    Then -
+        an error message would be returned.
+    """
+    from SendEmailReply import validate_email_sent
+    reply_mail_error = util_load_json('test_data/reply_mail_error.json')
+    mocker.patch('SendEmailReply.execute_reply_mail', return_value=reply_mail_error)
+
+    result = validate_email_sent('', '', '', '', '', '', '', {}, '', '')
+    assert result == 'Error:\n Command reply-mail in module EWS Mail ' \
+                     'Sender requires argument inReplyTo that is missing (7)'
 
 
 GET_EMAIL_RECIPIENTS = [
@@ -82,13 +114,23 @@ def test_get_email_recipients(email_to, email_from, service_mail, mailbox, excep
 
 @pytest.mark.parametrize(
     "notes, attachments, expected_results",
-    [([{'Metadata': {'user': 'DBot'}, 'Contents': 'note1'}, {'Metadata': {'user': 'DBot'}, 'Contents': 'note2'}],
-      [{'name': 'attachment1.png'}, {'name': 'attachment2.png'}],
-      "DBot: \nnote1\n\nDBot: \nnote2\n\nAttachments: ['attachment1.png', 'attachment2.png']\n\n"),
-     ([{'Metadata': {'user': 'DBot'}, 'Contents': 'note1'}, {'Metadata': {'user': 'DBot'}, 'Contents': 'note2'}],
-      [],
-      "DBot: \nnote1\n\nDBot: \nnote2\n\n"),
-     ]
+    [
+        (
+            [{'Metadata': {'user': 'DBot'}, 'Contents': 'note1'}, {'Metadata': {'user': 'DBot'}, 'Contents': 'note2'}],
+            [{'name': 'attachment1.png'}, {'name': 'attachment2.png'}],
+            "DBot: \nnote1\n\nDBot: \nnote2\n\nAttachments: ['attachment1.png', 'attachment2.png']\n\n"
+        ),
+        (
+            [{'Metadata': {'user': 'DBot'}, 'Contents': 'note1'}, {'Metadata': {'user': 'DBot'}, 'Contents': 'note2'}],
+            [],
+            "DBot: \nnote1\n\nDBot: \nnote2\n\n"
+        ),
+        (
+            [{'Metadata': {'user': 'DBot'}, 'Contents': 'note1'}, {'Metadata': {'user': 'DBot'}, 'Contents': 'note2'}],
+            "[]",
+            "DBot: \nnote1\n\nDBot: \nnote2\n\n"
+        )
+    ]
 )
 def test_get_reply_body(mocker, notes, attachments, expected_results):
     """Unit test

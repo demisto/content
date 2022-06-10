@@ -346,7 +346,7 @@ def test_create_single_asset_for_offense_enrichment():
                            None,
                            None,
                            None,
-                           ([], "DemistoException('error occurred', None) \nSee logs for further details."))
+                           ([], "DemistoException('error occurred', None, None) \nSee logs for further details."))
                           ])
 def test_poll_offense_events_with_retry(requests_mock, status_exception, status_response, results_response, search_id,
                                         expected):
@@ -878,43 +878,6 @@ def test_get_modified_remote_data_command(mocker):
     mocker.patch.object(client, 'offenses_list', return_value=command_test_data['get_modified_remote_data']['response'])
     result = get_modified_remote_data_command(client, dict(), command_test_data['get_modified_remote_data']['args'])
     assert expected.modified_incident_ids == result.modified_incident_ids
-
-
-@pytest.mark.parametrize('params, args, expected',
-                         [
-                             (dict(), {'lastUpdate': 1613399051537,
-                                       'id': command_test_data['get_remote_data']['response']['id']},
-                              GetRemoteDataResponse(
-                                  {'id': command_test_data['get_remote_data']['response']['id'],
-                                   'mirroring_events_message': 'Nothing new in the ticket.'},
-                                  [])),
-                             (dict(), {'lastUpdate': 1613399051535,
-                                       'id': command_test_data['get_remote_data']['response']['id']},
-                              GetRemoteDataResponse(
-                                  sanitize_outputs(command_test_data['get_remote_data']['enrich_offenses_result'])[0],
-                                  []))
-                         ])
-def test_get_remote_data_command_pre_6_1(mocker, params, args, expected: GetRemoteDataResponse):
-    """
-    Given:
-     - QRadar client.
-     - Demisto arguments.
-
-    When:
-     - Command 'get-get-remote-data' is being called.
-
-    Then:
-     - Ensure that command outputs the IDs of the offenses to update.
-    """
-    set_to_integration_context_with_retries(dict())
-    enriched_response = command_test_data['get_remote_data']['enrich_offenses_result']
-    mocker.patch.object(client, 'offenses_list', return_value=command_test_data['get_remote_data']['response'])
-    mocker.patch.object(QRadar_v3, 'enrich_offenses_result', return_value=enriched_response)
-    result = get_remote_data_command(client, params, args)
-    if expected.mirrored_object.get('last_mirror_in_time'):
-        expected.mirrored_object['last_mirror_in_time'] = result.mirrored_object['last_mirror_in_time']
-    assert result.mirrored_object == expected.mirrored_object
-    assert result.entries == expected.entries
 
 
 @pytest.mark.parametrize('params, offense, enriched_offense, note_response, expected',

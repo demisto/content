@@ -1,0 +1,44 @@
+{
+    "name": "Automox",
+    "description": "This pack empowers you with comprehensive solutions to manage your Automox device fleet with ease!",
+    "support": "partner",
+    "currentVersion": "1.0.1",
+    "author": "Automox Inc.",
+    "url": "https://www.automox.com/",
+    "email": "support@automox.com",
+    "categories": [
+        "Endpoint",
+        "Vulnerability Management"
+    ],
+    "tags": [
+        "IT",
+        "Network",
+        "Security",
+        "Use Case",
+        "New"
+    ],
+    "useCases": [
+        "IT Services",
+        "Vulnerability Management"
+    ],
+    "keywords": [
+        "Automox",
+        "Patch",
+        "Endpoint",
+        "Vulnerability",
+        "CVE"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "dependencies": {
+        "CommonPlaybooks": {
+            "mandatory": true,
+            "display_name": "Common Playbooks"
+        }
+    },
+    "displayedImages": [
+        "CommonPlaybooks"
+    ]
+}

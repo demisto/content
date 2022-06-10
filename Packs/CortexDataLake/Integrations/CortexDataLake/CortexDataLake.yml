@@ -33,6 +33,17 @@ configuration:
   options:
   - firewall.threat
   - firewall.file_data
+  - firewall.auth
+  - firewall.decryption
+  - firewall.extpcap
+  - firewall.globalprotect
+  - firewall.hipmatch
+  - firewall.iptag
+  - firewall.traffic
+  - firewall.url
+  - firewall.userid
+  - log.system
+  - log.config
   required: false
   type: 15
 - display: Severity of events to fetch (Firewall)
@@ -87,6 +98,14 @@ configuration:
   display: Fetch Fields
   hidden: false
   name: fetch_fields
+  required: false
+  type: 12
+- additionalinfo: 'Filter the fetched incidents according to the given query. Query
+    example: "source_ip.value LIKE `192.168.1.*` AND dst = `192.168.1.12`" Note: Can
+    not be used in combination with `Severity` and `Subtype` parameters.'
+  display: Fetch Filter
+  hidden: false
+  name: filter_query
   required: false
   type: 12
 - display: Incident type
@@ -2584,11 +2603,11 @@ script:
       description: Identifies the origin of the data (the system that produced the
         data.
       type: String
-  - name: cdl-reset-authentication-timeout
-    deprecated: false
+  - deprecated: false
     description: Use this command in case your authentication calls fail due to internal
       call-limit, the command will reset the limit cache.
     execution: false
+    name: cdl-reset-authentication-timeout
   dockerimage: demisto/python_pancloud_v2:1.0.0.23674
   feed: false
   isfetch: true
