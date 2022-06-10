@@ -2,8 +2,9 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from gdetect.api import status_msg, Client as gClient
+from gdetect.api import status_msg, Client as gClient, logger as gLogger
 from gdetect.exceptions import *
+import logging
 ''' IMPORTS '''
 
 from copy import copy
@@ -21,6 +22,7 @@ class Client(BaseClient):
 
     def __init__(self, base_url: str, api_token: str, verify: bool, proxy: bool):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
+        gLogger.setLevel(logging.CRITICAL)
         self.gclient = gClient(url=self._base_url, token=api_token)
         self.gclient.verify = not self._verify
 
