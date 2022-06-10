@@ -23,8 +23,14 @@ from py42.sdk.queries.fileevents.filters import (
     EventType,
     FileCategory,
 )
+from py42.sdk.queries.fileevents.util import FileEventFilterStringField
 from py42.sdk.queries.alerts.alert_query import AlertQuery
 from py42.sdk.queries.alerts.filters import DateObserved, Severity, AlertState
+
+
+class EventId(FileEventFilterStringField):
+    _term = "eventId"
+
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -259,11 +265,11 @@ class Code42Client(BaseClient):
         return res.data.get("alerts")
 
     def get_alert_details(self, alert_id):
-        py42_res = self.sdk.alerts.get_details(alert_id)
-        res = py42_res.data.get("alerts")
+        py42_res = self.sdk.alerts.get_aggregate_data(alert_id)
+        res = py42_res.data.get("alert")
         if not res:
             raise Code42AlertNotFoundError(alert_id)
-        return res[0]
+        return res
 
     def resolve_alert(self, id):
         self.sdk.alerts.resolve(id)
@@ -555,117 +561,6 @@ def get_file_category_value(key):
         "archive": FileCategory.ZIP,
     }
     return category_map.get(key, "UNCATEGORIZED")
-
-
-class ObservationToSecurityQueryMapper(object):
-    """Class to simplify the process of mapping observation data to query objects."""
-
-    # Exfiltration consts
-    _ENDPOINT_TYPE = "FedEndpointExfiltration"
-    _CLOUD_TYPE = "FedCloudSharePermissions"
-
-    # Query consts
-    _PUBLIC_SEARCHABLE = "PublicSearchableShare"
-    _PUBLIC_LINK = "PublicLinkShare"
-    _OUTSIDE_TRUSTED_DOMAINS = "SharedOutsideTrustedDomain"
-
-    exposure_type_map = {
-        "PublicSearchableShare": ExposureType.IS_PUBLIC,
-        "PublicLinkShare": ExposureType.SHARED_VIA_LINK,
-        "SharedOutsideTrustedDomain": ExposureType.OUTSIDE_TRUSTED_DOMAINS,
-    }
-
-    def __init__(self, observation, actor):
-        self._obs = observation
-        self._actor = actor
-
-    @property
-    def _observation_data(self):
-        return self._obs.get("data")
-
-    @property
-    def _exfiltration_type(self):
-        return self._obs.get("type")
-
-    @property
-    def _is_endpoint_exfiltration(self):
-        return self._exfiltration_type == self._ENDPOINT_TYPE
-
-    @property
-    def _is_cloud_exfiltration(self):
-        return self._exfiltration_type == self._CLOUD_TYPE
-
-    def _create_user_filter(self):
-        return (
-            DeviceUsername.eq(self._actor)
-            if self._is_endpoint_exfiltration
-            else Actor.eq(self._actor)
-        )
-
-    def map(self):
-        search_args = self._create_search_args()
-        query = search_args.to_all_query()
-        LOG("Alert Observation Query: {}".format(query))
-        return query
-
-    def _create_search_args(self):
-        filters = FileEventQueryFilters()
-        exposure_types = self._observation_data.get("exposureTypes")
-        first_activity = self._observation_data.get("firstActivityAt")
-        last_activity = self._observation_data.get("lastActivityAt")
-        filters.append(self._create_user_filter())
-        if first_activity:
-            begin_time = _convert_date_arg_to_epoch(first_activity)
-            if begin_time:
-                filters.append(EventTimestamp.on_or_after(begin_time))
-        if last_activity:
-            end_time = _convert_date_arg_to_epoch(last_activity)
-            if end_time:
-                filters.append(EventTimestamp.on_or_before(end_time))
-        filters.extend(self._create_exposure_filters(exposure_types))
-        filters.append(self._create_file_category_filters())
-        return filters
-
-    @logger
-    def _create_exposure_filters(self, exposure_types):
-        """Determine exposure types based on alert type"""
-        exp_types = []
-        if self._is_cloud_exfiltration:
-            for t in exposure_types:
-                exp_type = self.exposure_type_map.get(t)
-                if exp_type:
-                    exp_types.append(exp_type)
-                else:
-                    LOG("Received unsupported exposure type {0}.".format(t))
-            if exp_types:
-                return [ExposureType.is_in(exp_types)]
-            else:
-                # If not given a support exposure type, search for all unsupported exposure types
-                supported_exp_types = list(self.exposure_type_map.values())
-                return [ExposureType.not_in(supported_exp_types)]
-        elif self._is_endpoint_exfiltration:
-            return [
-                EventType.is_in([EventType.CREATED, EventType.MODIFIED, EventType.READ_BY_APP]),
-                ExposureType.is_in(exposure_types),
-            ]
-        return []
-
-    def _create_file_category_filters(self):
-        """Determine if file categorization is significant"""
-        observed_file_categories = self._observation_data.get("fileCategories")
-        if observed_file_categories:
-            categories = [
-                get_file_category_value(c.get("category"))
-                for c in observed_file_categories
-                if c.get("isSignificant") and c.get("category")
-            ]
-            if categories:
-                return FileCategory.is_in(categories)
-
-
-def map_observation_to_security_query(observation, actor):
-    mapper = ObservationToSecurityQueryMapper(observation, actor)
-    return mapper.map()
 
 
 def _convert_date_arg_to_epoch(date_arg):
@@ -1321,6 +1216,7 @@ class Code42SecurityIncidentFetcher(object):
     def _create_incident_from_alert(self, alert):
         details = self._client.get_alert_details(alert.get("id"))
         details["alertId"] = alert.get("id")
+        self._format_summary(details)
         incident = {"name": "Code42 - {}".format(details.get("name")), "occurred": details.get("createdAt")}
         if self._include_files:
             details = self._relate_files_to_alert(details)
@@ -1331,15 +1227,27 @@ class Code42SecurityIncidentFetcher(object):
         observations = alert_details.get("observations")
         if not observations:
             alert_details["fileevents"] = []
-            return
-        for obs in observations:
-            file_events = self._get_file_events_from_alert_details(obs, alert_details)
-            alert_details["fileevents"] = [_process_event_from_observation(e) for e in file_events]
+            return alert_details
+        event_ids = []
+        for o in observations:
+            data = json.loads(o["data"])
+            files = data.get("files")
+            if files:
+                for file in files:
+                    event_ids.append(file["eventId"])
+        query = FileEventQuery(EventId.is_in(event_ids))
+        events = self._client.search_file_events(query)
+        alert_details["fileevents"] = [_process_event_from_observation(e) for e in events]
         return alert_details
 
-    def _get_file_events_from_alert_details(self, observation, alert_details):
-        security_data_query = map_observation_to_security_query(observation, alert_details.get("actor"))
-        return self._client.search_file_events(security_data_query)
+    def _format_summary(self, alert_details):
+        summary = alert_details["riskSeveritySummary"]
+        string_list = []
+        for s in summary:
+            string_list.append(f"{s['numEvents']} {s['severity']} events:")
+            for indicator in s["summarizedRiskIndicators"]:
+                string_list.append(f"\t- {indicator['numEvents']} {indicator['name']}")
+        alert_details["risksummary"] = "\n".join(string_list)
 
 
 def fetch_incidents(

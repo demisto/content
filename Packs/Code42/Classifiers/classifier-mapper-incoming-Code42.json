@@ -103,7 +103,21 @@
 							}
 						]
 					}
-				}
+				},
+              "Code42 Alert Risk Severity Summary": {
+                  "complex": {
+                      "filters": [],
+                      "root": "risksummary",
+                      "transformers": []
+                    }
+              },
+              "Code42 Alert URL": {
+                  "complex": {
+                      "filters": [],
+                      "root": "alertUrl",
+                      "transformers": []
+                  }
+              }
             }
         }
     },
