@@ -869,7 +869,7 @@ script:
       - contextPath: Code42.WatchlistUsers.AddedTime
         description: The datetime the user was added to the watchlist.
         type: datetime
-  dockerimage: demisto/py42:1.0.0.30372
+  dockerimage: demisto/py42:1.0.0.30634
   feed: false
   isfetch: true
   longRunning: false
