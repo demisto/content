@@ -1232,6 +1232,9 @@ class Code42SecurityIncidentFetcher(object):
             if files:
                 for file in files:
                     event_ids.append(file["eventId"])
+        if not event_ids:
+            alert_details["fileevents"] = []
+            return alert_details
         query = FileEventQuery(EventId.is_in(event_ids))
         events = self._client.search_file_events(query)
         alert_details["fileevents"] = [_process_event_from_observation(e) for e in events]
