@@ -34,6 +34,7 @@ class Client(BaseClient):
             self.use_ssl = use_ssl
 
             self.atlassian_client = AtlassianClient(
+                base_url=self.base_url,
                 access_token=access_token,
                 api_token=api_token,
                 username=username,

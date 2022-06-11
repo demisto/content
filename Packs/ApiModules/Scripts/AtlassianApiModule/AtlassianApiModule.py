@@ -6,7 +6,7 @@ from requests_oauthlib import OAuth1
 
 class AtlassianClient(BaseClient):
 
-    def __init__(self, access_token: str = '', api_token: str = '', username: str = '',
+    def __init__(self, base_url: str, access_token: str = '', api_token: str = '', username: str = '',
                  password: str = '', consumer_key: str = '', private_key: str = '', headers: dict = {}):
         """
         ServiceNow Client class. The class can use either basic authorization with username and password, or OAuth2.
@@ -51,7 +51,7 @@ class AtlassianClient(BaseClient):
                 '- Personal Access Tokens requires AccessToken'
             )
         self.headers = headers
-        super().__init__(headers=self.headers, auth=self.auth)
+        super().__init__(base_url=base_url, headers=self.headers, auth=self.auth)
 
     def get_auth(self):
         return self.auth
