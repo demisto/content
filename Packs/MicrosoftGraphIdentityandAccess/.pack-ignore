@@ -1,0 +1,11 @@
+[known_words]
+msgraph-identity-ip-named-locations-get
+msgraph-identity-ip-named-locations-list
+msgraph-identity-ip-named-locations-update
+msgraph-identity-ip-named-locations-create
+msgraph-identity-ip-named-locations-delete
+msgraph-identity-protection-risky-user-list
+msgraph-identity-protection-risky-user-history-list
+msgraph-identity-protection-risky-user-dismiss
+msgraph-identity-protection-risky-user-confirm-compromised
+msgraph-identity-protection-risks-list
