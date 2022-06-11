@@ -453,6 +453,9 @@ def get_email_recipients(email_to, email_from, service_mail, mailbox):
     email_to = argToList(email_to)
     email_to_set = email_to_set.union(set(email_to))
 
+    # Remove any empty values resulting from any arguments receiving an empty string
+    email_to_set = list(filter(lambda item: item, email_to_set))
+
     recipient_to_remove = ''
     address_to_remove = mailbox if mailbox else service_mail
     if address_to_remove:
