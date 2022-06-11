@@ -81,13 +81,13 @@ def test_detection_to_incident(incident, expected):
 def test_build_filter(last_fetch, expected):
     """
     Given:
-    -   A date to convert to Azure format.
+    -   A date to set a filter by.
 
     When:
-    -  Converting the date value.
+    -  Doing an odata query.
 
     Then:
-    - Ensure that the date is what we expected.
+    - Ensure that the filter is what we expected.
     """
 
     assert MicrosoftGraphIdentityandAccess.build_filter(last_fetch, {}) == expected
