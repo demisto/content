@@ -393,6 +393,13 @@ Lists an ip named locations.
 | odata_query       | An odata query to send to the api. | Optional     |
 
 
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| -- | --- | --- |
+| MSGraph.conditionalAccess.namedIpLocations.ip_named_locations | Array | List of ip named locations. |
+
+
 #### Command Example
 ```!msgraph-identity-ip-named-locations-list```
 
@@ -418,6 +425,36 @@ Retrieve the properties of a collection of riskDetection objects.
 | limit | Number of results to provide. Default is 50. | Optional | 
 | next_link | A link that specifies a starting point for subsequent calls. Using this argument overrides all other arguments. | Optional | 
 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| "MSGraph.identityProtection.risks.id | string | Unique ID of the risk detection. | 
+| "MSGraph.identityProtection.risks.requestId | string | The ID of the sign-in associated with the risk detection. This property is null if the risk detection is not associated with a sign-in. | 
+| "MSGraph.identityProtection.risks.correlationId | string | Correlation ID of the sign-in associated with the risk detection. This property is null if the risk detection is not associated with a sign-in. | 
+| "MSGraph.identityProtection.risks.riskEventType | string | The type of risk event detected. The possible values are unlikelyTravel, anonymizedIPAddress, maliciousIPAddress, unfamiliarFeatures, malwareInfectedIPAddress, suspiciousIPAddress, leakedCredentials, investigationsThreatIntelligence, generic,adminConfirmedUserCompromised, mcasImpossibleTravel, mcasSuspiciousInboxManipulationRules, investigationsThreatIntelligenceSigninLinked, maliciousIPAddressValidCredentialsBlockedIP, and unknownFutureValue. | 
+| "MSGraph.identityProtection.risks.riskType | string | Deprecated. Use riskEventType instead. List of risk event types. | 
+| "MSGraph.identityProtection.risks.riskLevel | string | Risk level of the detected risky user. The possible values are low, medium, high, hidden, none, and unknownFutureValue. | 
+| "MSGraph.identityProtection.risks.riskstate | string | State of the user's risk. The possible values are none, confirmedSafe, remediated, dismissed, atRisk, confirmedCompromised, and unknownFutureValue. | 
+| "MSGraph.identityProtection.risks.riskDetail | string | Reason why the user is considered a risky user. The possible values are limited to none, adminGeneratedTemporaryPassword, userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, and unknownFutureValue. | 
+| "MSGraph.identityProtection.risks.source | string | Source of the risk detection. For example, `activeDirectory`. | 
+| "MSGraph.identityProtection.risks.detectionTimingType | string | Timing of the detected risk \(real-time/offline\). The possible values are notDefined, realtime, nearRealtime, offline, and unknownFutureValue. | 
+| "MSGraph.identityProtection.risks.activity | string | Indicates the activity type the detected risk is linked to. The possible values are signin, user, and unknownFutureValue. | 
+| "MSGraph.identityProtection.risks.tokenIssuerType | string | Indicates the type of token issuer for the detected sign-in risk. The possible values are AzureAD, ADFederationServices, and unknownFutureValue. | 
+| "MSGraph.identityProtection.risks.ipAddress | string | Provides the IP address of the client from where the risk occurred. | 
+| "MSGraph.identityProtection.risks.location.city | string | City of the sign-in. | 
+| "MSGraph.identityProtection.risks.location.countryOrRegion | string | Country or region of the sign-in. | 
+| "MSGraph.identityProtection.risks.location.geoCoordinates.latitude | string | Latitude of the sign-in. | 
+| "MSGraph.identityProtection.risks.location.geoCoordinates.longitude | string | Longitude of the sign-in. | 
+| "MSGraph.identityProtection.risks.location.state | string | State of the sign-in. | 
+| "MSGraph.identityProtection.risks.activityDateTime | string | Date and time that the risky activity occurred. The DateTimeOffset type represents date and time information using the ISO 8601 format and is always in UTC time. | 
+| "MSGraph.identityProtection.risks.detectedDateTime | string | Date and time that the risk was detected. The DateTimeOffset type represents date and time information using the ISO 8601 format and is always in UTC time. | 
+| "MSGraph.identityProtection.risks.lastUpdatedDateTime | string | Date and time that the risk detection was last updated. The DateTimeOffset type represents date and time information using the ISO 8601 format and is always in UTC time. | 
+| "MSGraph.identityProtection.risks.userId | string | Unique ID of the user. | 
+| "MSGraph.identityProtection.risks.userDisplayName | string | Risky user display name. | 
+| "MSGraph.identityProtection.risks.userPrincipalName | string | Risky user principal name. | 
+| "MSGraph.identityProtection.risks.additionalInfo | string | Additional information associated with the risk detection in JSON format. | 
 
 
 #### Command Example
@@ -532,6 +569,20 @@ Retrieves the properties of a collection of riskDetection objects.
 | user_name | Risky user principal name. | Optional | 
 
 
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| "MSGraph.identityProtection.risksky-users.id | string | Unique ID of the risky user. | 
+| "MSGraph.identityProtection.risksky-users.isDeleted | Boolean | Indicates whether the user is deleted. | 
+| "MSGraph.identityProtection.risksky-users.isProcessing | Boolean | Indicates whether a user's risky state is being processed by the backend. | 
+| "MSGraph.identityProtection.risksky-users.riskLastUpdatedDateTime | DateTime | The date and time that the risky user was last updated. The DateTimeOffset type represents date and time information using the ISO 8601 format and is always in UTC time. | 
+| "MSGraph.identityProtection.risksky-users.riskLevel | string | Risk level of the detected risky user. The possible values are low, medium, high, hidden, none, and unknownFutureValue. | 
+| "MSGraph.identityProtection.risksky-users.riskstate | string | State of the user's risk. The possible values are none, confirmedSafe, remediated, dismissed, atRisk, confirmedCompromised, and unknownFutureValue. | 
+| "MSGraph.identityProtection.risksky-users.riskDetail | string | Reason why the user is considered a risky user. The possible values are limited to none, adminGeneratedTemporaryPassword, userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, and unknownFutureValue. | 
+| "MSGraph.identityProtection.risksky-users.userDisplayName | string | Risky user display name. | 
+| "MSGraph.identityProtection.risksky-users.userPrincipalName | string | Risky user principal name. | 
+
 
 #### Command Example
 ```!msgraph-identity-protection-risky-user-list```
@@ -539,7 +590,7 @@ Retrieves the properties of a collection of riskDetection objects.
 #### Context Example
 ```json
 {
-    ""msgraph-identity-protection": {
+    ""MSGraph.identityProtection": {
         "risksky-users": [
           {
                 "id": "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2",
@@ -586,10 +637,55 @@ Gets the risk history of a riskyUser resource.
 | next_link | A link that specifies a starting point for subsequent calls. Using this argument overrides all other arguments. | Optional | 
 
 
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| "MSGraph.identityProtection.RiskyUserHistory.id | string | Unique ID of the risky user. | 
+| "MSGraph.identityProtection.RiskyUserHistory.isDeleted | Boolean | Indicates whether the user is deleted. | 
+| "MSGraph.identityProtection.RiskyUserHistory.isProcessing | Boolean | Indicates whether a user's risky state is being processed by the backend. | 
+| "MSGraph.identityProtection.RiskyUserHistory.riskLastUpdatedDateTime | DateTime | The date and time that the risky user was last updated. The DateTimeOffset type represents date and time information using the ISO 8601 format and is always in UTC time. | 
+| "MSGraph.identityProtection.RiskyUserHistory.riskLevel | string | Risk level of the detected risky user. The possible values are low, medium, high, hidden, none, and unknownFutureValue. | 
+| "MSGraph.identityProtection.RiskyUserHistory.riskstate | string | State of the user's risk. The possible values are none, confirmedSafe, remediated, dismissed, atRisk, confirmedCompromised, and unknownFutureValue. | 
+| "MSGraph.identityProtection.RiskyUserHistory.riskDetail | string | Reason why the user is considered a risky user. The possible values are limited to none, adminGeneratedTemporaryPassword, userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, and unknownFutureValue. | 
+| "MSGraph.identityProtection.RiskyUserHistory.userDisplayName | string | Risky user display name. | 
+| "MSGraph.identityProtection.RiskyUserHistory.userPrincipalName | string | Risky user principal name. | 
+
 
 #### Command Example
 ```!msgraph-identity-protection-risky-user-history-list user_id="3fa9f28b-eb0e-463a-ba7b-8089fe9991e2"```
 
+#### Context Example
+```json
+{
+    ""MSGraph.identityProtection": {
+        "RiskyUserHistory": [
+            {
+                "activity": {
+                    "detail": null,
+                    "eventTypes": [
+                        "unfamiliarFeatures"
+                    ],
+                    "riskEventTypes": [
+                        "unfamiliarFeatures"
+                    ]
+                },
+                "id": "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2637571860258849619",
+                "initiatedBy": null,
+                "isDeleted": false,
+                "isProcessing": false,
+                "riskDetail": "none",
+                "riskLastUpdatedDateTime": "2021-05-21T09:27:05.8849619Z",
+                "riskLevel": "high",
+                "riskstate": "atRisk",
+                "userDisplayName": "John Doe",
+                "userId": "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2",
+                "userPrincipalName": "jdoe@example.com"
+            }
+        ]
+    }
+}
+```
 
 #### Human Readable Output
 
@@ -627,8 +723,12 @@ Confirms one or more riskyUser objects as compromised. This action sets the targ
 | user_ids | One or more user IDs, comma-separated. | Required | 
 
 
+#### Context Output
+
+There is no context output for this command.
+
 #### Command Example
-```!msgraph-identity-protection-risky-user-confirm-compromised user_ids="3fa9f28b-eb0e-463a-ba7b-8089fe9991e3"```
+```!MSGraph.identityProtection-risky-user-confirm-compromised user_ids="3fa9f28b-eb0e-463a-ba7b-8089fe9991e3"```
 
 #### Human Readable Output
 
@@ -650,6 +750,10 @@ Dismisses the risk of one or more riskyUser objects. This action sets the target
 | --- | --- | --- |
 | user_ids | One or more user IDs, comma-separated. | Required | 
 
+
+#### Context Output
+
+There is no context output for this command.
 
 #### Command Example
 ```!c user_ids="3fa9f28b-eb0e-463a-ba7b-8089fe9991e2"```
