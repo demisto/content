@@ -578,7 +578,7 @@ def azure_ad_identity_protection_risky_users_dismiss_command(ms_client: Client, 
         return CommandResults(readable_output=f"Could not dismiss {str(user_ids)}:\n{e}")
 
 
-def ip_named_location_delete(ms_client: Client, args: dict) -> CommandResults:  # pragma: no cover  # noqa
+def ip_named_location_delete(ms_client: Client, args: dict) -> CommandResults:  # pragma: no cover
     ip_id = args.get('ip_id')
     if results := ms_client.delete_ip_named_location(ip_id):  # type: ignore
         return CommandResults(
@@ -810,8 +810,7 @@ def detection_to_incident(detection: dict, detection_date: str) -> dict:
     return incident
 
 
-def detections_to_incidents(detections: List[Dict[str, str]], last_fetch_datetime: str) -> \
-        Tuple[List[Dict[str, str]], str]:
+def detections_to_incidents(detections: List[Dict[str, str]], last_fetch_datetime: str) -> Tuple[List[Dict[str, str]], str]:  # pragma: no cover  # noqa
     """
     Given the detections retrieved from Azure Identity Protection, transforms their data to incidents format.
     """
@@ -840,7 +839,7 @@ def build_filter(last_fetch: datetime, params: dict) -> str:
     return query_filter
 
 
-def fetch_incidents(client: Client, params: Dict[str, str]):
+def fetch_incidents(client: Client, params: Dict[str, str]):  # pragma: no cover
     last_run: Dict[str, str] = demisto.getLastRun()
     demisto.debug(f'[AzureIdentityProtection] last run: {last_run}')
 
