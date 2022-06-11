@@ -646,7 +646,7 @@ Fetches all indicators that have a tag.
 | --- | --- | --- |
 | tag | The name of the tag by which to filter. | Required | 
 | owner | A list of indicators filtered by the owner. | Optional | 
-
+|limit | The limit of the indicators that will be available in the raw response. Default value is 100. NOTICE: In the context you will be able to see up to 100 indicators.'| Optional |
 
 #### Context Output
 
