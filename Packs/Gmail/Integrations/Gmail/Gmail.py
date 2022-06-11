@@ -1100,6 +1100,8 @@ def search_all_mailboxes():
                 futures.append(executor.submit(search_command, mailbox=user['primaryEmail']))
             entries = [future.result() for future in concurrent.futures.as_completed(futures)]
 
+        if receive_only_accounts:
+            demisto.results(entries)
         # if these are the final result push - return them
         if users_next_page_token is None:
             entries.append("Search completed")
@@ -1134,13 +1136,22 @@ def search_command(mailbox=None):
     has_attachments = args.get('has-attachments')
     has_attachments = None if has_attachments is None else bool(
         strtobool(has_attachments))
+    receive_only_accounts = argToBoolean(args.get('receive_only_accounts', 'false'))
 
     if max_results > 500:
         raise ValueError(
             'maxResults must be lower than 500, got %s' % (max_results,))
 
-    mails, q = search(user_id, subject, _from, to, before, after, filename, _in, query,
-                      fields, label_ids, max_results, page_token, include_spam_trash, has_attachments)
+    mails, q = search(user_id, subject, _from, to,
+                      before, after, filename, _in, query,
+                      fields, label_ids, max_results, page_token,
+                      include_spam_trash, has_attachments, receive_only_accounts)
+
+    # In case the user wants only account list without content.
+    if receive_only_accounts:
+        if mails:
+            return {'Mailbox': mailbox, 'q': q}
+        return {'Mailbox': None, 'q': q}
 
     res = emails_to_entry('Search in {}:\nquery: "{}"'.format(mailbox, q), mails, 'full', mailbox)
     return res
@@ -1148,7 +1159,7 @@ def search_command(mailbox=None):
 
 def search(user_id, subject='', _from='', to='', before='', after='', filename='', _in='', query='',
            fields=None, label_ids=None, max_results=100, page_token=None, include_spam_trash=False,
-           has_attachments=None):
+           has_attachments=None, receive_only_accounts=None):
     query_values = {
         'subject': subject,
         'from': _from,
@@ -1185,6 +1196,10 @@ def search(user_id, subject='', _from='', to='', before='', after='', filename='
             result = {}
         else:
             raise
+
+    # In case the user wants only account list without content.
+    if receive_only_accounts and result.get('sizeEstimate') > 0:
+        return True, q
 
     entries = [get_mail(user_id=user_id,
                         _id=mail['id'],
