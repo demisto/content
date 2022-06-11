@@ -182,3 +182,11 @@ AttackPattern
 ParsesUUID
 UUID
 Deprecated
+Atlassian
+OAuth1
+AtlassianClient
+noqa
+Jira
+blogpost
+CQL
+CSV

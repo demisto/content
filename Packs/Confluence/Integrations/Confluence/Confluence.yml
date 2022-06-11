@@ -11,6 +11,18 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
+#- display: Username (Basic Authentication)
+#  name: username
+#  required: false
+#  type: 0
+#- display: Password (Deprecated - Use API token)
+#  name: password
+#  required: false
+#  type: 4
+#- displaypassword: API token (Recommended)
+#  name: credentials
+#  required: false
+#  type: 9
 - display: Username
   name: credentials
   defaultvalue: ""
