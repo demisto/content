@@ -179,3 +179,6 @@ DNS
 XDR
 CommandRunner
 AttackPattern
+ParsesUUID
+UUID
+Deprecated
