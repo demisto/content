@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: Rasterize test
+  id: Rasterize
   version: -1
 configuration:
 - defaultvalue: 'false'
@@ -27,8 +27,8 @@ configuration:
   required: false
   type: 8
 description: Converts URLs, PDF files, and emails to an image file or PDF file.
-display: Rasterize test
-name: Rasterize test
+display: Rasterize
+name: Rasterize
 script:
   commands:
   - arguments:
