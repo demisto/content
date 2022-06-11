@@ -8,24 +8,9 @@ import json
 
 requests.packages.urllib3.disable_warnings()
 
-"""
-GLOBAL VARIABLES
-"""
-
-SERVER = demisto.params()['url'][:-1] if demisto.params()['url'].endswith('/') else demisto.params()['url']
-BASE_URL = SERVER + '/rest/api'
-VERIFY_CERTIFICATE = not demisto.params().get('unsecure', False)
-
-# Support Credentials
-USERNAME = demisto.params()['credentials']['identifier']
-PASSWORD = demisto.params()['credentials']['password']
-HEADERS = {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json'
-}
-
 
 class Client(BaseClient):
+
     def __init__(self, base_url, api_token: str, access_token: str, username: str, password: str,
                  consumer_key: str, private_key: str, headers: dict, use_ssl: bool):
         try:
@@ -36,7 +21,7 @@ class Client(BaseClient):
                 access_token=access_token,
                 api_token=api_token,
                 username=username,
-                password=api_token,
+                password=password,
                 consumer_key=consumer_key,
                 private_key=private_key,
                 headers=headers

@@ -51,6 +51,8 @@ class AtlassianClient(BaseClient):
                 '- Personal Access Tokens requires AccessToken'
             )
         self.headers = headers
+        super().__init__(base_url=self.base_url, verify=self.use_ssl, headers=self.headers,
+                         auth=self.auth)
 
     def get_auth(self):
         return self.auth
