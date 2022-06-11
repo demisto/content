@@ -343,6 +343,24 @@ def create_incident_labels(parsed_msg, headers):
     return labels
 
 
+def mailboxes_to_entry(mailboxes):
+
+    query = "Query: {}".format(mailboxes[0].get('q') if mailboxes else '')
+    result = [{"Mailbox": user['Mailbox']} for user in mailboxes if user.get('Mailbox')]
+    
+    return {
+        'ContentsFormat': formats['json'],
+        'Type': entryTypes['note'],
+        'Contents': mailboxes,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown(query, result, headers=['Mailbox'], removeNull=True),
+        'EntryContext': {
+            'Gmail(val.ID && val.ID == obj.ID)': result,
+            'Email(val.ID && val.ID == obj.ID)': result
+        }
+    }
+
+
 def emails_to_entry(title, raw_emails, format_data, mailbox):
     gmail_emails = []
     emails = []
@@ -1101,7 +1119,8 @@ def search_all_mailboxes():
             entries = [future.result() for future in concurrent.futures.as_completed(futures)]
 
         if receive_only_accounts:
-            demisto.results(entries)
+            entries = [mailboxes_to_entry(entries)]
+
         # if these are the final result push - return them
         if users_next_page_token is None:
             entries.append("Search completed")
