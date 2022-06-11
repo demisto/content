@@ -3,7 +3,7 @@
     "testInterval": 20,
     "tests": [
         {
-            "integrations": "URLhaus Feed",
+            "integrations": "FeedURLhaus",
             "playbookID": "playbook-urlhaus-feed_Test"
         },
 
