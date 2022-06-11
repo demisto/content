@@ -1083,6 +1083,7 @@ def get_user_tokens(user_id):
 def search_all_mailboxes():
     users_next_page_token = None
     service = get_service('admin', 'directory_v1')
+    receive_only_accounts = argToBoolean(demisto.args().get('receive_only_accounts', 'false'))
     while True:
         command_args = {
             'maxResults': 100,
