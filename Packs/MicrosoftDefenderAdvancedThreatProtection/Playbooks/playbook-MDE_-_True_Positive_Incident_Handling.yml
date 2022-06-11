@@ -860,7 +860,7 @@ tasks:
       description:
         simple: ${inputs.TicketDescription}
     separatecontext: false
-    skipunavailable: false
+    skipunavailable: true
     task:
       brand: ''
       description: |-
@@ -1214,7 +1214,7 @@ tasks:
       summary:
         simple: ${inputs.TicketDescription}
     separatecontext: false
-    skipunavailable: false
+    skipunavailable: true
     task:
       brand: ''
       description: Creates a new issue in Jira.

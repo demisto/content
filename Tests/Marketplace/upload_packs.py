@@ -1119,7 +1119,8 @@ def main():
             continue
 
         # upload author and integration images
-        if not pack.upload_images(index_folder_path, storage_bucket, storage_base_path, diff_files_list):
+        if not pack.upload_images(index_folder_path, storage_bucket, storage_base_path, diff_files_list,
+                                  override_all_packs):
             continue
 
         # detect if the pack is modified and return modified RN files

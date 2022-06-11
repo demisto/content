@@ -23,7 +23,7 @@ This playbook does not use any sub-playbooks.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | File | The details of the file to detonate. |  | Optional |
-| AlertOS | The operating system for which the alert was raised.<br/>Possible values:<br/>* Windows<br/>* Linux<br/>* Android | ${incident.sourceosversion} | Optional |
+| AlertOS | The operating system for which the alert was raised.<br/>Possible values:<br/>* Windows<br/>* Linux<br/>* Android | ${incident.deviceosname} | Optional |
 
 ## Playbook Outputs
 ---
