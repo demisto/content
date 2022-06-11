@@ -179,6 +179,9 @@ DNS
 XDR
 CommandRunner
 AttackPattern
+ParsesUUID
+UUID
+Deprecated
 Parses
 html
 maxPages

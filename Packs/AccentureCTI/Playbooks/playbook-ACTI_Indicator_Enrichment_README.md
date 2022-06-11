@@ -1,3 +1,4 @@
+- NOTE: This playbook is deprecated.
 - This playbook automatically queries ACTI Threat Indicator, Report, and Fundamental API to pull context for IOC and associated intelligence reports into XSOAR incidents.
 - This sub-playbook can be integrated into generic XSOAR playbooks and playbooks from other vendors by itself.
 
@@ -23,9 +24,9 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| IP_Pre_Enrich | The extracted IP. | ${ExtractedIndicators.IP} | Optional |
-| Domain_Pre_Enrich | The extracted Domain. | ${ExtractedIndicators.Domain} | Optional |
-| URL_Pre_Enrich | The extracted URL. | ${ExtractedIndicators.URL} | Optional |
+| IP_Pre_Enrich | The extracted IP. | ${IP.Address} | Optional |
+| Domain_Pre_Enrich | The extracted Domain. | ${Domain.Name} | Optional |
+| URL_Pre_Enrich | The extracted URL. | ${URL.Data} | Optional |
 
 ## Playbook Outputs
 ---
