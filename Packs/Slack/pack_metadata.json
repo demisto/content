@@ -1,6 +1,6 @@
 {
     "name": "Slack",
-    "description": "Send messages and notifications to your Slack team.",
+    "description": "Interact with Slack API - collect logs, send messages and notifications to your Slack team.",
     "support": "xsoar",
     "currentVersion": "3.0.0",
     "author": "Cortex XSOAR",

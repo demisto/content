@@ -103,7 +103,6 @@ script:
     description: Gets audit log events from Slack.
     execution: false
     name: slack-get-events
-  isfetch: false
   runonce: false
   script: '-'
   type: python

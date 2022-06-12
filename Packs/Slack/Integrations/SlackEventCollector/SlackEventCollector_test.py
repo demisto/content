@@ -96,7 +96,7 @@ def test_fetch_events_with_duplicates(mocker):
         {'id': '1', 'date_create': 1521214343},
     ])
     mocker.patch.object(Session, 'request', return_value=mock_response)
-    events, new_last_run = fetch_events_command(Client(base_url=''), query_params={}, last_run=last_run)
+    events, new_last_run = fetch_events_command(Client(base_url=''), params={}, last_run=last_run)
 
     assert len(events) == 2
     assert events[0].get('id') == '2'
@@ -124,7 +124,7 @@ def test_get_events(mocker):
         {'id': '1', 'date_create': 1521214343},
     ])
     mocker.patch.object(Session, 'request', return_value=mock_response)
-    _, results = get_events_command(Client(base_url=''), query_params={})
+    _, results = get_events_command(Client(base_url=''), args={})
 
     assert len(results.outputs) == 3
     assert results.outputs_prefix == 'SlackEvents'
