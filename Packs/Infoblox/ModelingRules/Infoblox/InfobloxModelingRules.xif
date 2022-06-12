@@ -15,6 +15,101 @@ filter _raw_log ~= "client" and _raw_log ~="infoblox-responses" and _raw_log ~="
 | alter XDM.Network.dns.dns_resource_record.type = arrayindex(regextract(_raw_log, "response:\s+.*?\s+(A\s|AAAA\s)"), 0)
 | alter XDM.Network.dns.dns_resource_record.value = arrayindex(regextract(_raw_log, "response:.*?A\s(\S*)[;]$"), 0);
 
+| Filter regextract(_raw_log, “:\s(\w*?)\s”) ~= “DHCPACK”
+| alter year = arrayindex(regextract(to_string(current_time()), "\d{4}"), 0)
+| alter XDM.Network.event_timestamp = concat(year, " ", arrayindex(regextract(_raw_log, "\w{3}\s\d{1,2}\s\d{2}:\d{2}:\d{2}"), 0))
+| Alter XDM.Network.Source.process.name = arrayindex(regextract(_raw_log, “\s(\w*?)\[”), 0)
+| Alter XDM.Network.Source.process.pid = arrayindex(regextract(_raw_log, “dhcpd\[(\d*?)\]”), 0)
+| Alter XDM.Network.dhcp.message_type = arrayindex(regextract(_raw_log, “:\s(\w*?)\s”), 0)
+| Alter XDM.Network.dhcp.yiaddr = arrayindex(regextract(_raw_log, “on\s((?:\d{1,3}[.]){3}\d{1,3})”), 0)
+| Alter XDM.Network.dhcp.ciaddr = arrayindex(regextract(_raw_log, “on\s((?:\d{1,3}[.]){3}\d{1,3})”), 0)
+| Alter XDM.Network.dhcp.chaddr = arrayindex(regextract(_raw_log, “to\s(.*?)\s”), 0)
+| Alter XDM.Network.dhcp.client_hostname = arrayindex(regextract(_raw_log, “to\s\S*?\s[(](.*?)[)]”), 0)
+| Alter XDM.Network.Source.interface = arrayindex(regextract(_raw_log, “via\s(.*?)\s”), 0)
+| Alter XDM.Network.dhcp.lease = arrayindex(regextract(_raw_log, “lease-duration\s(\d*?)\s”), 0);
+
+| Filter regextract(_raw_log, “:\s(\w*?)\s”) ~= “DHCPDISCOVER”
+| alter year = arrayindex(regextract(to_string(current_time()), "\d{4}"), 0)
+| alter XDM.Network.event_timestamp = concat(year, " ", arrayindex(regextract(_raw_log, "\w{3}\s\d{1,2}\s\d{2}:\d{2}:\d{2}"), 0))
+| Alter XDM.Network.Source.process.name = arrayindex(regextract(_raw_log, “\s(\w*?)\[”), 0)
+| Alter XDM.Network.Source.process.pid = arrayindex(regextract(_raw_log, “dhcpd\[(\d*?)\]”), 0)
+| Alter XDM.Network.dhcp.message_type = arrayindex(regextract(_raw_log, “:\s(\w*?)\s”), 0)
+| Alter XDM.Network.dhcp.chaddr = arrayindex(regextract(_raw_log, “from\s(.*?)\s”), 0)
+| Alter XDM.Network.dhcp.client_hostname = arrayindex(regextract(_raw_log, “from\s\S*?\s[(](.*?)[)]”), 0)
+| Alter XDM.Network.Source.interface = arrayindex(regextract(_raw_log, “via\s(.*?)\s”), 0)
+| Alter XDM.Network.original_event_id = arrayindex(regextract(_raw_log, “TransID\s(.*?)[:]?\s”), 0);
+
+| Filter regextract(_raw_log, “:\s(\w*?)\s”) ~= “DHCPREQUEST”
+| alter year = arrayindex(regextract(to_string(current_time()), "\d{4}"), 0)
+| alter XDM.Network.event_timestamp = concat(year, " ", arrayindex(regextract(_raw_log, "\w{3}\s\d{1,2}\s\d{2}:\d{2}:\d{2}"), 0))
+| Alter XDM.Network.Source.process.name = arrayindex(regextract(_raw_log, “\s(\w*?)\[”), 0)
+| Alter XDM.Network.Source.process.pid = arrayindex(regextract(_raw_log, “dhcpd\[(\d*?)\]”), 0)
+| Alter XDM.Network.dhcp.message_type = arrayindex(regextract(_raw_log, “:\s(\w*?)\s”), 0)
+| Alter XDM.Network.dhcp.ciaddr = arrayindex(regextract(_raw_log, “for\s((?:\d{1,3}[.]){3}\d{1,3})”), 0)
+| Alter XDM.Network.dhcp.chaddr = arrayindex(regextract(_raw_log, “from\s(.*?)\s”), 0)
+| Alter XDM.Network.dhcp.client_hostname = arrayindex(regextract(_raw_log, “from\s\S*?\s[(](.*?)[)]”), 0)
+| Alter XDM.Network.Source.interface = arrayindex(regextract(_raw_log, “via\s(.*?)\s”), 0)
+| Alter XDM.Network.original_event_id = arrayindex(regextract(_raw_log, “TransID\s(.*?)[:]?\s”), 0)
+| Alter XDM.Network.reason = arrayindex(regextract(_raw_log, “TransID\s.*?[:]\s(.*)”), 0);
+
+| Filter regextract(_raw_log, “:\s(\w*?)\s”) ~= “DHCPRELEASE”
+| alter year = arrayindex(regextract(to_string(current_time()), "\d{4}"), 0)
+| alter XDM.Network.event_timestamp = concat(year, " ", arrayindex(regextract(_raw_log, "\w{3}\s\d{1,2}\s\d{2}:\d{2}:\d{2}"), 0))
+| Alter XDM.Network.Source.process.name = arrayindex(regextract(_raw_log, “\s(\w*?)\[”), 0)
+| Alter XDM.Network.Source.process.pid = arrayindex(regextract(_raw_log, “dhcpd\[(\d*?)\]”), 0)
+| Alter XDM.Network.dhcp.message_type = arrayindex(regextract(_raw_log, “:\s(\w*?)\s”), 0)
+| Alter XDM.Network.dhcp.ciaddr = arrayindex(regextract(_raw_log, “of\s((?:\d{1,3}[.]){3}\d{1,3})”), 0)
+| Alter XDM.Network.dhcp.chaddr = arrayindex(regextract(_raw_log, “from\s(.*?)\s”), 0)
+| Alter XDM.Network.dhcp.client_hostname = arrayindex(regextract(_raw_log, “from\s\S*?\s[(](.*?)[)]”), 0)
+| Alter XDM.Network.Source.interface = arrayindex(regextract(_raw_log, “via\s(.*?)\s”), 0)
+| Alter XDM.Network.original_event_id = arrayindex(regextract(_raw_log, “TransID\s(.*?)[:]?\s”), 0);
+
+| Filter regextract(_raw_log, “:\s(\w*?)\s”) ~= “DHCPEXPIRE”
+| alter year = arrayindex(regextract(to_string(current_time()), "\d{4}"), 0)
+| alter XDM.Network.event_timestamp = concat(year, " ", arrayindex(regextract(_raw_log, "\w{3}\s\d{1,2}\s\d{2}:\d{2}:\d{2}"), 0))
+| Alter XDM.Network.Source.process.name = arrayindex(regextract(_raw_log, “\s(\w*?)\[”), 0)
+| Alter XDM.Network.Source.process.pid = arrayindex(regextract(_raw_log, “dhcpd\[(\d*?)\]”), 0)
+| Alter XDM.Network.dhcp.message_type = arrayindex(regextract(_raw_log, “:\s(\w*?)\s”), 0)
+| Alter XDM.Network.dhcp.ciaddr = arrayindex(regextract(_raw_log, “on\s((?:\d{1,3}[.]){3}\d{1,3})”), 0)
+| Alter XDM.Network.dhcp.chaddr = arrayindex(regextract(_raw_log, “to\s(.*?)\s”), 0);
+
+| Filter regextract(_raw_log, “:\s(\w*?)\s”) ~= “DHCPINFORM”
+| alter year = arrayindex(regextract(to_string(current_time()), "\d{4}"), 0)
+| alter XDM.Network.event_timestamp = concat(year, " ", arrayindex(regextract(_raw_log, "\w{3}\s\d{1,2}\s\d{2}:\d{2}:\d{2}"), 0))
+| Alter XDM.Network.Source.process.name = arrayindex(regextract(_raw_log, “\s(\w*?)\[”), 0)
+| Alter XDM.Network.Source.process.pid = arrayindex(regextract(_raw_log, “dhcpd\[(\d*?)\]”), 0)
+| Alter XDM.Network.dhcp.message_type = arrayindex(regextract(_raw_log, “:\s(\w*?)\s”), 0)
+| Alter XDM.Network.dhcp.ciaddr = arrayindex(regextract(_raw_log, “from\s((?:\d{1,3}[.]){3}\d{1,3})”), 0)
+| Alter XDM.Network.original_event_id = arrayindex(regextract(_raw_log, “TransID\s(.*?)[:]?\s”), 0)
+| Alter XDM.Network.reason = arrayindex(regextract(_raw_log, “TransID\s.*?[:]\s(.*)”), 0);
+
+| Filter regextract(_raw_log, “:\s(\w*?)\s”) ~= “DHCPDECLINE”
+| alter year = arrayindex(regextract(to_string(current_time()), "\d{4}"), 0)
+| alter XDM.Network.event_timestamp = concat(year, " ", arrayindex(regextract(_raw_log, "\w{3}\s\d{1,2}\s\d{2}:\d{2}:\d{2}"), 0))
+| Alter XDM.Network.Source.process.name = arrayindex(regextract(_raw_log, “\s(\w*?)\[”), 0)
+| Alter XDM.Network.Source.process.pid = arrayindex(regextract(_raw_log, “dhcpd\[(\d*?)\]”), 0)
+| Alter XDM.Network.dhcp.message_type = arrayindex(regextract(_raw_log, “:\s(\w*?)\s”), 0)
+| Alter XDM.Network.dhcp.ciaddr = arrayindex(regextract(_raw_log, “of\s((?:\d{1,3}[.]){3}\d{1,3})”), 0)
+| Alter XDM.Network.dhcp.chaddr = arrayindex(regextract(_raw_log, “from\s(.*?)\s”), 0);
+
+| Filter regextract(_raw_log, “:\s(\w*?)\s”) ~= “DHCPDECLINE”
+| alter year = arrayindex(regextract(to_string(current_time()), "\d{4}"), 0)
+| alter XDM.Network.event_timestamp = concat(year, " ", arrayindex(regextract(_raw_log, "\w{3}\s\d{1,2}\s\d{2}:\d{2}:\d{2}"), 0))
+| Alter XDM.Network.Source.process.name = arrayindex(regextract(_raw_log, “\s(\w*?)\[”), 0)
+| Alter XDM.Network.Source.process.pid = arrayindex(regextract(_raw_log, “dhcpd\[(\d*?)\]”), 0)
+| Alter XDM.Network.dhcp.message_type = arrayindex(regextract(_raw_log, “:\s(\w*?)\s”), 0)
+| Alter XDM.Network.dhcp.ciaddr = arrayindex(regextract(_raw_log, “on\s((?:\d{1,3}[.]){3}\d{1,3})”), 0)
+| Alter XDM.Network.dhcp.chaddr = arrayindex(regextract(_raw_log, “to\s(.*?)\s”), 0);
+
+| Filter regextract(_raw_log, “:\s(\w*?)\s”) ~= “DHCPDECLINE”
+| alter year = arrayindex(regextract(to_string(current_time()), "\d{4}"), 0)
+| alter XDM.Network.event_timestamp = concat(year, " ", arrayindex(regextract(_raw_log, "\w{3}\s\d{1,2}\s\d{2}:\d{2}:\d{2}"), 0))
+| Alter XDM.Network.Source.process.name = arrayindex(regextract(_raw_log, “\s(\w*?)\[”), 0)
+| Alter XDM.Network.Source.process.pid = arrayindex(regextract(_raw_log, “dhcpd\[(\d*?)\]”), 0)
+| Alter XDM.Network.dhcp.message_type = arrayindex(regextract(_raw_log, “:\s(\w*?)\s”), 0)
+| Alter XDM.Network.dhcp.ciaddr = arrayindex(regextract(_raw_log, “from\s((?:\d{1,3}[.]){3}\d{1,3})”), 0)
+| Alter XDM.Network.reason = arrayindex(regextract(_raw_log, “from\s(?:\d{1,3}[.]){3}\d{1,3}:\s(.*)”), 0);
+
 [MODEL: dataset="infoblox_infoblox_raw ", model="Auth"]
 filter _raw_log ~= "httpd"
 | alter XDM.Auth.event_timestamp = parse_timestamp("%Y-%m-%d %H:%M:%E3S", arrayindex(regextract(_raw_log, "\d{4}-\d{2}-[0-3]\d\s\d{2}:\d{2}:\d{2}[.]\d{3}"), 0)),
