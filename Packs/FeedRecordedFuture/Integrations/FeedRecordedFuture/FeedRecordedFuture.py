@@ -173,7 +173,7 @@ class Client(BaseClient):
         try:
             file_stream = open("response.txt", 'rt')
             columns = file_stream.readline()  # get the headers from the csv file.
-            columns = columns.replace("\"", "").strip().split(",")  # '"a","b"\n' -> ["a", "b"]
+            columns = columns.replace("\"", "").strip().split(",")  # type:ignore  # '"a","b"\n' -> ["a", "b"]
 
             batch_size = limit if limit else BATCH_SIZE
             while True:
@@ -428,7 +428,7 @@ def fetch_indicators_command(client, indicator_type, risk_rule: Optional[str] = 
             yield indicators
 
 
-def get_indicators_command(client, args) -> Tuple[str, Dict[Any, Any], List[Dict]]:
+def get_indicators_command(client, args) -> Tuple[str, Dict[Any, Any], List[Dict]]:  # pragma: no cover
     """Retrieves indicators from the Recorded Future feed to the war-room.
         Args:
             client(Client): Recorded Future Feed client.
@@ -497,7 +497,7 @@ def get_risk_rules_command(client: Client, args) -> Tuple[str, dict, dict]:
     return hr, {'RecordedFutureFeed.RiskRule(val.Name == obj.Name)': entry_result}, result
 
 
-def main():
+def main():  # pragma: no cover
     params = demisto.params()
     client = Client(RF_INDICATOR_TYPES[params.get('indicator_type')], params.get('api_token'), params.get('services'),
                     params.get('risk_rule'), params.get('fusion_file_path'), params.get('insecure'),
