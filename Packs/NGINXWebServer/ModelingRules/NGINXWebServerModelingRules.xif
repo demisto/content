@@ -13,7 +13,7 @@
 | alter sourceip = coalesce(sourceipv4 ,sourceipv6)
 // end extract source_ip
 | alter Username = arrayindex(regextract(_raw_log,"(\S+)\s\[\d+\/") ,0)
-| alter XDM.Network.event_timestamp= request_time
+| alter XDM.Network.event_timestamp= parse_timestamp("%F %X", Request_time)
 | alter XDM.Network.http.url = requested_line
 | alter XDM.Network.http.response_code = response_code  
 //| alter XDM.Network.http.user_agent= User_agent
