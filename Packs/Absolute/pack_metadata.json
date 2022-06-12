@@ -12,6 +12,7 @@
   "tags": [],
   "useCases": [],
   "keywords": [],
+  "hidden": false,
   "marketplaces": [
     "xsoar",
     "marketplacev2"

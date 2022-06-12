@@ -1,7 +1,7 @@
 import pytest
 
 from Tests.configure_and_test_integration_instances import XSOARBuild, create_build_object, \
-    options_handler, XSIAMBuild
+    options_handler, XSIAMBuild, get_non_added_packs_ids, get_turned_non_hidden_packs
 
 XSIAM_SERVERS = {
     "qa2-test-111111": {
@@ -96,3 +96,17 @@ def test_create_build(mocker, expected_class, build_object_type):
     """
     build = create_build_object_with_mock(mocker, build_object_type)
     assert isinstance(build, expected_class)
+
+
+def test_create_build_2(mocker):
+    """
+    Given:
+        - server_type of the server we run the build on: XSIAM or XSOAR.
+    When:
+        - Running 'configure_an_test_integration_instances' script and creating Build object
+    Then:
+        - Assert there the rigth Build object created: XSIAMBuild or XSOARBuild.
+    """
+    build = create_build_object_with_mock(mocker, 'XSOAR')
+    added_packs = get_non_added_packs_ids(build)
+    turned_non_hidden = get_turned_non_hidden_packs(added_packs, build)

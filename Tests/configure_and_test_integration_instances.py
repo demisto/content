@@ -15,7 +15,7 @@ from enum import IntEnum
 from pprint import pformat
 from threading import Thread
 from time import sleep
-from typing import List, Tuple, Union
+from typing import List, Tuple, Union, Set
 
 from urllib.parse import quote_plus
 import demisto_client
@@ -31,7 +31,7 @@ from demisto_sdk.commands.validate.validate_manager import ValidateManager
 from ruamel import yaml
 
 from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies, \
-    upload_zipped_packs, install_all_content_packs_for_nightly
+    upload_zipped_packs, install_all_content_packs_for_nightly, is_pack_hidden
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.test_content import get_server_numeric_version
@@ -1579,6 +1579,40 @@ def get_non_added_packs_ids(build: Build):
     return set(build.pack_ids_to_install) - set(added_pack_ids)
 
 
+def check_hidden_field_changed(pack_id: str, build: Build):
+    """
+    Check if pack turned from hidden to non-hidden.
+    Args:
+        pack_id (str): The pack id to check.
+        build (Build): The build object.
+    Returns:
+        (bool): True if the pack transformed to non-hidden.
+    """
+    compare_against = 'origin/master{}'.format('' if not build.branch_name == 'master' else '~1')
+    diff = run_command(f'git diff --diff-filter=A '
+                       f'{compare_against}..refs/heads/{build.branch_name} -- Packs/{pack_id}')
+    for diff_line in diff.splitlines():
+        if '"hidden": false' in diff_line and diff_line.split()[0].startswith('+'):
+            return True
+    return False
+
+
+def get_turned_non_hidden_packs(pack_ids: Set[str], build: Build):
+    """
+    Return all packs that turned from hidden to non-hidden.
+    Args:
+        pack_ids (Set[str]): The set of packs need to be installed.
+        build (Build): The build object.
+    Returns:
+        (Set[str]): The set of packs id which are non-hidden.
+    """
+    hidden_packs = set()
+    for pack_id in pack_ids:
+        # check if the pack turned from hidden to non-hidden.
+        if check_hidden_field_changed(pack_id, build):
+            hidden_packs.add(pack_id)
+    return hidden_packs
+
 def create_build_object() -> Build:
     options = options_handler()
     logging.info(f'Build type: {options.build_object_type}')
@@ -1623,9 +1657,11 @@ def main():
         build.install_nightly_pack()
     else:
         pack_ids = get_non_added_packs_ids(build)
-        build.install_packs(pack_ids=pack_ids)
-
+        turned_non_hidden = get_turned_non_hidden_packs(pack_ids, build)
+        added_packs_without_hidden = pack_ids - turned_non_hidden
+        build.install_packs(pack_ids=added_packs_without_hidden)
         new_integrations, modified_integrations = build.get_changed_integrations()
+
         pre_update_configuration_results = build.configure_and_test_integrations_pre_update(new_integrations,
                                                                                             modified_integrations)
         modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre = pre_update_configuration_results
