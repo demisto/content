@@ -1,5 +1,6 @@
 import io
 import json
+import traceback
 import types
 import zipfile
 from base64 import b64decode
@@ -427,6 +428,7 @@ def main():
             raw_response=result,
         ))
     except Exception as e:
+        demisto.error(traceback.format_exc())
         return_error(f'Failed to execute ValidateContent. Error: {str(e)}')
     finally:
         content_tmp_dir.cleanup()
