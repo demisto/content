@@ -14,7 +14,7 @@
 
 
 
-[MODEL: dataset ="Vcenter_P0", model=Auth] 
+[MODEL: dataset ="VMware_vCenter_raw", model=Auth] 
  filter _raw_log contains "vpxd[" or _raw_log contains "[vmafdd]" or _raw_log contains " vmdird "
 | alter Timestamp= arrayindex(regextract(_raw_log ,"(\d+\-\d+\-\d+\w\d+\:\d+\:\d+)") ,0)
 | alter Message_vpxd= arrayindex(regextract(_raw_log ,"vpxd\[\d+\](.*)") ,0)
