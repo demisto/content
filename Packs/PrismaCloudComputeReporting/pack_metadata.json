@@ -1,5 +1,5 @@
 {
-    "name": "Prisma Cloud Compute Reporting",
+    "name": "Prisma Cloud Compute Reporting (Deprecated)",
     "description": "Generate compliance and vulnerability reports from Prisma Cloud Compute",
     "support": "community",
     "currentVersion": "1.0.1",

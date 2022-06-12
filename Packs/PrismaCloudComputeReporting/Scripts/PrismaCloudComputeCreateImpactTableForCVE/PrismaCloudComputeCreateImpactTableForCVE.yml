@@ -19,5 +19,6 @@ tags:
 - indicator-action-button
 type: python
 fromversion: 6.0.0
+deprecated: true
 tests:
 - No tests (auto formatted)
