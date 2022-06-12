@@ -1468,7 +1468,7 @@ def poll_offense_events_with_retry(client: Client, search_id: str, offense_id: i
                 print_debug_msg(f'Http response: {search_results_response.get("http_response", "Not specified - ok")}')
                 events = search_results_response.get('events', [])
                 sanitized_events = sanitize_outputs(events)
-                print_debug_msg(f'Fetched {len(sanitized_events)} events for offense {offense_id}.')
+                print_debug_msg(f'Fetched events for offense {offense_id}.')
                 return sanitized_events, failure_message
             elapsed = time.time() - start_time
             if elapsed >= FETCH_SLEEP:  # print status debug every fetch sleep (or after)
@@ -1485,7 +1485,7 @@ def poll_offense_events_with_retry(client: Client, search_id: str, offense_id: i
             else:
                 failure_message = f'{repr(e)} \nSee logs for further details.'
     # if we didn't succeed to poll events for some reason, add it to the mirroring queue
-    context_data[MIRRORED_OFFENSES_QUERIED_CTX_KEY][offense_id] = search_id
+    context_data[MIRRORED_OFFENSES_QUERIED_CTX_KEY][offense_id] = search_id if search_id else '-1'
     safely_update_context_data(context_data, ctx_version, should_update_last_fetch=False, offense_ids=[offense_id])
     print_context_data_stats(context_data, 'long-running')
     print_debug_msg(f'Could not fetch events for offense ID: {offense_id}, returning empty events array. '
@@ -1513,7 +1513,7 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
         (Dict): Enriched offense with events.
     """
     failure_message = ''
-    events: list[str] = []
+    events: list[dict] = []
     events_fetched = 0
     min_events_size = min(offense.get('event_count', 0), events_limit)
     # decreasing 1 minute from the start_time to avoid the case where the minute queried of start_time equals end_time.
@@ -1526,7 +1526,7 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
 
         offense_id = offense['id']
         events, failure_message = poll_offense_events_with_retry(client, search_response['search_id'], offense_id)
-        events_fetched = sum(event.get('eventcount') for event in events)
+        events_fetched = sum(int(event.get('eventcount', 1)) for event in events)
         print_debug_msg(f"Polled events for offense ID {offense_id}")
         if events_fetched >= min_events_size:
             print_debug_msg(f"Fetched {events_fetched}/{min_events_size} for offense ID {offense_id}")
@@ -3154,11 +3154,13 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
         offenses_queried = context_data.get(MIRRORED_OFFENSES_QUERIED_CTX_KEY, {})
         offenses_finished = context_data.get(MIRRORED_OFFENSES_FINISHED_CTX_KEY, {})
         if offense_id not in offenses_finished:
+            # if our offense not in the finished list, we will create a new search
             search_id = create_events_search(client, events_columns, events_limit, offense_id)
             offenses_queried[offense_id] = search_id
             changed_ids_ctx.append(offense_id)
 
         if offense_id in offenses_finished:
+            # if our offense is in finished list, we will get the result
             search_id = offenses_finished[offense_id]
             try:
                 search_results = client.search_results_get(search_id)
@@ -3177,7 +3179,7 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
     enriched_offense = enrich_offenses_result(client, offense, ip_enrich, asset_enrich)
 
     final_offense_data = sanitize_outputs(enriched_offense)[0]
-    events_mirrored = sum(event.get('eventcount') for event in final_offense_data.get('events', []))
+    events_mirrored = sum(int(event.get('eventcount', 1)) for event in final_offense_data.get('events', []))
     print_debug_msg(f'events_mirrored for mirriring {offense_id=}: {events_mirrored}')
     events_message = update_events_mirror_message(
         mirror_options=mirror_options,
@@ -3197,8 +3199,8 @@ def add_modified_remote_offenses(client: Client,
                                  mirror_options: str,
                                  new_modified_records_ids: set,
                                  current_last_update: str,
-                                 events_columns,
-                                 events_limit,
+                                 events_columns: str,
+                                 events_limit: str,
                                  ) -> set:
     """Add modified remote offenses to context_data and handle exhausted offenses.
 
@@ -3209,7 +3211,8 @@ def add_modified_remote_offenses(client: Client,
         mirror_options: The mirror options for the integration.
         new_modified_records_ids: The new modified offenses ids.
         current_last_update: The current last mirror update.
-        offenses: The offenses to update.
+        events_columns: The events_columns param.
+        events_limit: The events_limit param.
 
     Returns: The new modified records ids)
     """
@@ -3266,7 +3269,7 @@ def create_events_search(client, events_columns, events_limit, offense_id) -> st
                         f'offense_start_time: {offense_start_time}, '
                         f'events_limit: {events_limit}, '
                         f'ret_value: {search_response}.')
-        return search_response['search_id']
+        return search_response['search_id'] if search_response['search_id'] else '-1'
     except Exception as e:
         print_debug_msg(f'Search for {offense_id} failed. Error: {e}')
         return '-1'
@@ -3318,10 +3321,8 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
     return GetModifiedRemoteDataResponse(list(new_modified_records_ids))
 
 
-def clear_integration_ctx(ctx: dict) -> dict:
-    """Return a cleared context_data dict so set_integration_context could be called on it.
-    Calling set_integration_context with the output of this function ensures the next call to
-    set_to_integration_context_with_retries will not fail.
+def convert_integration_ctx(ctx: dict) -> dict:
+    """Converts the old context to the current context
 
     Args:
         ctx: The context_data to simplify
@@ -3364,11 +3365,10 @@ def clear_integration_ctx(ctx: dict) -> dict:
 
 def convert_ctx_to_new_structure() -> None:
     """
-    In order to move QRadar from using set_integration_context to set_to_integration_context_with_retries, the fields
-    need to change to JSON strings.
-    Change is required due to race condition occurring between get-modified-remote-data to long-running-execution.
+    The new context structure is consists two dictionaries of queiried offenses and finished offenses.
+    The structure consists the actual objects and JSON of them.
 
-    Because some customers already have instances running where fields are not JSON fields, this function is needed
+    Because some customers already have instances with the old context, we will try to convert the old context to the new one.
     to make them be compatible with new changes.
     Returns:
         (None): Modifies context to be compatible.
@@ -3384,7 +3384,7 @@ def convert_ctx_to_new_structure() -> None:
         extract_works = False
 
     if not extract_works:
-        cleared_ctx = clear_integration_ctx(new_ctx)
+        cleared_ctx = convert_integration_ctx(new_ctx)
         print_debug_msg(f"Change ctx context data was cleared and changing to {cleared_ctx}")
         set_integration_context(cleared_ctx)
         safely_update_context_data(cleared_ctx, context_version)
