@@ -7,8 +7,8 @@ requests.packages.urllib3.disable_warnings()
 
 
 def arg_to_timestamp(value: Any) -> Optional[int]:
-    if value:
-        return int(arg_to_datetime(value).timestamp())
+    if datetime_obj := arg_to_datetime(value):
+        return int(datetime_obj.timestamp())
     return None
 
 
@@ -54,7 +54,7 @@ class Client(BaseClient):
             events (list): The raw events from the API.
             last_run (dict): If exists, contains the `oldest` and `id` values of the most recent event fetched
                in the previous run.
-        
+
         Returns:
             (list) All the events that occurred *after* the record stored in the lastRun object.
         """
