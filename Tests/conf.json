@@ -5168,6 +5168,11 @@
             ],
             "playbookID": "Github Event Collector-test",
             "fromversion": "6.6.0"
+        },
+        {
+            "integrations": "Cloudflare",
+            "playbookID": "TestCloudflareWAFPlaybook",
+            "fromversion": "6.2.0"
         }
     ],
     "skipped_tests": {
