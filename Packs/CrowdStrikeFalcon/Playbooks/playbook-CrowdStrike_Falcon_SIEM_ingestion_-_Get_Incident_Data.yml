@@ -45,7 +45,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ''
-      description: Verify if this is an incident or detection
+      description: Verify if incident or detection
     nexttasks:
       detection:
       - '2'
@@ -778,10 +778,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '21':
     id: '21'
-    taskid: b4cf67c0-cf5c-4607-8ee5-5a99e3e00bdd
+    taskid: 861aef8f-45e6-466a-85dd-6ab401cfd7d9
     type: regular
     task:
-      id: b4cf67c0-cf5c-4607-8ee5-5a99e3e00bdd
+      id: 861aef8f-45e6-466a-85dd-6ab401cfd7d9
       version: -1
       name: Extract Indicators
       description: commands.local.cmd.extract.indicators
@@ -795,6 +795,7 @@ tasks:
     scriptarguments:
       text:
         simple: ${CrowdStrike.Detection}
+    reputationcalc: 2
     separatecontext: false
     view: |-
       {
