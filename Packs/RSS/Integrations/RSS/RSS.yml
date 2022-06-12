@@ -15,7 +15,8 @@ configuration:
   name: incidentType
   required: false
   type: 13
-description: Simple RSS reader that can ingest new items as Incidents
+description: Deprecated. Use RSS Feed instead.
+deprecate: true
 display: RSS
 name: RSS
 script:
