@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: f5395793-9614-4840-81e4-c9fb7706ee12
+    taskid: 972ecce2-90f7-4ea8-8e9f-57e69ca73902
     type: start
     task:
-      id: f5395793-9614-4840-81e4-c9fb7706ee12
+      id: 972ecce2-90f7-4ea8-8e9f-57e69ca73902
       version: -1
       name: ""
       iscommand: false
@@ -34,10 +34,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 1dd5002c-a6e0-4243-8f76-45e6d0e9d96a
+    taskid: a97228b7-490c-48e9-8887-3bbc45c02245
     type: regular
     task:
-      id: 1dd5002c-a6e0-4243-8f76-45e6d0e9d96a
+      id: a97228b7-490c-48e9-8887-3bbc45c02245
       version: -1
       name: DeleteContext
       description: |-
@@ -53,6 +53,9 @@ tasks:
     nexttasks:
       '#none#':
       - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
     separatecontext: false
     view: |-
       {
@@ -70,10 +73,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 2af62764-753d-4c00-8ead-8d07429569a6
+    taskid: 17dc22ca-3b47-459e-8ad6-b6dac194c382
     type: regular
     task:
-      id: 2af62764-753d-4c00-8ead-8d07429569a6
+      id: 17dc22ca-3b47-459e-8ad6-b6dac194c382
       version: -1
       name: urlhaus-get-indicators
       description: Retrieves a limited number of indicators.
@@ -81,9 +84,6 @@ tasks:
       type: regular
       iscommand: true
       brand: URLhaus Feed
-    nexttasks:
-      '#none#':
-      - "3"
     separatecontext: false
     view: |-
       {
@@ -99,40 +99,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
-    taskid: be06794f-a95c-47fc-8d81-3701a96a89d2
-    type: regular
-    task:
-      id: be06794f-a95c-47fc-8d81-3701a96a89d2
-      version: -1
-      name: closeInvestigation
-      description: Close the current incident
-      script: Builtin|||closeInvestigation
-      type: regular
-      iscommand: true
-      brand: Builtin
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 580
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 625,
+        "height": 455,
         "width": 380,
         "x": 450,
         "y": 50
@@ -141,4 +113,3 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 5.5.0
