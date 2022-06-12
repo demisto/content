@@ -1,0 +1,166 @@
+{
+    "events": [
+        {
+            "timestamp": "2022-05-16T11:37:17Z",
+            "event_category": {
+                ".tag": "members"
+            },
+            "actor": {
+                ".tag": "admin",
+                "admin": {
+                    ".tag": "team_member",
+                    "account_id": "dbid:AADPF65IowZcTr20H_OoeQVf9hppQ8y4oQw",
+                    "display_name": "Dror Avrahami",
+                    "email": "davrahami@paloaltonetworks.com",
+                    "team_member_id": "dbmid:AAAwEGMUYzJ-1Alrkqk_XEpBgrQ8mZBRoVs"
+                }
+            },
+            "origin": {
+                "geo_location": {
+                    "city": "Tel Aviv",
+                    "region": "Tel Aviv",
+                    "country": "IL",
+                    "ip_address": "31.154.166.148"
+                },
+                "access_method": {
+                    ".tag": "end_user",
+                    "end_user": {
+                        ".tag": "web",
+                        "session_id": "dbwsid:335674022543922775395910881337406792772"
+                    }
+                }
+            },
+            "involve_non_team_member": false,
+            "context": {
+                ".tag": "team_member",
+                "account_id": "dbid:AACbUPIv29ia0nrUeBjM1nbbdLJZJcxFtfw",
+                "display_name": "",
+                "email": "meichler@paloaltonetworks.com",
+                "team_member_id": "dbmid:AABWu5unFsj7VTFdMRm_UZKGgRU0Mg0bJPM"
+            },
+            "participants": [],
+            "assets": [],
+            "event_type": {
+                ".tag": "member_change_status",
+                "description": "Changed member status (invited, joined, suspended, etc.)"
+            },
+            "details": {
+                ".tag": "member_change_status_details",
+                "previous_value": {
+                    ".tag": "not_joined"
+                },
+                "new_value": {
+                    ".tag": "invited"
+                },
+                "action": {
+                    ".tag": "team_invite_details",
+                    "invite_method": {
+                        ".tag": "member_invite"
+                    }
+                }
+            }
+        },
+        {
+            "timestamp": "2022-05-16T11:37:33Z",
+            "event_category": {
+                ".tag": "members"
+            },
+            "actor": {
+                ".tag": "admin",
+                "admin": {
+                    ".tag": "team_member",
+                    "account_id": "dbid:AADPF65IowZcTr20H_OoeQVf9hppQ8y4oQw",
+                    "display_name": "Dror Avrahami",
+                    "email": "davrahami@paloaltonetworks.com",
+                    "team_member_id": "dbmid:AAAwEGMUYzJ-1Alrkqk_XEpBgrQ8mZBRoVs"
+                }
+            },
+            "origin": {
+                "geo_location": {
+                    "city": "Tel Aviv",
+                    "region": "Tel Aviv",
+                    "country": "IL",
+                    "ip_address": "31.154.166.148"
+                },
+                "access_method": {
+                    ".tag": "end_user",
+                    "end_user": {
+                        ".tag": "web",
+                        "session_id": "dbwsid:335674022543922775395910881337406792772"
+                    }
+                }
+            },
+            "involve_non_team_member": false,
+            "context": {
+                ".tag": "team_member",
+                "account_id": "dbid:AACbUPIv29ia0nrUeBjM1nbbdLJZJcxFtfw",
+                "display_name": "",
+                "email": "meichler@paloaltonetworks.com",
+                "team_member_id": "dbmid:AABWu5unFsj7VTFdMRm_UZKGgRU0Mg0bJPM"
+            },
+            "participants": [],
+            "assets": [],
+            "event_type": {
+                ".tag": "member_change_admin_role",
+                "description": "Changed team member admin role"
+            },
+            "details": {
+                ".tag": "member_change_admin_role_details",
+                "new_value": {
+                    ".tag": "team_admin"
+                },
+                "previous_value": {
+                    ".tag": "member_only"
+                }
+            }
+        },
+        {
+            "timestamp": "2022-05-16T11:48:28Z",
+            "event_category": {
+                ".tag": "apps"
+            },
+            "actor": {
+                ".tag": "admin",
+                "admin": {
+                    ".tag": "team_member",
+                    "account_id": "dbid:AADPF65IowZcTr20H_OoeQVf9hppQ8y4oQw",
+                    "display_name": "Dror Avrahami",
+                    "email": "davrahami@paloaltonetworks.com",
+                    "team_member_id": "dbmid:AAAwEGMUYzJ-1Alrkqk_XEpBgrQ8mZBRoVs"
+                }
+            },
+            "origin": {
+                "geo_location": {
+                    "city": "Tel Aviv",
+                    "region": "Tel Aviv",
+                    "country": "IL",
+                    "ip_address": "31.154.166.148"
+                },
+                "access_method": {
+                    ".tag": "api",
+                    "request_id": "dbarid:bdd733062818443b9df8b78bcd5734ca"
+                }
+            },
+            "involve_non_team_member": false,
+            "context": {
+                ".tag": "team"
+            },
+            "participants": [],
+            "assets": [],
+            "event_type": {
+                ".tag": "app_link_team",
+                "description": "Linked app for team"
+            },
+            "details": {
+                ".tag": "app_link_team_details",
+                "app_info": {
+                    ".tag": "team_linked_app",
+                    "app_id": "dbaid:AAASFSOi_MGOC7IAEzMm6DzrW9c1MX0bYik",
+                    "display_name": "XSIAM"
+                }
+            }
+        }
+    ],
+    "cursor": "789012",
+    "has_more": false
+}

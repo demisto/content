@@ -58,10 +58,9 @@ class DropboxEventsClient(IntegrationEventsClient):
 class DropboxEventsGetter(IntegrationGetEvents):
     client: DropboxEventsClient
 
-    def get_last_run(self: Any, events: list[dict]) -> dict:  # type: ignore
-        last_datetime = max([datetime.strptime(event.get('timestamp'), DATETIME_FORMAT) for event in events])
-        last_datetime_with_delta = last_datetime + timedelta(seconds=1)
-        return {'start_time': datetime.strftime(last_datetime_with_delta, DATETIME_FORMAT)}
+    def get_last_run(self: Any, event: dict) -> dict:  # type: ignore
+        last_datetime = datetime.strptime(event.get('timestamp'), DATETIME_FORMAT) + timedelta(seconds=1)
+        return {'start_time': datetime.strftime(last_datetime, DATETIME_FORMAT)}
 
     def _iter_events(self):
         self.client.get_access_token()
@@ -71,7 +70,8 @@ class DropboxEventsGetter(IntegrationGetEvents):
 
         # region Yield Response
         while events := results.get('events'):  # Run as long there are logs
-            yield events
+
+            yield sorted(events, key=lambda d: d['timestamp'])
 
             if results.get('has_more'):
                 self.client.set_request_filter(results.get('cursor'))
@@ -131,7 +131,9 @@ def test_connection(refresh_token: str, credentials: Credentials, insecure: bool
 # ----------------------------------------- Main Functions -----------------------------------------
 
 def main(command: str, demisto_params: dict):
-    first_fetch = datetime.strftime(dateparser.parse(demisto_params.get('fetch_from', '7 days')), DATETIME_FORMAT)
+    first_fetch = datetime.strftime(
+        dateparser.parse(demisto_params.get('fetch_from', '')) or datetime.now() - timedelta(days=7), DATETIME_FORMAT
+    )
     start_time = demisto_params.get('start_time', first_fetch)
     request = DropboxEventsRequestConfig(data=json.dumps({'time': {'start_time': start_time}}), **demisto_params)
     credentials = Credentials(**demisto_params.get('credentials', {}))
@@ -170,7 +172,7 @@ def main(command: str, demisto_params: dict):
                                      product=demisto_params.get('product', 'dropbox'))
 
                 if events:
-                    last_run = get_events.get_last_run(events)
+                    last_run = get_events.get_last_run(events[-1])
                     demisto.debug(f'Set last run to {last_run}')
                     demisto.setLastRun(last_run)
 
