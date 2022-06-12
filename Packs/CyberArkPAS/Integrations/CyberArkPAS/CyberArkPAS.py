@@ -90,8 +90,30 @@ class Client(BaseClient):
         self._username = username
         self._password = password
         self._max_fetch = max_fetch
-        self._token = self._generate_token()
-        self._headers = {'Authorization': self._token, 'Content-Type': 'application/json'}
+        self._headers = {'Content-Type': 'application/json'}
+        self._token = self._get_token()
+
+    def _get_token(self) -> str:
+        """
+        Obtains token from integration context if available and still valid.
+        After expiration, new token are generated and stored in the integration context.
+        Returns:
+            str: token that will be added to authorization header.
+        """
+        integration_context = get_integration_context()
+        token = integration_context.get('token', self._generate_token())
+        self._headers['Authorization'] = token
+
+        try:
+            # check if token is valid.
+            current_timestamp = int(datetime.now().timestamp())
+            self.get_security_events(f"{current_timestamp}")
+
+        except DemistoException:
+            token = self._generate_token()
+            self._headers['Authorization'] = token
+
+        return token
 
     def _generate_token(self) -> str:
         """Generate an Access token using the user name and password
@@ -105,7 +127,11 @@ class Client(BaseClient):
         headers = {
             'Content-Type': 'application/json'
         }
-        return self._http_request("POST", "/PasswordVault/API/Auth/CyberArk/Logon", headers=headers, json_data=body)
+        token = self._http_request("POST", "/PasswordVault/API/Auth/CyberArk/Logon", headers=headers, json_data=body)
+        integration_context = get_integration_context()
+        integration_context.update({'token': token})
+        set_integration_context(integration_context)
+        return token
 
     def _logout(self):
         self._http_request("POST", "/PasswordVault/API/Auth/Logoff")
@@ -559,7 +585,7 @@ def test_module(
 ) -> str:
     """
     If a client was made then an accesses token was successfully reached,
-    therefor, the username and password are valid and a connection was made
+    therefore, the username and password are valid and a connection was made
     checks that the fetch command works as well, using the client function -
     :param client: the client object with an access token
     :return: ok if got a valid accesses token
