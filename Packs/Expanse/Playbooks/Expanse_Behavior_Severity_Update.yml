@@ -5,6 +5,8 @@ description: 'This playbook updates the severity of an Expanse Behavior incident
   based on the presence of other active Exposures for the IP address. '
 starttaskid: "0"
 fromversion: 5.0.0
+deprecated: true
+hidden: true
 tasks:
   "0":
     id: "0"
