@@ -42,6 +42,7 @@ class GetEvents(IntegrationGetEvents):
         Check if the dockerfile has the latest tag and if there is a new version of it.
         Args:
         events (list): list of the event from the api
+        audit (list): list of the instance audit events
         last_run (dict): the dictionary containing the last run times for the event types
         Returns:
         A dictionary with the times for the next run
@@ -69,7 +70,7 @@ class GetEvents(IntegrationGetEvents):
         try:
             response = self.call()
         except Exception as exc:
-            demisto.log(f'Failed to get a response from the endpoint: {self.client.request.url}.\nError:\n{str(exc)}')
+            demisto.info(f'Failed to get a response from the endpoint: {self.client.request.url}.\nError:\n{str(exc)}')
             return []
         events: list = response.json()
         events.sort(key=lambda k: k.get('created_at'))
