@@ -430,31 +430,31 @@ Retrieve the properties of a collection of riskDetection objects.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| "MSGraph.identityProtection.risks.id | string | Unique ID of the risk detection. | 
-| "MSGraph.identityProtection.risks.requestId | string | The ID of the sign-in associated with the risk detection. This property is null if the risk detection is not associated with a sign-in. | 
-| "MSGraph.identityProtection.risks.correlationId | string | Correlation ID of the sign-in associated with the risk detection. This property is null if the risk detection is not associated with a sign-in. | 
-| "MSGraph.identityProtection.risks.riskEventType | string | The type of risk event detected. The possible values are unlikelyTravel, anonymizedIPAddress, maliciousIPAddress, unfamiliarFeatures, malwareInfectedIPAddress, suspiciousIPAddress, leakedCredentials, investigationsThreatIntelligence, generic,adminConfirmedUserCompromised, mcasImpossibleTravel, mcasSuspiciousInboxManipulationRules, investigationsThreatIntelligenceSigninLinked, maliciousIPAddressValidCredentialsBlockedIP, and unknownFutureValue. | 
-| "MSGraph.identityProtection.risks.riskType | string | Deprecated. Use riskEventType instead. List of risk event types. | 
-| "MSGraph.identityProtection.risks.riskLevel | string | Risk level of the detected risky user. The possible values are low, medium, high, hidden, none, and unknownFutureValue. | 
-| "MSGraph.identityProtection.risks.riskstate | string | State of the user's risk. The possible values are none, confirmedSafe, remediated, dismissed, atRisk, confirmedCompromised, and unknownFutureValue. | 
-| "MSGraph.identityProtection.risks.riskDetail | string | Reason why the user is considered a risky user. The possible values are limited to none, adminGeneratedTemporaryPassword, userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, and unknownFutureValue. | 
-| "MSGraph.identityProtection.risks.source | string | Source of the risk detection. For example, `activeDirectory`. | 
-| "MSGraph.identityProtection.risks.detectionTimingType | string | Timing of the detected risk \(real-time/offline\). The possible values are notDefined, realtime, nearRealtime, offline, and unknownFutureValue. | 
-| "MSGraph.identityProtection.risks.activity | string | Indicates the activity type the detected risk is linked to. The possible values are signin, user, and unknownFutureValue. | 
-| "MSGraph.identityProtection.risks.tokenIssuerType | string | Indicates the type of token issuer for the detected sign-in risk. The possible values are AzureAD, ADFederationServices, and unknownFutureValue. | 
-| "MSGraph.identityProtection.risks.ipAddress | string | Provides the IP address of the client from where the risk occurred. | 
-| "MSGraph.identityProtection.risks.location.city | string | City of the sign-in. | 
-| "MSGraph.identityProtection.risks.location.countryOrRegion | string | Country or region of the sign-in. | 
-| "MSGraph.identityProtection.risks.location.geoCoordinates.latitude | string | Latitude of the sign-in. | 
-| "MSGraph.identityProtection.risks.location.geoCoordinates.longitude | string | Longitude of the sign-in. | 
-| "MSGraph.identityProtection.risks.location.state | string | State of the sign-in. | 
-| "MSGraph.identityProtection.risks.activityDateTime | string | Date and time that the risky activity occurred. The DateTimeOffset type represents date and time information using the ISO 8601 format and is always in UTC time. | 
-| "MSGraph.identityProtection.risks.detectedDateTime | string | Date and time that the risk was detected. The DateTimeOffset type represents date and time information using the ISO 8601 format and is always in UTC time. | 
-| "MSGraph.identityProtection.risks.lastUpdatedDateTime | string | Date and time that the risk detection was last updated. The DateTimeOffset type represents date and time information using the ISO 8601 format and is always in UTC time. | 
-| "MSGraph.identityProtection.risks.userId | string | Unique ID of the user. | 
-| "MSGraph.identityProtection.risks.userDisplayName | string | Risky user display name. | 
-| "MSGraph.identityProtection.risks.userPrincipalName | string | Risky user principal name. | 
-| "MSGraph.identityProtection.risks.additionalInfo | string | Additional information associated with the risk detection in JSON format. | 
+| MSGraph.identityProtection.risks.id | string | Unique ID of the risk detection. | 
+| MSGraph.identityProtection.risks.requestId | string | The ID of the sign-in associated with the risk detection. This property is null if the risk detection is not associated with a sign-in. | 
+| MSGraph.identityProtection.risks.correlationId | string | Correlation ID of the sign-in associated with the risk detection. This property is null if the risk detection is not associated with a sign-in. | 
+| MSGraph.identityProtection.risks.riskEventType | string | The type of risk event detected. The possible values are unlikelyTravel, anonymizedIPAddress, maliciousIPAddress, unfamiliarFeatures, malwareInfectedIPAddress, suspiciousIPAddress, leakedCredentials, investigationsThreatIntelligence, generic,adminConfirmedUserCompromised, mcasImpossibleTravel, mcasSuspiciousInboxManipulationRules, investigationsThreatIntelligenceSigninLinked, maliciousIPAddressValidCredentialsBlockedIP, and unknownFutureValue. | 
+| MSGraph.identityProtection.risks.riskType | string | Deprecated. Use riskEventType instead. List of risk event types. | 
+| MSGraph.identityProtection.risks.riskLevel | string | Risk level of the detected risky user. The possible values are low, medium, high, hidden, none, and unknownFutureValue. | 
+| MSGraph.identityProtection.risks.riskstate | string | State of the user's risk. The possible values are none, confirmedSafe, remediated, dismissed, atRisk, confirmedCompromised, and unknownFutureValue. | 
+| MSGraph.identityProtection.risks.riskDetail | string | Reason why the user is considered a risky user. The possible values are limited to none, adminGeneratedTemporaryPassword, userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, and unknownFutureValue. | 
+| MSGraph.identityProtection.risks.source | string | Source of the risk detection. For example, `activeDirectory`. | 
+| MSGraph.identityProtection.risks.detectionTimingType | string | Timing of the detected risk \(real-time/offline\). The possible values are notDefined, realtime, nearRealtime, offline, and unknownFutureValue. | 
+| MSGraph.identityProtection.risks.activity | string | Indicates the activity type the detected risk is linked to. The possible values are signin, user, and unknownFutureValue. | 
+| MSGraph.identityProtection.risks.tokenIssuerType | string | Indicates the type of token issuer for the detected sign-in risk. The possible values are AzureAD, ADFederationServices, and unknownFutureValue. | 
+| MSGraph.identityProtection.risks.ipAddress | string | Provides the IP address of the client from where the risk occurred. | 
+| MSGraph.identityProtection.risks.location.city | string | City of the sign-in. | 
+| MSGraph.identityProtection.risks.location.countryOrRegion | string | Country or region of the sign-in. | 
+| MSGraph.identityProtection.risks.location.geoCoordinates.latitude | string | Latitude of the sign-in. | 
+| MSGraph.identityProtection.risks.location.geoCoordinates.longitude | string | Longitude of the sign-in. | 
+| MSGraph.identityProtection.risks.location.state | string | State of the sign-in. | 
+| MSGraph.identityProtection.risks.activityDateTime | string | Date and time that the risky activity occurred. The DateTimeOffset type represents date and time information using the ISO 8601 format and is always in UTC time. | 
+| MSGraph.identityProtection.risks.detectedDateTime | string | Date and time that the risk was detected. The DateTimeOffset type represents date and time information using the ISO 8601 format and is always in UTC time. | 
+| MSGraph.identityProtection.risks.lastUpdatedDateTime | string | Date and time that the risk detection was last updated. The DateTimeOffset type represents date and time information using the ISO 8601 format and is always in UTC time. | 
+| MSGraph.identityProtection.risks.userId | string | Unique ID of the user. | 
+| MSGraph.identityProtection.risks.userDisplayName | string | Risky user display name. | 
+| MSGraph.identityProtection.risks.userPrincipalName | string | Risky user principal name. | 
+| MSGraph.identityProtection.risks.additionalInfo | string | Additional information associated with the risk detection in JSON format. | 
 
 
 #### Command Example

@@ -383,8 +383,8 @@ script:
           required: false
           secret: false
       outputs:
-        - contextPath: MSGraph.identityProtection.risksky-users.userPrincipalName
-          description: Risky user principal name.
+        - contextPath: MSGraph.identityProtection.risks.id
+          description: Unique ID of the risk detection.
           type: string
         - contextPath: MSGraph.identityProtection.risksky-users.userDisplayName
           description: Risky user display name.
