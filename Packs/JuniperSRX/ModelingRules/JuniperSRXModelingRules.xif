@@ -53,7 +53,7 @@ filter raw_log contains "source-address="
 | alter sourceip = coalesce(source_address_ipv4 ,source_adderss_ipv6)
 // end extract source_ip
 | alter XDM.Network.Source.ipv4= SourceIP
-| alter XDM.Network.event_timestamp = parse_timestamp("%FT%R%E*S", Timestamp) 
+| alter XDM.Network.event_timestamp = parse_timestamp("%FT%H:%M:%E3S", Timestamp) 
 | alter XDM.Network.Destination.ipv4 = Destination_address 
 | alter XDM.Network.Destination.port= Destination_Port
 | alter XDM.Network.Destination.interface= Service_Name
@@ -68,7 +68,3 @@ filter raw_log contains "source-address="
 | alter XDM.Network.Destination.user.username= Username 
 | alter XDM.Network.Source.user.employee_id= Roles 
 | alter XDM.Network.Destination.interface= Packet_Incoming_Interface;
-
-
-
-
