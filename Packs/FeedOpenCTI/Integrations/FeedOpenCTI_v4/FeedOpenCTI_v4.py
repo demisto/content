@@ -245,7 +245,6 @@ def main():
             return_results(reset_last_run())
 
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f"Error:\n [{e}]")
 
 
