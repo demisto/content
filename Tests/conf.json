@@ -5131,6 +5131,11 @@
             "fromversion": "6.1.0"
         },
         {
+            "integrations": "CloudflareWAF",
+            "playbookID": "playbook-TestCloudflareWAFPlaybook_Test",
+            "fromversion": "6.2.0"
+        },
+        {
             "scripts": "CheckIfSubdomain",
             "playbookID": "CheckIfSubdomain_Test",
             "fromversion": "6.0.0"
