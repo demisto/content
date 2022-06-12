@@ -34,7 +34,7 @@ filter _raw_log contains "GET" or _raw_log contains "HEAD" or _raw_log contains 
 | alter sourceipv6 = arrayindex(regextract(_raw_log ,"(\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+)") ,0)
 | alter sourceip = coalesce(sourceipv4 ,sourceipv6)
 // end extract source_ip
-| alter XDM.Network.event_timestamp= parse_timestamp("%a %b %d %H:%M:%E*S %Y", request_time)
+| alter XDM.Network.event_timestamp= parse_timestamp("%d/%b/%Y:%H:%M:%S %Ez", Request_time)
 | alter XDM.Network.Source.user.username =username
 | alter XDM.Network.http.url = requested_line
 | alter XDM.Network.http.response_code = response_code 
