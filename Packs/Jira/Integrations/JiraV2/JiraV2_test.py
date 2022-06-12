@@ -1210,21 +1210,21 @@ def test_get_issue_and_attachments(mocker, get_attachments_arg, should_get_attac
     from JiraV2 import get_issue
     from requests import Response
 
-    def jira_req_mock(method: str, resource_url: str, body: str = '', link: bool = False, resp_type: str = 'text',
+    def send_request_mock(method: str, resource_url: str, body: str = '', link: bool = False, resp_type: str = 'text',
                       headers: dict = None, files: dict = None):
 
         response = Response()
         response.status_code = 200
         response._content = b'{"filename": "filename"}'
 
-        if resource_url == 'rest/attachment/15451':
+        if 'rest/attachment/15451' in resource_url:
             return response
         elif resp_type == 'json':
             return GET_ISSUE_RESPONSE
         else:
             return type("RequestObjectNock", (OptionParser, object), {"content": 'Some zip data'})
     client = mock_client()
-    mocker.patch.object(client, 'send_request', side_effect=jira_req_mock)
+    mocker.patch.object(client, 'send_request', side_effect=send_request_mock)
     # mocker.patch("JiraV2.jira_req", side_effect=jira_req_mock)
     demisto_results_mocker = mocker.patch.object(demisto, 'results')
     get_issue(mock_client(), 'id', get_attachments=get_attachments_arg)
