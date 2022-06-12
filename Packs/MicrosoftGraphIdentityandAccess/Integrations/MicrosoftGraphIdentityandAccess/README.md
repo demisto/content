@@ -437,77 +437,6 @@ Retrieve the properties of a collection of riskDetection objects.
 #### Command Example
 ```!msgraph-identity-protection-risks-list```
 
-#### Context Example
-```json
-{
-    ""msgraph-identity-protection": {
-        "risks": [
-            {
-                "activity": "signin",
-                "activityDateTime": "2021-04-25T09:00:40.7780969Z",
-                "additionalInfo": "[{\"Key\":\"userAgent\",\"Value\":\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.85 Safari/537.36\"}]",
-                "correlationId": "271ac223-695b-418e-85b3-7809070ee33e",
-                "detectedDateTime": "2021-04-25T09:00:40.7780969Z",
-                "detectionTimingType": "realtime",
-                "id": "86a45315157fb75c3a6e0936ef854c139df99bdfbde4bd7e7f1bc685c3638908",
-                "ipAddress": "1.1.1.1",
-                "lastUpdatedDateTime": "2021-05-23T08:20:41.9161522Z",
-                "location": {
-                    "city": "San Jose",
-                    "countryOrRegion": "US",
-                    "geoCoordinates": {
-                        "latitude": 37.33053,
-                        "longitude": -121.8382
-                    },
-                    "state": "California"
-                },
-                "requestId": "86b6e4a1-25cb-40c7-af2b-9e79c6106000",
-                "riskDetail": "userPerformedSecuredPasswordChange",
-                "riskEventType": "unfamiliarFeatures",
-                "riskLevel": "low",
-                "riskstate": "remediated",
-                "riskType": "unfamiliarFeatures",
-                "source": "IdentityProtection",
-                "tokenIssuerType": "AzureAD",
-                "userDisplayName": "John Doe",
-                "userId": "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2",
-                "userPrincipalName": "jdoe@example.com"
-            },
-            {
-                "activity": "signin",
-                "activityDateTime": "2021-04-28T11:40:11.333738Z",
-                "additionalInfo": "[{\"Key\":\"userAgent\",\"Value\":\"python-requests/2.18.4\"}]",
-                "correlationId": "6f74b0f4-dabc-49af-aa87-3aaba042baba",
-                "detectedDateTime": "2021-04-28T11:40:11.333738Z",
-                "detectionTimingType": "realtime",
-                "id": "c0e94938cddbb849ef64dbb6a98189ab3d93cdec4c4f95923ac935a91486def2",
-                "ipAddress": "2.2.2.2",
-                "lastUpdatedDateTime": "2021-05-23T08:20:29.027631Z",
-                "location": {
-                    "city": "Frankfurt Am Main",
-                    "countryOrRegion": "DE",
-                    "geoCoordinates": {
-                        "latitude": 50.1109,
-                        "longitude": 8.6821
-                    },
-                    "state": "Hessen"
-                },
-                "requestId": "64b01b65-25fa-4811-b4cd-411c9accc000",
-                "riskDetail": "userPerformedSecuredPasswordChange",
-                "riskEventType": "unfamiliarFeatures",
-                "riskLevel": "low",
-                "riskstate": "remediated",
-                "riskType": "unfamiliarFeatures",
-                "source": "IdentityProtection",
-                "tokenIssuerType": "AzureAD",
-                "userDisplayName": "John Doe",
-                "userId": "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2",
-                "userPrincipalName": "jdoe@example.com"
-            }
-        ]
-    }
-}
-```
 
 #### Human Readable Output
 
@@ -557,26 +486,6 @@ Retrieves the properties of a collection of riskDetection objects.
 #### Command Example
 ```!msgraph-identity-protection-risky-user-list```
 
-#### Context Example
-```json
-{
-    ""MSGraph.identityProtection": {
-        "risksky-users": [
-          {
-                "id": "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2",
-                "isDeleted": false,
-                "isProcessing": false,
-                "riskDetail": "none",
-                "riskLastUpdatedDateTime": "2021-07-21T17:56:28.958147Z",
-                "riskLevel": "medium",
-                "riskstate": "atRisk",
-                "userDisplayName": "John Doe",
-                "userPrincipalName": "jdoe@example.com"
-            }
-        ]
-    }
-}
-```
 
 #### Human Readable Output
 
@@ -617,37 +526,6 @@ Gets the risk history of a riskyUser resource.
 #### Command Example
 ```!msgraph-identity-protection-risky-user-history-list user_id="3fa9f28b-eb0e-463a-ba7b-8089fe9991e2"```
 
-#### Context Example
-```json
-{
-    ""MSGraph.identityProtection": {
-        "RiskyUserHistory": [
-            {
-                "activity": {
-                    "detail": null,
-                    "eventTypes": [
-                        "unfamiliarFeatures"
-                    ],
-                    "riskEventTypes": [
-                        "unfamiliarFeatures"
-                    ]
-                },
-                "id": "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2637571860258849619",
-                "initiatedBy": null,
-                "isDeleted": false,
-                "isProcessing": false,
-                "riskDetail": "none",
-                "riskLastUpdatedDateTime": "2021-05-21T09:27:05.8849619Z",
-                "riskLevel": "high",
-                "riskstate": "atRisk",
-                "userDisplayName": "John Doe",
-                "userId": "3fa9f28b-eb0e-463a-ba7b-8089fe9991e2",
-                "userPrincipalName": "jdoe@example.com"
-            }
-        ]
-    }
-}
-```
 
 #### Human Readable Output
 
