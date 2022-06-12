@@ -736,6 +736,8 @@ def safely_update_context_data(context_data: dict,
         raise DemistoException(f'Could not update integration context after version {new_version}.')
 
     print_context_data_stats(updated_context, 'Safely update context - After Update')
+
+
 def add_iso_entries_to_dict(dicts: List[Dict]) -> List[Dict]:
     """
     Takes list of dicts, for each dict:
@@ -1687,7 +1689,7 @@ def print_context_data_stats(context_data: dict, stage: str) -> Set[str]:
     print_debug_msg(f'{finished_queries=}')
     print_debug_msg(f'{waiting_for_update=}')
     last_fetch_key = context_data.get(LAST_FETCH_KEY, 'Missing')
-    last_mirror_update = context_data.get(LAST_MIRROR_KEY, '0')
+    last_mirror_update = context_data.get(LAST_MIRROR_KEY, 0)
     samples = context_data.get('samples', [])
     sample_length = 0
     if samples:
@@ -3111,7 +3113,7 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
     events_columns = params.get('events_columns', '')
     events_limit = int(params.get('events_limit') or DEFAULT_EVENTS_LIMIT)
     print_context_data_stats(context_data, f"Starting Get Remote Data For "
-                                            f"Offense {str(offense.get('id'))}")
+                                           f"Offense {str(offense.get('id'))}")
 
     demisto.debug(f'Updating offense. Offense last update was {offense_last_update}')
     entries = []
@@ -3326,7 +3328,7 @@ def clear_integration_ctx(ctx: dict) -> dict:
 
     Returns: The cleared context_data
     """
-    fetch_id_ctx: str = ctx.get(LAST_FETCH_KEY) or '0'
+    fetch_id_ctx: str = ctx.get(LAST_FETCH_KEY, '0')
     try:
         fetch_id = int(fetch_id_ctx)
     except ValueError:
@@ -3336,23 +3338,23 @@ def clear_integration_ctx(ctx: dict) -> dict:
             print_debug_msg(f"Could not retrieve LAST_FETCH_KEY from {fetch_id_ctx} Setting to 0")
             fetch_id = 0
 
-    last_update_ctx: str = ctx.get(LAST_MIRROR_KEY) or '0'
+    last_update_ctx: str = ctx.get(LAST_MIRROR_KEY, '0')
     try:
-        last_update = str(int(last_update_ctx))
+        last_update = int(last_update_ctx)
     except ValueError:
         try:
-            last_update = str(int(json.loads(last_update_ctx)))
+            last_update = int(json.loads(last_update_ctx))
         except ValueError:
-            print_debug_msg(f"Could not retrive last_mirror_update from {last_update_ctx} Setting to '0'")
-            last_update = '0'
+            print_debug_msg(f"Could not retrieve last_mirror_update from {last_update_ctx} Setting to '0'")
+            last_update = 0
 
-    mirrored_offenses = {}
+    mirrored_offenses: Dict[str, str] = {}
     try:
         for key in ('mirrored_offenses', 'updated_mirrored_offenses', 'resubmitted_mirrored_offenses'):
             mirrored_offenses |= {json.loads(offense).get('id'): '-1' for offense in ctx.get(key, [])}
     except Exception as e:
         print_debug_msg(f'Could not load mirrored_offenses from context_data. Error: {e}')
-        
+
     return {LAST_FETCH_KEY: fetch_id,
             LAST_MIRROR_KEY: last_update,
             MIRRORED_OFFENSES_QUERIED_CTX_KEY: mirrored_offenses,
