@@ -1,5 +1,5 @@
 [RULE:file_copy_events]
-filter json_extract_scalar(event_type, "$['.tag']") in ("file_copy_details", "file_move_details", "file_rename_details", "file_save_copy_reference_details")
+filter json_extract_scalar(event_type, "$['.tag']") in ("file_copy", "file_move", "file_rename", "file_save_copy_reference")
 | alter XDM.Audit.audited_resource.name = json_extract_scalar(arrayindex(json_extract_array(assets, "$"), 1), "$.display_name"),
         XDM.Audit.audited_resource.id = json_extract_scalar(arrayindex(json_extract_array(assets, "$"), 1), "$.file_id"),
         XDM.Audit.audited_resource_before.name = json_extract_scalar(arrayindex(json_extract_array(assets, "$"), 0), "$.display_name"),
