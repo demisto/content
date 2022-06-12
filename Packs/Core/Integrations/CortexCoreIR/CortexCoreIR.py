@@ -26,7 +26,7 @@ class Client(CoreClient):
             Performs basic get request to get item samples
         """
         try:
-            self.get_incidents(limit=1)
+            self.get_endpoints(limit=1)
         except Exception as err:
             if 'API request Unauthorized' in str(err):
                 # this error is received from the Core server when the client clock is not in sync to the server

@@ -292,3 +292,4 @@ class Changelog(object):
     RELEASE_NOTES = 'releaseNotes'
     DISPLAY_NAME = 'displayName'
     RELEASED = 'released'
+    PULL_REQUEST_NUMBERS = 'pullRequests'
