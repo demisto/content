@@ -1,5 +1,5 @@
 {
-    "name": "Microsoft Policy And Compliance",
+    "name": "Microsoft Policy And Compliance (Deprecated)",
     "description": "An integration for Microsoft's management using PowerShell\",",
     "support": "xsoar",
     "currentVersion": "1.0.1",
