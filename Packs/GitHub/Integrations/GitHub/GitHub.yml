@@ -70,7 +70,7 @@ configuration:
   required: false
   type: 4
   hidden: true
-description: Integration to GitHub API.
+description: Integration to GitHub API
 display: GitHub
 name: GitHub
 script:
@@ -3936,7 +3936,7 @@ script:
     description: Deletes a comment.
     execution: false
     name: GitHub-delete-comment
-  dockerimage: demisto/pyjwt3:1.0.0.29644
+  dockerimage: demisto/pyjwt3:1.0.0.27257
   feed: false
   isfetch: true
   longRunning: false
