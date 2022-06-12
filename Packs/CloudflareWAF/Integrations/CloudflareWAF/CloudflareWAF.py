@@ -953,7 +953,7 @@ def cloudflare_waf_ip_list_delete_command(client: Client, args: Dict[str, Any]) 
     )
 
 
-def cloudflare_waf_ip_list_item_create_command(client: Client, args: Dict[str, Any]) -> Tuple[CommandResults, Any]:
+def cloudflare_waf_ip_list_item_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """ Create a new ip-list items.
 
     Args:
@@ -971,11 +971,11 @@ def cloudflare_waf_ip_list_item_create_command(client: Client, args: Dict[str, A
     output = response['result']
 
     return CommandResults(
-        readable_output=f'Adding items to the ip-list {list_id} is executing'
-    ), output
+        readable_output=f'Replace items in the IP List {list_id} is executing',
+        raw_response=output)
 
 
-def cloudflare_waf_ip_list_item_update_command(client: Client, args: Dict[str, Any]) -> Tuple[CommandResults, Any]:
+def cloudflare_waf_ip_list_item_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """ Replace exist ip-list items with a new items.
 
     Args:
@@ -995,11 +995,11 @@ def cloudflare_waf_ip_list_item_update_command(client: Client, args: Dict[str, A
     output = response['result']
 
     return CommandResults(
-        readable_output=f'Replacing items in the IP List {list_id} is executing'
-    ), output
+        readable_output=f'Delete items from ip-list {list_id} is executing',
+        raw_response=output)
 
 
-def cloudflare_waf_ip_list_item_delete_command(client: Client, args: Dict[str, Any]) -> Tuple[CommandResults, Any]:
+def cloudflare_waf_ip_list_item_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """ Delete items from an ip-list.
 
     Args:
@@ -1018,8 +1018,8 @@ def cloudflare_waf_ip_list_item_delete_command(client: Client, args: Dict[str, A
     output = response['result']
 
     return CommandResults(
-        readable_output=f'Deleting items from ip-list {list_id} is executing'
-    ), output
+        readable_output=f'Add items to the ip-list {list_id} is executing',
+        raw_response=output)
 
 
 def cloudflare_waf_ip_list_item_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -1143,7 +1143,9 @@ def run_polling_command(client: Client, cmd: str, command_function: Callable, ar
     timeout = arg_to_number(args.get('timeout', 60))
 
     if 'operation_id' not in args:
-        command_results, output = command_function(client, args)
+        command_results = command_function(client, args)
+        print(command_results)
+        output = command_results.raw_response
         operation_id = output['operation_id']
         args['operation_id'] = operation_id
         scheduled_command = scheduled_commands(operation_id, interval, timeout, cmd, args)

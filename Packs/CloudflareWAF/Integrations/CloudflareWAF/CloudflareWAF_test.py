@@ -406,8 +406,8 @@ def test_cloudflare_waf_ip_list_item_create_command(requests_mock, mock_client):
 
     requests_mock.post(url=url, json=mock_response)
 
-    result, output = cloudflare_waf_ip_list_item_create_command(mock_client, {'list_id': list_id, 'items': items})
-
+    result = cloudflare_waf_ip_list_item_create_command(mock_client, {'list_id': list_id, 'items': items})
+    output = result.raw_response
     assert output['operation_id'] == 'operation_id'
 
 
@@ -436,8 +436,8 @@ def test_cloudflare_waf_ip_list_item_update_command(requests_mock, mock_client):
 
     requests_mock.put(url=url, json=mock_response)
 
-    result, output = cloudflare_waf_ip_list_item_update_command(mock_client, {'list_id': list_id, 'items': items})
-
+    result = cloudflare_waf_ip_list_item_update_command(mock_client, {'list_id': list_id, 'items': items})
+    output = result.raw_response
     assert output['operation_id'] == 'operation_id'
 
 
@@ -466,6 +466,6 @@ def test_cloudflare_waf_ip_list_item_delete_command(requests_mock, mock_client):
 
     requests_mock.delete(url=url, json=mock_response)
 
-    result, output = cloudflare_waf_ip_list_item_delete_command(mock_client, {'list_id': list_id, 'items': items})
-
+    result = cloudflare_waf_ip_list_item_delete_command(mock_client, {'list_id': list_id, 'items': items})
+    output = result.raw_response
     assert output['operation_id'] == 'operation_id'

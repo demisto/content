@@ -836,7 +836,7 @@ script:
     - contextPath: CloudflareWAF.IpListItem.list_id
       description: The list ID.
       type: String
-  dockerimage: demisto/python3:3.10.4.29342
+  dockerimage: demisto/python3:3.10.4.30607
   feed: false
   isfetch: false
   longRunning: false
