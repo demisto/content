@@ -1,4 +1,4 @@
-[MODEL: dataset="VMware_ESXi_raw", model=Endpoint"]
+[MODEL: dataset="VMware_ESXi_raw", model=Endpoint]
  filter _raw_log contains "hostd" or _raw_log contains "vcpu" or _raw_log contains "svga"  or _raw_log contains "mks" or _raw_log contains "vmx" 
 | filter  _raw_log not contains "verbose" 
 |alter request_time = arrayindex(regextract(_raw_log ,"(\d+\-\d+\-\d+T\d+\:\d+\:\d+Z?\.?\d+Z)"),0)
@@ -25,7 +25,7 @@
 | alter XDM.Endpoint.threat.description=message;
 
 
-[MODEL: dataset="VMware_ ESXi_raw", model=Audit]
+[MODEL: dataset="VMware_ESXi_raw", model=Audit]
 filter _raw_log contains "verbose" or _raw_log contains "vpax" or _raw_log contains "scsiCorrelator" or _raw_log contains "cpu" or _raw_log contains "mark" or _raw_log contains "vmkeventd" or _raw_log contains "vmkdevmgr" or _raw_log contains "lwsmd" or _raw_log contains "smrtd" or _raw_log contains "sysboot" or _raw_log contains "ESXShell" or _raw_log contains "SSH" or _raw_log contains "mark" or _raw_log contains "esxupdate" or _raw_log contains "dhclient-um" 
 // extract message
 | alter message1= arrayindex(regextract(_raw_log ,"opID\=[^\s]+\s([^\"]+)") ,0)
@@ -62,8 +62,7 @@ filter _raw_log contains "verbose" or _raw_log contains "vpax" or _raw_log conta
 | alter XDM.Audit.TriggeredBy.ipv4= source_ip;
 
 
-[MODEL: dataset="VMware_ESXi_raw", model=Authentication]
-[MODEL: dataset="esxi_raw", model="Auth"] 
+[MODEL: dataset="VMware_ESXi_raw", model=Auth]
 filter _raw_log contains "vmauthd" or _raw_log contains "sshd"
 | alter Timestamp= arrayindex(regextract(_raw_log ,"(\d+\-\d+\-\d+T\d+\:\d+\:\d+Z?\.?\d+Z)") ,0)
 | alter Service_name = arrayindex(regextract(_raw_log ,"\d+\-\d+\-\d+T\d+\:\d+\:\d+\S+\s(\w+)") ,0)
