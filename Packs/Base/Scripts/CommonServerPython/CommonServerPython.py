@@ -137,7 +137,7 @@ def fix_traceback_line_numbers(trace_str):
     return trace_str
 
 
-from DemistoClassApiModule import *
+from DemistoClassApiModule import *     # type:ignore [no-redef]  # noqa:E402
 
 
 OS_LINUX = False

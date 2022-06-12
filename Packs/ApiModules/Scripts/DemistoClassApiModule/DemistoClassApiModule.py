@@ -119,11 +119,11 @@ class DemistoGeneral:
             # python 2 doesn't have timeout we use polling
             if timeout < 0:
                 return lock.acquire()
-            start = time.time()
-            while (time.time() - start) < timeout:
+            start = time.time()  # type:ignore  [name-defined] # noqa: F821
+            while (time.time() - start) < timeout:  # type:ignore  [name-defined] # noqa: F821
                 if lock.acquire(False):
                     return True
-                time.sleep(0.1)
+                time.sleep(0.1)  # type:ignore  [name-defined] # noqa: F821
             # didn't get the lock
             return False
 
@@ -206,12 +206,12 @@ class DemistoScript(DemistoGeneral):
 
     def getAutoFocusApiKey(self):
         resObj = self._do({'type': 'executeCommand', 'command': 'getLicenseCustomField', 'args': {'key': 'autofocus'}})
-        if resObj != None:
+        if resObj is not None:
             return resObj['value']
 
     def getLicenseCustomField(self, key):
         resObj = self._do({'type': 'executeCommand', 'command': 'getLicenseCustomField', 'args': {'key': key}})
-        if resObj != None:
+        if resObj is not None:
             return resObj['value']
 
     def convert(self, results):
@@ -343,12 +343,15 @@ class DemistoIntegration(DemistoGeneral):
                                                                                    'footer': footer}})
 
     def directMessage(self, message, username=None, email=None, anyoneCanOpenIncidents=None):
-        tmp = self._do({'type': 'executeCommand', 'command': 'directMessage', 'args': {'message': message,
-                                                                                       'username': username,
-                                                                                       'email': email,
-                                                                                       'anyoneCanOpenIncidents': anyoneCanOpenIncidents,
-                                                                                       'anyoneCanOpenAlerts': anyoneCanOpenIncidents}})
-        if tmp != None:
+        tmp = self._do({'type': 'executeCommand', 'command': 'directMessage',
+                        'args': {
+                            'message': message,
+                            'username': username,
+                            'email': email,
+                            'anyoneCanOpenIncidents': anyoneCanOpenIncidents,
+                            'anyoneCanOpenAlerts': anyoneCanOpenIncidents
+                        }})
+        if tmp is not None:
             return tmp["res"]
 
     def mirrorInvestigation(self, id, mirrorType, autoClose=False):
@@ -371,12 +374,12 @@ class DemistoIntegration(DemistoGeneral):
 
     def getAutoFocusApiKey(self):
         resObj = self._do({'type': 'executeCommand', 'command': 'getLicenseCustomField', 'args': {'key': 'autofocus'}})
-        if resObj != None:
+        if resObj is not None:
             return resObj['value']
 
     def getLicenseCustomField(self, key):
         resObj = self._do({'type': 'executeCommand', 'command': 'getLicenseCustomField', 'args': {'key': key}})
-        if resObj != None:
+        if resObj is not None:
             return resObj['value']
 
     def _apiCall(self, name, params=None, data=None):
@@ -438,21 +441,21 @@ class DemistoIntegration(DemistoGeneral):
         self.results({'Type': 1, 'Contents': json.dumps(credentials), 'ContentsFormat': 'json'})
 
 
-is_integ_script = context['integration']
+is_integ_script = context['integration']  # type:ignore [name-defined] # noqa: F821
 if is_integ_script:
     if "demisto" in locals():
         # stopping `_heartbeat_thread` if was created for demisto class in server
-        demisto._heartbeat_enabled = False
-    demisto = DemistoIntegration(context)
+        demisto._heartbeat_enabled = False  # type:ignore  [has-type]
+    demisto = DemistoIntegration(context)  # type:ignore [name-defined] # noqa: F821
 else:
-    demisto = DemistoScript(context)
+    demisto = DemistoScript(context)  # type:ignore # noqa: F821
 
 try:
     import __builtin__
     from StringIO import StringIO
 except ImportError:
     # Python 3
-    import builtins as __builtin__
+    import builtins as __builtin__  # type:ignore[no-redef]
     from io import StringIO
 
 
