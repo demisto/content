@@ -14,9 +14,9 @@
 
 
 
-[MODEL: dataset ="VMware_vCenter_raw", moder=Auth] 
-| filter _raw_log contains "vpxd[" or _raw_log contains "[vmafdd]" or _raw_log contains " vmdird "
-| alter Timestamp= arrayindex(regextract(_raw_log ,"(\d+\-\d+\-\d+\w\d+\:\d+\:\d+\.\d+\w+)") ,0)
+[MODEL: dataset ="Vcenter_P0", model=Auth] 
+ filter _raw_log contains "vpxd[" or _raw_log contains "[vmafdd]" or _raw_log contains " vmdird "
+| alter Timestamp= arrayindex(regextract(_raw_log ,"(\d+\-\d+\-\d+\w\d+\:\d+\:\d+)") ,0)
 | alter Message_vpxd= arrayindex(regextract(_raw_log ,"vpxd\[\d+\](.*)") ,0)
 | alter user0_vpxd= arrayindex(regextract(_raw_log ,"user\s\<([^\>]+)") ,0)
 | alter user1_vpxd= arrayindex(regextract(_raw_log ,"User\:\s'([^'])") ,0)
@@ -25,8 +25,7 @@
 | alter eventName_vmafdd = arrayindex(regextract(_raw_log ,"vmafdd.*\]\s([^\:]+)") ,0)
 | alter Message = coalesce(Message_vpxd ,Message_vmdrid ,Message_vmafdd )
 | alter user = coalesce(user0_vpxd , user1_vpxd )
-
-| alter XDM.Auth.event.timestamp = Timestamp
+| alter XDM.Auth.event_timestamp  = parse_timestamp("%FT%T",Timestamp)
 , XDM.Auth.threat.description = Message
-, XDM.Auth.event.name = eventName_vmafdd
-, XDM.Auth.client.user.username = user;
+, XDM.Auth.threat.name  = eventName_vmafdd
+, XDM.Auth.Client.user.username  = user;
