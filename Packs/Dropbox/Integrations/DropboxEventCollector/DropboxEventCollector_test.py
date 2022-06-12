@@ -7,19 +7,17 @@ from datetime import datetime, timedelta
 
 
 DEMISTO_PARAMS = {
-    'method': 'GET',
-    'url': 'https://your.domain/rest/api/3/auditing/record',
-    'max_fetch': 100,
-    'first_fetch': '3 days',
+    'max_fetch': 500,
+    'fetch_from': '7 days',
     'credentials': {
         'identifier': 'admin@your.domain',
         'password': '123456',
     }
 }
-URL = 'https://your.domain/rest/api/3/auditing/record'
-FIRST_REQUESTS_PARAMS = 'from=2022-04-11T00:00:00.000000&limit=1000&offset=0'
-SECOND_REQUESTS_PARAMS = 'from=2022-04-11T00:00:00.000000&limit=1000&offset=1000'
-DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
+# URL = 'https://your.domain/rest/api/3/auditing/record'
+# FIRST_REQUESTS_PARAMS = 'from=2022-04-11T00:00:00.000000&limit=1000&offset=0'
+# SECOND_REQUESTS_PARAMS = 'from=2022-04-11T00:00:00.000000&limit=1000&offset=1000'
+# DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
 
 
 def util_load_json(path):

@@ -60,7 +60,7 @@ class DropboxEventsGetter(IntegrationGetEvents):
 
     def get_last_run(self: Any, events: list[dict]) -> dict:  # type: ignore
         last_datetime = max([datetime.strptime(event.get('timestamp'), DATETIME_FORMAT) for event in events])
-        last_datetime_with_delta = last_datetime + timedelta(milliseconds=1)
+        last_datetime_with_delta = last_datetime + timedelta(seconds=1)
         return {'start_time': datetime.strftime(last_datetime_with_delta, DATETIME_FORMAT)}
 
     def _iter_events(self):
@@ -89,7 +89,7 @@ def start_auth_command(app_key: str) -> CommandResults:
     url = f'https://www.dropbox.com/oauth2/authorize?client_id={app_key}&token_access_type=offline&response_type=code'
     message = f"""### Authorization instructions
 1. To sign in, use a web browser to open the page [{url}]({url})
-2. Run the **auth-complete** command with the code returned from Dropbox in the War Room."""
+2. Run the **!dropbox-auth-complete** command with the code returned from Dropbox in the War Room."""
     return CommandResults(readable_output=message)
 
 
@@ -153,7 +153,7 @@ def main(command: str, demisto_params: dict):
             return_results(complete_auth_command(demisto_params.get('code'), credentials, insecure))
 
         elif not demisto.getIntegrationContext().get('refresh_token'):
-            return_results(CommandResults(readable_output='Please run the **dropbox-auth-start** command first'))
+            return_results(CommandResults(readable_output='Please run the **!dropbox-auth-start** command first'))
 
         elif command == 'dropbox-auth-reset':
             return_results(reset_auth_command())
