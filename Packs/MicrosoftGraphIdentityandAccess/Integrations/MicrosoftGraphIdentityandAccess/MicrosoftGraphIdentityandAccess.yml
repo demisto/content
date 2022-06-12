@@ -368,7 +368,7 @@ script:
           description: dentityProtection.risks.additionalInfo
           type: string
         - contextPath: MSGraph.identityProtection.risks.userPrincipalName
-          description: Risky user principal name.
+          description: Risky user principal name.v
           type: string
         - contextPath: MSGraph.identityProtection.risks.userDisplayName
           description: Risky user display name.
