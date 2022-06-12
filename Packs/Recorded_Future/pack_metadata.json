@@ -1,5 +1,5 @@
 {
-    "name": "Recorded Future",
+    "name": "Recorded Future (Deprecated)",
     "description": "Unique threat intel technology that automatically serves up relevant insights in real time.",
     "support": "xsoar",
     "currentVersion": "1.1.3",
