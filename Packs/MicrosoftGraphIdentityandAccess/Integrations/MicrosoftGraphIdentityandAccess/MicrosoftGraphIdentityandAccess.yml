@@ -364,9 +364,78 @@ script:
           required: false
           secret: false
       outputs:
-        - contextPath: MSGraph.identityProtection.risks
-          description: List of risk detections.
-          type: Array
+        outputs:
+          - contextPath: MSGraph.identityProtection.risks.additionalInfo
+            type: string
+          - contextPath: Additional information associated with the risk detection in JSON format.
+            description: Risky user principal name.
+            type: string
+          - contextPath: MSGraph.identityProtection.risks.userDisplayName
+            description: Risky user display name.
+            type: string
+          - contextPath: MSGraph.identityProtection.risks.userId
+            description: Unique ID of the user.
+            type: string
+          - contextPath: MSGraph.identityProtection.risks.lastUpdatedDateTime
+            description: Date and time that the risk detection was last updated. The DateTimeOffset type represents date and time information using the ISO 8601 format and is always in UTC time.
+            type: string
+          - contextPath: MSGraph.identityProtection.risks.detectedDateTime
+            description: Date and time that the risk was detected. The DateTimeOffset type represents date and time information using the ISO 8601 format and is always in UTC time.
+            type: string
+          - contextPath: MSGraph.identityProtection.risks.activityDateTime
+            description: Date and time that the risky activity occurred. The DateTimeOffset type represents date and time information using the ISO 8601 format and is always in UTC time.
+            type: string
+          - contextPath: MSGraph.identityProtection.risks.location.state
+            description: State of the sign-in.
+            type: string
+          - contextPath: MSGraph.identityProtection.risks.location.geoCoordinates.longitude
+            description: Longitude of the sign-in.
+            type: string
+          - contextPath: MSGraph.identityProtection.risks.location.geoCoordinates.latitude
+            description: Latitude of the sign-in.
+            type: string
+          - contextPath: MSGraph.identityProtection.risks.location.countryOrRegion
+            description: Country or region of the sign-in.
+            type: string
+          - contextPath: MSGraph.identityProtection.risks.location.city
+            description: City of the sign-in.
+            type: string
+          - contextPath: MSGraph.identityProtection.risks.ipAddress
+            description: Provides the IP address of the client from where the risk occurred.
+            type: string
+          - contextPath: MSGraph.identityProtection.risks.tokenIssuerType
+            description: Indicates the type of token issuer for the detected sign-in risk. The possible values are AzureAD, ADFederationServices, and unknownFutureValue.
+            type: string
+          - contextPath: MSGraph.identityProtection.risks.activity
+            description: Indicates the activity type the detected risk is linked to. The possible values are signin, user, and unknownFutureValue.
+            type: string
+          - contextPath: MSGraph.identityProtection.risks.detectionTimingType
+            description: Timing of the detected risk (real-time/offline). The possible values are notDefined, realtime, nearRealtime, offline, and unknownFutureValue.
+            type: string
+          - contextPath: MSGraph.identityProtection.risks.source
+            description: Source of the risk detection. For example, activeDirectory.
+            type: string
+          - contextPath: MSGraph.identityProtection.risks.riskDetail
+            description: Reason why the user is considered a risky user. The possible values are limited to none, adminGeneratedTemporaryPassword, userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, and unknownFutureValue.
+            type: string
+          - contextPath: MSGraph.identityProtection.risks.riskstate
+            description: State of the user's risk. The possible values are none, confirmedSafe, remediated, dismissed, atRisk, confirmedCompromised, and unknownFutureValue.
+            type: string
+          - contextPath: MSGraph.identityProtection.risks.riskLeve
+            description: Risk level of the detected risky user. The possible values are low, medium, high, hidden, none, and unknownFutureValue.
+            type: string
+          - contextPath: MSGraph.identityProtection.risks.riskType
+            description: Deprecated. Use riskEventType instead. List of risk event types.
+            type: string
+          - contextPath: MSGraph.identityProtection.risks.riskEventType
+            description: The type of risk event detected. The possible values are unlikelyTravel, anonymizedIPAddress, maliciousIPAddress, unfamiliarFeatures, malwareInfectedIPAddress, suspiciousIPAddress, leakedCredentials, investigationsThreatIntelligence, generic,adminConfirmedUserCompromised, mcasImpossibleTravel, mcasSuspiciousInboxManipulationRules, investigationsThreatIntelligenceSigninLinked, maliciousIPAddressValidCredentialsBlockedIP, and unknownFutureValue.
+            type: string
+          - contextPath: MSGraph.identityProtection.risks.correlationId
+            description: Correlation ID of the sign-in associated with the risk detection. This property is null if the risk detection is not associated with a sign-in.
+            type: string
+          - contextPath: MSGraph.identityProtection.risks.id
+            description: Unique ID of the risk detection.
+            type: string
     - deprecated: false
       description: Retrieve the risky users in active directory.
       execution: false
@@ -383,36 +452,37 @@ script:
           required: false
           secret: false
       outputs:
-        - contextPath: MSGraph.identityProtection.risks.additionalInfo
+        - contextPath: MSGraph.identityProtection.risks.id
+          description: Unique ID of the risk detection.
           type: string
-        - contextPath: MSGraph.identityProtection.risks.userPrincipalName
+        - contextPath: MSGraph.identityProtection.risksky-users.userDisplayName
           description: Risky user display name.
           type: string
-        - contextPath: MSGraph.identityProtection.risks.userDisplayName
+        - contextPath: MSGraph.identityProtection.risksky-users.riskDetail
           description: Reason why the user is considered a risky user. The possible values are limited to none, adminGeneratedTemporaryPassword, userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, and unknownFutureValue.
           type: string
-        - contextPath: MSGraph.identityProtection.risks.userId
+        - contextPath: MSGraph.identityProtection.risksky-users.riskstate
           description: State of the user's risk. The possible values are none, confirmedSafe, remediated, dismissed, atRisk, confirmedCompromised, and unknownFutureValue.
           type: string
-        - contextPath: MSGraph.identityProtection.risks.lastUpdatedDateTime
+        - contextPath: MSGraph.identityProtection.risksky-users.riskLevel
           description: Risk level of the detected risky user. The possible values are low, medium, high, hidden, none, and unknownFutureValue.
           type: string
-        - contextPath: MSGraph.identityProtection.risks.detectedDateTime
+        - contextPath: MSGraph.identityProtection.risksky-users.riskLastUpdatedDateTime
           description: The date and time that the risky user was last updated. The DateTimeOffset type represents date and time information using the ISO 8601 format and is always in UTC time.
           type: DateTime
-        - contextPath: MSGraph.identityProtection.risks.activityDateTime
+        - contextPath: MSGraph.identityProtection.risksky-users.isProcessing
           description: Indicates whether a user's risky state is being processed by the backend.
           type: boolean
-        - contextPath: MSGraph.identityProtection.risks.location.state
+        - contextPath: MSGraph.identityProtection.risksky-users.riskLastUpdatedDateTime
           description: The date and time that the risky user was last updated. The DateTimeOffset type represents date and time information using the ISO 8601 format and is always in UTC time.
           type: DateTime
-        - contextPath: MSGraph.identityProtection.risks.location.geoCoordinates.longitude
+        - contextPath: MSGraph.identityProtection.risksky-users.isProcessing
           description: Indicates whether a user's risky state is being processed by the backend.
           type: boolean
-        - contextPath: MSGraph.identityProtection.risks.location.countryOrRegion
+        - contextPath: MSGraph.identityProtection.risksky-users.isDeleted
           description: Indicates whether a user is delted
           type: boolean
-        - contextPath: MSGraph.identityProtection.risks.location.city
+        - contextPath: MSGraph.identityProtection.risksky-users.id
           description: Unique ID of the risky user.
           type: string
     - deprecated: false
