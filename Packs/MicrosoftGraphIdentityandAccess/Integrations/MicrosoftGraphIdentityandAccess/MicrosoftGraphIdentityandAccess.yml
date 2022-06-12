@@ -367,7 +367,7 @@ script:
         outputs:
           - contextPath: MSGraph.identityProtection.risks.additionalInfo
             type: string
-          - contextPath: Additional information associated with the risk detection in JSON format.
+          - contextPath: MSGraph.identityProtection.risks.userPrincipalName
             description: Risky user principal name.
             type: string
           - contextPath: MSGraph.identityProtection.risks.userDisplayName
@@ -421,7 +421,7 @@ script:
           - contextPath: MSGraph.identityProtection.risks.riskstate
             description: State of the user's risk. The possible values are none, confirmedSafe, remediated, dismissed, atRisk, confirmedCompromised, and unknownFutureValue.
             type: string
-          - contextPath: MSGraph.identityProtection.risks.riskLeve
+          - contextPath: MSGraph.identityProtection.risks.riskLevel
             description: Risk level of the detected risky user. The possible values are low, medium, high, hidden, none, and unknownFutureValue.
             type: string
           - contextPath: MSGraph.identityProtection.risks.riskType
@@ -432,6 +432,9 @@ script:
             type: string
           - contextPath: MSGraph.identityProtection.risks.correlationId
             description: Correlation ID of the sign-in associated with the risk detection. This property is null if the risk detection is not associated with a sign-in.
+            type: string
+          - contextPath: MSGraph.identityProtection.risks.requestId
+            description: The ID of the sign-in associated with the risk detection. This property is null if the risk detection is not associated with a sign-in.
             type: string
           - contextPath: MSGraph.identityProtection.risks.id
             description: Unique ID of the risk detection.
