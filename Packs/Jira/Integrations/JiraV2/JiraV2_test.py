@@ -1192,6 +1192,47 @@ def test_get_issue_fields():
                                        'security': {'name': 'Anyone'}}}
 
 
+# @pytest.mark.parametrize('get_attachments_arg, should_get_attachments', [
+#     ('true', True), ('false', False)
+# ])
+# def test_get_issue_and_attachments(mocker, get_attachments_arg, should_get_attachments):
+#     """
+#     Given:
+#         - Case A: That the user has set the get_attachments to 'true' as he wants to download attachments
+#         - Case B: That the user has set the get_attachments to 'false' as he does not want to download attachments
+#     When
+#         - Calling the get issue command
+#     Then
+#         - Ensure the demisto.results with file data is called
+#         - Ensure the demisto.results with file data is not called
+#     """
+#     from test_data.raw_response import GET_ISSUE_RESPONSE
+#     from JiraV2 import get_issue
+#     from requests import Response
+#
+#     def send_request_mock(method: str, resource_url: str, body: str = '', link: bool = False, resp_type: str = 'text',
+#                       headers: dict = None, files: dict = None):
+#
+#         response = Response()
+#         response.status_code = 200
+#         response._content = b'{"filename": "filename"}'
+#
+#         if 'rest/attachment/15451' in resource_url:
+#             return response
+#         elif resp_type == 'json':
+#             return GET_ISSUE_RESPONSE
+#         else:
+#             return type("RequestObjectNock", (OptionParser, object), {"content": 'Some zip data'})
+#     client = mock_client()
+#     mocker.patch.object(client, 'send_request', side_effect=send_request_mock)
+#     # mocker.patch("JiraV2.jira_req", side_effect=jira_req_mock)
+#     demisto_results_mocker = mocker.patch.object(demisto, 'results')
+#     get_issue(mock_client(), 'id', get_attachments=get_attachments_arg)
+#     if should_get_attachments:
+#         demisto_results_mocker.assert_called_once()
+#     else:
+#         demisto_results_mocker.assert_not_called()
+#
 @pytest.mark.parametrize('get_attachments_arg, should_get_attachments', [
     ('true', True), ('false', False)
 ])
@@ -1210,22 +1251,10 @@ def test_get_issue_and_attachments(mocker, get_attachments_arg, should_get_attac
     from JiraV2 import get_issue
     from requests import Response
 
-    def send_request_mock(method: str, resource_url: str, body: str = '', link: bool = False, resp_type: str = 'text',
-                      headers: dict = None, files: dict = None):
-
-        response = Response()
-        response.status_code = 200
-        response._content = b'{"filename": "filename"}'
-
-        if 'rest/attachment/15451' in resource_url:
-            return response
-        elif resp_type == 'json':
-            return GET_ISSUE_RESPONSE
-        else:
-            return type("RequestObjectNock", (OptionParser, object), {"content": 'Some zip data'})
     client = mock_client()
-    mocker.patch.object(client, 'send_request', side_effect=send_request_mock)
-    # mocker.patch("JiraV2.jira_req", side_effect=jira_req_mock)
+    mocker.patch.object(client, 'send_request', return_value=GET_ISSUE_RESPONSE)
+    mocker.patch("JiraV2.get_attachment_data", return_value=('entry_artifact_5@317.json', b'{"filename": "filename"}'))
+
     demisto_results_mocker = mocker.patch.object(demisto, 'results')
     get_issue(mock_client(), 'id', get_attachments=get_attachments_arg)
     if should_get_attachments:
