@@ -14,16 +14,6 @@ configuration:
   type: 9
   required: true
   hiddenusername: true
-- defaultvalue: slack
-  display: The product name corresponding to the integration that originated the events
-  name: product
-  required: false
-  type: 0
-- defaultvalue: slack
-  display: The vendor name corresponding to the integration that originated the events
-  name: vendor
-  required: false
-  type: 0
 - display: The maximum number of audit logs to fetch
   name: limit
   type: 0

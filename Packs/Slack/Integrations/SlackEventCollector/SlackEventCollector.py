@@ -129,11 +129,7 @@ def main() -> None:  # pragma: no cover
                 demisto.setLastRun(last_run)
 
             if argToBoolean(params.get('should_push_events', 'true')):
-                send_events_to_xsiam(
-                    events,
-                    params.get('vendor', 'slack'),
-                    params.get('product', 'slack')
-                )
+                send_events_to_xsiam(events, 'slack', 'slack')
 
     except Exception as e:
         return_error(f'Failed to execute {command} command.\nError:\n{e}')

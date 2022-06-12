@@ -1,5 +1,5 @@
 Slack logs event collector integration for XSIAM.
-This integration was integrated and tested with version v1 of Slack API.
+This integration was integrated and tested with version v1 of Slack Audit Logs API.
 
 ## Configure Slack Event Collector on Cortex XSIAM
 
@@ -9,10 +9,9 @@ This integration was integrated and tested with version v1 of Slack API.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | User Token |  | False |
+    | Server URL |  | True |
+    | User Token |  | True |
     | The maximum number of audit logs to fetch |  | False |
-    | The product name corresponding to the integration that originated the events |  | False |
-    | The vendor name corresponding to the integration that originated the events |  | False |
     | First fetch time interval | Data is not available prior to March 2018. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
