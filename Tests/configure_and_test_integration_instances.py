@@ -670,12 +670,12 @@ class XSOARBuild(Build):
     @staticmethod
     def get_servers(ami_env):
         env_conf = get_env_conf()
-        server_to_port_mapping = get_servers(env_conf, ami_env)
+        servers = get_servers(env_conf, ami_env)
         if Build.run_environment == Running.CI_RUN:
             server_numeric_version = get_server_numeric_version(ami_env)
         else:
             server_numeric_version = Build.DEFAULT_SERVER_VERSION
-        return server_to_port_mapping, server_numeric_version
+        return servers, server_numeric_version
 
     def concurrently_run_function_on_servers(self, function=None, pack_path=None, service_account=None):
         threads_list = []

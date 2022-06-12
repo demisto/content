@@ -68,8 +68,8 @@ def xsoar_configure_and_install_all_packs(options, branch_name: str, build_numbe
     password: str = secret_conf_file.get('userPassword')
 
     # Configure the Servers
-    for server_url, port in server_to_port_mapping.items():
-        server = XSOARServer(internal_ip=server_url, port=port, user_name=username, password=password)
+    for server_url in server_to_port_mapping:
+        server = XSOARServer(internal_ip=server_url, user_name=username, password=password)
         logging.info(f'Adding Marketplace configuration to {server_url}')
         error_msg: str = 'Failed to set marketplace configuration.'
         server.add_server_configuration(config_dict=MARKET_PLACE_CONFIGURATION, error_msg=error_msg)
@@ -100,7 +100,7 @@ def xsoar_configure_and_install_flow(options, branch_name: str, build_number: st
         build_number(str): number of the current build flow
     """
     # Get the host by the ami env
-    server_to_port_mapping, server_version = XSOARBuild.get_servers(ami_env=options.ami_env)
+    server_to_port_mapping, _ = XSOARBuild.get_servers(ami_env=options.ami_env)
 
     logging.info('Retrieving the credentials for Cortex XSOAR server')
     secret_conf_file = get_json(file_path=options.secret)
@@ -109,8 +109,8 @@ def xsoar_configure_and_install_flow(options, branch_name: str, build_number: st
 
     servers = []
     # Configure the Servers
-    for server_url, port in server_to_port_mapping.items():
-        server = XSOARServer(internal_ip=server_url, port=port, user_name=username, password=password)
+    for server_url in server_to_port_mapping:
+        server = XSOARServer(internal_ip=server_url, user_name=username, password=password)
         logging.info(f'Adding Marketplace configuration to {server_url}')
         error_msg: str = 'Failed to set marketplace configuration.'
         server.add_server_configuration(config_dict=MARKET_PLACE_CONFIGURATION, error_msg=error_msg)
