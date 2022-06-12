@@ -4,12 +4,17 @@ commonfields:
 name: Arkime
 display: Arkime
 category: Utilities
-description: Generated description - REPLACE THIS
+description: Arkime (formerly Moloch) is a large scale, open source, indexed packet capture and search tool.
 configuration:
   - name: url
     display: Server URL
     defaultvalue: https://www.example.com
     type: 0
+    required: true
+  - display: Username
+    name: credentials
+    defaultvalue: ""
+    type: 9
     required: true
   - name: proxy
     display: Use system proxy
@@ -18,14 +23,9 @@ configuration:
     required: false
   - name: insecure
     display: Trust any certificate
-    defaultvalue: ''
+    defaultvalue: 'true'
     type: 8
     required: false
-  - display: Username
-    name: credentials
-    defaultvalue: ""
-    type: 9
-    required: true
 script:
   script: ''
   type: python
@@ -121,27 +121,25 @@ script:
           description: 'The page at which to start. The default is 0'
           required: false
           isArray: false
-          defaultValue: '0'
         - name: page_size
           description: 'Page size. Minimum page size is 1, maximum is 100.'
-          defaultValue: '50'
           required: false
           isArray: false
       outputs:
         - contextPath: Arkime.Connection.nodes.id
-          description: ''
+          description: 'The source ip.'
           type: String
         - contextPath: Arkime.Connection.nodes.cnt
-          description: ''
+          description: 'Number of appearances.'
           type: Number
         - contextPath: Arkime.Connection.nodes.sessions
-          description: ''
+          description: 'Number of sessions'
           type: Number
         - contextPath: Arkime.Connection.nodes.inresult
           description: ''
           type: Number
         - contextPath: Arkime.Connection.nodes.type
-          description: ''
+          description: 'Connection type.'
           type: Number
         - contextPath: Arkime.Connection.nodes.network.bytes
           description: ''
@@ -180,8 +178,8 @@ script:
           description: ''
           type: String
         - contextPath: Arkime.Connection.recordsFiltered
-          description: ''
-          type: Number—
+          description: '	The number of history items returned in this result.'
+          type: Number
     - name: arkime-connection-csv-get
       description: 'Gets a list of nodes and links in csv format and returns them to the client.'
       arguments:
@@ -254,22 +252,22 @@ script:
           isArray: false
           defaultValue: '0'
       outputs:
-        - contextPath: InfoFile.Name
+        - contextPath: Arkime.Connection.InfoFile.Name
           description: The file name.
           type: String
-        - contextPath: InfoFile.EntryID
+        - contextPath: Arkime.Connection.InfoFile.EntryID
           description: The ID for locating the file in the War Room.
           type: String
-        - contextPath: InfoFile.Size
+        - contextPath: Arkime.Connection.InfoFile.Size
           description: The size of the file (in bytes).
           type: Number
-        - contextPath: InfoFile.Type
+        - contextPath: Arkime.Connection.InfoFile.Type
           description: The file type, as determined by libmagic (same as displayed in file entries).
           type: String
-        - contextPath: InfoFile.Extension
+        - contextPath: Arkime.Connection.InfoFile.Extension
           description: The file extension.
           type: String
-        - contextPath: InfoFile.Info
+        - contextPath: Arkime.Connection.InfoFile.Info
           description: Basic information about the file.
           type: String
     - name: arkime-session-pcap-get
@@ -292,6 +290,25 @@ script:
           description: 'If the date parameter is not set, this is the stop time of data to return. Format is seconds since Unix EPOC.'
           required: false
           isArray: false
+      outputs:
+        - contextPath: Arkime.PcapFile.data.node
+          description: ''
+          type: String
+        - contextPath: Arkime.PcapFile.data.num
+          description: ''
+          type: Number
+        - contextPath: Arkime.PcapFile.data.name
+          description: ''
+          type: String
+        - contextPath: Arkime.PcapFile.data.first
+          description: ''
+          type: Number
+        - contextPath: Arkime.PcapFile.data.fileSize
+          description: ''
+          type: Number
+        - contextPath: Arkime.PcapFile.data.packetSize
+          description: ''
+          type: Number
     - name: arkime-session-csv-get
       description: 'Gets a list of sessions and returns them as CSV to the client.'
       arguments:
@@ -355,6 +372,25 @@ script:
           required: false
           isArray: false
           defaultValue: '0'
+      outputs:
+        - contextPath: Arkime.Session.InfoFile.Name
+          description: The file name.
+          type: String
+        - contextPath: Arkime.Session.InfoFile.EntryID
+          description: The ID for locating the file in the War Room.
+          type: String
+        - contextPath: Arkime.Session.InfoFile.Size
+          description: The size of the file (in bytes).
+          type: Number
+        - contextPath: Arkime.Session.InfoFile.Type
+          description: The file type, as determined by libmagic (same as displayed in file entries).
+          type: String
+        - contextPath: Arkime.Session.InfoFile.Extension
+          description: The file extension.
+          type: String
+        - contextPath: Arkime.Session.InfoFile.Info
+          description: Basic information about the file.
+          type: String
     - name: arkime-session-list
       description: 'Gets a list of sessions and returns them to the client.'
       arguments:
@@ -417,10 +453,8 @@ script:
           description: 'The page at which to start. The default is 0'
           required: false
           isArray: false
-          defaultValue: '0'
         - name: page_size
           description: 'Page size. Minimum page size is 1, maximum is 100.'
-          defaultValue: '50'
           required: false
           isArray: false
       outputs:
@@ -504,10 +538,10 @@ script:
           description: ''
         - type: Number
           contextPath: Arkime.Session.recordsTotal
-          description: ''
+          description: 'The total number of history results stored.'
         - type: Number
           contextPath: Arkime.Session.recordsFiltered
-          description: ''
+          description: 'The number of history items returned in this result.'
     - name: arkime-unique-field-list
       description: 'Gets a list of unique field values (with or without counts) and sends them to the client.'
       arguments:
@@ -571,16 +605,26 @@ script:
           required: false
           isArray: false
           defaultvalue: false
+        - name: limit
+          description: 'The number of items to return. Defaults to 100, Max is 2,000,000'
+          required: false
+          isArray: false
+          defaultvalue: '50'
         - name: page_number
           description: 'The page at which to start. The default is 0'
           required: false
           isArray: false
-          defaultValue: '0'
         - name: page_size
           description: 'Page size. Minimum page size is 1, maximum is 100.'
-          defaultValue: '50'
           required: false
           isArray: false
+      outputs:
+      - contextPath: Arkime.UniqueField.Field
+        description: ''
+        type: String
+      - contextPath: Arkime.UniqueField.Count
+        description: ''
+        type: Boolean
     - name: arkime-multi-unique-field-list
       description: 'Gets an intersection of unique field values (with or without counts) and sends them to the client.'
       arguments:
@@ -650,16 +694,26 @@ script:
           required: false
           isArray: false
           defaultvalue: false
+        - name: limit
+          description: 'The number of items to return. Defaults to 100, Max is 2,000,000'
+          required: false
+          isArray: false
+          defaultvalue: '50'
         - name: page_number
           description: 'The page at which to start. The default is 0'
           required: false
           isArray: false
-          defaultValue: '0'
         - name: page_size
           description: 'Page size. Minimum page size is 1, maximum is 100.'
-          defaultValue: '50'
           required: false
           isArray: false
+      outputs:
+      - contextPath: Arkime.UniqueField.Field
+        description: ''
+        type: String
+      - contextPath: Arkime.UniqueField.Count
+        description: ''
+        type: Boolean
     - name: arkime-field-list
       description: 'Gets available database field objects pertaining to sessions.'
       arguments:
@@ -668,21 +722,22 @@ script:
           required: false
           isArray: false
           defaultvalue: false
-        - name: limit
-          description: 'The number of items to return. Defaults to 100, Max is 10,000'
-          required: false
-          isArray: false
-          defaultvalue: '100'
-        - name: page_number
-          description: 'The page at which to start. The default is 0'
-          required: false
-          isArray: false
-          defaultValue: '0'
-        - name: page_size
-          description: 'Page size. Minimum page size is 1, maximum is 100.'
-          defaultValue: '50'
-          required: false
-          isArray: false
+      outputs:
+      - contextPath: Arkime.Field.friendlyName
+        description: ''
+        type: String
+      - contextPath: Arkime.Field.type
+        description: ''
+        type: String
+      - contextPath: Arkime.Field.group
+        description: ''
+        type: String
+      - contextPath: Arkime.Field.help
+        description: ''
+        type: String
+      - contextPath: Arkime.Field.dbField
+        description: ''
+        type: String
     - name: arkime-spigraph-get
       description: 'Gets a list of values for a field with counts and graph data and returns them to the client.'
       arguments:
@@ -859,10 +914,10 @@ script:
           description: ''
         - type: Number
           contextPath: Arkime.SpiGraph.recordsTotal
-          description: ''
+          description: 'The total number of history results stored.'
         - type: Number
           contextPath: Arkime.SpiGraph.recordsFiltered
-          description: ''
+          description: 'The number of hunts returned in this result.'
     - name: arkime-spiview-get
       description: 'Gets a list of field values with counts and returns them to the client.'
       arguments:
@@ -937,10 +992,10 @@ script:
           description: ''
         - type: Number
           contextPath: Arkime.SpiView.recordsTotal
-          description: ''
+          description: 'The total number of history results stored.'
         - type: Number
           contextPath: Arkime.SpiView.recordsFiltered
-          description: ''
+          description: 'The number of history items returned in this result.'
     - name: arkime-session-tag-add
       description: 'Add tag(s) to individual session(s) by id or by query.'
       arguments:
@@ -1014,7 +1069,7 @@ script:
       outputs:
         - type: Boolean
           contextPath: Arkime.AddSessionTags.success
-          description: 'Success status '
+          description: 'Success status.'
         - type: String
           contextPath: Arkime.AddSessionTags.text
           description: 'Text from response'
@@ -1091,10 +1146,10 @@ script:
       outputs:
         - type: Boolean
           contextPath: Arkime.AddSessionTags.success
-          description: 'Success status'
+          description: 'Success status.'
         - type: String
           contextPath: Arkime.AddSessionTags.text
-          description: 'Text from response'
+          description: 'Text from response.'
     - name: arkime-pcap-file-list
       description: 'Gets a list of PCAP files that Arkime knows about.'
       arguments:
@@ -1107,19 +1162,17 @@ script:
           description: 'The page at which to start. The default is 0'
           required: false
           isArray: false
-          defaultValue: '0'
         - name: page_size
           description: 'Page size. Minimum page size is 1, maximum is 100.'
-          defaultValue: '50'
           required: false
           isArray: false
       outputs:
         - type: Number
           contextPath: Arkime.File.recordsTotal
-          description: ''
+          description: 'The total number of hunts Arkime has.'
         - type: Number
           contextPath: Arkime.File.recordsFiltered
-          description: ''
+          description: 'The number of hunts returned in this result.'
         - type: String
           contextPath: Arkime.File.data.node
           description: ''
@@ -1128,10 +1181,10 @@ script:
           description: ''
         - type: Number
           contextPath: Arkime.File.data.num
-          description: ''
+          description: 'The data number.'
         - type: String
           contextPath: Arkime.File.data.name
-          description: ''
+          description: 'The data name.'
         - type: Number
           contextPath: Arkime.File.data.locked
           description: ''
