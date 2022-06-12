@@ -4,8 +4,7 @@ import logging
 import os
 from pathlib import Path
 import subprocess
-import sys
-from typing import Dict, List, Optional
+from typing import Optional
 
 from demisto_sdk.commands.test_content.constants import SSH_USER
 from Tests.scripts.utils.log_util import install_logging
@@ -29,7 +28,8 @@ def chmod_logs(server_ip: str):
 
 
 def download_logs(server_ip: str, aritfacts_dir: str, role: str):
-    scp_string = f"scp {SSH_USER}@{server_ip}:/var/log/demisto/server.log {aritfacts_dir}/server_{role}_{server_ip}.log || echo 'WARN: Failed downloading server.log'"
+    scp_string = f"scp {SSH_USER}@{server_ip}:/var/log/demisto/server.log " \
+        "{aritfacts_dir}/server_{role}_{server_ip}.log || echo 'WARN: Failed downloading server.log'"
     try:
         logging.debug(f'Downloading server logs from server {server_ip}')
         subprocess.check_output(scp_string, shell=True)
@@ -46,6 +46,7 @@ def shutdown(server_ip: str, ttl: Optional[int] = None):
 
     except subprocess.CalledProcessError:
         logging.exception(f'Failed to shutdown server {server_ip}')
+
 
 def main():
     install_logging('Destroy_instances.log')
@@ -65,13 +66,12 @@ def main():
         chmod_logs(server_ip)
         download_logs(server_ip, options.aritfacts_dir, role)
 
-
         if time_to_live:
             logging.info(f'Time to live was set to {time_to_live} minutes')
             shutdown(server_ip, time_to_live)
-
-        elif (tests_path / f'is_build_passed_{role}.txt').exists() and (tests_path / f'is_post_update_passed_{role}.txt').exists():
-                shutdown(server_ip)
+        elif (tests_path / f'is_build_passed_{role}.txt').exists() and \
+                (tests_path / f'is_post_update_passed_{role}.txt').exists():
+            shutdown(server_ip)
         else:
             logging.warning(f'Tests for some integration failed on {readable_role}, keeping instance alive')
 

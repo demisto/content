@@ -1467,8 +1467,7 @@ def get_servers(env_results, instance_role):
         (lst): The server url list to connect to
     """
 
-    return [env.get('InstanceDNS') for env in env_results if
-                      instance_role in env.get('Role', '')]
+    return [env.get('InstanceDNS') for env in env_results if instance_role in env.get('Role')]
 
 
 def get_json_file(path):
