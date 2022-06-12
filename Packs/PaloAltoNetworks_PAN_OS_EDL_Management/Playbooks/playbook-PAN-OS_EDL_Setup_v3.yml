@@ -1,6 +1,7 @@
 id: PAN-OS EDL Setup v3
 version: -1
 fromversion: 5.0.0
+hidden: true
 name: PAN-OS EDL Setup v3
 description: "Configures an external dynamic list in PAN-OS.\nIn the event that the file exists on the web server, it will sync it to demisto. Then it will create an EDL object and a matching rule."
 starttaskid: '0'

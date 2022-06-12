@@ -1,5 +1,5 @@
 {
-    "name": "Palo Alto Networks PAN-OS EDL Management",
+    "name": "Palo Alto Networks PAN-OS EDL Management (Deprecated)",
     "description": "This integration enables you to manage and edit files located on a remote web server via SSH using integration context as Single Source of Truth.",
     "support": "xsoar",
     "currentVersion": "1.1.3",

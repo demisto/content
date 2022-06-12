@@ -4,6 +4,7 @@ fromversion: 5.0.0
 name: Block IOCs from CSV - External Dynamic List
 starttaskid: "0"
 description: This playbook parses a CSV file with IOCs and blocks them using Palo Alto Networks External Dynamic Lists.
+hidden: true
 tasks:
   "0":
     id: "0"
