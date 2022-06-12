@@ -394,7 +394,7 @@ def test_duplicated_indicator_in_the_same_batch(mocker):
     mocker.patch('FeedRecordedFuture.Client.build_iterator')
     mocker.patch(
         'FeedRecordedFuture.Client.get_batches_from_file',
-        return_value=DictReaderGenerator(DictReader(open('test_data/response_for_duplicate_indicator_test.txt')))
+        return_value=DictReaderGenerator(DictReader(open('/test_data/response_for_duplicate_indicator_test.txt')))
     )
     client = Client(indicator_type=indicator_type, api_token='123', services=['fusion'])
 
