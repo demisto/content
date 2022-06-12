@@ -1,4 +1,5 @@
-[MODEL: dataset="Juniper_SRX_raw", model="Audit"] 
+
+[MODEL: dataset="juniper_audit", model="Audit"] 
 alter event_type = arrayindex(regextract(_raw_log,"(\w+\[\d+\])\:\s"),0)
 | filter event_type contains "["
 | alter timestamp = arrayindex(regextract(_raw_log ,"(\d+\:\d+:\d+\.\d+)"), 0)
@@ -8,7 +9,7 @@ alter event_type = arrayindex(regextract(_raw_log,"(\w+\[\d+\])\:\s"),0)
 | alter username= arrayindex(regextract(_raw_log ,"ser\s\'([^\']+)") ,0)
 | alter message = arrayindex(regextract(_raw_log ,"\s\w+\[\d+\]\:\s[^\d]+:\s([^\\]+) ") ,0)
 | alter tag_name = arrayindex(regextract(_raw_log ,"\:\s(\w+\_\w+)"),0)
-| alter XDM.Audit.event_timestamp = timestamp 
+| alter XDM.Audit.event_timestamp = parse_timestamp("%FT%R%E*S", timestamp) 
 | alter XDM.Audit.operation= hostname
 | alter XDM.Audit.identity.name= process
 | alter XDM.Audit.operation_type= tag_name
@@ -17,10 +18,8 @@ alter event_type = arrayindex(regextract(_raw_log,"(\w+\[\d+\])\:\s"),0)
 | alter XDM.Audit.threat.description= message
 | alter XDM.Audit.operation_type= tag_name;
 
-
-
-[MODEL: dataset="Juniper_SRX_raw", model="Network"] 
-|filter raw_log contains "source-address="
+[MODEL: dataset="juniper_srx", model="Network"] 
+filter raw_log contains "source-address="
 | alter Timestamp = arrayindex(regextract(raw_log ,"(\d{4}\-\d{2}\-\d{2}T\d+\:\d+\:\d+.\d+)"), 0)
 | alter destination_address = arrayindex(regextract(raw_log ,"destination\-address\=\"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})") ,0)
 | alter file_name = arrayindex(regextract(raw_log ,"\sfilename\=\"([^\"]+)\"") ,0)
@@ -54,13 +53,13 @@ alter event_type = arrayindex(regextract(_raw_log,"(\w+\[\d+\])\:\s"),0)
 | alter sourceip = coalesce(source_address_ipv4 ,source_adderss_ipv6)
 // end extract source_ip
 | alter XDM.Network.Source.ipv4= SourceIP
-| alter XDM.Network.event_timestamp = TimeStamp 
+| alter XDM.Network.event_timestamp = parse_timestamp("%FT%R%E*S", Timestamp) 
 | alter XDM.Network.Destination.ipv4 = Destination_address 
 | alter XDM.Network.Destination.port= Destination_Port
 | alter XDM.Network.Destination.interface= Service_Name
 | alter XDM.Network.Source.ipv4= Nat_Source_Address
 | alter XDM.Network.Destination.ipv4= Destination_Address 
-| alter XDM.Network.Destination.port= Nat_Destination_Port 
+| alter XDM.Network.Destination.port= to_number(Nat_Destination_Port)
 | alter XDM.Network.rule= Source_Nat_Rule_Name 
 | alter XDM.Network.ip_protocol= Protocol_ID 
 | alter XDM.Network.rule= Policy_Name 
@@ -69,3 +68,7 @@ alter event_type = arrayindex(regextract(_raw_log,"(\w+\[\d+\])\:\s"),0)
 | alter XDM.Network.Destination.user.username= Username 
 | alter XDM.Network.Source.user.employee_id= Roles 
 | alter XDM.Network.Destination.interface= Packet_Incoming_Interface;
+
+
+
+
