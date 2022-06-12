@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 import subprocess
 import sys
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from demisto_sdk.commands.test_content.constants import SSH_USER
 from Tests.scripts.utils.log_util import install_logging
@@ -38,10 +38,11 @@ def download_logs(server_ip: str, aritfacts_dir: str, role: str):
         logging.exception(f'Failed downloading server logs from server {server_ip}')
 
 
-def shutdown(server_ip: str):
+def shutdown(server_ip: str, ttl: Optional[int] = None):
     try:
         logging.info(f'Destroying instance with IP - {server_ip}')
-        subprocess.check_output(f'ssh {SSH_USER}@{server_ip} "sudo shutdown"', shell=True)
+        shutdown_command = f'sudo shutdown +{ttl}' if ttl else 'sudo shutdown'
+        subprocess.check_output(f'ssh {SSH_USER}@{server_ip} "{shutdown_command}"', shell=True)
 
     except subprocess.CalledProcessError:
         logging.exception(f'Failed to shutdown server {server_ip}')
@@ -50,10 +51,12 @@ def main():
     install_logging('Destroy_instances.log')
     options = options_handler()
     time_to_live = os.getenv('TIME_TO_LIVE')
+    tests_path = Path('./Tests')
+
     with open(options.env_file, 'r') as json_file:
         env_results = json.load(json_file)
 
-    for env in filter(lambda x: x.get('Role') == options.instance_role, env_results):
+    for env in filter(lambda x: x["Role"] == options.instance_role, env_results):
         readable_role = env["Role"]
         role = readable_role.replace(' ', '')
         server_ip = env["InstanceDNS"]
@@ -62,12 +65,12 @@ def main():
         chmod_logs(server_ip)
         download_logs(server_ip, options.aritfacts_dir, role)
 
-        if time_to_live:
-            logging.info(f'Skipping - Time to live was set to {time_to_live} minutes')
-            continue
 
-        tests_path = Path('./Tests')
-        if (tests_path / f'is_build_passed_{role}.txt').exists() and (tests_path / f'is_post_update_passed_{role}.txt').exists():
+        if time_to_live:
+            logging.info(f'Time to live was set to {time_to_live} minutes')
+            shutdown(server_ip, time_to_live)
+
+        elif (tests_path / f'is_build_passed_{role}.txt').exists() and (tests_path / f'is_post_update_passed_{role}.txt').exists():
                 shutdown(server_ip)
         else:
             logging.warning(f'Tests for some integration failed on {readable_role}, keeping instance alive')
