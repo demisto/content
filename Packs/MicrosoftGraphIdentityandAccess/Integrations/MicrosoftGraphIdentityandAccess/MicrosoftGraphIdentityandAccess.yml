@@ -437,9 +437,33 @@ script:
           required: true
           secret: false
       outputs:
-        - contextPath: MSGraph.identityProtection.riskyUsersHistory
-          description: List of risy users history.
-          type: Array
+        - contextPath: MSGraph.identityProtection.RiskyUserHistory.userPrincipalName
+          description: Risky user principal name.
+          type: string
+        - contextPath: MSGraph.identityProtection.RiskyUserHistory.userDisplayName
+            description: Risky user display name.
+            type: string
+        - contextPath: MSGraph.identityProtection.RiskyUserHistory.riskDetail
+            description: Reason why the user is considered a risky user. The possible values are limited to none, adminGeneratedTemporaryPassword, userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, and unknownFutureValue.
+            type: string
+        - contextPath: MSGraph.identityProtection.RiskyUserHistory.riskstate
+            description: State of the user's risk. The possible values are none, confirmedSafe, remediated, dismissed, atRisk, confirmedCompromised, and unknownFutureValue.
+            type: string
+        - contextPath: MSGraph.identityProtection.RiskyUserHistory.riskLevel
+            description: Risk level of the detected risky user. The possible values are low, medium, high, hidden, none, and unknownFutureValue.
+            type: string
+        - contextPath: MSGraph.identityProtection.RiskyUserHistory.riskLastUpdatedDateTime
+            description: The date and time that the risky user was last updated. The DateTimeOffset type represents date and time information using the ISO 8601 format and is always in UTC time.
+            type: DateTime
+        - contextPath: MSGraph.identityProtection.RiskyUserHistory.isProcessing
+            description: Indicates whether a user's risky state is being processed by the backend.
+            type: Boolean
+        - contextPath: MSGraph.identityProtection.RiskyUserHistory.isDeleted
+            description: Indicates whether the user is deleted.
+            type: Boolean
+        - contextPath: MSGraph.identityProtection.RiskyUserHistory.id
+            description: Unique ID of the risky user.
+            type: string
     - deprecated: false
       description: Delete an ip named location by id.
       execution: false

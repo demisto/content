@@ -550,15 +550,15 @@ Gets the risk history of a riskyUser resource.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| "MSGraph.identityProtection.RiskyUserHistory.id | string | Unique ID of the risky user. | 
-| "MSGraph.identityProtection.RiskyUserHistory.isDeleted | Boolean | Indicates whether the user is deleted. | 
-| "MSGraph.identityProtection.RiskyUserHistory.isProcessing | Boolean | Indicates whether a user's risky state is being processed by the backend. | 
-| "MSGraph.identityProtection.RiskyUserHistory.riskLastUpdatedDateTime | DateTime | The date and time that the risky user was last updated. The DateTimeOffset type represents date and time information using the ISO 8601 format and is always in UTC time. | 
-| "MSGraph.identityProtection.RiskyUserHistory.riskLevel | string | Risk level of the detected risky user. The possible values are low, medium, high, hidden, none, and unknownFutureValue. | 
-| "MSGraph.identityProtection.RiskyUserHistory.riskstate | string | State of the user's risk. The possible values are none, confirmedSafe, remediated, dismissed, atRisk, confirmedCompromised, and unknownFutureValue. | 
-| "MSGraph.identityProtection.RiskyUserHistory.riskDetail | string | Reason why the user is considered a risky user. The possible values are limited to none, adminGeneratedTemporaryPassword, userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, and unknownFutureValue. | 
-| "MSGraph.identityProtection.RiskyUserHistory.userDisplayName | string | Risky user display name. | 
-| "MSGraph.identityProtection.RiskyUserHistory.userPrincipalName | string | Risky user principal name. | 
+| MSGraph.identityProtection.RiskyUserHistory.id | string | Unique ID of the risky user. | 
+| MSGraph.identityProtection.RiskyUserHistory.isDeleted | Boolean | Indicates whether the user is deleted. | 
+| MSGraph.identityProtection.RiskyUserHistory.isProcessing | Boolean | Indicates whether a user's risky state is being processed by the backend. | 
+| MSGraph.identityProtection.RiskyUserHistory.riskLastUpdatedDateTime | DateTime | The date and time that the risky user was last updated. The DateTimeOffset type represents date and time information using the ISO 8601 format and is always in UTC time. | 
+| MSGraph.identityProtection.RiskyUserHistory.riskLevel | string | Risk level of the detected risky user. The possible values are low, medium, high, hidden, none, and unknownFutureValue. | 
+| MSGraph.identityProtection.RiskyUserHistory.riskstate | string | State of the user's risk. The possible values are none, confirmedSafe, remediated, dismissed, atRisk, confirmedCompromised, and unknownFutureValue. | 
+| MSGraph.identityProtection.RiskyUserHistory.riskDetail | string | Reason why the user is considered a risky user. The possible values are limited to none, adminGeneratedTemporaryPassword, userPerformedSecuredPasswordChange, userPerformedSecuredPasswordReset, adminConfirmedSigninSafe, aiConfirmedSigninSafe, userPassedMFADrivenByRiskBasedPolicy, adminDismissedAllRiskForUser, adminConfirmedSigninCompromised, hidden, adminConfirmedUserCompromised, and unknownFutureValue. | 
+| MSGraph.identityProtection.RiskyUserHistory.userDisplayName | string | Risky user display name. | 
+| MSGraph.identityProtection.RiskyUserHistory.userPrincipalName | string | Risky user principal name. | 
 
 
 #### Command Example
