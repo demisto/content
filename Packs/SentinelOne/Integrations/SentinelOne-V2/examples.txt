@@ -15,3 +15,8 @@ sentinelone-get-events query_id=q034ae362a30eba5a187cbe601d19abaa
 sentinelone-get-processes query_id=q034ae362a30eba5a187cbe601d19abaa
 sentinelone-create-query query="AgentName Is Not Empty" from_date="2020-10-13T15:24:09.257Z" to_date="2021-01-10T04:49:26.257525Z"
 sentinelone-get-white-list os_types=windows exclusion_type=path
+sentinelone-get-blocklist account_ids=ACCOUNT_ID global=true offset=0 limit=1
+sentinelone-add-hash-to-blocklist os_type=windows description="EICAR Test File" sha1=3395856ce81f2b7382dee72602f798b642f14140 source=XSOAR
+sentinelone-remove-hash-from-blocklist os_type=windows sha1=3395856ce81f2b7382dee72602f798b642f14140
+sentinelone-fetch-file agent_id=AGENT_ID file_path="C:\Test\Path\To\File.txt" password=PossiblyInfected0987&*()
+sentinelone-download-fetched-file activity_id=ACTIVITY_ID agent_id=AGENT_ID password=PossiblyInfected0987&*()

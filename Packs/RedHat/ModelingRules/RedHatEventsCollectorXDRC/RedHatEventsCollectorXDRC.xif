@@ -1,7 +1,6 @@
 [MODEL: dataset="redhat_linux-xdrc_raw", model="Auth"]
-filter _log_source_file_name ~= "secure"
 
-| alter current_year =  arrayindex(regextract(to_string(current_time()), "\d{4}"), 0)
+  alter current_year =  arrayindex(regextract(to_string(current_time()), "\d{4}"), 0)
 | alter timestamp = arrayindex(regextract(_raw_log , "\w+\s\d{1,2}\s\d{2}(?::\d{2}){2}"), 0)
 | alter timestamp = format_string("%s %s", current_year , timestamp )
 
@@ -20,9 +19,8 @@ filter _log_source_file_name ~= "secure"
 
 
 [MODEL: dataset="redhat_linux-xdrc_raw", model="Endpoint"]
-filter _log_source_file_name ~= "messages"
 
-| alter current_year =  arrayindex(regextract(to_string(current_time()), "\d{4}"), 0)
+  alter current_year =  arrayindex(regextract(to_string(current_time()), "\d{4}"), 0)
 | alter timestamp = arrayindex(regextract(_raw_log , "\w+\s\d{1,2}\s\d{2}(?::\d{2}){2}"), 0)
 | alter timestamp = format_string("%s %s", current_year , timestamp )
 
