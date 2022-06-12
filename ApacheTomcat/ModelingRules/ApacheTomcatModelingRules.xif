@@ -12,7 +12,6 @@
 | alter sourceipv6 = arrayindex(regextract(_raw_log ,"(\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+)") ,0)
 | alter sourceip = coalesce(sourceipv4 ,sourceipv6)
 // end extract source_ip
-
  alter XDM.Network.event_timestamp= request_time
 | alter XDM.Network.Source.user.username =username
 | alter XDM.Network.http.url = requested_line
