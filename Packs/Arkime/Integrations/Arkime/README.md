@@ -56,21 +56,21 @@ Gets a list of nodes and links and returns them to the client.
 | Arkime.Connection.nodes.id | String | The source ip. | 
 | Arkime.Connection.nodes.cnt | Number | Number of appearances. | 
 | Arkime.Connection.nodes.sessions | Number | Number of sessions | 
-| Arkime.Connection.nodes.inresult | Number |  | 
+| Arkime.Connection.nodes.inresult | Number | The inresult. | 
 | Arkime.Connection.nodes.type | Number | Connection type. | 
-| Arkime.Connection.nodes.network.bytes | Number |  | 
-| Arkime.Connection.nodes.totDataBytes | Number |  | 
-| Arkime.Connection.nodes.network.packets | Number |  | 
-| Arkime.Connection.nodes.node | String |  | 
-| Arkime.Connection.nodes.pos | Number |  | 
-| Arkime.Connection.links.value | Number |  | 
-| Arkime.Connection.links.source | Number |  | 
-| Arkime.Connection.links.target | Number |  | 
-| Arkime.Connection.links.network.bytes | Number |  | 
-| Arkime.Connection.links.totDataBytes | Number |  | 
-| Arkime.Connection.links.network.packets | Number |  | 
-| Arkime.Connection.links.node | String |  | 
-| Arkime.Connection.recordsFiltered | Number | 	The number of history items returned in this result. | 
+| Arkime.Connection.nodes.network.bytes | Number | The bytes. | 
+| Arkime.Connection.nodes.totDataBytes | Number | The totDataBytes. | 
+| Arkime.Connection.nodes.network.packets | Number | The packets. | 
+| Arkime.Connection.nodes.node | String | The node. | 
+| Arkime.Connection.nodes.pos | Number | The pos. | 
+| Arkime.Connection.links.value | Number | The value. | 
+| Arkime.Connection.links.source | Number | The source. | 
+| Arkime.Connection.links.target | Number | The target. | 
+| Arkime.Connection.links.network.bytes | Number | The bytes. | 
+| Arkime.Connection.links.totDataBytes | Number | The totDataBytes. | 
+| Arkime.Connection.links.network.packets | Number | The packets. | 
+| Arkime.Connection.links.node | String | The node. | 
+| Arkime.Connection.recordsFiltered | Number | The number of history items returned in this result. | 
 
 #### Command example
 ```!arkime-connection-list baseline_date=720 start_time=1648817940 stop_time=1649595540```
@@ -1104,7 +1104,7 @@ Gets a list of nodes and links in csv format and returns them to the client.
 ```json
 {
     "InfoFile": {
-        "EntryID": "1871@4060e8c8-61bb-4131-8a47-32a7d97a9726",
+        "EntryID": "1931@4060e8c8-61bb-4131-8a47-32a7d97a9726",
         "Extension": "csv",
         "Info": "text/csv; charset=utf-8",
         "Name": "connections_list.csv",
@@ -1140,12 +1140,12 @@ Retrieve the raw session data in pcap format.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Arkime.PcapFile.data.node | String |  | 
-| Arkime.PcapFile.data.num | Number |  | 
-| Arkime.PcapFile.data.name | String |  | 
-| Arkime.PcapFile.data.first | Number |  | 
-| Arkime.PcapFile.data.fileSize | Number |  | 
-| Arkime.PcapFile.data.packetSize | Number |  | 
+| Arkime.PcapFile.data.node | String | The node. | 
+| Arkime.PcapFile.data.num | Number | The number. | 
+| Arkime.PcapFile.data.name | String | The name. | 
+| Arkime.PcapFile.data.first | Number | The first. | 
+| Arkime.PcapFile.data.fileSize | Number | The file size. | 
+| Arkime.PcapFile.data.packetSize | Number | The packet size. | 
 
 #### Command example
 ```!arkime-session-pcap-get ids=220516-QHSdz21pJ_xCtJGoL8mbmyNv```
@@ -1153,7 +1153,7 @@ Retrieve the raw session data in pcap format.
 ```json
 {
     "InfoFile": {
-        "EntryID": "1887@4060e8c8-61bb-4131-8a47-32a7d97a9726",
+        "EntryID": "1947@4060e8c8-61bb-4131-8a47-32a7d97a9726",
         "Extension": "pcap",
         "Info": "application/vnd.tcpdump.pcap",
         "Name": "raw_session_data.pcap",
@@ -1209,7 +1209,7 @@ Gets a list of sessions and returns them as CSV to the client.
 ```json
 {
     "InfoFile": {
-        "EntryID": "1883@4060e8c8-61bb-4131-8a47-32a7d97a9726",
+        "EntryID": "1943@4060e8c8-61bb-4131-8a47-32a7d97a9726",
         "Extension": "csv",
         "Info": "text/csv; charset=utf-8",
         "Name": "sessions_list.csv",
@@ -1253,32 +1253,32 @@ Gets a list of sessions and returns them to the client.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Arkime.Session.data.firstPacket | Date |  | 
-| Arkime.Session.data.rootId | String |  | 
-| Arkime.Session.data.totDataBytes | Number |  | 
-| Arkime.Session.data.ipProtocol | Number |  | 
-| Arkime.Session.data.node | String |  | 
-| Arkime.Session.data.lastPacket | Date |  | 
-| Arkime.Session.data.source.packets | Number |  | 
-| Arkime.Session.data.source.port | Number |  | 
-| Arkime.Session.data.source.ip | String |  | 
-| Arkime.Session.data.source.bytes | Number |  | 
-| Arkime.Session.data.destination.port | Number |  | 
-| Arkime.Session.data.destination.ip | String |  | 
-| Arkime.Session.data.destination.packets | Number |  | 
-| Arkime.Session.data.destination.bytes | Number |  | 
-| Arkime.Session.data.client.bytes | Number |  | 
-| Arkime.Session.data.server.bytes | Number |  | 
-| Arkime.Session.data.network.packets | Number |  | 
-| Arkime.Session.data.network.bytes | Number |  | 
-| Arkime.Session.data.id | String |  | 
-| Arkime.Session.graph.xmin | Date |  | 
-| Arkime.Session.graph.xmax | Date |  | 
-| Arkime.Session.graph.interval | Number |  | 
-| Arkime.Session.graph.sessionsTotal | Number |  | 
-| Arkime.Session.graph.network.packetsTotal | Number |  | 
-| Arkime.Session.graph.network.bytesTotal | Number |  | 
-| Arkime.Session.graph.totDataBytesTotal | Number |  | 
+| Arkime.Session.data.firstPacket | Date | The first packet. | 
+| Arkime.Session.data.rootId | String | The root Id. | 
+| Arkime.Session.data.totDataBytes | Number | The totDataBytes. | 
+| Arkime.Session.data.ipProtocol | Number | The IP Protocol. | 
+| Arkime.Session.data.node | String | The node. | 
+| Arkime.Session.data.lastPacket | Date | The last packet. | 
+| Arkime.Session.data.source.packets | Number | The source packets. | 
+| Arkime.Session.data.source.port | Number | The source port. | 
+| Arkime.Session.data.source.ip | String | The source ip. | 
+| Arkime.Session.data.source.bytes | Number | The source bytes. | 
+| Arkime.Session.data.destination.port | Number | The destination port. | 
+| Arkime.Session.data.destination.ip | String | The destination ip. | 
+| Arkime.Session.data.destination.packets | Number | The destination packets | 
+| Arkime.Session.data.destination.bytes | Number | The destination bytes. | 
+| Arkime.Session.data.client.bytes | Number | The client bytes. | 
+| Arkime.Session.data.server.bytes | Number | The server bytes. | 
+| Arkime.Session.data.network.packets | Number | The network packets. | 
+| Arkime.Session.data.network.bytes | Number | The network bytes. | 
+| Arkime.Session.data.id | String | The data id. | 
+| Arkime.Session.graph.xmin | Date | The graph xmin. | 
+| Arkime.Session.graph.xmax | Date | The graph xmax. | 
+| Arkime.Session.graph.interval | Number | The graph interval. | 
+| Arkime.Session.graph.sessionsTotal | Number | The graph sessions total. | 
+| Arkime.Session.graph.network.packetsTotal | Number | The network packets total. | 
+| Arkime.Session.graph.network.bytesTotal | Number | The network bytes total. | 
+| Arkime.Session.graph.totDataBytesTotal | Number | The totDataBytesTotal. | 
 | Arkime.Session.recordsTotal | Number | The total number of history results stored. | 
 | Arkime.Session.recordsFiltered | Number | The number of history items returned in this result. | 
 
@@ -4809,7 +4809,7 @@ Gets a list of sessions and returns them to the client.
             },
             "map": {},
             "recordsFiltered": 516305,
-            "recordsTotal": 23466787
+            "recordsTotal": 23491280
         }
     }
 }
@@ -4955,8 +4955,8 @@ Gets a list of unique field values (with or without counts) and sends them to th
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Arkime.UniqueField.Field | String |  | 
-| Arkime.UniqueField.Count | Boolean |  | 
+| Arkime.UniqueField.Field | String | The field. | 
+| Arkime.UniqueField.Count | Boolean | The count. | 
 
 #### Command example
 ```!arkime-unique-field-list expression_field_names=dns.ASN counts=0```
@@ -4984,10 +4984,13 @@ Gets a list of unique field values (with or without counts) and sends them to th
                 "Field": "AS14618 AMAZON-AES"
             },
             {
+                "Field": "AS15133 EDGECAST"
+            },
+            {
                 "Field": "AS16625 AKAMAI-AS"
             },
             {
-                "Field": "AS15133 EDGECAST"
+                "Field": "AS20446 STACKPATH-CDN"
             },
             {
                 "Field": "AS393225 ARIN-PFS-IAD"
@@ -4996,28 +4999,28 @@ Gets a list of unique field values (with or without counts) and sends them to th
                 "Field": "AS1680 Cellcom Fixed Line Communication L.P."
             },
             {
-                "Field": "AS22822 LLNW"
-            },
-            {
-                "Field": "AS20446 STACKPATH-CDN"
+                "Field": "AS54538 PAN0001"
             },
             {
                 "Field": "AS14870 FLEXERA-SC4"
             },
             {
-                "Field": "AS53736 NUTANIX-IT"
+                "Field": "AS20940 Akamai International B.V."
             },
             {
-                "Field": "AS54538 PAN0001"
+                "Field": "AS22822 LLNW"
+            },
+            {
+                "Field": "AS53736 NUTANIX-IT"
             },
             {
                 "Field": "AS8068 MICROSOFT-CORP-MSN-AS-BLOCK"
             },
             {
-                "Field": "---"
+                "Field": "AS3356 LEVEL3"
             },
             {
-                "Field": "AS20940 Akamai International B.V."
+                "Field": "---"
             },
             {
                 "Field": "AS41231 Canonical Group Limited"
@@ -5026,28 +5029,25 @@ Gets a list of unique field values (with or without counts) and sends them to th
                 "Field": "AS7754 MCAFEE"
             },
             {
-                "Field": "AS36351 SOFTLAYER"
+                "Field": "AS3598 MICROSOFT-CORP-AS"
             },
             {
-                "Field": "AS3356 LEVEL3"
-            },
-            {
-                "Field": "AS16276 OVH SAS"
-            },
-            {
-                "Field": "AS1955 KIFU (Governmental Info Tech Development Agency)"
-            },
-            {
-                "Field": "AS19637 AVG19637"
+                "Field": "AS12400 Partner Communications Ltd."
             },
             {
                 "Field": "AS202818 Lumen Technologies Uk Limited"
             },
             {
-                "Field": "AS6939 HURRICANE"
+                "Field": "AS12876 Online S.a.s."
             },
             {
-                "Field": "AS852 TELUS Communications"
+                "Field": "AS36351 SOFTLAYER"
+            },
+            {
+                "Field": "AS40816 VMW-PA-SERVER"
+            },
+            {
+                "Field": "AS6939 HURRICANE"
             },
             {
                 "Field": "AS1213 HEAnet"
@@ -5056,43 +5056,49 @@ Gets a list of unique field values (with or without counts) and sends them to th
                 "Field": "AS12322 Free SAS"
             },
             {
-                "Field": "AS12876 Online S.a.s."
+                "Field": "AS16276 OVH SAS"
             },
             {
                 "Field": "AS174 COGENT-174"
             },
             {
-                "Field": "AS206238 Freedom Internet BV"
+                "Field": "AS19429 Colombia"
+            },
+            {
+                "Field": "AS1955 KIFU (Governmental Info Tech Development Agency)"
+            },
+            {
+                "Field": "AS19637 AVG19637"
+            },
+            {
+                "Field": "AS208725 Devrandom.be BV"
             },
             {
                 "Field": "AS209850 Burdenis-com Eood"
             },
             {
-                "Field": "AS24940 Hetzner Online GmbH"
+                "Field": "AS22317 F5-NETWORKS"
             },
             {
-                "Field": "AS30983 Moroccan Academic Network"
+                "Field": "AS23028 TEAM-CYMRU"
             },
             {
-                "Field": "AS3303 Bluewin"
+                "Field": "AS3214 xTom GmbH"
             },
             {
-                "Field": "AS3598 MICROSOFT-CORP-AS"
+                "Field": "AS38719 Dreamscape Networks Limited"
             },
             {
-                "Field": "AS40816 VMW-PA-SERVER"
+                "Field": "AS393424 AS-TORIX-SVC"
             },
             {
-                "Field": "AS4766 Korea Telecom"
+                "Field": "AS50392 LLC Campus Networks"
             },
             {
-                "Field": "AS53159 SUPREMO TRIBUNAL FEDERAL"
+                "Field": "AS57351 Hypr Helix Ltd"
             },
             {
-                "Field": "AS7922 COMCAST-7922"
-            },
-            {
-                "Field": "AS8895 King Abdul Aziz City for Science and Technology"
+                "Field": "AS852 TELUS Communications"
             },
             {
                 "Field": ""
@@ -5104,7 +5110,7 @@ Gets a list of unique field values (with or without counts) and sends them to th
 
 #### Human Readable Output
 
->Showing 44 results, limit=50
+>Showing 46 results, limit=50
 >### Unique Field Results:
 >|Field|Count|
 >|---|---|
@@ -5114,43 +5120,45 @@ Gets a list of unique field values (with or without counts) and sends them to th
 >| AS16509 AMAZON-02 |  |
 >| AS13335 CLOUDFLARENET |  |
 >| AS14618 AMAZON-AES |  |
->| AS16625 AKAMAI-AS |  |
 >| AS15133 EDGECAST |  |
+>| AS16625 AKAMAI-AS |  |
+>| AS20446 STACKPATH-CDN |  |
 >| AS393225 ARIN-PFS-IAD |  |
 >| AS1680 Cellcom Fixed Line Communication L.P. |  |
->| AS22822 LLNW |  |
->| AS20446 STACKPATH-CDN |  |
->| AS14870 FLEXERA-SC4 |  |
->| AS53736 NUTANIX-IT |  |
 >| AS54538 PAN0001 |  |
->| AS8068 MICROSOFT-CORP-MSN-AS-BLOCK |  |
->| --- |  |
+>| AS14870 FLEXERA-SC4 |  |
 >| AS20940 Akamai International B.V. |  |
+>| AS22822 LLNW |  |
+>| AS53736 NUTANIX-IT |  |
+>| AS8068 MICROSOFT-CORP-MSN-AS-BLOCK |  |
+>| AS3356 LEVEL3 |  |
+>| --- |  |
 >| AS41231 Canonical Group Limited |  |
 >| AS7754 MCAFEE |  |
->| AS36351 SOFTLAYER |  |
->| AS3356 LEVEL3 |  |
->| AS16276 OVH SAS |  |
->| AS1955 KIFU (Governmental Info Tech Development Agency) |  |
->| AS19637 AVG19637 |  |
+>| AS3598 MICROSOFT-CORP-AS |  |
+>| AS12400 Partner Communications Ltd. |  |
 >| AS202818 Lumen Technologies Uk Limited |  |
+>| AS12876 Online S.a.s. |  |
+>| AS36351 SOFTLAYER |  |
+>| AS40816 VMW-PA-SERVER |  |
 >| AS6939 HURRICANE |  |
->| AS852 TELUS Communications |  |
 >| AS1213 HEAnet |  |
 >| AS12322 Free SAS |  |
->| AS12876 Online S.a.s. |  |
+>| AS16276 OVH SAS |  |
 >| AS174 COGENT-174 |  |
->| AS206238 Freedom Internet BV |  |
+>| AS19429 Colombia |  |
+>| AS1955 KIFU (Governmental Info Tech Development Agency) |  |
+>| AS19637 AVG19637 |  |
+>| AS208725 Devrandom.be BV |  |
 >| AS209850 Burdenis-com Eood |  |
->| AS24940 Hetzner Online GmbH |  |
->| AS30983 Moroccan Academic Network |  |
->| AS3303 Bluewin |  |
->| AS3598 MICROSOFT-CORP-AS |  |
->| AS40816 VMW-PA-SERVER |  |
->| AS4766 Korea Telecom |  |
->| AS53159 SUPREMO TRIBUNAL FEDERAL |  |
->| AS7922 COMCAST-7922 |  |
->| AS8895 King Abdul Aziz City for Science and Technology |  |
+>| AS22317 F5-NETWORKS |  |
+>| AS23028 TEAM-CYMRU |  |
+>| AS3214 xTom GmbH |  |
+>| AS38719 Dreamscape Networks Limited |  |
+>| AS393424 AS-TORIX-SVC |  |
+>| AS50392 LLC Campus Networks |  |
+>| AS57351 Hypr Helix Ltd |  |
+>| AS852 TELUS Communications |  |
 >|  |  |
 
 
@@ -5162,15 +5170,15 @@ Gets a list of unique field values (with or without counts) and sends them to th
     "Arkime": {
         "UniqueField": [
             {
-                "Count": " 796",
+                "Count": " 803",
                 "Field": "AS8075 MICROSOFT-CORP-MSN-AS-BLOCK"
             },
             {
-                "Count": " 553",
+                "Count": " 566",
                 "Field": "AS15169 GOOGLE"
             },
             {
-                "Count": " 520",
+                "Count": " 499",
                 "Field": "AS396982 GOOGLE-CLOUD-PLATFORM"
             },
             {
@@ -5178,63 +5186,67 @@ Gets a list of unique field values (with or without counts) and sends them to th
                 "Field": "AS16509 AMAZON-02"
             },
             {
-                "Count": " 118",
+                "Count": " 111",
                 "Field": "AS13335 CLOUDFLARENET"
             },
             {
-                "Count": " 70",
+                "Count": " 84",
                 "Field": "AS14618 AMAZON-AES"
             },
             {
-                "Count": " 32",
-                "Field": "AS16625 AKAMAI-AS"
-            },
-            {
-                "Count": " 23",
+                "Count": " 29",
                 "Field": "AS15133 EDGECAST"
             },
             {
-                "Count": " 20",
-                "Field": "AS393225 ARIN-PFS-IAD"
-            },
-            {
-                "Count": " 19",
-                "Field": "AS1680 Cellcom Fixed Line Communication L.P."
-            },
-            {
-                "Count": " 18",
-                "Field": "AS22822 LLNW"
+                "Count": " 29",
+                "Field": "AS16625 AKAMAI-AS"
             },
             {
                 "Count": " 17",
                 "Field": "AS20446 STACKPATH-CDN"
             },
             {
+                "Count": " 16",
+                "Field": "AS393225 ARIN-PFS-IAD"
+            },
+            {
                 "Count": " 15",
+                "Field": "AS1680 Cellcom Fixed Line Communication L.P."
+            },
+            {
+                "Count": " 14",
+                "Field": "AS54538 PAN0001"
+            },
+            {
+                "Count": " 13",
                 "Field": "AS14870 FLEXERA-SC4"
             },
             {
                 "Count": " 13",
-                "Field": "AS53736 NUTANIX-IT"
-            },
-            {
-                "Count": " 13",
-                "Field": "AS54538 PAN0001"
-            },
-            {
-                "Count": " 12",
-                "Field": "AS8068 MICROSOFT-CORP-MSN-AS-BLOCK"
-            },
-            {
-                "Count": " 8",
-                "Field": "---"
-            },
-            {
-                "Count": " 7",
                 "Field": "AS20940 Akamai International B.V."
             },
             {
-                "Count": " 6",
+                "Count": " 12",
+                "Field": "AS22822 LLNW"
+            },
+            {
+                "Count": " 11",
+                "Field": "AS53736 NUTANIX-IT"
+            },
+            {
+                "Count": " 10",
+                "Field": "AS8068 MICROSOFT-CORP-MSN-AS-BLOCK"
+            },
+            {
+                "Count": " 7",
+                "Field": "AS3356 LEVEL3"
+            },
+            {
+                "Count": " 5",
+                "Field": "---"
+            },
+            {
+                "Count": " 5",
                 "Field": "AS41231 Canonical Group Limited"
             },
             {
@@ -5243,35 +5255,31 @@ Gets a list of unique field values (with or without counts) and sends them to th
             },
             {
                 "Count": " 4",
-                "Field": "AS36351 SOFTLAYER"
+                "Field": "AS3598 MICROSOFT-CORP-AS"
             },
             {
                 "Count": " 3",
-                "Field": "AS3356 LEVEL3"
+                "Field": "AS12400 Partner Communications Ltd."
             },
             {
-                "Count": " 2",
-                "Field": "AS16276 OVH SAS"
-            },
-            {
-                "Count": " 2",
-                "Field": "AS1955 KIFU (Governmental Info Tech Development Agency)"
-            },
-            {
-                "Count": " 2",
-                "Field": "AS19637 AVG19637"
-            },
-            {
-                "Count": " 2",
+                "Count": " 3",
                 "Field": "AS202818 Lumen Technologies Uk Limited"
             },
             {
                 "Count": " 2",
-                "Field": "AS6939 HURRICANE"
+                "Field": "AS12876 Online S.a.s."
             },
             {
                 "Count": " 2",
-                "Field": "AS852 TELUS Communications"
+                "Field": "AS36351 SOFTLAYER"
+            },
+            {
+                "Count": " 2",
+                "Field": "AS40816 VMW-PA-SERVER"
+            },
+            {
+                "Count": " 2",
+                "Field": "AS6939 HURRICANE"
             },
             {
                 "Count": " 1",
@@ -5283,7 +5291,7 @@ Gets a list of unique field values (with or without counts) and sends them to th
             },
             {
                 "Count": " 1",
-                "Field": "AS12876 Online S.a.s."
+                "Field": "AS16276 OVH SAS"
             },
             {
                 "Count": " 1",
@@ -5291,7 +5299,19 @@ Gets a list of unique field values (with or without counts) and sends them to th
             },
             {
                 "Count": " 1",
-                "Field": "AS206238 Freedom Internet BV"
+                "Field": "AS19429 Colombia"
+            },
+            {
+                "Count": " 1",
+                "Field": "AS1955 KIFU (Governmental Info Tech Development Agency)"
+            },
+            {
+                "Count": " 1",
+                "Field": "AS19637 AVG19637"
+            },
+            {
+                "Count": " 1",
+                "Field": "AS208725 Devrandom.be BV"
             },
             {
                 "Count": " 1",
@@ -5299,39 +5319,35 @@ Gets a list of unique field values (with or without counts) and sends them to th
             },
             {
                 "Count": " 1",
-                "Field": "AS24940 Hetzner Online GmbH"
+                "Field": "AS22317 F5-NETWORKS"
             },
             {
                 "Count": " 1",
-                "Field": "AS30983 Moroccan Academic Network"
+                "Field": "AS23028 TEAM-CYMRU"
             },
             {
                 "Count": " 1",
-                "Field": "AS3303 Bluewin"
+                "Field": "AS3214 xTom GmbH"
             },
             {
                 "Count": " 1",
-                "Field": "AS3598 MICROSOFT-CORP-AS"
+                "Field": "AS38719 Dreamscape Networks Limited"
             },
             {
                 "Count": " 1",
-                "Field": "AS40816 VMW-PA-SERVER"
+                "Field": "AS393424 AS-TORIX-SVC"
             },
             {
                 "Count": " 1",
-                "Field": "AS4766 Korea Telecom"
+                "Field": "AS50392 LLC Campus Networks"
             },
             {
                 "Count": " 1",
-                "Field": "AS53159 SUPREMO TRIBUNAL FEDERAL"
+                "Field": "AS57351 Hypr Helix Ltd"
             },
             {
                 "Count": " 1",
-                "Field": "AS7922 COMCAST-7922"
-            },
-            {
-                "Count": " 1",
-                "Field": "AS8895 King Abdul Aziz City for Science and Technology"
+                "Field": "AS852 TELUS Communications"
             },
             {
                 "Field": ""
@@ -5343,53 +5359,55 @@ Gets a list of unique field values (with or without counts) and sends them to th
 
 #### Human Readable Output
 
->Showing 44 results, limit=50
+>Showing 46 results, limit=50
 >### Unique Field Results:
 >|Field|Count|
 >|---|---|
->| AS8075 MICROSOFT-CORP-MSN-AS-BLOCK |  796 |
->| AS15169 GOOGLE |  553 |
->| AS396982 GOOGLE-CLOUD-PLATFORM |  520 |
+>| AS8075 MICROSOFT-CORP-MSN-AS-BLOCK |  803 |
+>| AS15169 GOOGLE |  566 |
+>| AS396982 GOOGLE-CLOUD-PLATFORM |  499 |
 >| AS16509 AMAZON-02 |  208 |
->| AS13335 CLOUDFLARENET |  118 |
->| AS14618 AMAZON-AES |  70 |
->| AS16625 AKAMAI-AS |  32 |
->| AS15133 EDGECAST |  23 |
->| AS393225 ARIN-PFS-IAD |  20 |
->| AS1680 Cellcom Fixed Line Communication L.P. |  19 |
->| AS22822 LLNW |  18 |
+>| AS13335 CLOUDFLARENET |  111 |
+>| AS14618 AMAZON-AES |  84 |
+>| AS15133 EDGECAST |  29 |
+>| AS16625 AKAMAI-AS |  29 |
 >| AS20446 STACKPATH-CDN |  17 |
->| AS14870 FLEXERA-SC4 |  15 |
->| AS53736 NUTANIX-IT |  13 |
->| AS54538 PAN0001 |  13 |
->| AS8068 MICROSOFT-CORP-MSN-AS-BLOCK |  12 |
->| --- |  8 |
->| AS20940 Akamai International B.V. |  7 |
->| AS41231 Canonical Group Limited |  6 |
+>| AS393225 ARIN-PFS-IAD |  16 |
+>| AS1680 Cellcom Fixed Line Communication L.P. |  15 |
+>| AS54538 PAN0001 |  14 |
+>| AS14870 FLEXERA-SC4 |  13 |
+>| AS20940 Akamai International B.V. |  13 |
+>| AS22822 LLNW |  12 |
+>| AS53736 NUTANIX-IT |  11 |
+>| AS8068 MICROSOFT-CORP-MSN-AS-BLOCK |  10 |
+>| AS3356 LEVEL3 |  7 |
+>| --- |  5 |
+>| AS41231 Canonical Group Limited |  5 |
 >| AS7754 MCAFEE |  5 |
->| AS36351 SOFTLAYER |  4 |
->| AS3356 LEVEL3 |  3 |
->| AS16276 OVH SAS |  2 |
->| AS1955 KIFU (Governmental Info Tech Development Agency) |  2 |
->| AS19637 AVG19637 |  2 |
->| AS202818 Lumen Technologies Uk Limited |  2 |
+>| AS3598 MICROSOFT-CORP-AS |  4 |
+>| AS12400 Partner Communications Ltd. |  3 |
+>| AS202818 Lumen Technologies Uk Limited |  3 |
+>| AS12876 Online S.a.s. |  2 |
+>| AS36351 SOFTLAYER |  2 |
+>| AS40816 VMW-PA-SERVER |  2 |
 >| AS6939 HURRICANE |  2 |
->| AS852 TELUS Communications |  2 |
 >| AS1213 HEAnet |  1 |
 >| AS12322 Free SAS |  1 |
->| AS12876 Online S.a.s. |  1 |
+>| AS16276 OVH SAS |  1 |
 >| AS174 COGENT-174 |  1 |
->| AS206238 Freedom Internet BV |  1 |
+>| AS19429 Colombia |  1 |
+>| AS1955 KIFU (Governmental Info Tech Development Agency) |  1 |
+>| AS19637 AVG19637 |  1 |
+>| AS208725 Devrandom.be BV |  1 |
 >| AS209850 Burdenis-com Eood |  1 |
->| AS24940 Hetzner Online GmbH |  1 |
->| AS30983 Moroccan Academic Network |  1 |
->| AS3303 Bluewin |  1 |
->| AS3598 MICROSOFT-CORP-AS |  1 |
->| AS40816 VMW-PA-SERVER |  1 |
->| AS4766 Korea Telecom |  1 |
->| AS53159 SUPREMO TRIBUNAL FEDERAL |  1 |
->| AS7922 COMCAST-7922 |  1 |
->| AS8895 King Abdul Aziz City for Science and Technology |  1 |
+>| AS22317 F5-NETWORKS |  1 |
+>| AS23028 TEAM-CYMRU |  1 |
+>| AS3214 xTom GmbH |  1 |
+>| AS38719 Dreamscape Networks Limited |  1 |
+>| AS393424 AS-TORIX-SVC |  1 |
+>| AS50392 LLC Campus Networks |  1 |
+>| AS57351 Hypr Helix Ltd |  1 |
+>| AS852 TELUS Communications |  1 |
 >|  |  |
 
 
@@ -5426,8 +5444,8 @@ Gets an intersection of unique field values (with or without counts) and sends t
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Arkime.UniqueField.Field | String |  | 
-| Arkime.UniqueField.Count | Boolean |  | 
+| Arkime.UniqueField.Field | String | The field. | 
+| Arkime.UniqueField.Count | Boolean | The count. | 
 
 #### Command example
 ```!arkime-multi-unique-field-list expression_field_names=destination.ip counts=1 database_field=dns.ASN```
@@ -5437,51 +5455,51 @@ Gets an intersection of unique field values (with or without counts) and sends t
     "Arkime": {
         "UniqueField": [
             {
-                "Count": " 13936",
+                "Count": " 13573",
                 "Field": "8.8.8.8"
             },
             {
-                "Count": " 3337",
+                "Count": " 3321",
                 "Field": "192.168.1.53"
             },
             {
-                "Count": " 2860",
+                "Count": " 2846",
                 "Field": "192.168.1.65"
             },
             {
-                "Count": " 2850",
+                "Count": " 2837",
                 "Field": "192.168.1.51"
             },
             {
-                "Count": " 2274",
+                "Count": " 2441",
                 "Field": "8.8.4.4"
             },
             {
-                "Count": " 1410",
+                "Count": " 1404",
                 "Field": "13.48.226.5"
             },
             {
-                "Count": " 408",
-                "Field": "35.247.145.234"
-            },
-            {
-                "Count": " 358",
-                "Field": "192.168.1.64"
-            },
-            {
-                "Count": " 220",
-                "Field": "169.254.169.123"
-            },
-            {
-                "Count": " 197",
-                "Field": "162.159.246.125"
-            },
-            {
-                "Count": " 181",
+                "Count": " 467",
                 "Field": "192.168.1.141"
             },
             {
-                "Count": " 180",
+                "Count": " 390",
+                "Field": "35.247.145.234"
+            },
+            {
+                "Count": " 356",
+                "Field": "192.168.1.64"
+            },
+            {
+                "Count": " 312",
+                "Field": "192.168.1.126"
+            },
+            {
+                "Count": " 219",
+                "Field": "169.254.169.123"
+            },
+            {
+                "Count": " 183",
                 "Field": "192.168.1.95"
             },
             {
@@ -5489,115 +5507,123 @@ Gets an intersection of unique field values (with or without counts) and sends t
                 "Field": "51.124.32.246"
             },
             {
-                "Count": " 158",
-                "Field": "192.168.1.113"
+                "Count": " 161",
+                "Field": "192.168.1.41"
             },
             {
-                "Count": " 158",
-                "Field": "192.168.1.126"
+                "Count": " 149",
+                "Field": "224.0.0.252"
             },
             {
-                "Count": " 141",
+                "Count": " 143",
                 "Field": "ff02::1:2"
             },
             {
-                "Count": " 132",
+                "Count": " 142",
+                "Field": "192.168.1.113"
+            },
+            {
+                "Count": " 126",
                 "Field": "192.168.1.136"
             },
             {
                 "Count": " 125",
+                "Field": "192.168.1.77"
+            },
+            {
+                "Count": " 123",
                 "Field": "192.168.1.130"
             },
             {
-                "Count": " 122",
+                "Count": " 123",
                 "Field": "239.255.255.250"
             },
             {
-                "Count": " 121",
-                "Field": "224.0.0.252"
-            },
-            {
-                "Count": " 119",
+                "Count": " 118",
                 "Field": "15.236.187.14"
             },
             {
-                "Count": " 119",
+                "Count": " 118",
                 "Field": "15.237.17.54"
             },
             {
-                "Count": " 117",
+                "Count": " 118",
                 "Field": "192.168.1.255"
             },
             {
-                "Count": " 115",
-                "Field": "192.168.1.41"
-            },
-            {
-                "Count": " 113",
+                "Count": " 110",
                 "Field": "162.159.200.123"
             },
             {
-                "Count": " 106",
-                "Field": "192.168.1.8"
-            },
-            {
-                "Count": " 102",
+                "Count": " 104",
                 "Field": "192.168.1.1"
             },
             {
                 "Count": " 99",
+                "Field": "40.119.148.38"
+            },
+            {
+                "Count": " 97",
                 "Field": "104.46.127.225"
             },
             {
                 "Count": " 95",
-                "Field": "192.168.1.85"
+                "Field": "162.159.246.125"
             },
             {
-                "Count": " 94",
-                "Field": "40.119.148.38"
-            },
-            {
-                "Count": " 92",
+                "Count": " 90",
                 "Field": "162.159.200.1"
             },
             {
+                "Count": " 89",
+                "Field": "192.168.1.8"
+            },
+            {
+                "Count": " 82",
+                "Field": "192.168.1.85"
+            },
+            {
                 "Count": " 76",
-                "Field": "34.69.208.173"
-            },
-            {
-                "Count": " 75",
-                "Field": "192.168.1.77"
-            },
-            {
-                "Count": " 75",
                 "Field": "224.0.0.253"
             },
             {
-                "Count": " 73",
+                "Count": " 72",
                 "Field": "34.96.84.34"
             },
             {
-                "Count": " 69",
+                "Count": " 72",
                 "Field": "184.105.176.47"
+            },
+            {
+                "Count": " 69",
+                "Field": "192.168.1.97"
+            },
+            {
+                "Count": " 68",
+                "Field": "34.69.208.173"
             },
             {
                 "Count": " 60",
                 "Field": "34.254.235.146"
             },
             {
-                "Count": " 57",
-                "Field": "20.83.94.75"
-            },
-            {
-                "Count": " 57",
-                "Field": "142.250.186.110"
-            },
-            {
-                "Count": " 55",
+                "Count": " 60",
                 "Field": "154.59.123.123"
             },
             {
-                "Count": " 53",
+                "Count": " 58",
+                "Field": "20.83.94.75"
+            },
+            {
+                "Count": " 54",
+                "Field": "142.250.186.110"
+            },
+            {
+                "Count": " 52",
+                "Field": "3.235.189.123"
+            },
+            {
+                "Count": " 52",
                 "Field": "ff02::16"
             },
             {
@@ -5606,35 +5632,27 @@ Gets an intersection of unique field values (with or without counts) and sends t
             },
             {
                 "Count": " 49",
-                "Field": "168.149.132.102"
-            },
-            {
-                "Count": " 48",
-                "Field": "ff02::2"
-            },
-            {
-                "Count": " 47",
-                "Field": "192.168.1.97"
-            },
-            {
-                "Count": " 46",
                 "Field": "255.255.255.255"
             },
             {
-                "Count": " 38",
-                "Field": "3.235.189.122"
+                "Count": " 49",
+                "Field": "ff02::2"
             },
             {
-                "Count": " 35",
-                "Field": "3.235.189.123"
+                "Count": " 48",
+                "Field": "168.149.132.102"
             },
             {
-                "Count": " 35",
-                "Field": "34.98.77.231"
-            },
-            {
-                "Count": " 34",
+                "Count": " 37",
                 "Field": "3.235.189.124"
+            },
+            {
+                "Count": " 37",
+                "Field": "35.202.105.28"
+            },
+            {
+                "Count": " 36",
+                "Field": "34.98.77.231"
             }
         ]
     }
@@ -5647,56 +5665,56 @@ Gets an intersection of unique field values (with or without counts) and sends t
 >### Unique Field Results:
 >|Field|Count|
 >|---|---|
->| 8.8.8.8 |  13936 |
->| 192.168.1.53 |  3337 |
->| 192.168.1.65 |  2860 |
->| 192.168.1.51 |  2850 |
->| 8.8.4.4 |  2274 |
->| 13.48.226.5 |  1410 |
->| 35.247.145.234 |  408 |
->| 192.168.1.64 |  358 |
->| 169.254.169.123 |  220 |
->| 162.159.246.125 |  197 |
->| 192.168.1.141 |  181 |
->| 192.168.1.95 |  180 |
+>| 8.8.8.8 |  13573 |
+>| 192.168.1.53 |  3321 |
+>| 192.168.1.65 |  2846 |
+>| 192.168.1.51 |  2837 |
+>| 8.8.4.4 |  2441 |
+>| 13.48.226.5 |  1404 |
+>| 192.168.1.141 |  467 |
+>| 35.247.145.234 |  390 |
+>| 192.168.1.64 |  356 |
+>| 192.168.1.126 |  312 |
+>| 169.254.169.123 |  219 |
+>| 192.168.1.95 |  183 |
 >| 51.124.32.246 |  161 |
->| 192.168.1.113 |  158 |
->| 192.168.1.126 |  158 |
->| ff02::1:2 |  141 |
->| 192.168.1.136 |  132 |
->| 192.168.1.130 |  125 |
->| 239.255.255.250 |  122 |
->| 224.0.0.252 |  121 |
->| 15.236.187.14 |  119 |
->| 15.237.17.54 |  119 |
->| 192.168.1.255 |  117 |
->| 192.168.1.41 |  115 |
->| 162.159.200.123 |  113 |
->| 192.168.1.8 |  106 |
->| 192.168.1.1 |  102 |
->| 104.46.127.225 |  99 |
->| 192.168.1.85 |  95 |
->| 40.119.148.38 |  94 |
->| 162.159.200.1 |  92 |
->| 34.69.208.173 |  76 |
->| 192.168.1.77 |  75 |
->| 224.0.0.253 |  75 |
->| 34.96.84.34 |  73 |
->| 184.105.176.47 |  69 |
+>| 192.168.1.41 |  161 |
+>| 224.0.0.252 |  149 |
+>| ff02::1:2 |  143 |
+>| 192.168.1.113 |  142 |
+>| 192.168.1.136 |  126 |
+>| 192.168.1.77 |  125 |
+>| 192.168.1.130 |  123 |
+>| 239.255.255.250 |  123 |
+>| 15.236.187.14 |  118 |
+>| 15.237.17.54 |  118 |
+>| 192.168.1.255 |  118 |
+>| 162.159.200.123 |  110 |
+>| 192.168.1.1 |  104 |
+>| 40.119.148.38 |  99 |
+>| 104.46.127.225 |  97 |
+>| 162.159.246.125 |  95 |
+>| 162.159.200.1 |  90 |
+>| 192.168.1.8 |  89 |
+>| 192.168.1.85 |  82 |
+>| 224.0.0.253 |  76 |
+>| 34.96.84.34 |  72 |
+>| 184.105.176.47 |  72 |
+>| 192.168.1.97 |  69 |
+>| 34.69.208.173 |  68 |
 >| 34.254.235.146 |  60 |
->| 20.83.94.75 |  57 |
->| 142.250.186.110 |  57 |
->| 154.59.123.123 |  55 |
->| ff02::16 |  53 |
+>| 154.59.123.123 |  60 |
+>| 20.83.94.75 |  58 |
+>| 142.250.186.110 |  54 |
+>| 3.235.189.123 |  52 |
+>| ff02::16 |  52 |
 >| 34.122.191.141 |  50 |
->| 168.149.132.102 |  49 |
->| ff02::2 |  48 |
->| 192.168.1.97 |  47 |
->| 255.255.255.255 |  46 |
->| 3.235.189.122 |  38 |
->| 3.235.189.123 |  35 |
->| 34.98.77.231 |  35 |
->| 3.235.189.124 |  34 |
+>| 255.255.255.255 |  49 |
+>| ff02::2 |  49 |
+>| 168.149.132.102 |  48 |
+>| 3.235.189.124 |  37 |
+>| 35.202.105.28 |  37 |
+>| 34.98.77.231 |  36 |
 
 
 #### Command example
@@ -5725,19 +5743,19 @@ Gets an intersection of unique field values (with or without counts) and sends t
                 "Field": "13.48.226.5"
             },
             {
+                "Field": "192.168.1.141"
+            },
+            {
                 "Field": "35.247.145.234"
             },
             {
                 "Field": "192.168.1.64"
             },
             {
+                "Field": "192.168.1.126"
+            },
+            {
                 "Field": "169.254.169.123"
-            },
-            {
-                "Field": "162.159.246.125"
-            },
-            {
-                "Field": "192.168.1.141"
             },
             {
                 "Field": "192.168.1.95"
@@ -5746,13 +5764,19 @@ Gets an intersection of unique field values (with or without counts) and sends t
                 "Field": "51.124.32.246"
             },
             {
-                "Field": "192.168.1.113"
+                "Field": "192.168.1.41"
             },
             {
-                "Field": "192.168.1.126"
+                "Field": "224.0.0.252"
             },
             {
                 "Field": "ff02::1:2"
+            },
+            {
+                "Field": "192.168.1.113"
+            },
+            {
+                "Field": "192.168.1.77"
             },
             {
                 "Field": "192.168.1.136"
@@ -5764,9 +5788,6 @@ Gets an intersection of unique field values (with or without counts) and sends t
                 "Field": "239.255.255.250"
             },
             {
-                "Field": "224.0.0.252"
-            },
-            {
                 "Field": "15.236.187.14"
             },
             {
@@ -5776,34 +5797,28 @@ Gets an intersection of unique field values (with or without counts) and sends t
                 "Field": "192.168.1.255"
             },
             {
-                "Field": "192.168.1.41"
-            },
-            {
                 "Field": "162.159.200.123"
-            },
-            {
-                "Field": "192.168.1.8"
             },
             {
                 "Field": "192.168.1.1"
             },
             {
+                "Field": "40.119.148.38"
+            },
+            {
                 "Field": "104.46.127.225"
             },
             {
-                "Field": "192.168.1.85"
-            },
-            {
-                "Field": "40.119.148.38"
+                "Field": "162.159.246.125"
             },
             {
                 "Field": "162.159.200.1"
             },
             {
-                "Field": "34.69.208.173"
+                "Field": "192.168.1.8"
             },
             {
-                "Field": "192.168.1.77"
+                "Field": "192.168.1.85"
             },
             {
                 "Field": "224.0.0.253"
@@ -5815,7 +5830,16 @@ Gets an intersection of unique field values (with or without counts) and sends t
                 "Field": "184.105.176.47"
             },
             {
+                "Field": "192.168.1.97"
+            },
+            {
+                "Field": "34.69.208.173"
+            },
+            {
                 "Field": "34.254.235.146"
+            },
+            {
+                "Field": "154.59.123.123"
             },
             {
                 "Field": "20.83.94.75"
@@ -5824,7 +5848,7 @@ Gets an intersection of unique field values (with or without counts) and sends t
                 "Field": "142.250.186.110"
             },
             {
-                "Field": "154.59.123.123"
+                "Field": "3.235.189.123"
             },
             {
                 "Field": "ff02::16"
@@ -5833,28 +5857,22 @@ Gets an intersection of unique field values (with or without counts) and sends t
                 "Field": "34.122.191.141"
             },
             {
-                "Field": "168.149.132.102"
+                "Field": "255.255.255.255"
             },
             {
                 "Field": "ff02::2"
             },
             {
-                "Field": "192.168.1.97"
-            },
-            {
-                "Field": "255.255.255.255"
-            },
-            {
-                "Field": "3.235.189.122"
-            },
-            {
-                "Field": "3.235.189.123"
-            },
-            {
-                "Field": "34.98.77.231"
+                "Field": "168.149.132.102"
             },
             {
                 "Field": "3.235.189.124"
+            },
+            {
+                "Field": "35.202.105.28"
+            },
+            {
+                "Field": "34.98.77.231"
             }
         ]
     }
@@ -5873,50 +5891,50 @@ Gets an intersection of unique field values (with or without counts) and sends t
 >| 192.168.1.51 |  |
 >| 8.8.4.4 |  |
 >| 13.48.226.5 |  |
+>| 192.168.1.141 |  |
 >| 35.247.145.234 |  |
 >| 192.168.1.64 |  |
+>| 192.168.1.126 |  |
 >| 169.254.169.123 |  |
->| 162.159.246.125 |  |
->| 192.168.1.141 |  |
 >| 192.168.1.95 |  |
 >| 51.124.32.246 |  |
->| 192.168.1.113 |  |
->| 192.168.1.126 |  |
+>| 192.168.1.41 |  |
+>| 224.0.0.252 |  |
 >| ff02::1:2 |  |
+>| 192.168.1.113 |  |
+>| 192.168.1.77 |  |
 >| 192.168.1.136 |  |
 >| 192.168.1.130 |  |
 >| 239.255.255.250 |  |
->| 224.0.0.252 |  |
 >| 15.236.187.14 |  |
 >| 15.237.17.54 |  |
 >| 192.168.1.255 |  |
->| 192.168.1.41 |  |
 >| 162.159.200.123 |  |
->| 192.168.1.8 |  |
 >| 192.168.1.1 |  |
->| 104.46.127.225 |  |
->| 192.168.1.85 |  |
 >| 40.119.148.38 |  |
+>| 104.46.127.225 |  |
+>| 162.159.246.125 |  |
 >| 162.159.200.1 |  |
->| 34.69.208.173 |  |
->| 192.168.1.77 |  |
+>| 192.168.1.8 |  |
+>| 192.168.1.85 |  |
 >| 224.0.0.253 |  |
 >| 34.96.84.34 |  |
 >| 184.105.176.47 |  |
+>| 192.168.1.97 |  |
+>| 34.69.208.173 |  |
 >| 34.254.235.146 |  |
+>| 154.59.123.123 |  |
 >| 20.83.94.75 |  |
 >| 142.250.186.110 |  |
->| 154.59.123.123 |  |
+>| 3.235.189.123 |  |
 >| ff02::16 |  |
 >| 34.122.191.141 |  |
->| 168.149.132.102 |  |
->| ff02::2 |  |
->| 192.168.1.97 |  |
 >| 255.255.255.255 |  |
->| 3.235.189.122 |  |
->| 3.235.189.123 |  |
->| 34.98.77.231 |  |
+>| ff02::2 |  |
+>| 168.149.132.102 |  |
 >| 3.235.189.124 |  |
+>| 35.202.105.28 |  |
+>| 34.98.77.231 |  |
 
 
 ### arkime-field-list
@@ -5938,11 +5956,11 @@ Gets available database field objects pertaining to sessions.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Arkime.Field.friendlyName | String |  | 
-| Arkime.Field.type | String |  | 
-| Arkime.Field.group | String |  | 
-| Arkime.Field.help | String |  | 
-| Arkime.Field.dbField | String |  | 
+| Arkime.Field.friendlyName | String | The friendly name. | 
+| Arkime.Field.type | String | The type. | 
+| Arkime.Field.group | String | The group. | 
+| Arkime.Field.help | String | The help. | 
+| Arkime.Field.dbField | String | The dbField. | 
 
 #### Command example
 ```!arkime-field-list```
@@ -9700,46 +9718,46 @@ Gets a list of values for a field with counts and graph data and returns them to
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Arkime.SpiGraph.items.name | String |  | 
-| Arkime.SpiGraph.items.count | Number |  | 
-| Arkime.SpiGraph.items.graph.xmin | Date |  | 
-| Arkime.SpiGraph.items.graph.xmax | Date |  | 
-| Arkime.SpiGraph.items.graph.interval | Number |  | 
-| Arkime.SpiGraph.items.graph.sessionsHisto | Number |  | 
-| Arkime.SpiGraph.items.graph.sessionsTotal | Number |  | 
-| Arkime.SpiGraph.items.graph.source.packetsHisto | Number |  | 
-| Arkime.SpiGraph.items.graph.destination.packetsHisto | Number |  | 
-| Arkime.SpiGraph.items.graph.network.packetsTotal | Number |  | 
-| Arkime.SpiGraph.items.graph.source.bytesHisto | Number |  | 
-| Arkime.SpiGraph.items.graph.destination.bytesHisto | Number |  | 
-| Arkime.SpiGraph.items.graph.network.bytesTotal | Date |  | 
-| Arkime.SpiGraph.items.graph.client.bytesHisto | Number |  | 
-| Arkime.SpiGraph.items.graph.server.bytesHisto | Number |  | 
-| Arkime.SpiGraph.items.graph.totDataBytesTotal | Date |  | 
-| Arkime.SpiGraph.items.sessionsHisto | Number |  | 
-| Arkime.SpiGraph.items.source.packetsHisto | Number |  | 
-| Arkime.SpiGraph.items.destination.packetsHisto | Number |  | 
-| Arkime.SpiGraph.items.source.bytesHisto | Number |  | 
-| Arkime.SpiGraph.items.destination.bytesHisto | Date |  | 
-| Arkime.SpiGraph.items.client.bytesHisto | Number |  | 
-| Arkime.SpiGraph.items.server.bytesHisto | Date |  | 
-| Arkime.SpiGraph.items.network.packetsHisto | Number |  | 
-| Arkime.SpiGraph.items.totDataBytesHisto | Date |  | 
-| Arkime.SpiGraph.items.network.bytesHisto | Date |  | 
-| Arkime.SpiGraph.graph.xmin | Date |  | 
-| Arkime.SpiGraph.graph.xmax | Date |  | 
-| Arkime.SpiGraph.graph.interval | Number |  | 
-| Arkime.SpiGraph.graph.sessionsHisto | Number |  | 
-| Arkime.SpiGraph.graph.sessionsTotal | Number |  | 
-| Arkime.SpiGraph.graph.source.packetsHisto | Number |  | 
-| Arkime.SpiGraph.graph.destination.packetsHisto | Number |  | 
-| Arkime.SpiGraph.graph.network.packetsTotal | Number |  | 
-| Arkime.SpiGraph.graph.source.bytesHisto | Number |  | 
-| Arkime.SpiGraph.graph.destination.bytesHisto | Number |  | 
-| Arkime.SpiGraph.graph.network.bytesTotal | Date |  | 
-| Arkime.SpiGraph.graph.client.bytesHisto | Number |  | 
-| Arkime.SpiGraph.graph.server.bytesHisto | Number |  | 
-| Arkime.SpiGraph.graph.totDataBytesTotal | Date |  | 
+| Arkime.SpiGraph.items.name | String | The name. | 
+| Arkime.SpiGraph.items.count | Number | The count. | 
+| Arkime.SpiGraph.items.graph.xmin | Date | The graph xmin. | 
+| Arkime.SpiGraph.items.graph.xmax | Date | The graph xmax. | 
+| Arkime.SpiGraph.items.graph.interval | Number | The graph interval. | 
+| Arkime.SpiGraph.items.graph.sessionsHisto | Number | The graph sessionsHisto. | 
+| Arkime.SpiGraph.items.graph.sessionsTotal | Number | The sessions total. | 
+| Arkime.SpiGraph.items.graph.source.packetsHisto | Number | The source packets histo. | 
+| Arkime.SpiGraph.items.graph.destination.packetsHisto | Number | The destination packets histo. | 
+| Arkime.SpiGraph.items.graph.network.packetsTotal | Number | The network packets total. | 
+| Arkime.SpiGraph.items.graph.source.bytesHisto | Number | The source bytesHisto. | 
+| Arkime.SpiGraph.items.graph.destination.bytesHisto | Number | The destination bytesHisto. | 
+| Arkime.SpiGraph.items.graph.network.bytesTotal | Date | The network bytesTotal. | 
+| Arkime.SpiGraph.items.graph.client.bytesHisto | Number | The client bytesHisto. | 
+| Arkime.SpiGraph.items.graph.server.bytesHisto | Number | The server bytesHisto. | 
+| Arkime.SpiGraph.items.graph.totDataBytesTotal | Date | The graph totDataBytesTotal. | 
+| Arkime.SpiGraph.items.sessionsHisto | Number | The items sessionsHisto. | 
+| Arkime.SpiGraph.items.source.packetsHisto | Number | The source packetsHisto. | 
+| Arkime.SpiGraph.items.destination.packetsHisto | Number | The destination packetsHisto. | 
+| Arkime.SpiGraph.items.source.bytesHisto | Number | The source bytesHisto. | 
+| Arkime.SpiGraph.items.destination.bytesHisto | Date | The destination bytesHisto. | 
+| Arkime.SpiGraph.items.client.bytesHisto | Number | The client bytesHisto. | 
+| Arkime.SpiGraph.items.server.bytesHisto | Date | The server bytesHisto. | 
+| Arkime.SpiGraph.items.network.packetsHisto | Number | The network packetsHisto. | 
+| Arkime.SpiGraph.items.totDataBytesHisto | Date | The items totDataBytesHisto. | 
+| Arkime.SpiGraph.items.network.bytesHisto | Date | The network bytesHisto. | 
+| Arkime.SpiGraph.graph.xmin | Date | The graph xmin. | 
+| Arkime.SpiGraph.graph.xmax | Date | The graph xmax. | 
+| Arkime.SpiGraph.graph.interval | Number | The graph interval. | 
+| Arkime.SpiGraph.graph.sessionsHisto | Number | The graph sessionsHisto. | 
+| Arkime.SpiGraph.graph.sessionsTotal | Number | The graph sessionsTotal. | 
+| Arkime.SpiGraph.graph.source.packetsHisto | Number | The source packetsHisto. | 
+| Arkime.SpiGraph.graph.destination.packetsHisto | Number | The destination packetsHisto. | 
+| Arkime.SpiGraph.graph.network.packetsTotal | Number | The network packetsTotal. | 
+| Arkime.SpiGraph.graph.source.bytesHisto | Number | The source bytesHisto. | 
+| Arkime.SpiGraph.graph.destination.bytesHisto | Number | The destination bytesHisto. | 
+| Arkime.SpiGraph.graph.network.bytesTotal | Date | The network bytesTotal. | 
+| Arkime.SpiGraph.graph.client.bytesHisto | Number | The client bytesHisto. | 
+| Arkime.SpiGraph.graph.server.bytesHisto | Number | The server bytesHisto. | 
+| Arkime.SpiGraph.graph.totDataBytesTotal | Date | The graph totDataBytesTotal. | 
 | Arkime.SpiGraph.recordsTotal | Number | The total number of history results stored. | 
 | Arkime.SpiGraph.recordsFiltered | Number | The number of hunts returned in this result. | 
 
@@ -9749,7 +9767,7 @@ Gets a list of values for a field with counts and graph data and returns them to
 ```json
 {
     "InfoFile": {
-        "EntryID": "1891@4060e8c8-61bb-4131-8a47-32a7d97a9726",
+        "EntryID": "1951@4060e8c8-61bb-4131-8a47-32a7d97a9726",
         "Extension": "json",
         "Info": "application/json",
         "Name": "spi_graph.json",
@@ -9790,11 +9808,11 @@ Gets a list of field values with counts and returns them to the client.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Arkime.SpiView.spi.destination.ip.doc_count_error_upper_bound | Number |  | 
-| Arkime.SpiView.spi.destination.ip.sum_other_doc_count | Number |  | 
-| Arkime.SpiView.spi.destination.ip.buckets.key | String |  | 
-| Arkime.SpiView.spi.destination.ip.buckets.doc_count | Number |  | 
-| Arkime.SpiView.error | Unknown |  | 
+| Arkime.SpiView.spi.destination.ip.doc_count_error_upper_bound | Number | Destination ip - doc_count_error_upper_bound. | 
+| Arkime.SpiView.spi.destination.ip.sum_other_doc_count | Number | Destination ip - sum_other_doc_count. | 
+| Arkime.SpiView.spi.destination.ip.buckets.key | String | Destination ip - buckets key. | 
+| Arkime.SpiView.spi.destination.ip.buckets.doc_count | Number | Destination ip - buckets doc_count. | 
+| Arkime.SpiView.error | Unknown | The SpiView error. | 
 | Arkime.SpiView.recordsTotal | Number | The total number of history results stored. | 
 | Arkime.SpiView.recordsFiltered | Number | The number of history items returned in this result. | 
 
@@ -9804,7 +9822,7 @@ Gets a list of field values with counts and returns them to the client.
 ```json
 {
     "InfoFile": {
-        "EntryID": "1895@4060e8c8-61bb-4131-8a47-32a7d97a9726",
+        "EntryID": "1955@4060e8c8-61bb-4131-8a47-32a7d97a9726",
         "Extension": "json",
         "Info": "application/json",
         "Name": "spi_view.json",
@@ -9951,16 +9969,16 @@ Gets a list of PCAP files that Arkime knows about.
 | --- | --- | --- |
 | Arkime.File.recordsTotal | Number | The total number of hunts Arkime has. | 
 | Arkime.File.recordsFiltered | Number | The number of hunts returned in this result. | 
-| Arkime.File.data.node | String |  | 
-| Arkime.File.data.packetPosEncoding | String |  | 
+| Arkime.File.data.node | String | The file data node. | 
+| Arkime.File.data.packetPosEncoding | String | The file data packetPosEncoding. | 
 | Arkime.File.data.num | Number | The data number. | 
 | Arkime.File.data.name | String | The data name. | 
-| Arkime.File.data.locked | Number |  | 
-| Arkime.File.data.first | Number |  | 
-| Arkime.File.data.compression | Number |  | 
-| Arkime.File.data.packetsSize | Number |  | 
-| Arkime.File.data.filesize | Number |  | 
-| Arkime.File.data.packets | Number |  | 
+| Arkime.File.data.locked | Number | The file data locked. | 
+| Arkime.File.data.first | Number | The file data first. | 
+| Arkime.File.data.compression | Number | The file data compression. | 
+| Arkime.File.data.packetsSize | Number | The file data packets size. | 
+| Arkime.File.data.filesize | Number | The file data file size. | 
+| Arkime.File.data.packets | Number | The file data packets. | 
 
 #### Command example
 ```!arkime-pcap-file-list limit=10```

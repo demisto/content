@@ -136,49 +136,49 @@ script:
           description: 'Number of sessions'
           type: Number
         - contextPath: Arkime.Connection.nodes.inresult
-          description: ''
+          description: 'The inresult.'
           type: Number
         - contextPath: Arkime.Connection.nodes.type
           description: 'Connection type.'
           type: Number
         - contextPath: Arkime.Connection.nodes.network.bytes
-          description: ''
+          description: 'The bytes.'
           type: Number
         - contextPath: Arkime.Connection.nodes.totDataBytes
-          description: ''
+          description: 'The totDataBytes.'
           type: Number
         - contextPath: Arkime.Connection.nodes.network.packets
-          description: ''
+          description: 'The packets.'
           type: Number
         - contextPath: Arkime.Connection.nodes.node
-          description: ''
+          description: 'The node.'
           type: String
         - contextPath: Arkime.Connection.nodes.pos
-          description: ''
+          description: 'The pos.'
           type: Number
         - contextPath: Arkime.Connection.links.value
-          description: ''
+          description: 'The value.'
           type: Number
         - contextPath: Arkime.Connection.links.source
-          description: ''
+          description: 'The source.'
           type: Number
         - contextPath: Arkime.Connection.links.target
-          description: ''
+          description: 'The target.'
           type: Number
         - contextPath: Arkime.Connection.links.network.bytes
-          description: ''
+          description: 'The bytes.'
           type: Number
         - contextPath: Arkime.Connection.links.totDataBytes
-          description: ''
+          description: 'The totDataBytes.'
           type: Number
         - contextPath: Arkime.Connection.links.network.packets
-          description: ''
+          description: 'The packets.'
           type: Number
         - contextPath: Arkime.Connection.links.node
-          description: ''
+          description: 'The node.'
           type: String
         - contextPath: Arkime.Connection.recordsFiltered
-          description: '	The number of history items returned in this result.'
+          description: 'The number of history items returned in this result.'
           type: Number
     - name: arkime-connection-csv-get
       description: 'Gets a list of nodes and links in csv format and returns them to the client.'
@@ -292,22 +292,22 @@ script:
           isArray: false
       outputs:
         - contextPath: Arkime.PcapFile.data.node
-          description: ''
+          description: 'The node.'
           type: String
         - contextPath: Arkime.PcapFile.data.num
-          description: ''
+          description: 'The number.'
           type: Number
         - contextPath: Arkime.PcapFile.data.name
-          description: ''
+          description: 'The name.'
           type: String
         - contextPath: Arkime.PcapFile.data.first
-          description: ''
+          description: 'The first.'
           type: Number
         - contextPath: Arkime.PcapFile.data.fileSize
-          description: ''
+          description: 'The file size.'
           type: Number
         - contextPath: Arkime.PcapFile.data.packetSize
-          description: ''
+          description: 'The packet size.'
           type: Number
     - name: arkime-session-csv-get
       description: 'Gets a list of sessions and returns them as CSV to the client.'
@@ -460,82 +460,82 @@ script:
       outputs:
         - type: Date
           contextPath: Arkime.Session.data.firstPacket
-          description: ''
+          description: 'The first packet.'
         - type: String
           contextPath: Arkime.Session.data.rootId
-          description: ''
+          description: 'The root Id.'
         - type: Number
           contextPath: Arkime.Session.data.totDataBytes
-          description: ''
+          description: 'The totDataBytes.'
         - type: Number
           contextPath: Arkime.Session.data.ipProtocol
-          description: ''
+          description: 'The IP Protocol.'
         - type: String
           contextPath: Arkime.Session.data.node
-          description: ''
+          description: 'The node.'
         - type: Date
           contextPath: Arkime.Session.data.lastPacket
-          description: ''
+          description: 'The last packet.'
         - type: Number
           contextPath: Arkime.Session.data.source.packets
-          description: ''
+          description: 'The source packets.'
         - type: Number
           contextPath: Arkime.Session.data.source.port
-          description: ''
+          description: 'The source port.'
         - type: String
           contextPath: Arkime.Session.data.source.ip
-          description: ''
+          description: 'The source ip.'
         - type: Number
           contextPath: Arkime.Session.data.source.bytes
-          description: ''
+          description: 'The source bytes.'
         - type: Number
           contextPath: Arkime.Session.data.destination.port
-          description: ''
+          description: 'The destination port.'
         - type: String
           contextPath: Arkime.Session.data.destination.ip
-          description: ''
+          description: 'The destination ip.'
         - type: Number
           contextPath: Arkime.Session.data.destination.packets
-          description: ''
+          description: 'The destination packets'
         - type: Number
           contextPath: Arkime.Session.data.destination.bytes
-          description: ''
+          description: 'The destination bytes.'
         - type: Number
           contextPath: Arkime.Session.data.client.bytes
-          description: ''
+          description: 'The client bytes.'
         - type: Number
           contextPath: Arkime.Session.data.server.bytes
-          description: ''
+          description: 'The server bytes.'
         - type: Number
           contextPath: Arkime.Session.data.network.packets
-          description: ''
+          description: 'The network packets.'
         - type: Number
           contextPath: Arkime.Session.data.network.bytes
-          description: ''
+          description: 'The network bytes.'
         - type: String
           contextPath: Arkime.Session.data.id
-          description: ''
+          description: 'The data id.'
         - type: Date
           contextPath: Arkime.Session.graph.xmin
-          description: ''
+          description: 'The graph xmin.'
         - type: Date
           contextPath: Arkime.Session.graph.xmax
-          description: ''
+          description: 'The graph xmax.'
         - type: Number
           contextPath: Arkime.Session.graph.interval
-          description: ''
+          description: 'The graph interval.'
         - type: Number
           contextPath: Arkime.Session.graph.sessionsTotal
-          description: ''
+          description: 'The graph sessions total.'
         - type: Number
           contextPath: Arkime.Session.graph.network.packetsTotal
-          description: ''
+          description: 'The network packets total.'
         - type: Number
           contextPath: Arkime.Session.graph.network.bytesTotal
-          description: ''
+          description: 'The network bytes total.'
         - type: Number
           contextPath: Arkime.Session.graph.totDataBytesTotal
-          description: ''
+          description: 'The totDataBytesTotal.'
         - type: Number
           contextPath: Arkime.Session.recordsTotal
           description: 'The total number of history results stored.'
@@ -620,10 +620,10 @@ script:
           isArray: false
       outputs:
       - contextPath: Arkime.UniqueField.Field
-        description: ''
+        description: 'The field.'
         type: String
       - contextPath: Arkime.UniqueField.Count
-        description: ''
+        description: 'The count.'
         type: Boolean
     - name: arkime-multi-unique-field-list
       description: 'Gets an intersection of unique field values (with or without counts) and sends them to the client.'
@@ -709,10 +709,10 @@ script:
           isArray: false
       outputs:
       - contextPath: Arkime.UniqueField.Field
-        description: ''
+        description: The field.
         type: String
       - contextPath: Arkime.UniqueField.Count
-        description: ''
+        description: 'The count.'
         type: Boolean
     - name: arkime-field-list
       description: 'Gets available database field objects pertaining to sessions.'
@@ -724,19 +724,19 @@ script:
           defaultvalue: false
       outputs:
       - contextPath: Arkime.Field.friendlyName
-        description: ''
+        description: 'The friendly name.'
         type: String
       - contextPath: Arkime.Field.type
-        description: ''
+        description: 'The type.'
         type: String
       - contextPath: Arkime.Field.group
-        description: ''
+        description: 'The group.'
         type: String
       - contextPath: Arkime.Field.help
-        description: ''
+        description: 'The help.'
         type: String
       - contextPath: Arkime.Field.dbField
-        description: ''
+        description: 'The dbField.'
         type: String
     - name: arkime-spigraph-get
       description: 'Gets a list of values for a field with counts and graph data and returns them to the client.'
@@ -794,124 +794,124 @@ script:
       outputs:
         - type: String
           contextPath: Arkime.SpiGraph.items.name
-          description: ''
+          description: 'The name.'
         - type: Number
           contextPath: Arkime.SpiGraph.items.count
-          description: ''
+          description: 'The count.'
         - type: Date
           contextPath: Arkime.SpiGraph.items.graph.xmin
-          description: ''
+          description: 'The graph xmin.'
         - type: Date
           contextPath: Arkime.SpiGraph.items.graph.xmax
-          description: ''
+          description: 'The graph xmax.'
         - type: Number
           contextPath: Arkime.SpiGraph.items.graph.interval
-          description: ''
+          description: 'The graph interval.'
         - type: Number
           contextPath: Arkime.SpiGraph.items.graph.sessionsHisto
-          description: ''
+          description: 'The graph sessionsHisto.'
         - type: Number
           contextPath: Arkime.SpiGraph.items.graph.sessionsTotal
-          description: ''
+          description: 'The sessions total.'
         - type: Number
           contextPath: Arkime.SpiGraph.items.graph.source.packetsHisto
-          description: ''
+          description: 'The source packets histo.'
         - type: Number
           contextPath: Arkime.SpiGraph.items.graph.destination.packetsHisto
-          description: ''
+          description: 'The destination packets histo.'
         - type: Number
           contextPath: Arkime.SpiGraph.items.graph.network.packetsTotal
-          description: ''
+          description: 'The network packets total.'
         - type: Number
           contextPath: Arkime.SpiGraph.items.graph.source.bytesHisto
-          description: ''
+          description: 'The source bytesHisto.'
         - type: Number
           contextPath: Arkime.SpiGraph.items.graph.destination.bytesHisto
-          description: ''
+          description: 'The destination bytesHisto.'
         - type: Date
           contextPath: Arkime.SpiGraph.items.graph.network.bytesTotal
-          description: ''
+          description: 'The network bytesTotal.'
         - type: Number
           contextPath: Arkime.SpiGraph.items.graph.client.bytesHisto
-          description: ''
+          description: 'The client bytesHisto.'
         - type: Number
           contextPath: Arkime.SpiGraph.items.graph.server.bytesHisto
-          description: ''
+          description: 'The server bytesHisto.'
         - type: Date
           contextPath: Arkime.SpiGraph.items.graph.totDataBytesTotal
-          description: ''
+          description: 'The graph totDataBytesTotal.'
         - type: Number
           contextPath: Arkime.SpiGraph.items.sessionsHisto
-          description: ''
+          description: 'The items sessionsHisto.'
         - type: Number
           contextPath: Arkime.SpiGraph.items.source.packetsHisto
-          description: ''
+          description: 'The source packetsHisto.'
         - type: Number
           contextPath: Arkime.SpiGraph.items.destination.packetsHisto
-          description: ''
+          description: 'The destination packetsHisto.'
         - type: Number
           contextPath: Arkime.SpiGraph.items.source.bytesHisto
-          description: ''
+          description: 'The source bytesHisto.'
         - type: Date
           contextPath: Arkime.SpiGraph.items.destination.bytesHisto
-          description: ''
+          description: 'The destination bytesHisto.'
         - type: Number
           contextPath: Arkime.SpiGraph.items.client.bytesHisto
-          description: ''
+          description: 'The client bytesHisto.'
         - type: Date
           contextPath: Arkime.SpiGraph.items.server.bytesHisto
-          description: ''
+          description: 'The server bytesHisto.'
         - type: Number
           contextPath: Arkime.SpiGraph.items.network.packetsHisto
-          description: ''
+          description: 'The network packetsHisto.'
         - type: Date
           contextPath: Arkime.SpiGraph.items.totDataBytesHisto
-          description: ''
+          description: 'The items totDataBytesHisto.'
         - type: Date
           contextPath: Arkime.SpiGraph.items.network.bytesHisto
-          description: ''
+          description: 'The network bytesHisto.'
         - type: Date
           contextPath: Arkime.SpiGraph.graph.xmin
-          description: ''
+          description: 'The graph xmin.'
         - type: Date
           contextPath: Arkime.SpiGraph.graph.xmax
-          description: ''
+          description: 'The graph xmax.'
         - type: Number
           contextPath: Arkime.SpiGraph.graph.interval
-          description: ''
+          description: 'The graph interval.'
         - type: Number
           contextPath: Arkime.SpiGraph.graph.sessionsHisto
-          description: ''
+          description: 'The graph sessionsHisto.'
         - type: Number
           contextPath: Arkime.SpiGraph.graph.sessionsTotal
-          description: ''
+          description: 'The graph sessionsTotal.'
         - type: Number
           contextPath: Arkime.SpiGraph.graph.source.packetsHisto
-          description: ''
+          description: 'The source packetsHisto.'
         - type: Number
           contextPath: Arkime.SpiGraph.graph.destination.packetsHisto
-          description: ''
+          description: 'The destination packetsHisto.'
         - type: Number
           contextPath: Arkime.SpiGraph.graph.network.packetsTotal
-          description: ''
+          description: 'The network packetsTotal.'
         - type: Number
           contextPath: Arkime.SpiGraph.graph.source.bytesHisto
-          description: ''
+          description: 'The source bytesHisto.'
         - type: Number
           contextPath: Arkime.SpiGraph.graph.destination.bytesHisto
-          description: ''
+          description: 'The destination bytesHisto.'
         - type: Date
           contextPath: Arkime.SpiGraph.graph.network.bytesTotal
-          description: ''
+          description: 'The network bytesTotal.'
         - type: Number
           contextPath: Arkime.SpiGraph.graph.client.bytesHisto
-          description: ''
+          description: 'The client bytesHisto.'
         - type: Number
           contextPath: Arkime.SpiGraph.graph.server.bytesHisto
-          description: ''
+          description: 'The server bytesHisto.'
         - type: Date
           contextPath: Arkime.SpiGraph.graph.totDataBytesTotal
-          description: ''
+          description: 'The graph totDataBytesTotal.'
         - type: Number
           contextPath: Arkime.SpiGraph.recordsTotal
           description: 'The total number of history results stored.'
@@ -977,19 +977,19 @@ script:
       outputs:
         - type: Number
           contextPath: Arkime.SpiView.spi.destination.ip.doc_count_error_upper_bound
-          description: ''
+          description: 'Destination ip - doc_count_error_upper_bound.'
         - type: Number
           contextPath: Arkime.SpiView.spi.destination.ip.sum_other_doc_count
-          description: ''
+          description: 'Destination ip - sum_other_doc_count.'
         - type: String
           contextPath: Arkime.SpiView.spi.destination.ip.buckets.key
-          description: ''
+          description: 'Destination ip - buckets key.'
         - type: Number
           contextPath: Arkime.SpiView.spi.destination.ip.buckets.doc_count
-          description: ''
+          description: 'Destination ip - buckets doc_count.'
         - type: Unknown
           contextPath: Arkime.SpiView.error
-          description: ''
+          description: 'The SpiView error.'
         - type: Number
           contextPath: Arkime.SpiView.recordsTotal
           description: 'The total number of history results stored.'
@@ -1175,10 +1175,10 @@ script:
           description: 'The number of hunts returned in this result.'
         - type: String
           contextPath: Arkime.File.data.node
-          description: ''
+          description: 'The file data node.'
         - type: String
           contextPath: Arkime.File.data.packetPosEncoding
-          description: ''
+          description: 'The file data packetPosEncoding.'
         - type: Number
           contextPath: Arkime.File.data.num
           description: 'The data number.'
@@ -1187,20 +1187,20 @@ script:
           description: 'The data name.'
         - type: Number
           contextPath: Arkime.File.data.locked
-          description: ''
+          description: 'The file data locked.'
         - type: Number
           contextPath: Arkime.File.data.first
-          description: ''
+          description: 'The file data first.'
         - type: Number
           contextPath: Arkime.File.data.compression
-          description: ''
+          description: 'The file data compression.'
         - type: Number
           contextPath: Arkime.File.data.packetsSize
-          description: ''
+          description: 'The file data packets size.'
         - type: Number
           contextPath: Arkime.File.data.filesize
-          description: ''
+          description: 'The file data file size.'
         - type: Number
           contextPath: Arkime.File.data.packets
-          description: ''
+          description: 'The file data packets.'
 
