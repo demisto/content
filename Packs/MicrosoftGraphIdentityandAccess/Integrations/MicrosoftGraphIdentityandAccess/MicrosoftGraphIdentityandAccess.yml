@@ -366,6 +366,7 @@ script:
       outputs:
         outputs:
           - contextPath: MSGraph.identityProtection.risks.additionalInfo
+            description: dentityProtection.risks.additionalInfo
             type: string
           - contextPath: MSGraph.identityProtection.risks.userPrincipalName
             description: Risky user principal name.
@@ -455,8 +456,8 @@ script:
           required: false
           secret: false
       outputs:
-        - contextPath: MSGraph.identityProtection.risks.id
-          description: Unique ID of the risk detection.
+        - contextPath: MSGraph.identityProtection.risky-users.userPrincipalName
+          description: Risky user principal name.
           type: string
         - contextPath: MSGraph.identityProtection.risksky-users.userDisplayName
           description: Risky user display name.
@@ -475,16 +476,10 @@ script:
           type: DateTime
         - contextPath: MSGraph.identityProtection.risksky-users.isProcessing
           description: Indicates whether a user's risky state is being processed by the backend.
-          type: boolean
-        - contextPath: MSGraph.identityProtection.risksky-users.riskLastUpdatedDateTime
-          description: The date and time that the risky user was last updated. The DateTimeOffset type represents date and time information using the ISO 8601 format and is always in UTC time.
-          type: DateTime
-        - contextPath: MSGraph.identityProtection.risksky-users.isProcessing
-          description: Indicates whether a user's risky state is being processed by the backend.
-          type: boolean
+          type: Boolean
         - contextPath: MSGraph.identityProtection.risksky-users.isDeleted
           description: Indicates whether a user is delted
-          type: boolean
+          type: Boolean
         - contextPath: MSGraph.identityProtection.risksky-users.id
           description: Unique ID of the risky user.
           type: string
