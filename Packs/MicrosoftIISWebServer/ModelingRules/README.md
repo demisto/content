@@ -4,4 +4,10 @@ You can configure the vendor and product by replacing [vendor]_[product]raw with
 
 filebeat.modules:
 
-module: iis access: enabled: true var.paths: ["C:/inetpub/logs/LogFiles//.log"] error: enabled: true var.paths: ["C:/Windows/System32/LogFiles/HTTPERR/*.log"]
+- module: iis
+  access:
+    enabled: true
+    var.paths: ["C:/inetpub/logs/LogFiles/*/*.log"]
+  error:
+    enabled: true
+    var.paths: ["C:/Windows/System32/LogFiles/HTTPERR/*.log"]
