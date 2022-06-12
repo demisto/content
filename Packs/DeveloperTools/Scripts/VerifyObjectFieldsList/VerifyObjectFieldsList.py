@@ -3,6 +3,7 @@ import demistomock as demisto  # noqa: E402 lgtm [py/polluting-import]
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from typing import Dict, Any, Tuple
 
+
 def check_components(components: list, context: Any):
     """
     Args:
