@@ -1,8 +1,7 @@
-id: a75376da-81e9-4cdd-86cd-6effa4b27ae9
+id: Identity & Access test playbook
 version: 2
 vcShouldKeepItemLegacyProdMachine: false
-name: Identity & Access test playbook_copy_copy
-description: Test playbook for MSGraph Identity & Access
+name: Identity & Access test playbook
 starttaskid: "0"
 tasks:
   "0":
@@ -107,4 +106,5 @@ view: |-
   }
 inputs: []
 outputs: []
-sourceplaybookid: Identity & Access test playbook
+fromversion: 5.0.0
+description: Test playbook for MSGraph Identity & Access
