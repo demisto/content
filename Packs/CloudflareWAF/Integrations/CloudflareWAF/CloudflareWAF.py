@@ -1144,7 +1144,6 @@ def run_polling_command(client: Client, cmd: str, command_function: Callable, ar
 
     if 'operation_id' not in args:
         command_results = command_function(client, args)
-        print(command_results)
         output = command_results.raw_response
         operation_id = output['operation_id']
         args['operation_id'] = operation_id
