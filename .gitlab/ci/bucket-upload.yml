@@ -89,7 +89,7 @@ prepare-testing-bucket-mpv2-upload-flow:
   script:
     - EXIT_CODE=0
     - section_start "Download configuration"
-    - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/installations.log
+    - ./Tests/scripts/download_conf_repos.sh  >> $ARTIFACTS_FOLDER/logs/download_conf_repos.log
     - section_end "Download configuration"
     - !reference [.ssh-config-setup]
     - section_start "Get Instance Variables"
@@ -151,7 +151,7 @@ install-packs-in-server-master:
   script:
     - EXIT_CODE=0
     - section_start "Download configuration"
-    - ./Tests/scripts/download_demisto_conf.sh  >> $ARTIFACTS_FOLDER/logs/installations.log
+    - ./Tests/scripts/download_conf_repos.sh  >> $ARTIFACTS_FOLDER/logs/download_conf_repos.log
     - section_end "Download configuration"
 
     - section_start "Lock XSIAM Machine"
