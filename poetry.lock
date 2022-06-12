@@ -180,14 +180,14 @@ six = "*"
 
 [[package]]
 name = "boto3"
-version = "1.24.3"
+version = "1.24.7"
 description = "The AWS SDK for Python"
 category = "main"
 optional = false
 python-versions = ">= 3.7"
 
 [package.dependencies]
-botocore = ">=1.27.3,<1.28.0"
+botocore = ">=1.27.7,<1.28.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.6.0,<0.7.0"
 
@@ -196,7 +196,7 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.27.3"
+version = "1.27.7"
 description = "Low-level, data-driven core of boto 3."
 category = "main"
 optional = false
@@ -383,7 +383,7 @@ langdetect = ["langdetect"]
 
 [[package]]
 name = "db-dtypes"
-version = "1.0.1"
+version = "1.0.2"
 description = "Pandas Data Types for SQL systems (BigQuery, Spanner)"
 category = "main"
 optional = false
@@ -463,6 +463,7 @@ mypy = "^0.942"
 networkx = "^2.7.1"
 nltk = "^3.7"
 ordered-set = "^4.1.0"
+paramiko = "^2.11.0"
 Pebble = "^4.6.3"
 pipenv = "^2022.3.28"
 prettytable = "^3.2.0"
@@ -507,8 +508,8 @@ build = ["gsutil (==5.8)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "0168a0ea0fbf301fce38417c9d538c7fd6b278bf"
-resolved_reference = "0168a0ea0fbf301fce38417c9d538c7fd6b278bf"
+reference = "3fcf504523abd3fc768e5825e8e1669ab0b5cc8d"
+resolved_reference = "3fcf504523abd3fc768e5825e8e1669ab0b5cc8d"
 
 [[package]]
 name = "deprecated"
@@ -695,7 +696,7 @@ grpcio-gcp = ["grpcio-gcp (>=0.2.2,<1.0dev)"]
 
 [[package]]
 name = "google-auth"
-version = "2.6.6"
+version = "2.7.0"
 description = "Google Authentication Library"
 category = "main"
 optional = false
@@ -709,12 +710,13 @@ six = ">=1.9.0"
 
 [package.extras]
 aiohttp = ["requests (>=2.20.0,<3.0.0dev)", "aiohttp (>=3.6.2,<4.0.0dev)"]
+enterprise_cert = ["cryptography (==36.0.2)", "pyopenssl (==22.0.0)"]
 pyopenssl = ["pyopenssl (>=20.0.0)"]
 reauth = ["pyu2f (>=0.1.5)"]
 
 [[package]]
 name = "google-cloud-bigquery"
-version = "3.1.0"
+version = "3.2.0"
 description = "Google BigQuery API client library"
 category = "main"
 optional = false
@@ -726,9 +728,9 @@ google-cloud-bigquery-storage = ">=2.0.0,<3.0.0dev"
 google-cloud-core = ">=1.4.1,<3.0.0dev"
 google-resumable-media = ">=0.6.0,<3.0dev"
 grpcio = ">=1.38.1,<2.0dev"
-packaging = ">=14.3"
-proto-plus = ">=1.15.0"
-protobuf = ">=3.12.0"
+packaging = ">=14.3,<22.0.0dev"
+proto-plus = ">=1.15.0,<2.0.0dev"
+protobuf = ">=3.12.0,<4.0.0dev"
 pyarrow = ">=3.0.0,<9.0dev"
 python-dateutil = ">=2.7.2,<3.0dev"
 requests = ">=2.18.0,<3.0.0dev"
@@ -762,7 +764,7 @@ tests = ["freezegun"]
 
 [[package]]
 name = "google-cloud-core"
-version = "2.3.0"
+version = "2.3.1"
 description = "Google Cloud API client core library"
 category = "main"
 optional = false
@@ -777,7 +779,7 @@ grpc = ["grpcio (>=1.8.2,<2.0dev)"]
 
 [[package]]
 name = "google-cloud-storage"
-version = "2.3.0"
+version = "2.4.0"
 description = "Google Cloud Storage API client library"
 category = "main"
 optional = false
@@ -788,8 +790,10 @@ google-api-core = ">=1.31.5,<2.0.0 || >2.3.0,<3.0.0dev"
 google-auth = ">=1.25.0,<3.0dev"
 google-cloud-core = ">=2.3.0,<3.0dev"
 google-resumable-media = ">=2.3.2"
-protobuf = "*"
 requests = ">=2.18.0,<3.0.0dev"
+
+[package.extras]
+protobuf = ["protobuf (<5.0.0dev)"]
 
 [[package]]
 name = "google-crc32c"
@@ -1225,7 +1229,7 @@ ptyprocess = ">=0.5"
 
 [[package]]
 name = "pipenv"
-version = "2022.5.2"
+version = "2022.6.7"
 description = "Python Development Workflow for Humans."
 category = "main"
 optional = false
@@ -1643,20 +1647,20 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "requests"
-version = "2.27.1"
+version = "2.28.0"
 description = "Python HTTP for Humans."
 category = "main"
 optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*"
+python-versions = ">=3.7, <4"
 
 [package.dependencies]
 certifi = ">=2017.4.17"
-charset-normalizer = {version = ">=2.0.0,<2.1.0", markers = "python_version >= \"3\""}
-idna = {version = ">=2.5,<4", markers = "python_version >= \"3\""}
+charset-normalizer = ">=2.0.0,<2.1.0"
+idna = ">=2.5,<4"
 urllib3 = ">=1.21.1,<1.27"
 
 [package.extras]
-socks = ["PySocks (>=1.5.6,!=1.5.7)", "win-inet-pton"]
+socks = ["PySocks (>=1.5.6,!=1.5.7)"]
 use_chardet_on_py3 = ["chardet (>=3.0.2,<5)"]
 
 [[package]]
@@ -1893,7 +1897,7 @@ python-versions = "*"
 
 [[package]]
 name = "types-dateparser"
-version = "1.1.2"
+version = "1.1.3"
 description = "Typing stubs for dateparser"
 category = "main"
 optional = false
@@ -1901,7 +1905,7 @@ python-versions = "*"
 
 [[package]]
 name = "types-emoji"
-version = "1.7.0"
+version = "1.7.1"
 description = "Typing stubs for emoji"
 category = "main"
 optional = false
@@ -1909,7 +1913,7 @@ python-versions = "*"
 
 [[package]]
 name = "types-filelock"
-version = "3.2.6"
+version = "3.2.7"
 description = "Typing stubs for filelock"
 category = "main"
 optional = false
@@ -2199,7 +2203,7 @@ testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "b5c1ff2ddbf6519bb0d7cef75c278ee97e486577ef11f7caf8c72343990115f9"
+content-hash = "650f910d5268f10ab224829e9dcc81e8bfa02e3629ead051fec84c9a3e49da4c"
 
 [metadata.files]
 aiohttp = [
@@ -2353,12 +2357,12 @@ blessings = [
     {file = "blessings-1.7.tar.gz", hash = "sha256:98e5854d805f50a5b58ac2333411b0482516a8210f23f43308baeb58d77c157d"},
 ]
 boto3 = [
-    {file = "boto3-1.24.3-py3-none-any.whl", hash = "sha256:1bc562393d7985263e62828173eea6c7d61562031c646dc857a4f0fad1dfddbe"},
-    {file = "boto3-1.24.3.tar.gz", hash = "sha256:7625c5ed92bb7a953e03d2541bcbfcb66c3495f8d7b9421e47b4e2c280dc9162"},
+    {file = "boto3-1.24.7-py3-none-any.whl", hash = "sha256:925a34a55257219f4601e803951fd4d61ed6eac2208dc834a04fe150b03f265e"},
+    {file = "boto3-1.24.7.tar.gz", hash = "sha256:6e243e28c804dccd2015935acfac0567e1861b20fdd96aa47f232b47aa214a69"},
 ]
 botocore = [
-    {file = "botocore-1.27.3-py3-none-any.whl", hash = "sha256:2d48f4ed77220d4cb6f1b1abbb1b782d1b12260645f6ba3f3cd9ae5c98546297"},
-    {file = "botocore-1.27.3.tar.gz", hash = "sha256:7be5962b956b5770799ba87b0bd2173230068d269982bdf8d16fabaa79483912"},
+    {file = "botocore-1.27.7-py3-none-any.whl", hash = "sha256:3e0cbe26f08fe9a3f6df5de4dcc3bef686e01ba5f79ad03ffbe79d92f51ecea5"},
+    {file = "botocore-1.27.7.tar.gz", hash = "sha256:dc83ef991c730ab0f06b51fcefda74f493b990903b882452aff78c123e3040e2"},
 ]
 bracex = [
     {file = "bracex-2.3.post1-py3-none-any.whl", hash = "sha256:351b7f20d56fb9ea91f9b9e9e7664db466eb234188c175fd943f8f755c807e73"},
@@ -2525,8 +2529,8 @@ dateparser = [
     {file = "dateparser-1.1.1.tar.gz", hash = "sha256:038196b1f12c7397e38aad3d61588833257f6f552baa63a1499e6987fa8d42d9"},
 ]
 db-dtypes = [
-    {file = "db-dtypes-1.0.1.tar.gz", hash = "sha256:3eb5931c9f8c314a1a4aeb698a7eb1d713cddaed4a7a13f0408a8785c4a72330"},
-    {file = "db_dtypes-1.0.1-py2.py3-none-any.whl", hash = "sha256:b26b295773d2a4b445f6a7f297ec04dd9eb5d3fb26622032550da013486ba7b7"},
+    {file = "db-dtypes-1.0.2.tar.gz", hash = "sha256:7f1b5d9a75309e22d24b85914383f819636c3d487238c0ad4fa304879e04303e"},
+    {file = "db_dtypes-1.0.2-py2.py3-none-any.whl", hash = "sha256:1016122f37ee077f5d984dd00b4b25c72b39b579997739d8deb437225c48b5d7"},
 ]
 decorator = [
     {file = "decorator-5.1.1-py3-none-any.whl", hash = "sha256:b8c3f85900b9dc423225913c5aace94729fe1fa9763b38939a95226f02d37186"},
@@ -2657,24 +2661,24 @@ google-api-core = [
     {file = "google_api_core-2.8.1-py3-none-any.whl", hash = "sha256:ce1daa49644b50398093d2a9ad886501aa845e2602af70c3001b9f402a9d7359"},
 ]
 google-auth = [
-    {file = "google-auth-2.6.6.tar.gz", hash = "sha256:1ba4938e032b73deb51e59c4656a00e0939cf0b1112575099f136babb4563312"},
-    {file = "google_auth-2.6.6-py2.py3-none-any.whl", hash = "sha256:349ac49b18b01019453cc99c11c92ed772739778c92f184002b7ab3a5b7ac77d"},
+    {file = "google-auth-2.7.0.tar.gz", hash = "sha256:8a954960f852d5f19e6af14dd8e75c20159609e85d8db37e4013cc8c3824a7e1"},
+    {file = "google_auth-2.7.0-py2.py3-none-any.whl", hash = "sha256:df549a1433108801b11bdcc0e312eaf0d5f0500db42f0523e4d65c78722e8475"},
 ]
 google-cloud-bigquery = [
-    {file = "google-cloud-bigquery-3.1.0.tar.gz", hash = "sha256:d2d6caf78d1c133e7ffd9b0b7e2d7df1f9b2f703de377497b96d9a74cfe8ec02"},
-    {file = "google_cloud_bigquery-3.1.0-py2.py3-none-any.whl", hash = "sha256:d7cf136dccb6e754bc364553c7a92d31c90fbdb74d06f311a489588d548ac655"},
+    {file = "google-cloud-bigquery-3.2.0.tar.gz", hash = "sha256:97fb4306e324cb86909ce32a9944e81d21fbcb28a780c5cdf01b6e4d47d4c322"},
+    {file = "google_cloud_bigquery-3.2.0-py2.py3-none-any.whl", hash = "sha256:5ab006a2c422df5feb6a3ccdec2feb01066a33a12c92752f92efa9abf47acf35"},
 ]
 google-cloud-bigquery-storage = [
     {file = "google-cloud-bigquery-storage-2.13.2.tar.gz", hash = "sha256:ac4ce734e805aca7e73a69617b14d31e690a113446136e92292a74e1d8b3e3b2"},
     {file = "google_cloud_bigquery_storage-2.13.2-py2.py3-none-any.whl", hash = "sha256:b3f72c66e6c92afdb8ba76b81cceba1969d217a205c35acb4eb1a5257b7fd21d"},
 ]
 google-cloud-core = [
-    {file = "google-cloud-core-2.3.0.tar.gz", hash = "sha256:fdaa629e6174b4177c2d56eb8ab1ddd87661064d0a3e9bb06b62e4d7e2344669"},
-    {file = "google_cloud_core-2.3.0-py2.py3-none-any.whl", hash = "sha256:35900f614045a33d5208e1d50f0d7945df98ce088388ce7237e7a2db12d5656e"},
+    {file = "google-cloud-core-2.3.1.tar.gz", hash = "sha256:34334359cb04187bdc80ddcf613e462dfd7a3aabbc3fe4d118517ab4b9303d53"},
+    {file = "google_cloud_core-2.3.1-py2.py3-none-any.whl", hash = "sha256:113ba4f492467d5bd442c8d724c1a25ad7384045c3178369038840ecdd19346c"},
 ]
 google-cloud-storage = [
-    {file = "google-cloud-storage-2.3.0.tar.gz", hash = "sha256:f4cbb0de5e17228e9c09cdc897d81eaa70e2c396f58513f79de0e824584c8f5b"},
-    {file = "google_cloud_storage-2.3.0-py2.py3-none-any.whl", hash = "sha256:9a7b1d07d53bc1df5384a9906c1e6d9c920a2bdb5ffa5982d2c1d2bdaacd70c8"},
+    {file = "google-cloud-storage-2.4.0.tar.gz", hash = "sha256:5fe26f1381b30e3cc328f46e13531ca8525458f870c1e303c616bdeb7b7f5c66"},
+    {file = "google_cloud_storage-2.4.0-py2.py3-none-any.whl", hash = "sha256:973e7f7d9afcd4805769b6ea9ac15ab9df7037530850374f1494b5a2c8f65b6b"},
 ]
 google-crc32c = [
     {file = "google-crc32c-1.3.0.tar.gz", hash = "sha256:276de6273eb074a35bc598f8efbc00c7869c5cf2e29c90748fccc8c898c244df"},
@@ -3104,8 +3108,8 @@ pexpect = [
     {file = "pexpect-4.8.0.tar.gz", hash = "sha256:fc65a43959d153d0114afe13997d439c22823a27cefceb5ff35c2178c6784c0c"},
 ]
 pipenv = [
-    {file = "pipenv-2022.5.2-py2.py3-none-any.whl", hash = "sha256:06e19a3a2ae7db14a317bdedc61030cdcd132a012410de1e5bdb0e19d0620465"},
-    {file = "pipenv-2022.5.2.tar.gz", hash = "sha256:71d510c20f99ea5cd3c951f8203140197bcc79fc21a0d74924f97c726a0f2bd3"},
+    {file = "pipenv-2022.6.7-py2.py3-none-any.whl", hash = "sha256:2ae7d5fc742c14aa619d19acadd0830f14b1e80d35045e2a67b5af68ffc4d701"},
+    {file = "pipenv-2022.6.7.tar.gz", hash = "sha256:6ac0e7a8bbe02859d46c53c03d3f33136bbf49c8c7d9a6d818409e17a604eda0"},
 ]
 platformdirs = [
     {file = "platformdirs-2.5.2-py3-none-any.whl", hash = "sha256:027d8e83a2d7de06bbac4e5ef7e023c02b863d7ea5d079477e722bb41ab25788"},
@@ -3464,8 +3468,8 @@ regex = [
     {file = "regex-2022.3.2.tar.gz", hash = "sha256:79e5af1ff258bc0fe0bdd6f69bc4ae33935a898e3cbefbbccf22e88a27fa053b"},
 ]
 requests = [
-    {file = "requests-2.27.1-py2.py3-none-any.whl", hash = "sha256:f22fa1e554c9ddfd16e6e41ac79759e17be9e492b3587efa038054674760e72d"},
-    {file = "requests-2.27.1.tar.gz", hash = "sha256:68d7c56fd5a8999887728ef304a6d12edc7be74f1cfa47714fc8b414525c9a61"},
+    {file = "requests-2.28.0-py3-none-any.whl", hash = "sha256:bc7861137fbce630f17b03d3ad02ad0bf978c844f3536d0edda6499dafce2b6f"},
+    {file = "requests-2.28.0.tar.gz", hash = "sha256:d568723a7ebd25875d8d1eaf5dfa068cd2fc8194b2e483d7b1f7c81918dbec6b"},
 ]
 requests-mock = [
     {file = "requests-mock-1.9.3.tar.gz", hash = "sha256:8d72abe54546c1fc9696fa1516672f1031d72a55a1d66c85184f972a24ba0eba"},
@@ -3599,16 +3603,16 @@ types-cryptography = [
     {file = "types_cryptography-3.3.21-py3-none-any.whl", hash = "sha256:bdeb6dd07280ac724e05f02e0d8ef01fdef729b18bb07d635d64de83171a4e70"},
 ]
 types-dateparser = [
-    {file = "types-dateparser-1.1.2.tar.gz", hash = "sha256:5c248718da426b3de924fb4c6d934f5f82ad9a3bfc7b9f5a4df22c8c6b3516c6"},
-    {file = "types_dateparser-1.1.2-py3-none-any.whl", hash = "sha256:c7adfa6deb7ccfa88fcb5f2a1fd74f8c824dd40ff5ada957aee90a78b28b6eb8"},
+    {file = "types-dateparser-1.1.3.tar.gz", hash = "sha256:34262d9a8553b77481140ddb3cc4e7a1b8f974a987f7932046d21ec1151f24df"},
+    {file = "types_dateparser-1.1.3-py3-none-any.whl", hash = "sha256:1704d99dc71ca3c6003c25b353c1a7d07e3d3deaed50989fcbe18483cf5f5552"},
 ]
 types-emoji = [
-    {file = "types-emoji-1.7.0.tar.gz", hash = "sha256:bfdf677bed34537117a7d43687b09a01b808e4d838872f7628c6dc4d8a64131e"},
-    {file = "types_emoji-1.7.0-py3-none-any.whl", hash = "sha256:7655bb6aa1726ef6ee306d47679986def33f4ef909525687a40cad4bd06009a9"},
+    {file = "types-emoji-1.7.1.tar.gz", hash = "sha256:a4c7ae598a9c2c34339f36d6f2a4cc44c997505ad08ff10787b47313afee88b6"},
+    {file = "types_emoji-1.7.1-py3-none-any.whl", hash = "sha256:06fc3fb5c7bcc4b9db0e9a66284581b8ccc1cc1c5240fefd16276489ed7b0692"},
 ]
 types-filelock = [
-    {file = "types-filelock-3.2.6.tar.gz", hash = "sha256:81647b3ce2d81a704e5d6a66c1a4c935aafb780ae332c370af10598c6ebfb712"},
-    {file = "types_filelock-3.2.6-py3-none-any.whl", hash = "sha256:475a01ce06dd22a254228873dda868094c88066023b167502ece692adcfb7f69"},
+    {file = "types-filelock-3.2.7.tar.gz", hash = "sha256:0673a25b45725c5c45661fe3744c3d8058653a16e683f0ae4a74afb44a0cdef4"},
+    {file = "types_filelock-3.2.7-py3-none-any.whl", hash = "sha256:ee0ee2b4ec3d491ebe71f7343e21435c3a07f910881275a94788cac42acf4339"},
 ]
 types-futures = [
     {file = "types-futures-3.3.8.tar.gz", hash = "sha256:6fe8ccc2c2af7ef2fdd9bf73eab6d617074f09f30ad7d373510b4043d39c42de"},
