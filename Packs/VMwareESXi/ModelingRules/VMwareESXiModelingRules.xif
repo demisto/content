@@ -32,7 +32,14 @@ filter _raw_log contains "verbose" or _raw_log contains "vpax" or _raw_log conta
 | alter message2 = arrayindex(regextract(_raw_log ,"\:\s([^\&]+)"),0)
 | alter message = coalesce(message2 ,message1)
 // end extract message
-| alter boot_timestamp= arrayindex(regextract(_raw_log ,"\[(\d+\-\d+\-\d+\s\d+\:\d+\:\d+\.\d+\s\-\s\d+\-\d+\-\d+\s\d+\:\d+\:\d+\.\d+)") ,0)
+// extract timestamp part 
+| alter boot_timestamp= arrayindex(regextract(_raw_log ,"\[(\d+\-\d+\-\d+\s+\d+\:\d+\:\d+\.\d+)") ,0) 
+ ,extract_timestamp2= arrayindex(regextract(_raw_log ,"(\d+\-\d+\-\d+T\d+\:\d+\:\d+)") ,0) 
+| alter timestamp2 = concat(extract_timestamp2 ,".000000") 
+	,boot_timestamp =replex(boot_timestamp , " ","T") 
+| alter Timestamp = coalesce(boot_timestamp , Timestamp2) 
+| alter the_timestamp = parse_timestamp("%Y-%m-%dT%H:%M:%E6S",Timestamp ) 
+// end extarct timestamp
 | alter Timestamp= arrayindex(regextract(_raw_log ,"(\d+\-\d+\-\d+T\d+\:\d+\:\d+Z?\.?\d+Z)") ,0)
 | alter opID= arrayindex(regextract(_raw_log ,"opID\=([^\]]+)") ,0)
 | alter originator=arrayindex(regextract(_raw_log ,"Originator\@(\d+)") ,0)
@@ -51,14 +58,13 @@ filter _raw_log contains "verbose" or _raw_log contains "vpax" or _raw_log conta
 // end extract service_name
 | alter source_ip= arrayindex(regextract(_raw_log ,"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})") ,0)
 | alter XDM.Audit.operation= service_name
-| alter XDM.Audit.event_timestamp = parse_timestamp("%b %d %H:%M:%S",boot_timestamp)
+| alter XDM.Audit.event_timestamp = the_timestamp
 | alter XDM.Audit.audited_resource.id =opID
 | alter XDM.Audit.TriggeredBy.identity.uuid= originator 
 | alter XDM.Audit.identity.sub_type= sub
 | alter XDM.Audit.TriggeredBy.identity.name= process_name
 | alter XDM.Audit.threat.description= message
 | alter XDM.Audit.threat.severity= severity_alert 
-| alter XDM.Audit.observation_timestamp =parse_timestamp("%b %d %H:%M:%S",boot_timestamp)
 | alter XDM.Audit.TriggeredBy.ipv4= source_ip;
 
 
@@ -78,10 +84,9 @@ filter _raw_log contains "vmauthd" or _raw_log contains "sshd"
 | alter username2 = arrayindex(regextract(_raw_log ,"ruser\=(\w+)"),0)
 | alter username = coalesce(username1 ,username2)
 // end extract username
-| alter XDM.Auth.event_timestamp =parse_timestamp("%b %d %H:%M:%S",Timestamp)
+| alter XDM.Auth.event_timestamp =parse_timestamp("%Y-%m-%dT%H:%M:%SZ",Timestamp)
 | alter XDM.Auth.Observer.unique_identifier =service_name  
 | alter XDM.Auth.Client.process.pid =To_number(pid)
 | alter XDM.Auth.threat.description =message 
 | alter XDM.Auth.Client.ipv4 =sourceip
 | alter XDM.Auth.Client.user.username =username; 
- 
