@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+import quopri
 
 try:
     maxFileSize = int(demisto.args().get('maxFileSize'))
@@ -19,6 +20,8 @@ except Exception:
 with open(filePath, mode='r') as f:
     data = f.read(maxFileSize)
     try:
+        if 'Content-Transfer-Encoding: quoted-printable' in data:
+            data = quopri.decodestring(data)
         data = data.decode('unicode_escape').encode('utf-8')
     # unicode_escape might throw UnicodeDecodeError for strings that contain \ char followed by ascii characters
     except UnicodeDecodeError:
