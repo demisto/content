@@ -9,10 +9,10 @@
                 ".tag": "admin",
                 "admin": {
                     ".tag": "team_member",
-                    "account_id": "dbid:AADPF65IowZcTr20H_OoeQVf9hppQ8y4oQw",
-                    "display_name": "Dror Avrahami",
-                    "email": "davrahami@paloaltonetworks.com",
-                    "team_member_id": "dbmid:AAAwEGMUYzJ-1Alrkqk_XEpBgrQ8mZBRoVs"
+                    "account_id": "123456",
+                    "display_name": "John Smith",
+                    "email": "JohnSmith@example.com",
+                    "team_member_id": "111111"
                 }
             },
             "origin": {
@@ -20,23 +20,23 @@
                     "city": "Tel Aviv",
                     "region": "Tel Aviv",
                     "country": "IL",
-                    "ip_address": "31.154.166.148"
+                    "ip_address": "1.1.1.1"
                 },
                 "access_method": {
                     ".tag": "end_user",
                     "end_user": {
                         ".tag": "web",
-                        "session_id": "dbwsid:335674022543922775395910881337406792772"
+                        "session_id": "222222"
                     }
                 }
             },
             "involve_non_team_member": false,
             "context": {
                 ".tag": "team_member",
-                "account_id": "dbid:AACbUPIv29ia0nrUeBjM1nbbdLJZJcxFtfw",
+                "account_id": "333333",
                 "display_name": "",
-                "email": "meichler@paloaltonetworks.com",
-                "team_member_id": "dbmid:AABWu5unFsj7VTFdMRm_UZKGgRU0Mg0bJPM"
+                "email": "meichler@example.com",
+                "team_member_id": "444444"
             },
             "participants": [],
             "assets": [],
@@ -69,10 +69,10 @@
                 ".tag": "admin",
                 "admin": {
                     ".tag": "team_member",
-                    "account_id": "dbid:AADPF65IowZcTr20H_OoeQVf9hppQ8y4oQw",
-                    "display_name": "Dror Avrahami",
-                    "email": "davrahami@paloaltonetworks.com",
-                    "team_member_id": "dbmid:AAAwEGMUYzJ-1Alrkqk_XEpBgrQ8mZBRoVs"
+                    "account_id": "123456",
+                    "display_name": "John Smith",
+                    "email": "JohnSmith@example.com",
+                    "team_member_id": "111111"
                 }
             },
             "origin": {
@@ -80,23 +80,23 @@
                     "city": "Tel Aviv",
                     "region": "Tel Aviv",
                     "country": "IL",
-                    "ip_address": "31.154.166.148"
+                    "ip_address": "1.1.1.1"
                 },
                 "access_method": {
                     ".tag": "end_user",
                     "end_user": {
                         ".tag": "web",
-                        "session_id": "dbwsid:335674022543922775395910881337406792772"
+                        "session_id": "222222"
                     }
                 }
             },
             "involve_non_team_member": false,
             "context": {
                 ".tag": "team_member",
-                "account_id": "dbid:AACbUPIv29ia0nrUeBjM1nbbdLJZJcxFtfw",
+                "account_id": "333333",
                 "display_name": "",
-                "email": "meichler@paloaltonetworks.com",
-                "team_member_id": "dbmid:AABWu5unFsj7VTFdMRm_UZKGgRU0Mg0bJPM"
+                "email": "meichler@example.com",
+                "team_member_id": "444444"
             },
             "participants": [],
             "assets": [],
@@ -123,10 +123,10 @@
                 ".tag": "admin",
                 "admin": {
                     ".tag": "team_member",
-                    "account_id": "dbid:AADPF65IowZcTr20H_OoeQVf9hppQ8y4oQw",
-                    "display_name": "Dror Avrahami",
-                    "email": "davrahami@paloaltonetworks.com",
-                    "team_member_id": "dbmid:AAAwEGMUYzJ-1Alrkqk_XEpBgrQ8mZBRoVs"
+                    "account_id": "123456",
+                    "display_name": "John Smith",
+                    "email": "JohnSmith@example.com",
+                    "team_member_id": "111111"
                 }
             },
             "origin": {
@@ -134,11 +134,11 @@
                     "city": "Tel Aviv",
                     "region": "Tel Aviv",
                     "country": "IL",
-                    "ip_address": "31.154.166.148"
+                    "ip_address": "1.1.1.1"
                 },
                 "access_method": {
                     ".tag": "api",
-                    "request_id": "dbarid:bdd733062818443b9df8b78bcd5734ca"
+                    "request_id": "444444"
                 }
             },
             "involve_non_team_member": false,
@@ -155,7 +155,7 @@
                 ".tag": "app_link_team_details",
                 "app_info": {
                     ".tag": "team_linked_app",
-                    "app_id": "dbaid:AAASFSOi_MGOC7IAEzMm6DzrW9c1MX0bYik",
+                    "app_id": "555555",
                     "display_name": "XSIAM"
                 }
             }
