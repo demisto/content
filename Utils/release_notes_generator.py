@@ -311,9 +311,10 @@ def merge_version_blocks(pack_versions_dict: dict, return_str: bool = True) -> T
 
     Args:
         pack_versions_dict: a mapping from a pack version to a release notes file content.
+        return_str: Whether to return the release notes in str format. Return in a dict if false.
 
     Returns:
-        str: a single pack release note block
+        str/dict: a single pack release note block
         str: the pack's latest version
 
     """

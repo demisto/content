@@ -1121,7 +1121,7 @@ This is visible
 - **Field Name 2**
 </~XSOAR>
 - **Field Name 3**
-''', 'marketplacev2', "#### Incident Fields\n- **Field Name 1**\n\n#### Scripts\n##### Script Name\n- Fixed script"),
+''', 'marketplacev2', "#### Incident Fields\n- **Field Name 1**\n\n\n#### Scripts\n##### Script Name\n- Fixed script"),
         ('''
 #### Integrations
 ##### Integration Display Name
@@ -1342,6 +1342,100 @@ This is visible
         if is_changelog_exist == 'changelog_new_exist':
             os.remove(os.path.join(os.getcwd(), 'dummy_changelog.json'))
         assert pack_update_date == expected_date
+
+
+class TestFilterChangelog:
+    """ Test class for the changelog entries filterig.
+
+    """
+    TAG_BY_MP = {
+        'xsoar': 'XSOAR',
+        'marketplacev2': 'XSIAM'
+    }
+    RN_ENTRY_WITH_TAGS = '''#### Integrations
+##### Display Name
+- Some entry 1.
+<~{mp}>
+- Entry only for {mp}.
+</~{mp}>
+- Some entry 2.
+<~{mp2}>
+- Entry only for {mp2}.
+</~{mp2}>
+
+#### Incident Fields
+- **Field name 1**
+<~{mp}>
+- **Field name 2**
+</~{mp}>'''
+
+    RN_ENTRIES_DICTIONARY = {
+        "Integrations": {
+            "Display Name": "- Some entry1\n- Some entry2.",
+            "Display Name 2": "- Some entry1.",
+            "Display Name 3": "- Some entry."
+        },
+        "Incident Fields": {
+            "[special_msg]": "- **Field name 1**\n- **Field name 2**\n- **Field name 3**"
+        }
+    }
+
+    @pytest.fixture(scope="class")
+    def dummy_pack(self):
+        """ dummy pack fixture
+        """
+        dummy_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "test_data")
+        sample_pack = Pack(pack_name="TestPack", pack_path=dummy_path)
+        sample_pack.description = 'Sample description'
+        sample_pack.current_version = '1.0.0'
+        return sample_pack
+
+    @pytest.mark.parametrize('marketplace, upload_marketplace, expected_result', [
+        ('xsoar', 'marketplacev2',
+         '#### Integrations\n##### Display Name\n- Some entry 1.\n- Some entry 2.\n\n- Entry only for XSIAM.\n\n\n\
+#### Incident Fields\n- **Field name 1**\n'),
+        ('xsoar', 'xsoar',
+         '#### Integrations\n##### Display Name\n- Some entry 1.\n\n- Entry only for XSOAR.\n\n- Some entry 2.\n\n\
+         - Entry only for XSOAR.\n\n\n#### Incident Fields\n- **Field name 1**\n\n- **Field name 2**\n'),
+        ('marketplacev2', 'marketplacev2',
+         '#### Integrations\n##### Display Name\n- Some entry 1.\n\n- Entry only for XSIAM.\n\n- Some entry 2.\n\n\
+         - Entry only for XSIAM.\n\n\n#### Incident Fields\n- **Field name 1**\n\n- **Field name 2**\n'),
+        ('marketplacev2', 'xsoar',
+         '#### Integrations\n##### Display Name\n- Some entry 1.\n- Some entry 2.\n\n- Entry only for XSOAR.\n\n\n\
+#### Incident Fields\n- **Field name 1**\n'),
+    ])
+    def test_filter_by_tags(self, dummy_pack: Pack, marketplace, upload_marketplace, expected_result):
+        """
+            Given:
+                - Changelog entries wrapped by tags.
+            When:
+                - Filtering out the entries that were wrapped by the tags.
+            Then:
+                - Ensure the filtered entries resulte is as expected.
+        """
+        release_notes = self.RN_ENTRY_WITH_TAGS.format(mp=self.TAG_BY_MP[marketplace], mp2=self.TAG_BY_MP[upload_marketplace])
+        result = dummy_pack.filter_release_notes_by_tags(release_notes, upload_marketplace)
+
+        assert result == expected_result
+
+    @pytest.mark.parametrize('files_data, expected_result', [
+        ({"Integrations": [{"display_name": "Display Name 2"}],
+          "IncidentFields": [{"display_name": "Field name 1"}, {"display_name": "Field name 3"}]},
+         {"Integrations": {"Display Name 2": "- Some entry1."},
+          "Incident Fields": {"[special_msg]": "- **Field name 1**\n\n- **Field name 3**"}}),
+        ({"IncidentFields": [{"display_name": "Field name 1"}, {"display_name": "Field name 2"}]},
+         {"Incident Fields": {"[special_msg]": "- **Field name 1**\n- **Field name 2**\n"}})
+    ])
+    def test_filter_by_display_name(self, dummy_pack: Pack, files_data, expected_result):
+        """
+            Given:
+                - Release notes entries.
+            When:
+                - Filtering out the entries by the given entities display names from id-set.
+            Then:
+                - Ensure the filtered entries resulte is as expected.
+        """
+        assert dummy_pack.filter_release_notes_by_entities_display_name(self.RN_ENTRIES_DICTIONARY, files_data) == expected_result
 
 
 class TestImagesUpload:
