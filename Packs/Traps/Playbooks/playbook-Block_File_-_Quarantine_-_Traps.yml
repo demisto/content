@@ -2,6 +2,7 @@ id: Traps Quarantine Event
 version: -1
 fromversion: 5.0.0
 name: Traps Quarantine Event
+hidden: true
 description: This playbook accepts a file hash and quarantines this file using Traps.
 starttaskid: "0"
 tasks:

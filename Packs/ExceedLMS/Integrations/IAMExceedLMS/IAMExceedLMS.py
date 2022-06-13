@@ -339,7 +339,7 @@ def main():
 
     except Exception as exc:
         # For any other integration command exception, return an error
-        return_error(f'Failed to execute {command} command.\nError:{str(exe)}')
+        return_error(f'Failed to execute {command} command.\nError:{str(exc)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
