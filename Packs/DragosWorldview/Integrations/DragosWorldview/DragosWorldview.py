@@ -140,16 +140,16 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str) -> Tuple[l
         incident_time = dateparser.parse(item['updated_at'])
         incident = {
             'name': item['title'],
-            'occurred': incident_time.strftime('%Y-%m-%dT%H:%M:%SZ'),
+            'occurred': incident_time.strftime('%Y-%m-%dT%H:%M:%SZ'), # type: ignore
             'rawJSON': json.dumps(item)
         }
 
         incidents.append(incident)
 
-        if incident_time > max_time:
+        if incident_time > max_time: # type: ignore
             max_time = incident_time
 
-    next_run = {'time': max_time.strftime('%Y-%m-%dT%H:%M:%S')}
+    next_run = {'time': max_time.strftime('%Y-%m-%dT%H:%M:%S')} # type: ignore
     incidents.reverse()
 
     return incidents, next_run
