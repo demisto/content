@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+from typing import Callable
 
 '''IMPORTS'''
 import requests
@@ -142,7 +143,7 @@ def update_content_command(client: Client, args: dict):
     space_key = args.get('space')
     content_body = args.get('body')
     content_type = args.get('type')
-    content_version = int(args.get('currentversion')) + 1
+    content_version = int(args.get('currentversion')) + 1  # type: ignore
 
     raw_content = update_content(client, page_id, content_title, space_key, content_body, content_type, content_version)
     content = {
@@ -509,7 +510,7 @@ def main():
                     use_ssl=not params.get('insecure', False))
 
     LOG(f'Command being called is {demisto.command()}')
-    commands = {
+    commands: Dict[str, Callable] = {
         'test-module': test,
         'confluence-create-space': create_space_command,
         'confluence-create-content': create_content_command,

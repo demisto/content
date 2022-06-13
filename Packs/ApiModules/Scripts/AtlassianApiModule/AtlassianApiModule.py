@@ -23,7 +23,6 @@ class AtlassianClient(BaseClient):
         """
 
         self.auth = None
-        self.headers = headers
         self.access_token = access_token
         is_oauth1 = consumer_key and access_token and private_key
 

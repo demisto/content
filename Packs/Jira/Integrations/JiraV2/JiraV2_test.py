@@ -1,4 +1,3 @@
-from optparse import OptionParser
 from unittest.mock import Mock
 import demistomock as demisto
 import pytest
@@ -1249,74 +1248,17 @@ def test_get_issue_and_attachments(mocker, get_attachments_arg, should_get_attac
     """
     from test_data.raw_response import GET_ISSUE_RESPONSE
     from JiraV2 import get_issue
-    from requests import Response
 
     client = mock_client()
     mocker.patch.object(client, 'send_request', return_value=GET_ISSUE_RESPONSE)
     mocker.patch("JiraV2.get_attachment_data", return_value=('entry_artifact_5@317.json', b'{"filename": "filename"}'))
 
     demisto_results_mocker = mocker.patch.object(demisto, 'results')
-    get_issue(mock_client(), 'id', get_attachments=get_attachments_arg)
+    get_issue(client, 'id', get_attachments=get_attachments_arg)
     if should_get_attachments:
         demisto_results_mocker.assert_called_once()
     else:
         demisto_results_mocker.assert_not_called()
-
-
-OAUTH1 = {
-    'url': 'example.com',
-    'consumerKey': 'example_key',
-    'accessToken': 'example_token',
-    'privateKey': 'example_private_key',
-    'username': ''
-}
-
-PAT = {'url': 'example.com', 'username': '', 'accessToken': 'example_token'}
-
-BASIC = {'url': 'example.com', 'username': 'example_user', 'APItoken': 'example_token'}
-AUTH_CASES = [
-    (OAUTH1, {}, {'Content-Type': 'application/json', 'X-Atlassian-Token': 'nocheck'}),
-    (OAUTH1, {'X-Atlassian-Token': 'nocheck'}, {'X-Atlassian-Token': 'nocheck'}),
-    (PAT, {}, {'Content-Type': 'application/json', 'Authorization': 'Bearer example_token'}),
-    (PAT, {'X-Atlassian-Token': 'nocheck'}, {'X-Atlassian-Token': 'nocheck', 'Authorization': 'Bearer example_token'}),
-    (BASIC, {}, {'Content-Type': 'application/json'}),
-    (BASIC, {'X-Atlassian-Token': 'nocheck'}, {'X-Atlassian-Token': 'nocheck'}),
-]
-
-#
-# @pytest.mark.parametrize('params, custom_headers, expected_headers', AUTH_CASES)
-# def test_jira_req(mocker, requests_mock, params, custom_headers, expected_headers):
-#     """
-#        Given:
-#            - Case OAuth authentication: The user is using the default headers for a command
-#            - Case OAuth authentication: The user is using custom headers for a command
-#            - Case PAT authentication: The user is using the default headers for a command
-#            - Case PAT authentication: The user is using custom headers for a command
-#            - Case BASIC authentication: The user is using the default headers for a command
-#            - Case BASIC authentication: The user is using custom headers for a command
-#
-#        When
-#            - Running any command, trying to make a request to Jira while using specific authentication.
-#        Then
-#            - Ensure the authentication headers are correct when using custom headers
-#            - Ensure the authentication headers are correct when using default headers
-#        """
-#     import JiraV2
-#     import requests
-#
-#     class ResponseDummy():
-#         def __init__(self):
-#             self.ok = 1
-#
-#     req_mock = mocker.patch.object(requests, 'request', return_value=ResponseDummy())
-#     # requests_mock.register_uri(requests_mock.ANY, 'example.com', text='resp')
-#     JiraV2.USERNAME = params.get('username')
-#     JiraV2.HEADERS = {'Content-Type': 'application/json'}
-#     mocker.patch.object(demisto, "params", return_value=params)
-#     JiraV2.jira_req(method='get',
-#                     resource_url=params.get('url'),
-#                     headers=custom_headers)
-#     assert expected_headers == req_mock.call_args[1]['headers']
 
 
 def test_get_issue_outputs(mocker):
