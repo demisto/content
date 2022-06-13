@@ -78,12 +78,12 @@ script:
       secret: false
     - description: Set this argument to True in order to create events, otherwise the command will only display them.
       auto: PREDEFINED
-      defaultValue: 'False'
+      defaultValue: 'false'
       isArray: false
       name: should_push_events
       predefined:
-        - 'True'
-        - 'False'
+        - 'true'
+        - 'false'
       required: true
     - default: false
       description: Fetch events from this time (<number> <time unit>, e.g., 12 hours, 7 days).

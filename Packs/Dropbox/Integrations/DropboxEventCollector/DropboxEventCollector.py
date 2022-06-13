@@ -142,7 +142,7 @@ def main(command: str, demisto_params: dict):
     get_events = DropboxEventsGetter(client, options)
 
     try:
-        insecure = demisto_params.get('insecure')
+        insecure = not demisto_params.get('insecure')
 
         if command == 'test-module':
             raise DemistoException("Please run the !dropbox-auth-test command in order to test the connection")
@@ -167,7 +167,7 @@ def main(command: str, demisto_params: dict):
         elif command in ('fetch-events', 'dropbox-get-events'):
             events = get_events.run()
 
-            if command == 'fetch-events' or demisto_params.get('should_push_events'):
+            if command == 'fetch-events' or demisto_params.get('should_push_events').lower() == 'true':
                 send_events_to_xsiam(events, vendor=demisto_params.get('vendor', 'dropbox'),
                                      product=demisto_params.get('product', 'dropbox'))
 

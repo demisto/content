@@ -102,10 +102,22 @@ Get events.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | limit | The maximum events to fetch. Default is 500. | Optional | 
-| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: True, False. Default is False. | Required | 
+| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: true, false. Default is false. | Required | 
 | from | Fetch events from this time (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). Default is 3 days. | Optional | 
 
 
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!dropbox-get-events should_push_events='false' limit=3```
+
+#### Human Readable Output
+
+>### Dropbox logs
+>|Actor|Context|Details|Event _ Category|Event _ Type|Involve _ Non _ Team _ Member|Origin|Timestamp|
+>|---|---|---|---|---|---|---|---|
+>| .tag: admin<br/>admin: {".tag": "team_member", "account_id": "123456", "display_name": "John Smith", "email": "JohnSmith@example.com", "team_member_id": "111111"} | .tag: team_member<br/>account_id: 123456<br/>display_name: John Smith<br/>email: JohnSmith@example.com<br/>team_member_id: 111111 | .tag: member_change_status_details<br/>previous_value: {".tag": "not_joined"}<br/>new_value: {".tag": "active"}<br/>action: {".tag": "team_join_details", "linked_apps": [], "linked_devices": [], "linked_shared_folders": [], "has_linked_apps": false, "has_linked_devices": true, "has_linked_shared_folders": false} | .tag: members | .tag: member_change_status<br/>description: Changed member status (invited, joined, suspended, etc.) | false | geo_location: {"city": "Tel Aviv", "region": "Tel Aviv", "country": "IL", "ip_address": "1.1.1.1"}<br/>access_method: {".tag": "end_user", "end_user": {".tag": "web", "session_id": "222222"}} | 2022-05-16T11:34:29Z |
+>| .tag: admin<br/>admin: {".tag": "team_member", "account_id": "123456", "display_name": "John Smith", "email": "JohnSmith@example.com", "team_member_id": "111111"} | .tag: team_member<br/>account_id: 123456<br/>display_name: John Smith<br/>email: JohnSmith@example.com<br/>team_member_id: 111111 | .tag: member_change_admin_role_details<br/>new_value: {".tag": "team_admin"}<br/>previous_value: {".tag": "member_only"} | .tag: members | .tag: member_change_admin_role<br/>description: Changed team member admin role | false | geo_location: {"city": "Tel Aviv", "region": "Tel Aviv", "country": "IL", "ip_address": "1.1.1.1"}<br/>access_method: {".tag": "end_user", "end_user": {".tag": "web", "session_id": "222222"}} | 2022-05-16T11:34:29Z |
+>| .tag: admin<br/>admin: {".tag": "team_member", "account_id": "123456", "display_name": "John Smith", "email": "JohnSmith@example.com", "team_member_id": "111111"} | .tag: team | .tag: member_send_invite_policy_changed_details<br/>new_value: {".tag": "everyone"}<br/>previous_value: {".tag": "specific_members"} | .tag: team_policies | .tag: member_send_invite_policy_changed<br/>description: Changed member send invite policy for team | false | geo_location: {"city": "Tel Aviv", "region": "Tel Aviv", "country": "IL", "ip_address": "1.1.1.1"}<br/>access_method: {".tag": "end_user", "end_user": {".tag": "web", "session_id": "222222"}} | 2022-05-16T11:34:33Z |
+
