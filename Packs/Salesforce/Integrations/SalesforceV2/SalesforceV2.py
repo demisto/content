@@ -894,7 +894,7 @@ def fetchIncident(client, params):
                     "occurred": parse(item.get('CreatedDate')).isoformat().split("+")[0].split(".")[0] + "Z",
                     "rawJSON": json.dumps(item),
                     'mirror_direction': MIRROR_DIRECTION.get(params.get('mirror_direction')),
-                    'mirror_tags': [params.get('comment_tag'), demisto.params().get('file_tag')],
+                    'mirror_tags': [params.get('comment_tag'), params.get('file_tag')],
                     'mirror_instance': demisto.integrationInstance()
                 })
 
