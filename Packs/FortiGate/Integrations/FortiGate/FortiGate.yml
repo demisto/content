@@ -698,7 +698,7 @@ script:
       description: The address name.
       type: String
     - contextPath: Fortigate.Address.Deleted
-      description: The address deleted status.
+      description: The address deletion status.
       type: String
   dockerimage: demisto/python:2.7.18.27799
   feed: false
