@@ -904,7 +904,7 @@ def test_get_modified_remote_data_command(mocker):
     expected = GetModifiedRemoteDataResponse(list(map(str, command_test_data['get_modified_remote_data']['outputs'])))
     mocker.patch.object(client, 'offenses_list', return_value=command_test_data['get_modified_remote_data']['response'])
     result = get_modified_remote_data_command(client, dict(), command_test_data['get_modified_remote_data']['args'])
-    assert set(expected.modified_incident_ids) == set(result.modified_incident_ids)
+    assert set(int(id_) for id_ in expected.modified_incident_ids) == set(int(id_) for id_ in result.modified_incident_ids)
 
 
 @pytest.mark.parametrize('params, offense, enriched_offense, note_response, expected',
@@ -1088,28 +1088,48 @@ class MockResults:
 
 
 def test_get_modified_with_events(mocker):
-    context_data = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {'1': '123', '2': '456', '10': '-1'},
-                    MIRRORED_OFFENSES_FINISHED_CTX_KEY: {'3': '789', '4': '012'}}
-    expected_updated_context = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {'2': '456', '10': '555'},
-                                MIRRORED_OFFENSES_FINISHED_CTX_KEY: {'3': '789', '4': '012', '1': '123'},
-                                LAST_MIRROR_KEY: 0}
+    """
+    Given:
+        Context data with mirrored offenses, queried and finished.
+    
+    When:
+        Calling get_modified_with_events.
+    
+    Then:
+        Ensure that finished queries goes to finished queue, and modified incidents returns the modified offenses and the finished queries.
+    """
+    context_data = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {1: '123', 2: '456', 10: '-1'},
+                    MIRRORED_OFFENSES_FINISHED_CTX_KEY: {3: '789', 4: '012'}}
+    expected_updated_context = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {2: '456', 10: '555'},
+                                MIRRORED_OFFENSES_FINISHED_CTX_KEY: {3: '789', 4: '012', 1: '123'},
+                                LAST_MIRROR_KEY: 3444}
     set_integration_context(context_data)
     status = {'123': {'status': 'COMPLETED'},
               '456': {'status': 'WAIT'},
               '555': {'status': 'PENDING'}}
 
-    mocker.patch.object(client, 'offenses_list', return_value=[])
+    mocker.patch.object(client, 'offenses_list', return_value=[{'id': 6, 'last_persisted_time': "3444"}])
     mocker.patch.object(QRadar_v3, 'create_events_search', return_value='555')
     mocker.patch.object(client, 'search_status_get', side_effect=lambda offense_id: status[offense_id])
     modified = get_modified_remote_data_command(client,
                                                 {'mirror_options': MIRROR_OFFENSE_AND_EVENTS},
                                                 {'lastUpdate': '0'})
-    assert modified.modified_incident_ids == ['1']
+    assert modified.modified_incident_ids == [1, 6]
     assert get_integration_context() == expected_updated_context
 
 
-@pytest.mark.parametrize('offense_id', ['1', '2', '3', '4', '5', '10'])
+@pytest.mark.parametrize('offense_id', [1, 2, 3, 4, 5, 10])
 def test_remote_data_with_events(mocker, offense_id):
+    """
+    Given:
+        - Offense ID.
+        
+    When:
+        - Calling get_remote_data_command with offense ID after `get-modified`
+        
+    Then:
+        - Ensure that the offense data is returned and context_data is updated.
+    """
     context_data = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {'1': '123', '2': '456', '10': '-1'},
                     MIRRORED_OFFENSES_FINISHED_CTX_KEY: {'3': '789', '4': '012'}}
     set_integration_context(copy.deepcopy(context_data))
@@ -1280,6 +1300,13 @@ def test_integration_context_during_run(test_case_data, mocker):
 
 
 def test_convert_ctx():
+    """
+    Given: Old context structure
+    
+    When: Calling to update structure
+    
+    Then: New structure is returned
+    """
     new_context = convert_integration_ctx(ctx_test_data.get('old_ctxs')[0])
     expected = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
                 MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},

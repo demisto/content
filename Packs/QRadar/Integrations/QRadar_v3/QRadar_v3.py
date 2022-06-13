@@ -3299,8 +3299,8 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
                                             f'AND ({user_query})',
                                     sort='+last_persisted_time',
                                     fields='id,start_time,event_count,last_persisted_time')
-    new_modified_records_ids = {str(offense.get('id')) for offense in offenses if 'id' in offense}
-    current_last_update = last_update if not offenses else offenses[-1].get('last_persisted_time')
+    new_modified_records_ids = {offense.get('id') for offense in offenses if 'id' in offense}
+    current_last_update = last_update if not offenses else int(offenses[-1].get('last_persisted_time'))
     print_debug_msg(f'Last update: {last_update}, current last update: {current_last_update}')
     events_columns = params.get('events_columns', '')
     events_limit = int(params.get('events_limit') or DEFAULT_EVENTS_LIMIT)
