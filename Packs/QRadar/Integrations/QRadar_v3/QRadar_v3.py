@@ -3082,21 +3082,6 @@ def json_loads_inner(json_dumps_list: List[str]) -> list:
     return python_object_list
 
 
-def json_dumps_inner(listed_objects: list) -> List[str]:
-    """ Json dump values of list.
-
-    Args:
-        listed_objects: A list with nodes to be json dumped.
-
-    Returns: json dumped list of the json dumps in the original list.
-    """
-    listed_json_dumps = []
-    for python_object in listed_objects:
-        listed_json_dumps.append(json.dumps(python_object))
-
-    return listed_json_dumps
-
-
 def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) -> GetRemoteDataResponse:
     """
     get-remote-data command: Returns an updated incident and entries
@@ -3363,7 +3348,7 @@ def convert_integration_ctx(ctx: dict) -> dict:
     mirrored_offenses: Dict[str, str] = {}
     try:
         for key in ('mirrored_offenses', 'updated_mirrored_offenses', 'resubmitted_mirrored_offenses'):
-            mirrored_offenses |= {json.loads(offense).get('id'): '-1' for offense in ctx.get(key, [])}
+            mirrored_offenses |= {json.loads(offense).get('id'): '-1' for offense in json.loads(ctx.get(key, '[]'))}
     except Exception as e:
         print_debug_msg(f'Could not load mirrored_offenses from context_data. Error: {e}')
 

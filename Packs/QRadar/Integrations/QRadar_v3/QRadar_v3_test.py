@@ -1,7 +1,6 @@
 """
     QRadar v3 integration for Cortex XSOAR - Unit Tests file
 """
-import concurrent.futures
 import io
 import json
 from datetime import datetime
@@ -35,7 +34,6 @@ from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_o
 
 from CommonServerPython import DemistoException, set_integration_context, CommandResults, \
     GetModifiedRemoteDataResponse, GetRemoteDataResponse, get_integration_context
-from CommonServerPython import set_to_integration_context_with_retries
 
 QRadar_v3.FAILURE_SLEEP = 0
 QRadar_v3.SLEEP_FETCH_EVENT_RETIRES = 0
@@ -1280,13 +1278,10 @@ def test_integration_context_during_run(test_case_data, mocker):
     assert current_context == expected_ctx_second_loop
     set_integration_context({})
 
-@pytest.mark.parametrize('old_ctx', [ctx_test_data.get('old_contexts')[0], ctx_test_data.get('old_contexts')[1]])
-def test_convert_ctx(old_ctx):
-    if json.loads(old_ctx.get('samples')):
-        mirrored_q = {1: '-1',
-                      2: '-1'}
-    new_context = convert_integration_ctx(old_ctx)
-    expected = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: mirrored_q,
+
+def test_convert_ctx():
+    new_context = convert_integration_ctx(ctx_test_data.get('old_ctxs')[0])
+    expected = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
                 MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
                 LAST_FETCH_KEY: 15,
                 LAST_MIRROR_KEY: 0,

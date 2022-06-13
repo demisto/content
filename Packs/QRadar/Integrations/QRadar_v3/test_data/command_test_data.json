@@ -1220,7 +1220,7 @@
      "credibility": 5,
      "severity": 0,
      "magnitude": 1,
-     "eventcount": 1,
+     "eventcount": 2,
      "eventDirection": "R2R",
      "postNatDestinationIP": "0.0.0.0",
      "postNatDestinationPort": 0,
