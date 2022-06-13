@@ -10,7 +10,7 @@ args:
   predefined:
   - "True"
   - "False"
-comment: Deprecated. <REASON> No available replacement.
+comment: Deprecated. No available replacement.
 commonfields:
   id: PrismaCloudComputeCreateComplianceSummary
   version: -1
