@@ -28,4 +28,9 @@ The vendor corresponding to the integration that created the events. This affect
 The product corresponding to the integration that created the events. This affects the name of the dataset where the events will be inserted `{vendor_product_raw}`.
 
 ## Test
-Run the ***!dropbox-auth-start*** command from the WarRoom and follow the instructions.
+In order to test the connection to the Dropbox app:
+1. Fill in the required parameters.
+2. Run the ***!dropbox-auth-start*** command.
+3. Follow the instructions that appear.
+4. Run the ***!dropbox-auth-complete*** command with the code returned from Dropbox.
+5. Run the ***!dropbox-auth-test*** command to verify success.

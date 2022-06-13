@@ -18,6 +18,7 @@ This integration was integrated and tested with version 2 of Dropbox API
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
 
+4. Run the ***!dropbox-auth-start*** command to test the connection and the authorization process.
 
 ## Commands
 You can execute these commands from the Cortex XSIAM War Room, as part of an automation, or in a playbook.
