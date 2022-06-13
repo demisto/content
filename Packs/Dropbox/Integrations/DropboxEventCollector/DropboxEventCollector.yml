@@ -20,14 +20,6 @@ configuration:
   name: limit
   required: false
   type: 0
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
 - defaultvalue: dropbox
   additionalinfo: "For the dataset name for example: dropbox"
   display: Vendor name
@@ -40,6 +32,14 @@ configuration:
   name: product
   required: false
   type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 description: Collect events from Dropbox's logs.
 display: Dropbox Event Collector
 name: DropboxEventsCollector
@@ -108,4 +108,4 @@ script:
   isfetchevents: true
 tests:
 - No tests
-fromversion: 6.6.0
+fromversion: 6.8.0
