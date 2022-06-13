@@ -786,7 +786,7 @@ def get_modified_remote_data_command(client, args):
     remote_args = GetModifiedRemoteDataArgs(args)
     last_update = remote_args.last_update
     last_update_sfdc = parse(last_update).isoformat().split("+")[0].split(".")[0] + "Z"
-    demisto.debug(f'SalesforcePy : * START * Performing get-modified-remote-data command. Last update is: {last_update}')
+    demisto.debug(f'SalesforceV2 : * START * Performing get-modified-remote-data command. Last update is: {last_update}')
 
     cases = client.queryObjects(['Id'], 'Case', f"LastModifiedDate >= {last_update_sfdc}").get('records')
     for item in cases:
