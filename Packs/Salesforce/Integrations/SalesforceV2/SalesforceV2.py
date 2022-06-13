@@ -902,7 +902,7 @@ def fetchIncident(client, params):
         # Fetch comment replies
 
         properties += ['Id', 'CommentBody', 'CreatedDate']
-        condition = f"CreatedDate> {lastRun.get('last_case_time')} {demisto.params().get('condition','')} ORDER BY CreatedDate DESC LIMIT 10"
+        condition = f"CreatedDate> {lastRun.get('last_case_time')} {params.get('condition','')} ORDER BY CreatedDate DESC LIMIT 10"
         replies = client.queryObjects(list(set(properties)), "FeedComment", condition).get("records")
 
         if len(replies) > 0:
