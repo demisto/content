@@ -5429,7 +5429,8 @@
         "LogRhythm": "The integration is deprecated",
         "Alibaba Action Trail Event Collector": "XSIAM integration",
         "Salesforce Event Collector": "XSIAM integration",
-        "Github Event Collector" : "XSIAM integration"
+        "Github Event Collector" : "XSIAM integration",
+        "TestCloudflareWAFPlaybook": "No instance"
     },
     "nightly_integrations": [
         "Laline v2",
