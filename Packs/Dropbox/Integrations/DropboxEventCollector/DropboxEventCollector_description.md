@@ -27,7 +27,7 @@ The App key and App secret.
 ## Test
 In order to test the connection to the Dropbox app:
 1. Fill in the required parameters.
-2. Run the ***!dropbox-auth-start*** command.
+2. Run the ***!dropbox-auth-start*** command from the [WarRoom](./incidents/war_room).
 3. Follow the instructions that appear.
 4. Run the ***!dropbox-auth-complete*** command with the code returned from Dropbox.
 5. Run the ***!dropbox-auth-test*** command to verify success.
