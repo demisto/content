@@ -1,3 +1,5 @@
+import io
+
 from CoreIOCs import *
 import pytest
 from freezegun import freeze_time
@@ -9,6 +11,11 @@ client = Client({'url': 'https://example.com'})
 
 def d_sort(in_dict):
     return sorted(in_dict.items())
+
+
+def util_load_json(path):
+    with io.open(path, mode='r', encoding='utf-8') as f:
+        return json.loads(f.read())
 
 
 class TestGetHeaders:
@@ -32,6 +39,7 @@ class TestHttpRequest:
             Then:
                 - do not raise an error
         """
+
         requests_mock.post('https://example.com/public_api/v1/indicators/suffix', status_code=200, json={})
         client.http_request(url_suffix='suffix', requests_kwargs={})
 
@@ -632,6 +640,76 @@ class TestCommands:
         mocker.patch('CoreIOCs.return_outputs')
         tim_insert_jsons(client)
         assert http_request.call_args.kwargs['url_suffix'] == 'tim_insert_jsons/', 'tim_insert_jsons command url changed'
+
+    class TestPrevalenceCommands:
+        Client.base_url_suffix = 'xsiam/'
+        prevalence_client = Client({'url': 'https://example.com'})
+        api_responses = util_load_json(f'test_data/prevalence_response.json')
+
+        def test_get_domain_analytics(self, mocker):
+            """
+                Given:
+                    - A domain name.
+                When:
+                    - Calling handle_prevalence_command as part of core-get-domain-analytics-prevalence command.
+                Then:
+                    - Verify response is as expected.
+            """
+            api_res = self.api_responses['domain']
+            mocker.patch.object(Client, 'http_request', return_value=api_res)
+            res = handle_prevalence_command(self.prevalence_client, 'core-get-domain-analytics-prevalence',
+                                            {'domain': 'some-web.com'})
+            x = 5
+
+        def test_get_ip_analytics(self, mocker):
+            """
+                Given:
+                    - An Ip address.
+                When:
+                    - Calling handle_prevalence_command as part of core-get-IP-analytics-prevalence command.
+                Then:
+                    - Verify response is as expected.
+            """
+
+        def test_get_hash_analytics(self, mocker):
+            """
+                Given:
+                    - A sha256 address.
+                When:
+                    - Calling handle_prevalence_command as part of core-get-sha-analytics-prevalence command.
+                Then:
+                    - Verify response is as expected.
+            """
+
+        def test_get_process_analytics(self, mocker):
+            """
+                Given:
+                    - A process name.
+                When:
+                    - Calling handle_prevalence_command as part of core-get-process-analytics-prevalence command.
+                Then:
+                    - Verify response is as expected.
+            """
+
+        def test_get_registry_analytics(self, mocker):
+            """
+                Given:
+                    - A registry name.
+                When:
+                    - Calling handle_prevalence_command as part of core-get-registry-analytics-prevalence command.
+                Then:
+                    - Verify response is as expected.
+            """
+
+        def test_get_cmd_analytics(self, mocker):
+            """
+                Given:
+                    - A process command line.
+                When:
+                    - Calling handle_prevalence_command as part of core-get-cmd-analytics-prevalence command.
+                Then:
+                    - Verify response is as expected.
+            """
 
 
 class TestParams:

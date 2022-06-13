@@ -5,20 +5,20 @@ commonfields:
   version: -1
 configuration:
 - display: Server URL (e.g. https://example.net)
+  hidden: true
   name: url
   required: false
   type: 0
-  hidden: true
 - display: API Key ID
+  hidden: true
   name: apikey_id
   required: false
   type: 4
-  hidden: true
 - display: API Key
+  hidden: true
   name: apikey
   required: false
   type: 4
-  hidden: true
 - additionalinfo: Map the severity of each indicator that will be synced to Cortex.
   display: Cortex Severity
   hidden: false
@@ -37,7 +37,9 @@ configuration:
   name: query
   required: true
   type: 0
-description: The Cortex Core - IOCs integration uses the Cortex API for detection and response, by natively integrating network, endpoint, and cloud data to stop sophisticated attacks.
+description: The Cortex Core - IOCs integration uses the Cortex API for detection
+  and response, by natively integrating network, endpoint, and cloud data to stop
+  sophisticated attacks.
 display: Indicators detection
 name: Cortex Core - IOC
 script:
@@ -62,7 +64,8 @@ script:
     name: core-iocs-sync
   - arguments:
     - default: false
-      description: IOCs to push. leave empty to push all recently modified IOCs.the indicators
+      description: IOCs to push. leave empty to push all recently modified IOCs.the
+        indicators
       isArray: true
       name: indicator
       required: false
@@ -79,11 +82,13 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Set sync time manually (Do not use this command unless you unredstandard the consequences).
+    description: Set sync time manually (Do not use this command unless you unredstandard
+      the consequences).
     execution: false
     name: core-iocs-set-sync-time
   - deprecated: false
-    description: Creates the sync file for the manual process. Run this command when instructed by the Cortex support team.
+    description: Creates the sync file for the manual process. Run this command when
+      instructed by the Cortex support team.
     execution: false
     name: core-iocs-create-sync-file
   - arguments:
@@ -110,222 +115,84 @@ script:
     name: core-iocs-disable
   - arguments:
     - default: false
-      description: The hash values
+      description: The sha256 of a file.
       isArray: true
-      name: hash
+      name: sha256
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      isArray: false
-      name: detailed_response
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      isArray: false
-      name: global_check
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
-    - default: false
-      isArray: false
-      name: context
-      required: false
-      secret: false
     deprecated: false
+    description: Get the prevalence of a file, identified by sha256.
     execution: false
     hidden: false
-    name: core-get-hash-prevalence
+    name: core-get-hash-analytics-prevalence
   - arguments:
     - default: false
-      description: The IP values
+      description: The IP address.
       isArray: true
-      name: ip
+      name: ip_address
       predefined:
       - ''
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      isArray: false
-      name: detailed_response
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      isArray: false
-      name: global_check
-      predefined:
-      - 'true'
-      - 'false'
-      required: false
-      secret: false
-    - default: false
-      isArray: false
-      name: context
-      required: false
-      secret: false
     deprecated: false
+    description: Get the prevalence of an ip, identified by ip_address.
     execution: false
     hidden: false
-    name: core-get-ip-prevalence
+    name: core-get-IP-analytics-prevalence
   - arguments:
     - default: false
-      description: The domain values
+      description: The domain name.
       isArray: true
-      name: domain
+      name: domain_name
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      isArray: false
-      name: detailed_response
-      predefined:
-        - 'true'
-        - 'false'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      isArray: false
-      name: global_check
-      predefined:
-        - 'true'
-        - 'false'
-      required: false
-      secret: false
-    - default: false
-      isArray: false
-      name: context
-      required: false
-      secret: false
     deprecated: false
+    description: Get the prevalence of a domain, identified by domain_name.
     execution: false
     hidden: false
-    name: core-get-domain-prevalence
+    name: core-get-domain-analytics-prevalence
   - arguments:
     - default: false
-      description: The process values
+      description: The process name.
       isArray: true
-      name: process
+      name: process_name
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      isArray: false
-      name: detailed_response
-      predefined:
-        - 'true'
-        - 'false'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      isArray: false
-      name: global_check
-      predefined:
-        - 'true'
-        - 'false'
-      required: false
-      secret: false
-    - default: false
-      isArray: false
-      name: context
-      required: false
-      secret: false
     deprecated: false
+    description: Get the prevalence of a process, identified by process_name.
     execution: false
     hidden: false
-    name: core-get-process-prevalence
+    name: core-get-process-analytics-prevalence
   - arguments:
     - default: false
-      description: The registry values
+      description: The key name of a registry path.
       isArray: true
-      name: registry
+      name: key_name
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      isArray: false
-      name: detailed_response
-      predefined:
-        - 'true'
-        - 'false'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      isArray: false
-      name: global_check
-      predefined:
-        - 'true'
-        - 'false'
-      required: false
-      secret: false
     - default: false
-      isArray: false
-      name: context
-      required: false
+      description: The value name of a registry path.
+      isArray: true
+      name: value_name
+      required: true
       secret: false
     deprecated: false
+    description: Get the prevalence of a registry_path, identified by key_name, value_name.
     execution: false
     hidden: false
-    name: core-get-registry-prevalence
+    name: core-get-registry-analytics-prevalence
   - arguments:
     - default: false
-      description: The CMD values
+      description: The process command line.
       isArray: true
-      name: CMD
+      name: process_command_line
       required: true
       secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      isArray: false
-      name: detailed_response
-      predefined:
-        - 'true'
-        - 'false'
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: 'false'
-      isArray: false
-      name: global_check
-      predefined:
-        - 'true'
-        - 'false'
-      required: false
-      secret: false
-    - default: false
-      isArray: false
-      name: context
-      required: false
-      secret: false
     deprecated: false
+    description: Get the prevalence of a process_command_line, identified by process_command_line.
     execution: false
     hidden: false
-    name: core-get-cmd-prevalence
+    name: core-get-process-cmd-prevalence
   dockerimage: demisto/python3:3.10.1.26972
   feed: false
   isfetch: false
@@ -337,5 +204,5 @@ script:
   type: python
 tests:
 - No tests
-fromversion: 5.5.0
 defaultEnabled: true
+fromversion: 5.5.0

@@ -34,6 +34,7 @@ class Client:
     query: str = 'reputation:Bad and (type:File or type:Domain or type:IP)'
     tag = 'Cortex Core'
     tlp_color = None
+    base_url_suffix = '/public_api/v1/indicators/'
     error_codes: Dict[int, str] = {
         500: 'XDR internal server error.',
         401: 'Unauthorized access. An issue occurred during authentication. This can indicate an '    # noqa: W504
@@ -48,7 +49,7 @@ class Client:
         url = params.get('url')
         if not url:
             url = "http://" + demisto.getLicenseCustomField("Core.ApiHost") + "/api/webapp/"
-        self._base_url: str = urljoin(url, '/public_api/v1/indicators/')
+        self._base_url: str = urljoin(url, self.base_url_suffix)
         self._verify_cert: bool = not params.get('insecure', False)
         self._params = params
         handle_proxy()
@@ -158,26 +159,20 @@ def get_iocs(page=0, size=200, query=None) -> List:
         .get('iocs', [])
 
 
-def handle_prevalence_command(client: Client, indicator_name: str, args: dict):
-    indicator_values = argToList(args.get(indicator_name))
-    detailed_response = argToBoolean(args.get('detailed_response', False))
-    global_check = argToBoolean(args.get('global_check', False))
-    context = args.get('context')
-
-    arg_list = [
-        {
-            indicator_name: indicator_value,
-            'detailed_response': detailed_response,
-            'global_check': global_check,
-            'context': context
-        }
-        for indicator_value in indicator_values]
+def handle_prevalence_command(client: Client, command: str, args: dict):
+    arg_list = []
+    for key, value in args.items():
+        values = argToList(value)
+        args[key] = values
+        for val in values:
+            arg_list.append({key: val})
 
     request_body = {
-        'APIId': f'is_{indicator_name}_prevelant',
+        'api_id': command,
         'args': arg_list
     }
-    client.http_request('analytics_playbook_questions', requests_kwargs={'data': request_body})
+    request_kwargs = get_requests_kwargs(request_body)
+    return client.http_request('analytics_apis/', requests_kwargs=request_kwargs)
 
 
 def demisto_expiration_to_core(expiration) -> int:
@@ -451,10 +446,8 @@ def main():
     # """
     params = demisto.params()
     args = demisto.args()
-    Client.severity = params.get('severity', '').upper()
-    Client.query = params.get('query', Client.query)
-    Client.tlp_color = params.get('tlp_color')
-    client = Client(params)
+    command = demisto.command()
+
     commands = {
         'test-module': module_test,
         'core-iocs-enable': iocs_command,
@@ -463,15 +456,22 @@ def main():
     }
 
     prevalence_commands = {
-        'core-get-hash-prevalence': 'hash',
-        'core-get-ip-prevalence': 'ip',
-        'core-get-domain-prevalence': 'domain',
-        'core-get-process-prevalence': 'process',
-        'core-get-registry-prevalence': 'registry',
-        'core-get-cmd-prevalence': 'cmd',
+        'core-get-hash-analytics-prevalence',
+        'core-get-IP-analytics-prevalence',
+        'core-get-domain-analytics-prevalence',
+        'core-get-process-analytics-prevalence',
+        'core-get-registry-analytics-prevalence',
+        'core-get-cmd-analytics-prevalence',
     }
 
-    command = demisto.command()
+    if command in prevalence_commands:
+        Client.base_url_suffix = 'xsiam/'
+
+    Client.severity = params.get('severity', '').upper()
+    Client.query = params.get('query', Client.query)
+    Client.tlp_color = params.get('tlp_color')
+    client = Client(params)
+
     try:
         if command == 'core-iocs-set-sync-time':
             set_sync_time(args['time'])
@@ -482,7 +482,7 @@ def main():
         elif command == 'core-iocs-sync':
             core_iocs_sync_command(client, args.get('firstTime') == 'true')
         elif command in prevalence_commands:
-            handle_prevalence_command(client, prevalence_commands[command], args)
+            handle_prevalence_command(client, command, args)
         else:
             raise NotImplementedError(command)
     except Exception as error:
