@@ -13,10 +13,10 @@ This integration was integrated and tested with version xx of DropboxEventsColle
     | App Secret | The App secret | True |
     | First fetch in timestamp format | First fetch in timestamp format (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
     | The maximum number of events per fetch |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
     | Vendor name | For the dataset name for example: dropbox | False |
     | Product name | For the dataset name for example: dropbox | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
 
 
 ## Commands
