@@ -1647,20 +1647,6 @@ def update_missing_offenses_from_raw_offenses(raw_offenses: list, offenses: list
                 offenses.append(offense)
 
 
-def exclude_lists(original: List[dict], exclude: List[dict], key: str):
-    """Exclude nodes of exclude list from the original list by key
-
-    Args:
-        original: The original list to exclude from
-        exclude: The list of nodes to exclude
-        key: The key to exclude by
-
-    Returns: A list with the original nodes that were not excluded.
-    """
-    exclude_keys = [excluded_node.get(key) for excluded_node in exclude]
-    return [element.copy() for element in original if element.get(key) not in exclude_keys]
-
-
 def create_incidents_from_offenses(offenses: List[Dict], incident_type: Optional[str]) -> List[Dict]:
     """
     Transforms list of offenses given into incidents for Demisto.
@@ -3060,25 +3046,6 @@ def update_events_mirror_message(mirror_options: Optional[Any], events_limit: in
         mirroring_events_message = 'All available events in the offense were mirrored.'
 
     return mirroring_events_message
-
-
-def json_loads_inner(json_dumps_list: List[str]) -> list:
-    """ Json load values of list.
-
-    Args:
-        json_dumps_list: A list with json dumps as nodes.
-
-    Returns: json loaded list of the json dumps in the original list.
-    """
-    python_object_list = []
-    for json_dump in json_dumps_list:
-        try:
-            python_object_list.append(json.loads(json_dump))
-        except Exception as e:
-            demisto.error(f'Exception {e} when trying to json parse {json_dump}, as part of {json_dumps_list}')
-            raise e
-
-    return python_object_list
 
 
 def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) -> GetRemoteDataResponse:
