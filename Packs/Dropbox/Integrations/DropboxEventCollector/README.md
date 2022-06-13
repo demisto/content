@@ -7,8 +7,8 @@ This integration was integrated and tested with version xx of DropboxEventsColle
 2. Search for Dropbox Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter**                                                                             | **Description** | **Required** |
--------------------------------------------------------------------------------------------| --- | --- | --- |
+    | **Parameter** | **Description** | **Required** |
+    |---|---|---|
     | App Key | The App key | True |
     | App Secret | The App secret | True |
     | First fetch in timestamp format | First fetch in timestamp format (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
@@ -20,7 +20,7 @@ This integration was integrated and tested with version xx of DropboxEventsColle
 
 
 ## Commands
-You can execute these commands from the Cortex XSIAM CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSIAM War Room, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### dropbox-auth-start
@@ -102,7 +102,7 @@ Get events.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | limit | The maximum events to fetch. Default is 500. | Optional | 
-| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: true, false. Default is false. | Required | 
+| should_push_events | Set this argument to true to create events, otherwise the command will only display them. Possible values are: true, false. Default is false. | Required | 
 | from | Fetch events from this time (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). Default is 3 days. | Optional | 
 
 
