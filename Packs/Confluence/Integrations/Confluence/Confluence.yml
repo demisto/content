@@ -1,8 +1,8 @@
 commonfields:
-  id: Atlassian Confluence Server
+  id: Atlassian Confluence Server test
   version: -1
-name: Atlassian Confluence Server
-display: Atlassian Confluence Server
+name: Atlassian Confluence Server test
+display: Atlassian Confluence Server test
 category: Utilities
 description: Atlassian Confluence Server API
 configuration:
@@ -11,27 +11,19 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-#- display: Username (Basic Authentication)
-#  name: username
-#  required: false
-#  type: 0
-#- display: Password (Deprecated - Use API token)
-#  name: password
-#  required: false
-#  type: 4
-#- displaypassword: API token (Recommended)
-#  name: credentials
-#  required: false
-#  type: 9
-- display: Username
-  name: credentials
-  defaultvalue: ""
-  type: 9
-  required: true
-- display: API token (Recommended)
-  name: api_token
+- display: Username (Basic Authentication)
+  name: username
+  required: false
+  type: 0
+- display: Password (Deprecated - Use API token)
+  name: password
   required: false
   type: 4
+- displaypassword: API token (Recommended)
+  hiddenusername: true
+  name: credentials
+  required: false
+  type: 9
 - defaultvalue: OauthKey
   additionalinfo: This field is ignored if other required fields are not provided (for example both the access token and the private key).
   display: Consumer key (OAuth 1.0)

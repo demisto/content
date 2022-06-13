@@ -66,43 +66,6 @@ class Client(BaseClient):
 
 
 """
-Helper Functions
-"""
-
-
-# def http_request(method, full_url, data=None, params=None, is_test=False):
-#     try:
-#         res = requests.request(
-#             method,
-#             full_url,
-#             verify=VERIFY_CERTIFICATE,
-#             auth=(USERNAME, PASSWORD),
-#             data=data,
-#             headers=HEADERS,
-#             params=params
-#         )
-#     except requests.exceptions.RequestException:  # This is the correct syntax
-#         return_error('Failed to connect to - {} - Please check the URL'.format(full_url))
-#
-#     # Handle error responses gracefully
-#     if res.status_code < 200 or res.status_code >= 400:
-#         if is_test:
-#             return res
-#
-#         return_error('Failed to execute command.\nURL: {}, Status Code: {}\nResponse: {}'.format(full_url,
-#                                                                                                  res.status_code,
-#                                                                                                  res.text))
-#
-#     if is_test:
-#         return res
-#     try:
-#         return res.json()
-#
-#     except ValueError as err:
-#         return_error('Failed to parse response from service, received the following error:\n{}'.format(str(err)))
-#
-
-"""
 Confluence Commands
 """
 
@@ -126,11 +89,6 @@ def update_content(client: Client, page_id, content_title, space_key, content_bo
         "number": content_version
     }
     return client.send_request('PUT', f'/content/{page_id}', json.dumps(content_data))
-    # full_url = BASE_URL + '/content/' + page_id
-    #
-    # res = http_request('PUT', full_url, json.dumps(content_data))
-    #
-    # return res
 
 
 def update_content_command(client: Client, args: dict):
@@ -184,11 +142,6 @@ def create_content(client: Client, content_type, content_title, space_key, conte
         }
     }
     return client.send_request('POST', '/content', json.dumps(content_data))
-    # full_url = BASE_URL + '/content'
-    #
-    # res = http_request('POST', full_url, json.dumps(content_data))
-    #
-    # return res
 
 
 def create_content_command(client: Client, args: dict = {}):
@@ -238,11 +191,6 @@ def create_space(client: Client, space_description, space_key, space_name):
         "key": space_key
     }
     return client.send_request('POST', '/space', json.dumps(space_data))
-    # full_url = BASE_URL + '/space'
-    #
-    # res = http_request('POST', full_url, json.dumps(space_data))
-
-    # return res
 
 
 def create_space_command(client: Client, args):
@@ -284,11 +232,6 @@ def get_content(client, key, title):
         "expand": "body.view,version"
     }
     return client.send_request('GET', '/content', None, params)
-    # full_url = BASE_URL + '/content'
-    #
-    # res = http_request('GET', full_url, None, params)
-    #
-    # return res
 
 
 def get_content_command(client, args):
@@ -343,11 +286,6 @@ def search_content(client, cql, cql_context, expand, start, limit):
     if start is not None:
         params['start'] = start
     return client.send_request('GET', '/content/search', None, params)
-    # full_url = BASE_URL + '/content/search'
-    #
-    # res = http_request('GET', full_url, None, params)
-    #
-    # return res
 
 
 def search_content_command(client: Client, args: dict):
@@ -393,7 +331,6 @@ def search_content_command(client: Client, args: dict):
 
 
 def list_spaces(client, limit, status, space_type):
-    # full_url = BASE_URL + '/space'
 
     params = {
         'limit': limit
@@ -405,9 +342,6 @@ def list_spaces(client, limit, status, space_type):
     if space_type:
         params['type'] = space_type
     return client.send_request('GET', '/space', params=params)
-    # res = http_request('GET', full_url, params=params)
-    #
-    # return res
 
 
 def list_spaces_command(client, args):
@@ -448,13 +382,11 @@ def list_spaces_command(client, args):
 def delete_content(client, content_id):
 
     client.send_request('DELETE', '/content/', is_test=True)
-    # full_url = BASE_URL + '/content/' + content_id
-    # http_request('DELETE', full_url, is_test=True)
+
     return {
         "Results": "Successfully Deleted Content ID " + content_id,
         "ID": content_id
     }
-    # return result
 
 
 def delete_content_command(client: Client, args):
@@ -485,8 +417,6 @@ def delete_content_command(client: Client, args):
 def test(client: Client, args: dict = {}):
 
     res = client.send_request('GET', '/user/current', is_test=True)
-    # full_url = urljoin(BASE_URL, '/user/current')
-    # res = http_request('GET', full_url, is_test=True)
 
     if not res:
         return_error('Test failed. \nCheck URL and Username/Password.\nStatus Code: {}, Response: {}'.format(
@@ -499,10 +429,10 @@ def main():
 
     params = demisto.params()
     client = Client(base_url=urljoin(params.get('url'), '/rest/api'),
-                    api_token=params.get('api_token'),
+                    api_token=params.get('credentials', {}).get('password'),
                     access_token=params.get('access_token'),
-                    username=params.get('credentials', {}).get('identifier'),
-                    password=params.get('credentials', {}).get('password'),
+                    username=params.get('username'),
+                    password=params.get('password'),
                     consumer_key=params.get('consumer_key'),
                     private_key=params.get('private_key'),
                     headers={'Content-Type': 'application/json',
