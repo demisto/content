@@ -111,7 +111,7 @@ NON_HIDDEN_PACKS = [
    "marketplaces": [
      "xsoar",
      "marketplacev2""", False),
- ("""
+    ("""
    "tags": [],
    "marketplaces": [
      "xsoar",
@@ -119,17 +119,17 @@ NON_HIDDEN_PACKS = [
 ]
 
 
-@pytest.mark.parametrize('mock_diff, expected_result', NON_HIDDEN_PACKS)
-def test_get_turned_non_hidden_packs(mocker, mock_diff, expected_result):
+@pytest.mark.parametrize('diff, expected_result', NON_HIDDEN_PACKS)
+def test_get_turned_non_hidden_packs(mocker, diff, expected_result):
     """
     Given:
-        - server_type of the server we run the build on: XSIAM or XSOAR.
+        - A pack_metadata.json content returned from git diff.
     When:
-        - Running 'configure_an_test_integration_instances' script and creating Build object
+        - Running 'get_turned_non_hidden_packs' method.
     Then:
-        - Assert there the rigth Build object created: XSIAMBuild or XSOARBuild.
+        - Assert there the expected result is returned.
     """
     build = create_build_object_with_mock(mocker, 'XSOAR')
-    mocker.patch('Tests.configure_and_test_integration_instances.run_git_diff', return_value=mock_diff)
+    mocker.patch('Tests.configure_and_test_integration_instances.run_git_diff', return_value=diff)
     turned_non_hidden = get_turned_non_hidden_packs({'test'}, build)
     assert ('test' in turned_non_hidden) is expected_result

@@ -22,7 +22,7 @@ import demisto_client
 
 from demisto_sdk.commands.common.constants import FileType
 from demisto_sdk.commands.common.tools import run_threads_list, run_command, get_yaml, \
-    str2bool, format_version, find_type
+    str2bool, format_version, find_type, listdir_fullpath
 from demisto_sdk.commands.test_content.constants import SSH_USER
 from demisto_sdk.commands.test_content.mock_server import MITMProxy, run_with_mock, RESULT
 from demisto_sdk.commands.test_content.tools import update_server_configuration, is_redhat_instance
@@ -1593,7 +1593,7 @@ def run_git_diff(pack_id: str, build: Build) -> str:
                        f'{compare_against}..refs/heads/{build.branch_name} -- Packs/{pack_id}')
 
 
-def check_hidden_field_changed(pack_id: str, build: Build):
+def check_hidden_field_changed(pack_id: str, build: Build) -> bool:
     """
     Check if pack turned from hidden to non-hidden.
     Args:
@@ -1609,9 +1609,9 @@ def check_hidden_field_changed(pack_id: str, build: Build):
     return False
 
 
-def get_turned_non_hidden_packs(pack_ids: Set[str], build: Build):
+def get_turned_non_hidden_packs(pack_ids: Set[str], build: Build) -> Set[str]:
     """
-    Return all packs that turned from hidden to non-hidden.
+    Return the packs that turned from hidden to non-hidden.
     Args:
         pack_ids (Set[str]): The set of packs need to be installed.
         build (Build): The build object.
@@ -1625,6 +1625,7 @@ def get_turned_non_hidden_packs(pack_ids: Set[str], build: Build):
             hidden_packs.add(pack_id)
     return hidden_packs
 
+
 def create_build_object() -> Build:
     options = options_handler()
     logging.info(f'Build type: {options.build_object_type}')
@@ -1634,6 +1635,26 @@ def create_build_object() -> Build:
         return XSIAMBuild(options)
     else:
         raise Exception(f"Wrong Build object type {options.build_object_type}.")
+
+
+def update_integration_lists(new_integrations: List[str], turned_non_hidden: Set[str], modified_integrations: List[str]) ->\
+        Tuple[List[str], List[str]]:
+    """
+    Add turned_non_hidden list to the new_integrations list and remove it from modified_integrations.
+    Args:
+        new_integrations (List[str]): The new integration ids (e.g. "AbnormalSecurity.yml").
+        turned_non_hidden (Set[str]): The turned non-hidden pack ids (e.g. "AbnormalSecurity/pack_metadata.json")
+        modified_integrations (List[str]): The modified integration ids (e.g. "AbnormalSecurity.yml").
+    Returns:
+        Tuple[List[str], List[str]]: The updated lists.
+    """
+    hidden_integrations = []
+    hidden_packs_path = [f'Packs/{pack.split("/")[0]}/Integrations' for pack in turned_non_hidden]
+    for path in hidden_packs_path:
+        hidden_integrations.extend(map(lambda integrations: f'{integrations.split("/")[-1]}.yml', listdir_fullpath(path)))
+    hidden_ymls = [yml for yml in hidden_integrations if not str(yml).startswith('.')]
+    new_integrations.extend(hidden_ymls)
+    return list(set(new_integrations)), list(set(modified_integrations).difference(hidden_ymls))
 
 
 def main():
@@ -1673,7 +1694,7 @@ def main():
         added_packs_without_hidden = pack_ids - turned_non_hidden
         build.install_packs(pack_ids=added_packs_without_hidden)
         new_integrations, modified_integrations = build.get_changed_integrations()
-
+        update_integration_lists(new_integrations, turned_non_hidden, modified_integrations)
         pre_update_configuration_results = build.configure_and_test_integrations_pre_update(new_integrations,
                                                                                             modified_integrations)
         modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre = pre_update_configuration_results
