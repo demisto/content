@@ -1,7 +1,7 @@
 {
   "description": "Default Mapping for Qradar Offenses, Events, and Assets.",
   "feed": false,
-  "id": "QRadar - Generic Incoming Mapper v2",
+  "id": "QRadar - Generic Incoming Mapper",
   "mapping": {
     "Access": {
       "dontMapEventToLabels": false,
@@ -930,7 +930,7 @@
       }
     }
   },
-  "name": "QRadar - Generic Incoming Mapper v2",
+  "name": "QRadar - Generic Incoming Mapper",
   "type": "mapping-incoming",
   "version": -1,
   "fromVersion": "6.0.0"

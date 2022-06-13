@@ -2,7 +2,7 @@ import concurrent.futures
 import secrets
 from enum import Enum
 from ipaddress import ip_address
-from typing import Tuple, Set, Dict, Callable
+from typing import Tuple, Set, Dict
 from urllib import parse
 
 import pytz
@@ -668,6 +668,16 @@ def insert_to_updated_context(context_data: dict,
                               offense_ids: list = None,
                               should_update_last_fetch: bool = False,
                               should_update_last_mirror: bool = False,):
+    """When we have a race condition, insert the changed data from context_data to the updated context data
+
+    Args:
+        context_data (dict): Context data with relevant changes.
+        updated_context_data (dict): Context data that was updated before.
+        offense_ids (list, optional): Offense ids that were changed. Defaults to None.
+        should_update_last_fetch (bool, optional): Should update the last_fetch. Defaults to False.
+        should_update_last_mirror (bool, optional): Should update the last mirror. Defaults to False.
+    """
+    
     if not offense_ids:
         return updated_context_data
     new_context_data = updated_context_data.copy()
@@ -705,7 +715,7 @@ def safely_update_context_data(context_data: dict,
 
 
     Raises:
-        DemistoException: _description_
+        DemistoException: if could not update the context_data in all retries
 
     Returns:
     """
@@ -1443,7 +1453,6 @@ def poll_offense_events_with_retry(client: Client, search_id: str, offense_id: i
         (List[Dict], str): List of events returned by query. Returns empty list if number of retries exceeded limit,
                            A failure message in case an error occured.
     """
-    context_data, ctx_version = get_integration_context_with_version()
     num_of_failures = 0
     start_time = time.time()
     failure_message = ''
@@ -1484,10 +1493,6 @@ def poll_offense_events_with_retry(client: Client, search_id: str, offense_id: i
                 time.sleep(FAILURE_SLEEP)
             else:
                 failure_message = f'{repr(e)} \nSee logs for further details.'
-    # if we didn't succeed to poll events for some reason, add it to the mirroring queue
-    context_data[MIRRORED_OFFENSES_QUERIED_CTX_KEY][offense_id] = search_id if search_id else '-1'
-    safely_update_context_data(context_data, ctx_version, should_update_last_fetch=False, offense_ids=[offense_id])
-    print_context_data_stats(context_data, 'long-running')
     print_debug_msg(f'Could not fetch events for offense ID: {offense_id}, returning empty events array. '
                     f'Adding to mirroring queue')
     return [], failure_message
@@ -1515,6 +1520,7 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
     failure_message = ''
     events: list[dict] = []
     events_fetched = 0
+    offense_id = offense['id']
     min_events_size = min(offense.get('event_count', 0), events_limit)
     # decreasing 1 minute from the start_time to avoid the case where the minute queried of start_time equals end_time.
     for i in range(max_retries):
@@ -1524,7 +1530,6 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
         if not search_response:
             continue
 
-        offense_id = offense['id']
         events, failure_message = poll_offense_events_with_retry(client, search_response['search_id'], offense_id)
         events_fetched = sum(int(event.get('eventcount', 1)) for event in events)
         print_debug_msg(f"Polled events for offense ID {offense_id}")
@@ -1537,13 +1542,18 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
             time.sleep(SLEEP_FETCH_EVENT_RETIRES)
 
     if failure_message == '' and events_fetched < min_events_size:
+        # if we didn't succeed to poll events for some reason, add it to the mirroring queue
+        context_data, ctx_version = get_integration_context_with_version()
+        context_data[MIRRORED_OFFENSES_QUERIED_CTX_KEY][offense_id] = search_response['search_id'] if search_response else '-1'
+        safely_update_context_data(context_data, ctx_version, offense_ids=[offense_id])
+        print_context_data_stats(context_data, 'long-running')
         failure_message = 'Events were probably not indexed in QRadar at the time of the mirror.'
     print_debug_msg(f"Reached max retries for offense {offense.get('id')} with failure message {failure_message}")
 
     if events:
-        offense = dict(offense, events=events, events_fetched=events_fetched)
+        offense = dict(offense, events=events)
 
-    return offense
+    return dict(offense, events_fetched=events_fetched)
 
 
 def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int, user_query: str, fetch_mode: str,
@@ -1724,7 +1734,8 @@ def perform_long_running_loop(client: Client, offenses_per_fetch: int, fetch_mod
 
     )
     context_data, ctx_version = get_integration_context_with_version()
-
+    context_data |= {LAST_FETCH_KEY: context_data.get(LAST_FETCH_KEY, 0),
+                     'samples': context_data.get('samples', [])}
     if incidents and new_highest_id:
         incident_batch_for_sample = incidents[:SAMPLE_SIZE] if incidents else context_data.get('samples', [])
         if incident_batch_for_sample:
@@ -3200,7 +3211,7 @@ def add_modified_remote_offenses(client: Client,
                                  new_modified_records_ids: set,
                                  current_last_update: str,
                                  events_columns: str,
-                                 events_limit: str,
+                                 events_limit: int,
                                  ) -> set:
     """Add modified remote offenses to context_data and handle exhausted offenses.
 
@@ -3311,7 +3322,7 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
     events_limit = int(params.get('events_limit') or DEFAULT_EVENTS_LIMIT)
 
     new_modified_records_ids = add_modified_remote_offenses(client=client, context_data=ctx, version=ctx_version,
-                                                            mirror_options=params.get('mirror_options'),
+                                                            mirror_options=params.get('mirror_options', ''),
                                                             new_modified_records_ids=new_modified_records_ids,
                                                             current_last_update=current_last_update,
                                                             events_columns=events_columns,
