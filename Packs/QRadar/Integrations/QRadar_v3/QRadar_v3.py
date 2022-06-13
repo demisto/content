@@ -3389,7 +3389,7 @@ def convert_ctx_to_new_structure() -> None:
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     params = demisto.params()
     command = demisto.command()
     args = demisto.args()
