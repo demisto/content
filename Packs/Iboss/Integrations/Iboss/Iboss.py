@@ -1,5 +1,5 @@
 # import demistomock as demisto
-# from CommonServerPython import *
+from CommonServerPython import *
 # from CommonServerUserPython import *
 
 from dateutil.parser import parse
