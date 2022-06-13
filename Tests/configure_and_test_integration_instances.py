@@ -1579,6 +1579,20 @@ def get_non_added_packs_ids(build: Build):
     return set(build.pack_ids_to_install) - set(added_pack_ids)
 
 
+def run_git_diff(pack_id: str, build: Build) -> str:
+    """
+    Call git diff command with the specific pack id.
+    Args:
+        pack_id (str): The pack id to check.
+        build (Build): The build object.
+    Returns:
+        (str): The git diff output.
+    """
+    compare_against = 'origin/master{}'.format('' if not build.branch_name == 'master' else '~1')
+    return run_command(f'git diff --diff-filter=A '
+                       f'{compare_against}..refs/heads/{build.branch_name} -- Packs/{pack_id}')
+
+
 def check_hidden_field_changed(pack_id: str, build: Build):
     """
     Check if pack turned from hidden to non-hidden.
@@ -1588,9 +1602,7 @@ def check_hidden_field_changed(pack_id: str, build: Build):
     Returns:
         (bool): True if the pack transformed to non-hidden.
     """
-    compare_against = 'origin/master{}'.format('' if not build.branch_name == 'master' else '~1')
-    diff = run_command(f'git diff --diff-filter=A '
-                       f'{compare_against}..refs/heads/{build.branch_name} -- Packs/{pack_id}')
+    diff = run_git_diff(pack_id, build)
     for diff_line in diff.splitlines():
         if '"hidden": false' in diff_line and diff_line.split()[0].startswith('+'):
             return True

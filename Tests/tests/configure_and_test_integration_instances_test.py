@@ -98,7 +98,29 @@ def test_create_build(mocker, expected_class, build_object_type):
     assert isinstance(build, expected_class)
 
 
-def test_create_build_2(mocker):
+NON_HIDDEN_PACKS = [
+    ("""
+   "tags": [],
++  "hidden": false,
+   "marketplaces": [
+     "xsoar",
+     "marketplacev2""", True),
+    ("""
+   "tags": [],
++  "hidden": true,
+   "marketplaces": [
+     "xsoar",
+     "marketplacev2""", False),
+ ("""
+   "tags": [],
+   "marketplaces": [
+     "xsoar",
+     "marketplacev2""", False)
+]
+
+
+@pytest.mark.parametrize('mock_diff, expected_result', NON_HIDDEN_PACKS)
+def test_get_turned_non_hidden_packs(mocker, mock_diff, expected_result):
     """
     Given:
         - server_type of the server we run the build on: XSIAM or XSOAR.
@@ -108,5 +130,6 @@ def test_create_build_2(mocker):
         - Assert there the rigth Build object created: XSIAMBuild or XSOARBuild.
     """
     build = create_build_object_with_mock(mocker, 'XSOAR')
-    added_packs = get_non_added_packs_ids(build)
-    turned_non_hidden = get_turned_non_hidden_packs(added_packs, build)
+    mocker.patch('Tests.configure_and_test_integration_instances.run_git_diff', return_value=mock_diff)
+    turned_non_hidden = get_turned_non_hidden_packs({'test'}, build)
+    assert ('test' in turned_non_hidden) is expected_result
