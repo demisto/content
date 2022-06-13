@@ -17,8 +17,7 @@ from PyPDF2 import PdfFileReader
 from selenium import webdriver
 from selenium.common.exceptions import (InvalidArgumentException,
                                         NoSuchElementException,
-                                        TimeoutException,
-                                        WebDriverException)
+                                        TimeoutException)
 
 
 # Chrome respects proxy env params
@@ -403,7 +402,7 @@ def rasterize_email_command():
     html_load = int(demisto.args().get('max_page_load_time', DEFAULT_PAGE_LOAD_TIME))
     full_screen = argToBoolean(demisto.args().get('full_screen', False))
 
-    w, h = check_width_and_height(w, h) # Check that the width and height meet the safeguard limit
+    w, h = check_width_and_height(w, h)  # Check that the width and height meet the safeguard limit
 
     file_name = f'{file_name}.{"pdf" if r_type.lower() == "pdf" else "png"}'  # type: ignore
     with open('htmlBody.html', 'w') as f:
