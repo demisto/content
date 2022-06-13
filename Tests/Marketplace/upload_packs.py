@@ -1068,9 +1068,15 @@ def main():
     diff_files_list = content_repo.commit(current_commit_hash).diff(content_repo.commit(previous_commit_hash))
 
     # taking care of private packs
-    is_private_content_updated, private_packs, updated_private_packs_ids = handle_private_content(
-        index_folder_path, private_bucket_name, extract_destination_path, storage_client, pack_names, storage_base_path
-    )
+    if marketplace == 'xsoar':
+        # taking care of private packs
+        is_private_content_updated, private_packs, updated_private_packs_ids = handle_private_content(
+            index_folder_path, private_bucket_name, extract_destination_path, storage_client, pack_names, storage_base_path
+        )
+    else:
+        is_private_content_updated = False
+        private_packs = []
+        updated_private_packs_ids = []
 
     if not option.override_all_packs:
         check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, previous_commit_hash,
