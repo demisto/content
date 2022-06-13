@@ -1,23 +1,33 @@
 [MODEL: dataset ="VMware_vCenter_raw", model=Audit] 
-dataset= Vcenter_info 
+dataset= logs_audit_vcenter  
 | union VCENTER_P0 
-| filter _raw_log contains "| vlsi |" or _raw_log contains "| vim" or _raw_log contains "jointool" or _raw_log contains "heard-" or _raw_log contains "Stats"  or _raw_log contains "localhost" or _raw_log contains "Thread" or _raw_log contains "thread" or _raw_log contains "certificates" or _raw_log contains "DEBUG" or _raw_log contains "INFO" or _raw_log contains "appmgmt" or _raw_log contains "cloudvm" or _raw_log contains "pool" or _raw_log contains "vapi-endpoint" or _raw_log contains "vmon"
+| filter _raw_log contains "| vlsi |" or _raw_log contains "| vim" or _raw_log contains "jointool" or _raw_log contains "heard-" or _raw_log contains "Stats"  or _raw_log contains "localhost" or _raw_log contains "Thread" or _raw_log contains "thread" or _raw_log contains "certificates" or _raw_log contains "DEBUG" or _raw_log contains "INFO" or _raw_log contains "appmgmt" or _raw_log contains "cloudvm" or _raw_log contains "pool" or _raw_log contains "vmon"
 | alter Timestamp0= arrayindex(regextract(_raw_log ,"(\d+\-\d+\-\d+\w\d+\:\d+\:\d+\.\d+\w+)") ,0)
 | alter Timestamp1 = arrayindex(regextract(_raw_log ,"\[(\d+\-\d+\-\d+\s\d+\:\d+\:\d+)") ,0)
 | alter Timestamp = coalesce(Timestamp0 ,Timestamp1 )
-| alter LogLevel = arrayindex(regextract(_raw_log ,"\d+\-\d+\-\d+\w\d+\:\d+\:\d+\.\d+\w+\s\|\s+(\S+)") ,0)
+| fields -timestamp0 ,Timestamp1 
+| alter LogLevel = arrayindex(regextract(_raw_log ,"\d+\-\d+\-\d+\w\d+\:\d+\:\d+\.\d+\w+\s\|\s+(\S+)\s\s\|") ,0)
 | alter LogLeve2 = arrayindex(regextract(_raw_log ,"\[\w+\]\[(\w+)"),0)
 | alter LogLeve3 = arrayindex(regextract(_raw_log ,"\[\w+\-\d+\-\w+\-\S+\s(\w+)"),0)
 | alter LogLeve = coalesce(LogLevel ,LogLeve2, LogLeve3 )
-| fields -LogLevel ,LogLeve2
+| fields -LogLevel ,LogLeve2, LogLeve3 
 | alter Message0 = arrayindex(regextract(_raw_log ,"\|\s\d+\s\|\s([^\t]+)") ,0)
 | alter Message1 = arrayindex(regextract(_raw_log ,"\]\s([^\t]+)") ,0)
-| alter Message = coalesce(Message0, Message1)
-| fields -Message0 ,Message1 
+| alter Message2 = arrayindex(regextract(_raw_log ,"\|\s\S+\s\S+\S\s\<\S+([^\.]+)") ,0)
+| alter Message = coalesce(Message0, Message1,Message2)
+| fields -Message0 ,Message1,Message2
+| alter Description1 = arrayindex(regextract(_raw_log ,"\|\s\w+\-\w+\-\d+\s+\|\s([A-Z][^\!]+)") ,0)
+| alter Description2 = arrayindex(regextract(_raw_log ,"\[\d+\][A-Z]+\S+\:([^\!]+)") ,0)
+| alter Description3 = arrayindex(regextract(_raw_log ,"([A-Z]{7}[^\!]+)") ,0)
+| alter Description= coalesce(Description1 ,Description2,Description3 )
+| fields -Description2 ,Description1,Description3 
+| alter msg = arrayindex(regextract(_raw_log ,"INFO[^\|]+\|\s\S+\s+\|\s\w+\s+\|\s+([^\\]+)") ,0)
+| alter msg2= arrayindex(regextract(_raw_log ,"[endpoint|vmon]\s\-\s\-\s\-\s+([^\@]+)") ,0)
+| alter msg1= coalesce(msg ,message,LogLeve ,Description,msg2  )
+| fields -Msg,message,LogLeve,Description,msg2
 | alter originator=arrayindex(regextract(_raw_log ,"Originator\@(\d+)") ,0)
 | alter sub = arrayindex(regextract(_raw_log ,"(\w+)\sopID") ,0) 
 | alter opID= arrayindex(regextract(_raw_log ,"opID\=([^\]]+)") ,0)
-
 
 | alter XDM.Audit.event_timestamp =parse_timestamp("%Y-%m-%dT%H:%M:%SZ",Timestamp)
 , XDM.Audit.threat.description = Message
