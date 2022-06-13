@@ -14,9 +14,16 @@ dataset= Vcenter_info
 | alter Message1 = arrayindex(regextract(_raw_log ,"\]\s([^\t]+)") ,0)
 | alter Message = coalesce(Message0, Message1)
 | fields -Message0 ,Message1 
+| alter originator=arrayindex(regextract(_raw_log ,"Originator\@(\d+)") ,0)
+| alter sub = arrayindex(regextract(_raw_log ,"(\w+)\sopID") ,0) 
+| alter opID= arrayindex(regextract(_raw_log ,"opID\=([^\]]+)") ,0)
+
 
 | alter XDM.Audit.event_timestamp =parse_timestamp("%Y-%m-%dT%H:%M:%SZ",Timestamp)
 , XDM.Audit.threat.description = Message
+| alter XDM.Audit.audited_resource.id =opID
+| alter XDM.Audit.TriggeredBy.identity.uuid= originator 
+| alter XDM.Audit.identity.sub_type= sub 
 , XDM.Audit.identity.name = LogLevel;
 
 
