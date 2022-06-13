@@ -1,0 +1,30 @@
+commonfields:
+  id: TimeStampToDateV2
+  version: -1
+name: TimeStampToDateV2
+script: '-'
+tags:
+- transformer
+- date
+comment: 'Converts UTC epoch time to a custom-formatted timestamp. If you pass formatter argument, we will use it to transform. If not, we will use the IOS format. For more info, see: https://docs.python.org/3.7/library/datetime.html#strftime-and-strptime-behavior'
+enabled: true
+args:
+- name: value
+  required: true
+  description: UTC Time stamp to convert
+- name: format
+  required: false
+  description: Python 'strftime' formatter string
+scripttarget: 0
+runonce: false
+dockerimage: demisto/python3:3.10.4.30607
+runas: DBotWeakRole
+timeout: '0'
+type: python
+subtype: python3
+fromversion: 6.2.0
+marketplaces:
+- xsoar
+- marketplacev2
+tests:
+- No tests (auto formatted)
