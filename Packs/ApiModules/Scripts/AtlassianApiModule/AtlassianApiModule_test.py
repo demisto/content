@@ -15,9 +15,10 @@ AUTH_CASES = [
     (OAUTH1, {}, {'Content-Type': 'application/json', 'X-Atlassian-Token': 'nocheck'}),
     (OAUTH1, {'X-Atlassian-Token': 'nocheck'}, {'Content-Type': 'application/json', 'X-Atlassian-Token': 'nocheck'}),
     (PAT, {}, {'Content-Type': 'application/json', 'Authorization': 'Bearer example_token'}),
-    (PAT, {'X-Atlassian-Token': 'nocheck'}, {'Content-Type': 'application/json', 'Authorization': 'Bearer example_token'}),
+    (PAT, {'X-Atlassian-Token': 'nocheck'}, {'Content-Type': 'application/json', 'X-Atlassian-Token': 'nocheck',
+                                             'Authorization': 'Bearer example_token'}),
     (BASIC, {}, {'Content-Type': 'application/json'}),
-    (BASIC, {'X-Atlassian-Token': 'nocheck'}, {'Content-Type': 'application/json'}),
+    (BASIC, {'X-Atlassian-Token': 'nocheck'}, {'Content-Type': 'application/json', 'X-Atlassian-Token': 'nocheck'}),
 ]
 
 
@@ -54,7 +55,7 @@ def test_http_request(mocker, params, custom_headers, expected_headers):
     # JiraV2.USERNAME = params.get('username')
     # JiraV2.HEADERS = {'Content-Type': 'application/json'}
     # mocker.patch.object(demisto, "params", return_value=params)
-    client.http_request(method='get', full_url=params.get('url'))
+    client.http_request(method='get', headers=custom_headers, full_url=params.get('url'))
     # JiraV2.jira_req(method='get',
     #                 resource_url=params.get('url'),
     #                 headers=custom_headers)

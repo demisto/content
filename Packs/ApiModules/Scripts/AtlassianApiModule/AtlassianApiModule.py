@@ -60,6 +60,10 @@ class AtlassianClient(BaseClient):
 
     def http_request(self, method, full_url=None, headers=None, verify=False,
                      params=None, data=None, files=None):
+        if headers:
+            headers.update(self.headers)
+        else:
+            headers = self.headers
 
         try:
             result = requests.request(
@@ -67,7 +71,7 @@ class AtlassianClient(BaseClient):
                 url=full_url,
                 data=data,
                 auth=self.auth,
-                headers=headers.update(self.headers) if headers else self.headers,
+                headers=headers,
                 verify=verify,
                 files=files,
                 params=params
