@@ -3,6 +3,11 @@ commonfields:
   id: DropboxEventsCollector
   version: -1
 configuration:
+- defaultvalue: https://api.dropbox.com
+  display: Server URL
+  name: url
+  required: true
+  type: 0
 - display: App key
   displaypassword: App secret
   additionalinfo: The App key and App secret
@@ -18,18 +23,6 @@ configuration:
   display: The maximum number of events per fetch.
   additionalinfo: If you're encountering timeouts, consider decreasing this value.
   name: limit
-  required: false
-  type: 0
-- defaultvalue: dropbox
-  additionalinfo: "For the dataset name for example: dropbox"
-  display: Vendor name
-  name: vendor
-  required: false
-  type: 0
-- defaultvalue: dropbox
-  additionalinfo: "For the dataset name for example: dropbox"
-  display: Product name
-  name: product
   required: false
   type: 0
 - display: Trust any certificate (not secure)

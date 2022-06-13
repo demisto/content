@@ -13,7 +13,7 @@ DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 class DropboxEventsRequestConfig(IntegrationHTTPRequest):
     # Endpoint: https://api.dropbox.com/2/team_log/get_events
-    url = parse_obj_as(AnyUrl, 'https://api.dropbox.com/2/team_log/get_events')
+    url = parse_obj_as(AnyUrl, 'https://api.dropbox.com')
     method = Method.POST
     headers = {'Content-Type': 'application/json'}
     data: str
@@ -46,13 +46,14 @@ class DropboxEventsClient(IntegrationEventsClient):
     def get_access_token(self):
         request = IntegrationHTTPRequest(
             method=Method.POST,
-            url=parse_obj_as(AnyUrl, 'https://api.dropbox.com/oauth2/token'),
+            url=f'{self.request.url.removesuffix("/")}/oauth2/token',
             data={'grant_type': 'refresh_token', 'refresh_token': f'{self.refresh_token}'},
             auth=HTTPBasicAuth(self.credentials.identifier, self.credentials.password),
             verify=self.request.verify,
         )
         response = self.call(request)
         self.request.headers['Authorization'] = f'Bearer {response.json()["access_token"]}'
+        self.request.url += '/2/team_log/get_events'
 
 
 class DropboxEventsGetter(IntegrationGetEvents):
@@ -115,18 +116,9 @@ def reset_auth_command() -> CommandResults:
     return CommandResults(readable_output=message)
 
 
-def test_connection(refresh_token: str, credentials: Credentials, insecure: bool) -> CommandResults:
-    data = {
-        'grant_type': 'refresh_token',
-        'refresh_token': f'{refresh_token}',
-    }
-    auth = (credentials.identifier, credentials.password)
-
-    response = requests.post('https://api.dropbox.com/oauth2/token', data=data, auth=auth, verify=insecure)
-
-    if response.ok and response.json().get('access_token'):
-        return CommandResults(readable_output='✅ Success.')
-    return CommandResults(readable_output=f'❌ Failed. {response.text}')
+def test_connection(events_client: DropboxEventsGetter) -> str:
+    events_client.run()
+    return '✅ Success.'
 
 
 # ----------------------------------------- Main Functions -----------------------------------------
@@ -162,7 +154,8 @@ def main(command: str, demisto_params: dict):
             return_results(reset_auth_command())
 
         elif command == 'dropbox-auth-test':
-            return_results(test_connection(demisto.getIntegrationContext().get('refresh_token'), credentials, insecure))
+            results = test_connection(get_events)
+            return_results(CommandResults(readable_output=results))
 
         # ----- Fetch/Get events command ----- #
         elif command in ('fetch-events', 'dropbox-get-events'):
