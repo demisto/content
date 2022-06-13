@@ -4,7 +4,7 @@ Before you begin, in the [Dropbox app console](https://www.dropbox.com/developer
 
 ## Create an app in the Dropbox app console
 
-1. Go to [Dropbox app console](https://www.dropbox.com/developers/apps) and click **Create app**.
+1. Go to [Dropbox app console](https://www.dropbox.com/developers/apps) and click **Create app**.  
 ![Description Image](https://github.com/demisto/content/blob/39cc812da71224a9ea280eae46917fe8fa1d74c4/Packs/Dropbox/doc_files/Screen%20Shot%202022-06-13%20at%2010.03.00.png)
 
 2. Give full dropbox access (not just a single folder).  
@@ -26,3 +26,6 @@ The vendor corresponding to the integration that created the events. This affect
 
 **Product name**  
 The product corresponding to the integration that created the events. This affects the name of the dataset where the events will be inserted `{vendor_product_raw}`.
+
+## Test
+Run the ***!dropbox-auth-start*** command from the WarRoom and follow the instructions.
