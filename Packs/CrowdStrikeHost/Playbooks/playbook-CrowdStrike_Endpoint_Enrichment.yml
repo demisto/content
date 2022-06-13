@@ -3,6 +3,8 @@ version: -1
 name: CrowdStrike Endpoint Enrichment
 fromversion: "5.0.0"
 description: Enrich Endpoint with CrowdStrike
+deprecated: true
+hidden: true
 starttaskid: "0"
 tasks:
   "0":
