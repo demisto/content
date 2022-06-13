@@ -1,8 +1,8 @@
 commonfields:
-  id: Atlassian Confluence Server test
+  id: Atlassian Confluence Server
   version: -1
-name: Atlassian Confluence Server test
-display: Atlassian Confluence Server test
+name: Atlassian Confluence Server
+display: Atlassian Confluence Server
 category: Utilities
 description: Atlassian Confluence Server API
 configuration:
