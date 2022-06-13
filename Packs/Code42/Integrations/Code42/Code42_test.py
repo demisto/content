@@ -11,7 +11,6 @@ from Code42 import (
     Code42InvalidLegalHoldMembershipError,
     get_file_category_value,
     build_query_payload,
-    map_observation_to_security_query,
     map_to_code42_event_context,
     map_to_code42_alert_context,
     map_to_file_context,
@@ -439,6 +438,130 @@ MOCK_ALERTS_RESPONSE = """{
   "problems": []
 }"""
 
+MOCK_ALERT_AGGREGATE_RESPONSE = r"""
+{
+    "type$": "ALERT_DETAILS_IN_AGGREGATE_V2_RESPONSE",
+    "alert": {
+        "type$": "ALERT_DETAILS_AGGREGATE_V2",
+        "tenantId": "1d71796f-af5b-4231-9d8e-df6434da4663",
+        "type": "FED_COMPOSITE",
+        "name": "Test",
+        "description": "XSOAR Test Alert",
+        "actor": "user_a@example.com",
+        "actorId": "1028099692739127370",
+        "target": "N/A",
+        "severity": "HIGH",
+        "riskSeverity": "CRITICAL",
+        "ruleId": "04170662-692c-4fbd-89ac-74149771f501",
+        "id": "4cbda753-8821-4898-94b8-b51aff393e23",
+        "createdAt": "2022-05-31T18:49:32.2066350Z",
+        "state": "OPEN",
+        "observations": [
+            {
+                "type$": "OBSERVATION_AGGREGATE",
+                "observedAt": "2022-05-31T18:20:00.0000000Z",
+                "type": "FedEndpointExfiltration",
+                "data": "{\"type$\":\"OBSERVED_ENDPOINT_ACTIVITY\",\"id\":\"d1988297-fab0-41c3-8ae8-ee42e4d9ef3f\",\"sources\":[\"Endpoint\"],\"exposureTypes\":[\"RemovableMedia\"],\"exposureTypeIsSignificant\":true,\"firstActivityAt\":\"2022-05-31T18:20:00.0000000Z\",\"lastActivityAt\":\"2022-05-31T18:40:00.0000000Z\",\"fileCount\":501,\"totalFileSize\":92263889,\"fileCategories\":[{\"type$\":\"OBSERVED_FILE_CATEGORY\",\"category\":\"Archive\",\"fileCount\":92,\"totalFileSize\":920000},{\"type$\":\"OBSERVED_FILE_CATEGORY\",\"category\":\"Document\",\"fileCount\":312,\"totalFileSize\":24004555},{\"type$\":\"OBSERVED_FILE_CATEGORY\",\"category\":\"Image\",\"fileCount\":5,\"totalFileSize\":7220885},{\"type$\":\"OBSERVED_FILE_CATEGORY\",\"category\":\"Pdf\",\"fileCount\":60,\"totalFileSize\":60000000},{\"type$\":\"OBSERVED_FILE_CATEGORY\",\"category\":\"Spreadsheet\",\"fileCount\":19,\"totalFileSize\":89933},{\"type$\":\"OBSERVED_FILE_CATEGORY\",\"category\":\"Uncategorized\",\"fileCount\":13,\"totalFileSize\":28516}],\"fileCategoryIsSignificant\":false,\"files\":[{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062458160901467782_347\",\"path\":\"H:/TestData/\",\"name\":\"FileNew-6-020522D (78).zip\",\"category\":\"Archive\",\"size\":10000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":9,\"severity\":\"CRITICAL\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"Zip\",\"weight\":3}]},\"observedAt\":\"2022-05-31T18:30:33.0600000Z\"},{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062458160901467782_351\",\"path\":\"H:/TestData/\",\"name\":\"FileNew-6-020522D (81).zip\",\"category\":\"Archive\",\"size\":10000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":9,\"severity\":\"CRITICAL\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"Zip\",\"weight\":3}]},\"observedAt\":\"2022-05-31T18:30:36.5400000Z\"},{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062458160901467782_361\",\"path\":\"H:/TestData/\",\"name\":\"FileNew-6-020522D (90).zip\",\"category\":\"Archive\",\"size\":10000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":9,\"severity\":\"CRITICAL\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"Zip\",\"weight\":3}]},\"observedAt\":\"2022-05-31T18:30:40.8840000Z\"},{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062458160901467782_352\",\"path\":\"H:/TestData/\",\"name\":\"FileNew-6-020522D (82).zip\",\"category\":\"Archive\",\"size\":10000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":9,\"severity\":\"CRITICAL\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"Zip\",\"weight\":3}]},\"observedAt\":\"2022-05-31T18:30:36.6250000Z\"},{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062458160901467782_339\",\"path\":\"H:/TestData/\",\"name\":\"FileNew-6-020522D (70).zip\",\"category\":\"Archive\",\"size\":10000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":9,\"severity\":\"CRITICAL\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"Zip\",\"weight\":3}]},\"observedAt\":\"2022-05-31T18:30:06.7300000Z\"},{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062458160901467782_337\",\"path\":\"H:/TestData/\",\"name\":\"FileNew-6-020522D (69).zip\",\"category\":\"Archive\",\"size\":10000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":9,\"severity\":\"CRITICAL\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"Zip\",\"weight\":3}]},\"observedAt\":\"2022-05-31T18:30:03.9050000Z\"},{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062458160901467782_360\",\"path\":\"H:/TestData/\",\"name\":\"FileNew-6-020522D (9).zip\",\"category\":\"Archive\",\"size\":10000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":9,\"severity\":\"CRITICAL\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"Zip\",\"weight\":3}]},\"observedAt\":\"2022-05-31T18:30:39.9330000Z\"},{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062458160901467782_353\",\"path\":\"H:/TestData/\",\"name\":\"FileNew-6-020522D (83).zip\",\"category\":\"Archive\",\"size\":10000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":9,\"severity\":\"CRITICAL\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"Zip\",\"weight\":3}]},\"observedAt\":\"2022-05-31T18:30:37.5250000Z\"},{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062458160901467782_362\",\"path\":\"H:/TestData/\",\"name\":\"FileNew-6-020522D (91).zip\",\"category\":\"Archive\",\"size\":10000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":9,\"severity\":\"CRITICAL\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"Zip\",\"weight\":3}]},\"observedAt\":\"2022-05-31T18:30:40.9540000Z\"},{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062458160901467782_356\",\"path\":\"H:/TestData/\",\"name\":\"FileNew-6-020522D (86).zip\",\"category\":\"Archive\",\"size\":10000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":9,\"severity\":\"CRITICAL\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"Zip\",\"weight\":3}]},\"observedAt\":\"2022-05-31T18:30:38.7740000Z\"},{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062457579503824518_12\",\"path\":\"H:/TestData/\",\"name\":\"FileNew-6-020522D (13).zip\",\"category\":\"Archive\",\"size\":10000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":9,\"severity\":\"CRITICAL\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"Zip\",\"weight\":3}]},\"observedAt\":\"2022-05-31T18:24:44.8780000Z\"},{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062457579503824518_14\",\"path\":\"H:/TestData/\",\"name\":\"FileNew-6-020522D (15).zip\",\"category\":\"Archive\",\"size\":10000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":9,\"severity\":\"CRITICAL\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"Zip\",\"weight\":3}]},\"observedAt\":\"2022-05-31T18:24:52.8360000Z\"},{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062457579503824518_8\",\"path\":\"H:/TestData/\",\"name\":\"FileNew-6-020522D (1).zip\",\"category\":\"Archive\",\"size\":10000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":9,\"severity\":\"CRITICAL\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"Zip\",\"weight\":3}]},\"observedAt\":\"2022-05-31T18:24:21.4650000Z\"},{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062457579503824518_10\",\"path\":\"H:/TestData/\",\"name\":\"FileNew-6-020522D (11).zip\",\"category\":\"Archive\",\"size\":10000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":9,\"severity\":\"CRITICAL\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"Zip\",\"weight\":3}]},\"observedAt\":\"2022-05-31T18:24:37.8520000Z\"},{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062457579503824518_15\",\"path\":\"H:/TestData/\",\"name\":\"FileNew-6-020522D (16).zip\",\"category\":\"Archive\",\"size\":10000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":9,\"severity\":\"CRITICAL\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"Zip\",\"weight\":3}]},\"observedAt\":\"2022-05-31T18:25:16.6160000Z\"},{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062457579503824518_16\",\"path\":\"H:/TestData/\",\"name\":\"FileNew-6-020522D (17).zip\",\"category\":\"Archive\",\"size\":10000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":9,\"severity\":\"CRITICAL\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"Zip\",\"weight\":3}]},\"observedAt\":\"2022-05-31T18:25:41.0840000Z\"},{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062457579503824518_11\",\"path\":\"H:/TestData/\",\"name\":\"FileNew-6-020522D (12).zip\",\"category\":\"Archive\",\"size\":10000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":9,\"severity\":\"CRITICAL\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"Zip\",\"weight\":3}]},\"observedAt\":\"2022-05-31T18:24:43.7080000Z\"},{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062457579503824518_13\",\"path\":\"H:/TestData/\",\"name\":\"FileNew-6-020522D (14).zip\",\"category\":\"Archive\",\"size\":10000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":9,\"severity\":\"CRITICAL\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"Zip\",\"weight\":3}]},\"observedAt\":\"2022-05-31T18:24:48.1960000Z\"},{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062457579503824518_9\",\"path\":\"H:/TestData/\",\"name\":\"FileNew-6-020522D (10).zip\",\"category\":\"Archive\",\"size\":10000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":9,\"severity\":\"CRITICAL\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"Zip\",\"weight\":3}]},\"observedAt\":\"2022-05-31T18:24:23.5150000Z\"},{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062458160901467782_289\",\"path\":\"H:/TestData/\",\"name\":\"FileNew-6-020522D (25).zip\",\"category\":\"Archive\",\"size\":10000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":9,\"severity\":\"CRITICAL\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"Zip\",\"weight\":3}]},\"observedAt\":\"2022-05-31T18:26:23.9130000Z\"},{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062458160901467782_204\",\"path\":\"H:/TestDataUGTesting/\",\"name\":\"MyTestData285-020522D (11).pdf\",\"category\":\"Pdf\",\"size\":1000000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":6,\"severity\":\"MODERATE\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"PDF\",\"weight\":0}]},\"observedAt\":\"2022-05-31T18:30:56.0860000Z\"},{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062458160901467782_255\",\"path\":\"H:/TestDataUGTesting/\",\"name\":\"MyTestData285-020522D (45).pdf\",\"category\":\"Pdf\",\"size\":1000000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":6,\"severity\":\"MODERATE\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"PDF\",\"weight\":0}]},\"observedAt\":\"2022-05-31T18:32:18.4180000Z\"},{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062458160901467782_275\",\"path\":\"H:/TestDataUGTesting/\",\"name\":\"MyTestData285-020522D (7).pdf\",\"category\":\"Pdf\",\"size\":1000000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":6,\"severity\":\"MODERATE\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"PDF\",\"weight\":0}]},\"observedAt\":\"2022-05-31T18:32:37.8390000Z\"},{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062458160901467782_254\",\"path\":\"H:/TestDataUGTesting/\",\"name\":\"MyTestData285-020522D (44).pdf\",\"category\":\"Pdf\",\"size\":1000000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":6,\"severity\":\"MODERATE\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"PDF\",\"weight\":0}]},\"observedAt\":\"2022-05-31T18:32:18.2720000Z\"},{\"type$\":\"OBSERVED_FILE\",\"eventId\":\"0_1d71796f-af5b-4231-9d8e-df6434da4663_1062456656136187526_1062458160901467782_226\",\"path\":\"H:/TestDataUGTesting/\",\"name\":\"MyTestData285-020522D (21).pdf\",\"category\":\"Pdf\",\"size\":1000000,\"riskSeverityInfo\":{\"type$\":\"RISK_SEVERITY_INFO\",\"score\":6,\"severity\":\"MODERATE\",\"matchedRiskIndicators\":[{\"type$\":\"RISK_INDICATOR\",\"name\":\"Removable media\",\"weight\":6},{\"type$\":\"RISK_INDICATOR\",\"name\":\"PDF\",\"weight\":0}]},\"observedAt\":\"2022-05-31T18:31:38.4060000Z\"}],\"riskSeverityIsSignificant\":false,\"riskSeveritySummary\":[{\"type$\":\"RISK_SEVERITY_SUMMARY\",\"severity\":\"CRITICAL\",\"numEvents\":92,\"summarizedRiskIndicators\":[{\"type$\":\"SUMMARIZED_RISK_INDICATOR\",\"name\":\"Zip\",\"numEvents\":92},{\"type$\":\"SUMMARIZED_RISK_INDICATOR\",\"name\":\"Removable media\",\"numEvents\":92}]},{\"type$\":\"RISK_SEVERITY_SUMMARY\",\"severity\":\"MODERATE\",\"numEvents\":409,\"summarizedRiskIndicators\":[{\"type$\":\"SUMMARIZED_RISK_INDICATOR\",\"name\":\"PDF\",\"numEvents\":60},{\"type$\":\"SUMMARIZED_RISK_INDICATOR\",\"name\":\"Removable media\",\"numEvents\":409},{\"type$\":\"SUMMARIZED_RISK_INDICATOR\",\"name\":\"Document\",\"numEvents\":312},{\"type$\":\"SUMMARIZED_RISK_INDICATOR\",\"name\":\"Image\",\"numEvents\":5},{\"type$\":\"SUMMARIZED_RISK_INDICATOR\",\"name\":\"Spreadsheet\",\"numEvents\":19}]}],\"syncToServices\":[],\"sendingIpAddresses\":[\"50.159.105.116\"],\"isRemoteActivity\":false,\"destinationIsSignificant\":false}"
+            }
+        ],
+        "firstObservationAt": "2022-05-31T18:20:00.0000000Z",
+        "lastObservationAt": "2022-05-31T18:40:00.0000000Z",
+        "fileCount": 501,
+        "totalFileSize": 92263889,
+        "fileCategories": [
+            {
+                "type$": "FILE_CATEGORY",
+                "category": "Archive",
+                "fileCount": 92,
+                "totalFileSize": 920000
+            },
+            {
+                "type$": "FILE_CATEGORY",
+                "category": "Document",
+                "fileCount": 312,
+                "totalFileSize": 24004555
+            },
+            {
+                "type$": "FILE_CATEGORY",
+                "category": "Image",
+                "fileCount": 5,
+                "totalFileSize": 7220885
+            },
+            {
+                "type$": "FILE_CATEGORY",
+                "category": "Pdf",
+                "fileCount": 60,
+                "totalFileSize": 60000000
+            },
+            {
+                "type$": "FILE_CATEGORY",
+                "category": "Spreadsheet",
+                "fileCount": 19,
+                "totalFileSize": 89933
+            },
+            {
+                "type$": "FILE_CATEGORY",
+                "category": "Uncategorized",
+                "fileCount": 13,
+                "totalFileSize": 28516
+            }
+        ],
+        "riskSeveritySummary": [
+            {
+                "type$": "RISK_SEVERITY_SUMMARY",
+                "severity": "CRITICAL",
+                "numEvents": 92,
+                "summarizedRiskIndicators": [
+                    {
+                        "type$": "SUMMARIZED_RISK_INDICATOR",
+                        "name": "Zip",
+                        "numEvents": 92
+                    },
+                    {
+                        "type$": "SUMMARIZED_RISK_INDICATOR",
+                        "name": "Removable media",
+                        "numEvents": 92
+                    }
+                ]
+            },
+            {
+                "type$": "RISK_SEVERITY_SUMMARY",
+                "severity": "MODERATE",
+                "numEvents": 409,
+                "summarizedRiskIndicators": [
+                    {
+                        "type$": "SUMMARIZED_RISK_INDICATOR",
+                        "name": "Removable media",
+                        "numEvents": 409
+                    },
+                    {
+                        "type$": "SUMMARIZED_RISK_INDICATOR",
+                        "name": "Document",
+                        "numEvents": 312
+                    },
+                    {
+                        "type$": "SUMMARIZED_RISK_INDICATOR",
+                        "name": "PDF",
+                        "numEvents": 60
+                    },
+                    {
+                        "type$": "SUMMARIZED_RISK_INDICATOR",
+                        "name": "Spreadsheet",
+                        "numEvents": 19
+                    },
+                    {
+                        "type$": "SUMMARIZED_RISK_INDICATOR",
+                        "name": "Image",
+                        "numEvents": 5
+                    }
+                ]
+            }
+        ],
+        "ffsUrlEndpoint": "https://console.us.code42.com/app/#/alerts/investigate-alert?alertId=4cbda753-8821-4898-94b8-b51aff393e23&observationType=FedEndpointExfiltration",
+        "alertUrl": "https://console.us.code42.com/app/#/alerts/review-alerts?t0=alertId&q0=IS&v0=4cbda753-8821-4898-94b8-b51aff393e23"
+    }
+}
+"""
 MOCK_ALERT_DETAILS_RESPONSE = """{
   "type$": "ALERT_DETAILS_RESPONSE",
   "alerts": [
@@ -1384,6 +1507,8 @@ def code42_users_mock(code42_sdk_mock, mocker):
 def create_alerts_mock(c42_sdk_mock, mocker):
     alert_details_response = create_mock_code42_sdk_response(mocker, MOCK_ALERT_DETAILS_RESPONSE)
     c42_sdk_mock.alerts.get_details.return_value = alert_details_response
+    alert_aggregate_response = create_mock_code42_sdk_response(mocker, MOCK_ALERT_AGGREGATE_RESPONSE)
+    c42_sdk_mock.alerts.get_aggregate_data.return_value = alert_aggregate_response
     alerts_response = create_mock_code42_sdk_response(mocker, MOCK_ALERTS_RESPONSE)
     c42_sdk_mock.alerts.search.return_value = alerts_response
     return c42_sdk_mock
@@ -1476,6 +1601,7 @@ def create_mock_code42_sdk_response(mocker, response_text):
     response_mock = mocker.MagicMock(spec=Response)
     response_mock.text = response_text
     response_mock.status_code = 200
+    response_mock._content_consumed = False
     return Py42Response(response_mock)
 
 
@@ -1657,33 +1783,12 @@ def test_build_query_payload():
     assert json.loads((str(query))) == MOCK_FILE_EVENT_QUERY_PAYLOAD
 
 
-def test_map_observation_to_security_query():
-    response = json.loads(MOCK_ALERT_DETAILS_RESPONSE)
-    alert = response["alerts"][0]
-    actor = alert["actor"]
-    observations = alert["observations"]
-    actual_queries = [
-        json.loads(str(map_observation_to_security_query(o, actor))) for o in observations
-    ]
-    assert actual_queries[0] == MOCK_OBSERVATION_QUERIES[0]
-    assert actual_queries[1] == MOCK_OBSERVATION_QUERIES[1]
-    assert actual_queries[2] == MOCK_OBSERVATION_QUERIES[2]
-
-
 def test_map_to_code42_event_context():
     response = json.loads(MOCK_SECURITY_EVENT_RESPONSE)
     file_events = response["fileEvents"]
     for i in range(0, len(file_events)):
         context = map_to_code42_event_context(file_events[i])
         assert context == MOCK_CODE42_EVENT_CONTEXT[i]
-
-
-def test_map_to_code42_alert_context():
-    response = json.loads(MOCK_ALERT_DETAILS_RESPONSE)
-    alerts = response["alerts"]
-    for i in range(0, len(alerts)):
-        context = map_to_code42_alert_context(alerts[i])
-        assert context == MOCK_CODE42_ALERT_CONTEXT[i]
 
 
 def test_map_to_file_context():
@@ -2213,29 +2318,6 @@ def test_add_user_to_watchlist_command_with_watchlist_type_calls_add_by_type_met
     cmd_res = add_user_to_watchlist_command(client, {"watchlist": watchlist_type, "username": "user_a@example.com"})
     assert code42_sdk_mock.watchlists.add_included_users_by_watchlist_type.called_once_with(user_id, watchlist_type)
     assert cmd_res.raw_response == {'Watchlist': 'DEPARTING_EMPLOYEE', 'Username': 'user_a@example.com', 'Success': True}
-
-
-def test_fetch_when_no_significant_file_categories_ignores_filter(
-    code42_fetch_incidents_mock, mocker
-):
-    response_text = MOCK_ALERT_DETAILS_RESPONSE.replace(
-        '"isSignificant": true', '"isSignificant": false'
-    )
-    alert_details_response = create_mock_code42_sdk_response(mocker, response_text)
-    code42_fetch_incidents_mock.alerts.get_details.return_value = alert_details_response
-    client = create_client(code42_fetch_incidents_mock)
-    _, _, _ = fetch_incidents(
-        client=client,
-        last_run={"last_fetch": None},
-        first_fetch_time=MOCK_FETCH_TIME,
-        event_severity_filter=None,
-        fetch_limit=10,
-        include_files=True,
-        integration_context=None,
-    )
-    actual_query = str(code42_fetch_incidents_mock.securitydata.search_file_events.call_args[0][0])
-    assert "fileCategory" not in actual_query
-    assert "IMAGE" not in actual_query
 
 
 def test_fetch_incidents_handles_single_severity(code42_fetch_incidents_mock):

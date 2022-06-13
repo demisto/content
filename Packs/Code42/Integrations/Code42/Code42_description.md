@@ -8,5 +8,6 @@ To configure this integration, you will need to [create an API Client](https://s
 * Detection Lists (Read/Write)
 * Alerts (Read/Write)
 * File Events (Read)
+* Device (Read)
 
 After this API Client is set up, use the API Client ID and Secret (in the "password" field) to configure the Code42 integration.

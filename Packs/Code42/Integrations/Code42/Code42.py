@@ -262,11 +262,11 @@ class Code42Client(BaseClient):
         return res.data.get("alerts")
 
     def get_alert_details(self, alert_id):
-        py42_res = self.sdk.alerts.get_aggregate_data(alert_id)
-        res = py42_res.data.get("alert")
+        py42_res = self.sdk.alerts.get_details(alert_id)
+        res = py42_res.data.get("alerts")
         if not res:
             raise Code42AlertNotFoundError(alert_id)
-        return res
+        return res[0]
 
     def resolve_alert(self, id):
         self.sdk.alerts.resolve(id)
@@ -1211,7 +1211,8 @@ class Code42SecurityIncidentFetcher(object):
         return self._client.fetch_alerts(start_query_time, self._event_severity_filter)
 
     def _create_incident_from_alert(self, alert):
-        details = self._client.get_alert_details(alert.get("id"))
+        response = self._client.sdk.alerts.get_aggregate_data(alert.get("id"))
+        details = response.data.get("alert")
         details["alertId"] = alert.get("id")
         self._format_summary(details)
         incident = {"name": "Code42 - {}".format(details.get("name")), "occurred": details.get("createdAt")}
