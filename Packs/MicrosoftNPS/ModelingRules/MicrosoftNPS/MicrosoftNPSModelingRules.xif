@@ -9,6 +9,7 @@ alter packet_type = regextract(_raw_log ,"\<Packet\-Type\sdata_type\=\"\d+\"\>([
     ,host_ipv4_addresses = regextract(_raw_log ,"\<Client\-IP\-Address\sdata_type\=\"\d+\"\>([^\<]+)\<")
     ,Client_port = arrayindex( regextract(_raw_log ,"\<NAS\-Port\sdata_type\=\"\d+\"\>([^\<]+)\<") ,0)
     ,reason = arrayindex( regextract(_raw_log ,"\<Reason\-Code\sdata_type\=\"\d+\"\>([^\<]+)\<") ,0)
+// map the fields to the Auth
 | alter XDM.Auth.event_timestamp = change_format_timestamp
     ,XDM.Auth.Server.host.hostname = hostname
     ,XDM.Auth.original_event_type = original_event_type
