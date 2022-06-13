@@ -1,5 +1,5 @@
 {
-    "name": "SNDBOX",
+    "name": "SNDBOX (Deprecated)",
     "description": "SNDBOX as a service",
     "support": "xsoar",
     "currentVersion": "1.0.6",

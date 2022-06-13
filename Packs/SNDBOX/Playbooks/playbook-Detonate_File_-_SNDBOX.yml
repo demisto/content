@@ -1,6 +1,8 @@
 id: Detonate File - SNDBOX
 version: -1
 name: Detonate File - SNDBOX
+deprecated: true
+hidden: true
 fromversion: 5.0.0
 description: |-
   Detonates a File using the SNDBOX.
