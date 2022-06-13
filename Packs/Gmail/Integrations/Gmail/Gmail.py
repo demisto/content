@@ -347,7 +347,7 @@ def mailboxes_to_entry(mailboxes):
 
     query = "Query: {}".format(mailboxes[0].get('q') if mailboxes else '')
     result = [{"Mailbox": user['Mailbox']} for user in mailboxes if user.get('Mailbox')]
-    
+
     return {
         'ContentsFormat': formats['json'],
         'Type': entryTypes['note'],
@@ -1101,7 +1101,7 @@ def get_user_tokens(user_id):
 def search_all_mailboxes():
     users_next_page_token = None
     service = get_service('admin', 'directory_v1')
-    receive_only_accounts = argToBoolean(demisto.args().get('receive_only_accounts', 'false'))
+    receive_only_accounts = argToBoolean(demisto.args().get('show-only-mailboxes', 'false'))
     while True:
         command_args = {
             'maxResults': 100,
@@ -1155,7 +1155,7 @@ def search_command(mailbox=None):
     has_attachments = args.get('has-attachments')
     has_attachments = None if has_attachments is None else bool(
         strtobool(has_attachments))
-    receive_only_accounts = argToBoolean(args.get('receive_only_accounts', 'false'))
+    receive_only_accounts = argToBoolean(args.get('show-only-mailboxes', 'false'))
 
     if max_results > 500:
         raise ValueError(
@@ -1164,7 +1164,8 @@ def search_command(mailbox=None):
     mails, q = search(user_id, subject, _from, to,
                       before, after, filename, _in, query,
                       fields, label_ids, max_results, page_token,
-                      include_spam_trash, has_attachments, receive_only_accounts)
+                      include_spam_trash, has_attachments, receive_only_accounts,
+                      )
 
     # In case the user wants only account list without content.
     if receive_only_accounts:

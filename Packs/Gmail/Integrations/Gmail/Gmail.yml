@@ -645,8 +645,9 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: if True, return only mailboxes.
-      name: receive_only_accounts
+      description: Whether to return only mailboxes which contain the email. Default
+        is "False".
+      name: show-only-mailboxes
       predefined:
       - "false"
       - "true"
