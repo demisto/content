@@ -1,5 +1,5 @@
 Collect events from Dropbox's logs.
-This integration was integrated and tested with version xx of DropboxEventsCollector
+This integration was integrated and tested with version 2 of Dropbox API
 
 ## Configure Dropbox Event Collector on Cortex XSIAM
 

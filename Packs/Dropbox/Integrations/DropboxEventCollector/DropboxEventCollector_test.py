@@ -3,7 +3,6 @@ import io
 import requests_mock
 from freezegun import freeze_time
 import demistomock as demisto
-from datetime import datetime, timedelta
 
 
 DEMISTO_PARAMS = {
