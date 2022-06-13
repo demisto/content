@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: URLhaus Feed
+  id: FeedURLhaus
   version: -1
 deprecated: false
 configuration:
@@ -85,7 +85,7 @@ configuration:
   type: 8
 description: Fetch url indicators for URLhaus
 display: URLhaus Feed
-name: URLhaus Feed
+name: FeedURLhaus
 script:
   commands:
   - name: urlhaus-get-indicators
