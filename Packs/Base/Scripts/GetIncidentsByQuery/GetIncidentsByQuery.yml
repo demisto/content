@@ -119,5 +119,4 @@ type: python
 dockerimage: demisto/python3:3.10.1.26972
 tests:
 - Create Phishing Classifier V2 ML Test
-- DBot Build Phishing Classifier Test - Multiple Algorithms
 fromversion: 5.0.0

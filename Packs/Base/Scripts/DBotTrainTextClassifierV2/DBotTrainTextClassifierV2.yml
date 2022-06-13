@@ -221,5 +221,4 @@ dockerimage: demisto/ml:1.0.0.30541
 runonce: true
 tests:
 - Create Phishing Classifier V2 ML Test
-- DBot Build Phishing Classifier Test - Multiple Algorithms
 fromversion: 5.0.0
