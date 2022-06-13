@@ -88,6 +88,7 @@ script:
       - User Service Request
       - Infrastructure Event
       - Infrastructure Restoration
+      - Security Incident
       description: Incident service-type
     - name: impact
       required: false
@@ -237,6 +238,10 @@ script:
       - Infrastructure Event
       - Infrastructure Restoration
       description: Updated service-type (unchanged if not specified)
+    - name: status-reason
+      description: Updated status reason
+    - name: resolution-summary
+      description: Resolution summary incase of incident closure
     outputs:
     - contextPath: Ticket.ID
       description: Ticket ID

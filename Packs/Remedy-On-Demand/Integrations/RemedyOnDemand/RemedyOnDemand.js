@@ -279,7 +279,9 @@ switch (command) {
                 'Reported Source': args.source,
                 'Service_Type': args['service-type'],
                 Impact: args.impact,
-                Urgency: args.urgency
+                Urgency: args.urgency,
+                'Status_Reason': args['status-reason'],
+                Resolution : args['resolution-summary']
             }
         );
 }

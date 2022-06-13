@@ -32,17 +32,17 @@ Note: according to Remedy AR API documentation it is recommended to provide all 
 `remedy-incident-create`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| first-name | costumer's first name (make sure costumer already exists). | Required | 
-| last-name | costumer's first name (make sure costumer already exists). | Required | 
-| description | Incident description. | Required | 
-| status | Incident status. Possible values are: New, Assigned, In Progress, Pending, Resolved, Closed, Cancelled. | Required | 
-| source | Incident source. Possible values are: Direct Input, Email, External Escalation, Fax, Self-Service, Systems Management, Phone, Voice Mail, Walk, Web, Other. | Required | 
-| service-type | Incident service-type. Possible values are: User Service Restoration, User Service Request, Infrastructure Event, Infrastructure Restoration. | Required | 
-| impact | Incident impact. Possible values are: 1-Extensive/Widespread, 2-Significant/Large, 3-Moderate/Limited, 4-Minor/Localized. | Required | 
-| urgency | Incident urgency. Possible values are: 1-Critical, 2-High, 3-Medium, 4-Low. | Required | 
-| custom-fields | Custom fields for incident creation. Should be comma separated query (i.e. field1=value1,field2=value2). | Optional | 
+| **Argument Name** | **Description**                                                                                                                                                  | **Required** |
+| --- |------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| first-name | costumer's first name (make sure costumer already exists).                                                                                                       | Required | 
+| last-name | costumer's first name (make sure costumer already exists).                                                                                                       | Required | 
+| description | Incident description.                                                                                                                                            | Required | 
+| status | Incident status. Possible values are: New, Assigned, In Progress, Pending, Resolved, Closed, Cancelled.                                                          | Required | 
+| source | Incident source. Possible values are: Direct Input, Email, External Escalation, Fax, Self-Service, Systems Management, Phone, Voice Mail, Walk, Web, Other.      | Required | 
+| service-type | Incident service-type. Possible values are: User Service Restoration, User Service Request, Infrastructure Event, Infrastructure Restoration, Security Incident. | Required | 
+| impact | Incident impact. Possible values are: 1-Extensive/Widespread, 2-Significant/Large, 3-Moderate/Limited, 4-Minor/Localized.                                        | Required | 
+| urgency | Incident urgency. Possible values are: 1-Critical, 2-High, 3-Medium, 4-Low.                                                                                      | Required | 
+| custom-fields | Custom fields for incident creation. Should be comma separated query (i.e. field1=value1,field2=value2).                                                         | Optional | 
 
 
 #### Context Output
@@ -159,15 +159,17 @@ Update exiting incident
 `remedy-incident-update`
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| ID | Incident Entry ID. If EntryID is not available to you, incident details can be found using `remedy-fetch-incidents query="'Incident Number' = \"&lt;incident number&gt;\"". | Required | 
-| description | Updated description. | Optional | 
-| status | Updated status (unchanged if not specified). Possible values are: New, Assigned, In Progress, Pending, Resolved, Closed, Cancelled. | Optional | 
-| urgency | Updated urgency (unchanged if not specified). Possible values are: 1-Critical, 2-High, 3-Medium, 4-Low. | Optional | 
-| impact | Updated impact (unchanged if not specified). Possible values are: 1-Extensive/Widespread, 2-Signinficant/Large, 3-Moderate/Limited, 4-Minor/Localized. | Optional | 
+| **Argument Name** | **Description**                                                                                                                                                                                  | **Required** |
+| --- |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| ID | Incident Entry ID. If EntryID is not available to you, incident details can be found using `remedy-fetch-incidents query="'Incident Number' = \"&lt;incident number&gt;\"".                      | Required | 
+| description | Updated description.                                                                                                                                                                             | Optional | 
+| status | Updated status (unchanged if not specified). Possible values are: New, Assigned, In Progress, Pending, Resolved, Closed, Cancelled.                                                              | Optional | 
+| urgency | Updated urgency (unchanged if not specified). Possible values are: 1-Critical, 2-High, 3-Medium, 4-Low.                                                                                          | Optional | 
+| impact | Updated impact (unchanged if not specified). Possible values are: 1-Extensive/Widespread, 2-Signinficant/Large, 3-Moderate/Limited, 4-Minor/Localized.                                           | Optional | 
 | source | Updated reported source (unchanged if not specified). Possible values are: Direct Input, Email, External Escalation, Fax, Self-Service, Systems Management, Phone, Voice Mail, Walk, Web, Other. | Optional | 
-| service-type | Updated service-type (unchanged if not specified). Possible values are: User Service Restoration, User Service Request, Infrastructure Event, Infrastructure Restoration. | Optional | 
+| service-type | Updated service-type (unchanged if not specified). Possible values are: User Service Restoration, User Service Request, Infrastructure Event, Infrastructure Restoration, Security Incident.     | Optional | 
+| status-reason | Updated status reason.                                                                                                                                                                           | Optional | 
+| resolution-summary | Resolution summary incase of incident closure.                                                                                                                                                   | Optional | 
 
 
 #### Context Output
