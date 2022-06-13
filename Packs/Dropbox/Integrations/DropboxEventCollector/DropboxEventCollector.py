@@ -59,7 +59,7 @@ class DropboxEventsGetter(IntegrationGetEvents):
     client: DropboxEventsClient
 
     def get_last_run(self: Any, event: dict) -> dict:  # type: ignore
-        last_datetime = datetime.strptime(event.get('timestamp'), DATETIME_FORMAT) + timedelta(seconds=1)
+        last_datetime = datetime.strptime(event.get('timestamp', ''), DATETIME_FORMAT) + timedelta(seconds=1)
         return {'start_time': datetime.strftime(last_datetime, DATETIME_FORMAT)}
 
     def _iter_events(self):
@@ -126,6 +126,7 @@ def test_connection(refresh_token: str, credentials: Credentials, insecure: bool
 
     if response.ok and response.json().get('access_token'):
         return CommandResults(readable_output='✅ Success.')
+    return CommandResults(readable_output=f'❌ Failed. {response.text}')
 
 
 # ----------------------------------------- Main Functions -----------------------------------------
@@ -149,10 +150,10 @@ def main(command: str, demisto_params: dict):
 
         # ----- Authentication Commands ----- #
         elif command == 'dropbox-auth-start':
-            return_results(start_auth_command(credentials.identifier))
+            return_results(start_auth_command(str(credentials.identifier)))
 
         elif command == 'dropbox-auth-complete':
-            return_results(complete_auth_command(demisto_params.get('code'), credentials, insecure))
+            return_results(complete_auth_command(str(demisto_params.get('code')), credentials, insecure))
 
         elif not demisto.getIntegrationContext().get('refresh_token'):
             return_results(CommandResults(readable_output='Please run the **!dropbox-auth-start** command first'))
@@ -167,7 +168,7 @@ def main(command: str, demisto_params: dict):
         elif command in ('fetch-events', 'dropbox-get-events'):
             events = get_events.run()
 
-            if command == 'fetch-events' or demisto_params.get('should_push_events').lower() == 'true':
+            if command == 'fetch-events' or argToBoolean(demisto_params.get('should_push_events')):
                 send_events_to_xsiam(events, vendor=demisto_params.get('vendor', 'dropbox'),
                                      product=demisto_params.get('product', 'dropbox'))
 
