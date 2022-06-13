@@ -4,7 +4,7 @@
     "tests": [
         {
             "integrations": "FeedURLhaus",
-            "playbookID": "ç"
+            "playbookID": "playbook-urlhaus-feed_Test"
         },
         {
             "integrations": "RSANetWitnessv115",

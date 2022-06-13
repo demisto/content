@@ -1,7 +1,7 @@
-id: playbook-urlhaus-feed-Test
+id: playbook-urlhaus-feed_Test
 version: 3
 vcShouldKeepItemLegacyProdMachine: false
-name: playbook-urlhaus-feed-Test
+name: playbook-urlhaus-feed_Test
 starttaskid: "0"
 tasks:
   "0":
