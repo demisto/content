@@ -1,0 +1,257 @@
+[{
+    "Type": 1,
+    "ContentsFormat": "json",
+    "Contents": {
+        "data": {
+            "attributes": {
+                "categories": {
+                    "Forcepoint ThreatSeeker": "newly registered websites",
+                    "Sophos": "illegal phishing, phishing and fraud",
+                    "Webroot": "Phishing and Other Frauds"
+                },
+                "first_submission_date": 1603275371,
+                "last_analysis_date": 1635971126,
+                "last_analysis_stats": {
+                    "harmless": 77,
+                    "malicious": 7,
+                    "suspicious": 0,
+                    "timeout": 0,
+                    "undetected": 8
+                },
+                "last_final_url": "http://something_definitely_unsecure.com",
+                "last_http_response_code": 200,
+                "last_http_response_content_length": 4372,
+                "last_http_response_content_sha256": "67c1bc796bffe9169be3ef87dd8af4e8776d04484812a5bfdc7c5c9042aed1ca",
+                "last_http_response_headers": {
+                    "accept-ch": "viewport-width, dpr, device-memory, rtt, downlink, ect, ua, ua-full-version, ua-platform, ua-platform-version, ua-arch, ua-model, ua-mobile",
+                    "accept-ch-lifetime": "30",
+                    "connection": "keep-alive",
+                    "content-type": "text/html; charset=UTF-8",
+                    "date": "Wed, 03 Nov 2021 20:25:28 GMT",
+                    "server": "nginx",
+                    "transfer-encoding": "chunked",
+                    "vary": "Accept-Encoding",
+                    "x-redirect": "skenzo"
+                },
+                "last_modification_date": 1635971440,
+                "last_submission_date": 1635971126,
+                "reputation": 0,
+                "tags": [],
+                "threat_names": ["Mal/HTMLGen-A"],
+                "times_submitted": 18,
+                "title": "something_definitely_unsecure.com",
+                "total_votes": {
+                    "harmless": 0,
+                    "malicious": 0
+                },
+                "trackers": {
+                    "Amazon Cloudfront": [{
+                        "id": "d1lxhc4jvstzrp",
+                        "timestamp": 1635971126,
+                        "url": "//something_definitely_unsecure.js"
+                    }]
+                },
+                "url": "http://something_definitely_unsecure.com"
+            },
+            "id": "1234",
+            "links": {
+                "self": "https://www.virustotal.com/api/v3/urls/2b2f1f47449495b69986a40beffc86bb1978832c3f6264ff02ea712ac9f3c9a1"
+            },
+            "relationships": {
+                "last_serving_ip_address": {
+                    "data": {
+                        "id": "1.1.1.1",
+                        "type": "ip_address"
+                    },
+                    "links": {
+                        "related": "https://www.virustotal.com/api/v3/urls/2b2f1f47449495b69986a40beffc86bb1978832c3f6264ff02ea712ac9f3c9a1/last_serving_ip_address",
+                        "self": "https://www.virustotal.com/api/v3/urls/2b2f1f47449495b69986a40beffc86bb1978832c3f6264ff02ea712ac9f3c9a1/relationships/last_serving_ip_address"
+                    },
+                    "meta": {
+                        "count": 1
+                    }
+                },
+                "network_location": {
+                    "data": {
+                        "id": "something_definitely_unsecure.com",
+                        "type": "domain"
+                    },
+                    "links": {
+                        "related": "https://www.virustotal.com/api/v3/urls/2b2f1f47449495b69986a40beffc86bb1978832c3f6264ff02ea712ac9f3c9a1/network_location",
+                        "self": "https://www.virustotal.com/api/v3/urls/2b2f1f47449495b69986a40beffc86bb1978832c3f6264ff02ea712ac9f3c9a1/relationships/network_location"
+                    },
+                    "meta": {
+                        "count": 1
+                    }
+                }
+            },
+            "type": "url"
+        }
+    },
+    "HumanReadable": "### URL data of \"https://vt_is_awesome.com/uts\"\n|Url|Title|LastModified|LastHttpResponseContentSha256|Positives|Reputation|\n|---|---|---|---|---|---|\n| https://vt_is_awesome.com/uts | something_definitely_unsecure.com | 2021-11-03 20:30:40Z | 67c1bc796bffe9169be3ef87dd8af4e8776d04484812a5bfdc7c5c9042aed1ca | 7/92 | 0 |\n",
+    "EntryContext": {
+        "URL(val.Data && val.Data == obj.Data)": [{
+            "Data": "https://vt_is_awesome.com/uts",
+            "DetectionEngines": 92,
+            "PositiveDetections": 7,
+            "Category": {
+                "Forcepoint ThreatSeeker": "newly registered websites",
+                "Sophos": "illegal phishing, phishing and fraud",
+                "Webroot": "Phishing and Other Frauds"
+            },
+            "Malicious": {
+                "Vendor": "VirusTotal",
+                "Description": "Basic analyzing of \"https://vt_is_awesome.com/uts\"\nCould not determine rank by popularity, No popularity ranks data.\nThose preferred vendors found the hash malicious: []. They do not pass the threshold 2. \n7 vendors found malicious. \nThe malicious threshold is 1. \nFound as malicious: total_malicious=7 >= threshold=1. "
+            },
+            "Relationships": [{
+                "Relationship": "resolved-from",
+                "EntityA": "https://vt_is_awesome.com/uts",
+                "EntityAType": "URL",
+                "EntityB": "1.1.1.1",
+                "EntityBType": "IP"
+            }, {
+                "Relationship": "resolved-from",
+                "EntityA": "https://vt_is_awesome.com/uts",
+                "EntityAType": "URL",
+                "EntityB": "something_definitely_unsecure.com",
+                "EntityBType": "Domain"
+            }]
+        }],
+        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [{
+            "Indicator": "https://vt_is_awesome.com/uts",
+            "Type": "url",
+            "Vendor": "VirusTotal",
+            "Score": 3,
+            "Reliability": "A - Completely reliable"
+        }],
+        "VirusTotal.URL(val.id && val.id == obj.id)": {
+            "attributes": {
+                "categories": {
+                    "Forcepoint ThreatSeeker": "newly registered websites",
+                    "Sophos": "illegal phishing, phishing and fraud",
+                    "Webroot": "Phishing and Other Frauds"
+                },
+                "first_submission_date": 1603275371,
+                "last_analysis_date": 1635971126,
+                "last_analysis_stats": {
+                    "harmless": 77,
+                    "malicious": 7,
+                    "suspicious": 0,
+                    "timeout": 0,
+                    "undetected": 8
+                },
+                "last_final_url": "http://something_definitely_unsecure.com",
+                "last_http_response_code": 200,
+                "last_http_response_content_length": 4372,
+                "last_http_response_content_sha256": "67c1bc796bffe9169be3ef87dd8af4e8776d04484812a5bfdc7c5c9042aed1ca",
+                "last_http_response_headers": {
+                    "accept-ch": "viewport-width, dpr, device-memory, rtt, downlink, ect, ua, ua-full-version, ua-platform, ua-platform-version, ua-arch, ua-model, ua-mobile",
+                    "accept-ch-lifetime": "30",
+                    "connection": "keep-alive",
+                    "content-type": "text/html; charset=UTF-8",
+                    "date": "Wed, 03 Nov 2021 20:25:28 GMT",
+                    "server": "nginx",
+                    "transfer-encoding": "chunked",
+                    "vary": "Accept-Encoding",
+                    "x-redirect": "skenzo"
+                },
+                "last_modification_date": 1635971440,
+                "last_submission_date": 1635971126,
+                "reputation": 0,
+                "tags": [],
+                "threat_names": ["Mal/HTMLGen-A"],
+                "times_submitted": 18,
+                "title": "something_definitely_unsecure.com",
+                "total_votes": {
+                    "harmless": 0,
+                    "malicious": 0
+                },
+                "trackers": {
+                    "Amazon Cloudfront": [{
+                        "id": "d1lxhc4jvstzrp",
+                        "timestamp": 1635971126,
+                        "url": "//something_definitely_unsecure.js"
+                    }]
+                },
+                "url": "http://something_definitely_unsecure.com"
+            },
+            "id": "1234",
+            "links": {
+                "self": "https://www.virustotal.com/api/v3/urls/2b2f1f47449495b69986a40beffc86bb1978832c3f6264ff02ea712ac9f3c9a1"
+            },
+            "relationships": {
+                "last_serving_ip_address": {
+                    "data": {
+                        "id": "1.1.1.1",
+                        "type": "ip_address"
+                    },
+                    "links": {
+                        "related": "https://www.virustotal.com/api/v3/urls/2b2f1f47449495b69986a40beffc86bb1978832c3f6264ff02ea712ac9f3c9a1/last_serving_ip_address",
+                        "self": "https://www.virustotal.com/api/v3/urls/2b2f1f47449495b69986a40beffc86bb1978832c3f6264ff02ea712ac9f3c9a1/relationships/last_serving_ip_address"
+                    },
+                    "meta": {
+                        "count": 1
+                    }
+                },
+                "network_location": {
+                    "data": {
+                        "id": "something_definitely_unsecure.com",
+                        "type": "domain"
+                    },
+                    "links": {
+                        "related": "https://www.virustotal.com/api/v3/urls/2b2f1f47449495b69986a40beffc86bb1978832c3f6264ff02ea712ac9f3c9a1/network_location",
+                        "self": "https://www.virustotal.com/api/v3/urls/2b2f1f47449495b69986a40beffc86bb1978832c3f6264ff02ea712ac9f3c9a1/relationships/network_location"
+                    },
+                    "meta": {
+                        "count": 1
+                    }
+                }
+            },
+            "type": "url"
+        }
+    },
+    "IndicatorTimeline": [],
+    "IgnoreAutoExtract": false,
+    "Note": false,
+    "Relationships": [{
+        "name": "resolved-from",
+        "reverseName": "resolves-to",
+        "type": "IndicatorToIndicator",
+        "entityA": "https://vt_is_awesome.com/uts",
+        "entityAFamily": "Indicator",
+        "entityAType": "URL",
+        "entityB": "1.1.1.1",
+        "entityBFamily": "Indicator",
+        "entityBType": "IP",
+        "fields": {},
+        "reliability": "A - Completely reliable",
+        "brand": "VirusTotal"
+    }, {
+        "name": "resolved-from",
+        "reverseName": "resolves-to",
+        "type": "IndicatorToIndicator",
+        "entityA": "https://vt_is_awesome.com/uts",
+        "entityAFamily": "Indicator",
+        "entityAType": "URL",
+        "entityB": "something_definitely_unsecure.com",
+        "entityBFamily": "Indicator",
+        "entityBType": "Domain",
+        "fields": {},
+        "reliability": "A - Completely reliable",
+        "brand": "VirusTotal"
+    }]
+}, {
+    "Type": 19,
+    "ContentsFormat": "json",
+    "Contents": "Metrics reported successfully.",
+    "HumanReadable": null,
+    "EntryContext": {},
+    "IndicatorTimeline": [],
+    "IgnoreAutoExtract": false,
+    "Note": false,
+    "Relationships": [],
+    "APIExecutionMetrics": [{
+        "Type": "Successful",
+        "APICallsCount": 1
+    }]
+}]

@@ -1577,9 +1577,8 @@ def ip_command(client: Client, score_calculator: ScoreCalculator, args: dict, re
         result = CommandResults(readable_output='No IPs were found.').to_context()
         results.append(result)
     if execution_metrics.is_supported():
-        final_metrics = execution_metrics.metrics
-        metric_results = CommandResults(execution_metrics=final_metrics)
-        results.append(metric_results)
+        metric_results = execution_metrics.metrics
+        results.append(metric_results.to_context())
     return results
 
 
@@ -1612,9 +1611,8 @@ def file_command(client: Client, score_calculator: ScoreCalculator, args: dict, 
         result = CommandResults(readable_output='No files were found.').to_context()
         results.append(result)
     if execution_metrics.is_supported():
-        final_metrics = execution_metrics.metrics
-        metric_results = CommandResults(execution_metrics=final_metrics)
-        results.append(metric_results)
+        metric_results = execution_metrics.metrics
+        results.append(metric_results.to_context())
     return results
 
 
@@ -1649,9 +1647,8 @@ def url_command(client: Client, score_calculator: ScoreCalculator, args: dict, r
         result = CommandResults(readable_output='No domains were found.').to_context()
         results.append(result)
     if execution_metrics.is_supported():
-        final_metrics = execution_metrics.metrics
-        metric_results = CommandResults(execution_metrics=final_metrics)
-        results.append(metric_results)
+        metric_results = execution_metrics.metrics
+        results.append(metric_results.to_context())
     return results
 
 
@@ -1684,9 +1681,9 @@ def domain_command(client: Client, score_calculator: ScoreCalculator, args: dict
         result = CommandResults(readable_output='No domains were found.').to_context()
         results.append(result)
     if execution_metrics.is_supported():
-        final_metrics = execution_metrics.metrics
-        metric_results = CommandResults(execution_metrics=final_metrics)
-        results.append(metric_results)
+        metric_results = execution_metrics.metrics
+        results.append(metric_results.to_context())
+
     return results
 
 
