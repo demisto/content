@@ -39,3 +39,7 @@ ignore=BA101
 
 [file:PrismaCloudIAM_image.png]
 ignore=IM111
+
+[known_words]
+SSH
+Misconfiguration
