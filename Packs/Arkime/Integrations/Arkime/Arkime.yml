@@ -54,7 +54,6 @@ script:
     - name: start_time
       description: If the date parameter is not set, this is the start time of data to return. Format is seconds since Unix EPOC.
       required: false
-      isArray: false
     - name: stop_time
       description: If the date parameter is not set, this is the stop time of data to return. Format is seconds since Unix EPOC.
       required: false

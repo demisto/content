@@ -4,15 +4,17 @@ import copy
 import math
 from typing import Tuple, Callable
 
+from requests import Response
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from requests.auth import HTTPDigestAuth
 
 # ----------------------------------------- Constants ---------------------------
 
-DEFAULT_SEGMENTS = 'no'
-DEFAULT_BOUNDING = 'last'
-DEFAULT_COUNTS = '0'
+DEFAULT_SEGMENTS = ['no']
+DEFAULT_BOUNDING = ['last']
+DEFAULT_COUNTS = 0
 DEFAULT_DATE = 1
 DEFAULT_INTERNAL_LIMIT = 50
 DEFAULT_LIMIT = 100
@@ -31,19 +33,19 @@ class Client(BaseClient):
         super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
 
     def connections_csv_request(self,
-                                source_field: str,
-                                destination_field: str,
+                                source_field: Optional[str],
+                                destination_field: Optional[str],
                                 date: int,
-                                expression: str,
-                                start_time: str,
-                                stop_time: str,
-                                view: str,
-                                order: str,
-                                fields: str,
-                                bounding: str,
-                                strictly: bool,
+                                expression: Optional[str],
+                                start_time: Optional[str],
+                                stop_time: Optional[str],
+                                view: Optional[str],
+                                order: Optional[str],
+                                fields: Optional[str],
+                                bounding: Optional[str],
+                                strictly: Optional[bool],
                                 length: int,
-                                start: int):
+                                start: Optional[int]):
         params = assign_params(srcField=source_field,
                                dstField=destination_field,
                                date=date,
@@ -67,21 +69,21 @@ class Client(BaseClient):
         return response
 
     def get_connections_request(self,
-                                source_field: str,
-                                destination_field: str,
+                                source_field: Optional[str],
+                                destination_field: Optional[str],
                                 date: int,
-                                expression: str,
-                                start_time: str,
-                                stop_time: str,
-                                view: str,
-                                order: str,
-                                fields: str,
-                                bounding: str,
-                                strictly: bool,
-                                baseline_date: List[str],
-                                baseline_view: List[str],
-                                length: int,
-                                start: int):
+                                expression: Optional[str],
+                                start_time: Optional[str],
+                                stop_time: Optional[str],
+                                view: Optional[str],
+                                order: Optional[str],
+                                fields: Optional[str],
+                                bounding: Optional[str],
+                                strictly: Optional[bool],
+                                baseline_date: Optional[List[str]],
+                                baseline_view: Optional[List[str]],
+                                length: Optional[int],
+                                start: Optional[int]):
         params = assign_params(srcField=source_field,
                                dstField=destination_field,
                                date=date,
@@ -117,14 +119,14 @@ class Client(BaseClient):
 
     def sessions_query_request(self,
                                date: int,
-                               expression: str,
-                               start_time: str,
-                               stop_time: str,
-                               view: str,
-                               order: str,
-                               fields: str,
-                               bounding: str,
-                               strictly: bool,
+                               expression: Optional[str],
+                               start_time: Optional[str],
+                               stop_time: Optional[str],
+                               view: Optional[str],
+                               order: Optional[str],
+                               fields: Optional[str],
+                               bounding: Optional[str],
+                               strictly: Optional[bool],
                                length: int,
                                start: int):
         params = assign_params(date=date,
@@ -148,16 +150,16 @@ class Client(BaseClient):
 
     def sessions_csv_request(self,
                              date: int,
-                             expression: str,
-                             start_time: str,
-                             stop_time: str,
-                             view: str,
-                             order: str,
-                             fields: str,
-                             bounding: str,
-                             strictly: bool,
+                             expression: Optional[str],
+                             start_time: Optional[str],
+                             stop_time: Optional[str],
+                             view: Optional[str],
+                             order: Optional[str],
+                             fields: Optional[str],
+                             bounding: Optional[str],
+                             strictly: Optional[bool],
                              length: int,
-                             start: int):
+                             start: Optional[int]):
         params = assign_params(date=date,
                                expression=expression,
                                startTime=start_time,
@@ -179,9 +181,9 @@ class Client(BaseClient):
 
     def sessions_pcap_request(self,
                               ids: str,
-                              expression: str,
-                              start_time: str,
-                              stop_time: str):
+                              expression: Optional[str],
+                              start_time: Optional[str],
+                              stop_time: Optional[str]):
         params = assign_params(ids=ids,
                                expression=expression,
                                startTime=start_time,
@@ -197,13 +199,13 @@ class Client(BaseClient):
     def spi_graph_request(self,
                           ids: str,
                           date: int,
-                          expression: str,
-                          start_time: str,
-                          stop_time: str,
-                          view: str,
-                          fields: str,
-                          bounding: List,
-                          strictly: bool):
+                          expression: Optional[str],
+                          start_time: Optional[str],
+                          stop_time: Optional[str],
+                          view: Optional[str],
+                          fields: Optional[str],
+                          bounding: Optional[List[Any]],
+                          strictly: Optional[bool]):
         params = assign_params(ids=ids,
                                date=date,
                                expression=expression,
@@ -224,11 +226,11 @@ class Client(BaseClient):
     def spi_view_request(self,
                          spi: str,
                          date: int,
-                         expression: str,
-                         start_time: str,
-                         stop_time: str,
-                         view: str,
-                         fields: str,
+                         expression: Optional[str],
+                         start_time: Optional[str],
+                         stop_time: Optional[str],
+                         view: Optional[str],
+                         fields: Optional[str],
                          bounding: List,
                          strictly: bool):
         params = assign_params(spi=spi,
@@ -258,15 +260,15 @@ class Client(BaseClient):
         return response
 
     def unique_field_request(self,
-                             counts: bool,
+                             counts: int,
                              expression_field_names: str,
                              date: int,
-                             expression: str,
-                             start_time: str,
-                             stop_time: str,
-                             view: str,
-                             order: str,
-                             fields: str,
+                             expression: Optional[str],
+                             start_time: Optional[str],
+                             stop_time: Optional[str],
+                             view: Optional[str],
+                             order: Optional[str],
+                             fields: Optional[str],
                              bounding: List[str],
                              strictly: bool):
         params = assign_params(counts=counts,
@@ -288,16 +290,16 @@ class Client(BaseClient):
         return response
 
     def unique_field_multi_request(self,
-                                   counts: bool,
+                                   counts: int,
                                    expression_field_names: str,
-                                   database_field: str,
+                                   database_field: Optional[str],
                                    date: int,
-                                   expression: str,
-                                   start_time: str,
-                                   stop_time: str,
-                                   view: str,
-                                   order: str,
-                                   fields: str,
+                                   expression: Optional[str],
+                                   start_time: Optional[str],
+                                   stop_time: Optional[str],
+                                   view: Optional[str],
+                                   order: Optional[str],
+                                   fields: Optional[str],
                                    bounding: List[str],
                                    strictly: bool):
         params = assign_params(counts=counts,
@@ -321,15 +323,15 @@ class Client(BaseClient):
 
     def add_session_tags_request(self,
                                  tags: str,
-                                 ids: str,
+                                 ids: Optional[str],
                                  segments: List[str],
                                  date: int,
-                                 expression: str,
-                                 start_time: str,
-                                 stop_time: str,
-                                 view: str,
-                                 order: str,
-                                 fields: str,
+                                 expression: Optional[str],
+                                 start_time: Optional[str],
+                                 stop_time: Optional[str],
+                                 view: Optional[str],
+                                 order: Optional[str],
+                                 fields: Optional[str],
                                  bounding: List[str],
                                  strictly: bool):
         params = assign_params(tags=tags,
@@ -353,15 +355,15 @@ class Client(BaseClient):
 
     def remove_session_tags_request(self,
                                     tags: str,
-                                    ids: str,
+                                    ids: Optional[str],
                                     segments: List[str],
                                     date: int,
-                                    expression: str,
-                                    start_time: str,
-                                    stop_time: str,
-                                    view: str,
-                                    order: str,
-                                    fields: str,
+                                    expression: Optional[str],
+                                    start_time: Optional[str],
+                                    stop_time: Optional[str],
+                                    view: Optional[str],
+                                    order: Optional[str],
+                                    fields: Optional[str],
                                     bounding: List[str],
                                     strictly: bool):
         params = assign_params(tags=tags,
@@ -391,7 +393,7 @@ def arrange_output_for_pcap_file_list_command(response: Dict) -> List:
     This function converting data.first to timestamp for human-readable.
     """
     output_for_hr = []
-    for record in response.get('data'):
+    for record in response.get('data', []):
         temp_record = copy.deepcopy(record)
         temp_record['first'] = epochToTimestamp(temp_record['first'])
         output_for_hr.append(temp_record)
@@ -403,7 +405,7 @@ def arrange_output_for_session_list_command(response: Dict) -> List:
 
     output_for_hr = []
 
-    for record in response.get('data'):
+    for record in response.get('data', []):
         # temp_record = copy.deepcopy(record)
         temp_record = {'firstPacket': epochToTimestamp(record['firstPacket']),
                        'lastPacket': epochToTimestamp(record['lastPacket'])}
@@ -425,7 +427,9 @@ def page_size_validness(page_size: int) -> int:
     return page_size
 
 
-def length_validness(length: int, max_length: int) -> int:
+def length_validness(length: Optional[int], max_length: int) -> int:
+    if not length:
+        return DEFAULT_LIMIT
     if length < 0:
         return 1
     elif length > max_length:
@@ -446,18 +450,18 @@ def remove_all_keys_endswith_histo(response: Dict) -> Dict:
 
 
 def parse_unique_field_response(text: str) -> List:
-    text = text.split('\n')
-    unique_field_list_for_hr = []
-    for line in text:
-        line = line.split(',')
-        temp_dic = {'Field': line[0]}
-        if len(line) > 1:
-            temp_dic['Count'] = line[1]
+    text_lines = text.split('\n')
+    unique_field_list_for_hr: list = []
+    for line in text_lines:
+        spilt_line = line.split(',')
+        temp_dic = {'Field': spilt_line[0]}
+        if len(spilt_line) > 1:
+            temp_dic['Count'] = spilt_line[1]
         unique_field_list_for_hr.append(temp_dic)
     return unique_field_list_for_hr
 
 
-def unique_field_helper(response: dict, start: int, limit: int, pagination_dict: dict) -> CommandResults:
+def unique_field_helper(response: Response, start: int, limit: int, pagination_dict: dict) -> CommandResults:
     headers = ['Field', 'Count']
     unique_field_list = parse_unique_field_response(response.text)
     unique_field_list = unique_field_list[start: start + limit]
@@ -465,9 +469,10 @@ def unique_field_helper(response: dict, start: int, limit: int, pagination_dict:
         outputs_prefix='Arkime.UniqueField',
         outputs=unique_field_list,
         raw_response=unique_field_list,
-        readable_output=create_paging_header(len(unique_field_list), pagination_dict.get('page_number'),
-                                             pagination_dict.get('length'), pagination_dict.get('pagination')) +
-                        tableToMarkdown('Unique Field Results:', unique_field_list, headers=headers)
+        readable_output=create_paging_header(len(unique_field_list), pagination_dict.get('page_number', DEFAULT_OFFSET),
+                                             pagination_dict.get('length', DEFAULT_LIMIT),
+                                             pagination_dict.get('pagination', False)) + tableToMarkdown(
+            'Unique Field Results:', unique_field_list, headers=headers)
     )
 
     return command_results
@@ -479,9 +484,9 @@ def create_paging_header(results_num: int, page_number: int, length: int, pagina
     return f'Showing {results_num} results, limit={length}\n'
 
 
-def calculate_offset_and_limit(page_number: int, page_size: int) -> Union[Tuple[int, int, int, int],
-                                                                          Tuple[int, int, None, int]]:
+def calculate_offset_and_limit(page_number: Optional[int], page_size: Optional[int]) -> Tuple[int, int, int, int]:
     # start / offset == page_number * page_size, and limit is page size
+    assert not (page_number is None and page_size is None)
     if page_size is not None and page_number is not None:
         page_size = page_size_validness(page_size)
         start = page_number * page_size
@@ -489,16 +494,14 @@ def calculate_offset_and_limit(page_number: int, page_size: int) -> Union[Tuple[
 
     # if page size is None, but we are in pagination case, so use DEFAULT_PAGE_SIZE (== 50)
     if page_size is None:
-        return page_number * DEFAULT_PAGE_SIZE, DEFAULT_PAGE_SIZE, page_number, DEFAULT_PAGE_SIZE
+        return page_number * DEFAULT_PAGE_SIZE, DEFAULT_PAGE_SIZE, page_number, DEFAULT_PAGE_SIZE  # type: ignore
 
     # if page number is None, but we are in pagination case, so use DEFAULT_OFFSET (== 0)
     page_size = page_size_validness(page_size)
     return DEFAULT_OFFSET * page_size, page_size, DEFAULT_OFFSET, page_size
 
 
-def pagination(page_size: Optional[int], page_number: Optional[int], length: int) -> \
-        Union[Dict[str, bool], Dict[str, Union[int, bool]]]:
-
+def pagination(page_size: Optional[int], page_number: Optional[int], length: int) -> Dict[str, Union[int, bool]]:
     pagination = False
 
     # in pagination case, start/offset == page_number * page_size, length/limit == page_size
@@ -519,23 +522,23 @@ def pagination(page_size: Optional[int], page_number: Optional[int], length: int
             }
 
 
-def union(dict1: Dict, dict2: Dict) -> Dict:
+def union(dict1: dict, dict2: dict) -> dict:
     res = {}
     for key in dict2:
         if not dict1.get(key):
             res[key] = dict2.get(key)
         elif isinstance(dict2.get(key), dict):
-            res[key] = {**dict1.get(key), **dict2.get(key)}
+            res[key] = {**dict1.get(key), **dict2.get(key)}  # type: ignore
         else:
-            res[key] = dict1.get(key) + dict2.get(key)
+            res[key] = dict1.get(key) + dict2.get(key)  # type: ignore
     return res
 
 
-def responses_by_batches(request_method: Callable, length: int, start: int = DEFAULT_OFFSET, **kwargs) -> Dict:
+def responses_by_batches(request_method: Callable, length: int, start: int, **kwargs) -> Dict:
     num_of_batches = math.ceil(length / MAX_BATCH_LIMIT)
     temp_length = MAX_BATCH_LIMIT
     temp_start = start
-    final_response = {}
+    final_response: dict[str, Any] = {}
     for i in range(num_of_batches):
         response = request_method(length=temp_length,
                                   start=temp_start,
@@ -614,12 +617,15 @@ def connection_list_command(client: Client,
     page_size = arg_to_number(page_size)
 
     pagination_dict = pagination(page_size, page_number, length)
+    start = pagination_dict.get('page_number', DEFAULT_OFFSET)
+    length = pagination_dict.get('length', DEFAULT_LIMIT)
+    is_pagination: bool = pagination_dict.get('pagination', False)  # type: ignore
 
     # To avoid time out, we do api calls by batches
-    if not pagination_dict.get('pagination') and pagination_dict.get('length') > MAX_BATCH_LIMIT:
+    if not is_pagination and length > MAX_BATCH_LIMIT:
         response = responses_by_batches(client.get_connections_request,
-                                        length=pagination_dict.get('length'),
-                                        start=pagination_dict.get('start'),
+                                        length=length,
+                                        start=start,
                                         source_field=source_field,
                                         destination_field=destination_field,
                                         date=date,
@@ -648,8 +654,8 @@ def connection_list_command(client: Client,
                                                   strictly=strictly,
                                                   baseline_date=baseline_date,
                                                   baseline_view=baseline_view,
-                                                  length=pagination_dict.get('length'),
-                                                  start=pagination_dict.get('start')
+                                                  length=length,
+                                                  start=start
                                                   )
 
     headers = ['id', 'cnt', 'sessions', 'node']
@@ -657,17 +663,17 @@ def connection_list_command(client: Client,
                'cnt': 'Count',
                'sessions': 'Sessions',
                'node': 'Node'}
+
     command_results = CommandResults(
         outputs_prefix='Arkime.Connection',
         outputs=response,
         raw_response=response,
-        readable_output=create_paging_header(len(response.get('nodes')), pagination_dict.get('page_number'),
-                                             pagination_dict.get('length'), pagination_dict.get('pagination')) +
-                        tableToMarkdown('Connection Results:',
-                                        response.get('nodes'),
-                                        headerTransform=lambda header: mapping.get(header, header),
-                                        headers=headers,
-                                        )
+        readable_output=create_paging_header(len(response.get('nodes', [])), start, length,
+                                             is_pagination) + tableToMarkdown('Connection Results:',
+                                                                              response.get('nodes'),
+                                                                              headerTransform=lambda
+                                                                              header: mapping.get(header, header),
+                                                                              headers=headers)
     )
 
     return command_results
@@ -687,14 +693,15 @@ def pcap_file_list_command(client: Client,
 
     pagination_dict = pagination(page_size, page_number, length)
 
+    start = pagination_dict.get('page_number', DEFAULT_OFFSET)
+    length = pagination_dict.get('length', DEFAULT_LIMIT)
+    is_pagination: bool = pagination_dict.get('pagination', False)  # type: ignore
+
     # To avoid time out, we do api calls by batches
-    if not pagination_dict.get('pagination') and pagination_dict.get('length') > MAX_BATCH_LIMIT:
-        response = responses_by_batches(client.get_files_request,
-                                        length=pagination_dict.get('length'),
-                                        start=pagination_dict.get('start'),
-                                        )
+    if not is_pagination and length > MAX_BATCH_LIMIT:
+        response = responses_by_batches(client.get_files_request, length=length, start=start)
     else:
-        response = client.get_files_request(length=pagination_dict.get('length'), start=pagination_dict.get('start'))
+        response = client.get_files_request(length=length, start=start)
 
     output_for_hr = arrange_output_for_pcap_file_list_command(response)
     headers = ['node', 'name', 'num', 'first', 'filesize', 'packetsSize']
@@ -705,18 +712,15 @@ def pcap_file_list_command(client: Client,
                'filesize': 'File Size',
                'packetsSize': 'Packet Size',
                }
+
     command_results = CommandResults(
         outputs_prefix='Arkime.PcapFile',
         outputs_key_field='name',
         outputs=response,
         raw_response=response,
-        readable_output=create_paging_header(len(output_for_hr), pagination_dict.get('page_number'),
-                                             pagination_dict.get('length'), pagination_dict.get('pagination')) +
-                        tableToMarkdown('Files List Result:',
-                                        output_for_hr,
-                                        headerTransform=lambda header: mapping.get(header, header),
-                                        headers=headers,
-                                        )
+        readable_output=create_paging_header(len(output_for_hr), start, length, is_pagination) + tableToMarkdown(
+            'Files List Result:', output_for_hr, headerTransform=lambda header: mapping.get(header, header),
+            headers=headers)
     )
 
     return command_results
@@ -740,12 +744,15 @@ def session_list_command(client: Client,
     page_size = arg_to_number(page_size)
 
     pagination_dict = pagination(page_size, page_number, length)
+    length: int = pagination_dict.get('length', DEFAULT_LIMIT)
+    start: int = pagination_dict.get('start', DEFAULT_OFFSET)
+    is_pagination: bool = pagination_dict.get('pagination', False)  # type: ignore
 
     # To avoid time out, we do api calls by batches
-    if not pagination_dict.get('pagination') and pagination_dict.get('length') > MAX_BATCH_LIMIT:
+    if not pagination_dict.get('pagination', False) and pagination_dict.get('length', DEFAULT_LIMIT) > MAX_BATCH_LIMIT:
         response = responses_by_batches(client.sessions_query_request,
-                                        length=pagination_dict.get('length'),
-                                        start=pagination_dict.get('start'),
+                                        length=length,
+                                        start=start,
                                         date=date,
                                         expression=expression,
                                         start_time=start_time,
@@ -766,8 +773,8 @@ def session_list_command(client: Client,
                                                  fields=fields,
                                                  bounding=bounding,
                                                  strictly=strictly,
-                                                 length=pagination_dict.get('length'),
-                                                 start=pagination_dict.get('start'),
+                                                 length=length,
+                                                 start=start,
                                                  )
 
     output_for_hr = arrange_output_for_session_list_command(response)
@@ -787,13 +794,9 @@ def session_list_command(client: Client,
         outputs_prefix='Arkime.Session',
         outputs=response,
         raw_response=response,
-        readable_output=create_paging_header(len(output_for_hr), pagination_dict.get('page_number'),
-                                             pagination_dict.get('length'), pagination_dict.get('pagination')) +
-                        tableToMarkdown('Session List Result:',
-                                        output_for_hr,
-                                        headerTransform=lambda header: mapping.get(header, header),
-                                        headers=headers,
-                                        )
+        readable_output=create_paging_header(len(output_for_hr), start, length, is_pagination) + tableToMarkdown(
+            'Session List Result:', output_for_hr, headerTransform=lambda header: mapping.get(header, header),
+            headers=headers)
     )
 
     return command_results
@@ -922,7 +925,7 @@ def fields_list_command(client: Client,
 
 def unique_field_list_command(client: Client,
                               expression_field_names: str,
-                              counts: bool = DEFAULT_COUNTS,
+                              counts: int = DEFAULT_COUNTS,
                               date: int = DEFAULT_DATE,
                               expression: str = None,
                               start_time: str = None,
@@ -955,12 +958,13 @@ def unique_field_list_command(client: Client,
                                            strictly=strictly,
                                            )
 
-    return unique_field_helper(response, pagination_dict.get('start'), pagination_dict.get('length'), pagination_dict)
+    return unique_field_helper(response, pagination_dict.get('start', DEFAULT_OFFSET),
+                               pagination_dict.get('length', DEFAULT_LIMIT), pagination_dict)
 
 
 def multi_unique_field_list_command(client: Client,
                                     expression_field_names: str,
-                                    counts: str = DEFAULT_COUNTS,
+                                    counts: int = DEFAULT_COUNTS,
                                     database_field: str = None,
                                     date: int = DEFAULT_DATE,
                                     expression: str = None,
@@ -994,7 +998,8 @@ def multi_unique_field_list_command(client: Client,
                                                  strictly=strictly,
                                                  )
 
-    return unique_field_helper(response, pagination_dict.get('start'), pagination_dict.get('length'), pagination_dict)
+    return unique_field_helper(response, pagination_dict.get('start', DEFAULT_OFFSET),
+                               pagination_dict.get('length', DEFAULT_LIMIT), pagination_dict)
 
 
 def session_tag_add_command(client: Client,
@@ -1105,7 +1110,7 @@ def main() -> None:
     params: Dict[str, Any] = demisto.params()
     args: Dict[str, Any] = demisto.args()
     url = params.get('url')
-    auth = HTTPDigestAuth(params.get('credentials').get('identifier'), params.get('credentials').get('password'))
+    auth = HTTPDigestAuth(demisto.get(params, 'credentials.identifier'), demisto.get(params, 'credentials.password'))
     verify_certificate: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
@@ -1118,7 +1123,7 @@ def main() -> None:
         requests.packages.urllib3.disable_warnings()
         client: Client = Client(urljoin(url, ''), verify_certificate, proxy, headers=headers, auth=auth)
 
-        commands = {
+        commands: Dict[str, Callable] = {
             'arkime-connection-csv-get': connection_csv_get_command,
             'arkime-connection-list': connection_list_command,
             'arkime-pcap-file-list': pcap_file_list_command,
