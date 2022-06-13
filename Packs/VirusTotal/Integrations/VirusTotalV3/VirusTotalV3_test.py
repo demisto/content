@@ -249,7 +249,6 @@ def test_domain_command(mocker, requests_mock):
     mocker.patch.object(demisto, 'params', return_value=DEFAULT_PARAMS)
     mocker.patch.object(CommonServerPython, 'is_demisto_version_ge', return_value=True)
 
-
     # Assign arguments
     params = demisto.params()
     mocked_score_calculator = ScoreCalculator(params=params)

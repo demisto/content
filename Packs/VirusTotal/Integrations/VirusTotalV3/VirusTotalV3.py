@@ -1578,7 +1578,7 @@ def ip_command(client: Client, score_calculator: ScoreCalculator, args: dict, re
         results.append(result)
     if execution_metrics.is_supported():
         metric_results = execution_metrics.metrics
-        results.append(metric_results.to_context())  # mypy: ignore
+        results.append(metric_results.to_context())  # mypy: ignore[union-attr]
     return results
 
 
@@ -1612,7 +1612,7 @@ def file_command(client: Client, score_calculator: ScoreCalculator, args: dict, 
         results.append(result)
     if execution_metrics.is_supported():
         metric_results = execution_metrics.metrics
-        results.append(metric_results.to_context())  # mypy: ignore
+        results.append(metric_results.to_context())  # mypy: ignore[union-attr]
     return results
 
 
@@ -1648,7 +1648,7 @@ def url_command(client: Client, score_calculator: ScoreCalculator, args: dict, r
         results.append(result)
     if execution_metrics.is_supported():
         metric_results = execution_metrics.metrics
-        results.append(metric_results.to_context())  # mypy: ignore
+        results.append(metric_results.to_context())  # mypy: ignore[union-attr]
     return results
 
 
@@ -1682,7 +1682,7 @@ def domain_command(client: Client, score_calculator: ScoreCalculator, args: dict
         results.append(result)
     if execution_metrics.is_supported():
         metric_results = execution_metrics.metrics
-        results.append(metric_results.to_context())  # mypy: ignore
+        results.append(metric_results.to_context())  # mypy: ignore[union-attr]
 
     return results
 
