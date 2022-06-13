@@ -10,7 +10,7 @@ args:
   predefined:
   - "True"
   - "False"
-comment: Create a Vulnerability summary Report from XSOAR CVEs.  These CVEs can be created from the command !prisma-cloud-compute-images-scan-list
+comment: Deprecated. No available replacement.
 commonfields:
   id: PrismaCloudComputeCreateCVEReport
   version: -1
