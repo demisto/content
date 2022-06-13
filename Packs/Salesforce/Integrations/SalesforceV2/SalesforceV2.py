@@ -1,8 +1,7 @@
 import json
 import traceback
-from typing import Any, Dict, List, Optional, Tuple, Union, cast
+from typing import Any, Dict
 
-import dateparser
 #import demistomock as demisto  # noqa: F401
 import urllib3
 #from CommonServerPython import *  # noqa: F401
