@@ -1098,10 +1098,9 @@ def get_user_tokens(user_id):
     return result.get('items', [])
 
 
-def search_all_mailboxes():
+def search_all_mailboxes(receive_only_accounts):
     users_next_page_token = None
     service = get_service('admin', 'directory_v1')
-    receive_only_accounts = argToBoolean(demisto.args().get('show-only-mailboxes', 'false'))
     while True:
         command_args = {
             'maxResults': 100,
@@ -2180,7 +2179,11 @@ def main():
                 'Command "{}" is not implemented.'.format(command))
 
         else:
-            demisto.results(cmd_func())  # type: ignore
+            if command == 'gmail-search-all-mailboxes':
+                receive_only_accounts = argToBoolean(demisto.args().get('show-only-mailboxes', 'false'))
+                demisto.results(cmd_func(receive_only_accounts))
+            else:
+                demisto.results(cmd_func())  # type: ignore
 
     except Exception as e:
         import traceback
