@@ -1396,10 +1396,10 @@ class TestFilterChangelog:
 #### Incident Fields\n- **Field name 1**\n'),
         ('xsoar', 'xsoar',
          '#### Integrations\n##### Display Name\n- Some entry 1.\n\n- Entry only for XSOAR.\n\n- Some entry 2.\n\n\
-         - Entry only for XSOAR.\n\n\n#### Incident Fields\n- **Field name 1**\n\n- **Field name 2**\n'),
+- Entry only for XSOAR.\n\n\n#### Incident Fields\n- **Field name 1**\n\n- **Field name 2**\n'),
         ('marketplacev2', 'marketplacev2',
          '#### Integrations\n##### Display Name\n- Some entry 1.\n\n- Entry only for XSIAM.\n\n- Some entry 2.\n\n\
-         - Entry only for XSIAM.\n\n\n#### Incident Fields\n- **Field name 1**\n\n- **Field name 2**\n'),
+- Entry only for XSIAM.\n\n\n#### Incident Fields\n- **Field name 1**\n\n- **Field name 2**\n'),
         ('marketplacev2', 'xsoar',
          '#### Integrations\n##### Display Name\n- Some entry 1.\n- Some entry 2.\n\n- Entry only for XSOAR.\n\n\n\
 #### Incident Fields\n- **Field name 1**\n'),
