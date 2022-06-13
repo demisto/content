@@ -10,7 +10,7 @@
       "type": "CRE_RULE"
      }
     ],
-    "event_count": 1,
+    "event_count": 3,
     "flow_count": 0,
     "assigned_to": null,
     "security_category_count": 1,
@@ -1220,7 +1220,7 @@
      "credibility": 5,
      "severity": 0,
      "magnitude": 1,
-     "eventcount": 2,
+     "eventcount": 1,
      "eventDirection": "R2R",
      "postNatDestinationIP": "0.0.0.0",
      "postNatDestinationPort": 0,
