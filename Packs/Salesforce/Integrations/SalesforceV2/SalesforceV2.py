@@ -793,7 +793,7 @@ def get_modified_remote_data_command(client, args):
         modified_records_ids.append(item['Id'])
 
     demisto.debug(
-        f"SalesforcePy : * END * Performing get-modified-remote-data command. Results: {','.join(modified_records_ids)}")
+        f"SalesforceV2 : * END * Performing get-modified-remote-data command. Results: {','.join(modified_records_ids)}")
 
     return GetModifiedRemoteDataResponse(modified_records_ids)
 
