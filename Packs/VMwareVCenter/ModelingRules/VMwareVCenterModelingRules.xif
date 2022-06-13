@@ -1,14 +1,19 @@
 [MODEL: dataset ="VMware_vCenter_raw", model=Audit] 
+dataset= Vcenter_info 
 | filter _raw_log contains "| vlsi |" or _raw_log contains "| vim" or _raw_log contains "jointool" or _raw_log contains "heard-" or _raw_log contains "Stats"  or _raw_log contains "localhost" or _raw_log contains "Thread" or _raw_log contains "thread" or _raw_log contains "certificates" or _raw_log contains "DEBUG" or _raw_log contains "INFO" or _raw_log contains "appmgmt" or _raw_log contains "cloudvm" or _raw_log contains "pool" or _raw_log contains "vapi-endpoint" or _raw_log contains "vmon"
 | alter Timestamp0= arrayindex(regextract(_raw_log ,"(\d+\-\d+\-\d+\w\d+\:\d+\:\d+\.\d+\w+)") ,0)
 | alter Timestamp1 = arrayindex(regextract(_raw_log ,"\[(\d+\-\d+\-\d+\s\d+\:\d+\:\d+)") ,0)
 | alter Timestamp = coalesce(Timestamp0 ,Timestamp1 )
 | alter LogLevel = arrayindex(regextract(_raw_log ,"\d+\-\d+\-\d+\w\d+\:\d+\:\d+\.\d+\w+\s\|\s+(\S+)") ,0)
+| alter LogLeve2 = arrayindex(regextract(_raw_log ,"\[\S+\s(\w+)"),0)
+| alter LogLeve = coalesce(LogLevel  ,LogLeve2)
+| fields -LogLevel ,LogLeve2
 | alter Message0 = arrayindex(regextract(_raw_log ,"\|\s\d+\s\|\s([^\t]+)") ,0)
 | alter Message1 = arrayindex(regextract(_raw_log ,"\]\s([^\t]+)") ,0)
 | alter Message = coalesce(Message0, Message1)
+| fields -Message0 ,Message1 
 
-| alter XDM.Audit.event_timestamp = Timestamp
+| alter XDM.Audit.event_timestamp =parse_timestamp("%Y-%m-%dT%H:%M:%SZ",Timestamp)
 , XDM.Audit.threat.description = Message
 , XDM.Audit.identity.name = LogLevel;
 
