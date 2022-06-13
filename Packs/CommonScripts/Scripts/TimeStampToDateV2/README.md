@@ -8,7 +8,7 @@ For example, "1585657181" with format "%Y-%m-%dT%H:%M:%S%z" will return '2020-03
 
 | **Name** | **Description** |
 | --- | --- |
-| Script Type | python |
+| Script Type | python3 |
 | Tags | transformer, date |
 
 
