@@ -76,7 +76,7 @@ script:
       defaultValue: 500
       required: false
       secret: false
-    - description: Set this argument to True in order to create events, otherwise the command will only display them.
+    - description: Set this argument to true to create events, otherwise the command only displays them.
       auto: PREDEFINED
       defaultValue: 'false'
       isArray: false
