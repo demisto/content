@@ -1153,6 +1153,111 @@ def delete_address_group_request(name):
     return response
 
 
+@logger
+def create_address_command():
+    contents = []
+    context = {}
+    address_context = []
+    address_name = demisto.args().get('name', '')
+    address = demisto.args().get('address', '')
+    mask = demisto.args().get('mask', '')
+    fqdn = demisto.args().get('fqdn','')
+    subnet = address + " " + mask
+
+    if fqdn and address:
+        return_error("Please provide only one of the two arguments: fqdn or address")
+
+    create_address_request(address_name, address, mask,fqdn)
+
+    if address:
+        contents.append({
+            'Name': address_name,
+            'IPAddress': address
+        })
+        address_context.append({
+            'Name': address_name,
+            'IPAddress': address
+        })
+    elif fqdn:
+        contents.append({
+            'Name': address_name,
+            'FQDN': fqdn
+        })
+        address_context.append({
+            'Name': address_name,
+            'FQDN': fqdn
+        })
+
+    context['Fortigate.Address(val.Name && val.Name === obj.Name)'] = address_context
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': contents,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('FortiGate address ' + address_name + ' created successfully', contents),
+        'EntryContext': context
+    })
+
+
+@logger
+def create_address_request(address_name, address, mask, fqdn):
+    uri_suffix = 'cmdb/firewall/address/'
+    if does_path_exist(uri_suffix + address_name):
+        return_error('Address already exists.')
+    subnet = address + " " + mask
+    if address:
+        payload = {
+            'name': address_name,
+            'subnet': subnet
+        }
+    elif fqdn:
+        payload = {
+            'name': address_name,
+            "type": "fqdn",
+            "fqdn": fqdn
+        }
+    result = http_request('POST', uri_suffix, {}, json.dumps(payload))
+    return result
+
+
+@logger
+def delete_address_command():
+    contents = []
+    context = {}
+    address_context = []
+    name = demisto.args().get('name', '')
+
+    delete_address_request(name)
+
+    contents.append({
+        'Name': name,
+        'Deleted': True
+    })
+    address_context.append({
+        'Name': name,
+        'Deleted': True
+    })
+
+    context['Fortigate.Address(val.Name && val.Name === obj.Name)'] = address_context
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': contents,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('FortiGate address ' + name + ' deleted successfully', contents),
+        'EntryContext': context
+    })
+
+
+@logger
+def delete_address_request(name):
+    uri_suffix = 'cmdb/firewall/address/' + name
+    response = http_request('DELETE', uri_suffix)
+    return response
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 LOG('command is %s' % (demisto.command(), ))
@@ -1198,6 +1303,10 @@ try:
         unban_ip_command()
     elif demisto.command() == 'fortigate-get-banned-ips':
         get_banned_ips_command()
+    elif demisto.command() == 'fortigate-create-address':
+        create_address_command()
+    elif demisto.command() == 'fortigate-delete-address':
+        delete_address_command()
 
 except Exception as e:
     LOG(e.message)
