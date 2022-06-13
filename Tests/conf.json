@@ -5132,7 +5132,7 @@
         },
         {
             "integrations": "CloudflareWAF",
-            "playbookID": "playbook-TestCloudflareWAFPlaybook_Test",
+            "playbookID": "TestCloudflareWAFPlaybook",
             "fromversion": "6.2.0"
         },
         {
@@ -5168,11 +5168,6 @@
             ],
             "playbookID": "Github Event Collector-test",
             "fromversion": "6.6.0"
-        },
-        {
-            "integrations": "Cloudflare",
-            "playbookID": "TestCloudflareWAFPlaybook",
-            "fromversion": "6.2.0"
         }
     ],
     "skipped_tests": {
@@ -5430,7 +5425,7 @@
         "Alibaba Action Trail Event Collector": "XSIAM integration",
         "Salesforce Event Collector": "XSIAM integration",
         "Github Event Collector" : "XSIAM integration",
-        "TestCloudflareWAFPlaybook": "No instance"
+        "CloudflareWAF": "No instance"
     },
     "nightly_integrations": [
         "Laline v2",
