@@ -1561,7 +1561,7 @@ def ip_command(client: Client, score_calculator: ScoreCalculator, args: dict, re
             raw_response = client.ip(ip, relationships)
             if raw_response.get('error', {}).get('code') == "QuotaExceededError":
                 execution_metrics.quota_error += 1
-                result = CommandResults(readable_output=f'Quota exceeded for IP: {ip}').to_context()
+                result = CommandResults(readable_output=f'Quota exceeded for IP: {ip}')
                 results.append(result)
                 continue
         except Exception as exception:
@@ -1571,14 +1571,13 @@ def ip_command(client: Client, score_calculator: ScoreCalculator, args: dict, re
             continue
         execution_metrics.success += 1
         results.append(
-            build_ip_output(client, score_calculator, ip, raw_response, argToBoolean(args.get('extended_data'))).to_context()
-        )
+            build_ip_output(client, score_calculator, ip, raw_response, argToBoolean(args.get('extended_data'))))
     if len(results) == 0:
         result = CommandResults(readable_output='No IPs were found.').to_context()
         results.append(result)
     if execution_metrics.is_supported():
         metric_results = execution_metrics.metrics
-        results.append(metric_results.to_context())  # mypy: ignore[union-attr]
+        results.append(metric_results)
     return results
 
 
@@ -1597,10 +1596,10 @@ def file_command(client: Client, score_calculator: ScoreCalculator, args: dict, 
             raw_response = client.file(file, relationships)
             if raw_response.get('error', {}).get('code') == "QuotaExceededError":
                 execution_metrics.quota_error += 1
-                result = CommandResults(readable_output=f'Quota exceeded for file: {file}').to_context()
+                result = CommandResults(readable_output=f'Quota exceeded for file: {file}')
                 results.append(result)
                 continue
-            results.append(build_file_output(client, score_calculator, file, raw_response, extended_data).to_context())
+            results.append(build_file_output(client, score_calculator, file, raw_response, extended_data))
             execution_metrics.success += 1
         except Exception as exc:
             # If anything happens, just keep going
@@ -1608,11 +1607,11 @@ def file_command(client: Client, score_calculator: ScoreCalculator, args: dict, 
             execution_metrics.general_error += 1
             continue
     if len(results) == 0:
-        result = CommandResults(readable_output='No files were found.').to_context()
+        result = CommandResults(readable_output='No files were found.')
         results.append(result)
     if execution_metrics.is_supported():
         metric_results = execution_metrics.metrics
-        results.append(metric_results.to_context())  # mypy: ignore[union-attr]
+        results.append(metric_results)
     return results
 
 
@@ -1633,7 +1632,7 @@ def url_command(client: Client, score_calculator: ScoreCalculator, args: dict, r
             demisto.results(raw_response)
             if raw_response.get('error', {}).get('code') == "QuotaExceededError":
                 execution_metrics.quota_error += 1
-                result = CommandResults(readable_output=f'Quota exceeded for url: {url}').to_context()
+                result = CommandResults(readable_output=f'Quota exceeded for url: {url}')
                 results.append(result)
                 continue
         except Exception as exception:
@@ -1642,13 +1641,13 @@ def url_command(client: Client, score_calculator: ScoreCalculator, args: dict, r
             execution_metrics.general_error += 1
             continue
         execution_metrics.success += 1
-        results.append(build_url_output(client, score_calculator, url, raw_response, extended_data).to_context())
+        results.append(build_url_output(client, score_calculator, url, raw_response, extended_data))
     if len(results) == 0:
-        result = CommandResults(readable_output='No domains were found.').to_context()
+        result = CommandResults(readable_output='No domains were found.')
         results.append(result)
     if execution_metrics.is_supported():
         metric_results = execution_metrics.metrics
-        results.append(metric_results.to_context())  # mypy: ignore[union-attr]
+        results.append(metric_results)
     return results
 
 
@@ -1665,7 +1664,7 @@ def domain_command(client: Client, score_calculator: ScoreCalculator, args: dict
             raw_response = client.domain(domain, relationships)
             if raw_response.get('error', {}).get('code') == "QuotaExceededError":
                 execution_metrics.quota_error += 1
-                result = CommandResults(readable_output=f'Quota exceeded for domain: {domain}').to_context()
+                result = CommandResults(readable_output=f'Quota exceeded for domain: {domain}')
                 results.append(result)
                 continue
         except Exception as exception:
@@ -1675,14 +1674,14 @@ def domain_command(client: Client, score_calculator: ScoreCalculator, args: dict
             continue
         execution_metrics.success += 1
         result = build_domain_output(client, score_calculator, domain, raw_response,
-                                     argToBoolean(args.get('extended_data'))).to_context()
+                                     argToBoolean(args.get('extended_data')))
         results.append(result)
     if len(results) == 0:
-        result = CommandResults(readable_output='No domains were found.').to_context()
+        result = CommandResults(readable_output='No domains were found.')
         results.append(result)
     if execution_metrics.is_supported():
         metric_results = execution_metrics.metrics
-        results.append(metric_results.to_context())  # mypy: ignore[union-attr]
+        results.append(metric_results)
 
     return results
 

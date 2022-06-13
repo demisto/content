@@ -271,7 +271,9 @@ def test_domain_command(mocker, requests_mock):
         relationships=domain_relationships
     )
 
-    assert results == expected_results
+    assert results[1].execution_metrics == [{'APICallsCount': 1, 'Type': 'Successful'}]
+    assert results[0].execution_metrics is None
+    assert results[0].outputs == expected_results
 
 
 def test_ip_command(mocker, requests_mock):
@@ -314,7 +316,9 @@ def test_ip_command(mocker, requests_mock):
         relationships=ip_relationships
     )
 
-    assert results == expected_results
+    assert results[1].execution_metrics == [{'APICallsCount': 1, 'Type': 'Successful'}]
+    assert results[0].execution_metrics is None
+    assert results[0].outputs == expected_results
 
 
 def test_url_command_success(mocker, requests_mock):
@@ -358,4 +362,6 @@ def test_url_command_success(mocker, requests_mock):
         relationships=url_relationships
     )
 
-    assert results == expected_results
+    assert results[1].execution_metrics == [{'APICallsCount': 1, 'Type': 'Successful'}]
+    assert results[0].execution_metrics is None
+    assert results[0].outputs == expected_results

@@ -1,111 +1,32 @@
-[{
-    "Type": 1,
-    "ContentsFormat": "json",
-    "Contents": {
-        "data": {
-            "attributes": {
-                "as_owner": "EMERALD-ONION",
-                "asn": 396507,
-                "continent": "NA",
-                "country": "US",
-                "jarm": ":jarm:",
-                "last_analysis_stats": {
-                    "harmless": 72,
-                    "malicious": 5,
-                    "suspicious": 2,
-                    "timeout": 0,
-                    "undetected": 8
-                },
-                "last_modification_date": 1613300914,
-                "network": ":cidr:",
-                "regional_internet_registry": "ARIN",
-                "reputation": -4,
-                "tags": [],
-                "total_votes": {
-                    "harmless": 0,
-                    "malicious": 1
-                },
-                "whois": "NetRange: :range:\nCIDR: :cidr:\nNetName: ENCRYPTED-TRANSIT-IPV4\nNetHandle: :net-handle:\nParent: :parent:\nNetType: Direct Allocation\nOriginAS: :oas:\nOrganization: :org name: (:org-id:)\nRegDate: 2017-07-19\nUpdated: 2017-07-19\nComment: :comment:\nRef: :ref:\nOrgName: :org name:\nOrgId: :org-id:\nAddress: 815 1st Ave # 331\nCity: Seattle\nStateProv: WA\nPostalCode: :code:\nCountry: US\nRegDate: 2017-06-20\nUpdated: 2018-11-15\nRef: :ref:\nOrgTechHandle: :handle:\nOrgTechName: Technical Support\nOrgTechPhone: :phone: \nOrgTechEmail: tech@example.com\nOrgTechRef: :ref:/:handle:\nOrgAbuseHandle: :abuse-handle:\nOrgAbuseName: Abuse Management\nOrgAbusePhone: :phone: \nOrgAbuseEmail: abuse@example.com\nOrgAbuseRef: :ref:/:abuse-handle:\nOrgNOCHandle: NETWO8737-ARIN\nOrgNOCName: Network Operations\nOrgNOCPhone: :phone: \nOrgNOCEmail: noc@example.com\nOrgNOCRef: :ref::ref\n",
-                "whois_date": 1611870274
-            },
-            "id": ":ip:",
-            "links": {
-                "self": "https://www.virustotal.com/api/v3/ip_addresses/:ip:"
-            },
-            "type": "ip_address"
-        }
+{
+    "attributes": {
+        "as_owner": "EMERALD-ONION",
+        "asn": 396507,
+        "continent": "NA",
+        "country": "US",
+        "jarm": ":jarm:",
+        "last_analysis_stats": {
+            "harmless": 72,
+            "malicious": 5,
+            "suspicious": 2,
+            "timeout": 0,
+            "undetected": 8
+        },
+        "last_modification_date": 1613300914,
+        "network": ":cidr:",
+        "regional_internet_registry": "ARIN",
+        "reputation": -4,
+        "tags": [],
+        "total_votes": {
+            "harmless": 0,
+            "malicious": 1
+        },
+        "whois": "NetRange: :range:\nCIDR: :cidr:\nNetName: ENCRYPTED-TRANSIT-IPV4\nNetHandle: :net-handle:\nParent: :parent:\nNetType: Direct Allocation\nOriginAS: :oas:\nOrganization: :org name: (:org-id:)\nRegDate: 2017-07-19\nUpdated: 2017-07-19\nComment: :comment:\nRef: :ref:\nOrgName: :org name:\nOrgId: :org-id:\nAddress: 815 1st Ave # 331\nCity: Seattle\nStateProv: WA\nPostalCode: :code:\nCountry: US\nRegDate: 2017-06-20\nUpdated: 2018-11-15\nRef: :ref:\nOrgTechHandle: :handle:\nOrgTechName: Technical Support\nOrgTechPhone: :phone: \nOrgTechEmail: tech@example.com\nOrgTechRef: :ref:/:handle:\nOrgAbuseHandle: :abuse-handle:\nOrgAbuseName: Abuse Management\nOrgAbusePhone: :phone: \nOrgAbuseEmail: abuse@example.com\nOrgAbuseRef: :ref:/:abuse-handle:\nOrgNOCHandle: NETWO8737-ARIN\nOrgNOCName: Network Operations\nOrgNOCPhone: :phone: \nOrgNOCEmail: noc@example.com\nOrgNOCRef: :ref::ref\n",
+        "whois_date": 1611870274
     },
-    "HumanReadable": "### IP reputation of 8.8.8.8:\n|Id|Network|Country|LastModified|Reputation|Positives|\n|---|---|---|---|---|---|\n| :ip: | :cidr: | US | 2021-02-14 11:08:34Z | -4 | 5/87 |\n",
-    "EntryContext": {
-        "IP(val.Address && val.Address == obj.Address)": [{
-            "Address": "8.8.8.8",
-            "ASN": 396507,
-            "Geo": {
-                "Country": "US"
-            },
-            "DetectionEngines": 87,
-            "PositiveDetections": 5,
-            "Malicious": {
-                "Vendor": "VirusTotal",
-                "Description": "Basic analyzing of \"8.8.8.8\"\nCould not determine rank by popularity, No popularity ranks data.\nThose preferred vendors found the hash malicious: []. They do not pass the threshold 2. \n5 vendors found malicious. \nThe malicious threshold is 1. \nFound as malicious: total_malicious=5 >= threshold=1. "
-            }
-        }],
-        "DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)": [{
-            "Indicator": "8.8.8.8",
-            "Type": "ip",
-            "Vendor": "VirusTotal",
-            "Score": 3,
-            "Reliability": "A - Completely reliable"
-        }],
-        "VirusTotal.IP(val.id && val.id == obj.id)": {
-            "attributes": {
-                "as_owner": "EMERALD-ONION",
-                "asn": 396507,
-                "continent": "NA",
-                "country": "US",
-                "jarm": ":jarm:",
-                "last_analysis_stats": {
-                    "harmless": 72,
-                    "malicious": 5,
-                    "suspicious": 2,
-                    "timeout": 0,
-                    "undetected": 8
-                },
-                "last_modification_date": 1613300914,
-                "network": ":cidr:",
-                "regional_internet_registry": "ARIN",
-                "reputation": -4,
-                "tags": [],
-                "total_votes": {
-                    "harmless": 0,
-                    "malicious": 1
-                },
-                "whois": "NetRange: :range:\nCIDR: :cidr:\nNetName: ENCRYPTED-TRANSIT-IPV4\nNetHandle: :net-handle:\nParent: :parent:\nNetType: Direct Allocation\nOriginAS: :oas:\nOrganization: :org name: (:org-id:)\nRegDate: 2017-07-19\nUpdated: 2017-07-19\nComment: :comment:\nRef: :ref:\nOrgName: :org name:\nOrgId: :org-id:\nAddress: 815 1st Ave # 331\nCity: Seattle\nStateProv: WA\nPostalCode: :code:\nCountry: US\nRegDate: 2017-06-20\nUpdated: 2018-11-15\nRef: :ref:\nOrgTechHandle: :handle:\nOrgTechName: Technical Support\nOrgTechPhone: :phone: \nOrgTechEmail: tech@example.com\nOrgTechRef: :ref:/:handle:\nOrgAbuseHandle: :abuse-handle:\nOrgAbuseName: Abuse Management\nOrgAbusePhone: :phone: \nOrgAbuseEmail: abuse@example.com\nOrgAbuseRef: :ref:/:abuse-handle:\nOrgNOCHandle: NETWO8737-ARIN\nOrgNOCName: Network Operations\nOrgNOCPhone: :phone: \nOrgNOCEmail: noc@example.com\nOrgNOCRef: :ref::ref\n",
-                "whois_date": 1611870274
-            },
-            "id": ":ip:",
-            "links": {
-                "self": "https://www.virustotal.com/api/v3/ip_addresses/:ip:"
-            },
-            "type": "ip_address"
-        }
+    "id": ":ip:",
+    "links": {
+        "self": "https://www.virustotal.com/api/v3/ip_addresses/:ip:"
     },
-    "IndicatorTimeline": [],
-    "IgnoreAutoExtract": false,
-    "Note": false,
-    "Relationships": []
-}, {
-    "Type": 19,
-    "ContentsFormat": "json",
-    "Contents": "Metrics reported successfully.",
-    "HumanReadable": null,
-    "EntryContext": {},
-    "IndicatorTimeline": [],
-    "IgnoreAutoExtract": false,
-    "Note": false,
-    "Relationships": [],
-    "APIExecutionMetrics": [{
-        "Type": "Successful",
-        "APICallsCount": 1
-    }]
-}]
+    "type": "ip_address"
+}
