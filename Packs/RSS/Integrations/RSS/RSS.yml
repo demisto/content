@@ -17,7 +17,7 @@ configuration:
   type: 13
 description: Deprecated. Use RSS Feed instead.
 deprecated: true
-display: RSS
+display: RSS (Deprecated)
 name: RSS
 script:
   dockerimage: demisto/feed-parser:1.0.0.14495
