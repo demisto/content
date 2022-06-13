@@ -1,5 +1,5 @@
 [MODEL: dataset ="VMware_vCenter_raw", model=Audit] 
-| filter _raw_log contains "| vlsi |" or _raw_log contains "| vim" or _raw_log contains "jointool" or _raw_log contains "heard-" 
+| filter _raw_log contains "| vlsi |" or _raw_log contains "| vim" or _raw_log contains "jointool" or _raw_log contains "heard-" or _raw_log contains "Stats"  or _raw_log contains "localhost" or _raw_log contains "Thread" or _raw_log contains "thread" or _raw_log contains "certificates" or _raw_log contains "DEBUG" or _raw_log contains "INFO" or _raw_log contains "appmgmt" or _raw_log contains "cloudvm" or _raw_log contains "pool" or _raw_log contains "vapi-endpoint" or _raw_log contains "vmon"
 | alter Timestamp0= arrayindex(regextract(_raw_log ,"(\d+\-\d+\-\d+\w\d+\:\d+\:\d+\.\d+\w+)") ,0)
 | alter Timestamp1 = arrayindex(regextract(_raw_log ,"\[(\d+\-\d+\-\d+\s\d+\:\d+\:\d+)") ,0)
 | alter Timestamp = coalesce(Timestamp0 ,Timestamp1 )
@@ -15,7 +15,7 @@
 
 
 [MODEL: dataset ="VMware_vCenter_raw", model=Auth] 
- filter _raw_log contains "vpxd[" or _raw_log contains "[vmafdd]" or _raw_log contains " vmdird "
+ filter _raw_log contains "vpxd" or _raw_log contains "[vmafdd]" or _raw_log contains " vmdird "
 | alter Timestamp= arrayindex(regextract(_raw_log ,"(\d+\-\d+\-\d+\w\d+\:\d+\:\d+)") ,0)
 | alter Message_vpxd= arrayindex(regextract(_raw_log ,"vpxd\[\d+\](.*)") ,0)
 | alter user0_vpxd= arrayindex(regextract(_raw_log ,"user\s\<([^\>]+)") ,0)
@@ -29,3 +29,6 @@
 , XDM.Auth.threat.description = Message
 , XDM.Auth.threat.name  = eventName_vmafdd
 , XDM.Auth.Client.user.username  = user;
+
+[MODEL: dataset ="VMware_vCenter_raw", model=Network] 
+filter _raw_log contains "tomcat" or _raw_log contains "HTTP"
