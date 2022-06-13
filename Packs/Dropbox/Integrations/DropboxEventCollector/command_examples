@@ -1,1 +1,1 @@
-!dropbox-get-events
+!dropbox-get-events should_push_events=False
