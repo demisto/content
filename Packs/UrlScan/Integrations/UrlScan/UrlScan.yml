@@ -523,7 +523,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.4.29342
+  dockerimage: demisto/python3:3.10.4.30607
 defaultEnabled: false
 fromversion: 5.0.0
 tests:
