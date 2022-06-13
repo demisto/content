@@ -1,9 +1,9 @@
 Collect events from Dropbox's logs.
 This integration was integrated and tested with version xx of DropboxEventsCollector
 
-## Configure Dropbox Event Collector on Cortex XSOAR
+## Configure Dropbox Event Collector on Cortex XSIAM
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. Navigate to **Settings** > **Configurations** > **Automation and Feed Integrations**.
 2. Search for Dropbox Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 
