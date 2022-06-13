@@ -34,7 +34,7 @@ configuration:
   name: fetch_time
   required: false
   type: 0
-- defaultvalue: '10'
+- defaultvalue: '5'
   display: Alerts to fetch per run; note that increasing this value may result in slow performance if too many results are returned at once
   name: fetch_limit
   required: false
@@ -44,6 +44,11 @@ configuration:
   name: include_files
   required: false
   type: 8
+- name: incidentFetchInterval
+  display: Incidents Fetch Interval
+  defaultvalue: "3"
+  required: false
+  type: 19
 description: Use the Code42 integration to identify potential data exfiltration from insider threats while speeding investigation and response by providing fast access to file events and metadata across physical and cloud environments.
 display: Code42
 name: Code42
