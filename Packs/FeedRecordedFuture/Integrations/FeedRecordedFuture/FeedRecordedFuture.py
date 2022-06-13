@@ -170,6 +170,7 @@ class Client(BaseClient):
                 f.write(response.text)
 
     def get_batches_from_file(self, limit):
+        # we do this try to make sure the file gets deleted at the end
         try:
             file_stream = open("response.txt", 'rt')
             columns = file_stream.readline()  # get the headers from the csv file.
