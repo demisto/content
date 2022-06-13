@@ -164,8 +164,8 @@ script:
       default: true
       auto: PREDEFINED
       predefined:
-      - github
-      - bitbucket
+        - github
+        - bitbucket
       defaultValue: github
     - default: false
       description: The organization from which to retrieve artifacts. Defaults to the organization instance parameter.
@@ -259,8 +259,8 @@ script:
       default: true
       auto: PREDEFINED
       predefined:
-      - github
-      - bitbucket
+        - github
+        - bitbucket
       defaultValue: github
     - default: false
       description: Organization from which to retrieve workflow last runs. Defaults to the organization instance parameter.
