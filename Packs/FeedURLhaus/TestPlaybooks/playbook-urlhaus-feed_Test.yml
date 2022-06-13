@@ -1,7 +1,7 @@
-id: playbook-urlhaus-feed_Test
+id: playbook-urlhaus-feed-Test
 version: 3
 vcShouldKeepItemLegacyProdMachine: false
-name: playbook-urlhaus-feed_Test
+name: playbook-urlhaus-feed-Test
 starttaskid: "0"
 tasks:
   "0":
@@ -113,3 +113,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.5.0
