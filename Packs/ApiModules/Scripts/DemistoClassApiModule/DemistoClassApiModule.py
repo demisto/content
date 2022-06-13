@@ -119,11 +119,11 @@ class DemistoGeneral:
             # python 2 doesn't have timeout we use polling
             if timeout < 0:
                 return lock.acquire()
-            start = time.time()  # type:ignore  [name-defined] # noqa: F821
-            while (time.time() - start) < timeout:  # type:ignore  [name-defined] # noqa: F821
+            start = time.time()  # type:ignore  [name-defined] # noqa: F821 # pylint: disable=E0602
+            while (time.time() - start) < timeout:  # type:ignore  [name-defined] # noqa: F821 # pylint: disable=E0602
                 if lock.acquire(False):
                     return True
-                time.sleep(0.1)  # type:ignore  [name-defined] # noqa: F821
+                time.sleep(0.1)  # type:ignore  [name-defined] # noqa: F821 # pylint: disable=E0602
             # didn't get the lock
             return False
 
@@ -441,14 +441,14 @@ class DemistoIntegration(DemistoGeneral):
         self.results({'Type': 1, 'Contents': json.dumps(credentials), 'ContentsFormat': 'json'})
 
 
-is_integ_script = context['integration']  # type:ignore [name-defined] # noqa: F821
+is_integ_script = context['integration']  # type:ignore [name-defined] # noqa: F821 # pylint: disable=E0602
 if is_integ_script:
     if "demisto" in locals():
         # stopping `_heartbeat_thread` if was created for demisto class in server
         demisto._heartbeat_enabled = False  # type:ignore  [has-type]
-    demisto = DemistoIntegration(context)  # type:ignore [name-defined] # noqa: F821
+    demisto = DemistoIntegration(context)  # type:ignore [name-defined] # noqa: F821 # pylint: disable=E0602
 else:
-    demisto = DemistoScript(context)  # type:ignore # noqa: F821
+    demisto = DemistoScript(context)  # type:ignore # noqa: F821 # pylint: disable=E0602
 
 try:
     import __builtin__
