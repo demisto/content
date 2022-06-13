@@ -2,7 +2,7 @@ commonfields:
   id: MitreNameLayoutDynamicSection
   version: -1
 name: MitreNameLayoutDynamicSection
-comment: Populates the MITRE ATT&CK name for the MITRE ATT&CK indicator layout
+comment: Deprecated. No available replacement.
 script: '-'
 type: python
 tags:
