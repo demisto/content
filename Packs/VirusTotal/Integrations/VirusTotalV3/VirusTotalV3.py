@@ -4,7 +4,7 @@ API Documentation:
     https://developers.virustotal.com/v3.0/reference
 """
 from collections import defaultdict
-from typing import Callable
+from typing import Callable, cast
 
 from dateparser import parse
 
@@ -1576,7 +1576,8 @@ def ip_command(client: Client, score_calculator: ScoreCalculator, args: dict, re
         result = CommandResults(readable_output='No IPs were found.').to_context()
         results.append(result)
     if execution_metrics.is_supported():
-        metric_results = execution_metrics.metrics
+        _metric_results = execution_metrics.metrics
+        metric_results = cast(CommandResults, _metric_results)
         results.append(metric_results)
     return results
 
@@ -1610,7 +1611,8 @@ def file_command(client: Client, score_calculator: ScoreCalculator, args: dict, 
         result = CommandResults(readable_output='No files were found.')
         results.append(result)
     if execution_metrics.is_supported():
-        metric_results = execution_metrics.metrics
+        _metric_results = execution_metrics.metrics
+        metric_results = cast(CommandResults, _metric_results)
         results.append(metric_results)
     return results
 
@@ -1646,7 +1648,8 @@ def url_command(client: Client, score_calculator: ScoreCalculator, args: dict, r
         result = CommandResults(readable_output='No domains were found.')
         results.append(result)
     if execution_metrics.is_supported():
-        metric_results = execution_metrics.metrics
+        _metric_results = execution_metrics.metrics
+        metric_results = cast(CommandResults, _metric_results)
         results.append(metric_results)
     return results
 
@@ -1680,7 +1683,8 @@ def domain_command(client: Client, score_calculator: ScoreCalculator, args: dict
         result = CommandResults(readable_output='No domains were found.')
         results.append(result)
     if execution_metrics.is_supported():
-        metric_results = execution_metrics.metrics
+        _metric_results = execution_metrics.metrics
+        metric_results = cast(CommandResults, _metric_results)
         results.append(metric_results)
 
     return results
