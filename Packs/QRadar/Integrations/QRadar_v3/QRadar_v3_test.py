@@ -1091,12 +1091,13 @@ def test_get_modified_with_events(mocker):
     """
     Given:
         Context data with mirrored offenses, queried and finished.
-    
+
     When:
         Calling get_modified_with_events.
-    
+
     Then:
-        Ensure that finished queries goes to finished queue, and modified incidents returns the modified offenses and the finished queries.
+        Ensure that finished queries goes to finished queue,
+        and modified incidents returns the modified offenses and the finished queries.
     """
     context_data = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {1: '123', 2: '456', 10: '-1'},
                     MIRRORED_OFFENSES_FINISHED_CTX_KEY: {3: '789', 4: '012'}}
@@ -1123,10 +1124,10 @@ def test_remote_data_with_events(mocker, offense_id):
     """
     Given:
         - Offense ID.
-        
+
     When:
         - Calling get_remote_data_command with offense ID after `get-modified`
-        
+
     Then:
         - Ensure that the offense data is returned and context_data is updated.
     """
@@ -1302,9 +1303,9 @@ def test_integration_context_during_run(test_case_data, mocker):
 def test_convert_ctx():
     """
     Given: Old context structure
-    
+
     When: Calling to update structure
-    
+
     Then: New structure is returned
     """
     new_context = convert_integration_ctx(ctx_test_data.get('old_ctxs')[0])
