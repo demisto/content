@@ -677,7 +677,6 @@ def insert_to_updated_context(context_data: dict,
         should_update_last_fetch (bool, optional): Should update the last_fetch. Defaults to False.
         should_update_last_mirror (bool, optional): Should update the last mirror. Defaults to False.
     """
-    
     if not offense_ids:
         return updated_context_data
     new_context_data = updated_context_data.copy()
