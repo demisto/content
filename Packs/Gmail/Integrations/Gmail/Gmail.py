@@ -2181,7 +2181,7 @@ def main():
         else:
             if command == 'gmail-search-all-mailboxes':
                 receive_only_accounts = argToBoolean(demisto.args().get('show-only-mailboxes', 'false'))
-                demisto.results(cmd_func(receive_only_accounts))
+                demisto.results(cmd_func(receive_only_accounts))  # type: ignore
             else:
                 demisto.results(cmd_func())  # type: ignore
 
