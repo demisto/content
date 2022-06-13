@@ -489,7 +489,6 @@ Gets a list of nodes and links and returns them to the client.
                 },
                 {
                     "cnt": 1,
-                    "id": "192.168.1.37",
                     "inresult": 1,
                     "network.bytes": 1258,
                     "network.packets": 17,
@@ -503,7 +502,6 @@ Gets a list of nodes and links and returns them to the client.
                 },
                 {
                     "cnt": 8,
-                    "id": "192.168.1.8",
                     "inresult": 1,
                     "network.bytes": 8999878,
                     "network.packets": 41456,
@@ -517,7 +515,6 @@ Gets a list of nodes and links and returns them to the client.
                 },
                 {
                     "cnt": 1,
-                    "id": "10.196.102.220",
                     "inresult": 1,
                     "network.bytes": 8819968,
                     "network.packets": 40000,
@@ -531,7 +528,6 @@ Gets a list of nodes and links and returns them to the client.
                 },
                 {
                     "cnt": 1,
-                    "id": "192.168.1.130",
                     "inresult": 1,
                     "network.bytes": 45605888,
                     "network.packets": 290000,
@@ -545,7 +541,6 @@ Gets a list of nodes and links and returns them to the client.
                 },
                 {
                     "cnt": 1,
-                    "id": "192.168.1.88",
                     "inresult": 1,
                     "network.bytes": 45605888,
                     "network.packets": 290000,
@@ -559,7 +554,6 @@ Gets a list of nodes and links and returns them to the client.
                 },
                 {
                     "cnt": 1,
-                    "id": "20.54.37.64",
                     "inresult": 1,
                     "network.bytes": 5445,
                     "network.packets": 39,
@@ -573,7 +567,6 @@ Gets a list of nodes and links and returns them to the client.
                 },
                 {
                     "cnt": 1,
-                    "id": "20.199.120.85",
                     "inresult": 1,
                     "network.bytes": 5421,
                     "network.packets": 39,
@@ -587,7 +580,6 @@ Gets a list of nodes and links and returns them to the client.
                 },
                 {
                     "cnt": 1,
-                    "id": "20.199.120.151",
                     "inresult": 1,
                     "network.bytes": 5447,
                     "network.packets": 39,
@@ -601,7 +593,6 @@ Gets a list of nodes and links and returns them to the client.
                 },
                 {
                     "cnt": 1,
-                    "id": "20.199.120.182",
                     "inresult": 1,
                     "network.bytes": 5445,
                     "network.packets": 39,
@@ -615,7 +606,6 @@ Gets a list of nodes and links and returns them to the client.
                 },
                 {
                     "cnt": 1,
-                    "id": "192.168.1.100",
                     "inresult": 1,
                     "network.bytes": 812,
                     "network.packets": 8,
@@ -629,7 +619,6 @@ Gets a list of nodes and links and returns them to the client.
                 },
                 {
                     "cnt": 6,
-                    "id": "8.8.8.8",
                     "inresult": 1,
                     "network.bytes": 6754,
                     "network.packets": 62,
@@ -643,7 +632,6 @@ Gets a list of nodes and links and returns them to the client.
                 },
                 {
                     "cnt": 2,
-                    "id": "192.168.1.11",
                     "inresult": 1,
                     "network.bytes": 74490,
                     "network.packets": 904,
@@ -657,7 +645,6 @@ Gets a list of nodes and links and returns them to the client.
                 },
                 {
                     "cnt": 1,
-                    "id": "20.93.58.141",
                     "inresult": 1,
                     "network.bytes": 240,
                     "network.packets": 4,
@@ -671,7 +658,6 @@ Gets a list of nodes and links and returns them to the client.
                 },
                 {
                     "cnt": 2,
-                    "id": "192.168.1.16",
                     "inresult": 1,
                     "network.bytes": 332282,
                     "network.packets": 1468,
@@ -685,7 +671,6 @@ Gets a list of nodes and links and returns them to the client.
                 },
                 {
                     "cnt": 3,
-                    "id": "192.168.1.71",
                     "inresult": 1,
                     "network.bytes": 354478,
                     "network.packets": 1567,
@@ -699,7 +684,6 @@ Gets a list of nodes and links and returns them to the client.
                 },
                 {
                     "cnt": 2,
-                    "id": "104.155.131.72",
                     "inresult": 1,
                     "network.bytes": 431926,
                     "network.packets": 4201,
@@ -713,7 +697,6 @@ Gets a list of nodes and links and returns them to the client.
                 },
                 {
                     "cnt": 2,
-                    "id": "192.168.1.111",
                     "inresult": 1,
                     "network.bytes": 431926,
                     "network.packets": 4201,
@@ -727,7 +710,6 @@ Gets a list of nodes and links and returns them to the client.
                 },
                 {
                     "cnt": 1,
-                    "id": "192.168.1.212",
                     "inresult": 1,
                     "network.bytes": 92,
                     "network.packets": 1,
@@ -741,7 +723,6 @@ Gets a list of nodes and links and returns them to the client.
                 },
                 {
                     "cnt": 3,
-                    "id": "192.168.1.68",
                     "inresult": 1,
                     "network.bytes": 126456,
                     "network.packets": 321,
@@ -755,7 +736,6 @@ Gets a list of nodes and links and returns them to the client.
                 },
                 {
                     "cnt": 2,
-                    "id": "192.168.1.144",
                     "inresult": 1,
                     "network.bytes": 147368,
                     "network.packets": 797,
@@ -769,7 +749,6 @@ Gets a list of nodes and links and returns them to the client.
                 },
                 {
                     "cnt": 2,
-                    "id": "192.168.1.113",
                     "inresult": 1,
                     "network.bytes": 79390,
                     "network.packets": 451,
@@ -783,7 +762,6 @@ Gets a list of nodes and links and returns them to the client.
                 },
                 {
                     "cnt": 1,
-                    "id": "192.168.1.102",
                     "inresult": 1,
                     "network.bytes": 7275,
                     "network.packets": 50,
@@ -797,7 +775,6 @@ Gets a list of nodes and links and returns them to the client.
                 },
                 {
                     "cnt": 1,
-                    "id": "192.168.1.156",
                     "inresult": 1,
                     "network.bytes": 7275,
                     "network.packets": 50,
@@ -811,7 +788,6 @@ Gets a list of nodes and links and returns them to the client.
                 },
                 {
                     "cnt": 3,
-                    "id": "192.168.1.26",
                     "inresult": 1,
                     "network.bytes": 47521,
                     "network.packets": 109,
@@ -825,7 +801,6 @@ Gets a list of nodes and links and returns them to the client.
                 },
                 {
                     "cnt": 1,
-                    "id": "34.69.208.173",
                     "inresult": 1,
                     "network.bytes": 34010,
                     "network.packets": 57,
@@ -839,7 +814,6 @@ Gets a list of nodes and links and returns them to the client.
                 },
                 {
                     "cnt": 2,
-                    "id": "192.168.1.97",
                     "inresult": 1,
                     "network.bytes": 11320,
                     "network.packets": 25,
@@ -853,7 +827,6 @@ Gets a list of nodes and links and returns them to the client.
                 },
                 {
                     "cnt": 1,
-                    "id": "34.98.77.231",
                     "inresult": 1,
                     "network.bytes": 11062,
                     "network.packets": 23,
@@ -867,7 +840,6 @@ Gets a list of nodes and links and returns them to the client.
                 },
                 {
                     "cnt": 1,
-                    "id": "192.168.1.63",
                     "inresult": 1,
                     "network.bytes": 21392,
                     "network.packets": 91,
@@ -881,7 +853,6 @@ Gets a list of nodes and links and returns them to the client.
                 },
                 {
                     "cnt": 1,
-                    "id": "35.247.145.234",
                     "inresult": 1,
                     "network.bytes": 11211,
                     "network.packets": 32,
@@ -895,7 +866,6 @@ Gets a list of nodes and links and returns them to the client.
                 },
                 {
                     "cnt": 1,
-                    "id": "192.168.1.73",
                     "inresult": 1,
                     "network.bytes": 1702,
                     "network.packets": 13,
@@ -909,7 +879,6 @@ Gets a list of nodes and links and returns them to the client.
                 },
                 {
                     "cnt": 1,
-                    "id": "130.211.8.196",
                     "inresult": 1,
                     "network.bytes": 1702,
                     "network.packets": 13,
@@ -923,7 +892,6 @@ Gets a list of nodes and links and returns them to the client.
                 },
                 {
                     "cnt": 1,
-                    "id": "192.168.1.165",
                     "inresult": 1,
                     "network.bytes": 143171,
                     "network.packets": 987,
@@ -937,7 +905,6 @@ Gets a list of nodes and links and returns them to the client.
                 },
                 {
                     "cnt": 1,
-                    "id": "192.168.1.1",
                     "inresult": 1,
                     "network.bytes": 48216,
                     "network.packets": 492,
@@ -951,7 +918,6 @@ Gets a list of nodes and links and returns them to the client.
                 },
                 {
                     "cnt": 1,
-                    "id": "192.168.1.121",
                     "inresult": 1,
                     "network.bytes": 48216,
                     "network.packets": 492,
@@ -965,7 +931,6 @@ Gets a list of nodes and links and returns them to the client.
                 },
                 {
                     "cnt": 1,
-                    "id": "192.168.1.49",
                     "inresult": 1,
                     "network.bytes": 90,
                     "network.packets": 1,
@@ -979,7 +944,6 @@ Gets a list of nodes and links and returns them to the client.
                 },
                 {
                     "cnt": 1,
-                    "id": "169.254.169.123",
                     "inresult": 1,
                     "network.bytes": 90,
                     "network.packets": 1,
@@ -993,7 +957,6 @@ Gets a list of nodes and links and returns them to the client.
                 },
                 {
                     "cnt": 1,
-                    "id": "192.168.1.62",
                     "inresult": 1,
                     "network.bytes": 125504,
                     "network.packets": 312,
