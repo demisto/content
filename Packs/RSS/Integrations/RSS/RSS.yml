@@ -16,7 +16,7 @@ configuration:
   required: false
   type: 13
 description: Deprecated. Use RSS Feed instead.
-deprecate: true
+deprecated: true
 display: RSS
 name: RSS
 script:
