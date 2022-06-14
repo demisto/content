@@ -728,20 +728,19 @@ def safely_update_context_data(context_data: dict,
 
     for retry in range(5):
         try:
-            new_context_data, new_version = get_integration_context_with_version()
-            updated_context = insert_to_updated_context(context_data,
-                                                        new_context_data,
-                                                        offense_ids,
-                                                        should_update_last_fetch,
-                                                        should_update_last_mirror)
-
-            set_integration_context(updated_context, new_version)
+            set_integration_context(updated_context, version=new_version)
             print_debug_msg(f'Updated integration context after version {new_version}.')
             break
         except Exception as e:
             # if someone else is updating the context, we will get a conflict error
             print_debug_msg(f'Could not set integration context in retry {retry + 1}. '
                             f'Error: {e}. Trying to resolve conflicts')
+            new_context_data, new_version = get_integration_context_with_version()
+            updated_context = insert_to_updated_context(context_data,
+                                                        new_context_data,
+                                                        offense_ids,
+                                                        should_update_last_fetch,
+                                                        should_update_last_mirror)
     else:
         raise DemistoException(f'Could not update integration context after version {new_version}.')
 
