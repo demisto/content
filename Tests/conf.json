@@ -5131,6 +5131,11 @@
             "fromversion": "6.1.0"
         },
         {
+            "integrations": "CloudflareWAF",
+            "playbookID": "TestCloudflareWAFPlaybook",
+            "fromversion": "6.2.0"
+        },
+        {
             "scripts": "CheckIfSubdomain",
             "playbookID": "CheckIfSubdomain_Test",
             "fromversion": "6.0.0"
@@ -5297,7 +5302,8 @@
         "RecordedFutureFeed - Test": "Issue 43923",
         "RedLockTest": "Issue 24600",
         "SymantecEndpointProtection_Test": "Issue 30157",
-        "RSANetWitnessv115-Test": "Issue XDRSUP-12553"
+        "RSANetWitnessv115-Test": "Issue XDRSUP-12553",
+        "TestCloudflareWAFPlaybook": "No instance"
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
