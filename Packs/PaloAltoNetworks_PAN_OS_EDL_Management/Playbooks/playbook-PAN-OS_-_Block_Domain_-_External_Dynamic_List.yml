@@ -4,10 +4,7 @@ name: PAN-OS - Block Domain - External Dynamic List
 hidden: true
 deprecated: true
 fromversion: 5.0.0
-description: |-
-  This playbook blocks Domains using Palo Alto Networks Panorama or Firewall External Dynamic Lists.
-  It checks if the EDL configuration is in place with the 'PAN-OS EDL Setup v3' sub-playbook
-  (otherwise the list will be configured), and adds the input Domains to the relevant lists.
+description: Deprecated. No available replacement.
 starttaskid: "0"
 tasks:
   "0":
