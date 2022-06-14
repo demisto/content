@@ -1533,7 +1533,7 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
 
         events, failure_message = poll_offense_events_with_retry(client, search_response['search_id'], offense_id)
         events_fetched = sum(int(event.get('eventcount', 1)) for event in events)
-        print_debug_msg(f"Polled events for offense ID {offense_id}")
+        print_debug_msg(f"Polled events for offense ID {offense_id}. Not polling for more events in fetch")
         break
 
     print_debug_msg(f"Fetched {events_fetched}/{min_events_size} for offense ID {offense_id}")
