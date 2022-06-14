@@ -1234,6 +1234,9 @@ def test_integration_context_during_run(test_case_data, mocker):
     mirror_direction = test_case_data['mirror_direction']
 
     init_context = test_case_data['init_context']
+    init_context |= {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
+                     MIRRORED_OFFENSES_FINISHED_CTX_KEY: {}}
+    
     set_integration_context(init_context)
     if test_case_data['offenses_first_loop']:
         first_loop_offenses = ctx_test_data['offenses_first_loop']
@@ -1264,6 +1267,9 @@ def test_integration_context_during_run(test_case_data, mocker):
         incident_type=None,
         mirror_direction=mirror_direction
     )
+    expected_ctx_first_loop |= {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
+                                MIRRORED_OFFENSES_FINISHED_CTX_KEY: {}}
+
     current_context = get_integration_context()
 
     assert current_context == expected_ctx_first_loop
@@ -1295,6 +1301,10 @@ def test_integration_context_during_run(test_case_data, mocker):
     second_loop_ctx_not_default_values = test_case_data.get('second_loop_ctx_not_default_values', {})
     for k, v in second_loop_ctx_not_default_values.items():
         expected_ctx_second_loop[k] = v
+
+    expected_ctx_second_loop |= {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
+                                MIRRORED_OFFENSES_FINISHED_CTX_KEY: {}}
+
     current_context = get_integration_context()
     assert current_context == expected_ctx_second_loop
     set_integration_context({})
