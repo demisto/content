@@ -1,5 +1,4 @@
 
-import traceback
 from typing import Any, Dict
 
 import demistomock as demisto
@@ -28,7 +27,6 @@ def main():
     try:
         return_results(epoc_to_date(demisto.args()))
     except Exception as ex:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute TimeStampToDateV2. Error: {str(ex)}')
 
 

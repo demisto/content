@@ -31,7 +31,6 @@ def test_wrong_epoch_value(mocker):
     """
     mocker.patch.object(demisto, 'args', return_value={'value': 'wrong_val', 'format': "%Y-%m-%dT%H:%M:%S%z"})
     mocker.patch.object(TimeStampToDateV2, 'return_error')
-    mocker.patch.object(demisto, 'error')
 
     main()
 
