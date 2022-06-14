@@ -108,8 +108,7 @@ def get_tasks(incident_id: str):
     urls = demisto.demistoUrls()  # works in multi tenant env as well
     uri = f'/investigation/{incident_id}/workplan'
     res = demisto.internalHttpRequest('GET', uri=uri)
-    if not (workplan := demisto.get(res[0], 'Contents.response.invPlaybook')) \
-            or not (tasks := workplan.get('tasks')):
+    if not (tasks := demisto.get(json.loads(res.get('body', '{}')), 'invPlaybook.tasks')):
         raise DemistoException(f'Workplan for incident {incident_id}, has no tasks.')
     start_task = find_start_task(tasks)
     tasks_nested_results: Dict = {}
@@ -156,7 +155,7 @@ def main():
         return_results(get_tasks(incident_id))
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute  GetTasksWithSections.\nError:\n{str(e)}')
+        return_error(f'Failed to execute GetTasksWithSections.\nError:\n{type(e)}, {str(e)}')
 
 
 if __name__ in ('__main__', 'builtin', 'builtins'):
