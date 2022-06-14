@@ -1519,7 +1519,7 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
 
         events, failure_message = poll_offense_events_with_retry(client, search_id, offense_id)
         events_fetched = sum(int(event.get('eventcount', 1)) for event in events)
-        print_debug_msg(f"Polled events for offense ID {offense_id}")
+        print_debug_msg(f"Polled events for offense ID {offense_id}. Not polling for more events in fetch")
         break
 
     print_debug_msg(f"Fetched {events_fetched}/{min_events_size} for offense ID {offense_id}")
@@ -1671,7 +1671,7 @@ def print_context_data_stats(context_data: dict, stage: str) -> Set[str]:
         print_debug_msg("Not printing stats")
         return set()
     if MIRRORED_OFFENSES_QUERIED_CTX_KEY not in context_data or MIRRORED_OFFENSES_FINISHED_CTX_KEY not in context_data:
-        raise ValueError("Context data is missing keys: MIRRORED_OFFENSES_QUERIED_CTX_KEY or MIRRORED_OFFENSES_FINISHED_CTX_KEY")
+        raise ValueError(f"Context data is missing keys: {MIRRORED_OFFENSES_QUERIED_CTX_KEY} or {MIRRORED_OFFENSES_FINISHED_CTX_KEY}")
 
     finished_queries = context_data.get(MIRRORED_OFFENSES_FINISHED_CTX_KEY, {})
     waiting_for_update = context_data.get(MIRRORED_OFFENSES_QUERIED_CTX_KEY, {})
@@ -1750,7 +1750,6 @@ def long_running_execution_command(client: Client, params: Dict):
     events_columns = params.get('events_columns', '')
     events_limit = int(params.get('events_limit') or DEFAULT_EVENTS_LIMIT)
     incident_type = params.get('incident_type')
-    print_debug_msg(f'{incident_type=}')
     mirror_options = params.get('mirror_options', DEFAULT_MIRRORING_DIRECTION)
     mirror_direction = MIRROR_DIRECTION.get(mirror_options)
 
