@@ -443,9 +443,8 @@ def remove_all_keys_endswith_histo(response: Dict) -> Dict:
             del response[key]
         elif isinstance(response[key], dict):
             response[key] = remove_all_keys_endswith_histo(response[key])
-        elif isinstance(response[key], List):
+        elif isinstance(response[key], List) and len(response[key]) > 0:
             response[key] = [remove_all_keys_endswith_histo(response[key][0])]
-
     return response
 
 
