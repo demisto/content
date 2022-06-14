@@ -716,7 +716,7 @@ tasks:
       version: -1
       name: Send Slack notice about exemption
       description: Send the user a Slack message about the temporary exemption on
-        the file .
+        the file.
       script: SlackV3|||send-notification
       type: regular
       iscommand: true
@@ -1491,7 +1491,7 @@ tasks:
       name: Send Teams notice about exemption
       description: |-
         Sends a message to the specified teams.
-        To mention a user in the message, add a semicolon ";" at the end of the user mention. For example: @Bruce Willis;
+        To mention a user in the message, add a semicolon ";" at the end of the user mentioned. For example: @Bruce Willis;
       script: Microsoft Teams|||send-notification
       type: regular
       iscommand: true
@@ -1533,7 +1533,7 @@ tasks:
       id: 6584493a-45ab-46a3-833c-8107870a2ed6
       version: -1
       name: Any email module enabled?
-      description: Check if any email module is enabled
+      description: Check if any email module is enabled.
       type: condition
       iscommand: false
       brand: ""
