@@ -1421,7 +1421,7 @@ def run_polling_command(client: CoreClient,
             timeout_in_seconds=timeout_in_seconds)
 
         # result with scheduled_command only - no update to the war room
-        command_results = CommandResults(scheduled_command=scheduled_command)
+        command_results = CommandResults(scheduled_command=scheduled_command, raw_response=outputs_result_func)
     return command_results
 
 
@@ -1911,7 +1911,6 @@ def retrieve_files_command(client: CoreClient, args: Dict[str, str]) -> CommandR
         file_path_list=file_path_list,
         incident_id=incident_id
     )
-
     result = {'action_id': reply.get('action_id')}
 
     return CommandResults(
@@ -2810,7 +2809,7 @@ def get_endpoint_device_control_violations_command(client: CoreClient, args: Dic
     )
 
 
-def retrieve_file_details_command(client: CoreClient, args):
+def retrieve_file_details_command(client: CoreClient, args, add_to_context):
     action_id_list = argToList(args.get('action_id', ''))
     action_id_list = [arg_to_int(arg=item, arg_name=str(item)) for item in action_id_list]
 
@@ -2840,13 +2839,14 @@ def retrieve_file_details_command(client: CoreClient, args):
 
     hr = f'### Action id : {args.get("action_id", "")} \n Retrieved {retrived_files_count} files from ' \
          f'{endpoints_count} endpoints. \n To get the exact action status run the core-action-status-get command'
-
+    context = {f'{args.get("integration_context_brand", "CoreApiModule")}'
+               f'.RetrievedFiles(val.action_id == obj.action_id)': result}
     return_entry = {'Type': entryTypes['note'],
                     'ContentsFormat': formats['json'],
                     'Contents': raw_result,
                     'HumanReadable': hr,
                     'ReadableContentsFormat': formats['markdown'],
-                    'EntryContext': obj
+                    'EntryContext': context if add_to_context else {}
                     }
     return return_entry, file_results
 

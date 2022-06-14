@@ -17,7 +17,6 @@ This integration was integrated and tested with version 2.6.5 of Cortex XDR - IR
     | API Key |  | True |
     | Only fetch starred incidents |  | False |
     | Starred incidents fetch window (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days)  |  | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days)__
     | HTTP Timeout | The timeout of the HTTP requests sent to Cortex XDR API \(in seconds\). | False |
     | Maximum number of incidents per fetch | The maximum number of incidents per fetch. Cannot exceed 100. | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |

@@ -958,8 +958,8 @@ def get_endpoints_by_status_command(client: Client, args: Dict) -> CommandResult
         raw_response=raw_res)
 
 
-def file_details_results(client: Client, args: Dict) -> None:
-    return_entry, file_results = retrieve_file_details_command(client, args)
+def file_details_results(client: Client, args: Dict, add_to_context: bool) -> None:
+    return_entry, file_results = retrieve_file_details_command(client, args, add_to_context)
     demisto.results(return_entry)
     if file_results:
         demisto.results(file_results)
@@ -1202,16 +1202,15 @@ def main():  # pragma: no cover
                                           polling_value=["PENDING",
                                                          "IN_PROGRESS",
                                                          "PENDING_ABORT"])
-            outputs_result_func = polling.raw_response
-            result = outputs_result_func.get('status') if isinstance(outputs_result_func, dict) else \
-                outputs_result_func[0].get('status')
-            if polling.scheduled_command or result:
+            result = polling.raw_response.get('status') if isinstance(polling.raw_response, dict) else \
+                polling.raw_response[0].get('status')
+            if polling.scheduled_command or result != 'COMPLETED_SUCCESSFULLY':
                 return_results(polling)
             else:
-                file_details_results(client, args)
+                file_details_results(client, args, True)
 
         elif command == 'xdr-retrieve-file-details':
-            file_details_results(client, args)
+            file_details_results(client, args, False)
 
         elif command == 'xdr-get-scripts':
             return_outputs(*get_scripts_command(client, args))
