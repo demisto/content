@@ -11,17 +11,3 @@ You can configure the specific vendor and product for this instance.
    - vendor as infoblox
    - product as infoblox
 
-
-```
-filebeat.inputs:
-- type: filestream
-  enabled: true
-  paths:
-    - c:\windows\system32\logfiles\*.log
-  processors:
-    - add_fields:
-        fields:
-          vendor: msft
-          product: nps
-```
-
