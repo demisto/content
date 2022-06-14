@@ -1540,7 +1540,7 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
         if i < max_retries - 1:
             time.sleep(SLEEP_FETCH_EVENT_RETIRES)
 
-    if failure_message == '' and events_fetched < min_events_size:
+    if events_fetched < min_events_size:
         # if we didn't succeed to poll events for some reason, add it to the mirroring queue
         context_data, ctx_version = get_integration_context_with_version()
         context_data[MIRRORED_OFFENSES_QUERIED_CTX_KEY][offense_id] = search_response['search_id'] if search_response else '-1'
