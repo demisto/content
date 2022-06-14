@@ -1,0 +1,14 @@
+name: Microsoft NPS Modeling Rule
+id: microsoft_nps_modeling_rule
+fromversion: 6.8.0
+tags: Microsoft NPS
+rules: ''
+schema: |-
+  {
+    "msft_radius_raw": {
+      "_raw_log": {
+        "type": "string",
+        "is_array": false
+      }
+    }
+  }
