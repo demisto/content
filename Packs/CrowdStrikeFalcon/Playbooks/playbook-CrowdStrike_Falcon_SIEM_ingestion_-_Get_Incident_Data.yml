@@ -311,7 +311,7 @@ tasks:
       id: 5c22181f-8e83-462c-8893-8becc8d992e2
       version: -1
       name: Set Severity
-      description: commands.local.cmd.set.incident
+      description: Set Severity
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -457,7 +457,7 @@ tasks:
       id: ab07910c-703a-4326-80ca-c1f417d42922
       version: -1
       name: Set Severity
-      description: commands.local.cmd.set.incident
+      description: Set Severity
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -544,7 +544,7 @@ tasks:
       id: a3ab8a8f-116c-4471-8912-27cc94fa5234
       version: -1
       name: Set Endpoint information to layout
-      description: commands.local.cmd.set.incident
+      description: Set Endpoint information to layout
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -785,7 +785,7 @@ tasks:
       id: 861aef8f-45e6-466a-85dd-6ab401cfd7d9
       version: -1
       name: Extract Indicators
-      description: commands.local.cmd.extract.indicators
+      description: Extract Indicators
       script: Builtin|||extractIndicators
       type: regular
       iscommand: true
