@@ -172,7 +172,9 @@ def handle_prevalence_command(client: Client, command: str, args: dict):
         'args': arg_list
     }
     request_kwargs = get_requests_kwargs(request_body)
-    return client.http_request('analytics_apis/', requests_kwargs=request_kwargs)
+    res = client.http_request('analytics_apis/', requests_kwargs=request_kwargs).get('results', [])
+    return_warning({'domain_name': item.get('args', {}).get('domain_name'), 'value': item.get('value')} for item in res)
+    return res.get('results', []).get('value')
 
 
 def demisto_expiration_to_core(expiration) -> int:
