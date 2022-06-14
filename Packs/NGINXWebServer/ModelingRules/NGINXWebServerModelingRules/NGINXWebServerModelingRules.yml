@@ -1,0 +1,13 @@
+name:  NGINX Web Server
+id:  NGINXWebServer
+fromversion: 6.8.0
+tags:  NGINX Web Server
+rules: ''
+schema: |-
+  {
+    "nginx_raw": {
+      "_raw_log": {
+        "type": "string",
+        "is_array": false
+      },
+  }
