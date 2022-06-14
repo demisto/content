@@ -88,9 +88,9 @@ script:
       secret: false
     - auto: PREDEFINED
       defaultValue: 'False'
-      description: 'Get the full page. The maximal width and height values are 8000px.
-        (Marking full_screen as true means that the values for width and height arguments
-        might not be respected).'
+      description: 'Get the full page. The actual page width and height will be auto calculated up to a max value of
+      8000px. (Marking full_screen as true means that the values for width and height arguments
+      might not be respected).'
       isArray: false
       name: full_screen
       predefined:
@@ -157,9 +157,9 @@ script:
       secret: false
     - auto: PREDEFINED
       defaultValue: 'False'
-      description: 'Get the full page. The maximal width and height values are 8000px.
-        (Marking full_screen as true means that the values for width and height arguments
-        might not be respected).'
+      description: 'Get the full page. The actual page width and height will be auto calculated up to a max value of
+      8000px. (Marking full_screen as true means that the values for width and height arguments
+      might not be respected).'
       isArray: false
       name: full_screen
       predefined:
@@ -202,9 +202,9 @@ script:
       secret: false
     - auto: PREDEFINED
       defaultValue: 'False'
-      description: 'Get the full page. The maximal width and height values are 8000px.
-        (Marking full_screen as true means that the values for width and height arguments
-        might not be respected).'
+      description: 'Get the full page. The actual page width and height will be auto calculated up to a max value of
+      8000px. (Marking full_screen as true means that the values for width and height arguments
+      might not be respected).'
       isArray: false
       name: full_screen
       predefined:
