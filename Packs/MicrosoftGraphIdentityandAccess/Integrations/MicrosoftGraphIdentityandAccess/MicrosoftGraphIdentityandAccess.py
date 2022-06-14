@@ -38,7 +38,7 @@ class Client:  # pragma: no cover
             args["scope"] = 'offline_access RoleManagement.ReadWrite.Directory'
             args["token_retrieval_url"] = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
 
-    def get_directory_roles(self, limit: int) -> list:  # pragma: no cover
+    def get_directory_roles(self, limit: int) -> list:
         """Get all service principals.
 
         Args:
@@ -59,7 +59,7 @@ class Client:  # pragma: no cover
             results.extend(res.get('value'))
         return results[:limit]
 
-    def get_role_members(self, role_id: str, limit: int) -> dict:  # pragma: no cover
+    def get_role_members(self, role_id: str, limit: int) -> dict:
         """Get all members of a specific role
 
         Args:
@@ -75,7 +75,7 @@ class Client:  # pragma: no cover
         return self.ms_client.http_request(
             'GET', f'v1.0/directoryRoles/{role_id}/members')['value'][:limit]
 
-    def get_ip_named_location(self, ip_id: str) -> dict:  # pragma: no cover
+    def get_ip_named_location(self, ip_id: str) -> dict:
         """Get an IP named location by id
 
         Args:
@@ -90,7 +90,7 @@ class Client:  # pragma: no cover
         return self.ms_client.http_request(
             'GET', f'v1.0/identity/conditionalAccess/namedLocations/{ip_id}')
 
-    def update_ip_named_location(self, ip_id: str, data: dict) -> dict:  # pragma: no cover
+    def update_ip_named_location(self, ip_id: str, data: dict) -> dict:
         """Update an IP named location by id
 
         Args:
@@ -107,7 +107,7 @@ class Client:  # pragma: no cover
             'PUT', f'v1.0/identity/conditionalAccess/namedLocations/{ip_id}', return_empty_response=True,
             json_data=data)
 
-    def delete_ip_named_location(self, ip_id: str) -> dict:  # pragma: no cover
+    def delete_ip_named_location(self, ip_id: str) -> dict:
         """Delete an IP named location by id
 
         Args:
@@ -122,7 +122,7 @@ class Client:  # pragma: no cover
         return self.ms_client.http_request(
             'DELETE', f'v1.0/identity/conditionalAccess/namedLocations/{ip_id}', return_empty_response=True)
 
-    def create_ip_named_location(self, data: dict) -> dict:  # pragma: no cover
+    def create_ip_named_location(self, data: dict) -> dict:
         """Create an IP named location
 
         Args:
@@ -137,7 +137,7 @@ class Client:  # pragma: no cover
         return self.ms_client.http_request(
             'POST', 'v1.0/identity/conditionalAccess/namedLocations', json_data=data)
 
-    def compromise_users(self, data: dict) -> dict:  # pragma: no cover
+    def compromise_users(self, data: dict) -> dict:
         """Compromise users in active directory
 
         Args:
@@ -152,7 +152,7 @@ class Client:  # pragma: no cover
         return self.ms_client.http_request(
             'POST', 'v1.0/identityProtection/riskyUsers/confirmCompromised', json_data=data, return_empty_response=True)
 
-    def dismiss_users(self, data: dict) -> dict:  # pragma: no cover
+    def dismiss_users(self, data: dict) -> dict:
         """dismiss users in active directory
 
         Args:
@@ -167,7 +167,7 @@ class Client:  # pragma: no cover
         return self.ms_client.http_request(
             'POST', 'v1.0/identityProtection/riskyUsers/dismiss', json_data=data, return_empty_response=True)
 
-    def list_ip_named_location(self, limit: str, page: str, odata: str) -> list:  # pragma: no cover
+    def list_ip_named_location(self, limit: str, page: str, odata: str) -> list:
         """Get a list of all IP named locations
 
         Args:
@@ -191,7 +191,7 @@ class Client:  # pragma: no cover
         return self.ms_client.http_request(
             'GET', f'v1.0/identity/conditionalAccess/namedLocations{odata_query}')['value']
 
-    def list_risk_detections(self, limit: str, odata: str, odata_filter: str) -> list:  # pragma: no cover
+    def list_risk_detections(self, limit: str, odata: str, odata_filter: str) -> list:
         """Get a list of all risk detections
 
         Args:
@@ -216,7 +216,7 @@ class Client:  # pragma: no cover
         return self.ms_client.http_request(
             'GET', f'v1.0/identityProtection/riskDetections{odata_query}')['value']
 
-    def list_risky_users(self, limit: str, odata: str) -> list:  # pragma: no cover
+    def list_risky_users(self, limit: str, odata: str) -> list:
         """Get a list of all risky users
 
         Args:
@@ -238,7 +238,7 @@ class Client:  # pragma: no cover
         return self.ms_client.http_request(
             'GET', f'v1.0/identityProtection/riskyUsers{odata_query}')['value']
 
-    def list_risky_users_history(self, limit: str, odata: str, user_id: str) -> list:  # pragma: no cover
+    def list_risky_users_history(self, limit: str, odata: str, user_id: str) -> list:
         """Get a list of all risky user history
 
         Args:
@@ -261,7 +261,7 @@ class Client:  # pragma: no cover
         return self.ms_client.http_request(
             'GET', f'v1.0/identityProtection/riskyUsers/{user_id}/history{odata_query}')['value']
 
-    def activate_directory_role(self, template_id: str) -> dict:  # pragma: no cover
+    def activate_directory_role(self, template_id: str) -> dict:
         """Activating a role in the directory.
         Args:
             template_id: A template id to activate
@@ -278,7 +278,7 @@ class Client:  # pragma: no cover
             json_data={'roleTemplateId': template_id}
         )
 
-    def add_member_to_role(self, role_object_id: str, user_id: str):  # pragma: no cover
+    def add_member_to_role(self, role_object_id: str, user_id: str):
         """Adds a member to a specific role.
 
         Args:
@@ -304,7 +304,7 @@ class Client:  # pragma: no cover
             return_empty_response=True
         )
 
-    def remove_member_from_role(self, role_object_id: str, user_id: str):  # pragma: no cover
+    def remove_member_from_role(self, role_object_id: str, user_id: str):
         """Removing a member from a specific role.
 
         Args:
