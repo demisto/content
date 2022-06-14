@@ -1685,7 +1685,7 @@ def print_context_data_stats(context_data: dict, stage: str) -> Set[str]:
         print_debug_msg("Not printing stats")
         return set()
     if MIRRORED_OFFENSES_QUERIED_CTX_KEY not in context_data or MIRRORED_OFFENSES_FINISHED_CTX_KEY not in context_data:
-        raise ValueError("Context data is missing keys: MIRRORED_OFFENSES_QUERIED_CTX_KEY or MIRRORED_OFFENSES_FINISHED_CTX_KEY")
+        raise ValueError(f"Context data is missing keys: {MIRRORED_OFFENSES_QUERIED_CTX_KEY} or {MIRRORED_OFFENSES_FINISHED_CTX_KEY}")
 
     finished_queries = context_data.get(MIRRORED_OFFENSES_FINISHED_CTX_KEY, {})
     waiting_for_update = context_data.get(MIRRORED_OFFENSES_QUERIED_CTX_KEY, {})
