@@ -1764,7 +1764,6 @@ def long_running_execution_command(client: Client, params: Dict):
     events_columns = params.get('events_columns', '')
     events_limit = int(params.get('events_limit') or DEFAULT_EVENTS_LIMIT)
     incident_type = params.get('incident_type')
-    print_debug_msg(f'{incident_type=}')
     mirror_options = params.get('mirror_options', DEFAULT_MIRRORING_DIRECTION)
     mirror_direction = MIRROR_DIRECTION.get(mirror_options)
 
