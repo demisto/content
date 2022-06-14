@@ -1,4 +1,4 @@
-[MODEL: dataset=brocade_raw , model=Network]
+[MODEL: dataset=brocade_switch_raw , model=Network]
 // create timestamp part
 alter year_now = arrayindex( regextract(to_string( current_time()), "(\d{4})"),0)
 | alter extract_timestamp = concat( arrayindex( regextract(_raw_log , "\<\d+\>\s*(\w+\s\d+\s\d+\:\d+\:\d+)\s" ) ,0)," ", year_now )
