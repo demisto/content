@@ -1633,7 +1633,7 @@ def update_missing_offenses_from_raw_offenses(raw_offenses: list, offenses: list
             if offense_id in missing_ids:
                 offenses.append(offense)
                 changed_ids.append(offense_id)
-                ctx[MIRRORED_OFFENSES_QUERIED_CTX_KEY][offense_id] = '-1'
+                ctx[MIRRORED_OFFENSES_QUERIED_CTX_KEY][offense_id] = SearchQueryStatus.WAIT.value
 
     print_debug_msg(f'Moving {changed_ids} to mirroring queue')
     safely_update_context_data(ctx, ctx_version, offense_ids=changed_ids)
@@ -3204,7 +3204,8 @@ def add_modified_remote_offenses(client: Client,
                 status = query_status_results.get('status')
                 if status in {'CANCELED', 'ERROR'}:
                     print_debug_msg(f'offense {offense_id}, search query {search_id}, status is {status}')
-                if status == 'COMPLETED':
+                    mirrored_offenses_queries[offense_id] = SearchQueryStatus.ERROR.value
+                elif status == 'COMPLETED':
                     del mirrored_offenses_queries[offense_id]
                     finished_offenses_queue[offense_id] = search_id
                     # add the offense id to modified in order to run get_remote_data
@@ -3212,6 +3213,7 @@ def add_modified_remote_offenses(client: Client,
                     changed_ids_ctx.append(offense_id)
             except Exception as e:
                 msg = f'Getting search for {offense_id} with {search_id} failed: {e}'
+                mirrored_offenses_queries[offense_id] = SearchQueryStatus.ERROR.value
                 print_debug_msg(msg)
 
         new_context_data.update({MIRRORED_OFFENSES_QUERIED_CTX_KEY: mirrored_offenses_queries})
@@ -3333,7 +3335,7 @@ def migrate_integration_ctx(ctx: dict) -> dict:
     mirrored_offenses: Dict[str, str] = {}
     try:
         for key in ('mirrored_offenses', 'updated_mirrored_offenses', 'resubmitted_mirrored_offenses'):
-            mirrored_offenses |= {json.loads(offense).get('id'): '-1' for offense in json.loads(ctx.get(key, '[]'))}
+            mirrored_offenses |= {json.loads(offense).get('id'): SearchQueryStatus.WAIT.value for offense in json.loads(ctx.get(key, '[]'))}
     except Exception as e:
         print_debug_msg(f'Could not load mirrored_offenses from context_data. Error: {e}')
 
