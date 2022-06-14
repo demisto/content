@@ -52,3 +52,6 @@ Packs/**/report_pytest.json
 
 # devcontainer folders
 .devcontainer
+
+# lock files
+*.lock
