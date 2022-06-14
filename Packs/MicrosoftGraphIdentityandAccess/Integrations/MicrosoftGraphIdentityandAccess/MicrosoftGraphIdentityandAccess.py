@@ -33,10 +33,10 @@ class Client:  # pragma: no cover
             "tenant_id": tenant_id,
             "enc_key": enc_key
         }
-        self.ms_client = MicrosoftClient(**args)  # type: ignore
         if not client_credentials:
             args["scope"] = 'offline_access RoleManagement.ReadWrite.Directory'
             args["token_retrieval_url"] = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
+        self.ms_client = MicrosoftClient(**args)  # type: ignore
 
     def get_directory_roles(self, limit: int) -> list:
         """Get all service principals.
@@ -548,9 +548,6 @@ def azure_ad_identity_protection_confirm_compromised_command(ms_client: Client, 
     try:
         ms_client.compromise_users(data)
         return CommandResults(
-            'MSGraph.identityProtection.compromiseUsers',
-            'compromiseUsers',
-            outputs={},
             raw_response={},
             ignore_auto_extract=True,
             readable_output=f'Successfully compromised {str(user_ids)}'
@@ -567,9 +564,6 @@ def azure_ad_identity_protection_risky_users_dismiss_command(ms_client: Client, 
     try:
         ms_client.dismiss_users(data)
         return CommandResults(
-            'MSGraph.identityProtection.compromiseUsers',
-            'compromiseUsers',
-            outputs={},
             raw_response={},
             ignore_auto_extract=True,
             readable_output=f'Successfully dismissed {str(user_ids)}'

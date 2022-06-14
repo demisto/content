@@ -1,5 +1,5 @@
 id: Identity & Access test playbook
-version: 2
+version: -1
 vcShouldKeepItemLegacyProdMachine: false
 name: Identity & Access test playbook
 starttaskid: "0"
