@@ -3351,7 +3351,7 @@ def convert_ctx_to_new_structure() -> None:
         print_debug_msg(f"Checking {context_data} failed, trying to make it retry compatible. Error was: {str(e)}")
         extract_works = False
 
-    if not extract_works:
+    if not extract_works or MIRRORED_OFFENSES_QUERIED_CTX_KEY not in new_ctx or MIRRORED_OFFENSES_FINISHED_CTX_KEY not in new_ctx:
         cleared_ctx = convert_integration_ctx(new_ctx)
         print_debug_msg(f"Change ctx context data was cleared and changing to {cleared_ctx}")
         set_integration_context(cleared_ctx)
