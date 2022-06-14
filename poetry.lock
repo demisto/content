@@ -392,7 +392,7 @@ python-versions = ">=3.6, <3.11"
 [package.dependencies]
 numpy = ">=1.16.6,<2.0dev"
 packaging = ">=17.0"
-pandas = ">=0.24.2,<2.0dev"
+pandas = ">=0.24.2,<2.0dev"  # guardrails-disable-line
 pyarrow = ">=3.0.0,<9.0dev"
 
 [[package]]
