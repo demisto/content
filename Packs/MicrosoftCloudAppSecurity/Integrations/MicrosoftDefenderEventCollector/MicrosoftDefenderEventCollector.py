@@ -23,8 +23,8 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 AUTH_ERROR_MSG = 'Authorization Error: make sure tenant id, client id and client secret is correctly set'
 TYPES_TO_RETRIEVE = {'alerts': dict(type='alerts', filters={}),
                      'activities_admin': dict(type='activities', filters={"activity.type": {"eq": True}}),
-                     'activities_login': dict(type='activities', filters=
-                    {"activity.eventType": {"eq": ["EVENT_CATEGORY_LOGIN", "EVENT_CATEGORY_FAILED_LOGIN"]}})}
+                     'activities_login': dict(type='activities', filters={
+                         "activity.eventType": {"eq": ["EVENT_CATEGORY_LOGIN", "EVENT_CATEGORY_FAILED_LOGIN"]}})}
 
 ''' HELPER CLASSES '''
 
@@ -373,7 +373,7 @@ def main(command: str, demisto_params: dict):
 
     try:
         demisto_params['client_secret'] = demisto_params['credentials']['password']
-        push_to_xsiam = argToBoolean(demisto_params.get('push_to_xsiam', 'false'))
+        push_to_xsiam = argToBoolean(demisto_params.get('should_push_events', 'false'))
         vendor = demisto_params.get('vendor')
         product = demisto_params.get('product')
 
@@ -418,7 +418,7 @@ def main(command: str, demisto_params: dict):
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
 ''' ENTRY POINT '''

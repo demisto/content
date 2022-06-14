@@ -70,7 +70,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Microsoft Defender for Cloud Apps Event Collector integration.
+description: Collects the events log for alerts and activities provided Microsoft Defender for Cloud Apps API.
 display: Microsoft Defender for Cloud Apps Event Collector
 name: Microsoft Defender for Cloud Apps Event Collector
 script:
@@ -97,7 +97,7 @@ script:
       defaultValue: 'false'
       description: Whether to push the fetched event to XSIAM or not.
       isArray: false
-      name: push_to_xsiam
+      name: should_push_events
       predefined:
       - 'false'
       - 'true'
