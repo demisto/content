@@ -6,17 +6,15 @@ This integration was integrated and tested with version 3 of Jira Event Collecto
 2. Search for Jira Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description**                                                                                | **Required** |
-    |------------------------------------------------------------------------------------------------| --- | --- |
-    | Server URL |                                                                                                | True |
-    | Vendor name | For the dataset name for example: jira                                                         | True |
-    | Password | For the dataset name for example: jira                                                         | True |
-    | User name | The user name. For example, `admin@example.com`                                                | True |
-    | Password |                                                                                                | True |
-    | First fetch time | (&lt;number&gt; &lt;time unit&gt;. For example, 12 hours, 1 day, 3 months). Default is 3 days. |  | True |
-    | The maximum number of incidents per fetch. | Default is 1000.                                                                               |  | True |
-    | Trust any certificate (not secure) |                                                                                                | False |
-    | Use system proxy settings |                                                                                                | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Server URL |  | True |
+    | User name | The user name. For example, `admin@example.com` | True |
+    | Password |  | True |
+    | First fetch time |(&lt;number&gt; &lt;time unit&gt;. For example, 12 hours, 1 day, 3 months). Default is 3 days. |  | True |
+    | The maximum number of incidents per fetch. | Default is 1000. |  | True |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
