@@ -1636,7 +1636,8 @@ def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int
 
 def update_missing_offenses_from_raw_offenses(raw_offenses: list, offenses: list):
     """
-    Populate offenses with missing offenses
+    Populate offenses with missing offenses.
+    Move the missing offenses to the mirroring queue.
     """
     ctx, ctx_version = get_integration_context_with_version()
     changed_ids = []
