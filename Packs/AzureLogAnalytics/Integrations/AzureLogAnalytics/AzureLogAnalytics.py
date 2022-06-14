@@ -28,7 +28,7 @@ AZURE_MANAGEMENT_RESOURCE = 'https://management.azure.com'
 class Client:
     def __init__(self, self_deployed, refresh_token, auth_and_token_url, enc_key, redirect_uri, auth_code,
                  subscription_id, resource_group_name, workspace_name, verify, proxy, certificate_thumbprint,
-                 private_key):
+                 private_key, client_credentials):
 
         tenant_id = refresh_token if self_deployed else ''
         refresh_token = get_integration_context().get('current_refresh_token') or refresh_token
@@ -36,12 +36,12 @@ class Client:
             f'{resource_group_name}/providers/Microsoft.OperationalInsights/workspaces/{workspace_name}'
         self.ms_client = MicrosoftClient(
             self_deployed=self_deployed,
-            auth_id=auth_and_token_url,
+            auth_id=auth_and_token_url,  # client_id for client credential
             refresh_token=refresh_token,
-            enc_key=enc_key,
+            enc_key=enc_key,  # client_secret for client credential
             redirect_uri=redirect_uri,
             token_retrieval_url='https://login.microsoftonline.com/{tenant_id}/oauth2/token',
-            grant_type=AUTHORIZATION_CODE,  # disable-secrets-detection
+            grant_type=CLIENT_CREDENTIALS if client_credentials else AUTHORIZATION_CODE,  # disable-secrets-detection
             app_name=APP_NAME,
             base_url=base_url,
             verify=verify,
@@ -149,7 +149,7 @@ def tags_arg_to_request_format(tags):
 
 
 def test_connection(client, params):
-    if params.get('self_deployed', False) and not params.get('auth_code'):
+    if params.get('self_deployed', False) and not params.get('client_credentials') and not params.get('auth_code'):
         return_error('You must enter an authorization code in a self-deployed configuration.')
     client.ms_client.get_access_token(AZURE_MANAGEMENT_RESOURCE)  # If fails, MicrosoftApiModule returns an error
     try:
@@ -318,10 +318,15 @@ def main():
 
     try:
         self_deployed = params.get('self_deployed', False)
-        enc_key = params.get('enc_key')
+        client_credentials = params.get('client_credentials', False)
+        auth_and_token_url = params.get('auth_id') or params.get('credentials', {}).get('identifier')  # client_id
+        enc_key = params.get('enc_key') or params.get('credentials', {}).get('password')  # client_secret
         certificate_thumbprint = params.get('certificate_thumbprint')
         private_key = params.get('private_key')
-        if not self_deployed and not enc_key:
+        self_deployed = self_deployed or client_credentials
+        if client_credentials and not enc_key:
+            raise DemistoException("Client Secret must be provided for client credentials flow.")
+        elif not self_deployed and not enc_key:
             raise DemistoException('Key must be provided. For further information see '
                                    'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')  # noqa: E501
         elif not enc_key and not (certificate_thumbprint and private_key):
@@ -329,11 +334,11 @@ def main():
 
         client = Client(
             self_deployed=self_deployed,
-            auth_and_token_url=params.get('auth_id'),
-            refresh_token=params.get('refresh_token'),
-            enc_key=enc_key,
+            auth_and_token_url=auth_and_token_url,  # client_id or auth_id
+            refresh_token=params.get('refresh_token'),  # tenant_id or token
+            enc_key=enc_key,  # client_secret or enc_key
             redirect_uri=params.get('redirect_uri', ''),
-            auth_code=params.get('auth_code'),
+            auth_code=params.get('auth_code') if not client_credentials else '',
             subscription_id=params.get('subscriptionID'),
             resource_group_name=params.get('resourceGroupName'),
             workspace_name=params.get('workspaceName'),
@@ -341,6 +346,7 @@ def main():
             proxy=params.get('proxy', False),
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
+            client_credentials=client_credentials,
         )
 
         commands = {
