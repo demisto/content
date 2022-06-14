@@ -2,6 +2,7 @@ id: PAN-OS - Block Domain - External Dynamic List
 version: -1
 name: PAN-OS - Block Domain - External Dynamic List
 hidden: true
+deprecated: true
 fromversion: 5.0.0
 description: |-
   This playbook blocks Domains using Palo Alto Networks Panorama or Firewall External Dynamic Lists.
