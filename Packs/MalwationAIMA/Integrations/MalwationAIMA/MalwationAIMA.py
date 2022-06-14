@@ -418,7 +418,6 @@ def main() -> None:  # pragma: no cover
 
         # Log exceptions and return errors
         except Exception as e:
-            demisto.error(traceback.format_exc())  # print the traceback
             return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
     else:
         try:
@@ -440,7 +439,6 @@ def main() -> None:  # pragma: no cover
                 return_results(cap_static_get_submission(client, args))
                 # Log exceptions and return errors
         except Exception as e:
-            demisto.error(traceback.format_exc())  # print the traceback
             return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
