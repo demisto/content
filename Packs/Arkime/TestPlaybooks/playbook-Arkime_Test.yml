@@ -1247,4 +1247,4 @@ view: |-
 inputs: []
 outputs: []
 description: 'Test playbook for Arkime integration'
-fromvresion: 6.2.0
+fromversion: 6.2.0
