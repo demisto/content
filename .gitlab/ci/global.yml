@@ -158,7 +158,7 @@
 .default-job-settings:
   interruptible: true
   extends:
-    # - .default-cache
+    - .default-cache
     - .default-before-script
 
 
