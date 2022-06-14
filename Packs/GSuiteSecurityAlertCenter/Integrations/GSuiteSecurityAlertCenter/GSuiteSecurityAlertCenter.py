@@ -4,6 +4,7 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 
 import urllib3
+import traceback
 from datetime import datetime
 from typing import Any, Dict, List, Callable, Tuple, Optional
 
@@ -716,6 +717,7 @@ def main() -> None:
 
     # Log exceptions
     except Exception as e:
+        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 
