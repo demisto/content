@@ -1,6 +1,38 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+''' CLIENT CLASS '''
+
+
+class Client(BaseClient):
+    def __init__(self, base_url: str, headers: dict, proxy: bool = False, verify: bool = False):
+        super().__init__(base_url=base_url, headers=headers, proxy=proxy, verify=verify)
+
+    def get_info(self) -> Dict[str, Any]:
+        return self._http_request(
+            method='GET',
+            url_suffix='/info'
+        )
+
+    def get_top_stats(self) -> Dict[str, Any]:
+        return self._http_request(
+            method='GET',
+            url_suffix='/stats/top'
+        )
+
+    def bulk_search(self, hashtype: str, data: Dict[str, List[str]]) -> Dict[str, Any]:
+        return self._http_request(
+            method='POST',
+            url_suffix=f'/bulk/{hashtype}',
+            json_data=data
+        )
+
+    def file_search(self, hashtype: str, hashvalue: str) -> Dict[str, Any]:
+        return self._http_request(
+            method='GET',
+            url_suffix=f'/lookup/{hashtype}/{hashvalue}'
+        )
+
 
 def test_module(client) -> str:
     result = client._http_request('GET', '/info')
@@ -60,8 +92,13 @@ def create_file_output(results: Dict[str, str], hashtype: str, reliability: str,
     elif hashtype == 'md5':
         file_hash = results.get('MD5')
 
-    dbot_score_object = Common.DBotScore(indicator=file_hash, indicator_type=DBotScoreType.FILE,
-                                         integration_name='Circl', score=0, reliability=reliability)
+    if 'KnownMalicious' in results:
+        dbot_score_object = Common.DBotScore(indicator=file_hash, indicator_type=DBotScoreType.FILE,
+                                             integration_name='Circl', score=3, reliability=reliability)
+    else:
+        dbot_score_object = Common.DBotScore(indicator=file_hash, indicator_type=DBotScoreType.FILE,
+                                             integration_name='Circl', score=0, reliability=reliability)
+
     file = Common.File(dbot_score=dbot_score_object, name=results.get('FileName'),
                        file_type=results.get('mimetype'), md5=results.get('MD5'), sha1=results.get('SHA-1'),
                        sha256=results.get('SHA-256'), size=results.get('FileSize'), ssdeep=results.get('SSDEEP'))
@@ -112,7 +149,7 @@ def main():
 
     demisto.info(f'Command being called is {demisto.command()}')
     try:
-        client = BaseClient(
+        client = Client(
             base_url=base_url,
             verify=verify_certificate,
             headers=headers,
@@ -124,22 +161,20 @@ def main():
             result = test_module(client)
             return_results(result)
         elif demisto.command() == 'circl-info':
-            results = client._http_request('GET', '/info')
+            results = client.get_info()
             return_results(create_output(results, 'Info'))
         elif demisto.command() == 'circl-top':
-            results = client._http_request('GET', '/stats/top')
+            results = client.get_top_stats()
             return_results(create_output(results, 'Top'))
         elif demisto.command() == 'circl-bulk-md5':
-            listofhashes = args.get('md5_list')
-            md5list = [x.strip() for x in listofhashes.split(',')]
+            md5list = argToList(args.get('md5_list'))
             data = {'hashes': md5list}
-            results = client._http_request('POST', '/bulk/md5', json_data=data)
+            results = client.bulk_search('md5', data)
             return_results(create_output(results, 'MD5'))
         elif demisto.command() == 'circl-bulk-sha1':
-            listofhashes = args.get('sha1_list')
-            sha1list = [x.strip() for x in listofhashes.split(',')]
+            sha1list = argToList(args.get('sha1_list'))
             data = {'hashes': sha1list}
-            results = client._http_request('POST', '/bulk/sha1', json_data=data)
+            results = client.bulk_search('sha1', data)
             return_results(create_output(results, 'SHA1'))
         elif demisto.command() == 'file':
             file_list = argToList(args.get('file'))
@@ -147,13 +182,13 @@ def main():
                 raise ValueError('Hash(es) not specified')
             for item in file_list:
                 if len(item) == 32:
-                    results = client._http_request('GET', f'/lookup/md5/{item}')
+                    results = client.file_search('md5', item)
                     return_results(create_file_output(results, 'md5', reliability, create_relationships))
                 elif len(item) == 40:
-                    results = client._http_request('GET', f'/lookup/sha1/{item}')
+                    results = client.file_search('sha1', item)
                     return_results(create_file_output(results, 'sha1', reliability, create_relationships))
                 elif len(item) == 64:
-                    results = client._http_request('GET', f'/lookup/sha256/{item}')
+                    results = client.file_search('sha256', item)
                     return_results(create_file_output(results, 'sha256', reliability, create_relationships))
                 else:
                     return_error('Hash value not valid md5, sha1 or sha256')
