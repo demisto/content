@@ -1,7 +1,7 @@
 
 /* ----------------------------------- Infoblox ----------------------------------- */
 
-[MODEL: dataset="infoblox_infoblox_raw ", model="Network"]
+[MODEL: dataset="infoblox_infoblox_raw", model="Network"]
 filter _raw_log ~= "client" and _raw_log ~="infoblox-responses" and _raw_log ~="named"
 | alter XDM.Network.event_timestamp = parse_timestamp("%d-%b-%Y %H:%M:%E3S",arrayindex(regextract(_raw_log, "[0-3]\d-[A-Za-z]{3}-\d{4}\s\d{2}:\d{2}:\d{2}[.]\d{3}"), 0))
 | alter XDM.Network.Source.process.pid = arrayindex(regextract(_raw_log , "\s\w+\[\d+\]") ,0)
@@ -110,7 +110,7 @@ filter _raw_log ~= "client" and _raw_log ~="infoblox-responses" and _raw_log ~="
 | Alter XDM.Network.dhcp.ciaddr = arrayindex(regextract(_raw_log, “from\s((?:\d{1,3}[.]){3}\d{1,3})”), 0)
 | Alter XDM.Network.reason = arrayindex(regextract(_raw_log, “from\s(?:\d{1,3}[.]){3}\d{1,3}:\s(.*)”), 0);
 
-[MODEL: dataset="infoblox_infoblox_raw ", model="Auth"]
+[MODEL: dataset="infoblox_infoblox_raw", model="Auth"]
 filter _raw_log ~= "httpd"
 | alter XDM.Auth.event_timestamp = parse_timestamp("%Y-%m-%d %H:%M:%E3S", arrayindex(regextract(_raw_log, "\d{4}-\d{2}-[0-3]\d\s\d{2}:\d{2}:\d{2}[.]\d{3}"), 0)),
         XDM.Auth.Client.user.username = arrayindex(regextract(_raw_log, "\[(.*?)\]"), 0),
