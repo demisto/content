@@ -55,3 +55,7 @@ Packs/**/report_pytest.json
 
 # lock files
 *.lock
+
+#exclude dependency lock files
+!poetry.lock
+!Pipfile.lock
