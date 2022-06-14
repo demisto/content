@@ -461,10 +461,8 @@
                         "h": 3,
                         "i": "caseinfoid-field-changed-kkq7tnozrg-caseinfoid-kkq7tnozrg-caseinfoid-kkq7tnozrg-c4515bf0-a4df-11ea-8c29-db553c036fb9",
                         "items": [],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 3,
                         "moved": false,
                         "name": "Indicators",
                         "query": "",
@@ -490,10 +488,8 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
-                        "maxW": 1,
+                        "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Labels",
                         "static": false,
@@ -593,10 +589,8 @@
                                 "startCol": 2
                             }
                         ],
-                        "maxH": null,
-                        "maxW": 2,
+                        "maxW": 3,
                         "minH": 1,
-                        "minW": 2,
                         "moved": false,
                         "name": "Investigation Data",
                         "static": false,
@@ -608,10 +602,8 @@
                         "h": 2,
                         "i": "caseinfoid-9f29f350-9b23-11ec-a77a-f7e2032aa20a",
                         "items": [],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 3,
                         "moved": false,
                         "name": "Linked Incidents",
                         "static": false,
@@ -777,32 +769,13 @@
                 "name": "Cheat Sheet",
                 "sections": [
                     {
-                        "description": "Notes:\n---------\n- Mark entries as a Note by selecting **+Actions -\u003e Mark as Note+** on the war room entry. \n- Notes are important information that you want to make it easy for others to find and read.\n- Screenshots and images can be uploaded in line to Notes via the Command Line Interface (CLI)\n- Notes can be tagged, and war room filters applied to view Notes with specific tags.\n\nEvidence:\n--------------\n- Mark entries as Evidence by selecting **+Actions -\u003e Mark as Evidence+** on the war room entry. \n- Evidence can be reviewed on the Evidence Board.\n",
+                        "description": "### Investigation / Enrichment\n| Command | Functionality |\n| --- | --- |\n| !DomainReputation | Checks Domain reputation |\n| !FileReputation | Checks reputation of a File hash |\n| !IPReputation | Checks IP address reputation |\n| !URLReputation | Checks URL reputation. |\n| !ExtractIndicatorsFromTextFile | Extracts IOCs from text file |\n| !ExtractIndicatorsFromWordFile | Extracts IOCs from Word file |\n| !ReadPDFFileV2 | Extracts IOCs from PDF file |\n\n### Data Manipulation\n| Command | Functionality |\n| --- | --- |\n| !Base64Decode | Decodes base64-encoded input |\n| !Base64EncodeV2 | Encodes input into base64 |\n| !UnEscapeIPs| Removes escape characters [ ] from IP(s) |\n| !UnEscapeURLs | Removes escape characters from URLs |\n| !UnzipFile | Unzips a file (supports password protection) |\n| !ZipFile | Zips a file with optional password |\n\n### Related Incidents \u0026 Canvas\n- Use the Related Incidents tab to find similar Incidents based on common fields and Indicators.\n- Use the Canvas to construct a map of the Incidents and Indicators visually. ",
                         "displayType": "ROW",
-                        "h": 4,
-                        "hideItemTitleOnlyOne": true,
-                        "hideName": false,
-                        "i": "caseinfoid-yh3gwnhgwz-caseinfoid-field-changed-caseinfoid-xd2uikfpom-caseinfoid-ezf8qothdj-caseinfoid-phnf2odnms-b1b85870-343d-11eb-bc94-47298fb74458",
-                        "items": [],
-                        "maxH": null,
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Standards",
-                        "static": false,
-                        "w": 1,
-                        "x": 0,
-                        "y": 5
-                    },
-                    {
-                        "description": "Investigation / Enrichment\n------------------------------------------------------\n| Command | Functionality |\n| --- | --- |\n| !DomainReputation | Checks Domain reputation |\n| !FileReputation | Checks reputation of a File hash |\n| !IPReputation | Checks IP address reputation |\n| !URLReputation | Checks URL reputation. |\n| !ExtractIndicatorsFromTextFile | Extracts IOCs from text file |\n| !ExtractIndicatorsFromWordFile | Extracts IOCs from Word file |\n| !ReadPDFFileV2 | Extracts IOCs from PDF file |\n\nData Manipulation\n-------------------------\n| Command | Functionality |\n| --- | --- |\n| !Base64Decode | Decodes base64-encoded input |\n| !Base64EncodeV2 | Encodes input into base64 |\n| !UnEscapeIPs| Removes escape characters [ ] from IP(s) |\n| !UnEscapeURLs | Removes escape characters from URLs |\n| !UnzipFile | Unzips a file (supports password protection) |\n| !ZipFile | Zips a file with optional password |",
-                        "displayType": "ROW",
-                        "h": 9,
+                        "h": 11,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
                         "i": "caseinfoid-yh3gwnhgwz-caseinfoid-field-changed-caseinfoid-xd2uikfpom-caseinfoid-ezf8qothdj-caseinfoid-phnf2odnms-6ff55d60-343e-11eb-bc94-47298fb74458",
                         "items": [],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -813,13 +786,12 @@
                         "y": 0
                     },
                     {
-                        "description": "War Room entries can be created from the CLI, and are **markdown friendly**.  \n\n| Markdown | Description |\n| --- | --- | \n| \\#Incident ID | Reference other Incidents in the War Room | \n| \\*\\*Bold\\*\\* | **Bolds** the text |\n| \\*Italics\\* | *Italics* the text |\n| \\*\\*\\*Both\\*\\*\\* | ***Bold and Italics*** |\n| \\+Underline\\+ | +Underline+ |\n| \\{\\{color\\:red\\}\\}\\(This text will be in red\\) | {{color:red}}(This text will be in red) |\n| \\{\\{color\\:blue\\}\\}\\(This text will be in blue\\) | {{color:blue}}(This text will be in blue) |\n| \\{\\{color\\:green\\}\\}\\(This text will be in green\\) | {{color:green}}(This text will be in green) |\n| \\{\\{background\\:red\\}\\}\\(This text will be highlighted red\\) | {{background:red}}(This text will be highlighted red) |\n| \\{\\{background\\:blue\\}\\}\\(TThis text will be highlighted blue\\) | {{background:blue}}(This text will be highlighted blue) |\n| \\{\\{background\\:green\\}\\}\\(This text will be highlighted\\) | {{background:green}}(This text will be highlighted) |\n| \\# Heading 1 | Heading Level 1 |\n| \\#\\# Heading 2 | Heading Level 2 |\n| \\#\\#\\# Heading 3 | Heading Level 3 | \n\n## Markdown Tables\n\n\\| Column A \\| Column B \\| Column C \\|\n\\| \\-\\-\\- \\| \\-\\-\\- \\| \\-\\-\\- \\|\n\\| A1 \\| B1 \\| C1 \\|\n\\| A2 \\| B2 \\| C2 \\|\n\\| A3 \\| B3 \\| C3 \\|\n",
+                        "description": "War Room entries can be created from the Command Line Interface (CLI), and are **markdown friendly**.  \n\n| Markdown | Description |\n| --- | --- | \n| \\#Incident ID | Reference other Incidents in the War Room | \n| \\*\\*Bold\\*\\* | **Bolds** the text |\n| \\*Italics\\* | *Italics* the text |\n| \\*\\*\\*Both\\*\\*\\* | ***Bold and Italics*** |\n| \\+Underline\\+ | +Underline+ |\n| \\{\\{color\\:red\\}\\}\\(This text will be in red\\) | {{color:red}}(This text will be in red) |\n| \\{\\{color\\:blue\\}\\}\\(This text will be in blue\\) | {{color:blue}}(This text will be in blue) |\n| \\{\\{color\\:green\\}\\}\\(This text will be in green\\) | {{color:green}}(This text will be in green) |\n| \\{\\{background\\:red\\}\\}\\(This text will be highlighted red\\) | {{background:red}}(This text will be highlighted red) |\n| \\{\\{background\\:blue\\}\\}\\(TThis text will be highlighted blue\\) | {{background:blue}}(This text will be highlighted blue) |\n| \\{\\{background\\:green\\}\\}\\(This text will be highlighted\\) | {{background:green}}(This text will be highlighted) |\n| \\# Heading 1 | Heading Level 1 |\n| \\#\\# Heading 2 | Heading Level 2 |\n| \\#\\#\\# Heading 3 | Heading Level 3 | \n\n### Markdown Tables\n\n\\| Column A \\| Column B \\| Column C \\|\n\\| \\-\\-\\- \\| \\-\\-\\- \\| \\-\\-\\- \\|\n\\| A1 \\| B1 \\| C1 \\|\n\\| A2 \\| B2 \\| C2 \\|\n\\| A3 \\| B3 \\| C3 \\|\n\n### War Room Filters\n- The War Room can be filtered based on Actions, Tags, or Users.  \n- Set or review filters from the top of the War Room tab.\n- Make sure to review your filters so you don't potentially miss important information.",
                         "displayType": "ROW",
-                        "h": 9,
+                        "h": 11,
                         "hideName": false,
                         "i": "caseinfoid-yh3gwnhgwz-caseinfoid-field-changed-caseinfoid-xd2uikfpom-caseinfoid-ezf8qothdj-caseinfoid-phnf2odnms-d78a7950-3d95-11eb-977e-4150345205e0",
                         "items": [],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -830,13 +802,12 @@
                         "y": 0
                     },
                     {
-                        "description": "| Item | Notes | \n| --- | --- |\n| Assign an Owner | Select Owner via the **Owner field**, or use the **+Assign to Me button+** to assign to yourself |\n| Closing an Incident | Select **+Actions -\u003e Close Incident+**, and complete close notes and reason | \n| Editing an Incident | Select **+Actions -\u003e Edit+**, or edit the field on the layout |\n| Linking Incidents | Use the **+Link Incidents button+** or run !linkIncidents in the CLI |\n| Closing as Duplicate | Use the **+Close as Duplicate button+** or run !CloseInvestigationAsDuplicate in the CLI | \n| Inviting a Team Member | You can tag team members with @username, or select the 3-dots, and select Team.  You can also select ALT \\+ E (Win) or Option (Mac) \\+ E to navigate to this quickly |\n| Restrict Incident | Restricts the Incident to only invited Team Members. Select **+Actions -\u003e Restrict Incident+** | \n| Fast Navigation |  Command \\+ K (Mac) or Ctrl \\+ K (Win) |\n| Focus on the CLI | Command \\+ ; (Mac) or Ctrl \\+ ; (Win) | \n\n",
+                        "description": "| Item | Notes | \n| --- | --- |\n| Assign an Owner | Select Owner via the **Owner field**, or use the **+Assign to Me button+** to assign to yourself |\n| Closing an Incident | Select **+Actions -\u003e Close Incident+**, and complete close notes and reason | \n| Editing an Incident | Select **+Actions -\u003e Edit+**, or edit the field on the layout |\n| Linking Incidents | Use the **+Link Incidents button+** or run !linkIncidents in the CLI |\n| Closing as Duplicate | Use the **+Close as Duplicate button+** or run **!CloseInvestigationAsDuplicate** in the CLI | \n| Inviting a Team Member | You can tag team members with **@username**, or select the 3-dots, and select Team.  You can also select ALT \\+ E (Win) or Option (Mac) \\+ E to navigate to this quickly |\n| Restrict Incident | Restricts the Incident to only invited Team Members. Select **+Actions -\u003e Restrict Incident+** | \n| Fast Navigation |  Command \\+ K (Mac) or Ctrl \\+ K (Win) |\n| Focus on the CLI | Command \\+ ; (Mac) or Ctrl \\+ ; (Win) | \n\n### Notes\n- Mark entries as a Note by selecting **+Actions -\u003e Mark as Note+** on the war room entry. \n- Notes are important information that you want to make it easy for others to find and read.\n- Screenshots and images can be uploaded in line to Notes via the Command Line Interface (CLI)\n- Notes can be tagged, and war room filters applied to view Notes with specific tags.\n\n### Evidence\n- Mark entries as Evidence by selecting **+Actions -\u003e Mark as Evidence+** on the war room entry. \n- Evidence can be reviewed on the Evidence Board.\n",
                         "displayType": "ROW",
-                        "h": 5,
+                        "h": 11,
                         "hideName": false,
                         "i": "caseinfoid-yh3gwnhgwz-caseinfoid-field-changed-caseinfoid-xd2uikfpom-caseinfoid-92e2c5d0-3805-11ec-81a5-351a935f8f6d",
                         "items": [],
-                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -869,10 +840,6 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_owner",
-                        "isVisible": true
-                    },
-                    {
                         "fieldId": "incident_severity",
                         "isVisible": true
                     },
@@ -881,19 +848,15 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_reminder",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_playbookid",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_labels",
+                        "fieldId": "incident_owner",
                         "isVisible": true
                     },
                     {
                         "fieldId": "incident_roles",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_playbookid",
                         "isVisible": true
                     },
                     {
@@ -903,6 +866,37 @@
                 ],
                 "isVisible": true,
                 "name": "Basic Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_sourceusername",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourceip",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_destinationip",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourcehostname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_destinationhostname",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Additional Information",
                 "query": null,
                 "queryType": "",
                 "readOnly": false,

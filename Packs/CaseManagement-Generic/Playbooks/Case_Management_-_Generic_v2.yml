@@ -1,8 +1,15 @@
-contentitemexportablefields:
-  contentitemfields: {}
-description: This playbook executes when no other playbook is associated with an incident. It enriches indicators in an incident using one or more integrations.
+description: This playbook will extract and enrich indicators upon trigger, calculate Severity, and set SLAs and Timers.
 id: Case Management - Generic v2
-inputs: []
+inputs:
+- description: |-
+    Determines whether to extract and enrich all indicators in the Incident.  This is run on all Incident fields.
+
+    Set to "True" to enable extraction and enrichment.
+  key: Enrich
+  playbookInputQuery:
+  required: false
+  value:
+    simple: 'True'
 name: Case Management - Generic v2
 outputs: []
 starttaskid: '0'
@@ -14,19 +21,19 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - '9'
+      - '24'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
       brand: ''
-      id: f82a2aa4-f04f-4186-8884-7d5f2ceb6cca
+      id: e5bf928b-dc21-4148-8803-aa3bd1345bc0
       iscommand: false
       name: ''
       version: -1
       description: ''
-    taskid: f82a2aa4-f04f-4186-8884-7d5f2ceb6cca
+    taskid: e5bf928b-dc21-4148-8803-aa3bd1345bc0
     timertriggers: []
     type: start
     view: |-
@@ -34,42 +41,6 @@ tasks:
         "position": {
           "x": 265,
           "y": 50
-        }
-      }
-  '9':
-    id: '9'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - '20'
-    note: false
-    quietmode: 0
-    reputationcalc: 2
-    scriptarguments:
-      text:
-        complex:
-          root: incident
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Builtin
-      description: Extracts all indicators that match the regex for the indicator type, and enriches the repuration using the reputation command defined for the indicator type.
-      id: 4f9c059e-34ec-4533-85d4-97f2ed8d4dc2
-      iscommand: true
-      name: Extract Indicators
-      script: Builtin|||extractIndicators
-      type: regular
-      version: -1
-    taskid: 4f9c059e-34ec-4533-85d4-97f2ed8d4dc2
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 195
         }
       }
   '12':
@@ -83,20 +54,20 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: b2e9d04a-acdf-4ff5-8a83-ad05d5346b43
+      id: 5a3151b3-449b-4c38-82c0-4664b2866a76
       iscommand: false
       name: 'Done '
       type: title
       version: -1
       description: ''
-    taskid: b2e9d04a-acdf-4ff5-8a83-ad05d5346b43
+    taskid: 5a3151b3-449b-4c38-82c0-4664b2866a76
     timertriggers: []
     type: title
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 1040
+          "y": 1650
         }
       }
   '16':
@@ -113,20 +84,20 @@ tasks:
     skipunavailable: false
     task:
       brand: Builtin
-      description: "# Investigation\n\nAnalyst review and investigation, please ensure to take the following actions:\n\n## Assign to yourself, or another Analyst\n- Click Assign to Me to assign this to yourself.\n- Select an Owner via the Owner field to assign or reassign to another Analyst.\n\n## Select Actions -> Close Incident to close this when completed. \n- Please ensure to capture the appropriate close reason, and closing notes/resolution as required.\n\n## Timers\n\nNote that Remediation SLA timers will not stop until closure. "
-      id: ce695764-785d-4d71-8bb9-dfe1633a1d85
+      description: "# Analyst Investigation\n\nPlease ensure to take the following actions:\n\n## Assign to yourself, or another Analyst\n- Click Assign to Me to assign this to yourself.\n- Select an Owner via the Owner field to assign or reassign to another Analyst.\n\n## Select Actions -> Close Incident to close this when completed. \n- Please ensure to capture the appropriate close reason, and closing notes/resolution as required.\n\n## Timers\n- Time to Assignment will stop when an Owner is assigned, and the Remediation SLA Timer will be started.\n- The Remediation SLA timers will not stop until the Incident is closed"
+      id: 2ba5473a-df9e-464a-822e-8182fff8608d
       iscommand: false
       name: Manual - Analyst Investigation
       type: regular
       version: -1
-    taskid: ce695764-785d-4d71-8bb9-dfe1633a1d85
+    taskid: 2ba5473a-df9e-464a-822e-8182fff8608d
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 865
+          "y": 1475
         }
       }
   '18':
@@ -154,19 +125,19 @@ tasks:
     task:
       brand: ''
       description: Checks to see if there is an Owner assigned to this case.
-      id: 3b9f527a-b2ec-477b-8087-db4ee8103351
+      id: d9de13dd-4dff-4f47-82ef-fd20ffd3b932
       iscommand: false
       name: Is an Owner already assigned?
       type: condition
       version: -1
-    taskid: 3b9f527a-b2ec-477b-8087-db4ee8103351
+    taskid: d9de13dd-4dff-4f47-82ef-fd20ffd3b932
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 545
+          "y": 1155
         }
       }
   '20':
@@ -176,28 +147,28 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - '18'
+      - '28'
     note: false
     quietmode: 0
     separatecontext: true
     skipunavailable: false
     task:
       brand: ''
-      id: d97bc295-a980-4a0c-8d5e-8cd1b9ec42d4
+      id: 6aa11311-9a8c-4254-82f5-d1cbfcce18c6
       iscommand: false
       name: Calculate Severity - Standard
       playbookId: Calculate Severity - Standard
       type: playbook
       version: -1
       description: ''
-    taskid: d97bc295-a980-4a0c-8d5e-8cd1b9ec42d4
+    taskid: 6aa11311-9a8c-4254-82f5-d1cbfcce18c6
     timertriggers: []
     type: playbook
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 370
+          "y": 835
         }
       }
   '22':
@@ -214,13 +185,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 992dabb6-1a71-4851-8663-987479c59ab9
+      id: 00bff721-e4fb-4488-8cee-7352d49e0774
       iscommand: false
       name: Start Time to Assignment Timer
       type: title
       version: -1
       description: ''
-    taskid: 992dabb6-1a71-4851-8663-987479c59ab9
+    taskid: 00bff721-e4fb-4488-8cee-7352d49e0774
     timertriggers:
     - action: start
       fieldname: timetoassignment
@@ -228,8 +199,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 720
+          "x": 50,
+          "y": 1330
         }
       }
   '23':
@@ -246,13 +217,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: cf2ab3db-cd3b-48df-8154-9855cb1d3434
+      id: d8e6aab9-abf5-41d1-85b3-b262400ba61a
       iscommand: false
       name: Start Remediation SLA Timer
       type: title
       version: -1
       description: ''
-    taskid: cf2ab3db-cd3b-48df-8154-9855cb1d3434
+    taskid: d8e6aab9-abf5-41d1-85b3-b262400ba61a
     timertriggers:
     - action: start
       fieldname: remediationsla
@@ -260,8 +231,179 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 720
+          "x": 480,
+          "y": 1330
+        }
+      }
+  '24':
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.Enrich
+          operator: isEqualString
+          right:
+            value:
+              simple: 'True'
+      label: yes
+    id: '24'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '27'
+      yes:
+      - '25'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Checks whether the Enrich playbook input is set to True.
+      id: ce3ac68b-0ac8-4b7c-8171-f6193d3e03c0
+      iscommand: false
+      name: Should indicators be extracted and enriched?
+      type: condition
+      version: -1
+    taskid: ce3ac68b-0ac8-4b7c-8171-f6193d3e03c0
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+  '25':
+    id: '25'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '26'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: a0778edc-fc70-4493-86e8-8c5fc720d2d6
+      iscommand: false
+      name: Enrich indicators
+      type: title
+      version: -1
+      description: ''
+    taskid: a0778edc-fc70-4493-86e8-8c5fc720d2d6
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 370
+        }
+      }
+  '26':
+    id: '26'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '27'
+    note: false
+    quietmode: 0
+    reputationcalc: 2
+    scriptarguments:
+      text:
+        complex:
+          root: incident
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: Extracts all indicators that match the regex for the indicator type, and enriches the repuration using the reputation command defined for the indicator type.
+      id: 09f84ec8-6ceb-4173-86a7-91dd4d2cf2c7
+      iscommand: true
+      name: Extract Indicators from Incident
+      script: Builtin|||extractIndicators
+      type: regular
+      version: -1
+    taskid: 09f84ec8-6ceb-4173-86a7-91dd4d2cf2c7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 515
+        }
+      }
+  '27':
+    id: '27'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '20'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 53239a23-5612-4a72-8a8c-14dc7cb38a78
+      iscommand: false
+      name: Calculate Severity
+      type: title
+      version: -1
+      description: ''
+    taskid: 53239a23-5612-4a72-8a8c-14dc7cb38a78
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 690
+        }
+      }
+  '28':
+    id: '28'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '18'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 983a4128-4e29-4e41-8573-5cd3fc2fb7d6
+      iscommand: false
+      name: Start SLA Timers
+      type: title
+      version: -1
+      description: ''
+    taskid: 983a4128-4e29-4e41-8573-5cd3fc2fb7d6
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1010
         }
       }
 version: -1
@@ -270,7 +412,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1055,
+        "height": 1665,
         "width": 810,
         "x": 50,
         "y": 50
