@@ -174,6 +174,7 @@ def main():
     # Args is always stronger. Get last run even stronger
     demisto_params = demisto.params() | demisto.args() | demisto.getLastRun()
 
+    demisto_params['url'] = f'{str(demisto_params.get("url", "")).removesuffix("/")}/rest/api/3/auditing/record'
     demisto_params['params'] = ReqParams.parse_obj(demisto_params)
 
     request = Request.parse_obj(demisto_params)

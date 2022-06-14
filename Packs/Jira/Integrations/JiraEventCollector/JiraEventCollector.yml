@@ -3,7 +3,7 @@ commonfields:
   id: Jira Event Collector
   version: -1
 configuration:
-- defaultvalue: https://<your-domain>.atlassian.net/rest/api/3/auditing/record
+- defaultvalue: https://<tenant>.atlassian.net
   display: Server URL
   name: url
   required: true
