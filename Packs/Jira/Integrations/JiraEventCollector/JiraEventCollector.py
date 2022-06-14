@@ -23,22 +23,24 @@ class Method(str, Enum):
 
 
 class Args(BaseModel):
-    from_day = demisto.params().get('first_fetch', '3 days')
-    default_from_day = datetime.now() - timedelta(days=3)
     from_: str = Field(
-        datetime.strftime(dateparser.parse(from_day, settings={'TIMEZONE': 'UTC'}) or default_from_day, DATETIME_FORMAT),
-        alias='from'
+        datetime.strftime(
+            dateparser.parse(
+                demisto.params().get('first_fetch', '3 days'), settings={'TIMEZONE': 'UTC'}
+            ) or datetime.now() - timedelta(days=3), DATETIME_FORMAT
+        ), alias='from'
     )
     limit: int = 1000
     offset: int = 0
 
 
 class ReqParams(BaseModel):
-    from_day = demisto.params().get('first_fetch', '3 days')
-    default_from_day = datetime.now() - timedelta(days=3)
     from_: str = Field(
-        datetime.strftime(dateparser.parse(from_day, settings={'TIMEZONE': 'UTC'}) or default_from_day, DATETIME_FORMAT),
-        alias='from'
+        datetime.strftime(
+            dateparser.parse(
+                demisto.params().get('first_fetch', '3 days'), settings={'TIMEZONE': 'UTC'}
+            ) or datetime.now() - timedelta(days=3), DATETIME_FORMAT
+        ), alias='from'
     )
     limit: int = 1000
     offset: int = 0
