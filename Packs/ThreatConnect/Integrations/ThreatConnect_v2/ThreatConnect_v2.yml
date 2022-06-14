@@ -320,6 +320,7 @@ script:
       name: owner
     - description: The maximum number of results that can be returned. The default
         is 500.
+      defaultValue: '500'
       name: limit
     description: Retrieves a list of all indicators.
     name: tc-indicators
@@ -623,6 +624,14 @@ script:
       required: true
     - description: A list of indicators filtered by the owner.
       name: owner
+    - default: false
+      defaultValue: '100'
+      description: 'The limit of the indicators that will be available in the raw response. Default value is 100.
+       NOTICE: In the context you will be able to see up to 100 indicators.'
+      isArray: false
+      name: limit
+      required: false
+      secret: false
     description: Fetches all indicators that have a tag.
     name: tc-get-indicators-by-tag
     outputs:
