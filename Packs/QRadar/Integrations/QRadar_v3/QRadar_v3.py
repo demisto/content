@@ -1527,19 +1527,16 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
         search_response = create_search_with_retry(client, fetch_mode, offense, events_columns,
                                                    events_limit)
         if not search_response:
+            print_debug_msg(f'Could not create search query for {offense_id}. Retry number {i}/{max_retries}')
+            time.sleep(SLEEP_FETCH_EVENT_RETIRES)
             continue
 
         events, failure_message = poll_offense_events_with_retry(client, search_response['search_id'], offense_id)
         events_fetched = sum(int(event.get('eventcount', 1)) for event in events)
         print_debug_msg(f"Polled events for offense ID {offense_id}")
-        if events_fetched >= min_events_size:
-            print_debug_msg(f"Fetched {events_fetched}/{min_events_size} for offense ID {offense_id}")
-            break
-        print_debug_msg(f'Did not fetch enough events. Expected at least {min_events_size}. Retrying to fetch events '
-                        f'for offense ID: {offense_id}. Retry number {i}/{max_retries}')
-        if i < max_retries - 1:
-            time.sleep(SLEEP_FETCH_EVENT_RETIRES)
+        break
 
+    print_debug_msg(f"Fetched {events_fetched}/{min_events_size} for offense ID {offense_id}")
     if events_fetched < min_events_size:
         # if we didn't succeed to poll events for some reason, add it to the mirroring queue
         context_data, ctx_version = get_integration_context_with_version()
