@@ -3,6 +3,8 @@ version: -1
 name: Detonate File - SNDBOX
 fromversion: 5.0.0
 description: Deprecated. No available replacement.
+deprecated: true
+hidden: true
 starttaskid: "0"
 tasks:
   "0":
