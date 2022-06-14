@@ -1272,7 +1272,7 @@ def fetch_incidents(client: Client,
         topdesk_incident['mirror_direction'] = MIRROR_DIRECTION.get(str(demisto_params.get('mirror_direction')))
         topdesk_incident['mirror_tags'] = [
             demisto_params.get('comment_tag', 'comments'),
-            demisto_params.get('file_tag', 'ForServiceNow'),
+            demisto_params.get('file_tag', 'ForTOPdesk'),
             demisto_params.get('work_notes_tag', 'work_notes')
         ]
         topdesk_incident['mirror_instance'] = demisto.integrationInstance()
