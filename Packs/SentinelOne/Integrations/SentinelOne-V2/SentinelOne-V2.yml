@@ -2205,7 +2205,7 @@ script:
     - contextPath: SentinelOne.IOC.Valid Until
       description: Threat Intelligence indicator Expiration Time.
       type: String
-  dockerimage: demisto/python3:3.10.4.29342
+  dockerimage: demisto/python3:3.10.4.30607
   isfetch: true
   longRunning: false
   longRunningPort: false
