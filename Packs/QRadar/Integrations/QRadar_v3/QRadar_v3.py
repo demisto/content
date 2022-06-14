@@ -3346,7 +3346,7 @@ def migrate_integration_ctx(ctx: dict) -> dict:
 
 def validate_integration_context() -> None:
     """
-    The new context structure is consists two dictionaries of queiried offenses and finished offenses.
+    The new context structure consists two dictionaries of queried offenses and finished offenses.
     The structure consists the actual objects and JSON of them.
 
     Because some customers already have instances with the old context, we will try to convert the old context to the new one.
