@@ -34,6 +34,35 @@
                     "complex": null,
                     "simple": "note"
                 },
+				"Wiz Issue URL": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "id",
+						"transformers": [
+							{
+								"args": {
+									"prefix": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "https://app.wiz.io/issues#~(issue~'"
+										}
+									},
+									"suffix": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": ")"
+										}
+									}
+								},
+								"operator": "concat"
+							}
+						]
+					},
+					"simple": ""
+				},
                 "Wiz Resource ID": {
                     "complex": null,
                     "simple": "entitySnapshot.id"
