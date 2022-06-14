@@ -81,6 +81,15 @@
 							},
 							{
 								"endCol": 2,
+								"fieldId": "wizissueurl",
+								"height": 22,
+								"id": "6fd428b0-ebd1-11ec-840b-d17131d3a6aa",
+								"index": 7,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
 								"fieldId": "wizissueduedate",
 								"height": 22,
 								"id": "c05b8770-698a-11ec-8f54-25c02ba6665c",
