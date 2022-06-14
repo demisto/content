@@ -28,12 +28,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: e5bf928b-dc21-4148-8803-aa3bd1345bc0
+      id: a48d5514-a168-41c5-8798-809683bb68d8
       iscommand: false
       name: ''
       version: -1
       description: ''
-    taskid: e5bf928b-dc21-4148-8803-aa3bd1345bc0
+    taskid: a48d5514-a168-41c5-8798-809683bb68d8
     timertriggers: []
     type: start
     view: |-
@@ -54,13 +54,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 5a3151b3-449b-4c38-82c0-4664b2866a76
+      id: d14fd353-5b17-4cd9-8630-973dde8c74e3
       iscommand: false
       name: 'Done '
       type: title
       version: -1
       description: ''
-    taskid: 5a3151b3-449b-4c38-82c0-4664b2866a76
+    taskid: d14fd353-5b17-4cd9-8630-973dde8c74e3
     timertriggers: []
     type: title
     view: |-
@@ -84,13 +84,13 @@ tasks:
     skipunavailable: false
     task:
       brand: Builtin
-      description: "# Analyst Investigation\n\nPlease ensure to take the following actions:\n\n## Assign to yourself, or another Analyst\n- Click Assign to Me to assign this to yourself.\n- Select an Owner via the Owner field to assign or reassign to another Analyst.\n\n## Select Actions -> Close Incident to close this when completed. \n- Please ensure to capture the appropriate close reason, and closing notes/resolution as required.\n\n## Timers\n- Time to Assignment will stop when an Owner is assigned, and the Remediation SLA Timer will be started.\n- The Remediation SLA timers will not stop until the Incident is closed"
-      id: 2ba5473a-df9e-464a-822e-8182fff8608d
+      description: "### Analyst Investigation\n\nPlease ensure to take the following actions:\n\n### Assign to yourself, or another Analyst\n- Click Assign to Me to assign this to yourself.\n- Select an Owner via the Owner field to assign or reassign to another Analyst.\n\n### Select Actions -> Close Incident to close this when completed. \n- Please ensure to capture the appropriate close reason, and closing notes/resolution as required.\n\n### Timers\n- Time to Assignment will stop when an Owner is assigned, and the Remediation SLA Timer will be started.\n- The Remediation SLA timers will not stop until the Incident is closed"
+      id: 57d24284-885f-4c22-8bee-83d2f3b27936
       iscommand: false
       name: Manual - Analyst Investigation
       type: regular
       version: -1
-    taskid: 2ba5473a-df9e-464a-822e-8182fff8608d
+    taskid: 57d24284-885f-4c22-8bee-83d2f3b27936
     timertriggers: []
     type: regular
     view: |-
@@ -125,12 +125,12 @@ tasks:
     task:
       brand: ''
       description: Checks to see if there is an Owner assigned to this case.
-      id: d9de13dd-4dff-4f47-82ef-fd20ffd3b932
+      id: 5c6c0a82-2d81-498c-88a3-035199c898e1
       iscommand: false
       name: Is an Owner already assigned?
       type: condition
       version: -1
-    taskid: d9de13dd-4dff-4f47-82ef-fd20ffd3b932
+    taskid: 5c6c0a82-2d81-498c-88a3-035199c898e1
     timertriggers: []
     type: condition
     view: |-
@@ -154,14 +154,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 6aa11311-9a8c-4254-82f5-d1cbfcce18c6
+      id: f2b5f1f3-6ea5-4e73-847b-686b36646b22
       iscommand: false
       name: Calculate Severity - Standard
       playbookId: Calculate Severity - Standard
       type: playbook
       version: -1
       description: ''
-    taskid: 6aa11311-9a8c-4254-82f5-d1cbfcce18c6
+    taskid: f2b5f1f3-6ea5-4e73-847b-686b36646b22
     timertriggers: []
     type: playbook
     view: |-
@@ -185,13 +185,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 00bff721-e4fb-4488-8cee-7352d49e0774
+      id: 12992c48-d963-44a6-85ae-d23ce25a223a
       iscommand: false
       name: Start Time to Assignment Timer
       type: title
       version: -1
       description: ''
-    taskid: 00bff721-e4fb-4488-8cee-7352d49e0774
+    taskid: 12992c48-d963-44a6-85ae-d23ce25a223a
     timertriggers:
     - action: start
       fieldname: timetoassignment
@@ -217,13 +217,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: d8e6aab9-abf5-41d1-85b3-b262400ba61a
+      id: 3627deaf-6946-432c-8c2e-0add06bf2e8e
       iscommand: false
       name: Start Remediation SLA Timer
       type: title
       version: -1
       description: ''
-    taskid: d8e6aab9-abf5-41d1-85b3-b262400ba61a
+    taskid: 3627deaf-6946-432c-8c2e-0add06bf2e8e
     timertriggers:
     - action: start
       fieldname: remediationsla
@@ -265,12 +265,12 @@ tasks:
     task:
       brand: ''
       description: Checks whether the Enrich playbook input is set to True.
-      id: ce3ac68b-0ac8-4b7c-8171-f6193d3e03c0
+      id: d8ec74d0-aa42-4e63-8fc7-4a8ef0dd756d
       iscommand: false
       name: Should indicators be extracted and enriched?
       type: condition
       version: -1
-    taskid: ce3ac68b-0ac8-4b7c-8171-f6193d3e03c0
+    taskid: d8ec74d0-aa42-4e63-8fc7-4a8ef0dd756d
     timertriggers: []
     type: condition
     view: |-
@@ -294,13 +294,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: a0778edc-fc70-4493-86e8-8c5fc720d2d6
+      id: 26700fc2-1de4-4b08-8125-a89a969cd1ee
       iscommand: false
       name: Enrich indicators
       type: title
       version: -1
       description: ''
-    taskid: a0778edc-fc70-4493-86e8-8c5fc720d2d6
+    taskid: 26700fc2-1de4-4b08-8125-a89a969cd1ee
     timertriggers: []
     type: title
     view: |-
@@ -330,13 +330,13 @@ tasks:
     task:
       brand: Builtin
       description: Extracts all indicators that match the regex for the indicator type, and enriches the repuration using the reputation command defined for the indicator type.
-      id: 09f84ec8-6ceb-4173-86a7-91dd4d2cf2c7
+      id: 5ff4184b-c4ea-498a-8702-362b77826ae7
       iscommand: true
       name: Extract Indicators from Incident
       script: Builtin|||extractIndicators
       type: regular
       version: -1
-    taskid: 09f84ec8-6ceb-4173-86a7-91dd4d2cf2c7
+    taskid: 5ff4184b-c4ea-498a-8702-362b77826ae7
     timertriggers: []
     type: regular
     view: |-
@@ -360,13 +360,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 53239a23-5612-4a72-8a8c-14dc7cb38a78
+      id: 0ab8768c-20da-437c-87ca-ca6be6a4c160
       iscommand: false
       name: Calculate Severity
       type: title
       version: -1
       description: ''
-    taskid: 53239a23-5612-4a72-8a8c-14dc7cb38a78
+    taskid: 0ab8768c-20da-437c-87ca-ca6be6a4c160
     timertriggers: []
     type: title
     view: |-
@@ -390,13 +390,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 983a4128-4e29-4e41-8573-5cd3fc2fb7d6
+      id: cdf4cb29-9cd1-4b7d-81c9-74838ac541a1
       iscommand: false
       name: Start SLA Timers
       type: title
       version: -1
       description: ''
-    taskid: 983a4128-4e29-4e41-8573-5cd3fc2fb7d6
+    taskid: cdf4cb29-9cd1-4b7d-81c9-74838ac541a1
     timertriggers: []
     type: title
     view: |-

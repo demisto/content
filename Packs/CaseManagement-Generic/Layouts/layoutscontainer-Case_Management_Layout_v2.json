@@ -118,7 +118,7 @@
                         "y": 0
                     },
                     {
-                        "h": 3,
+                        "h": 2,
                         "i": "caseinfoid-yh3gwnhgwz-caseinfoid-field-changed-caseinfoid-kkq7tnozrg-caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
                         "maxH": null,
                         "maxW": 3,
@@ -133,7 +133,7 @@
                     },
                     {
                         "displayType": "ROW",
-                        "h": 3,
+                        "h": 2,
                         "i": "caseinfoid-yh3gwnhgwz-caseinfoid-field-changed-caseinfoid-kkq7tnozrg-caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
                         "maxH": null,
                         "maxW": 3,
@@ -160,7 +160,7 @@
                         "type": "team",
                         "w": 1,
                         "x": 1,
-                        "y": 7
+                        "y": 6
                     },
                     {
                         "displayType": "ROW",
@@ -208,7 +208,7 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 7
+                        "y": 6
                     },
                     {
                         "description": "",
@@ -344,7 +344,7 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 5
+                        "y": 4
                     },
                     {
                         "displayType": "CARD",
@@ -436,7 +436,7 @@
                         "static": false,
                         "w": 2,
                         "x": 1,
-                        "y": 5
+                        "y": 4
                     },
                     {
                         "h": 2,
@@ -451,7 +451,7 @@
                         "type": "linkedIncidents",
                         "w": 1,
                         "x": 2,
-                        "y": 7
+                        "y": 6
                     }
                 ],
                 "type": "custom"
@@ -465,8 +465,10 @@
                         "h": 3,
                         "i": "caseinfoid-field-changed-kkq7tnozrg-caseinfoid-kkq7tnozrg-caseinfoid-kkq7tnozrg-c4515bf0-a4df-11ea-8c29-db553c036fb9",
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
+                        "minW": 3,
                         "moved": false,
                         "name": "Indicators",
                         "query": "",
@@ -492,8 +494,10 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxW": 3,
+                        "maxH": null,
+                        "maxW": 1,
                         "minH": 1,
+                        "minW": 1,
                         "moved": false,
                         "name": "Labels",
                         "static": false,
@@ -593,8 +597,10 @@
                                 "startCol": 2
                             }
                         ],
-                        "maxW": 3,
+                        "maxH": null,
+                        "maxW": 2,
                         "minH": 1,
+                        "minW": 2,
                         "moved": false,
                         "name": "Investigation Data",
                         "static": false,
@@ -606,8 +612,10 @@
                         "h": 2,
                         "i": "caseinfoid-9f29f350-9b23-11ec-a77a-f7e2032aa20a",
                         "items": [],
-                        "maxW": 3,
+                        "maxH": null,
+                        "maxW": 2,
                         "minH": 1,
+                        "minW": 2,
                         "moved": false,
                         "name": "Linked Incidents",
                         "static": false,
@@ -633,8 +641,10 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxW": 3,
+                        "maxH": null,
+                        "maxW": 1,
                         "minH": 1,
+                        "minW": 1,
                         "moved": false,
                         "name": "Attachments",
                         "static": false,
@@ -682,7 +692,7 @@
                     {
                         "description": "",
                         "h": 7,
-                        "i": "caseinfoid-yh3gwnhgwz-caseinfoid-yh3gwnhgwz-caseinfoid-field-changed-caseinfoid-ezf8qothdj-caseinfoid-c7c1d8b0-3803-11ec-83b9-bbbad1a9d462",
+                        "i": "yh3gwnhgwz-caseinfoid-yh3gwnhgwz-caseinfoid-yh3gwnhgwz-caseinfoid-field-changed-caseinfoid-ezf8qothdj-caseinfoid-c7c1d8b0-3803-11ec-83b9-bbbad1a9d462",
                         "items": [],
                         "maxH": null,
                         "maxW": 2,
@@ -703,7 +713,7 @@
                         "displayType": "ROW",
                         "h": 7,
                         "hideName": false,
-                        "i": "caseinfoid-yh3gwnhgwz-caseinfoid-yh3gwnhgwz-caseinfoid-8a252500-9bec-11ec-bf5b-3f81ae54e773",
+                        "i": "yh3gwnhgwz-caseinfoid-yh3gwnhgwz-caseinfoid-yh3gwnhgwz-caseinfoid-8a252500-9bec-11ec-bf5b-3f81ae54e773",
                         "items": [
                             {
                                 "args": {},
@@ -809,12 +819,11 @@
                         "h": 11,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
-                        "i": "caseinfoid-yh3gwnhgwz-caseinfoid-field-changed-caseinfoid-xd2uikfpom-caseinfoid-ezf8qothdj-caseinfoid-phnf2odnms-6ff55d60-343e-11eb-bc94-47298fb74458",
+                        "i": "caseinfoid-yh3gwnhgwz-caseinfoid-yh3gwnhgwz-caseinfoid-field-changed-caseinfoid-xd2uikfpom-caseinfoid-ezf8qothdj-caseinfoid-phnf2odnms-6ff55d60-343e-11eb-bc94-47298fb74458",
                         "items": [],
                         "maxH": null,
-                        "maxW": 1,
+                        "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Useful Commands",
                         "static": false,
@@ -827,12 +836,11 @@
                         "displayType": "ROW",
                         "h": 11,
                         "hideName": false,
-                        "i": "caseinfoid-yh3gwnhgwz-caseinfoid-field-changed-caseinfoid-xd2uikfpom-caseinfoid-ezf8qothdj-caseinfoid-phnf2odnms-d78a7950-3d95-11eb-977e-4150345205e0",
+                        "i": "caseinfoid-yh3gwnhgwz-caseinfoid-yh3gwnhgwz-caseinfoid-field-changed-caseinfoid-xd2uikfpom-caseinfoid-ezf8qothdj-caseinfoid-phnf2odnms-d78a7950-3d95-11eb-977e-4150345205e0",
                         "items": [],
                         "maxH": null,
-                        "maxW": 1,
+                        "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "War Room Entries",
                         "static": false,
@@ -845,12 +853,11 @@
                         "displayType": "ROW",
                         "h": 11,
                         "hideName": false,
-                        "i": "caseinfoid-yh3gwnhgwz-caseinfoid-field-changed-caseinfoid-xd2uikfpom-caseinfoid-92e2c5d0-3805-11ec-81a5-351a935f8f6d",
+                        "i": "caseinfoid-yh3gwnhgwz-caseinfoid-yh3gwnhgwz-caseinfoid-field-changed-caseinfoid-xd2uikfpom-caseinfoid-92e2c5d0-3805-11ec-81a5-351a935f8f6d",
                         "items": [],
                         "maxH": null,
-                        "maxW": 1,
+                        "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Working Incidents",
                         "static": false,
