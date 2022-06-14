@@ -64,6 +64,35 @@ Returns all agents that match the specified criteria.
 | SentinelOne.Agents.SiteName | string | Site name associated with the agent. | 
 
 
+#### V2.0 to V2.1 API Changes
+
+| **Params (input) API V2 (XOAR)** | **API V2.1 (S1)** | 
+| --- | --- | 
+| activeThreats__gt | valid |
+| computerName | valid |
+| scanStatus | valid |
+| osType | osTypes |
+| createdAt__gte | valid |
+
+| **Params (Outputs) API V2 (XOAR) ** | **API V2.1 (S1)** | 
+| --- | --- | 
+| SentinelOne.Agents.NetworkStatus | valid |
+| SentinelOne.Agents.ID | valid |
+| SentinelOne.Agents.AgentVersion | valid |
+| SentinelOne.Agents.isDecommissioned | valid |
+| SentinelOne.Agents.IsActive | valid |
+| SentinelOne.Agents.LastActiveDate | valid |
+| SentinelOne.Agents.RegisteredAt | valid |
+| SentinelOne.Agents.ExternalIP | valid |
+| SentinelOne.Agents.ThreatCount | activeThreat |
+| SentinelOne.Agents.EncryptedApplications | valid |
+| SentinelOne.Agents.OSName | valid |
+| SentinelOne.Agents.ComputerName | valid |
+| SentinelOne.Agents.Domain | valid |
+| SentinelOne.Agents.CreatedAt | valid |
+| SentinelOne.Agents.SiteName | valid |
+
+
 #### Command Example
 ```!sentinelone-list-agents```
 
@@ -133,6 +162,25 @@ Creates an exclusion item that matches the specified input filter.
 | SentinelOne.Exclusions.CreatedAt | date | Time when the allow list item was created. | 
 
 
+#### V2.0 to V2.1 API Changes
+
+| **Params (input) API V2 (XOAR)** | **API V2.1 (S1)** | 
+| --- | --- | 
+| type | valid |
+| value | valid |
+| osType | valid |
+| description | valid |
+| mode | valid |
+| groupIds | valid |
+| siteIds | valid |
+
+| **Params (Outputs) API V2 (XOAR) ** | **API V2.1 (S1)** | 
+| --- | --- | 
+| SentinelOne.Exclusions.ID | valid |
+| SentinelOne.Exclusions.Type | valid |
+| SentinelOne.Exclusions.CreatedAt | valid |
+
+
 ### sentinelone-get-white-list
 ***
 Lists all exclusion items that match the specified input filter.
@@ -165,6 +213,29 @@ Lists all exclusion items that match the specified input filter.
 | SentinelOne.Exclusions.OsType | string | OS type of the exclusion item. | 
 | SentinelOne.Exclusions.UserName | string | User name of the user that added the exclusion item. | 
 | SentinelOne.Exclusions.Mode | string | A comma-separated list of modes by which to filter \(path exclusions only\), for example: "suppress". | 
+
+
+#### V2.0 to V2.1 API Changes
+
+| **Params (input) API V2 (XOAR)** | **API V2.1 (S1)** | 
+| --- | --- | 
+| ids | valid |
+| osTypes | valid |
+| type | valid |
+| limit | valid |
+
+| **Params (Outputs) API V2 (XOAR) ** | **API V2.1 (S1)** | 
+| --- | --- | 
+| SentinelOne.Exclusions.ID | valid |
+| SentinelOne.Exclusions.Type | valid |
+| SentinelOne.Exclusions.CreatedAt | valid |
+| SentinelOne.Exclusions.Value | valid |
+| SentinelOne.Exclusions.Source | valid |
+| SentinelOne.Exclusions.UserID | valid |
+| SentinelOne.Exclusions.UpdatedAt | valid |
+| SentinelOne.Exclusions.OsType | valid |
+| SentinelOne.Exclusions.UserName | valid |
+| SentinelOne.Exclusions.Mode | valid |
 
 
 #### Command Example
@@ -220,6 +291,20 @@ Gets the file reputation by a SHA1 hash.
 | --- | --- | --- |
 | SentinelOne.Hash.Rank | Number | The hash reputation \(1-10\). | 
 | SentinelOne.Hash.Hash | String | The content hash. | 
+
+
+#### V2.0 to V2.1 API Changes
+
+| **Params (input) API V2 (XOAR)** | **API V2.1 (S1)** | 
+| --- | --- | 
+| {hash} | valid |
+
+| **Params (Outputs) API V2 (XOAR) ** | **API V2.1 (S1)** | 
+| --- | --- |
+| SentinelOne.Hash.Rank | valid |
+| SentinelOne.Hash.Hash | None (need to return from the input) |
+| SentinelOne.Hash.Classification | None |
+| SentinelOne.Hash.Classification Source | None |
 
 
 #### Command Example
@@ -292,6 +377,36 @@ Returns threats according to the specified filters.
 | SentinelOne.Threat.MarkedAsBenign | Boolean | Whether the threat is marked as benign. Relevant for version 2.0 only. | 
 
 
+#### V2.0 to V2.1 API Changes
+
+| **Params (input) API V2 (XOAR)** | **API V2.1 (S1)** | 
+| --- | --- | 
+| contentHash | contentHashes |
+| mitigationStatuses | valid |
+| createdAt__lt | valid |
+| createdAt__gt | valid |
+| createdAt__lte | valid |
+| createdAt__gte | valid |
+| resolved | valid |
+| displayName__like | displayName |
+| query | valid |
+| ids | valid |
+| limit | valid |
+| classifications | valid |
+
+| **Params (Outputs) API V2 (XOAR) ** | **API V2.1 (S1)** | 
+| --- | --- |
+| SentinelOne.Threat.ID | valid |
+| SentinelOne.Threat.AgentComputer | agentComputerName |
+| SentinelOne.Threat.CreatedDate | createdAt |
+| SentinelOne.Threat.SiteID | valid |
+| SentinelOne.Threat.Classification | valid |
+| SentinelOne.Threat.MitigationStatus | valid |
+| SentinelOne.Threat.AgentID | valid |
+| SentinelOne.Threat.Rank | None |
+| SentinelOne.Threat.MarkedAsBenig | None |
+
+
 #### Command Example
 ```!sentinelone-get-threats resolved=true```
 
@@ -351,7 +466,7 @@ Returns threats according to the specified filters.
 
 ### sentinelone-threat-summary
 ***
-Returns a dashboard threat summary.
+Returns a dashboard threat summary. And Existent only at API V1
 
 
 #### Base Command
@@ -411,7 +526,7 @@ Returns a dashboard threat summary.
 
 ### sentinelone-mark-as-threat
 ***
-Marks suspicious threats as threats.
+Marks suspicious threats as threats. And Existent only at API V2.0
 
 
 #### Base Command
@@ -458,9 +573,24 @@ Applies a mitigation action to a group of threats that match the specified input
 | SentinelOne.Threat.Mitigation.Action | Number | Number of threats affected. | 
 
 
+#### V2.0 to V2.1 API Changes
+
+| **Params (input) API V2 (XOAR)** | **API V2.1 (S1)** | 
+| --- | --- | 
+| filter | valid |
+| ids | valid |
+| action | valid |
+
+| **Params (Outputs) API V2 (XOAR) ** | **API V2.1 (S1)** | 
+| --- | --- |
+| SentinelOne.Threat.ID | None (need to return from the input) |
+| SentinelOne.Threat.Mitigated | None |
+| SentinelOne.Threat.Mitigation.Action | effected |
+
+
 ### sentinelone-resolve-threat
 ***
-Resolves threats using the threat ID.
+Resolves threats using the threat ID. And Existent only at API V2.0
 
 
 #### Base Command
@@ -515,6 +645,31 @@ Returns the details of an agent according to the agent ID.
 | SentinelOne.Agent.Domain | string | Domain name of the agent. | 
 | SentinelOne.Agent.CreatedAt | date | Agent creation time. | 
 | SentinelOne.Agent.SiteName | string | Site name associated with the agent. | 
+
+
+#### V2.0 to V2.1 API Changes
+
+| **Params (input) API V2 (XOAR)** | **API V2.1 (S1)** | 
+| --- | --- | 
+| ids | valid |
+
+| **Params (Outputs) API V2 (XOAR) ** | **API V2.1 (S1)** | 
+| --- | --- |
+| SentinelOne.Agent.NetworkStatus | valid |
+| SentinelOne.Agent.ID | valid |
+| SentinelOne.Agent.AgentVersion | valid |
+| SentinelOne.Agent.IsDecomissioned | isDecommissioned (misspelled) |
+| SentinelOne.Agent.IsActive | valid |
+| SentinelOne.Agent.LastActiveDate | valid |
+| SentinelOne.Agent.RegisteredAt | valid |
+| SentinelOne.Agent.ExternalIP | valid |
+| SentinelOne.Agent.ThreatCount | activeThreats |
+| SentinelOne.Agent.EncryptedApplica | valid |
+| SentinelOne.Agent.OSName| valid |
+| SentinelOne.Agent.ComputerName | valid |
+| SentinelOne.Agent.Domain | valid |
+| SentinelOne.Agent.CreatedAt | valid |
+| SentinelOne.Agent.SiteName | valid |
 
 
 #### Command Example
@@ -595,6 +750,40 @@ Returns all sites that match the specified criteria.
 | SentinelOne.Site.CreatedAt | date | Timestamp when the site was created. | 
 | SentinelOne.Site.Expiration | string | Timestamp when the site will expire. | 
 | SentinelOne.Site.UnlimitedLicenses | boolean | Whether the site has unlimited licenses. | 
+
+
+#### V2.0 to V2.1 API Changes
+
+| **Params (input) API V2 (XOAR)** | **API V2.1 (S1)** | 
+| --- | --- | 
+| updatedAt | valid |
+| query | valid |
+| siteType | valid |
+| features | valid |
+| state | valid |
+| suite | valid |
+| adminOnly | valid |
+| accountId | valid |
+| name | valid |
+| createdAt | valid |
+| limit | valid |
+| siteIds | valid |
+
+| **Params (Outputs) API V2 (XOAR) ** | **API V2.1 (S1)** | 
+| --- | --- |
+| SentinelOne.Site.Creator | valid |
+| SentinelOne.Site.Name | valid |
+| SentinelOne.Site.Type | siteType |
+| SentinelOne.Site.AccountName | valid |
+| SentinelOne.Site.State | valid |
+| SentinelOne.Site.HealthStatus | valid |
+| SentinelOne.Site.Suite | valid |
+| SentinelOne.Site.ActiveLicenses | valid |
+| SentinelOne.Site.ID | valid |
+| SentinelOne.Site.TotalLicenses | valid |
+| SentinelOne.Site.CreatedAt | valid |
+| SentinelOne.Site.Expiration | valid |
+| SentinelOne.Site.UnlimitedLicenses | valid |
 
 
 #### Command Example
@@ -728,6 +917,18 @@ Reactivates an expired site.
 | SentinelOne.Site.Reactivated | boolean | Whether the site was reactivated. | 
 
 
+#### V2.0 to V2.1 API Changes
+
+| **Params (input) API V2 (XOAR)** | **API V2.1 (S1)** | 
+| --- | --- | 
+| site_id | valid |
+
+| **Params (Outputs) API V2 (XOAR) ** | **API V2.1 (S1)** | 
+| --- | --- |
+| SentinelOne.Site.ID | None (need to return from the input) |
+| SentinelOne.Site.Reactivated | success |
+
+
 ### sentinelone-get-activities
 ***
 Returns a list of activities.
@@ -779,6 +980,48 @@ Returns a list of activities.
 | SentinelOne.Activity.ID | String | Activity ID. | 
 | SentinelOne.Activity.CreatedAt | Date | Activity creation time \(UTC\). | 
 | SentinelOne.Activity.Description | String | Extra activity information. | 
+
+
+#### V2.0 to V2.1 API Changes
+
+| **Params (input) API V2 (XOAR)** | **API V2.1 (S1)** | 
+| --- | --- | 
+| created_at__gt | valid |
+| userEmails | valid |
+| groupIds | valid |
+| created_at__lte | valid |
+| ids | valid |
+| includeHidden | valid |
+| created_at__lt | valid |
+| threatIds | valid |
+| activityTypes | valid |
+| userIds | valid |
+| created_at__gte | valid |
+| createdAt_between | valid |
+| agentIds | valid |
+| limit | valid |
+
+| **Params (Outputs) API V2 (XOAR) ** | **API V2.1 (S1)** | 
+| --- | --- |
+| SentinelOne.Activity.AgentID | valid |
+| SentinelOne.Activity.AgentUpdated | agentUpdatedVersion |
+| SentinelOne.Activity.SiteID | valid |
+| SentinelOne.Activity.UserID | valid |
+| SentinelOne.Activity.SecondaryDescription | valid |
+| SentinelOne.Activity.OsFamily | valid |
+| SentinelOne.Activity.ActivityType | valid |
+| SentinelOne.Activity.data.SiteID | None |
+| SentinelOne.Activity.data.SiteName | valid |
+| SentinelOne.Activity.data.username | valid |
+| SentinelOne.Activity.Hash | valid |
+| SentinelOne.Activity.UpdatedAt | valid |
+| SentinelOne.Activity.Comments | valid |
+| SentinelOne.Activity.ThreatID | valid |
+| SentinelOne.Activity.PrimaryDescription | valid |
+| SentinelOne.Activity.GroupID | valid |
+| SentinelOne.Activity.ID | valid |
+| SentinelOne.Activity.CreatedAt | valid |
+| SentinelOne.Activity.Description | valid |
 
 
 #### Command Example
@@ -941,6 +1184,37 @@ Returns data for the specified group.
 | SentinelOne.Group.createdAt | Date | Timestamp of group creation. | 
 
 
+#### V2.0 to V2.1 API Changes
+
+| **Params (input) API V2 (XOAR)** | **API V2.1 (S1)** | 
+| --- | --- | 
+| type | valid |
+| groupIds | valid |
+| id | valid |
+| isDefault | valid |
+| name | valid |
+| query | valid |
+| rank | valid |
+| limit | valid |
+
+| **Params (Outputs) API V2 (XOAR) ** | **API V2.1 (S1)** | 
+| --- | --- |
+| SentinelOne.Group.siteId | valid |
+| SentinelOne.Group.filterName | valid |
+| SentinelOne.Group.creatorId | valid |
+| SentinelOne.Group.name | valid |
+| SentinelOne.Group.creator | valid |
+| SentinelOne.Group.rank | valid |
+| SentinelOne.Group.updatedAt | valid |
+| SentinelOne.Group.totalAgents | valid |
+| SentinelOne.Group.filterId | valid |
+| SentinelOne.Group.isDefault | valid |
+| SentinelOne.Group.inherits | valid |
+| SentinelOne.Group.type | valid |
+| SentinelOne.Group.id | valid |
+| SentinelOne.Group.createdAt | valid |
+
+
 #### Command Example
 ```!sentinelone-get-groups```
 
@@ -1000,6 +1274,18 @@ Moves agents to a new group.
 | SentinelOne.Agent.AgentsMoved | Number | The number of agents that were moved to another group. | 
 
 
+#### V2.0 to V2.1 API Changes
+
+| **Params (input) API V2 (XOAR)** | **API V2.1 (S1)** | 
+| --- | --- | 
+| group_id | valid |
+| agentIds | valid |
+
+| **Params (Outputs) API V2 (XOAR) ** | **API V2.1 (S1)** | 
+| --- | --- |
+| SentinelOne.Agent.AgentsMoved | valid |
+
+
 #### Command Example
 ``` ```
 
@@ -1024,7 +1310,20 @@ Deletes a group, by the group ID.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.DeleteGroup.Success | String | the status of the command. | 
+
+#### V2.0 to V2.1 API Changes
+
+| **Params (input) API V2 (XOAR)** | **API V2.1 (S1)** | 
+| --- | --- | 
+| group_id | valid |
+
+| **Params (Outputs) API V2 (XOAR) ** | **API V2.1 (S1)** | 
+| --- | --- |
+| SentinelOne.DeleteGroup.Success | valid |
+
 
 #### Command Example
 ``` ```
@@ -1059,6 +1358,22 @@ DEPRECATED - Retrieves running processes for a specific agent.
 | SentinelOne.Agent.cpuUsage | Number | CPU usage \(%\). | 
 | SentinelOne.Agent.executablePath | String | Executable path. | 
 
+#### V2.0 to V2.1 API Changes
+
+| **Params (input) API V2 (XOAR)** | **API V2.1 (S1)** | 
+| --- | --- | 
+| ids | valid |
+
+| **Params (Outputs) API V2 (XOAR) ** | **API V2.1 (S1)** | 
+| --- | --- |
+| SentinelOne.Agent.memoryUsage | valid |
+| SentinelOne.Agent.startTime | valid |
+| SentinelOne.Agent.pid | valid |
+| SentinelOne.Agent.processName | valid |
+| SentinelOne.Agent.cpuUsage | valid |
+| SentinelOne.Agent.executablePath | valid |
+
+
 
 ### sentinelone-connect-agent
 ***
@@ -1081,6 +1396,18 @@ Connects agents to network.
 | --- | --- | --- |
 | SentinelOne.Agent.AgentsAffected | Number | The number of affected agents. | 
 | SentinelOne.Agent.ID | String | The IDs of the affected agents. | 
+
+
+#### V2.0 to V2.1 API Changes
+
+| **Params (input) API V2 (XOAR)** | **API V2.1 (S1)** | 
+| --- | --- | 
+| ids | valid |
+
+| **Params (Outputs) API V2 (XOAR) ** | **API V2.1 (S1)** | 
+| --- | --- |
+| SentinelOne.Agent.AgentsAffected | affected |
+| SentinelOne.Agent.ID | None (need to return from the input) |
 
 
 #### Command Example
@@ -1125,6 +1452,18 @@ Disconnects agents from network.
 | SentinelOne.Agent.ID | String | The IDs of the affected agents. | 
 
 
+#### V2.0 to V2.1 API Changes
+
+| **Params (input) API V2 (XOAR)** | **API V2.1 (S1)** | 
+| --- | --- | 
+| ids | valid |
+
+| **Params (Outputs) API V2 (XOAR) ** | **API V2.1 (S1)** | 
+| --- | --- |
+| SentinelOne.Agent.NetworkStatus | None |
+| SentinelOne.Agent.ID | None (need to return from the input) |
+
+
 #### Command Example
 ```!sentinelone-disconnect-agent agent_id=657613730168123595```
 
@@ -1165,7 +1504,24 @@ Broadcasts a message to all agents that match the input filters.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.BroadcastMessage.Affected  | String | Number of agents that receive the Broadcast. | 
+
+
+#### V2.0 to V2.1 API Changes
+
+| **Params (input) API V2 (XOAR)** | **API V2.1 (S1)** | 
+| --- | --- | 
+| isActive | valid |
+| groupIds | valid |
+| ids | valid |
+| domains | valid |
+
+| **Params (Outputs) API V2 (XOAR) ** | **API V2.1 (S1)** | 
+| --- | --- |
+| SentinelOne.BroadcastMessage.Affected | valid |
+
 
 #### Command Example
 ```!sentinelone-broadcast-message message="Hey There, just checking" agent_id=657613730168123595```
@@ -1208,6 +1564,31 @@ Returns all Deep Visibility events that match the query.
 | Event.ID | String | Event process ID. | 
 | Event.Name | String | Event name. | 
 | Event.Type | String | Event type. | 
+
+
+#### V2.0 to V2.1 API Changes
+
+| **Params (input) API V2 (XOAR)** | **API V2.1 (S1)** | 
+| --- | --- | 
+| query_id | valid |
+| limit | valid |
+
+| **Params (Outputs) API V2 (XOAR) ** | **API V2.1 (S1)** | 
+| --- | --- |
+| SentinelOne.Event.ProcessUID | srcProcUid |
+| SentinelOne.Event.SHA256 | valid |
+| SentinelOne.Event.AgentOS | valid |
+| SentinelOne.Event.ProcessID | pid |
+| SentinelOne.Event.User | valid |
+| SentinelOne.Event.Time | processStartTime |
+| SentinelOne.Event.Endpoint | agentName |
+| SentinelOne.Event.SiteName | valid |
+| SentinelOne.Event.EventType | valid |
+| SentinelOne.Event.ProcessName | valid |
+| SentinelOne.Event.MD5 | valid |
+| Event.ID | id |
+| Event.Name | None |
+| Event.Type | eventType |
 
 
 #### Command Example
@@ -1304,6 +1685,35 @@ Returns a list of Deep Visibility events from query by event type - process.
 | SentinelOne.Event.ProcessDisplayName | String | Process display name. | 
 
 
+#### V2.0 to V2.1 API Changes
+
+| **Params (input) API V2 (XOAR)** | **API V2.1 (S1)** | 
+| --- | --- | 
+| query_id | valid |
+| limit | valid |
+| event_type | Event_type (need to be added if using GET/web/api/v2.1/dv/events/{event_type} ) |
+
+| **Params (Outputs) API V2 (XOAR) ** | **API V2.1 (S1)** | 
+| --- | --- |
+| SentinelOne.Event.ParentProcessID | parentPid |
+| SentinelOne.Event.ProcessUID | None |
+| SentinelOne.Event.SHA1 | valid |
+| SentinelOne.Event.SubsystemType | processSubSystem |
+| SentinelOne.Event.ParentProcessStartTim | valid |
+| SentinelOne.Event.ProcessID | Pid |
+| SentinelOne.Event.ParentProcessUID | None |
+| SentinelOne.Event.User | valid |
+| SentinelOne.Event.Time | processStartTime |
+| SentinelOne.Event.ParentProcessName | valid |
+| SentinelOne.Event.SiteName | valid |
+| SentinelOne.Event.EventType | valid |
+| SentinelOne.Event.Endpoint | agentName |
+| SentinelOne.Event.IntegrityLevel | processIntegrityLevel |
+| SentinelOne.Event.CMD | processCmd |
+| SentinelOne.Event.ProcessName | valid |
+| SentinelOne.Event.ProcessDisplayName | valid |
+
+
 #### Command Example
 ```!sentinelone-get-processes query_id=q034ae362a30eba5a187cbe601d19abaa```
 
@@ -1332,6 +1742,19 @@ Sends a shutdown command to all agents that match the input filter.
 | SentinelOne.Agent.ID | String | The ID of the agent that was shutdown. | 
 
 
+#### V2.0 to V2.1 API Changes
+
+| **Params (input) API V2 (XOAR)** | **API V2.1 (S1)** | 
+| --- | --- | 
+| query | valid |
+| ids | valid |
+| groupIds | valid |
+
+| **Params (Outputs) API V2 (XOAR) ** | **API V2.1 (S1)** | 
+| --- | --- |
+| SentinelOne.Agent.ID | None |
+
+
 #### Command Example
 ``` ```
 
@@ -1354,6 +1777,27 @@ Sends an uninstall command to all agents that match the input filter.
 | query | A free-text search term, will match applicable attributes (sub-string match). Note: A device's physical addresses will only be matched if they start with the search term  (not if they contain the search term). | Optional | 
 | agent_id | A comma-separated list of agents IDs to shutdown. | Optional | 
 | group_id | The ID of the network group. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.uninstall.Affected | String | Number of agents that were uninstalled | 
+
+#### V2.0 to V2.1 API Changes
+
+| **Params (input) API V2 (XOAR)** | **API V2.1 (S1)** | 
+| --- | --- | 
+| query | valid |
+| ids | valid |
+| groupIds | valid |
+
+| **Params (Outputs) API V2 (XOAR) ** | **API V2.1 (S1)** | 
+| --- | --- |
+| SentinelOne.uninstall.Affected | valid |
+
+
 ### sentinelone-get-blocklist
 ***
 Add a hash to the blocklist ("blacklist" in SentinelOne documentation). If the `global` flag is `true`, then group_ids, site_ids, and account_ids are ignored.
