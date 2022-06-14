@@ -42,7 +42,7 @@ class TestScoreCalculator:
         )
 
     def test_there_are_logs(self):
-        with open('./TestData/file.json') as f:
+        with open('./test_data/file.json') as f:
             self.score_calculator.file_score('given hash', json.load(f))
         assert self.score_calculator.logs
         self.score_calculator.logs = []
@@ -178,7 +178,7 @@ def test_create_relationships():
     - Validate that the relationships were created as expected.
     """
     expected_name = ['communicates-with', 'communicates-with', 'related-to', 'related-to']
-    with open('./TestData/relationships.json') as f:
+    with open('./test_data/relationships.json') as f:
         relationships = create_relationships(entity_a='Test', entity_a_type='IP', relationships_response=json.load(f),
                                              reliability='B - Usually reliable')
     relation_entry = [relation.to_entry() for relation in relationships]
@@ -258,8 +258,8 @@ def test_domain_command(mocker, requests_mock):
     )
 
     # Load assertions and mocked request data
-    mock_response = util_load_json('TestData/domain.json')
-    expected_results = util_load_json('TestData/domain_results.json')
+    mock_response = util_load_json('test_data/domain.json')
+    expected_results = util_load_json('test_data/domain_results.json')
     requests_mock.get(f'https://www.virustotal.com/api/v3/domains/testing.com?relationships={domain_relationships}',
                       json=mock_response)
 
@@ -303,8 +303,8 @@ def test_ip_command(mocker, requests_mock):
     )
 
     # Load assertions and mocked request data
-    mock_response = util_load_json('TestData/ip.json')
-    expected_results = util_load_json('TestData/ip_results.json')
+    mock_response = util_load_json('test_data/ip.json')
+    expected_results = util_load_json('test_data/ip_results.json')
     requests_mock.get(f'https://www.virustotal.com/api/v3/ip_addresses/8.8.8.8?relationships={ip_relationships}',
                       json=mock_response)
 
@@ -349,8 +349,8 @@ def test_url_command_success(mocker, requests_mock):
     )
 
     # Load assertions and mocked request data
-    mock_response = util_load_json('TestData/url.json')
-    expected_results = util_load_json('TestData/url_results.json')
+    mock_response = util_load_json('test_data/url.json')
+    expected_results = util_load_json('test_data/url_results.json')
     requests_mock.get(f'https://www.virustotal.com/api/v3/urls/{encode_url_to_base64(testing_url)}'
                       f'?relationships={url_relationships}', json=mock_response)
 
