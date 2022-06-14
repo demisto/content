@@ -140,7 +140,7 @@ Converts an image file to a PDF file.
 | width | The image width, for example, 600px. Specify with or without the px suffix. | Optional | 
 | height | The image height, for example, 800px. Specify with or without the px suffix. If empty, the height is the entire image. | Optional | 
 | file_name | The name the file will be saved as. Default is the EntryID. | Optional |
-| full_screen | Get the full page. The maximal width and height values are 8000px. (Marking full_screen as true means that the values for width and height arguments might not be respected). | Optional | 
+| full_screen | Get the full page. The actual page width and height will be auto calculated up to a max value of 8000px. (Marking full_screen as true means that the values for width and height arguments might not be respected). | Optional | 
 
 
 #### Context Output
