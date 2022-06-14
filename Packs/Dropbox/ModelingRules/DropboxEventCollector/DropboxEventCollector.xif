@@ -5,7 +5,7 @@ filter json_extract_scalar(event_type, "$['.tag']") in ("file_copy", "file_move"
         XDM.Audit.audited_resource_before.name = json_extract_scalar(arrayindex(json_extract_array(assets, "$"), 0), "$.display_name"),
         XDM.Audit.audited_resource_before.id = json_extract_scalar(arrayindex(json_extract_array(assets, "$"), 0), "$.file_id");
 
-[MODEL: model = Audit, dataset = dropbox_dropbox_raw]
+[MODEL: dataset=dropbox_dropbox_raw, model=Audit]
 filter json_extract_scalar(event_category, "$['.tag']") != "logins"
 | alter XDM.Audit.event_timestamp = timestamp,
        XDM.Audit.original_event_type = json_extract_scalar(event_category, "$['.tag']"),
@@ -29,7 +29,7 @@ filter json_extract_scalar(event_category, "$['.tag']") != "logins"
        XDM.Audit.audited_resource_before.value = coalesce(json_extract_scalar(details, "$.previous_value['.tag']"), json_extract_scalar(details, "$.new_certificate_details.sha1_fingerprint")),
        XDM.Audit.TriggeredBy.agent.identifier = json_extract_scalar(details, "$.user_agent");
 
-[MODEL: model = Auth, dataset = dropbox_dropbox_raw]
+[MODEL: dataset=dropbox_dropbox_raw, model=Auth]
 filter json_extract_scalar(event_category, "$['.tag']") = "logins"
 | alter XDM.Auth.event_timestamp = timestamp,
        XDM.Auth.original_event_type = json_extract_scalar(event_category, "$['.tag']"),

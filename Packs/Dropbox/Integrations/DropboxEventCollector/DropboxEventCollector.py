@@ -87,7 +87,7 @@ class DropboxEventsGetter(IntegrationGetEvents):
 # ----------------------------------------- Authentication Functions -----------------------------------------
 
 def start_auth_command(base_url: str, app_key: str) -> CommandResults:
-    url = f'{base_url}/oauth2/authorize?client_id={app_key}&token_access_type=offline&response_type=code'
+    url = f'https://www.dropbox.com/oauth2/authorize?client_id={app_key}&token_access_type=offline&response_type=code'
     message = f"""### Authorization instructions
 1. To sign in, use a web browser to open the page [{url}]({url})
 2. Run the **!dropbox-auth-complete** command with the code returned from Dropbox in the War Room."""

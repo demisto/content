@@ -11,7 +11,7 @@ schema: |-
       },
       "assets": {
         "type": "string",
-        "is_array": true
+        "is_array": false
       },
       "context": {
         "type": "string",
@@ -34,7 +34,7 @@ schema: |-
         "is_array": false
       },
       "timestamp": {
-        "type": datetime,
+        "type": "datetime",
         "is_array": false
       }
     }
