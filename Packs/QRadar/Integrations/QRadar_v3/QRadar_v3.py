@@ -728,6 +728,13 @@ def safely_update_context_data(context_data: dict,
 
     for retry in range(5):
         try:
+            new_context_data, new_version = get_integration_context_with_version()
+            updated_context = insert_to_updated_context(context_data,
+                                                        new_context_data,
+                                                        offense_ids,
+                                                        should_update_last_fetch,
+                                                        should_update_last_mirror)
+
             set_integration_context(updated_context, new_version)
             print_debug_msg(f'Updated integration context after version {new_version}.')
             break
@@ -735,12 +742,6 @@ def safely_update_context_data(context_data: dict,
             # if someone else is updating the context, we will get a conflict error
             print_debug_msg(f'Could not set integration context in retry {retry + 1}. '
                             f'Error: {e}. Trying to resolve conflicts')
-            new_context_data, new_version = get_integration_context_with_version()
-            updated_context = insert_to_updated_context(context_data,
-                                                        new_context_data,
-                                                        offense_ids,
-                                                        should_update_last_fetch,
-                                                        should_update_last_mirror)
     else:
         raise DemistoException(f'Could not update integration context after version {new_version}.')
 
@@ -1684,6 +1685,8 @@ def print_context_data_stats(context_data: dict, stage: str) -> Set[str]:
     if not context_data:
         print_debug_msg("Not printing stats")
         return set()
+    if MIRRORED_OFFENSES_QUERIED_CTX_KEY not in context_data or MIRRORED_OFFENSES_FINISHED_CTX_KEY not in context_data:
+        raise ValueError("Context data is missing keys: MIRRORED_OFFENSES_QUERIED_CTX_KEY or MIRRORED_OFFENSES_FINISHED_CTX_KEY")
 
     finished_queries = context_data.get(MIRRORED_OFFENSES_FINISHED_CTX_KEY, {})
     waiting_for_update = context_data.get(MIRRORED_OFFENSES_QUERIED_CTX_KEY, {})
@@ -3351,7 +3354,7 @@ def convert_ctx_to_new_structure() -> None:
         print_debug_msg(f"Checking {context_data} failed, trying to make it retry compatible. Error was: {str(e)}")
         extract_works = False
 
-    if not extract_works or MIRRORED_OFFENSES_QUERIED_CTX_KEY not in new_ctx or MIRRORED_OFFENSES_FINISHED_CTX_KEY not in new_ctx:
+    if not extract_works:
         cleared_ctx = convert_integration_ctx(new_ctx)
         print_debug_msg(f"Change ctx context data was cleared and changing to {cleared_ctx}")
         set_integration_context(cleared_ctx)
