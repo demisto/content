@@ -26,4 +26,9 @@ filebeat.modules:
   audit:
     var.input: file
     var.paths: /home/user/mysqlauditlogs/audit.*.log
+  processors:
+    - add_fields:
+        fields:
+          vendor: mysql
+          product: enterprise
 ```
