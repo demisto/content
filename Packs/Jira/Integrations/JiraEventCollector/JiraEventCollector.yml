@@ -32,7 +32,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: 'Jira logs event collector integration for XSIAM.'
+description: 'Jira logs event collector integration for Cortex XSIAM.'
 display: Jira Event Collector
 name: Jira Event Collector
 script:
@@ -47,7 +47,7 @@ script:
       name: max_fetch
       required: false
       secret: false
-    - description: First fetch time (<number> <time unit>, e.g., 12 hours, 1 day, 3 months). default is 3 days.
+    - description: First fetch time (<number> <time unit>, e.g., 12 hours, 1 day, 3 months). Default is 3 days.
       isArray: true
       name: first_fetch
       required: false
