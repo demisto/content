@@ -1,0 +1,68 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Threatgraph
+  version: -1
+configuration:
+- defaultvalue: https://falconapi.us-2.crowdstrike.com
+  display: Server URL (e.g. https://falconapi.us-2.crowdstrike.com)
+  name: url
+  required: true
+  type: 0
+- additionalinfo: Threatgraph API key
+  display: API Key
+  name: apikey
+  required: true
+  type: 4
+- additionalinfo: Threatgraph API secret
+  display: API Secret
+  name: apisecret
+  required: true
+  type: 4
+- display: Fetch indicators
+  name: feed
+  required: false
+  type: 8
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 0c6a24d3-1a25-4f55-83ad-357fad4fab7c
+    propagationLabels:
+    - edr-crowdstrike
+    - cloud-zscaler
+    toServerVersion: ""
+description: |-
+  Uses the deprecated crowdstrike graph api to return process and other information.
+
+  Version History
+  - V2.1.4 added process data to returned information
+  - v2.1.3 lint tidy
+  - V2.1.2 no change, just reversioned following git restructuring and changed tags for deployment
+  - V1.1.1 support multiple sensors
+  - V1.1.0 added test method
+  - V1.0.0 original version
+display: Threatgraph
+name: Threatgraph
+script:
+  commands:
+  - arguments:
+    - description: The ID of the sensor the process was running on.
+      isArray: true
+      name: sensor_ids
+      required: true
+    - description: The ID of the process to get the parents and children for.
+      isArray: true
+      name: process_ids
+      required: true
+    description: Gets the parent and child processes for a crowdstrike process/processes
+      for given sensor id(s)
+    name: bt-get-tree
+    outputs:
+    - contextPath: ThreatGraph_data
+      description: An output of the threatgraph query
+  dockerimage: demisto/python3:3.10.4.29342
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
