@@ -309,7 +309,7 @@ def format_results(client, uuid):
         try:
             num_of_attempts += 1
             demisto.debug('Attempting to get scan lists {} times'.format(num_of_attempts))
-            response = urlscan_submit_request(client, uuid)
+            response, _ = urlscan_submit_request(client, uuid)
             scan_lists = response.get('lists')
         except Exception:
             if num_of_attempts == 5:
@@ -532,8 +532,8 @@ def format_results(client, uuid):
 
 
 def urlscan_submit_request(client, uuid):
-    response = http_request(client, 'GET', 'result/{}'.format(uuid))
-    return response
+    response, metrics = http_request(client, 'GET', 'result/{}'.format(uuid))
+    return response, metrics
 
 
 def get_urlscan_submit_results_polling(client, uuid):
@@ -576,9 +576,9 @@ def urlscan_submit_command(client):
 def urlscan_search(client, search_type, query):
 
     if search_type == 'advanced':
-        r = http_request(client, 'GET', 'search/?q=' + query)
+        r, _ = http_request(client, 'GET', 'search/?q=' + query)
     else:
-        r = http_request(client, 'GET', 'search/?q=' + search_type + ':"' + query + '"')
+        r, _ = http_request(client, 'GET', 'search/?q=' + search_type + ':"' + query + '"')
 
     return r
 
@@ -612,7 +612,7 @@ def urlscan_search_command(client):
             # Parsing query to see if it's a url
             parsed = urlparse(raw_query)
             # Checks to see if Netloc is present. If it's not a url, Netloc will not exist
-            if parsed[1] == '' and len(raw_query) == 64:
+            if parsed.netloc == '' and len(raw_query) == 64:
                 search_type = 'hash'
             else:
                 search_type = 'page.url'
@@ -735,7 +735,7 @@ def format_http_transaction_list(client):
     # Scan Lists sometimes returns empty
     scan_lists = {}  # type: dict
     while not scan_lists:
-        response = urlscan_submit_request(client, uuid)
+        response, _ = urlscan_submit_request(client, uuid)
         scan_lists = response.get('lists', {})
 
     limit = int(demisto.args().get('limit'))
