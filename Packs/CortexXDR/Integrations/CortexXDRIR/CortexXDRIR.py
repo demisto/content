@@ -1202,7 +1202,10 @@ def main():  # pragma: no cover
                                           polling_value=["PENDING",
                                                          "IN_PROGRESS",
                                                          "PENDING_ABORT"])
-            if polling.scheduled_command:
+            outputs_result_func = polling.raw_response
+            result = outputs_result_func.get('status') if isinstance(outputs_result_func, dict) else \
+                outputs_result_func[0].get('status')
+            if polling.scheduled_command or result:
                 return_results(polling)
             else:
                 file_details_results(client, args)

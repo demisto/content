@@ -2846,7 +2846,7 @@ def retrieve_file_details_command(client: CoreClient, args):
                     'Contents': raw_result,
                     'HumanReadable': hr,
                     'ReadableContentsFormat': formats['markdown'],
-                    'EntryContext': {}
+                    'EntryContext': obj
                     }
     return return_entry, file_results
 
