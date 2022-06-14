@@ -86,22 +86,22 @@ class DropboxEventsGetter(IntegrationGetEvents):
 
 # ----------------------------------------- Authentication Functions -----------------------------------------
 
-def start_auth_command(app_key: str) -> CommandResults:
-    url = f'https://www.dropbox.com/oauth2/authorize?client_id={app_key}&token_access_type=offline&response_type=code'
+def start_auth_command(base_url: str, app_key: str) -> CommandResults:
+    url = f'{base_url}/oauth2/authorize?client_id={app_key}&token_access_type=offline&response_type=code'
     message = f"""### Authorization instructions
 1. To sign in, use a web browser to open the page [{url}]({url})
 2. Run the **!dropbox-auth-complete** command with the code returned from Dropbox in the War Room."""
     return CommandResults(readable_output=message)
 
 
-def complete_auth_command(code: str, credentials: Credentials, insecure: bool) -> CommandResults:
+def complete_auth_command(code: str, credentials: Credentials, base_url: str, insecure: bool) -> CommandResults:
     data = {
         'grant_type': 'authorization_code',
         'code': code,
     }
     auth = (credentials.identifier, credentials.password)
 
-    response = requests.post('https://api.dropbox.com/oauth2/token', data=data, auth=auth, verify=insecure)
+    response = requests.post(f'{base_url}/oauth2/token', data=data, auth=auth, verify=insecure)
     if response.ok:
         demisto.setIntegrationContext({'refresh_token': response.json()['refresh_token']})
     else:
@@ -135,6 +135,7 @@ def main(command: str, demisto_params: dict):
     get_events = DropboxEventsGetter(client, options)
 
     try:
+        base_url = str(demisto_params.get('url')).removesuffix('/')
         insecure = not demisto_params.get('insecure')
 
         if command == 'test-module':
@@ -142,10 +143,10 @@ def main(command: str, demisto_params: dict):
 
         # ----- Authentication Commands ----- #
         elif command == 'dropbox-auth-start':
-            return_results(start_auth_command(str(credentials.identifier)))
+            return_results(start_auth_command(base_url, str(credentials.identifier)))
 
         elif command == 'dropbox-auth-complete':
-            return_results(complete_auth_command(str(demisto_params.get('code')), credentials, insecure))
+            return_results(complete_auth_command(str(demisto_params.get('code')), credentials, base_url, insecure))
 
         elif not demisto.getIntegrationContext().get('refresh_token'):
             return_results(CommandResults(readable_output='Please run the **!dropbox-auth-start** command first'))
