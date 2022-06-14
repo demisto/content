@@ -6,7 +6,8 @@ import json
 from datetime import datetime
 from typing import Dict, Callable
 import copy
- 
+from Packs.QRadar.Integrations.QRadar_v3.QRadar_v3 import SearchQueryStatus
+
 
 import QRadar_v3  # import module separately for mocker
 import pytest
@@ -30,8 +31,8 @@ from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_o
     qradar_log_sources_list_command, qradar_get_custom_properties_command, enrich_asset_properties, \
     flatten_nested_geolocation_values, get_modified_remote_data_command, get_remote_data_command, is_valid_ip, \
     qradar_ips_source_get_command, qradar_ips_local_destination_get_command, \
-    convert_integration_ctx, \
-    perform_long_running_loop, convert_ctx_to_new_structure
+    migrate_integration_ctx, \
+    perform_long_running_loop, validate_integration_context
 
 from CommonServerPython import DemistoException, set_integration_context, CommandResults, \
     GetModifiedRemoteDataResponse, GetRemoteDataResponse, get_integration_context
@@ -383,19 +384,19 @@ def test_poll_offense_events_with_retry(requests_mock, status_exception, status_
     assert poll_offense_events_with_retry(client, search_id, 16, 1) == expected
 
 
-@pytest.mark.parametrize('search_exception, fetch_mode, query_expression, search_response',
-                         [(None, 'Fetch With All Events', command_test_data['all_events_query'],
+@pytest.mark.parametrize('search_exception, fetch_mode, search_response',
+                         [(None, 'Fetch With All Events',
                            command_test_data['search_create']['response']),
                           (DemistoException('error occurred'),
-                           'Fetch With All Events', command_test_data['all_events_query'],
+                           'Fetch With All Events',
                            None),
-                          (None, 'Fetch Correlation Events Only', command_test_data['correlation_events_query'],
+                          (None, 'Fetch Correlation Events Only',
                            command_test_data['search_create']['response']),
                           (DemistoException('error occurred'),
-                           'Fetch Correlation Events Only', command_test_data['correlation_events_query'],
+                           'Fetch Correlation Events Only',
                            None)
                           ])
-def test_create_search_with_retry(mocker, search_exception, fetch_mode, query_expression, search_response):
+def test_create_search_with_retry(mocker, search_exception, fetch_mode, search_response):
     """
     Given:
      - Client to perform API calls.
@@ -416,21 +417,19 @@ def test_create_search_with_retry(mocker, search_exception, fetch_mode, query_ex
                     MIRRORED_OFFENSES_FINISHED_CTX_KEY: {}}
     set_integration_context(context_data)
     offense = command_test_data['offenses_list']['response'][0]
-    offense_id = offense['id']
     if search_exception:
         mocker.patch.object(client, "search_create", side_effect=[search_exception])
     else:
         mocker.patch.object(client, "search_create", return_value=search_response)
+    expected_search_id = search_response['search_id'] if search_response else SearchQueryStatus.ERROR.value
     assert create_search_with_retry(client, fetch_mode=fetch_mode,
                                     offense=offense,
                                     event_columns=event_columns_default_value, events_limit=20,
-                                    max_retries=1) == search_response
-    if search_exception:
-        assert context_data[MIRRORED_OFFENSES_QUERIED_CTX_KEY][offense_id] == '-1'
+                                    max_retries=1) == expected_search_id
 
 
 @pytest.mark.parametrize(
-    'offense, fetch_mode, mock_search_response, poll_events_response, events_limit, success',
+    'offense, fetch_mode, mock_search_response, poll_events_response, events_limit',
     [
         # success cases
         (command_test_data['offenses_list']['response'][0],
@@ -438,28 +437,24 @@ def test_create_search_with_retry(mocker, search_exception, fetch_mode, query_ex
          command_test_data['search_create']['response'],
          (sanitize_outputs(command_test_data['search_results_get']['response']['events']), ''),
          3,
-         True
          ),
         (command_test_data['offenses_list']['response'][0],
          'correlations_events_only',
          command_test_data['search_create']['response'],
          (sanitize_outputs(command_test_data['search_results_get']['response']['events'][:1]), ''),
          2,
-         True
          ),
         (command_test_data['offenses_list']['response'][0],
          'all_events',
          command_test_data['search_create']['response'],
          (sanitize_outputs(command_test_data['search_results_get']['response']['events']), ''),
          3,
-         True
          ),
         (command_test_data['offenses_list']['response'][0],
          'all_events',
          command_test_data['search_create']['response'],
          (sanitize_outputs(command_test_data['search_results_get']['response']['events'][:1]), ''),
          1,
-         True
          ),
 
         # failure cases
@@ -468,32 +463,28 @@ def test_create_search_with_retry(mocker, search_exception, fetch_mode, query_ex
          None,
          None,
          3,
-         False
          ),
         (command_test_data['offenses_list']['response'][0],
          'correlations_events_only',
          command_test_data['search_create']['response'],
          (sanitize_outputs(command_test_data['search_results_get']['response']['events'][:1]), ''),
          3,
-         False
          ),
         (command_test_data['offenses_list']['response'][0],
          'all_events',
          None,
          None,
          3,
-         False
          ),
         (command_test_data['offenses_list']['response'][0],
          'all_events',
          command_test_data['search_create']['response'],
          (sanitize_outputs(command_test_data['search_results_get']['response']['events'][:1]), ''),
          3,
-         False
          ),
     ])
 def test_enrich_offense_with_events(mocker, offense: Dict, fetch_mode, mock_search_response: Dict,
-                                    poll_events_response, events_limit, success):
+                                    poll_events_response, events_limit):
     """
     Given:
      - Offense to enrich with events.
@@ -543,8 +534,8 @@ def test_enrich_offense_with_events(mocker, offense: Dict, fetch_mode, mock_sear
                                 )
         if poll_events:
             expected_offense = dict(expected_offense, events=poll_events)
-
-    mocker.patch.object(QRadar_v3, "create_search_with_retry", return_value=mock_search_response)
+    expected_id = mock_search_response['search_id'] if mock_search_response else SearchQueryStatus.ERROR.value
+    mocker.patch.object(QRadar_v3, "create_search_with_retry", return_value=expected_id)
     poll_events_mock = mocker.patch.object(QRadar_v3, "poll_offense_events_with_retry",
                                            return_value=poll_events_response)
 
@@ -554,11 +545,6 @@ def test_enrich_offense_with_events(mocker, offense: Dict, fetch_mode, mock_sear
     if mock_search_response:
         assert poll_events_mock.call_args[0][1] == mock_search_response['search_id']
     assert enriched_offense == expected_offense
-    if not success:
-        if mock_search_response:
-            assert context_data[MIRRORED_OFFENSES_QUERIED_CTX_KEY][offense['id']] == mock_search_response['search_id']
-        else:
-            assert context_data[MIRRORED_OFFENSES_QUERIED_CTX_KEY][offense['id']] == '-1'
 
 
 def test_create_incidents_from_offenses():
@@ -1101,7 +1087,7 @@ def test_get_modified_with_events(mocker):
         Ensure that finished queries goes to finished queue,
         and modified incidents returns the modified offenses and the finished queries.
     """
-    context_data = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {1: '123', 2: '456', 10: '-1'},
+    context_data = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {1: '123', 2: '456', 10: SearchQueryStatus.WAIT.value},
                     MIRRORED_OFFENSES_FINISHED_CTX_KEY: {3: '789', 4: '012'}}
     expected_updated_context = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {2: '456', 10: '555'},
                                 MIRRORED_OFFENSES_FINISHED_CTX_KEY: {3: '789', 4: '012', 1: '123'},
@@ -1238,7 +1224,7 @@ def test_integration_context_during_run(test_case_data, mocker):
     init_context = test_case_data['init_context']
     init_context |= {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
                      MIRRORED_OFFENSES_FINISHED_CTX_KEY: {}}
-    
+
     set_integration_context(init_context)
     if test_case_data['offenses_first_loop']:
         first_loop_offenses = ctx_test_data['offenses_first_loop']
@@ -1305,7 +1291,7 @@ def test_integration_context_during_run(test_case_data, mocker):
         expected_ctx_second_loop[k] = v
 
     expected_ctx_second_loop |= {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
-                                MIRRORED_OFFENSES_FINISHED_CTX_KEY: {}}
+                                 MIRRORED_OFFENSES_FINISHED_CTX_KEY: {}}
 
     current_context = get_integration_context()
     assert current_context == expected_ctx_second_loop
@@ -1320,7 +1306,7 @@ def test_convert_ctx():
 
     Then: New structure is returned
     """
-    new_context = convert_integration_ctx(ctx_test_data.get('old_ctxs')[0])
+    new_context = migrate_integration_ctx(ctx_test_data.get('old_ctxs')[0])
     expected = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
                 MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
                 LAST_FETCH_KEY: 15,
@@ -1335,7 +1321,7 @@ def test_convert_ctx_to_new_structure():
                LAST_MIRROR_KEY: '0',
                'samples': '[]'}
     set_integration_context(context)
-    convert_ctx_to_new_structure()
+    validate_integration_context()
     assert get_integration_context() == {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
                                          MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
                                          LAST_FETCH_KEY: 15,
