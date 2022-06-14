@@ -95,7 +95,7 @@ configuration:
   name: feedTags
   required: false
   type: 0
-description: Deprecated. Use the AutoFocus Feed integration instead.
+description: Deprecated. No available replacement.
 display: AutoFocus Daily Feed (Deprecated)
 name: AutoFocus Daily Feed
 script:

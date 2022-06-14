@@ -1,0 +1,39 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GLPI Incident",
+        "GLPI Request"
+    ],
+    "caseInsensitive": true,
+    "cliName": "glpiurgency",
+    "closeForm": false,
+    "content": true,
+    "description": "GLPI ticket urgency",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_glpiurgency",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GLPI Urgency",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "selectValues": [
+        "1 - Very low",
+        "2 - Low",
+        "3 - Medium",
+        "4 - High",
+        "5 - Very high"
+    ],
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "singleSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.2.0"
+}

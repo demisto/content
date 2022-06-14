@@ -3,7 +3,13 @@ from unittest import mock
 from unittest.mock import patch
 
 import pytest
-from requests.exceptions import MissingSchema, InvalidSchema, SSLError, InvalidURL, HTTPError
+from requests.exceptions import (
+    MissingSchema,
+    InvalidSchema,
+    SSLError,
+    InvalidURL,
+    HTTPError,
+)
 from requests import Response
 from CommonServerPython import *
 
@@ -13,40 +19,52 @@ SAMPLE_URL = 'https://sample.api.com'
 
 AUTHENTICATION_RESP_HEADER = {
     'X-FeApi-Token': API_TOKEN,
-    'Content-Type': CONTENT_TYPE_JSON
+    'Content-Type': CONTENT_TYPE_JSON,
 }
 
 MOCK_INTEGRATION_CONTEXT = {
     'api_token': API_TOKEN,
-    'valid_until': time.time() + 900
+    'valid_until': time.time() + 900,
 }
 
 PARAMS = {
     'url': SAMPLE_URL,
     'fetch_limit': 10,
-    'firstFetchTimestamp': '1 hour'
+    'firstFetchTimestamp': '1 hour',
 }
 
 MOCK_TEST_URL_SUFFIX = '/test/url/suffix'
 
-ALERT_ID_TYPE_ERROR = 'The given value for alert_id is invalid. Expected integer value.'
+ALERT_ID_TYPE_ERROR = (
+    'The given value for alert_id is invalid. Expected integer value.'
+)
 ALERT_DETAILS_REPORT = 'Alert Details Report'
 CONTENT_TYPE_ZIP = 'application/zip'
 
-''' HELPER FUNCTION'''
+""" HELPER FUNCTION"""
 
 
 @pytest.fixture()
 def client():
     from FireEyeNX import Client
-    return Client(base_url=SAMPLE_URL,
-                  verify=False,
-                  proxy=False,
-                  auth=('username', 'password'),
-                  request_timeout=60)
+
+    return Client(
+        base_url=SAMPLE_URL,
+        verify=False,
+        proxy=False,
+        auth=('username', 'password'),
+        request_timeout=60,
+    )
 
 
-def mock_http_response(status=200, headers=None, json_data=None, raise_for_status=None, text=None, content=None):
+def mock_http_response(
+    status=200,
+    headers=None,
+    json_data=None,
+    raise_for_status=None,
+    text=None,
+    content=None,
+):
     mock_resp = mock.Mock()
     # mock raise_for_status call w/optional error
     mock_resp.raise_for_status = mock.Mock()
@@ -62,9 +80,7 @@ def mock_http_response(status=200, headers=None, json_data=None, raise_for_statu
     mock_resp.ok = True if status < 400 else False
     # add json data if provided
     if json_data:
-        mock_resp.json = mock.Mock(
-            return_value=json_data
-        )
+        mock_resp.json = mock.Mock(return_value=json_data)
     return mock_resp
 
 
@@ -85,22 +101,25 @@ class MockResponse:
             raise HTTPError('test')
 
 
-''' Unit Test Cases '''
+""" Unit Test Cases """
 
 
 @patch('FireEyeNX.Client.http_request')
 @patch('demistomock.getIntegrationContext')
 @patch('demistomock.setIntegrationContext')
-def test_get_api_token_when_not_found_in_integration_context(mocker_set_context, mocker_get_context, mock_request,
-                                                             client):
+def test_get_api_token_when_not_found_in_integration_context(
+    mocker_set_context, mocker_get_context, mock_request, client
+):
     """
-        When get_api_token method called and headers is set with X-FeApi-Token also call_count is one,
-        it should match.
+    When get_api_token method called and headers is set with X-FeApi-Token also call_count is one,
+    it should match.
     """
     mocker_get_context.return_value = {}
     mocker_set_context.return_value = {}
 
-    mock_request.return_value = mock_http_response(status=200, headers=AUTHENTICATION_RESP_HEADER, text='')
+    mock_request.return_value = mock_http_response(
+        status=200, headers=AUTHENTICATION_RESP_HEADER, text=''
+    )
 
     api_token = client.get_api_token()
 
@@ -111,15 +130,18 @@ def test_get_api_token_when_not_found_in_integration_context(mocker_set_context,
 @patch('FireEyeNX.Client._http_request')
 @patch('demistomock.getIntegrationContext')
 @patch('demistomock.setIntegrationContext')
-def test_get_api_token_when_found_in_integration_context(mocker_set_context, mocker_get_context, mock_request,
-                                                         client):
+def test_get_api_token_when_found_in_integration_context(
+    mocker_set_context, mocker_get_context, mock_request, client
+):
     """
-        When get_api_token method called and headers is set with X-FeApi-Token also call_count is zero, it should match.
+    When get_api_token method called and headers is set with X-FeApi-Token also call_count is zero, it should match.
     """
     mocker_get_context.return_value = MOCK_INTEGRATION_CONTEXT
     mocker_set_context.return_value = {}
 
-    mock_request.return_value = mock_http_response(status=200, headers=AUTHENTICATION_RESP_HEADER, text='')
+    mock_request.return_value = mock_http_response(
+        status=200, headers=AUTHENTICATION_RESP_HEADER, text=''
+    )
 
     api_token = client.get_api_token()
 
@@ -130,7 +152,7 @@ def test_get_api_token_when_found_in_integration_context(mocker_set_context, moc
 @patch('FireEyeNX.BaseClient._http_request')
 def test_http_request_invalid_schema_error(mock_base_http_request, client):
     """
-        When http request return invalid schema exception then appropriate error message should match.
+    When http request return invalid schema exception then appropriate error message should match.
     """
     # Configure
     mock_base_http_request.side_effect = InvalidSchema
@@ -140,13 +162,16 @@ def test_http_request_invalid_schema_error(mock_base_http_request, client):
         client.http_request('GET', MOCK_TEST_URL_SUFFIX)
 
     # Assert
-    assert str(e.value) == 'Invalid API URL. Supplied schema is invalid, supports http(s).'
+    assert (
+        str(e.value)
+        == 'Invalid API URL. Supplied schema is invalid, supports http(s).'
+    )
 
 
 @patch('FireEyeNX.BaseClient._http_request')
 def test_http_proxy_error(mock_base_http_request, client):
     """
-        When http request return proxy error with exception then appropriate error message should match.
+    When http request return proxy error with exception then appropriate error message should match.
     """
     # Configure
     mock_base_http_request.side_effect = DemistoException('Proxy Error')
@@ -156,14 +181,17 @@ def test_http_proxy_error(mock_base_http_request, client):
         client.http_request('GET', MOCK_TEST_URL_SUFFIX)
 
     # Assert
-    assert str(e.value) == 'Proxy Error - cannot connect to proxy. Either try clearing the \'Use system proxy\'' \
-                           ' check-box or check the host, authentication details and connection details for the proxy.'
+    assert (
+        str(e.value)
+        == "Proxy Error - cannot connect to proxy. Either try clearing the 'Use system proxy'"
+        ' check-box or check the host, authentication details and connection details for the proxy.'
+    )
 
 
 @patch('FireEyeNX.Client._http_request')
 def test_http_request_connection_error(mock_base_http_request, client):
     """
-        When http request return connection error with Demisto exception then appropriate error message should match.
+    When http request return connection error with Demisto exception then appropriate error message should match.
     """
     # Configure
     mock_base_http_request.side_effect = DemistoException('ConnectionError')
@@ -173,13 +201,16 @@ def test_http_request_connection_error(mock_base_http_request, client):
         client.http_request('GET', MOCK_TEST_URL_SUFFIX)
 
     # Assert
-    assert str(e.value) == 'Connectivity failed. Check your internet connection or the API URL.'
+    assert (
+        str(e.value)
+        == 'Connectivity failed. Check your internet connection or the API URL.'
+    )
 
 
 @patch('FireEyeNX.BaseClient._http_request')
 def test_http_request_read_timeout_error(mock_base_http_request, client):
     """
-        When http request return connection error with Demisto exception then appropriate error message should match.
+    When http request return connection error with Demisto exception then appropriate error message should match.
     """
     # Configure
     mock_base_http_request.side_effect = DemistoException('ReadTimeoutError')
@@ -189,13 +220,16 @@ def test_http_request_read_timeout_error(mock_base_http_request, client):
         client.http_request('GET', MOCK_TEST_URL_SUFFIX)
 
     # Assert
-    assert str(e.value) == 'Request timed out. Check the configured HTTP(S) Request Timeout (in seconds) value.'
+    assert (
+        str(e.value)
+        == 'Request timed out. Check the configured HTTP(S) Request Timeout (in seconds) value.'
+    )
 
 
 @patch('FireEyeNX.BaseClient._http_request')
 def test_http_ssl_error(mock_base_http_request, client):
     """
-        When http request return ssl error with Demisto exception then appropriate error message should match.
+    When http request return ssl error with Demisto exception then appropriate error message should match.
     """
     # Configure
     mock_base_http_request.side_effect = DemistoException('SSLError')
@@ -204,14 +238,17 @@ def test_http_ssl_error(mock_base_http_request, client):
         client.http_request('GET', MOCK_TEST_URL_SUFFIX)
 
     # Assert
-    assert str(e.value) == 'SSL Certificate Verification Failed - try selecting \'Trust any certificate\' checkbox ' \
-                           'in the integration configuration.'
+    assert (
+        str(e.value)
+        == "SSL Certificate Verification Failed - try selecting 'Trust any certificate' checkbox "
+        'in the integration configuration.'
+    )
 
 
 @patch('FireEyeNX.BaseClient._http_request')
 def test_http_request_missing_schema_error(mock_base_http_request, client):
     """
-        When http request return MissingSchema exception then appropriate error message should display.
+    When http request return MissingSchema exception then appropriate error message should display.
     """
     # Configure
     mock_base_http_request.side_effect = MissingSchema
@@ -227,7 +264,7 @@ def test_http_request_missing_schema_error(mock_base_http_request, client):
 @patch('FireEyeNX.BaseClient._http_request')
 def test_http_request_invalid_url_error(mock_base_http_request, client):
     """
-        When http request return invalid url exception then appropriate error message should match.
+    When http request return invalid url exception then appropriate error message should match.
     """
     # Configure
     mock_base_http_request.side_effect = InvalidURL
@@ -243,7 +280,7 @@ def test_http_request_invalid_url_error(mock_base_http_request, client):
 @patch('FireEyeNX.BaseClient._http_request')
 def test_http_request_other_demisto_exception(mock_base_http_request, client):
     """
-        When http request return other custom Demisto exception then appropriate error message should match.
+    When http request return other custom Demisto exception then appropriate error message should match.
     """
     # Configure
     mock_base_http_request.side_effect = DemistoException('custom')
@@ -258,7 +295,7 @@ def test_http_request_other_demisto_exception(mock_base_http_request, client):
 
 def test_main_success(mocker):
     """
-        When main function called test function should call.
+    When main function called test function should call.
     """
     import FireEyeNX
 
@@ -269,29 +306,46 @@ def test_main_success(mocker):
     assert FireEyeNX.test_function.called
 
 
-def test_main_all_argunment_should_strip(mocker):
+def test_strip_blank():
     import FireEyeNX
 
-    mocker.patch.object(demisto, 'params', return_value=PARAMS)
-    mocker.patch.object(demisto, 'command', return_value='fireeye-nx-get-alerts')
-    mocker.patch.object(FireEyeNX, 'get_alerts_command', return_value='ok')
     args = {
         'malware_name': ' malware_name ',
         'malware_type': ' domain_match ',
-        'url': SAMPLE_URL
+        'url': SAMPLE_URL,
     }
     actual_output = {
         'malware_name': 'malware_name',
         'malware_type': 'domain_match',
-        'url': SAMPLE_URL
+        'url': SAMPLE_URL,
+    }
+    assert FireEyeNX.strip_blank(args) == actual_output
+
+
+def test_main_strip_blank_called(mocker):
+    import FireEyeNX
+
+    mocker.patch.object(demisto, 'params', return_value=PARAMS)
+    mocker.patch.object(
+        demisto, 'command', return_value='fireeye-nx-get-alerts'
+    )
+    mocker.patch.object(FireEyeNX, 'get_alerts_command', return_value='ok')
+    args = {
+        'malware_name': ' malware_name ',
+        'malware_type': ' domain_match ',
+        'url': SAMPLE_URL,
     }
     mocker.patch.object(demisto, 'args', return_value=args)
+    strip_blank = mocker.patch.object(FireEyeNX, 'strip_blank')
     FireEyeNX.main()
-    assert args == actual_output
+    assert strip_blank.call_count > 0
 
 
-def test_main_when_fetch_incident_called_it_should_called_fetch_incident_method(mocker):
+def test_main_when_fetch_incident_called_it_should_called_fetch_incident_method(
+    mocker,
+):
     import FireEyeNX
+
     mocker.patch.object(demisto, 'params', return_value=PARAMS)
     mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
     mocker.patch.object(FireEyeNX, 'fetch_incidents', return_value='ok')
@@ -303,9 +357,10 @@ def test_main_when_fetch_incident_called_it_should_called_fetch_incident_method(
 @patch('FireEyeNX.return_error')
 def test_main_failure(mock_return_error, mocker):
     """
-        When main function get some exception then valid message should be print.
+    When main function get some exception then valid message should be print.
     """
     import FireEyeNX
+
     mocker.patch.object(demisto, 'error')
     mocker.patch.object(demisto, 'params', return_value=PARAMS)
     mocker.patch.object(demisto, 'command', return_value='test-module')
@@ -318,11 +373,13 @@ def test_main_failure(mock_return_error, mocker):
 @patch('FireEyeNX.BaseClient._http_request')
 def test_module_success_without_test_fetch_incident(mock_request, client):
     """
-        When test_function called with status code 200 without is_fetch=false, it successful return ok.
+    When test_function called with status code 200 without is_fetch=false, it successful return ok.
     """
     from FireEyeNX import test_function
 
-    mock_request.return_value = mock_http_response(status=200, headers=AUTHENTICATION_RESP_HEADER, text='')
+    mock_request.return_value = mock_http_response(
+        status=200, headers=AUTHENTICATION_RESP_HEADER, text=''
+    )
     first_fetch_time = '12 hours'
     fetch_limit = '1'
     malware_type = ''
@@ -333,27 +390,40 @@ def test_module_success_without_test_fetch_incident(mock_request, client):
     instance_url = SAMPLE_URL
     fetch_artifacts = False
 
-    resp = test_function(client=client, first_fetch_time=first_fetch_time, fetch_limit=fetch_limit,
-                         malware_type=malware_type, is_fetch=is_fetch, fetch_type=fetch_type,
-                         mvx_correlated=mvx_correlated, replace_alert_url=replace_alert_url, instance_url=instance_url,
-                         fetch_artifacts=fetch_artifacts)
+    resp = test_function(
+        client=client,
+        first_fetch_time=first_fetch_time,
+        fetch_limit=fetch_limit,
+        malware_type=malware_type,
+        is_fetch=is_fetch,
+        fetch_type=fetch_type,
+        mvx_correlated=mvx_correlated,
+        replace_alert_url=replace_alert_url,
+        instance_url=instance_url,
+        fetch_artifacts=fetch_artifacts,
+    )
 
     assert resp == 'ok'
 
 
 @patch('FireEyeNX.get_incidents_for_alert')
 @patch('FireEyeNX.BaseClient._http_request')
-def test_module_success_with_fetch_incident(mock_get_alert, mock_request, client):
+def test_module_success_with_fetch_incident(
+    mock_get_alert, mock_request, client
+):
     """
-        When test_function called with status code 200 without is_fetch=False, it successful return ok.
+    When test_function called with status code 200 without is_fetch=False, it successful return ok.
     """
     from FireEyeNX import test_function
+
     mock_get_alert.return_value = []
     mock_last_run = {
         'start_time': datetime.now().replace(tzinfo=timezone.utc).timestamp()
     }
 
-    mock_request.return_value = mock_http_response(status=200, headers=AUTHENTICATION_RESP_HEADER, text='')
+    mock_request.return_value = mock_http_response(
+        status=200, headers=AUTHENTICATION_RESP_HEADER, text=''
+    )
     first_fetch_time = '12 hours'
     fetch_limit = '1'
     malware_type = None
@@ -363,33 +433,46 @@ def test_module_success_with_fetch_incident(mock_get_alert, mock_request, client
     replace_alert_url = False
     instance_url = SAMPLE_URL
     fetch_artifacts = False
-    resp = test_function(client=client, first_fetch_time=first_fetch_time, fetch_limit=fetch_limit,
-                         malware_type=malware_type,
-                         is_fetch=is_fetch, fetch_type=fetch_type,
-                         mvx_correlated=mvx_correlated, replace_alert_url=replace_alert_url, instance_url=instance_url,
-                         fetch_artifacts=fetch_artifacts, last_run=mock_last_run)
+    resp = test_function(
+        client=client,
+        first_fetch_time=first_fetch_time,
+        fetch_limit=fetch_limit,
+        malware_type=malware_type,
+        is_fetch=is_fetch,
+        fetch_type=fetch_type,
+        mvx_correlated=mvx_correlated,
+        replace_alert_url=replace_alert_url,
+        instance_url=instance_url,
+        fetch_artifacts=fetch_artifacts,
+        last_run=mock_last_run,
+    )
 
     assert resp == 'ok'
 
 
 def test_validate_date_range_failure():
     """
-        When validate_date_range_failure() method call and date more then 48 hour then raise value error.
+    When validate_date_range_failure() method call and date more then 48 hour then raise value error.
     """
     from FireEyeNX import validate_date_range
+
     fetch_time = '49 hours'
 
     with pytest.raises(ValueError) as e:
         validate_date_range(fetch_time)
 
-    assert str(e.value) == 'The First fetch time interval should be up to 48 hour as per API limitation.'
+    assert (
+        str(e.value)
+        == 'The First fetch time interval should be up to 48 hour as per API limitation.'
+    )
 
 
 def test_fetch_limit_when_valid_value_success(mocker):
     """
-        When valid fetch_limit is given, test should pass.
+    When valid fetch_limit is given, test should pass.
     """
     from FireEyeNX import get_fetch_limit
+
     mocker.patch.object(demisto, 'params', return_value=PARAMS)
 
     fetch_limit = get_fetch_limit(fetch_limit='')
@@ -399,26 +482,38 @@ def test_fetch_limit_when_valid_value_success(mocker):
 @pytest.mark.parametrize('inputs', ['0', '201', 'dfdf'])
 def test_fetch_limit_when_invalid_value_should_raise_exception(mocker, inputs):
     """
-        When invalid fetch limit is passed, should raises value error.
+    When invalid fetch limit is passed, should raises value error.
     """
     from FireEyeNX import get_fetch_limit
-    mocker.patch.object(demisto, 'params', return_value={'fetch_limit': inputs})
+
+    mocker.patch.object(
+        demisto, 'params', return_value={'fetch_limit': inputs}
+    )
 
     with pytest.raises(ValueError) as e:
         get_fetch_limit(inputs)
 
-    assert str(e.value) == 'Value of Fetch Limit should be an integer and between range 1 to 200.'
+    assert (
+        str(e.value)
+        == 'Value of Fetch Limit should be an integer and between range 1 to 200.'
+    )
 
 
 def test_command_called_from_main_success(mocker, client):
     """
-        When main function is called get_reports_command should be called if that command is triggered.
+    When main function is called get_reports_command should be called if that command is triggered.
     """
     import FireEyeNX
 
-    mocker.patch.object(demisto, 'command', return_value='fireeye-nx-get-reports')
-    mocker.patch.object(FireEyeNX, 'get_reports_command', return_value='No report contents were '
-                                                                       'found for the given argument(s).')
+    mocker.patch.object(
+        demisto, 'command', return_value='fireeye-nx-get-reports'
+    )
+    mocker.patch.object(
+        FireEyeNX,
+        'get_reports_command',
+        return_value='No report contents were '
+        'found for the given argument(s).',
+    )
     FireEyeNX.main()
     assert FireEyeNX.get_reports_command.called
 
@@ -426,33 +521,31 @@ def test_command_called_from_main_success(mocker, client):
 @patch('FireEyeNX.Client.http_request')
 def test_get_artifacts_metadata_by_alert_command_invalid_uuid(client):
     """
-        When fireeye-nx-get-artifacts-metadata-by-alert command executes with uuid and it failure due to
-        artifacts metadata is not present.
+    When fireeye-nx-get-artifacts-metadata-by-alert command executes with uuid and it failure due to
+    artifacts metadata is not present.
     """
     from FireEyeNX import get_artifacts_metadata_by_alert_command
-    client.http_request.return_value = {
-        'artifactsInfoList': []
-    }
 
-    args = {
-        'uuid': 'abc-dsh-didA'
-    }
+    client.http_request.return_value = {'artifactsInfoList': []}
+
+    args = {'uuid': 'abc-dsh-didA'}
     return_value = get_artifacts_metadata_by_alert_command(client, args)
 
-    assert return_value == 'No artifacts metadata were found for the given argument(s).'
+    assert (
+        return_value
+        == 'No artifacts metadata were found for the given argument(s).'
+    )
 
 
 @patch('FireEyeNX.Client.http_request')
 def test_get_artifacts_metadata_by_alert_command_success(client):
     """
-        When fireeye-nx-get-artifacts-metadata-by-alert command executes successfully then context output and
-        response should match.
+    When fireeye-nx-get-artifacts-metadata-by-alert command executes successfully then context output and
+    response should match.
     """
     from FireEyeNX import get_artifacts_metadata_by_alert_command
 
-    args = {
-        'uuid': 'test'
-    }
+    args = {'uuid': 'test'}
 
     with open('TestData/get_artifacts_metadata_by_alert_response.json') as f:
         expected_res = json.load(f)
@@ -460,7 +553,10 @@ def test_get_artifacts_metadata_by_alert_command_success(client):
     client.http_request.return_value = expected_res
 
     cmd_res = get_artifacts_metadata_by_alert_command(client, args)
-    with open('TestData/get_artifacts_metadata_by_alert_context.json', encoding='utf-8') as f:
+    with open(
+        'TestData/get_artifacts_metadata_by_alert_context.json',
+        encoding='utf-8',
+    ) as f:
         expected_ec = json.load(f)
 
     with open('TestData/get_artifacts_metadata.md') as f:
@@ -472,27 +568,32 @@ def test_get_artifacts_metadata_by_alert_command_success(client):
 
 
 @patch('FireEyeNX.BaseClient._http_request')
-@pytest.mark.parametrize('args', [
-    {
-        'report_type': ALERT_DETAILS_REPORT,
-        'type': 'pdf',
-        'time_frame': 'between',
-        'start_time': '2020-01-29',
-        'end_time': '2020-02-29T23:59:59+13:00',
-        'infection_id': 'rt', 'infection_type': 'all'
-    },
-    {
-        'report_type': ALERT_DETAILS_REPORT,
-        'type': 'pdf',
-        'time_frame': 'between',
-        'start_time': '2020-01-29T23:59:59+13:01',
-        'end_time': '2020-02-29',
-        'infection_id': 'rt', 'infection_type': 'all'
-    }
-])
+@pytest.mark.parametrize(
+    'args',
+    [
+        {
+            'report_type': ALERT_DETAILS_REPORT,
+            'type': 'pdf',
+            'time_frame': 'between',
+            'start_time': '2020-01-29',
+            'end_time': '2020-02-29T23:59:59+13:00',
+            'infection_id': 'rt',
+            'infection_type': 'all',
+        },
+        {
+            'report_type': ALERT_DETAILS_REPORT,
+            'type': 'pdf',
+            'time_frame': 'between',
+            'start_time': '2020-01-29T23:59:59+13:01',
+            'end_time': '2020-02-29',
+            'infection_id': 'rt',
+            'infection_type': 'all',
+        },
+    ],
+)
 def test_get_reports_success(mock_request, args, client):
     """
-        When fireeye-nx-get-reports command execute and passed valid arguments, it should be successful.
+    When fireeye-nx-get-reports command execute and passed valid arguments, it should be successful.
     """
     from FireEyeNX import get_reports_command
 
@@ -502,10 +603,12 @@ def test_get_reports_success(mock_request, args, client):
     headers = {
         'X-FeApi-Token': API_TOKEN,
         'Content-Type': 'application/pdf',
-        'Content-Length': 56
+        'Content-Length': 56,
     }
 
-    mock_request.return_value = mock_http_response(status=200, headers=headers, content=expected_res)
+    mock_request.return_value = mock_http_response(
+        status=200, headers=headers, content=expected_res
+    )
 
     result = get_reports_command(client, args=args)
     assert result.get('File', '') != ''
@@ -515,7 +618,7 @@ def test_get_reports_success(mock_request, args, client):
 @patch('FireEyeNX.BaseClient._http_request')
 def test_get_reports_no_records_found(mock_request, client):
     """
-        When fireeye-nx-get-reports command returns empty response then corresponding message should be populated.
+    When fireeye-nx-get-reports command returns empty response then corresponding message should be populated.
     """
     from FireEyeNX import get_reports_command
 
@@ -525,16 +628,18 @@ def test_get_reports_no_records_found(mock_request, client):
     headers = {
         'X-FeApi-Token': API_TOKEN,
         'Content-Type': 'application/pdf',
-        'Content-Length': 0
+        'Content-Length': 0,
     }
 
-    mock_request.return_value = mock_http_response(status=200, headers=headers, content=expected_res)
+    mock_request.return_value = mock_http_response(
+        status=200, headers=headers, content=expected_res
+    )
 
     args = {
         'report_type': 'IPS Top N Attackers Report',
         'limit': 56,
         'interface': 'C',
-        'type': 'csv'
+        'type': 'csv',
     }
 
     result = get_reports_command(client, args=args)
@@ -543,13 +648,12 @@ def test_get_reports_no_records_found(mock_request, client):
 
 def test_reports_command_invalid_report_type(client):
     """
-        When fireeye-nx-get-reports command is provided invalid report type argument
-        it should give an error message.
+    When fireeye-nx-get-reports command is provided invalid report type argument
+    it should give an error message.
     """
     from FireEyeNX import get_reports_params
-    args = {
-        'report_type': 'XYZ'
-    }
+
+    args = {'report_type': 'XYZ'}
     with pytest.raises(ValueError) as e:
         get_reports_params(args=args)
 
@@ -558,85 +662,98 @@ def test_reports_command_invalid_report_type(client):
 
 def test_reports_command_invalid_output_type(client):
     """
-        When fireeye-nx-get-reports command is provided invalid output type argument
-        it should give an error message.
+    When fireeye-nx-get-reports command is provided invalid output type argument
+    it should give an error message.
     """
     from FireEyeNX import get_reports_params
-    args = {
-        'report_type': ALERT_DETAILS_REPORT,
-        'type': 'csv'
-    }
+
+    args = {'report_type': ALERT_DETAILS_REPORT, 'type': 'csv'}
     with pytest.raises(ValueError) as e:
         get_reports_params(args=args)
 
-    assert str(e.value) == 'The given value for the argument type (report\'s format) is invalid. Valid value(s): pdf.'
+    assert (
+        str(e.value)
+        == "The given value for the argument type (report's format) is invalid. Valid value(s): pdf."
+    )
 
 
 def test_reports_command_invalid_limit(client):
     """
-        When fireeye-nx-get-reports command is provided with invalid value of limit it should give an error message.
+    When fireeye-nx-get-reports command is provided with invalid value of limit it should give an error message.
     """
     from FireEyeNX import get_reports_params
+
     args = {
         'report_type': 'IPS Top N Attackers Report',
         'limit': 'dummy',
-        'end_time': '--'
+        'end_time': '--',
     }
     with pytest.raises(ValueError) as e:
         get_reports_params(args=args)
 
-    assert str(e.value) == 'The given value for limit is invalid. Expected integer value.'
+    assert (
+        str(e.value)
+        == 'The given value for limit is invalid. Expected integer value.'
+    )
 
 
 def test_reports_command_missing_alert_argument():
     """
-        When fireeye-nx-get-reports command is provided with same value of
-        start_time and end_time it should give an error message.
+    When fireeye-nx-get-reports command is provided with same value of
+    start_time and end_time it should give an error message.
     """
     from FireEyeNX import get_reports_params
-    args = {
-        'report_type': ALERT_DETAILS_REPORT,
-        'type': 'pdf'
-    }
+
+    args = {'report_type': ALERT_DETAILS_REPORT, 'type': 'pdf'}
     with pytest.raises(ValueError) as e:
         get_reports_params(args=args)
 
-    assert str(e.value) == 'For fetching Alert Details Report, "infection_id" and ' \
-                           '"infection_type" arguments are required.'
+    assert (
+        str(e.value)
+        == 'For fetching Alert Details Report, "infection_id" and '
+        '"infection_type" arguments are required.'
+    )
 
 
-@pytest.mark.parametrize('args', [
-    {
-        'duration': '1_hour',
-        'end_time': '2020',
-        'mvx_correlated_only': 'dummy',
-        'start_time': '2020'
-    },
-    {
-        'duration': '1_hour',
-        'end_time': '2020',
-        'mvx_correlated_only': 'dummy',
-        'start_time': '2020'
-    }
-])
+@pytest.mark.parametrize(
+    'args',
+    [
+        {
+            'duration': '1_hour',
+            'end_time': '2020',
+            'mvx_correlated_only': 'dummy',
+            'start_time': '2020',
+        },
+        {
+            'duration': '1_hour',
+            'end_time': '2020',
+            'mvx_correlated_only': 'dummy',
+            'start_time': '2020',
+        },
+    ],
+)
 def test_events_command_invalid_bool_value(args):
     """
-        When fireeye-nx-get-events command is provided with invalid bool value of an argument
-        it should give an error message.
+    When fireeye-nx-get-events command is provided with invalid bool value of an argument
+    it should give an error message.
     """
     from FireEyeNX import get_events_params
 
     with pytest.raises(ValueError) as e:
         get_events_params(args=args)
 
-    assert str(e.value) == 'The given value for mvx_correlated_only argument is invalid. Valid values: true, false.'
+    assert (
+        str(e.value)
+        == 'The given value for mvx_correlated_only argument is invalid. Valid values: true, false.'
+    )
 
 
 def test_request_timeout_success():
     """
-        When provided valid request timeout then test should be passed.
+    When provided valid request timeout then test should be passed.
     """
     from FireEyeNX import get_request_timeout
+
     request_timeout = '5'
 
     request_timeout_int = get_request_timeout(request_timeout)
@@ -646,7 +763,7 @@ def test_request_timeout_success():
 @pytest.mark.parametrize('request_timeout', ['invalid_str_value', '-5', '0'])
 def test_request_timeout_invalid_value(request_timeout):
     """
-        When provided invalid request timeout then display error message.
+    When provided invalid request timeout then display error message.
     """
     from FireEyeNX import get_request_timeout
 
@@ -655,15 +772,19 @@ def test_request_timeout_invalid_value(request_timeout):
         get_request_timeout(request_timeout)
 
     # Assert
-    assert str(e.value) == 'HTTP(S) Request timeout parameter must be a positive integer.'
+    assert (
+        str(e.value)
+        == 'HTTP(S) Request timeout parameter must be a positive integer.'
+    )
 
 
 def test_request_timeout_large_value_failure():
     """
-        When too large value provided for request timeout then raised value error and
-        appropriate error message should display.
+    When too large value provided for request timeout then raised value error and
+    appropriate error message should display.
     """
     from FireEyeNX import get_request_timeout
+
     request_timeout = '990000000000000000'
 
     # Execute
@@ -674,16 +795,17 @@ def test_request_timeout_large_value_failure():
 
 
 @patch('FireEyeNX.BaseClient._http_request')
-def test_http_request_when_response_type_is_json_return_type_should_match(mock_request, client):
+def test_http_request_when_response_type_is_json_return_type_should_match(
+    mock_request, client
+):
     """
-        When http_request called and response type is json and content is '{}' passed
-        then response should match with {}.
+    When http_request called and response type is json and content is '{}' passed
+    then response should match with {}.
     """
-    headers = {
-        'X-FeApi-Token': API_TOKEN,
-        'Content-Type': CONTENT_TYPE_JSON
-    }
-    mock_request.return_value = MockResponse(status_code=200, content='{}', headers=headers)
+    headers = {'X-FeApi-Token': API_TOKEN, 'Content-Type': CONTENT_TYPE_JSON}
+    mock_request.return_value = MockResponse(
+        status_code=200, content='{}', headers=headers
+    )
     mock_request.return_value.ok = True
     resp = client.http_request(method='GET', url_suffix='')
 
@@ -692,9 +814,10 @@ def test_http_request_when_response_type_is_json_return_type_should_match(mock_r
 
 def test_handle_error_response_when_status_code_not_in_list_then_raise_for_status():
     """
-        When handle_error_response method called and status is not in list then it must raise DemistoException.
+    When handle_error_response method called and status is not in list then it must raise DemistoException.
     """
     from FireEyeNX import Client
+
     resp = MockResponse(content='{}', headers={}, status_code=200)
 
     with pytest.raises(DemistoException):
@@ -703,15 +826,17 @@ def test_handle_error_response_when_status_code_not_in_list_then_raise_for_statu
 
 def test_handle_error_response_when_content_type_zip(client):
     """
-        When handle_error_response method called and status is not in list and content type is application/zip
-        then it must called raise_for_status.
+    When handle_error_response method called and status is not in list and content type is application/zip
+    then it must called raise_for_status.
     """
     from FireEyeNX import Client
-    resp = {
 
-    }
-    resp = mock_http_response(text='Could not fetch any artifact due to wrong uuid',
-                              headers={'Content-Type': 'application/zip'}, status=403)
+    resp = {}
+    resp = mock_http_response(
+        text='Could not fetch any artifact due to wrong uuid',
+        headers={'Content-Type': 'application/zip'},
+        status=403,
+    )
     with pytest.raises(DemistoException) as e:
         Client.handle_error_response(resp)
     assert str(e.value) == 'Could not fetch any artifact due to wrong uuid'
@@ -719,10 +844,11 @@ def test_handle_error_response_when_content_type_zip(client):
 
 def test_handle_error_response_when_content_not_type_json_throw_value_error():
     """
-        When handle_error_response method called and json string have error then through ValueError and it passed
-        and again raise DemistoException.
+    When handle_error_response method called and json string have error then through ValueError and it passed
+    and again raise DemistoException.
     """
     from FireEyeNX import Client
+
     resp = MockResponse(content='{[]}', headers={}, status_code=400)
     with pytest.raises(DemistoException) as e:
         Client.handle_error_response(resp)
@@ -732,9 +858,10 @@ def test_handle_error_response_when_content_not_type_json_throw_value_error():
 
 def test_set_integration_context_api_token_empty_failure():
     """
-        When set_integration_context method called api token not there then must throw ValueError.
+    When set_integration_context method called api token not there then must throw ValueError.
     """
     from FireEyeNX import Client
+
     resp = MockResponse(content='{}', headers={}, status_code=200)
     with pytest.raises(ValueError) as e:
         Client.set_integration_context(resp)
@@ -746,9 +873,10 @@ def test_set_integration_context_api_token_empty_failure():
 @patch('FireEyeNX.Client.http_request')
 def test_get_alerts_command_success(mock_request, replace_url, client):
     """
-        When fireeye-nx-get-alerts command is passed with valid arguments, it should be successful.
+    When fireeye-nx-get-alerts command is passed with valid arguments, it should be successful.
     """
     from FireEyeNX import get_alerts_command
+
     args = {
         'src_ip': '0.0.0.0',
         'dst_ip': '0.0.0.0',
@@ -759,7 +887,7 @@ def test_get_alerts_command_success(mock_request, replace_url, client):
         'info_level': 'extended',
         'malware_name': 'malware_name',
         'malware_type': 'domain_match',
-        'url': SAMPLE_URL
+        'url': SAMPLE_URL,
     }
 
     with open('TestData/get_alerts_response.json', encoding='utf-8') as f:
@@ -777,7 +905,9 @@ def test_get_alerts_command_success(mock_request, replace_url, client):
     replace_alert_url = True
     instance_url = SAMPLE_URL
 
-    cmd_result = get_alerts_command(client, args, replace_alert_url, instance_url)
+    cmd_result = get_alerts_command(
+        client, args, replace_alert_url, instance_url
+    )
 
     assert cmd_result.raw_response == expected_res
     assert cmd_result.outputs == expected_outputs
@@ -787,10 +917,11 @@ def test_get_alerts_command_success(mock_request, replace_url, client):
 @patch('FireEyeNX.Client.http_request')
 def test_get_alerts_command_no_record_failure(mock_request, client):
     """
-        When fireeye-nx-get-alerts command called and passed with valid arguments but records are not present
-        then it must return error message.
+    When fireeye-nx-get-alerts command called and passed with valid arguments but records are not present
+    then it must return error message.
     """
     from FireEyeNX import get_alerts_command
+
     args = {
         'alert_id': '1',
         'src_ip': '0.0.0.0',
@@ -802,13 +933,15 @@ def test_get_alerts_command_no_record_failure(mock_request, client):
         'info_level': 'concise',
         'malware_name': 'malware_name',
         'malware_type': 'domain_match',
-        'url': SAMPLE_URL
+        'url': SAMPLE_URL,
     }
 
     mock_request.return_value = {}
     replace_alert_url = False
     instance_url = SAMPLE_URL
-    cmd_result = get_alerts_command(client, args, replace_alert_url, instance_url)
+    cmd_result = get_alerts_command(
+        client, args, replace_alert_url, instance_url
+    )
 
     assert cmd_result == 'No alert(s) were found for the given argument(s).'
 
@@ -816,14 +949,15 @@ def test_get_alerts_command_no_record_failure(mock_request, client):
 @patch('FireEyeNX.Client.http_request')
 def test_get_events_command_no_record_failure(mock_request, client):
     """
-        When fireeye-nx-get-events command called passed with valid arguments but records are not present
-        then it must return error message.
+    When fireeye-nx-get-events command called passed with valid arguments but records are not present
+    then it must return error message.
     """
     from FireEyeNX import get_events_command
+
     args = {
         'duration': '1_hour',
         'end_time': '2017-06-21T16:30:00',
-        'mvx_correlated_only': 'true'
+        'mvx_correlated_only': 'true',
     }
 
     mock_request.return_value = {}
@@ -833,44 +967,54 @@ def test_get_events_command_no_record_failure(mock_request, client):
 
 
 @patch('FireEyeNX.Client.http_request')
-def test_get_artifacts_by_alert_command_zero_content_length_failure(mock_request, client):
+def test_get_artifacts_by_alert_command_zero_content_length_failure(
+    mock_request, client
+):
     """
-        When fireeye-nx-get-artifacts-by-alert command called with Content-Length is zero
-        then it should return error message.
+    When fireeye-nx-get-artifacts-by-alert command called with Content-Length is zero
+    then it should return error message.
     """
     from FireEyeNX import get_artifacts_by_alert_command
+
     headers = {
         'X-FeApi-Token': API_TOKEN,
         'Content-Type': CONTENT_TYPE_ZIP,
-        'Content-Length': 0
+        'Content-Length': 0,
     }
-    args = {
-        'uuid': 'abc-def'
-    }
+    args = {'uuid': 'abc-def'}
 
-    mock_request.return_value = MockResponse(status_code=200, headers=headers, content='test')
+    mock_request.return_value = MockResponse(
+        status_code=200, headers=headers, content='test'
+    )
     cmd_result = get_artifacts_by_alert_command(client, args=args)
 
-    assert cmd_result == 'No artifacts data were found for the given argument(s).'
+    assert (
+        cmd_result == 'No artifacts data were found for the given argument(s).'
+    )
 
 
 @patch('FireEyeNX.BaseClient._http_request')
 def test_get_artifacts_by_alert_command_success(mock_request, client):
     """
-        When fireeye-nx-get-artifacts-by-alert command called and passed with valid arguments, it should be successful.
+    When fireeye-nx-get-artifacts-by-alert command called and passed with valid arguments, it should be successful.
     """
     from FireEyeNX import get_artifacts_by_alert_command
+
     args = {'uuid': 'abc-def-ghI'}
-    with open('TestData/test-get-artifacts-by-alert.zip', encoding='IBM437') as f:
+    with open(
+        'TestData/test-get-artifacts-by-alert.zip', encoding='IBM437'
+    ) as f:
         expected_res = f.read()
 
     headers = {
         'X-FeApi-Token': API_TOKEN,
         'Content-Type': CONTENT_TYPE_ZIP,
-        'Content-Length': 56
+        'Content-Length': 56,
     }
 
-    mock_request.return_value = mock_http_response(status=200, headers=headers, content=expected_res)
+    mock_request.return_value = mock_http_response(
+        status=200, headers=headers, content=expected_res
+    )
 
     result = get_artifacts_by_alert_command(client, args=args)
 
@@ -880,14 +1024,16 @@ def test_get_artifacts_by_alert_command_success(mock_request, client):
 
 def test_is_supported_context_type_failure(client):
     """
-        When is_supported_context_type() method called invalid argument then should return False.
+    When is_supported_context_type() method called invalid argument then should return False.
     """
-    assert client.is_supported_context_type('application/octet-stream') is False
+    assert (
+        client.is_supported_context_type('application/octet-stream') is False
+    )
 
 
 def test_is_supported_context_type_success(client):
     """
-        When is_supported_context_type() method called valid argument then should return True.
+    When is_supported_context_type() method called valid argument then should return True.
     """
     assert client.is_supported_context_type(CONTENT_TYPE_ZIP) is True
 
@@ -895,15 +1041,15 @@ def test_is_supported_context_type_success(client):
 @patch('FireEyeNX.Client.http_request')
 def test_get_events_command_success(mock_request, client):
     """
-        When fireeye-nx-get-events command executes successfully then context output and
-        response should match.
+    When fireeye-nx-get-events command executes successfully then context output and
+    response should match.
     """
     from FireEyeNX import get_events_command
 
     args = {
         'duration': '48_hours',
         'mvx_correlated_only': 'false',
-        'end_time': '2020-08-10T06:31:00.000+00:00'
+        'end_time': '2020-08-10T06:31:00.000+00:00',
     }
 
     with open('TestData/get_events_response.json') as f:
@@ -925,43 +1071,36 @@ def test_get_events_command_success(mock_request, client):
 
 def test_add_time_suffix_into_arguments(client):
     """
-        When add_time_suffix_into_arguments() method called it should add time suffix if format is suitable
-        else return as it is.
+    When add_time_suffix_into_arguments() method called it should add time suffix if format is suitable
+    else return as it is.
     """
     from FireEyeNX import add_time_suffix_into_arguments
-    args = {
-        'start_time': '2020-05-20',
-        'end_time': '2020-05-20'
-    }
+
+    args = {'start_time': '2020-05-20', 'end_time': '2020-05-20'}
     add_time_suffix_into_arguments(args)
-    actual_output = {'end_time': '2020-05-20T00:00:00.000-00:00',
-                     'start_time': '2020-05-20T00:00:00.000-00:00'}
+    actual_output = {
+        'end_time': '2020-05-20T00:00:00.000-00:00',
+        'start_time': '2020-05-20T00:00:00.000-00:00',
+    }
     assert actual_output == args
 
 
 def test_replace_alert_url_key_domain_to_instance_url():
     """
-        When replace_alert_url_key_domain_to_instance_url() method called it should Change domain
-        of 'alertUrl' to the instance URL.
+    When replace_alert_url_key_domain_to_instance_url() method called it should Change domain
+    of 'alertUrl' to the instance URL.
     """
     from FireEyeNX import replace_alert_url_key_domain_to_instance_url
+
     alerts_resp = [
-        {
-            'alertUrl': 'https://WWW.fireeye-1234/event/evenid=123'
-        },
-        {
-            'alertUrl': 'http://www.fireeye-1234/event/evenid=124'  # NOSONAR
-        }
+        {'alertUrl': 'https://WWW.fireeye-1234/event/evenid=123'},
+        {'alertUrl': 'http://www.fireeye-1234/event/evenid=124'},  # NOSONAR
     ]
     instance_url = 'https://example.com'
 
     actual_res = [
-        {
-            'alertUrl': 'https://example.com/event/evenid=123'
-        },
-        {
-            'alertUrl': 'https://example.com/event/evenid=124'
-        }
+        {'alertUrl': 'https://example.com/event/evenid=123'},
+        {'alertUrl': 'https://example.com/event/evenid=124'},
     ]
 
     replace_alert_url_key_domain_to_instance_url(alerts_resp, instance_url)
@@ -973,11 +1112,14 @@ def test_replace_alert_url_key_domain_to_instance_url():
 @patch('FireEyeNX.set_attachment_file')
 @patch('FireEyeNX.BaseClient._http_request')
 @patch('FireEyeNX.Client.get_api_token')
-def test_fetch_incidents_for_alert_success(mock_api_token, mock_request, set_attachment, replace_url, client):
+def test_fetch_incidents_for_alert_success(
+    mock_api_token, mock_request, set_attachment, replace_url, client
+):
     """
-        When fetch_incidents() method called with fetch_type='Alerts' and pass all required arg it success.
+    When fetch_incidents() method called with fetch_type='Alerts' and pass all required arg it success.
     """
     from FireEyeNX import fetch_incidents
+
     # Configure
     mock_last_run = {
         'start_time': datetime.now().replace(tzinfo=timezone.utc).timestamp()
@@ -994,9 +1136,7 @@ def test_fetch_incidents_for_alert_success(mock_api_token, mock_request, set_att
     resp._content = dummy_response.encode()
     resp.status_code = 200
     resp._ok = True
-    resp.headers = {
-        'Content-Type': CONTENT_TYPE_JSON
-    }
+    resp.headers = {'Content-Type': CONTENT_TYPE_JSON}
     mock_request.return_value = resp
 
     set_attachment.return_value = None
@@ -1014,7 +1154,7 @@ def test_fetch_incidents_for_alert_success(mock_api_token, mock_request, set_att
         replace_alert_url=True,
         instance_url=SAMPLE_URL,
         fetch_artifacts=True,
-        is_test=False
+        is_test=False,
     )
 
     # Assert
@@ -1026,6 +1166,7 @@ def test_fetch_incidents_for_alert_success(mock_api_token, mock_request, set_att
 def test_set_attachment_file(mock_request, client):
     # incident: dict, uuid: str, headers: dict
     from FireEyeNX import set_attachment_file
+
     uuid = 'abc'
     headers = {}
 
@@ -1033,9 +1174,7 @@ def test_set_attachment_file(mock_request, client):
     resp._ok = True
     resp.status_code = 200
     resp._content = b'a'
-    resp.headers = {
-        'Content-Length': '1'
-    }
+    resp.headers = {'Content-Length': '1'}
 
     mock_request.return_value = resp
     excepted_incident = {}
@@ -1046,11 +1185,14 @@ def test_set_attachment_file(mock_request, client):
 
 @patch('FireEyeNX.BaseClient._http_request')
 @patch('FireEyeNX.Client.get_api_token')
-def test_fetch_incidents_for_event_success(mock_api_token, mock_request, client):
+def test_fetch_incidents_for_event_success(
+    mock_api_token, mock_request, client
+):
     """
-        When fetch_incidents() method called with fetch_type='Alerts' and pass all required arg it success.
+    When fetch_incidents() method called with fetch_type='Alerts' and pass all required arg it success.
     """
     from FireEyeNX import fetch_incidents
+
     # Configure
     mock_last_run = {
         'start_time': datetime.now().replace(tzinfo=timezone.utc).timestamp()
@@ -1066,9 +1208,7 @@ def test_fetch_incidents_for_event_success(mock_api_token, mock_request, client)
     resp._content = dummy_response.encode()
     resp.status_code = 200
     resp._ok = True
-    resp.headers = {
-        'Content-Type': CONTENT_TYPE_JSON
-    }
+    resp.headers = {'Content-Type': CONTENT_TYPE_JSON}
     mock_request.return_value = resp
 
     next_run, incidents = fetch_incidents(
@@ -1082,7 +1222,7 @@ def test_fetch_incidents_for_event_success(mock_api_token, mock_request, client)
         replace_alert_url=True,
         instance_url='',
         fetch_artifacts=False,
-        is_test=False
+        is_test=False,
     )
 
     # Assert

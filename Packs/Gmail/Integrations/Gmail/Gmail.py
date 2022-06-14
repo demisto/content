@@ -7,6 +7,7 @@ import re
 import json
 import base64
 from datetime import datetime, timedelta
+from typing import *
 import httplib2
 import urlparse
 from distutils.util import strtobool
@@ -68,7 +69,7 @@ class TextExtractHtmlParser(HTMLParser):
         if data and not self._ignore:
             stripped = data.strip()
             if stripped:
-                self._texts.append(re.sub(r'\s+', ' ', stripped))
+                self._texts.append(re.sub(r'\s+', ' ', stripped))  # pylint: disable=E1101
 
     def handle_entityref(self, name):
         if not self._ignore and name in name2codepoint:
@@ -306,7 +307,7 @@ def get_email_context(email_data, mailbox):
     return context_gmail, headers, context_email
 
 
-TIME_REGEX = re.compile(r'^([\w,\d: ]*) (([+-]{1})(\d{2}):?(\d{2}))?[\s\w\(\)]*$')  # NOSONAR
+TIME_REGEX = re.compile(r'^([\w,\d: ]*) (([+-]{1})(\d{2}):?(\d{2}))?[\s\w\(\)]*$')  # pylint: disable=E1101
 
 
 def move_to_gmt(t):
@@ -453,6 +454,31 @@ def users_to_entry(title, response, next_page_token=None):
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': human_readable,
         'EntryContext': {'Account(val.ID && val.Type && val.ID == obj.ID && val.Type == obj.Type)': context}
+    }
+
+
+def labels_to_entry(title, response, user_key):
+    context = []
+
+    for label in response:
+        context.append({
+            'UserID': user_key,
+            'Name': label.get('name'),
+            'ID': label.get('id'),
+            "Type": label.get('type'),
+            "MessageListVisibility": label.get('messageListVisibility'),
+            "LabelListVisibility": label.get('labelListVisibility')
+        })
+    headers = ['Name', 'ID', 'Type', 'MessageListVisibility', 'LabelListVisibility']
+    human_readable = tableToMarkdown(title, context, headers, removeNull=True)
+
+    return {
+        'ContentsFormat': formats['json'],
+        'Type': entryTypes['note'],
+        'Contents': response,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': human_readable,
+        'EntryContext': {'GmailLabel(val.ID == obj.ID && val.Name == obj.Name && val.UserID == obj.UserID)': context}
     }
 
 
@@ -628,7 +654,7 @@ def dict_keys_snake_to_camelcase(dictionary):
     :param dictionary: Dictionary which may contain keys in snake_case
     :return: Dictionary with snake_case keys converted to lowerCamelCase
     """
-    underscore_pattern = re.compile(r'_([a-z])')
+    underscore_pattern = re.compile(r'_([a-z])')  # pylint: disable=E1101
     return {underscore_pattern.sub(lambda i: i.group(1).upper(), key.lower()): value for (key, value) in
             dictionary.items()}
 
@@ -670,6 +696,13 @@ def list_users_command():
     users, next_page_token = list_users(domain, customer, query, sort_order, view_type,
                                         show_deleted, max_results, projection, custom_field_mask, page_token)
     return users_to_entry('Users:', users, next_page_token)
+
+
+def list_labels_command():
+    args = demisto.args()
+    user_key = args.get('user-id')
+    labels = list_labels(user_key)
+    return labels_to_entry('Labels for UserID {}:'.format(user_key), labels, user_key)
 
 
 def list_users(domain, customer=None, query=None, sort_order=None, view_type='admin_view',
@@ -927,6 +960,16 @@ def delete_user(user_key):
     service.users().delete(**command_args).execute()
 
     return 'User {} have been deleted.'.format(command_args['userKey'])
+
+
+def list_labels(user_key):
+    service = get_service(
+        'gmail',
+        'v1',
+        ['https://www.googleapis.com/auth/gmail.readonly'])
+    results = service.users().labels().list(userId=user_key).execute()
+    labels = results.get('labels', [])
+    return labels
 
 
 def get_user_role_command():
@@ -1564,8 +1607,12 @@ def handle_html(htmlBody):
     cleanBody = ''
     lastIndex = 0
     for i, m in enumerate(
-            re.finditer(r'<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"', htmlBody,  # NOSONAR
-                        re.I)):
+        re.finditer(  # pylint: disable=E1101
+            r'<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"',
+            htmlBody,
+            re.I  # pylint: disable=E1101
+        )
+    ):
         maintype, subtype = m.group(2).split('/', 1)
         att = {
             'maintype': maintype,
@@ -2034,6 +2081,7 @@ def main():
     ''' EXECUTION CODE '''
     COMMANDS = {
         'gmail-list-users': list_users_command,
+        'gmail-list-labels': list_labels_command,
         'gmail-get-user': get_user_command,
         'gmail-create-user': create_user_command,
         'gmail-delete-user': delete_user_command,

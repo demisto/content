@@ -31,7 +31,7 @@ def test_ip_command(requests_mock):
 
     from RSTCloudThreatFeedAPI import Client, ip_command
 
-    value_to_check = '118.243.83.70'
+    value_to_check = '1.2.3.4'
     mock_response = util_load_json('test_data/ip_reputation.json')
     requests_mock.get(f'https://api.rstcloud.net/v1/ioc?value={value_to_check}', json=mock_response)
 
@@ -43,6 +43,8 @@ def test_ip_command(requests_mock):
     assert isinstance(raw_results, list)
     assert isinstance(indicators, list)
     assert isinstance(markdown[0], str)
+    assert isinstance(raw_results[0]['UUID'], str)
+    assert isinstance(raw_results[0]['RSTReference'], str)
     assert indicators[0].ip == value_to_check
     assert raw_results[0]['Address'] == value_to_check
 
@@ -56,7 +58,7 @@ def test_domain_command(requests_mock):
     """
     from RSTCloudThreatFeedAPI import Client, domain_command
 
-    value_to_check = 'thec0de-22249.portmap.io'
+    value_to_check = 'malicious-domain.local'
     mock_response = util_load_json('test_data/domain_reputation.json')
     requests_mock.get(f'https://api.rstcloud.net/v1/ioc?value={value_to_check}', json=mock_response)
 
@@ -68,6 +70,7 @@ def test_domain_command(requests_mock):
     assert isinstance(raw_results, list)
     assert isinstance(indicators, list)
     assert isinstance(markdown[0], str)
+    assert isinstance(raw_results[0]['UUID'], str)
     assert indicators[0].domain == value_to_check
     assert raw_results[0]['Name'] == value_to_check
 
@@ -81,7 +84,7 @@ def test_url_command(requests_mock):
     """
     from RSTCloudThreatFeedAPI import Client, url_command
 
-    value_to_check = 'http://zpmagura.com/wp-content/nux5wem-08'
+    value_to_check = 'http://malicious-domain.local/uri/test'
     mock_response = util_load_json('test_data/url_reputation.json')
     requests_mock.get(f'https://api.rstcloud.net/v1/ioc?value={value_to_check}', json=mock_response)
 
@@ -93,8 +96,35 @@ def test_url_command(requests_mock):
     assert isinstance(raw_results, list)
     assert isinstance(indicators, list)
     assert isinstance(markdown[0], str)
+    assert isinstance(raw_results[0]['UUID'], str)
     assert indicators[0].url == value_to_check
     assert raw_results[0]['Data'] == value_to_check
+
+
+def test_file_command(requests_mock):
+    """Tests the hash reputation command function.
+
+    Configures requests_mock instance to generate the appropriate
+    hash reputation API response, loaded from a local JSON file. Checks
+    the output of the command function with the expected output.
+    """
+    from RSTCloudThreatFeedAPI import Client, file_command
+
+    value_to_check = 'f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2'
+    mock_response = util_load_json('test_data/hash_reputation.json')
+    requests_mock.get(f'https://api.rstcloud.net/v1/ioc?value={value_to_check}', json=mock_response)
+
+    client = Client(verify=False, apikey='test')
+    args = {'file': value_to_check}
+    markdown, raw_results, indicators = file_command(client, args)
+
+    assert isinstance(markdown, list)
+    assert isinstance(raw_results, list)
+    assert isinstance(indicators, list)
+    assert isinstance(markdown[0], str)
+    assert isinstance(raw_results[0]['UUID'], str)
+    assert indicators[0].sha256 == value_to_check
+    assert raw_results[0]['SHA256'] == value_to_check
 
 
 def test_submit_command(requests_mock):
@@ -139,3 +169,21 @@ def test_submitfp_command(requests_mock):
 
     assert isinstance(markdown, list)
     assert markdown[0] == f'Indicator: {value_to_check} was submitted as False Positive to RST Cloud\n'
+
+
+def test_test_command(requests_mock):
+    """Tests the Test command function.
+
+    Configures requests_mock instance to generate the appropriate
+    Test API response. Checks
+    the output of the command function with the expected output.
+    """
+    from RSTCloudThreatFeedAPI import Client, test_module
+
+    mock_response = util_load_json('test_data/test_response.json')
+    requests_mock.get('https://api.rstcloud.net/v1/ioc?value=1.1.1.1', json=mock_response)
+
+    client = Client(verify=False, apikey='test')
+    results = test_module(client)
+
+    assert isinstance(results, str)

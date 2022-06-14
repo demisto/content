@@ -50,7 +50,9 @@ To get the ***Subscription ID***, ***Workspace Name***, ***Workspace ID*** and *
 | --- | --- | --- |
 | auth_id | ID \(received from the authorization step - see Detailed Instructions \(?\) section\) | True |
 | refresh_token | Token \(received from the authorization step - see Detailed Instructions \(?\) section\) | True |
-| enc_key | Key \(received from the authorization step - see Detailed Instructions \(?\) section\) | True |
+| enc_key | Key \(received from the authorization step - see Detailed Instructions \(?\) section\) | False |
+| Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app. | False |
+| Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
 | self_deployed | Use a self-deployed Azure application | False |
 | redirect_uri | Application redirect URI \(for self-deployed mode\) | False |
 | auth_code | Authorization code \(received from the authorization step - see Detailed Instructions \(?\) section\) | False |

@@ -73,22 +73,31 @@ def parse_list(raw_response: dict, human_readable_title: str, context_path: str)
 
 
 class AADClient(MicrosoftClient):
-    def __init__(self, app_id: str, subscription_id: str, verify: bool, proxy: bool, azure_ad_endpoint: str):
+    def __init__(self, app_id: str, subscription_id: str, verify: bool, proxy: bool, azure_ad_endpoint: str,
+                 tenant_id: str = None, enc_key: str = None, client_credentials: bool = False):
         if '@' in app_id:  # for use in test-playbook
             app_id, refresh_token = app_id.split('@')
             integration_context = get_integration_context()
             integration_context.update(current_refresh_token=refresh_token)
             set_integration_context(integration_context)
 
-        super().__init__(azure_ad_endpoint=azure_ad_endpoint,
-                         self_deployed=True,
-                         auth_id=app_id,
-                         grant_type=DEVICE_CODE,
-                         base_url=BASE_URL,
-                         token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
-                         verify=verify,
-                         proxy=proxy,
-                         scope=' '.join(REQUIRED_PERMISSIONS))
+        self.client_credentials = client_credentials
+        args = {
+            "azure_ad_endpoint": azure_ad_endpoint,
+            "self_deployed": True,
+            "auth_id": app_id,
+            "grant_type": CLIENT_CREDENTIALS if client_credentials else DEVICE_CODE,
+            "base_url": BASE_URL,
+            "verify": verify,
+            "proxy": proxy,
+            "tenant_id": tenant_id,
+            "enc_key": enc_key
+        }
+        if not client_credentials:
+            args["scope"] = ' '.join(REQUIRED_PERMISSIONS)
+            args["token_retrieval_url"] = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
+
+        super().__init__(**args)  # type: ignore
 
         self.subscription_id = subscription_id
 
@@ -266,8 +275,8 @@ def detection_to_incident(detection, detection_date):
     return incident
 
 
-def detections_to_incidents(detections: List[Dict[str, str]], last_fetch_datetime: datetime) -> \
-        Tuple[List[Dict[str, str]], datetime]:
+def detections_to_incidents(detections: List[Dict[str, str]], last_fetch_datetime: str) -> \
+        Tuple[List[Dict[str, str]], str]:
     """
     Given the detections retrieved from Azure Identity Protection, transforms their data to incidents format.
     """
@@ -275,13 +284,13 @@ def detections_to_incidents(detections: List[Dict[str, str]], last_fetch_datetim
     latest_incident_time = last_fetch_datetime
 
     for detection in detections:
-        # 'activityDateTime': '2021-07-15T11:02:54Z' / 'activityDateTime': '2021-07-15T11:02:54.12345Z'
-        detection_date = date_str_to_azure_format(detection.get('detectedDateTime', ''))
-        incident = detection_to_incident(detection, detection_date)
+        detection_datetime = detection.get('detectedDateTime', '')
+        detection_datetime_in_azure_format = date_str_to_azure_format(detection_datetime)
+        incident = detection_to_incident(detection, detection_datetime_in_azure_format)
         incidents.append(incident)
 
-        detection_datetime = datetime.strptime(detection_date, DATE_FORMAT)
-        if detection_datetime > latest_incident_time:
+        if datetime.strptime(detection_datetime_in_azure_format, DATE_FORMAT) > \
+                datetime.strptime(date_str_to_azure_format(latest_incident_time), DATE_FORMAT):
             latest_incident_time = detection_datetime
 
     return incidents, latest_incident_time
@@ -294,20 +303,19 @@ def get_last_fetch_time(last_run, params):
         # handle first time fetch
         first_fetch = f"{params.get('first_fetch') or '1 days'} ago"
         default_fetch_datetime = dateparser.parse(date_string=first_fetch, date_formats=[DATE_FORMAT])
-        last_fetch = str(default_fetch_datetime.isoformat(timespec='milliseconds'))
+        assert default_fetch_datetime is not None, f'failed parsing {first_fetch}'
+        last_fetch = str(default_fetch_datetime.isoformat(timespec='milliseconds')) + 'Z'
 
-    last_fetch = date_str_to_azure_format(last_fetch)
-    last_fetch_datetime: datetime = datetime.strptime(last_fetch, DATE_FORMAT)
-    demisto.debug(f'[AzureADIdentityProtection] last_fetch: {last_fetch}, last_fetch_datetime: {last_fetch_datetime}')
-    return last_fetch, last_fetch_datetime
+    demisto.debug(f'[AzureADIdentityProtection] last_fetch: {last_fetch}')
+    return last_fetch
 
 
 def build_filter(last_fetch, params):
-    start_time_enforcing_filter = f"detectedDateTime gt {last_fetch}Z"
+    start_time_enforcing_filter = f"detectedDateTime gt {last_fetch}"
     user_supplied_filter = params.get('fetch_filter_expression', '')
-    query_filter = f'{user_supplied_filter} and {start_time_enforcing_filter}' if user_supplied_filter \
+    query_filter = f'({user_supplied_filter}) and {start_time_enforcing_filter}' if user_supplied_filter \
         else start_time_enforcing_filter
-    demisto.debug(f'[AzureADIdentityProtection] query_filter: {query_filter}Z')
+    demisto.debug(f'[AzureADIdentityProtection] query_filter: {query_filter}')
     return query_filter
 
 
@@ -332,7 +340,7 @@ def fetch_incidents(client: AADClient, params: Dict[str, str]):
     last_run: Dict[str, str] = demisto.getLastRun()
     demisto.debug(f'[AzureIdentityProtection] last run: {last_run}')
 
-    last_fetch, last_fetch_datetime = get_last_fetch_time(last_run, params)
+    last_fetch = get_last_fetch_time(last_run, params)
     query_filter = build_filter(last_fetch, params)
     demisto.debug(f'[AzureIdentityProtection] last fetch is: {last_fetch}, filter is: {query_filter}')
 
@@ -345,13 +353,12 @@ def fetch_incidents(client: AADClient, params: Dict[str, str]):
 
     detections: list = risk_detection_list_raw.get('value', [])
 
-    incidents, latest_detection_time = detections_to_incidents(detections, last_fetch_datetime=last_fetch_datetime)
+    incidents, latest_detection_time = detections_to_incidents(detections, last_fetch_datetime=last_fetch)
     demisto.debug(f'[AzureIdentityProtection] Fetched {len(incidents)} incidents')
 
-    latest_detection_time = latest_detection_time.strftime(DATE_FORMAT)
     demisto.debug(f'[AzureIdentityProtection] next run latest_detection_found: {latest_detection_time}')
     last_run = {
-        'latest_detection_found': latest_detection_time
+        'latest_detection_found': latest_detection_time,
     }
 
     return incidents, last_run
@@ -389,7 +396,10 @@ def main() -> None:
             subscription_id=params.get('subscription_id', ''),
             verify=not params.get('insecure', False),
             proxy=params.get('proxy', False),
-            azure_ad_endpoint=params.get('azure_ad_endpoint', 'https://login.microsoftonline.com')
+            azure_ad_endpoint=params.get('azure_ad_endpoint', 'https://login.microsoftonline.com'),
+            tenant_id=params.get("tenant_id"),
+            client_credentials=params.get("client_credentials", False),
+            enc_key=(params.get('credentials') or {}).get('password')
         )
 
         # auth commands

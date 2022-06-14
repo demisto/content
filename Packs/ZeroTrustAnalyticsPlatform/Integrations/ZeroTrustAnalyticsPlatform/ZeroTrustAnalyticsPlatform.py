@@ -31,7 +31,7 @@ ZTAP_STATUS_TO_XSOAR = {
     "resolved": "Resolved",
 }
 
-ESCALATE_REASON = "User escalated back to CriticalStart."
+ESCALATE_REASON = "User escalated back to Critical Start."
 
 # Ignore new comments with this string
 XSOAR_EXCLUDE_MESSAGE = "via Cortex XSOAR"
@@ -43,14 +43,6 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 EPOCH = "0001-01-01T00:00:00Z"
 
 MIRROR_DIRECTION = {"None": None, "Incoming": "In", "Outgoing": "Out", "Both": "Both"}
-
-# These audit logs are redundant and not synced
-LOG_NO_SYNC = [
-    "Added a comment",
-]
-
-SORT_ORDER_LOG = 0
-SORT_ORDER_COMMENT = 1
 
 """ CLIENT CLASS """
 
@@ -68,7 +60,6 @@ class Client(BaseClient):
         proxy=None,
         comment_tag="",
         escalate_tag="",
-        input_tag="",
         max_match=100,
         get_attachments=False,
         close_incident=False,
@@ -84,7 +75,6 @@ class Client(BaseClient):
         )
         self.comment_tag = comment_tag
         self.escalate_tag = escalate_tag
-        self.input_tag = input_tag
         self.max_match = max_match
         self.get_attachments = get_attachments
         self.close_incident = close_incident
@@ -143,14 +133,6 @@ class Client(BaseClient):
             "created": created_since.isoformat(),
         }
         return self.paginate(method="GET", url_suffix="/comments/", params=params)
-
-    def get_logs(self, alert_id, created_since):
-        params = {
-            "model": "incident",
-            "object": alert_id,
-            "created": created_since.isoformat(),
-        }
-        return self.paginate(method="GET", url_suffix="/auditlogs/", params=params)
 
     def get_events(self, alert_id):
         params = {
@@ -292,8 +274,8 @@ def epoch():
     return dateparser.parse(EPOCH)
 
 
-def get_sort(occurred: str, sort_order: int, oid: str):
-    return f"{occurred}_{sort_order}_{oid}"
+def get_sort(occurred: str, oid: str):
+    return f"{occurred}_{oid}"
 
 
 def delta_or_data(remote_args, key):
@@ -337,6 +319,19 @@ def get_alert_last_new_event(alert):
     return dateparser.parse(alert.get("datetime_events_added") or EPOCH)
 
 
+def user_to_display(user):
+    user_name = user.get("name")
+    user_email = user.get("email")
+    if user_name and user_email:
+        return f"{user_name} ({user_email})"
+    elif user_name:
+        return user_name
+    elif user_email:
+        return user_email
+    else:
+        return "Unknown"
+
+
 def get_comments_for_alert(
     client: Client,
     alert_id: str,
@@ -352,7 +347,9 @@ def get_comments_for_alert(
         if XSOAR_EXCLUDE_MESSAGE in ["comment"]:
             continue
 
-        if dateparser.parse(c["datetime_created"]) <= last_update:
+        date_created = dateparser.parse(c["datetime_created"])
+        assert date_created
+        if date_created <= last_update:
             continue
 
         comments.append(c)
@@ -365,82 +362,32 @@ def comments_to_notes(client: Client, comments: List):
     Turns comments into XSOAR entries
     """
 
-    def to_note(comment, filenames):
+    def to_note(comment):
         occurred = comment["datetime_created"]
         oid = comment["id"]
-        readable = {
-            "occurred": occurred,
-            "contents": comment["comment"],
-            "type": "comment",
-            "files": filenames,
-        }
+        user_display = user_to_display(comment.get("user"))
+        comment_text = comment.get("comment")
+        footer = f"\n\nSent by {user_display} via ZTAP"
         return {
             "Type": EntryType.NOTE,
             "ContentsFormat": EntryFormat.JSON,
             "Contents": comment,
-            "HumanReadable": readable,
-            "ReadableContentsFormat": EntryFormat.JSON,
+            "HumanReadable": f"{comment_text}{footer}",
+            "ReadableContentsFormat": EntryFormat.TEXT,
             "Note": True,
-            "Tags": [client.input_tag],
-            "occurred": get_sort(occurred, SORT_ORDER_COMMENT, oid),
+            "Tags": [],
+            "sort": get_sort(occurred, oid),
         }
 
     entries = []
     for c in comments:
-        filenames = []
         if client.get_attachments:
             for filename, link in get_comment_links(c):
                 entries.append(attachment_note_from_link(client, filename, link))
-                filenames.append(filename)
 
         strip_comment_links(c)
-        entries.append(to_note(c, filenames))
+        entries.append(to_note(c))
 
-    return entries
-
-
-def get_audit_logs_for_alert(
-    client: Client,
-    alert_id: str,
-    last_update: datetime,
-):
-    all_logs = client.get_logs(alert_id, last_update)
-
-    logs = []
-    for log in all_logs:
-        if log["action"] in LOG_NO_SYNC:
-            continue
-
-        logs.append(log)
-
-    return logs
-
-
-def audit_logs_to_notes(
-    client: Client,
-    logs: List,
-    last_update: datetime,
-):
-    def to_note(audit_log):
-        occurred = audit_log["datetime"]
-        oid = audit_log["id"]
-        readable = {
-            "occurred": occurred,
-            "contents": audit_log["action"],
-            "type": "log",
-        }
-        return {
-            "Type": EntryType.NOTE,
-            "ContentsFormat": EntryFormat.JSON,
-            "Contents": audit_log,
-            "HumanReadable": readable,
-            "ReadableContentsFormat": EntryFormat.JSON,
-            "Note": True,
-            "Tags": [client.input_tag],
-            "occurred": get_sort(occurred, SORT_ORDER_LOG, oid),
-        }
-
-    entries = [to_note(log) for log in logs]
     return entries
 
 
@@ -452,7 +399,7 @@ def get_notes_for_alert(
     update_status: bool,
 ):
     """
-    Retrieve any logs/comments/attachments as XSOAR entries
+    Retrieve any comments/attachments as XSOAR entries
     """
 
     alert_id = str(alert["id"])
@@ -462,10 +409,11 @@ def get_notes_for_alert(
     comments = get_comments_for_alert(client, alert_id, last_update)
     entries.extend(comments_to_notes(client, comments))
 
-    audit_logs = get_audit_logs_for_alert(client, alert_id, last_update)
-    entries.extend(audit_logs_to_notes(client, audit_logs, last_update))
+    entries = sorted(entries, key=lambda x: x.get("sort", ""))
 
-    entries = sorted(entries, key=lambda x: x["occurred"] if "occurred" in x else "")
+    # Remove sort field from entries now that they are sorted correctly
+    for entry in entries:
+        entry.pop("sort")
 
     # Times for syncing
     local_last_closed = get_last_closed(investigation)
@@ -541,7 +489,7 @@ def attachment_note_from_link(
     text = client.download_attachment(link)
     result = fileResult(filename, text)
     result["Note"] = True
-    result["Tags"] = [client.input_tag]
+    result["Tags"] = []
     return result
 
 
@@ -562,10 +510,31 @@ def was_alert_first_escalated(
             end_of_group
         ):
             escalation_time = dateparser.parse(escalation["time"])
+            assert escalation_time is not None
             # Only check against the first escalation to this organization
             return escalation_time > since
 
     return False
+
+
+def extract_trigger_kv(trigger_events: list):
+    """
+    The main information about the alert is more convenient to have as key/value pairs
+    instead of using field weights as it makes writing mapping for individual values easier.
+    """
+    trigger_event = None
+    for event in trigger_events:
+        if event.get("trigger"):
+            trigger_event = event
+            break
+    flattened = {}
+    if trigger_event:
+        for field in trigger_event.get("fields", []):
+            key = field["key"]
+            value = field["value"]
+            flattened[key] = value
+
+    return flattened
 
 
 """ COMMAND FUNCTIONS """
@@ -592,6 +561,7 @@ def fetch_incidents(
         )
         existing_ids = []
 
+    assert oldest_alert_time
     org_name = client.active_user["organization"]["name"]
     org_psa_id = client.active_user["organization"]["psa_id"]
     start_time_iso = oldest_alert_time.isoformat()
@@ -599,7 +569,7 @@ def fetch_incidents(
     params = {
         "sort by": "last time org assigned",
         "last time org assigned": f"{start_time_iso}&{now_iso}",
-        "incident status": ["open"],
+        "incident status": ["open", "reviewing"],
         "assigned organization": org_psa_id,
         "limit": max_fetch,
     }
@@ -609,7 +579,9 @@ def fetch_incidents(
     newest_ids = []
     escalation_time = oldest_alert_time
     for alert in alerts:
-        escalation_time = max(escalation_time, get_alert_org_escalation_time(alert))
+        alert_orig_escalation_time = get_alert_org_escalation_time(alert)
+        assert alert_orig_escalation_time is not None and alert_orig_escalation_time is not None
+        escalation_time = max(escalation_time, alert_orig_escalation_time)
         alert_id = str(alert["id"])
 
         if alert_id in existing_ids:
@@ -624,12 +596,17 @@ def fetch_incidents(
         trigger_events = client.get_events(alert_id)
         alert["xsoar_trigger_events"] = trigger_events
 
+        # Parse trigger event as key/value pairs for ease of parsing
+        alert["xsoar_trigger_kv"] = extract_trigger_kv(trigger_events)
+
         # Mirroring fields
         alert["xsoar_mirror_direction"] = mirror_direction
         alert["xsoar_mirror_instance"] = integration_instance
         alert["xsoar_mirror_id"] = alert_id
         alert["xsoar_mirror_tags"] = [client.comment_tag, client.escalate_tag]
-        alert["xsoar_input_tag"] = client.input_tag
+
+        # Link back to ZTAP
+        alert["url"] = alert.get("url")
 
         incident = alert_to_incident(alert)
         incidents.append(incident)
@@ -672,7 +649,7 @@ def get_remote_data(
             parsed_args.last_update,
             settings={"TIMEZONE": "UTC", "RETURN_AS_TIMEZONE_AWARE": True},
         )
-
+        assert last_update_utc is not None
         entries = get_notes_for_alert(
             client,
             investigation,
@@ -795,7 +772,7 @@ def ztap_get_alert_entries(
     args: Dict,
 ):
     """
-    Gets all entries (comments/logs) for an alert
+    Gets all entries (comments/attachments) for an alert
     """
     try:
         alert_id = args.get("id")
@@ -869,7 +846,6 @@ def main() -> None:
     proxy = params.get("proxy", False)
     comment_tag = params.get("comment_tag")
     escalate_tag = params.get("escalate_tag")
-    input_tag = params.get("input_tag")
     get_attachments = params.get("get_attachments", False)
     close_incident = params.get("close_incident", False)
     reopen_incident = params.get("reopen_incident", False)
@@ -885,7 +861,6 @@ def main() -> None:
             proxy=proxy,
             comment_tag=comment_tag,
             escalate_tag=escalate_tag,
-            input_tag=input_tag,
             get_attachments=get_attachments,
             close_incident=close_incident,
             reopen_incident=reopen_incident,

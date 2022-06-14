@@ -314,10 +314,13 @@ def convert_timeframe_string_to_json(time_to_convert: str) -> Dict[str, int]:
             if len(tokens) == 2:
                 time_from = dateparser.parse(tokens[0], settings={'TIMEZONE': 'UTC'})
                 time_to = dateparser.parse(tokens[1], settings={'TIMEZONE': 'UTC'})
+                assert time_from is not None and time_to is not None
                 return {'from': int(time_from.timestamp()) * 1000, 'to': int(time_to.timestamp()) * 1000}
         else:
             relative = dateparser.parse(time_to_convert, settings={'TIMEZONE': 'UTC'})
-            return {'relativeTime': int((datetime.utcnow() - relative).total_seconds()) * 1000}
+            now_date = datetime.utcnow()
+            assert now_date is not None and relative is not None
+            return {'relativeTime': int((now_date - relative).total_seconds()) * 1000}
 
         raise ValueError(f'Invalid timeframe: {time_to_convert}')
     except Exception as exc:
@@ -642,11 +645,12 @@ def get_xql_query_results_polling_command(client: Client, args: dict) -> Union[C
     outputs_prefix = get_outputs_prefix(command_name)
     command_results = CommandResults(outputs_prefix=outputs_prefix, outputs_key_field='execution_id', outputs=outputs,
                                      raw_response=copy.deepcopy(outputs))
-    # if there are more then 1000 results
+    # if there are more than 1000 results
     if file_data:
         if not parse_result_file_to_context:
             #  Extracts the results into a file only
             file = fileResult(filename="results.gz", data=file_data)
+            command_results.readable_output = 'More than 1000 results were retrieved, see the compressed gzipped file below.'
             remove_query_id_from_integration_context(query_id)
             return [file, command_results]
         else:

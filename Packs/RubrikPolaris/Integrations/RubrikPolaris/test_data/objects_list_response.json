@@ -1,0 +1,395 @@
+{
+  "raw_response": {
+    "data": {
+      "vSphereVmNewConnection": {
+        "edges": [
+          {
+            "cursor": "Y3Vyc29yOmludDow",
+            "node": {
+              "id": "0242e84c-773a-5877-b955-1d52765ac852",
+              "name": "sx1-ganebala-l1",
+              "objectType": "VmwareVirtualMachine",
+              "replicatedObjectCount": 1,
+              "cluster": {
+                "id": "cc19573c-db6c-418a-9d48-067a256543ba",
+                "name": "sand1-rbk01",
+                "version": "6.0.1-12877",
+                "status": "Connected"
+              },
+              "effectiveSlaDomain": {
+                "id": "DO_NOT_PROTECT",
+                "name": "DO_NOT_PROTECT",
+                "description": ""
+              },
+              "pendingSla": null,
+              "effectiveSlaSourceObject": {
+                "fid": "0242e84c-773a-5877-b955-1d52765ac852",
+                "name": "sx1-ganebala-l1",
+                "objectType": "VmwareVirtualMachine"
+              },
+              "slaAssignment": "Direct",
+              "isRelic": false,
+              "authorizedOperations": [
+                "ProvisionOnInfrastructure",
+                "RefreshDataSource",
+                "RestoreToOrigin",
+                "ConfigureDataClassGlobal",
+                "ViewDataClassGlobal",
+                "ViewNonSystemEvent",
+                "ExportFiles",
+                "ViewSystemEvent",
+                "CategoryRecovery",
+                "CategoryViewDataSource",
+                "ManageProtection",
+                "CancelRunningActivity",
+                "CreateReport",
+                "ModifyReport",
+                "ViewAuditLog",
+                "Mount",
+                "ExportDataClassGlobal",
+                "ViewReport",
+                "CategoryProtection",
+                "TakeOnDemandSnapshot",
+                "ExportSnapshots",
+                "ViewInventory",
+                "DeleteReport",
+                "DeleteSnapshot",
+                "Download",
+                "DownloadFromArchivalLocation"
+              ],
+              "primaryClusterLocation": {
+                "id": "cc19573c-db6c-418a-9d48-067a256543ba",
+                "name": "sand1-rbk01"
+              },
+              "logicalPath": [
+                {
+                  "fid": "f325106b-892b-59df-b786-e06ab8ae6dfd",
+                  "name": "Ganesh Balabharathi",
+                  "objectType": "VSphereFolder"
+                },
+                {
+                  "fid": "69172b37-93ba-523c-8a60-922a34717a55",
+                  "name": "Specialists",
+                  "objectType": "VSphereFolder"
+                },
+                {
+                  "fid": "2ae29168-b805-5104-9daa-9a74b0c8f554",
+                  "name": "vm",
+                  "objectType": "VSphereFolder"
+                },
+                {
+                  "fid": "3f3a92de-c7f3-57f7-989f-3731db83aeab",
+                  "name": "Sandbox-1 Datacenter",
+                  "objectType": "VSphereDatacenter"
+                },
+                {
+                  "fid": "415859e2-fd22-53ea-8de1-041d99298fe3",
+                  "name": "sand1-vcsa.rubrikdemo.com",
+                  "objectType": "VSphereVCenter"
+                }
+              ],
+              "snapshotDistribution": {
+                "id": "0242e84c-773a-5877-b955-1d52765ac852",
+                "onDemandCount": 0,
+                "retrievedCount": 0,
+                "scheduledCount": 0,
+                "totalCount": 0
+              },
+              "reportSnappable": {
+                "id": "VirtualMachine:::868aa03d-4145-4cb1-808b-e10c4f7a3741-vm-206037",
+                "archiveStorage": 0,
+                "physicalBytes": 0
+              },
+              "vmwareToolsInstalled": true,
+              "agentStatus": {
+                "agentStatus": "Unregistered",
+                "disconnectReason": null
+              }
+            }
+          },
+          {
+            "cursor": "Y3Vyc29yOmludDox",
+            "node": {
+              "id": "0556f691-b750-556c-baea-800dbb2920e7",
+              "name": "linux-a-Fri Feb 15 2019 04:43:40 GMT+0000 (Greenwich Mean Time)-9P4t",
+              "objectType": "VmwareVirtualMachine",
+              "replicatedObjectCount": 1,
+              "cluster": {
+                "id": "cc19573c-db6c-418a-9d48-067a256543ba",
+                "name": "sand1-rbk01",
+                "version": "6.0.1-12877",
+                "status": "Connected"
+              },
+              "effectiveSlaDomain": {
+                "id": "UNPROTECTED",
+                "name": "UNPROTECTED",
+                "description": ""
+              },
+              "pendingSla": null,
+              "effectiveSlaSourceObject": null,
+              "slaAssignment": "Unassigned",
+              "isRelic": true,
+              "authorizedOperations": [
+                "CancelRunningActivity",
+                "DeleteReport",
+                "ModifyReport",
+                "CategoryRecovery",
+                "DownloadFromArchivalLocation",
+                "ViewAuditLog",
+                "ViewNonSystemEvent",
+                "ExportFiles",
+                "Mount",
+                "ViewInventory",
+                "RestoreToOrigin",
+                "CreateReport",
+                "ViewDataClassGlobal",
+                "ViewReport",
+                "CategoryProtection",
+                "ProvisionOnInfrastructure",
+                "Download",
+                "ExportSnapshots",
+                "ManageProtection",
+                "ConfigureDataClassGlobal",
+                "ExportDataClassGlobal",
+                "ViewSystemEvent",
+                "CategoryViewDataSource",
+                "DeleteSnapshot",
+                "RefreshDataSource",
+                "TakeOnDemandSnapshot"
+              ],
+              "primaryClusterLocation": {
+                "id": "cc19573c-db6c-418a-9d48-067a256543ba",
+                "name": "sand1-rbk01"
+              },
+              "logicalPath": [
+                {
+                  "fid": "28ebf20d-70d4-59fb-88c3-cc30122e1244",
+                  "name": "shrd1-vcd",
+                  "objectType": "VSphereDatacenter"
+                },
+                {
+                  "fid": "d7e74bc8-3c4f-515d-8f2e-25e00e1b812a",
+                  "name": "shrd1-vcd-vcsa.rubrikdemo.com",
+                  "objectType": "VSphereVCenter"
+                }
+              ],
+              "snapshotDistribution": {
+                "id": "0556f691-b750-556c-baea-800dbb2920e7",
+                "onDemandCount": 0,
+                "retrievedCount": 0,
+                "scheduledCount": 34,
+                "totalCount": 34
+              },
+              "reportSnappable": {
+                "id": "VirtualMachine:::d2f41f4b-5d53-4063-a618-25046a0f4c7d-vm-35806",
+                "archiveStorage": 0,
+                "physicalBytes": 1115023609
+              },
+              "vmwareToolsInstalled": true,
+              "agentStatus": {
+                "agentStatus": "Unregistered",
+                "disconnectReason": null
+              }
+            }
+          }
+        ],
+        "pageInfo": {
+          "startCursor": "Y3Vyc29yOmludDow",
+          "endCursor": "Y3Vyc29yOmludDox",
+          "hasNextPage": true,
+          "hasPreviousPage": false
+        }
+      }
+    }
+  },
+  "outputs": [
+    {
+      "id": "0242e84c-773a-5877-b955-1d52765ac852",
+      "name": "sx1-ganebala-l1",
+      "objectType": "VmwareVirtualMachine",
+      "replicatedObjectCount": 1,
+      "cluster": {
+        "id": "cc19573c-db6c-418a-9d48-067a256543ba",
+        "name": "sand1-rbk01",
+        "version": "6.0.1-12877",
+        "status": "Connected"
+      },
+      "effectiveSlaDomain": {
+        "id": "DO_NOT_PROTECT",
+        "name": "DO_NOT_PROTECT",
+        "description": ""
+      },
+      "pendingSla": null,
+      "effectiveSlaSourceObject": {
+        "fid": "0242e84c-773a-5877-b955-1d52765ac852",
+        "name": "sx1-ganebala-l1",
+        "objectType": "VmwareVirtualMachine"
+      },
+      "slaAssignment": "Direct",
+      "isRelic": false,
+      "authorizedOperations": [
+        "ProvisionOnInfrastructure",
+        "RefreshDataSource",
+        "RestoreToOrigin",
+        "ConfigureDataClassGlobal",
+        "ViewDataClassGlobal",
+        "ViewNonSystemEvent",
+        "ExportFiles",
+        "ViewSystemEvent",
+        "CategoryRecovery",
+        "CategoryViewDataSource",
+        "ManageProtection",
+        "CancelRunningActivity",
+        "CreateReport",
+        "ModifyReport",
+        "ViewAuditLog",
+        "Mount",
+        "ExportDataClassGlobal",
+        "ViewReport",
+        "CategoryProtection",
+        "TakeOnDemandSnapshot",
+        "ExportSnapshots",
+        "ViewInventory",
+        "DeleteReport",
+        "DeleteSnapshot",
+        "Download",
+        "DownloadFromArchivalLocation"
+      ],
+      "primaryClusterLocation": {
+        "id": "cc19573c-db6c-418a-9d48-067a256543ba",
+        "name": "sand1-rbk01"
+      },
+      "logicalPath": [
+        {
+          "fid": "f325106b-892b-59df-b786-e06ab8ae6dfd",
+          "name": "Ganesh Balabharathi",
+          "objectType": "VSphereFolder"
+        },
+        {
+          "fid": "69172b37-93ba-523c-8a60-922a34717a55",
+          "name": "Specialists",
+          "objectType": "VSphereFolder"
+        },
+        {
+          "fid": "2ae29168-b805-5104-9daa-9a74b0c8f554",
+          "name": "vm",
+          "objectType": "VSphereFolder"
+        },
+        {
+          "fid": "3f3a92de-c7f3-57f7-989f-3731db83aeab",
+          "name": "Sandbox-1 Datacenter",
+          "objectType": "VSphereDatacenter"
+        },
+        {
+          "fid": "415859e2-fd22-53ea-8de1-041d99298fe3",
+          "name": "sand1-vcsa.rubrikdemo.com",
+          "objectType": "VSphereVCenter"
+        }
+      ],
+      "snapshotDistribution": {
+        "id": "0242e84c-773a-5877-b955-1d52765ac852",
+        "onDemandCount": 0,
+        "retrievedCount": 0,
+        "scheduledCount": 0,
+        "totalCount": 0
+      },
+      "reportSnappable": {
+        "id": "VirtualMachine:::868aa03d-4145-4cb1-808b-e10c4f7a3741-vm-206037",
+        "archiveStorage": 0,
+        "physicalBytes": 0
+      },
+      "vmwareToolsInstalled": true,
+      "agentStatus": {
+        "agentStatus": "Unregistered",
+        "disconnectReason": null
+      }
+    },
+    {
+      "id": "0556f691-b750-556c-baea-800dbb2920e7",
+      "name": "linux-a-Fri Feb 15 2019 04:43:40 GMT+0000 (Greenwich Mean Time)-9P4t",
+      "objectType": "VmwareVirtualMachine",
+      "replicatedObjectCount": 1,
+      "cluster": {
+        "id": "cc19573c-db6c-418a-9d48-067a256543ba",
+        "name": "sand1-rbk01",
+        "version": "6.0.1-12877",
+        "status": "Connected"
+      },
+      "effectiveSlaDomain": {
+        "id": "UNPROTECTED",
+        "name": "UNPROTECTED",
+        "description": ""
+      },
+      "pendingSla": null,
+      "effectiveSlaSourceObject": null,
+      "slaAssignment": "Unassigned",
+      "isRelic": true,
+      "authorizedOperations": [
+        "CancelRunningActivity",
+        "DeleteReport",
+        "ModifyReport",
+        "CategoryRecovery",
+        "DownloadFromArchivalLocation",
+        "ViewAuditLog",
+        "ViewNonSystemEvent",
+        "ExportFiles",
+        "Mount",
+        "ViewInventory",
+        "RestoreToOrigin",
+        "CreateReport",
+        "ViewDataClassGlobal",
+        "ViewReport",
+        "CategoryProtection",
+        "ProvisionOnInfrastructure",
+        "Download",
+        "ExportSnapshots",
+        "ManageProtection",
+        "ConfigureDataClassGlobal",
+        "ExportDataClassGlobal",
+        "ViewSystemEvent",
+        "CategoryViewDataSource",
+        "DeleteSnapshot",
+        "RefreshDataSource",
+        "TakeOnDemandSnapshot"
+      ],
+      "primaryClusterLocation": {
+        "id": "cc19573c-db6c-418a-9d48-067a256543ba",
+        "name": "sand1-rbk01"
+      },
+      "logicalPath": [
+        {
+          "fid": "28ebf20d-70d4-59fb-88c3-cc30122e1244",
+          "name": "shrd1-vcd",
+          "objectType": "VSphereDatacenter"
+        },
+        {
+          "fid": "d7e74bc8-3c4f-515d-8f2e-25e00e1b812a",
+          "name": "shrd1-vcd-vcsa.rubrikdemo.com",
+          "objectType": "VSphereVCenter"
+        }
+      ],
+      "snapshotDistribution": {
+        "id": "0556f691-b750-556c-baea-800dbb2920e7",
+        "onDemandCount": 0,
+        "retrievedCount": 0,
+        "scheduledCount": 34,
+        "totalCount": 34
+      },
+      "reportSnappable": {
+        "id": "VirtualMachine:::d2f41f4b-5d53-4063-a618-25046a0f4c7d-vm-35806",
+        "archiveStorage": 0,
+        "physicalBytes": 1115023609
+      },
+      "vmwareToolsInstalled": true,
+      "agentStatus": {
+        "agentStatus": "Unregistered",
+        "disconnectReason": null
+      }
+    }
+  ],
+  "page_token": {
+    "has_next_page": true,
+    "next_page_token": "Y3Vyc29yOmludDox",
+    "name": "rubrik-polaris-vm-objects-list"
+  }
+}

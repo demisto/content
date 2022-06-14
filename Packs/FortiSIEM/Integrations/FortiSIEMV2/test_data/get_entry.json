@@ -1,0 +1,18 @@
+{
+    "response": {
+        "naturalId": "1.1.1.1_1643727090000",
+        "firstSeen": 1637654430000,
+        "count": 2,
+        "triggeringRules": "Excessive End User Mail",
+        "description": null,
+        "entryValue": "1.1.1.1.",
+        "expiredTime": 1644331890000,
+        "ageOut": "1w",
+        "lastSeen": 1643727090000,
+        "dataCreationType": null,
+        "custId": 1,
+        "id": 55555,
+        "state": "Enabled"
+    },
+    "status": "Success"
+}

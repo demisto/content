@@ -9,8 +9,20 @@
                 "urgency": {
                     "complex": null,
                     "simple": "notableurgency"
-                }
-            }
+                },
+			  	"reviewer": {
+					"simple": "",
+					"complex": {
+						"filters": [],
+						"root": "splunknotablereviewer",
+						"transformers": [
+							{
+								"operator": "FirstArrayElement"
+							}
+						]
+					}
+				}
+			}
         },
         "dbot_classification_incident_type_all": {
             "dontMapEventToLabels": false,

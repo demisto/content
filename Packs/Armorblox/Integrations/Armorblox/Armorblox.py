@@ -178,7 +178,9 @@ def fetch_incidents_command(client):
 
     for incident in incidents_data:
         dt = incident['date']
-        dt = dateparser.parse(dt).timestamp()
+        parsed_date = dateparser.parse(dt)
+        assert parsed_date is not None, f'failed parsing {dt}'
+        dt = parsed_date.timestamp()
         # Update last run and add incident if the incident is newer than last fetch
         if dt > start_time:
 

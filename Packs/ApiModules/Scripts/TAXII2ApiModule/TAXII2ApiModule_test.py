@@ -112,7 +112,8 @@ class TestInitCollectionsToFetch:
         Then:
         - Ensure exception is raised with proper error message
         """
-        mock_client = Taxii2FeedClient(url='', collection_to_fetch='default', proxies=[], verify=False, objects_to_fetch=[])
+        mock_client = Taxii2FeedClient(url='', collection_to_fetch='default', proxies=[], verify=False,
+                                       objects_to_fetch=[])
         with pytest.raises(DemistoException, match="No collection is available for this user"):
             mock_client.init_collection_to_fetch('not_found')
 
@@ -121,6 +122,7 @@ class TestBuildIterator:
     """
     Scenario: Get indicators via build_iterator method
     """
+
     def test_no_collection_to_fetch(self):
         """
         Scenario: Fail to build iterator when there is no collection to fetch from
@@ -181,6 +183,7 @@ class TestInitServer:
     """
     Scenario: Initialize server
     """
+
     def test_default_v20(self):
         """
         Scenario: Intialize server with the default option
@@ -242,6 +245,7 @@ class TestFetchingStixObjects:
     """
     Scenario: Test load_stix_objects_from_envelope and parse_stix_objects
     """
+
     def test_21_empty(self):
         """
         Scenario: Test 21 envelope extract
@@ -390,3 +394,32 @@ class TestFetchingStixObjects:
         result = mock_client.parse_generator_type_envelope(objects_envelopes, parse_stix_2_objects)
         assert mock_client.id_to_object == id_to_object
         assert result == parsed_objects
+
+    @pytest.mark.parametrize('last_modifies_client, last_modifies_param, expected_modified_result', [
+        (None, None, None), (None, '2021-09-29T15:55:04.815Z', '2021-09-29T15:55:04.815Z'),
+        ('2021-09-29T15:55:04.815Z', '2022-09-29T15:55:04.815Z', '2022-09-29T15:55:04.815Z')
+    ])
+    def test_update_last_modified_indicator_date(self, last_modifies_client, last_modifies_param, expected_modified_result):
+        """
+               Scenario: Test updating the last_fetched_indicator__modified field of the client.
+
+               Given:
+                - A : An empty indicator_modified_str parameter.
+                - B : A client with empty last_fetched_indicator__modified field.
+                - C : A client with a value in last_fetched_indicator__modified
+                 and a valid indicator_modified_str parameter.
+
+               When:
+               - Calling the last_modified_indicator_date function with given parameter.
+
+               Then: Make sure the right value is updated in the client's last_fetched_indicator__modified field.
+               - A : last_fetched_indicator__modified field remains empty
+               - B : last_fetched_indicator__modified field remains empty
+               - C : last_fetched_indicator__modified receives new value
+        """
+
+        mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False, objects_to_fetch=[], )
+        mock_client.last_fetched_indicator__modified = last_modifies_client
+        mock_client.update_last_modified_indicator_date(last_modifies_param)
+
+        assert mock_client.last_fetched_indicator__modified == expected_modified_result

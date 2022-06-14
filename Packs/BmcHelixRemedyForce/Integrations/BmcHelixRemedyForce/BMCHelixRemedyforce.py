@@ -1658,6 +1658,7 @@ def process_attachment_record(record: Dict[str, Any]) -> Dict[str, Any]:
     :return: processed attachment record for markdown
     """
     date_time = dateparser.parse(record.get('ContentDocument', {}).get('CreatedDate', ''))
+    assert date_time is not None
     date = date_time.strftime(DISPLAY_DATE_FORMAT)
     download_url = demisto.params()['url'] + URL_SUFFIX['DOWNLOAD_ATTACHMENT'].format(
         record.get('ContentDocumentId', ''))
@@ -1699,6 +1700,7 @@ def process_notes_record(record: Dict[str, Any]) -> Dict[str, str]:
     :return: list
     """
     date_time = dateparser.parse(record.get('CreatedDate', ''))
+    assert date_time is not None
     date = date_time.strftime(DISPLAY_DATE_FORMAT)
     notes = {
         'Note': record.get('BMCServiceDesk__note__c', ''),

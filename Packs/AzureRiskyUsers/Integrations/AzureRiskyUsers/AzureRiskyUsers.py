@@ -15,6 +15,13 @@ class Client:
     """
 
     def __init__(self, client_id: str, verify: bool, proxy: bool):
+
+        if '@' in client_id:  # for use in test-playbook
+            client_id, refresh_token = client_id.split('@')
+            integration_context = get_integration_context()
+            integration_context.update(current_refresh_token=refresh_token)
+            set_integration_context(integration_context)
+
         self.ms_client = MicrosoftClient(
             self_deployed=True,
             auth_id=client_id,
@@ -345,7 +352,7 @@ def main():
     """
     params = demisto.params()
     args = demisto.args()
-    client_id = params.get('client_id')
+    client_id = params.get('client_id').get('password', '')
 
     verify_certificate = not params.get('insecure', False)
 

@@ -93,7 +93,31 @@ def main(args):
     }
 
     if is_widget:
-        return data
+        ctx = demisto.context()
+        dataFromCtx = ctx.get("widgets")
+        if not dataFromCtx:
+            return data
+        else:
+            data = {
+                "Type": 17,
+                "ContentsFormat": widget_type,
+                "Contents": {
+                    "stats": dataFromCtx['DiskUsagePerCentage'],
+                    "params": {
+                        "currencySign": "%",
+                        "signAlignment": "right",
+                        "colors": {
+                            "isEnabled": True,
+                            "items": {
+                                "#00CD33": {"value": -1},
+                                "#FAC100": {"value": 60},
+                                "#FF1B15": {"value": 80},
+                            },
+                            "type": "above",
+                        }
+                    }
+                }
+            }
     else:
         add_actions = analyze_data(stats)
         return CommandResults(

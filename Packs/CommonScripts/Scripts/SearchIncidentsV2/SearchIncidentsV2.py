@@ -23,10 +23,10 @@ def is_valid_args(args: Dict):
         if _key in array_args:
             try:
                 if _key == 'id':
-                    if not isinstance(value, (int, str)):
+                    if not isinstance(value, (int, str, list)):
                         error_msg.append(
                             f'Error while parsing the incident id with the value: {value}. The given type: '
-                            f'{type(value)} is not a valid type for an ID. The supported id types are: int and str')
+                            f'{type(value)} is not a valid type for an ID. The supported id types are: int, list and str')
                     elif isinstance(value, str):
                         _ = bytes(value, "utf-8").decode("unicode_escape")
                 else:
@@ -77,6 +77,10 @@ def search_incidents(args: Dict):   # pragma: no cover
 
     if args.get('trimevents') == '0':
         args.pop('trimevents')
+
+    # handle list of ids
+    if args.get('id'):
+        args['id'] = ','.join(argToList(args.get('id'), transform=str))
 
     res: List = execute_command('getIncidents', args, extract_contents=False)
     incident_found: bool = check_if_found_incident(res)

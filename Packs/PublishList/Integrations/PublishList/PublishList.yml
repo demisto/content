@@ -3,7 +3,7 @@ commonfields:
   id: Publish List
   version: -1
 configuration:
-- defaultvalue: "true"
+- defaultvalue: 'true'
   display: Long running instance
   hidden: true
   name: longRunning
@@ -41,9 +41,16 @@ configuration:
   type: 12
 - additionalinfo: 'For standard lists that are comma delimited, this puts each list
     item on a new line. '
-  defaultvalue: "false"
+  defaultvalue: 'false'
   display: List Items on Individual Lines
   name: commaToLineBreak
+  required: false
+  type: 8
+- additionalinfo: If selected, the comment "# Empty list" will be added to an empty
+    list.
+  defaultvalue: 'false'
+  display: Add comment to empty list
+  name: add_comment_if_empty
   required: false
   type: 8
 description: The Publish List integration is used to publish XSOAR lists for external
@@ -51,7 +58,7 @@ description: The Publish List integration is used to publish XSOAR lists for ext
 display: Publish List
 name: Publish List
 script:
-  dockerimage: demisto/fastapi:1.0.0.24037
+  dockerimage: demisto/fastapi:1.0.0.27446
   longRunning: true
   longRunningPort: true
   runonce: false

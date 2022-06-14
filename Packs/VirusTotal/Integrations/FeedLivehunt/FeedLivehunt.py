@@ -26,8 +26,8 @@ class DetectionRatio:
 
 class Client(BaseClient):
     def get_api_indicators(self,
-                           query_filter: Optional[str] = None,
-                           limit: Optional[int] = 10):
+                           query_filter: str = None,
+                           limit: int = 10):
         return self._http_request(
             'GET',
             'intelligence/hunting_notification_files',
@@ -38,7 +38,7 @@ class Client(BaseClient):
         )
 
     def fetch_indicators(self,
-                         limit: Optional[int] = 10,
+                         limit: int = 10,
                          filter_tag: Optional[str] = None,
                          fetch_command: bool = False) -> List:
         """Retrieves all entries from the feed.
@@ -109,7 +109,7 @@ def test_module(client: Client, args: dict) -> str:
 def fetch_indicators_command(client: Client,
                              tlp_color: Optional[str] = None,
                              feed_tags: List = [],
-                             limit: Optional[int] = 10,
+                             limit: int = 10,
                              filter_tag: Optional[str] = None,
                              fetch_command: bool = False) -> List[Dict]:
     """Retrieves indicators from the feed

@@ -9,6 +9,7 @@ def alert_data():
             "id": 1,
             "status": "assigned",
             "description": "Test Alert 1",
+            "url": "http://some_mock_url/#/incidents/1",
         },
         {
             "datetime_created": "2021-05-11T20:09:50Z",
@@ -19,6 +20,7 @@ def alert_data():
             "id": 2,
             "status": "assigned",
             "description": "Test Alert 2",
+            "url": "http://some_mock_url/#/incidents/2",
         },
     ]
 
@@ -54,6 +56,7 @@ def event_data():
                     "order": 2,
                 },
             ],
+            "trigger": True,
         },
     ]
 
@@ -64,46 +67,13 @@ def comment_data():
             "comment": "Test comment",
             "datetime_created": "2021-05-10T19:36:48Z",
             "id": 1,
+            "user": user_data(),
         },
         {
             "comment": "Closing alert due to duplicate.",
             "datetime_created": "2021-05-10T19:50:18Z",
             "id": 2,
-        },
-    ]
-
-
-def log_data():
-    return [
-        {
-            "action": "Added a comment",
-            "datetime": "2021-05-11T18:28:14Z",
-            "id": 1,
-        },
-        {
-            "action": "Incident locked due to closing.",
-            "datetime": "2021-05-11T18:28:15Z",
-            "id": 2,
-        },
-    ]
-
-
-def log_data_reopened():
-    return [
-        {
-            "action": "Assigned incident to group testing.",
-            "datetime": "2021-05-11T22:00:00Z",
-            "id": 2,
-        },
-    ]
-
-
-def log_data_new_event():
-    return [
-        {
-            "action": "1 new events added to incident.",
-            "datetime": "2021-05-11T22:00:00Z",
-            "id": 2,
+            "user": user_data(),
         },
     ]
 
@@ -117,7 +87,7 @@ def organization_data():
             "monitoring_organization": {
                 "id": 1,
                 "psa_id": "csmssp",
-                "name": "CriticalStart MDR",
+                "name": "Critical Start MDR",
             },
         },
         {
@@ -127,7 +97,7 @@ def organization_data():
             "monitoring_organization": {
                 "id": 1,
                 "psa_id": "dummy_id",
-                "name": "CriticalStart MDR",
+                "name": "Critical Start MDR",
             },
         },
     ]
@@ -152,5 +122,6 @@ def user_data():
     return {
         "id": 1,
         "name": "Active User",
+        "email": "test@test",
         "organization": {"id": 1, "name": "dummy_org", "psa_id": "dummy_id"},
     }

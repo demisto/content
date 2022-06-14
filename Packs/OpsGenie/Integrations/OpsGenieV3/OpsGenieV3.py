@@ -850,7 +850,9 @@ def get_teams(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 
 def _parse_fetch_time(fetch_time: str):
-    return dateparser.parse(date_string=f"{fetch_time} UTC").strftime(DATE_FORMAT)
+    fetch_time_date = dateparser.parse(date_string=f"{fetch_time} UTC")
+    assert fetch_time_date is not None, f'could not parse {fetch_time} UTC'
+    return fetch_time_date.strftime(DATE_FORMAT)
 
 
 def fetch_incidents_by_type(client: Client,
@@ -874,7 +876,9 @@ def fetch_incidents_by_type(client: Client,
     else:
         timestamp_now = int(now.timestamp())
         last_run = last_run_dict.get('lastRun')
-        timestamp_last_run = int(dateparser.parse(last_run).timestamp())
+        last_run_date = dateparser.parse(last_run)  # type: ignore
+        assert last_run_date is not None, f'could not parse {last_run}'
+        timestamp_last_run = int(last_run_date.timestamp())
         time_query = f'createdAt>{timestamp_last_run} AND createdAt<={timestamp_now}'
         params['query'] = f'{query} AND {time_query}' if query else f'{time_query}'
         params['limit'] = limit
