@@ -434,3 +434,64 @@ Starts a best-effort attempt to cancel a specific running search query in the sp
 >|Client Request Id|Reason Phrase|Running Query Canceled|
 >|---|---|---|
 >| xxxx-xxxxx-xxxxx | None | false |
+
+### azure-data-explorer-auth-start
+***
+Run this command to start the authorization process and follow the instructions in the command results.
+
+
+#### Base Command
+
+`azure-data-explorer-auth-start`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+### azure-data-explorer-auth-complete
+***
+Run this command to complete the authorization process. This should be used after running the azure-data-explorer-auth-start command.
+
+
+#### Base Command
+
+`azure-data-explorer-auth-complete`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+### azure-data-explorer-auth-reset
+***
+Run this command if for some reason you need to rerun the authentication process.
+
+
+#### Base Command
+
+`azure-data-explorer-auth-reset`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+### azure-data-explorer-auth-test
+***
+Run this command to test the connectivity to Azure Data Explorer.
+
+
+#### Base Command
+
+`azure-data-explorer-auth-test`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
