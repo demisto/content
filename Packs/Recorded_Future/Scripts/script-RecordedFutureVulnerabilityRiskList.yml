@@ -129,4 +129,5 @@ runonce: false
 tests:
 - No test - fetches indicators
 fromversion: 5.0.0
+deprecated: true
 dockerimage: demisto/python:2.7.18.24398
