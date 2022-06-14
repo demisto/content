@@ -233,31 +233,24 @@ def fetch_incidents(client: IMAPClient,
         incidents: Incidents that will be created in Demisto
     """
     logger(fetch_incidents)
+    time_to_fetch_from = None
     # First fetch - using the first_fetch_time
     if not last_run:
         time_to_fetch_from = parse(f'{first_fetch_time} UTC', settings={'TIMEZONE': 'UTC'})
-        mails_fetched, messages, uid_to_fetch_from = fetch_mails(
-            client=client,
-            include_raw_body=include_raw_body,
-            time_to_fetch_from=time_to_fetch_from,
-            limit=limit,
-            with_headers=with_headers,
-            permitted_from_addresses=permitted_from_addresses,
-            permitted_from_domains=permitted_from_domains,
-            save_file=save_file
-        )
-    else: # Otherwise use the mail UID
-        uid_to_fetch_from = last_run.get('last_uid', 1)
-        mails_fetched, messages, uid_to_fetch_from = fetch_mails(
-            client=client,
-            include_raw_body=include_raw_body,
-            limit=limit,
-            with_headers=with_headers,
-            permitted_from_addresses=permitted_from_addresses,
-            permitted_from_domains=permitted_from_domains,
-            save_file=save_file,
-            uid_to_fetch_from=uid_to_fetch_from
-        )
+
+    # Otherwise use the mail UID
+    uid_to_fetch_from = last_run.get('last_uid', 1)
+    mails_fetched, messages, uid_to_fetch_from = fetch_mails(
+        client=client,
+        include_raw_body=include_raw_body,
+        time_to_fetch_from=time_to_fetch_from,
+        limit=limit,
+        with_headers=with_headers,
+        permitted_from_addresses=permitted_from_addresses,
+        permitted_from_domains=permitted_from_domains,
+        save_file=save_file,
+        uid_to_fetch_from=uid_to_fetch_from
+    )
     incidents = []
     for mail in mails_fetched:
         incidents.append(mail.convert_to_incident())
@@ -323,6 +316,7 @@ def fetch_mails(client: IMAPClient,
         if not message_bytes:
             continue
         email_message_object = Email(message_bytes, include_raw_body, save_file, mail_id)
+
         # Add mails if the current email UID is higher than the previous incident UID
         if int(email_message_object.id) > int(uid_to_fetch_from):
             mails_fetched.append(email_message_object)
