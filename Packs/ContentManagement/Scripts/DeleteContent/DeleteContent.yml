@@ -1,13 +1,13 @@
 args:
 - default: false
   description: The ids to deleting. If set, delete only these ids.
-  isArray: false
+  isArray: true
   name: include_ids
   required: false
   secret: false
 - default: false
   description: The ids to exclude from deleting. If set, will delete everything else.
-  isArray: false
+  isArray: true
   name: exclude_ids
   required: false
   secret: false

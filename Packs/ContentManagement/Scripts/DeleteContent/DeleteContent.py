@@ -7,6 +7,8 @@ from CommonServerPython import *
 from abc import ABC, abstractmethod
 
 SCRIPT_NAME = 'DeleteContent'
+ALWAYS_EXCLUDED = ['Base', 'ContentManagement', 'CleanUpContent', 'CommonDashboards', 'CommonScripts', 'CommonReports',
+                   'CommonPlaybooks', 'CommonTypes', 'CommonWidgets', 'DemistoRESTAPI']
 
 
 class EntityAPI(ABC):
@@ -210,13 +212,16 @@ def get_and_delete_entities(entity_api: EntityAPI, excluded_ids: List = [], incl
 
 def main():
     args = demisto.args()
-    excluded_ids = args.get('exclude_ids', []).split(',') if args.get('exclude_ids', []) else []
-    included_ids = args.get('include_ids', []).split(',') if args.get('include_ids', []) else []
+    excluded_ids = args.get('exclude_ids', [])
+    included_ids = args.get('include_ids', [])
     dry_run = True if args.get('dry_run', 'true') == 'true' else False
     deletion_status = 'Failed'
 
     if included_ids and excluded_ids:
         return return_error('')
+
+    if excluded_ids:
+        excluded_ids += ALWAYS_EXCLUDED
 
     try:
         deleted_jobs, undeleted_jobs = get_and_delete_entities(entity_api=JobAPI(), excluded_ids=excluded_ids, included_ids=included_ids, dry_run=dry_run)
