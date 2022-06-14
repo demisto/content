@@ -1,4 +1,3 @@
-
 # pylint: disable=no-name-in-module
 # pylint: disable=no-self-argument
 
@@ -16,18 +15,19 @@ import requests
 import dateparser
 
 from MicrosoftApiModule import *
+
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
-
 ''' CONSTANTS '''
 AUTH_ERROR_MSG = 'Authorization Error: make sure tenant id, client id and client secret is correctly set'
-TYPES_TO_RETRIEVE = {'activities_login': dict(type='activities', filters=
-                     {"activity.eventType": {"eq": ["EVENT_CATEGORY_LOGIN", "EVENT_CATEGORY_FAILED_LOGIN"]}}),
+TYPES_TO_RETRIEVE = {'alerts': dict(type='alerts', filters={}),
                      'activities_admin': dict(type='activities', filters={"activity.type": {"eq": True}}),
-                     'alerts': dict(type='alerts', filters={})}
+                     'activities_login': dict(type='activities', filters=
+                    {"activity.eventType": {"eq": ["EVENT_CATEGORY_LOGIN", "EVENT_CATEGORY_FAILED_LOGIN"]}})}
 
 ''' HELPER CLASSES '''
+
 
 # COPY OF SiemApiModule
 
@@ -100,10 +100,10 @@ class IntegrationOptions(BaseModel):
 
 class IntegrationEventsClient(ABC):
     def __init__(
-        self,
-        request: IntegrationHTTPRequest,
-        options: IntegrationOptions,
-        session=requests.Session(),
+            self,
+            request: IntegrationHTTPRequest,
+            options: IntegrationOptions,
+            session=requests.Session(),
     ):
         self.request = request
         self.options = options
@@ -137,7 +137,7 @@ class IntegrationEventsClient(ABC):
             raise DemistoException(msg) from exc
 
     def _skip_cert_verification(
-        self, skip_cert_verification: Callable = skip_cert_verification
+            self, skip_cert_verification: Callable = skip_cert_verification
     ):
         if not self.request.verify:
             skip_cert_verification()
@@ -151,7 +151,7 @@ class IntegrationEventsClient(ABC):
 
 class IntegrationGetEvents(ABC):
     def __init__(
-        self, client: IntegrationEventsClient, options: IntegrationOptions
+            self, client: IntegrationEventsClient, options: IntegrationOptions
     ) -> None:
         self.client = client
         self.options = options
@@ -185,6 +185,7 @@ class IntegrationGetEvents(ABC):
     def _iter_events(self):
         """Create iterators with Yield"""
         pass
+
 
 # END COPY OF SiemApiModule
 
@@ -239,7 +240,6 @@ class DefenderHTTPRequest(IntegrationHTTPRequest):
 
 
 class DefenderClient(IntegrationEventsClient):
-
     authenticator: DefenderAuthenticator
     request: DefenderHTTPRequest
     options: IntegrationOptions
@@ -339,7 +339,6 @@ class DefenderGetEvents(IntegrationGetEvents):
 
 ''' HELPER FUNCTIONS '''
 
-
 ''' COMMAND FUNCTIONS '''
 
 
@@ -370,7 +369,6 @@ def test_module(get_events: DefenderGetEvents) -> str:
 
 
 def main(command: str, demisto_params: dict):
-
     demisto.debug(f'Command being called is {command}')
 
     try:
