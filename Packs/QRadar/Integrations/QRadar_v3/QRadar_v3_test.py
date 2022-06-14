@@ -6,6 +6,7 @@ import json
 from datetime import datetime
 from typing import Dict, Callable
 import copy
+ 
 
 import QRadar_v3  # import module separately for mocker
 import pytest
@@ -30,7 +31,7 @@ from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_o
     flatten_nested_geolocation_values, get_modified_remote_data_command, get_remote_data_command, is_valid_ip, \
     qradar_ips_source_get_command, qradar_ips_local_destination_get_command, \
     convert_integration_ctx, \
-    perform_long_running_loop
+    perform_long_running_loop, convert_ctx_to_new_structure
 
 from CommonServerPython import DemistoException, set_integration_context, CommandResults, \
     GetModifiedRemoteDataResponse, GetRemoteDataResponse, get_integration_context
@@ -345,7 +346,7 @@ def test_create_single_asset_for_offense_enrichment():
                            None,
                            None,
                            None,
-                           ([], "DemistoException('error occurred', None, None) \nSee logs for further details."))
+                           ([], "DemistoException('error occurred', None) \nSee logs for further details."))
                           ])
 def test_poll_offense_events_with_retry(requests_mock, status_exception, status_response, results_response, search_id,
                                         expected):
@@ -362,7 +363,8 @@ def test_poll_offense_events_with_retry(requests_mock, status_exception, status_
      - Case a: Ensure that expected events are returned.
      - Case b: Ensure that None is returned.
     """
-    context_data = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {}}
+    context_data = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
+                    MIRRORED_OFFENSES_FINISHED_CTX_KEY: {}}
     set_integration_context(context_data)
     if status_exception:
         requests_mock.get(
@@ -1326,3 +1328,16 @@ def test_convert_ctx():
                 'samples': [],
                 }
     assert new_context == expected
+
+
+def test_convert_ctx_to_new_structure():
+    context = {LAST_FETCH_KEY: '15',
+               LAST_MIRROR_KEY: '0',
+               'samples': '[]'}
+    set_integration_context(context)
+    convert_ctx_to_new_structure()
+    assert get_integration_context() == {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
+                                         MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
+                                         LAST_FETCH_KEY: 15,
+                                         LAST_MIRROR_KEY: 0,
+                                         'samples': []}

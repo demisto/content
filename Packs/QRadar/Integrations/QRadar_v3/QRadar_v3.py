@@ -3357,7 +3357,6 @@ def convert_ctx_to_new_structure() -> None:
         cleared_ctx = convert_integration_ctx(new_ctx)
         print_debug_msg(f"Change ctx context data was cleared and changing to {cleared_ctx}")
         set_integration_context(cleared_ctx)
-        safely_update_context_data(cleared_ctx, context_version)
         print_debug_msg(f"Change ctx context data was cleared and changed to {cleared_ctx}")
 
 
