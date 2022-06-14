@@ -24,8 +24,7 @@ def prepare_query_params(params: dict) -> dict:
         'actor': params.get('actor'),
         'entity': params.get('entity'),
     }
-    assert isinstance(query_params['limit'], int)
-    if not 0 < query_params['limit'] < 10000:
+    if not 0 < query_params['limit'] < 10000:  # type: ignore
         raise ValueError('limit argument must be an integer between 1 to 9999.')
     return query_params
 
@@ -129,8 +128,11 @@ def main() -> None:  # pragma: no cover
                 demisto.setLastRun(last_run)
 
             if argToBoolean(params.get('should_push_events', 'true')):
-                send_events_to_xsiam(events, 'slack', 'slack')
-
+                send_events_to_xsiam(
+                    events,
+                    params.get('vendor', 'slack'),
+                    params.get('product', 'slack')
+                )
     except Exception as e:
         return_error(f'Failed to execute {command} command.\nError:\n{e}')
 
