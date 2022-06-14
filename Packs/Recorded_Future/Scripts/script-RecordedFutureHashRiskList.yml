@@ -80,7 +80,7 @@ type: python
 subtype: python2
 tags:
 - RecordedFuture
-comment: Deprecated. No available replacement.
+comment: Deprecated. Use Recorded Future v2 instead.
 enabled: true
 args:
 - name: list
