@@ -1,0 +1,13 @@
+name: F5 ASM
+id: F5_ASM
+fromversion: 6.8.0
+tags: F5 ASM
+rules: ''
+schema: |-
+  {
+    "CEF_F5_ASM": {
+      "_raw_log": {
+        "type": "string",
+        "is_array": false
+      },
+  }

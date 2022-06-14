@@ -3,8 +3,6 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 import re
 
-import traceback
-
 
 # --------------------------------------------------- Helper functions---------------------------------------------
 
@@ -117,7 +115,6 @@ def main():  # pragma: no cover
             CommandResults(readable_output=hr, outputs_prefix='Relationships', outputs=context, outputs_key_field='ID'))
 
     except Exception as e:
-        demisto.error(traceback.format_exc())
         return_error(f'Failed to execute SearchIndicatorRelationships automation. Error: {str(e)}')
 
 
