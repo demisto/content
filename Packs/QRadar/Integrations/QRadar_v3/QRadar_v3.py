@@ -1618,7 +1618,7 @@ def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int
             offenses = [future.result(timeout=DEFAULT_EVENTS_TIMEOUT * 60) for future in futures]
         except concurrent.futures.TimeoutError as e:
             demisto.error(
-                f"Error while enriching mirrored offenses with events: {str(e)} \n {traceback.format_exc()}")
+                f"Error while enriching offenses with events: {str(e)} \n {traceback.format_exc()}")
             update_missing_offenses_from_raw_offenses(raw_offenses, offenses)
     else:
         offenses = raw_offenses
@@ -1638,13 +1638,21 @@ def update_missing_offenses_from_raw_offenses(raw_offenses: list, offenses: list
     """
     Populate offenses with missing offenses
     """
+    ctx, ctx_version = get_integration_context_with_version()
+    changed_ids = []
     offenses_ids = {offense['id'] for offense in raw_offenses} or set()
     updated_offenses_ids = {offense['id'] for offense in offenses} or set()
     missing_ids = offenses_ids - updated_offenses_ids
     if missing_ids:
         for offense in raw_offenses:
-            if offense['id'] in missing_ids:
+            offense_id = offense['id']
+            if offense_id in missing_ids:
                 offenses.append(offense)
+                changed_ids.append(offense_id)
+                ctx[MIRRORED_OFFENSES_QUERIED_CTX_KEY][offense_id] = '-1'
+
+    print_debug_msg(f'Moving {changed_ids} to mirroring queue')
+    safely_update_context_data(ctx, ctx_version, offense_ids=changed_ids)
 
 
 def create_incidents_from_offenses(offenses: List[Dict], incident_type: Optional[str]) -> List[Dict]:
