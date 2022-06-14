@@ -4,7 +4,7 @@ commonfields:
 name: Arkime
 display: Arkime
 category: Utilities
-fromversion: 5.0.0
+fromversion: 6.2.0
 description: Arkime (formerly Moloch) is a large scale, open source, indexed packet capture and search tool.
 configuration:
 - name: url
