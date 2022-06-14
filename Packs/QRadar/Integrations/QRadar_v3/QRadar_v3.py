@@ -3269,9 +3269,9 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
         last_update_time = remote_args.last_update
     last_update = get_time_parameter(last_update_time, epoch_format=True)
     # if this call fails, raise an error and stop command execution
+    user_query = f' AND ({user_query})' if user_query else ''
     offenses = client.offenses_list(range_=range_,
-                                    filter_=f'id <= {highest_fetched_id} AND last_persisted_time > {last_update} '
-                                            f'AND ({user_query})',
+                                    filter_=f'id <= {highest_fetched_id} AND last_persisted_time > {last_update}{user_query}',
                                     sort='+last_persisted_time',
                                     fields='id,start_time,event_count,last_persisted_time')
     new_modified_records_ids = {offense.get('id') for offense in offenses if 'id' in offense}
