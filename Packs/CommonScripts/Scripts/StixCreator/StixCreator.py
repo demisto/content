@@ -7,9 +7,9 @@ from CommonServerPython import *  # noqa: F401
 ''' IMPORTS '''
 import json
 
-from stix2 import Bundle, ExternalReference, Indicator
+from stix2 import Bundle, ExternalReference, Indicator, Vulnerability
 from stix2 import AttackPattern, Campaign, Malware, Infrastructure, IntrusionSet, Report, ThreatActor
-from stix2 import Tool, Vulnerability, CourseOfAction
+from stix2 import Tool, CourseOfAction
 
 SCOs = {
     "file md5": "[file:hashes.md5 ='{}']",
