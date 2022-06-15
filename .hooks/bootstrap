@@ -57,10 +57,10 @@ echo "Check if poetry is valid"
 poetry check
 echo "Installing dependencies..."
 if [ -n "$CI" ]; then
-    echo "In build so installing build envirmoent too"
+    echo "Detected CI env. Running extra requiements"
     poetry install -E build
 else
-    echo "Not in build, so not installing build environment"
+    echo "Detected local env."
     poetry install
 fi
 
