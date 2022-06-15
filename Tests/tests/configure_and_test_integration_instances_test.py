@@ -1,7 +1,7 @@
 import pytest
 
 from Tests.configure_and_test_integration_instances import XSOARBuild, create_build_object, \
-    options_handler, XSIAMBuild, get_non_added_packs_ids, get_turned_non_hidden_packs
+    options_handler, XSIAMBuild, get_non_added_packs_ids, get_turned_non_hidden_packs, update_integration_lists
 
 XSIAM_SERVERS = {
     "qa2-test-111111": {
@@ -115,21 +115,51 @@ NON_HIDDEN_PACKS = [
    "tags": [],
    "marketplaces": [
      "xsoar",
-     "marketplacev2""", False)
+     "marketplacev2""", False),
+    ("""
+    "tags": [],
+    +  "hidden": true,
+    -  "hidden": false,
+    "marketplaces": [
+      "xsoar",
+      "marketplacev2""", False)
 ]
 
 
-@pytest.mark.parametrize('diff, expected_result', NON_HIDDEN_PACKS)
-def test_get_turned_non_hidden_packs(mocker, diff, expected_result):
+@pytest.mark.parametrize('diff, the_expected_result', NON_HIDDEN_PACKS)
+def test_get_turned_non_hidden_packs(mocker, diff, the_expected_result):
     """
     Given:
-        - A pack_metadata.json content returned from git diff.
+        - A pack_metadata.json content returned from the git diff.
     When:
         - Running 'get_turned_non_hidden_packs' method.
     Then:
-        - Assert there the expected result is returned.
+        - Assert the expected result is returned.
     """
     build = create_build_object_with_mock(mocker, 'XSOAR')
     mocker.patch('Tests.configure_and_test_integration_instances.run_git_diff', return_value=diff)
     turned_non_hidden = get_turned_non_hidden_packs({'test'}, build)
-    assert ('test' in turned_non_hidden) is expected_result
+    assert ('test' in turned_non_hidden) is the_expected_result
+
+
+UPDATE_INTEGRATION_LISTS = [
+    (['test1'], ['test2'], ['test2'], lambda new, modified: 'test2' in new and not modified),
+    (['test1'], ['test1'], ['test2'], lambda new, modified: 'test2' not in new and 'test2' in modified),
+    (['test1'], [], ['test2'], lambda new, modified: 'test2' not in new and 'test2' in modified),
+    (['test1'], ['test1'], ['test1'], lambda new, modified: len(new) == 1 and not modified)
+]
+
+
+@pytest.mark.parametrize('new_integrations_names, turned_non_hidden_packs_id, modified_integrations_names, the_expected_result', UPDATE_INTEGRATION_LISTS)
+def test_update_integration_lists(mocker, new_integrations_names, turned_non_hidden_packs_id, modified_integrations_names, the_expected_result):
+    """
+    Given:
+        - New integrations names, modifeid integrations names and turned non-hidden packs ids.
+    When:
+        - Running 'update_integration_lists' method.
+    Then:
+        - Assert the turned non-hidden integrations removed from the modified integrations list and added to the new integration list.
+    """
+    mocker.patch('Tests.configure_and_test_integration_instances.packs_id_to_integrations_names', return_value=turned_non_hidden_packs_id)
+    returned_results = update_integration_lists(new_integrations_names, set(), modified_integrations_names)
+    assert the_expected_result(returned_results[0], returned_results[1])

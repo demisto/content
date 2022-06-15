@@ -269,14 +269,15 @@ class Build:
         for server in self.servers:
             disable_all_integrations(server.client)
 
-    def get_changed_integrations(self) -> tuple:
+    def get_changed_integrations(self, turned_non_hidden: Set[str]) -> Tuple[List[str], List[str]]:
         """
-        Return 2 lists - list of new integrations and list of modified integrations since the commit of the git_sha1.
+        Return 2 lists - list of new integrations names and list of modified integrations names since the commit of the git_sha1.
 
         Args:
             self: the build object
+            turned_non_hidden (Set[str]): The set of packs id which are turned to non-hidden.
         Returns:
-            list of new integrations and list of modified integrations
+            Tuple[List[str], List[str]]: The list of new integrations names and list of modified integrations names.
         """
         new_integrations_files, modified_integrations_files = get_new_and_modified_integration_files(
             self.branch_name) if not self.is_private else ([], [])
@@ -289,7 +290,7 @@ class Build:
         if modified_integrations_files:
             modified_integrations_names = get_integration_names_from_files(modified_integrations_files)
             logging.debug(f'Updated Integrations Since Last Release:\n{modified_integrations_names}')
-        return new_integrations_names, modified_integrations_names
+        return update_integration_lists(new_integrations_names, turned_non_hidden, modified_integrations_names)
 
     @abstractmethod
     def concurrently_run_function_on_servers(self, function=None, pack_path=None, service_account=None):
@@ -1637,24 +1638,43 @@ def create_build_object() -> Build:
         raise Exception(f"Wrong Build object type {options.build_object_type}.")
 
 
-def update_integration_lists(new_integrations: List[str], turned_non_hidden: Set[str], modified_integrations: List[str]) ->\
-        Tuple[List[str], List[str]]:
+def packs_id_to_integrations_names(turned_non_hidden_packs_id: Set[str]) -> List[str]:
     """
-    Add turned_non_hidden list to the new_integrations list and remove it from modified_integrations.
+    Convert packs_id to the integrations names contained in it.
     Args:
-        new_integrations (List[str]): The new integration ids (e.g. "AbnormalSecurity.yml").
-        turned_non_hidden (Set[str]): The turned non-hidden pack ids (e.g. "AbnormalSecurity/pack_metadata.json")
-        modified_integrations (List[str]): The modified integration ids (e.g. "AbnormalSecurity.yml").
+        turned_non_hidden_packs_id (Set[str]): The turned non-hidden pack ids (e.g. "AbnormalSecurity/pack_metadata.json")
+    Returns:
+        List[str]: The turned non-hidden integrations names list.
+    """
+    hidden_integrations = []
+    hidden_integrations_paths = [f'Packs/{pack.split("/")[0]}/Integrations' for pack in turned_non_hidden_packs_id]
+    # extract integration names within the turned non-hidden packs.
+    for hidden_integrations_path in hidden_integrations_paths:
+        hidden_integrations.extend(
+            map(lambda integrations: integrations.split("/")[-1], listdir_fullpath(hidden_integrations_path)))
+    hidden_integrations_names = [integration for integration in hidden_integrations if
+                                 not str(integration).startswith('.')]
+    return hidden_integrations_names
+
+
+def update_integration_lists(new_integrations_names: List[str], turned_non_hidden_packs_id: Set[str],
+                             modified_integrations_names: List[str]) -> Tuple[List[str], List[str]]:
+    """
+    Add the turned non-hidden integrations names to the new integrations names list and remove it from modified integrations names.
+    Args:
+        new_integrations_names (List[str]): The new integration ids (e.g. "AbnormalSecurity").
+        turned_non_hidden_packs_id (Set[str]): The turned non-hidden pack ids (e.g. "AbnormalSecurity/pack_metadata.json")
+        modified_integrations_names (List[str]): The modified integration ids (e.g. "AbnormalSecurity").
     Returns:
         Tuple[List[str], List[str]]: The updated lists.
     """
-    hidden_integrations = []
-    hidden_packs_path = [f'Packs/{pack.split("/")[0]}/Integrations' for pack in turned_non_hidden]
-    for path in hidden_packs_path:
-        hidden_integrations.extend(map(lambda integrations: f'{integrations.split("/")[-1]}.yml', listdir_fullpath(path)))
-    hidden_ymls = [yml for yml in hidden_integrations if not str(yml).startswith('.')]
-    new_integrations.extend(hidden_ymls)
-    return list(set(new_integrations)), list(set(modified_integrations).difference(hidden_ymls))
+    hidden_integrations_names = packs_id_to_integrations_names(turned_non_hidden_packs_id)
+    # update the new integration and the modified integration with the non-hidden integrations.
+    for hidden_integration_name in hidden_integrations_names:
+        if hidden_integration_name in modified_integrations_names:
+            modified_integrations_names.remove(hidden_integration_name)
+            new_integrations_names.append(hidden_integration_name)
+    return list(set(new_integrations_names)), modified_integrations_names
 
 
 def main():
@@ -1665,14 +1685,17 @@ def main():
         2. Disable all enabled integrations.
         3. Finds only modified (not new) packs and install them, same version as in production.
             (before the update in this branch).
-        4. Compares master to commit_sha and return two lists - new integrations and modified in the current branch.
-        5. Configures integration instances (same version as in production) for the modified packs
+        4. Finds all the turned hidden -> non-hidden packs id.
+        5. Compares master to commit_sha and return two lists - new integrations and modified in the current branch.
+           Filter the lists, add the turned non-hidden to the new integrations list and remove it from the modified list.
+           This filter purpose is to ignore the turned-hidden integration tests in the pre-update step. (#CIAC-3009)
+        6. Configures integration instances (same version as in production) for the modified packs
             and runs `test-module` (pre-update).
-        6. Changes marketplace bucket to the new one that was created in create-instances workflow.
-        7. Installs all (new and modified) packs from current branch.
-        8. After updating packs from branch, runs `test-module` for both new and modified integrations,
+        7. Changes marketplace bucket to the new one that was created in create-instances workflow.
+        8. Installs all (new and modified) packs from current branch.
+        9. After updating packs from branch, runs `test-module` for both new and modified integrations,
             to check that modified integrations was not broken. (post-update).
-        9. Prints results.
+        10. Prints results.
     The flow for nightly:
         1. Add server config and restart servers (only in xsoar).
         2. Disable all enabled integrations.
@@ -1690,19 +1713,18 @@ def main():
         build.install_nightly_pack()
     else:
         pack_ids = get_non_added_packs_ids(build)
-        turned_non_hidden = get_turned_non_hidden_packs(pack_ids, build)
-        added_packs_without_hidden = pack_ids - turned_non_hidden
-        build.install_packs(pack_ids=added_packs_without_hidden)
-        new_integrations, modified_integrations = build.get_changed_integrations()
-        update_integration_lists(new_integrations, turned_non_hidden, modified_integrations)
-        pre_update_configuration_results = build.configure_and_test_integrations_pre_update(new_integrations,
-                                                                                            modified_integrations)
+        turned_non_hidden_packs_id = get_turned_non_hidden_packs(pack_ids, build)
+        packs_to_install = pack_ids - turned_non_hidden_packs_id
+        build.install_packs(pack_ids=packs_to_install)
+        new_integrations_names, modified_integrations_names = build.get_changed_integrations(turned_non_hidden_packs_id)
+        pre_update_configuration_results = build.configure_and_test_integrations_pre_update(new_integrations_names,
+                                                                                            modified_integrations_names)
         modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre = pre_update_configuration_results
         installed_content_packs_successfully = build.update_content_on_servers()
         successful_tests_post, failed_tests_post = build.test_integrations_post_update(new_module_instances,
                                                                                        modified_module_instances)
         success = report_tests_status(failed_tests_pre, failed_tests_post, successful_tests_pre, successful_tests_post,
-                                      new_integrations, build)
+                                      new_integrations_names, build)
         if not success or not installed_content_packs_successfully:
             sys.exit(2)
 
