@@ -1623,8 +1623,9 @@ def action_status_get_command(client: CoreClient, args) -> CommandResults:
 
     return CommandResults(
         readable_output=tableToMarkdown(name='Get Action Status', t=result, removeNull=True),
-        outputs={
-            f'{args.get("integration_context_brand", "CoreApiModule")}.GetActionStatus(val.action_id == obj.action_id)': result},
+        outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.'
+                       f'GetActionStatus(val.action_id == obj.action_id)',
+        outputs=result,
         raw_response=result
     )
 
@@ -1917,8 +1918,9 @@ def retrieve_files_command(client: CoreClient, args: Dict[str, str]) -> CommandR
 
     return CommandResults(
         readable_output=tableToMarkdown(name='Retrieve files', t=result, headerTransform=string_to_table_header),
-        outputs={f'{args.get("integration_context_brand", "CoreApiModule")}'
-                 f'.RetrievedFiles(val.action_id == obj.action_id)': result},
+        outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}'
+                       f'.RetrievedFiles(val.action_id == obj.action_id)',
+        outputs=result,
         raw_response=reply
     )
 

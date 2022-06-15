@@ -1203,11 +1203,15 @@ def main():  # pragma: no cover
                                                          "IN_PROGRESS",
                                                          "PENDING_ABORT"])
             raw = polling.raw_response
-            result = raw.get('status') if isinstance(raw, dict) else raw[0].get('status')
-            if polling.scheduled_command or result != 'COMPLETED_SUCCESSFULLY':
+            status = raw.get('status') if isinstance(raw, dict) else raw[0].get('status')
+            if polling.scheduled_command:
                 return_results(polling)
-            else:
+            elif status == 'COMPLETED_SUCCESSFULLY':
                 file_details_results(client, args, True)
+            else:  # status is not in polling value and operation was not COMPLETED_SUCCESSFULLY
+                polling.outputs_prefix = f'{args.get("integration_context_brand", "CoreApiModule")}' \
+                                         f'.RetrievedFiles(val.action_id == obj.action_id)'
+                return_results(polling)
 
         elif command == 'xdr-retrieve-file-details':
             file_details_results(client, args, False)
