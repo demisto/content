@@ -56,7 +56,12 @@ poetry config virtualenvs.in-project true --local
 echo "Check if poetry is valid"
 poetry check
 echo "Installing dependencies..."
-poetry install
+if [ -n "$BUILD" ]; then
+    poetry install --extras build
+else
+    poetry install
+fi
+
 echo "=========================="
 echo "Done setting up virtualenv with poetry"
 echo "Activate the venv by running: poetry shell"
