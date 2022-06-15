@@ -51,10 +51,10 @@ if ! command -v poetry >/dev/null 2>&1; then
 fi
 
 echo "Configure poetry to install virutal enviroment in the project repo (will be availible in (.venv)"
-poetry config virtualenvs.in-project true
-echo "Deleting poetry cache"
-rm -rf ~/.cache/pypoetry
+poetry config virtualenvs.in-project true --local
 
+echo "Check if poetry is valid"
+poetry check
 echo "Installing dependencies..."
 poetry install
 echo "=========================="
