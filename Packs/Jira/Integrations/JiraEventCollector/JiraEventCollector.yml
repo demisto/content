@@ -8,21 +8,10 @@ configuration:
   name: url
   required: true
   type: 0
-- defaultvalue: jira
-  additionalinfo: "For the dataset name for example: jira"
-  display: Vendor name
-  name: vendor
-  required: false
-  type: 0
-- defaultvalue: jira
-  additionalinfo: "For the dataset name for example: jira"
-  display: Product name
-  name: product
-  required: false
-  type: 0
 - display: User name
   additionalinfo: The user name (admin@example.com) and password
   name: credentials
+  displaypassword: API token
   required: true
   type: 9
 - defaultvalue: 3 days
@@ -43,6 +32,18 @@ configuration:
   name: proxy
   required: false
   type: 8
+- defaultvalue: jira
+  additionalinfo: "For the dataset name for example: jira"
+  display: Vendor name
+  name: vendor
+  required: false
+  type: 0
+- defaultvalue: jira
+  additionalinfo: "For the dataset name for example: jira"
+  display: Product name
+  name: product
+  required: false
+  type: 0
 description: 'Jira logs event collector integration for XSIAM.'
 display: Jira Event Collector
 name: Jira Event Collector

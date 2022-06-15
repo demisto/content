@@ -340,7 +340,7 @@ def test_ip(requests_mock):
     the output of the command function with the expected output.
     """
     from HelloWorld import Client, ip_reputation_command
-    from CommonServerPython import Common
+    from CommonServerPython import Common, DBotScoreReliability
 
     ip_to_check = '151.1.1.1'
     mock_response = util_load_json('test_data/ip_reputation.json')
@@ -360,7 +360,7 @@ def test_ip(requests_mock):
         'threshold': 65,
     }
 
-    response = ip_reputation_command(client, args, 65)
+    response = ip_reputation_command(client, args, 65, DBotScoreReliability.C)
 
     assert response[0].outputs == mock_response
     assert response[0].outputs_prefix == 'HelloWorld.IP'
@@ -380,7 +380,7 @@ def test_domain(requests_mock):
     the output of the command function with the expected output.
     """
     from HelloWorld import Client, domain_reputation_command
-    from CommonServerPython import Common
+    from CommonServerPython import Common, DBotScoreReliability
 
     domain_to_check = 'google.com'
     mock_response = util_load_json('test_data/domain_reputation.json')
@@ -400,7 +400,7 @@ def test_domain(requests_mock):
         'threshold': 65,
     }
 
-    response = domain_reputation_command(client, args, 65)
+    response = domain_reputation_command(client, args, 65, DBotScoreReliability.C)
 
     # We modify the timestamps from the raw mock_response of the API, because the
     # integration changes the format from timestamp to ISO8601.
