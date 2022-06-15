@@ -34,6 +34,15 @@
                     "complex": null,
                     "simple": "note"
                 },
+				"Wiz Issue Projects": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "projects",
+						"transformers": []
+					},
+					"simple": ""
+				},
 				"Wiz Issue URL": {
 					"complex": {
 						"accessor": "",
@@ -60,6 +69,24 @@
 								"operator": "concat"
 							}
 						]
+					},
+					"simple": ""
+				},
+				"Wiz Project Owners": {
+					"complex": {
+						"accessor": "projectOwners",
+						"filters": [],
+						"root": "projects",
+						"transformers": []
+					},
+					"simple": ""
+				},
+				"Wiz Project Security Champions": {
+					"complex": {
+						"accessor": "securityChampions",
+						"filters": [],
+						"root": "projects",
+						"transformers": []
 					},
 					"simple": ""
 				},

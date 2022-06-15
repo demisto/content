@@ -197,6 +197,13 @@ script:
     - name: issue_id
       description: issue id
       required: true
+  - name: wiz-get-project-team
+    description: Get the Project Owners and Security Champions details
+    execution: false
+    arguments:
+    - name: project_name
+      description: project name
+      required: true
   - name: wiz-rescan-machine-disk
     description: Rescan a VM disk in Wiz
     execution: false

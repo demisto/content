@@ -67,6 +67,18 @@
                     "complex": null,
                     "simple": "issue.note"
                 },
+				"Wiz Issue Projects": {
+					"complex": null,
+					"simple": "issue.projects"
+				},
+				"Wiz Project Owners": {
+					"complex": null,
+					"simple": "issue.projects.projectOwners"
+				},
+				"Wiz Project Security Champions": {
+					"complex": null,
+					"simple": "issue.projects.securityChampions"
+				},
                 "Wiz Resource Cloud ID": {
                     "complex": null,
                     "simple": "entitySnapshot.providerId"
