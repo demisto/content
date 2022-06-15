@@ -114,7 +114,7 @@ def get_tasks(incident_id: str):
     start_task = find_start_task(tasks)
     tasks_nested_results: Dict = {}
     traverse_tasks(tasks, start_task, tasks_nested_results)
-    task_results, md = get_tasks_and_readable(tasks_nested_results, workplan_url=urls.get('workPlan'))
+    task_results, md = get_tasks_and_readable(tasks_nested_results, urls.get('workPlan'))
     return CommandResults(outputs_prefix='Tasks',
                           outputs_key_field='id',
                           entry_type=EntryType.NOTE,
