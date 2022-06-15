@@ -1,25 +1,26 @@
-from typing import Callable, Tuple
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
-from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException, InvalidArgumentException, TimeoutException
-from PyPDF2 import PdfReader
-from pdf2image import convert_from_path
-import numpy as np
-from PIL import Image
-import tempfile
-from io import BytesIO
 import base64
-import time
-import subprocess
-import traceback
-import re
 import os
+import re
+import subprocess
+import tempfile
+import time
+import traceback
 from enum import Enum
+from io import BytesIO
 from pathlib import Path
+from typing import Callable, Tuple
 
+import numpy as np
+from pdf2image import convert_from_path
+from PIL import Image
+from PyPDF2 import PdfReader
+from selenium import webdriver
+from selenium.common.exceptions import (InvalidArgumentException,
+                                        NoSuchElementException,
+                                        TimeoutException)
 
 # Chrome respects proxy env params
 handle_proxy()
@@ -37,6 +38,8 @@ EMPTY_RESPONSE_ERROR_MSG = "There is nothing to render. This can occur when ther
 DEFAULT_W, DEFAULT_H = '600', '800'
 DEFAULT_W_WIDE = '1024'
 CHROME_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/101.0.4951.64 Safari/537.36'  # noqa
+MAX_FULLSCREEN_W = 8000
+MAX_FULLSCREEN_H = 8000
 DRIVER_LOG = f'{tempfile.gettempdir()}/chromedriver.log'
 DEFAULT_CHROME_OPTIONS = [
     '--no-sandbox',
@@ -70,6 +73,21 @@ class RasterizeType(Enum):
     PNG = 'png'
     PDF = 'pdf'
     JSON = 'json'
+
+
+def check_width_and_height(width: int, height: int) -> Tuple[int, int]:
+    """
+    Verifies that the width and height are not greater than the safeguard limit.
+    Args:
+        width: The given width.
+        height: The given height.
+
+    Returns: The checked width and height values - [width, height]
+    """
+    w = min(width, MAX_FULLSCREEN_W)
+    h = min(height, MAX_FULLSCREEN_H)
+
+    return w, h
 
 
 def return_err_or_warn(msg):
@@ -176,7 +194,7 @@ def quit_driver_and_reap_children(driver):
 
 
 def rasterize(path: str, width: int, height: int, r_type: RasterizeType = RasterizeType.PNG, wait_time: int = 0,
-              offline_mode: bool = False, max_page_load_time: int = 180,
+              offline_mode: bool = False, max_page_load_time: int = 180, full_screen: bool = False,
               r_mode: RasterizeMode = RasterizeMode.WEBDRIVER_PREFERED):
     """
     Capturing a snapshot of a path (url/file), using Chrome Driver
@@ -186,6 +204,9 @@ def rasterize(path: str, width: int, height: int, r_type: RasterizeType = Raster
     :param height: desired snapshot height in pixels
     :param r_type: result type: .png/.pdf
     :param wait_time: time in seconds to wait before taking a screenshot
+    :param max_page_load_time: amount of time to wait for a page load to complete before throwing an error
+    :param full_screen: when set to True, the snapshot will take the whole page
+    :param r_mode: rasterizing mode see: RasterizeMode enum.
     """
     demisto.debug(f'Rasterizing using mode: {r_mode}')
     page_load_time = max_page_load_time if max_page_load_time > 0 else DEFAULT_PAGE_LOAD_TIME
@@ -205,7 +226,7 @@ def rasterize(path: str, width: int, height: int, r_type: RasterizeType = Raster
         for i, r_func in enumerate(rasterize_funcs):  # type: ignore[var-annotated]
             try:
                 return r_func(path=path, width=width, height=height, r_type=r_type, wait_time=wait_time,  # type: ignore[misc]
-                              offline_mode=offline_mode, max_page_load_time=page_load_time)
+                              offline_mode=offline_mode, max_page_load_time=page_load_time, full_screen=full_screen)
             except Exception as ex:
                 if i < (len(rasterize_funcs) - 1):
                     demisto.info(f'Failed rasterize preferred option trying second option. Exception: {ex}')
@@ -227,7 +248,7 @@ def rasterize(path: str, width: int, height: int, r_type: RasterizeType = Raster
 
 
 def rasterize_webdriver(path: str, width: int, height: int, r_type: RasterizeType = RasterizeType.PNG, wait_time: int = 0,
-                        offline_mode: bool = False, max_page_load_time: int = 180):
+                        offline_mode: bool = False, max_page_load_time: int = 180, full_screen: bool = False):
     """
     Capturing a snapshot of a path (url/file), using Chrome Driver
     :param offline_mode: when set to True, will block any outgoing communication
@@ -254,10 +275,10 @@ def rasterize_webdriver(path: str, width: int, height: int, r_type: RasterizeTyp
         elif r_type == RasterizeType.JSON:
             html = driver.page_source
             url = driver.current_url
-            output = {'image_b64': base64.b64encode(get_image(driver, width, height)).decode('utf8'),
+            output = {'image_b64': base64.b64encode(get_image(driver, width, height, full_screen)).decode('utf8'),
                       'html': html, 'current_url': url}
         else:
-            output = get_image(driver, width, height)
+            output = get_image(driver, width, height, full_screen)
         return output
     finally:
         quit_driver_and_reap_children(driver)
@@ -309,17 +330,37 @@ def rasterize_headless_cmd(path: str, width: int, height: int, r_type: Rasterize
         output_file.unlink(missing_ok=True)
 
 
-def get_image(driver, width: int, height: int):
+def get_image(driver, width: int, height: int, full_screen: bool):
     """
     Uses the Chrome driver to generate an image out of a currently loaded path
+    :param width: desired snapshot width in pixels
+    :param height: desired snapshot height in pixels
+    :param full_screen: when set to True, the snapshot will take the whole page
+                        (safeguard limits defined in MAX_FULLSCREEN_W, MAX_FULLSCREEN_H)
     :return: .png file of the loaded path
     """
     demisto.debug('Capturing screenshot')
 
-    # Set windows size
+    # Set windows size to the given width and height:
     driver.set_window_size(width, height)
 
+    if full_screen:
+        # Convention: the calculated values are always larger then the given width and height and smaller than the
+        # safeguard limits
+
+        # Calculates the width and height using the scrollbar of the window:
+        calc_width = driver.execute_script('return document.body.parentNode.scrollWidth')
+        calc_height = driver.execute_script('return document.body.parentNode.scrollHeight')
+
+        # Check that the width and height meet the safeguard limit:
+        calc_width, calc_height = check_width_and_height(calc_width, calc_height)
+        demisto.info(f'Calculated snapshot width is {calc_width}, calculated snapshot height is {calc_height}.')
+
+        # Reset window size
+        driver.set_window_size(calc_width, calc_height)
+
     image = driver.get_screenshot_as_png()
+
     driver.quit()
 
     demisto.debug('Capturing screenshot - COMPLETED')
@@ -330,6 +371,8 @@ def get_image(driver, width: int, height: int):
 def get_pdf(driver, width: int, height: int):
     """
     Uses the Chrome driver to generate an pdf file out of a currently loaded path
+    :param width: desired snapshot width in pixels
+    :param height: desired snapshot height in pixels
     :return: .pdf file of the loaded path
     """
     demisto.debug('Generating PDF')
@@ -410,13 +453,16 @@ def rasterize_command():
     wait_time = int(demisto.args().get('wait_time', 0))
     page_load = int(demisto.args().get('max_page_load_time', DEFAULT_PAGE_LOAD_TIME))
     file_name = demisto.args().get('file_name', 'url')
+    full_screen = argToBoolean(demisto.args().get('full_screen', False))
+
+    w, h = check_width_and_height(w, h)  # Check that the width and height meet the safeguard limit
 
     if not (url.startswith('http')):
         url = f'http://{url}'
     file_name = f'{file_name}.{"pdf" if r_type == RasterizeType.PDF else "png"}'  # type: ignore
 
     output = rasterize(path=url, r_type=r_type, width=w, height=h, wait_time=wait_time, max_page_load_time=page_load,
-                       r_mode=r_mode)
+                       full_screen=full_screen, r_mode=r_mode)
     if r_type == RasterizeType.JSON:
         return_results(CommandResults(raw_response=output, readable_output="Successfully rasterize url: " + url))
         return
@@ -445,12 +491,16 @@ def rasterize_image_command():
     entry_id = args.get('EntryID')
     w, h, r_mode = get_common_args(args)
     file_name = args.get('file_name', entry_id)
+    full_screen = argToBoolean(demisto.args().get('full_screen', False))
+
+    w, h = check_width_and_height(w, h)  # Check that the width and height meet the safeguard limit
 
     file_path = demisto.getFilePath(entry_id).get('path')
     file_name = f'{file_name}.pdf'
 
     with open(file_path, 'rb') as f:
-        output = rasterize(path=f'file://{os.path.realpath(f.name)}', width=w, height=h, r_type=RasterizeType.PDF, r_mode=r_mode)
+        output = rasterize(path=f'file://{os.path.realpath(f.name)}', width=w, height=h, r_type=RasterizeType.PDF,
+                           full_screen=full_screen, r_mode=r_mode)
         res = fileResult(filename=file_name, data=output, file_type=entryTypes['entryInfoFile'])
         demisto.results(res)
 
@@ -462,6 +512,9 @@ def rasterize_email_command():
     r_type = RasterizeType(demisto.args().get('type', 'png').lower())
     file_name = demisto.args().get('file_name', 'email')
     html_load = int(demisto.args().get('max_page_load_time', DEFAULT_PAGE_LOAD_TIME))
+    full_screen = argToBoolean(demisto.args().get('full_screen', False))
+
+    w, h = check_width_and_height(w, h)  # Check that the width and height meet the safeguard limit
 
     file_name = f'{file_name}.{"pdf" if r_type == RasterizeType.PDF else "png"}'  # type: ignore
     with open('htmlBody.html', 'w') as f:
@@ -469,7 +522,7 @@ def rasterize_email_command():
     path = f'file://{os.path.realpath(f.name)}'
 
     output = rasterize(path=path, r_type=r_type, width=w, height=h, offline_mode=offline,
-                       max_page_load_time=html_load, r_mode=r_mode)
+                       max_page_load_time=html_load, full_screen=full_screen, r_mode=r_mode)
     res = fileResult(filename=file_name, data=output)
     if r_type == RasterizeType.PNG:
         res['Type'] = entryTypes['image']
