@@ -1934,3 +1934,417 @@ There is no context output for this command.
 
 #### Command Example
 ```!sentinelone-download-fetched-file activity_id=ACTIVITY_ID agent_id=AGENT_ID password=PossiblyInfected0987&*()```
+
+
+### sentinelone-update-threats-verdict
+***
+Updates the analyst verdict to a group of threats that match the specified input filter.
+
+#### Base Command
+
+`sentinelone-update-threats-verdict`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| action | Analyst verdict action. Can be "undefined", "true_positive", "false_positive","suspicious" | Required | 
+| threat_ids | A comma-separated list of threat IDs. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.Threat.ID | String | The threat ID. |
+| SentinelOne.Threat.Updated | Boolean | Whether the threat was successfully updated the analyst verdict. |
+| SentinelOne.Threat.Updation.Action | String | Name of the analyst verdict action performed on the threats. |
+
+#### Command Example
+```!sentinelone-update-threats-verdict threat_ids="14417837215288624" action=false_positive```
+
+
+### sentinelone-update-alerts-verdict
+***
+Updates the analyst verdict to a group of alerts that match the specified input filter.
+
+
+#### Base Command
+
+`sentinelone-update-alerts-verdict`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| action | Analyst verdict action. Can be "undefined", "true_positive", "false_positive", "suspicious" | Required | 
+| alert_ids | A comma-separated list of alert IDs. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.Alert.ID | String | The alert ID. | 
+| SentinelOne.Alert.Updated | Boolean | Whether the alert was successfully updated the analyst verdict. | 
+| SentinelOne.Alert.Updation.Action | String | Name of the analyst verdict action performed on the alerts. | 
+
+#### Command Example
+```!sentinelone-update-alerts-verdict threat_ids="14417837215288624" action=false_positive```
+
+### sentinelone-create-star-rule
+***
+Creates a custom STAR rule.
+
+
+#### Base Command
+
+`sentinelone-create-star-rule`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name of the star rule | Required | 
+| rule_severity | The rule severity. Can be "Low", "Medium", "High" and "Critical" | Required | 
+| expiration_mode | Type of Expiration Mode. Can be "Permanent" or "Temporary" | Required | 
+| query_type | Type of the query. For now it's "events" | Required | 
+| query | The query string for which to return events. | Required | 
+| description | The description of the star rule | Optional |
+| expiration_date | If expiration mode is "Temporary" then it should be supplied,for example, "2019-08-03T04:49:26.257525Z" | Optional |
+| site_ids | A comma separated list of site IDs | Optional |
+| group_ids | A comma separated list of Group IDs | Optional |
+| account_ids | A comma separated list of Account IDs | Optional |
+| network_quarantine | To enable the network quarantine of the star rule. Can be true or false | Required |
+| treatAsThreat | The treatAsThreat. Can be "Malicious", "Suspicious" and "UNDEFINED" | Required |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.StarRule.ID | String | The star rule ID. | 
+| SentinelOne.StarRule.Name | String | The star rule name. | 
+| SentinelOne.StarRule.Status | String | The status of the star rule |
+| SentinelOne.StarRule.Severity | String | The severity of the star rule |
+| SentinelOne.StarRule.Description | String | The description of the star rule | 
+| SentinelOne.StarRule.Network Quarantine | Boolean | The Network Quarantine of the star rule |
+| SentinelOne.StarRule.Treat As Threat | String | The Treat As Threat of the star rule |
+| SentinelOne.StarRule.Expiration Mode | String | The expiration mode of the star rule |
+| SentinelOne.StarRule.Expiration Date | String | The expiration date of the star rule | 
+| SentinelOne.StarRule.Scope Hierarchy | String | The scope hierarchy of the star rule |
+| SentinelOne.StarRule.Created At | String | The created time for the star rule |
+| SentinelOne.StarRule.Updated At | String | The updated time for the star rule |
+
+
+#### Command Example
+```!sentinelone-create-star-rule name="test" rule_severity=Low expiration_mode=Temporary expiration_date=2022-06-23T09:29:29.206941Z query_type=events query="Dstip EXISTS" network_quarantine=false treatAsThreat=Malicious ```
+
+
+### sentinelone-get-star-rules
+***
+Get a list of Custom Detection Rules for a given scope.
+
+
+#### Base Command
+
+`sentinelone-get-star-rules`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| status | The status of the star rule. You can provide one or more values with comma seperated. Available options are: "Activating, Active, Deleted, Deleting, Disabled, Disabling and Draft".Example: "Draft,Active". | Optional | 
+| creator_contains | Free-text filter by rule creator (supports multiple values). Example:"Service Pack 1". | Optional | 
+| queryType | Return rules with the filtered type. Example: "events". | Optional | 
+| query | Free-text filter by S1 query (supports multiple values). Example:"Service Pack 1". | Optional | 
+| description_contains | Free-text filter by rule description (supports multiple values).Example: "Service Pack 1" | Optional | 
+| ruleIds | A list of Rules IDs. Example: "225494730938493804,225494730938493915". | Optional | 
+| name_contains | Free-text filter by rule name (supports multiple values). Example: "Service Pack 1". | Optional | 
+| accountIds | List of Account IDs to filter by. Example: "225494730938493804,225494730938493915". | Optional | 
+| expirationMode | Return rules with the filtered expiration mode. Example: "Permanent". | Optional | 
+| limit | Limit number of returned items (1-1000). Example: "10". | Optional | 
+| siteIds | List of Site IDs to filter by. Example: "225494730938493804,225494730938493915". | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.StarRule.ID | Number | The Star Rule ID | 
+| SentinelOne.StarRule.Creator | String | The Star Rule Creator | 
+| SentinelOne.StarRule.Name | String | The Star Rule Name | 
+| SentinelOne.StarRule.Status | String | The Star Rule Status | 
+| SentinelOne.StarRule.Severity | String | The Star Rule Severity | 
+| SentinelOne.StarRule.Generated Alerts | String | The Star Rule Generated Alerts | 
+| SentinelOne.StarRule.Description | String | The Star Rule Description | 
+| SentinelOne.StarRule.Status Reason | String | The Star Rule Status Reason | 
+| SentinelOne.StarRule.Expiration Mode | String | The Star Rule Expiration Mode | 
+| SentinelOne.StarRule.Expiration Date | Date | The Star Rule Expiration Date | 
+| SentinelOne.StarRule.Expired | Boolean | The Star Rule Expired or Not | 
+
+
+#### Command Example
+```!sentinelone-get-star-rules```
+
+### sentinelone-update-star-rule
+***
+Updates a custom STAR rule.
+
+
+#### Base Command
+
+`sentinelone-update-star-rule`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rule_id | Rule ID  Example: "225494730938493804". | Required | 
+| name | The name of the star rule | Required | 
+| rule_severity | The rule severity. Can be "Low", "Medium", "High" and "Critical" | Required | 
+| expiration_mode | Type of Expiration Mode. Can be "Permanent" or "Temporary" | Required | 
+| query_type | Type of the query. For now it's "events" | Required | 
+| query | The query string for which to return events. | Required | 
+| description | The description of the star rule | Optional |
+| expiration_date | If expiration mode is "Temporary" then it should be supplied,for example, "2019-08-03T04:49:26.257525Z" | Optional |
+| site_ids | A comma separated list of site IDs | Optional |
+| group_ids | A comma separated list of Group IDs | Optional |
+| account_ids | A comma separated list of Account IDs | Optional |
+| network_quarantine | To enable the network quarantine of the star rule. Can be true or false | Required |
+| treatAsThreat | The treatAsThreat. Can be "Malicious", "Suspicious" and "UNDEFINED" | Required |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.StarRule.ID | String | The star rule ID. | 
+| SentinelOne.StarRule.Name | String | The star rule name. | 
+| SentinelOne.StarRule.Status | String | The status of the star rule |
+| SentinelOne.StarRule.Severity | String | The severity of the star rule |
+| SentinelOne.StarRule.Description | String | The description of the star rule | 
+| SentinelOne.StarRule.Network Quarantine | Boolean | The Network Quarantine of the star rule |
+| SentinelOne.StarRule.Treat As Threat | String | The Treat As Threat of the star rule |
+| SentinelOne.StarRule.Expiration Mode | String | The expiration mode of the star rule |
+| SentinelOne.StarRule.Expiration Date | String | The expiration date of the star rule | 
+| SentinelOne.StarRule.Scope Hierarchy | String | The scope hierarchy of the star rule |
+| SentinelOne.StarRule.Created At | String | The created time for the star rule |
+| SentinelOne.StarRule.Updated At | String | The updated time for the star rule |
+
+
+#### Command Example
+```!sentinelone-update-star-rule rule_id=225494730938493804 name="test" rule_severity=Low expiration_mode=Temporary expiration_date=2022-06-23T09:29:29.206941Z query_type=events query="Dstip EXISTS" network_quarantine=false treatAsThreat=Malicious ```
+
+
+### sentinelone-enable-star-rules
+***
+Activate Custom Detection Rules that match the specified input filter.
+
+
+#### Base Command
+
+`sentinelone-enable-star-rules`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rule_ids | A comma-separated list of star rule IDs. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.StarRule.ID | String | The Rule ID. | 
+| SentinelOne.StarRule.Enabled | Boolean | Whether the star rule was successfully eabled or not. | 
+
+#### Command Example
+```!sentinelone-enable-star-rules rule_ids=225494730938493804```
+
+### sentinelone-disable-star-rules
+***
+Disable Custom Detection Rules that match the specified input filter.
+
+
+#### Base Command
+
+`sentinelone-disable-star-rules`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rule_ids | A comma-separated list of star rule IDs. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.StarRule.ID | String | The Rule ID. | 
+| SentinelOne.StarRule.Disabled | Boolean | Whether the star rule was successfully disabled or not. | 
+
+#### Command Example
+```!sentinelone-disable-star-rules rule_ids=225494730938493804```
+
+### sentinelone-delete-star-rule
+***
+Deletes Custom Detection Rules that match the specified input filter.
+
+
+#### Base Command
+
+`sentinelone-delete-star-rule`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rule_ids | A comma-separated list of star rule IDs. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.StarRule.ID | String | The Rule ID. | 
+| SentinelOne.StarRule.Deleted | Boolean | Whether the star rule was successfully deleted or not. | 
+
+#### Command Example
+```!sentinelone-delete-star-rule rule_ids=225494730938493804```
+
+### sentinelone-write-threat-note
+***
+Add a threat note to one or more threats.
+
+
+#### Base Command
+
+`sentinelone-write-threat-note`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| threat_ids | A comma-separated list of threat IDs. | Required | 
+| note | Threat Note Text | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.Threat.ID | String | The Threat ID. | 
+| SentinelOne.Threat.Note | String | The Threat Note. | 
+| SentinelOne.Threat.Status | String | Whether the note was added successfully or not. | 
+
+#### Command Example
+```!sentinelone-write-threat-note threat_ids=14417837215288624 note="a sample test"```
+
+### sentinelone-create-ioc
+***
+Add an IoC to the Threat Intelligence database.
+
+
+#### Base Command
+
+`sentinelone-create-ioc`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Threat Intelligence indicator name. | Required | 
+| source | The source of the identified Threat Intelligence indicator. | Required | 
+| type | The type of the Threat Intelligence indicator | Required | 
+| method | The comparison method used by SentinelOne to trigger the event. | Required | 
+| validUntil | Expiration date for the Threat Intelligence indicator. | Required |
+| value | The value of the Threat Intelligence indicator. | Required |
+| account_ids | List of Account IDs to filter by. | Required | 
+| externalId | The unique identifier of the indicator as provided by the Threat Intelligence source | Optional |
+| description | Description of the Threat Intelligence indicator | Optional |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.IOC.UUID | String | The IOC UUID. | 
+| SentinelOne.IOC.Name | String | Threat Intelligence indicator name. | 
+| SentinelOne.IOC.Source | String | The source of the identified Threat Intelligence indicator. |
+| SentinelOne.IOC.Type | String | The type of the Threat Intelligence indicator. |
+| SentinelOne.IOC.Batch Id | String | The IOC Batch Id. |
+| SentinelOne.IOC.Creator | String | The IOC Creator. |
+| SentinelOne.IOC.Scope | String | The IOC Scope. |
+| SentinelOne.IOC.Scope Id | String | The IOC Scope Id. |
+| SentinelOne.IOC.Valid Until | String | Expiration date for the Threat Intelligence indicator. |
+| SentinelOne.IOC.Description | String | Description of the Threat Intelligence indicator |
+| SentinelOne.IOC.External Id | String | The unique identifier of the indicator as provided by the Threat Intelligence source |
+
+#### Command Example
+```!sentinelone-create-ioc name="test" source="proof_test" type="IPV4" method="EQUALS" validUntil="2022-06-25T07:52:09.428858Z" value="10.0.2.15" account_ids="106802936546889425464"```
+
+
+### sentinelone-delete-ioc
+***
+Delete an IoC from the Threat Intelligence database that matches a filter.
+
+
+#### Base Command
+
+`sentinelone-delete-ioc`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_ids | List of Account IDs to filter by. | Required | 
+| uuids | UUID of threat Intelligence indicator. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.IOC.UUID | String | The IOC UUID. | 
+| SentinelOne.IOC.Deleted | Boolean | Threat Intelligence indicator deleted or not. | 
+
+#### Command Example
+```!sentinelone-delete-ioc account_ids=106802961889425793 uuids=ef367d66175288e75fa6b29c53d46d4```
+
+### sentinelone-get-iocs 
+***
+Get the IOCs of a specified Account that match the filter.
+
+#### Base Command
+
+`sentinelone-get-iocs`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| account_ids | List of Account IDs to filter by. | Required |  
+| upload_time_gte | The time at which the Threat Intelligence indicator was uploaded to SentinelOne DB greater or equal than. Example: "2022-07-13T20:33:29.007906Z". | Required |
+| upload_time_lte | The time at which the Threat Intelligence indicator was uploaded to SentinelOne DB lessthan or equal than. Example: "2022-07-13T20:33:29.007906Z". | Required |
+| limit | Limit number of returned items (1-1000). Example: "10". But limit is defaulted to 1000 | Optional |
+| cursor | Cursor position returned by the last request. Should be used for iterating over more than 1000 items. Example: "YWdlbnRfaWQ6NTgwMjkzODE=". | Optional |
+| uuids | A list of unique Ids of the parent process of the indicator of compromise. Example: "2cffae871197f20d864fe8363eee6651". | Optional |
+| type | The type of the Threat Intelligence indicator | OPtional |
+| batch_id | Unique ID of the uploaded indicators batch. Example: "atmtn000000028a881bcf939dc6d92ab55443". | Optional |
+| source | List of the sources of the identified Threat Intelligence indicator. Example: "AlienVault". | Optional | 
+| value | The value of the Threat Intelligence indicator. Example: "175.0.x.x". | Optional |
+| external_id | The unique identifier of the indicator as provided by the Threat Intelligence source. Example: "e277603e-1060-5ad4-9937-c26c97f1ca68". | Optional |
+| name_contains | Free-text filter by the Indicator name (supports multiple values). Example: "foo.dll". | Optional |
+| creator_contains | Free-text filter by the user uploaded the Threat Intelligence indicator (supports multiple values). Example: "admin@sentinelone.com". | Optional | 
+| description_contains | Free-text filter by the description of the indicator (supports multiple values). Example: "Malicious-activity". | Optional |
+| category_in | The categories of the Threat Intelligence indicator, e.g. the malware type associated with the IOC | Optional |
+| updated_at_gte | The time at which the indicator was last updated in SentinelOne DB greater or equal than. Example: "2021-07-13T20:33:29.007906Z". | Optional |
+| updated_at_lte | The time at which the indicator was last updated in SentinelOne DB lessthan or equal than. Example: "2021-07-13T20:33:29.007906Z". | Optional |
+| creation_time_gte | Creation Time as set by the user greater or equal than. Example: "2021-07-13T20:33:29.007906Z". | Optional |
+| creation_time_lte | Creation Time as set by the user lessthan or equal than. Example: "2021-07-13T20:33:29.007906Z". | Optional |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.IOC.UUID | String | The IOC UUID. | 
+| SentinelOne.IOC.Creator | String | Threat Intelligence indicator Creator. | 
+| SentinelOne.IOC.Name | String | Threat Intelligence indicator Name. |
+| SentinelOne.IOC.Value | String | Threat Intelligence indicator Value. |
+| SentinelOne.IOC.Description | String | Threat Intelligence indicator Description. |
+| SentinelOne.IOC.Type | String | Threat Intelligence indicator Type. |
+| SentinelOne.IOC.External Id | String | Threat Intelligence indicator External Id. |
+| SentinelOne.IOC.Source | String | Threat Intelligence indicator Source. |
+| SentinelOne.IOC.Upload Time | String | Threat Intelligence indicator Upload Time. |
+| SentinelOne.IOC.Valid Until | String | Threat Intelligence indicator Expiration Time. |
+
+#### Command Example
+```!sentinelone-get-iocs account_ids="1068029618885547693" upload_time_gte="2022-04-25T07:52:09.428858Z" upload_time_lte="2022-06-30T07:52:09.428858Z"```

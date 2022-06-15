@@ -1827,9 +1827,6 @@ script:
     - contextPath: SentinelOne.StarRule.Treat As Threat
       description: The Treat As Threat of the star rule
       type: String
-    - contextPath: SentinelOne.StarRule.Treat As Threat
-      description: The Treat As Threat of the star rule
-      type: String
     - contextPath: SentinelOne.StarRule.Expiration Mode
       description: The expiration mode of the star rule
       type: String
@@ -1843,7 +1840,8 @@ script:
       description: The created time for the star rule
       type: String
     - contextPath: SentinelOne.StarRule.Updated At
-      description: The updated
+      description: The updated time for the star rule
+      type: String
   - arguments:
     - name: rule_ids
       required: true
