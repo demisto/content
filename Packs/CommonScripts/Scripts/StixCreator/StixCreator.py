@@ -25,7 +25,7 @@ SCOs = {
     "username": "[user-account:account_login = '{}']",
     "domain": "[domain-name:value = '{}']",
     "hostname": "[domain-name:value = '{}']",
-    "registry path reputation": "[windows-registry-key:key = '{}']"
+    "registry key": "[windows-registry-key:key = '{}']"
 }
 
 SDOs = {
