@@ -92,11 +92,11 @@ create-instances:
   stage: create-instances
   script:
     - !reference [.download-demisto-conf]
-    - !reference [.create-id-set]
+    - !reference [.create-id-set-xsoar]
     - !reference [.create-release-notes-and-common-docs]
 
     - section_start "Create Content Artifacts and Update Conf" --collapsed
-    - demisto-sdk create-content-artifacts -a $ARTIFACTS_FOLDER --cpus 8 --content_version $CONTENT_VERSION >> $ARTIFACTS_FOLDER/logs/create_content_artifacts.log
+    - demisto-sdk create-content-artifacts -a $ARTIFACTS_FOLDER --cpus 8 --content_version $CONTENT_VERSION --marketplace "xsoar" -fbi -idp ./Tests/id_set.json >> $ARTIFACTS_FOLDER/logs/create_content_artifacts.log
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY"
     - successful_feature_branch_build=$(gsutil ls "gs://xsoar-ci-artifacts/content/$FEATURE_BRANCH_NAME/*" | tail -n 1 | grep -o -E "content/$FEATURE_BRANCH_NAME/[0-9]*")
     - echo $successful_feature_branch_build
