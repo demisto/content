@@ -2,7 +2,7 @@ commonfields:
   id: MitreIDLayoutDynamicSection
   version: -1
 name: MitreIDLayoutDynamicSection
-comment: Deprecated. No available replacement.
+comment: Deprecated. Use FeedMitreAttackv2 instead.
 script: '-'
 type: python
 tags:

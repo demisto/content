@@ -11,7 +11,7 @@ args:
   name: from
   required: false
   secret: false
-comment: Deprecated. No available replacement.
+comment: Deprecated. Use FeedMitreAttackv2 instead.
 commonfields:
   id: MITREIndicatorsByOpenIncidents
   version: -1
