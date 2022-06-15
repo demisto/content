@@ -106,10 +106,11 @@ def add_url_to_tasks(tasks: List[Dict[str, str]], workplan_url: str):
 
 def get_tasks(incident_id: str):
     urls = demisto.demistoUrls()  # works in multi tenant env as well
-    uri = f'/investigation/{incident_id}/workplan'
-    res = demisto.internalHttpRequest('GET', uri=uri)
+    res = demisto.internalHttpRequest('GET', f'/investigation/{incident_id}/workplan')
+    demisto.debug(f'sent GET /investigation/{incident_id}/workplan, got response={res}')
     if not (tasks := json.loads(res.get('body', '{}')).get('invPlaybook', {}).get('tasks', {})):
         raise DemistoException(f'Workplan for incident {incident_id}, has no tasks.')
+    demisto.debug(f'got {len(tasks)} tasks')
     start_task = find_start_task(tasks)
     tasks_nested_results: Dict = {}
     traverse_tasks(tasks, start_task, tasks_nested_results)
