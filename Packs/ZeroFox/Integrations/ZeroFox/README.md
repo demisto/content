@@ -11,7 +11,7 @@ This integration was integrated and tested with api version 1.0 of ZeroFox
 
     | **Parameter** | **Required** |
     | --- | --- |
-    | URL (e.g. https://api.zerofox.com/1.0) | True |
+    | URL (e.g., https://api.zerofox.com/1.0) | True |
     | Username | True |
     | Password | True |
     | Trust any certificate (not secure) | False |
@@ -156,7 +156,7 @@ Adds tags to and or removes tags from a specified alert.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| action | Adds or removes tags. Can be "add" or "remove". The default is "add". Possible values are: add, remove. Default is add. | Optional |
+| action | Adds or removes tags. Possible values are: add, remove. Default is add. | Optional |
 | alert_id | The ID of an alert. Can be retrieved by running the zerofox-list-alerts command. | Required |
 | tags | A CSV of tags to be added to or removed from an alert. | Required |
 
@@ -216,7 +216,7 @@ Returns alerts that match user-defined or default filters and parameters. By def
 | entity | The ID of the ZeroFox entity. | Optional |
 | entity_term | The term ID of the ZeroFox entity. | Optional |
 | last_modified | The amount of time (in seconds) since an alert was last modified. | Optional |
-| limit | The maximum number of alerts to retrieve (0 - 100). The default is 10. Default is 10. | Optional |
+| limit | The maximum number of alerts to retrieve (0 - 100). Default is 10. | Optional |
 | max_timestamp | The ending date-time string (in ISO-8601 format) by which to filter alerts. | Optional |
 | min_timestamp | The starting date-time string (in ISO-8601 format) by which to filter alerts. | Optional |
 | network | Filters results by the specified network names. | Optional |
@@ -231,7 +231,7 @@ Returns alerts that match user-defined or default filters and parameters. By def
 | perpetrator_search | The substring used to filter alerts by the username or display name of a perpetrator. | Optional |
 | pro_social_obj_search | The substring used to filter alerts by the username, display name, or entity term name of protected social objects. | Optional |
 | alert_id | CSV list of alert IDs. | Optional |
-| risk_rating | Risk rating of alert. Can be "Critical", "High", "Medium", "Low", of "Info". Possible values are: Critical, High, Medium, Low, Info. | Optional |
+| risk_rating | Risk rating of alert. Possible values are: Critical, High, Medium, Low, Info. | Optional |
 | sort_direction | Sorts results in ascending or descending order. Possible values are: asc, desc. | Optional |
 | sort_field | Field used for defining alert filter for sorting. Possible values are: alert_id, alert_status, alert_type, assigned_user, perpetrator, protected_entity, protected_social_object, rule, severity, social_network, timestamp, escalated. | Optional |
 | status | The alert status. Possible values are: closed, open, takedown_accepted, takedown_denied, takedown_requested, whitelisted. | Optional |
@@ -290,8 +290,8 @@ Creates a new entity associated with the company of the authorized user.
 | --- | --- | --- |
 | name | Name of the entity (may be non-unique). | Required |
 | strict_name_matching | Indicates the type of string matching used for comparing entity names to impersonator names. | Optional |
-| tags | List of string tags for tagging the entity.<br/>Seperated by a comma, for example:<br/>label1,label2,label3. | Optional |
-| policy_id | The ID of the policy to assign to the new entity. Can be retrieved running the zerofox-get-policy-types command. Possible values are: . | Optional |
+| tags | Comma-separated list of string tags for tagging the entity. <br/>For example:<br/>label1,label2,label3. | Optional |
+| policy_id | The ID of the policy to assign to the new entity. Can be retrieved running the zerofox-get-policy-types command. | Optional |
 | organization | The name of the organization associated with the entity. | Optional |
 
 
