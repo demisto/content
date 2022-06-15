@@ -1,6 +1,6 @@
-id: Arkime
+id: Arkime Test playbook
 version: -1
-name: Arkime
+name: Arkime Test playbook
 starttaskid: '0'
 tasks:
   '0':
