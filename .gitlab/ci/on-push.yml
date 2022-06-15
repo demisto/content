@@ -134,7 +134,6 @@ create-instances:
     - ./Tests/scripts/upload_artifacts.sh
     - section_end "Upload Artifacts to GCP"
 
-
 prepare-testing-bucket-mpv2:
   tags:
     - gke
