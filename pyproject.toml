@@ -1,0 +1,45 @@
+[tool.poetry]
+name = "content"
+version = "0.1.0"
+description = "Cortex XSOAR content"
+authors = ["Cortex XSOAR"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.8,<3.11"
+blessings = "^1.7"
+coloredlogs = "^15.0.1"
+demisto_py = "^3.1.6"
+demisto_sdk= "^1.6.8"
+freezegun = "^1.1.0"
+pandas = "^1.3.3"
+prettytable = "^3.2.0"
+pyspellchecker = "^0.6.2"
+sendgrid = "^6.6.0"
+slack_sdk = "^3.11.2"
+timeout_decorator = "^0.5.0"
+ujson = "^5.1.0"
+yamlordereddictloader = "^0.4.0"
+parinx = {git = "https://github.com/npsolve/parinx.git", rev = "6493798ceba8089345d970f71be4a896eb6b081d"}
+requests = "^2.22.0"
+urllib3 = "^1.25.7"
+pytest = "^7.1.2"
+mock-open = "^1.4.0"
+python-gitlab = "^2.6.0"
+PyGithub = "^1.54.1"
+requests-mock = "^1.9.3"
+pytest-mock = "^3.7.0"
+db-dtypes = "^1.0.1"
+google-cloud-bigquery = "^3.1.0"
+ansible-runner = "^2.2.0"
+paramiko = "^2.11.0"
+boto3 = "^1.24.9"
+flake8 = "^4.0.1"
+mypy = "^0.942"
+jsonschema = "^4.6.0"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
