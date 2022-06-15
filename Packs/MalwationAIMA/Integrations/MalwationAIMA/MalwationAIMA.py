@@ -1,6 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import traceback
 
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
