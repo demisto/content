@@ -34,7 +34,7 @@ fi
 
 # test if any of the lint libraries has been updated
 
-DIFF_RES=$(git diff  "$DIFF_COMPARE" -- dev-requirements-py*  | grep -E '\+(flake8|mypy|demisto-sdk|git\+https://github.com/demisto/demisto-sdk|bandit|vulture)' )
+DIFF_RES=$(git diff  "$DIFF_COMPARE" -- poetry.lock)
 
 if [[ -n "$DIFF_RES" ]]; then
     echo -e "Found modified dependency packages:\n$DIFF_RES"
