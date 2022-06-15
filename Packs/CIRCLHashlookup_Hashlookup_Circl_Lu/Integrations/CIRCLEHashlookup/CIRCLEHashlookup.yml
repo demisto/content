@@ -36,16 +36,6 @@ configuration:
   name: create_relationships
   required: false
   type: 8
-contentitemexportablefields:
-  contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: 73f9961b-e930-45c5-86ef-a48e90e62242
-    packName: CIRCL hashlookup (hashlookup.circl.lu) Contribution Pack
-    propagationLabels:
-    - all
-    toServerVersion: ""
 description: CIRCL hash lookup is a public API to lookup hash values against known
   database of files. NSRL RDS database is included and many others are also included.
   The API is accessible via HTTP ReST API and the API is also described as an OpenAPI.
