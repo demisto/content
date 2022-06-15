@@ -12,22 +12,16 @@ alter
         XDM.Endpoint.Target.host.device_id = machineId,			
         XDM.Endpoint.Target.host.fqdn = computerDnsName,	
         XDM.Endpoint.threat.mitre_techniques = json_extract_array(mitreTechniques, "$."),
-        evidence_arr = json_extract_array (evidence ,"$.")
-| alter
-        XDM.Endpoint.Target.file.sha256	= arraystring (arraymap (evidence_arr, json_extract_scalar ("@element", "$.sha256")),","),
-        XDM.Endpoint.Target.file.filename = arraystring (arraymap (evidence_arr, json_extract_scalar ("@element", "$.fileName")),","),
-        XDM.Endpoint.Target.file.path = arraystring (arraymap (evidence_arr, json_extract_scalar ("@element", "$.filePath")),","),	
-        XDM.Endpoint.Target.process.command_line = arraystring (arraymap (evidence_arr, json_extract_scalar ("@element", "$.processCommandLine")),","),	
-        XDM.Endpoint.Target.process.parent_id = arraystring (arraymap (evidence_arr, json_extract_scalar ("@element", "$.parentProcessId")),","),		
-        XDM.Endpoint.Target.host.ipv4_addresses	= arraymap (evidence_arr, json_extract_scalar ("@element", "$.ipAddress")),	
-        XDM.Endpoint.Target.registry.key = arraystring (arraymap (evidence_arr, json_extract_scalar ("@element", "$.registryKey")),","),		
-        XDM.Endpoint.Target.registry.value_type	= arraystring (arraymap (evidence_arr, json_extract_scalar ("@element", "$.registryValueType")),","),		
-        XDM.Endpoint.Target.registry.value = arraystring (arraymap (evidence_arr, json_extract_scalar ("@element", "$.registryValue")),","),	
-        XDM.Endpoint.Actor.user.username = arraystring (arraymap (evidence_arr, json_extract_scalar ("@element", "$.accountName")),","),		
-        XDM.Endpoint.Actor.user.domain = arraystring (arraymap (evidence_arr, json_extract_scalar ("@element", "$.domainName")),","),	
-        XDM.Endpoint.Actor.user.identifier = arraystring (arraymap (evidence_arr, json_extract_scalar ("@element", "$.userSid")),","),
-        
-        process_ids = arraymap (evidence_arr, json_extract_scalar ("@element", "$.processId"))	
-
-| alter
-        XDM.Endpoint.Target.process.pid	= to_integer(if(array_length(process_ids) > 0, arrayindex(process_ids, 0), null));		
+        XDM.Endpoint.Target.file.sha256	= json_extract_scalar(evidence, "$.sha256"),
+        XDM.Endpoint.Target.file.filename = json_extract_scalar(evidence, "$.fileName"),		
+        XDM.Endpoint.Target.file.path = json_extract_scalar(evidence, "$.filePath"),	
+        XDM.Endpoint.Target.process.pid	= to_integer(json_extract_scalar(evidence, "$.processId")),		
+        XDM.Endpoint.Target.process.command_line = json_extract_scalar(evidence, "$.processCommandLine"),		
+        XDM.Endpoint.Target.process.parent_id = json_extract_scalar(evidence, "$.parentProcessId"),		
+        XDM.Endpoint.Target.host.ipv4_addresses	= if(json_extract_scalar(evidence, "$.ipAddress") != null, arraycreate(json_extract_scalar(evidence, "$.ipAddress")), null),	
+        XDM.Endpoint.Target.registry.key = json_extract_scalar(evidence, "$.registryKey"),		
+        XDM.Endpoint.Target.registry.value_type	= json_extract_scalar(evidence, "$.registryValueType"),		
+        XDM.Endpoint.Target.registry.value = json_extract_scalar(evidence, "$.registryValue"),	
+        XDM.Endpoint.Actor.user.username = json_extract_scalar(evidence, "$.accountName"),		
+        XDM.Endpoint.Actor.user.domain = json_extract_scalar(evidence, "$.domainName"),	
+        XDM.Endpoint.Actor.user.identifier = json_extract_scalar(evidence, "$.userSid");
