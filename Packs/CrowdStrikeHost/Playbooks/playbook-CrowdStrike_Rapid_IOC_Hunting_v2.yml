@@ -3,7 +3,7 @@ version: -1
 name: CrowdStrike Rapid IOC Hunting v2
 deprecated: true
 hidden: true
-description: Deprecated. No available replacement."
+description: Deprecated. Use CrowdStrike Falcon instead.
 starttaskid: "0"
 tasks:
   "0":
