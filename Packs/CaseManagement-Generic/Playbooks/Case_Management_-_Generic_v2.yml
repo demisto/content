@@ -580,8 +580,8 @@ tasks:
       brand: ''
       id: 70d0f89c-9f27-441d-8acc-2b8cf37c051a
       iscommand: false
-      name: cd1b3efe-1f9b-4574-8ef7-04afbaf88640
-      playbookId: cd1b3efe-1f9b-4574-8ef7-04afbaf88640
+      name: Case Management - Generic - Set SLAs based on Severity
+      playbookId: Case Management - Generic - Set SLAs based on Severity
       type: playbook
       version: -1
       description: ''
