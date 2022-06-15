@@ -284,6 +284,7 @@ def main():
         return_results(' , '.join(msg_list))
         return msg_list
     except Exception as ex:
+        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute URL Phishing script. Error: {str(ex)}')
 
 
