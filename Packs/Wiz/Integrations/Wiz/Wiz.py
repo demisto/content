@@ -308,6 +308,16 @@ def get_filtered_issues(issue_type, resource_id, severity, limit):
                 name
                 slug
                 businessUnit
+                projectOwners {
+                    id
+                    name
+                    email
+                }
+                securityChampions {
+                    id
+                    name
+                    email
+                }
                 riskProfile {
                     businessImpact
                 }
