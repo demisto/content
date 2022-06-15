@@ -10,6 +10,78 @@ inputs:
   required: false
   value:
     simple: 'True'
+- description: "Set to \"True\" to enable setting SLAs for the Incident, Time to Assignment, and Remediation SLA Timers.  \n\nComplete the other inputs to set the SLA, and Timer SLAs based on Severity."
+  key: SetSLAs
+  playbookInputQuery:
+  required: false
+  value:
+    simple: 'False'
+- description: Set to "True" to set the SLA on the Incident.
+  key: SetIncidentSLAs
+  playbookInputQuery:
+  required: false
+  value:
+    simple: 'False'
+- description: Set to "True" to set the SLAs on the Time to Assignment Timer.
+  key: SetTimeToAssignmentSLAs
+  playbookInputQuery:
+  required: false
+  value:
+    simple: 'False'
+- description: Set to "True" to set the SLAs on the Remediation SLA Timer.
+  key: SetRemediationTimerSLA
+  playbookInputQuery:
+  required: false
+  value:
+    simple: 'False'
+- description: Number in minutes for the Incident and Remediation Timer SLAs, when the severity of the Incident is Critical.
+  key: CriticalRemediationSLA
+  playbookInputQuery:
+  required: false
+  value:
+    simple: '180'
+- description: Number in minutes for the Incident and Remediation Timer SLAs, when the severity of the Incident is High.
+  key: HighRemediationSLA
+  playbookInputQuery:
+  required: false
+  value:
+    simple: '300'
+- description: Number in minutes for the Incident and Remediation Timer SLAs, when the severity of the Incident is Medium.
+  key: MediumRemediationSLA
+  playbookInputQuery:
+  required: false
+  value:
+    simple: '1440'
+- description: Number in minutes for the Incident and Remediation Timer SLAs, when the severity of the Incident is Low or Informational.
+  key: LowRemediationSLA
+  playbookInputQuery:
+  required: false
+  value:
+    simple: '7200'
+- description: 'Number in minutes for the Time to Assignment Timer SLA, when the severity of the Incident is Critical. '
+  key: CriticalTimeToAssignSLA
+  playbookInputQuery:
+  required: false
+  value:
+    simple: '15'
+- description: 'Number in minutes for the Time to Assignment Timer SLA, when the severity of the Incident is High. '
+  key: HighTimeToAssignSLA
+  playbookInputQuery:
+  required: false
+  value:
+    simple: '60'
+- description: 'Number in minutes for the Time to Assignment Timer SLA, when the severity of the Incident is Medium. '
+  key: MediumTimeToAssignSLA
+  playbookInputQuery:
+  required: false
+  value:
+    simple: '180'
+- description: 'Number in minutes for the Time to Assignment Timer SLA, when the severity of the Incident is Low or Informational. '
+  key: LowTimeToAssignSLA
+  playbookInputQuery:
+  required: false
+  value:
+    simple: '1440'
 name: Case Management - Generic v2
 outputs: []
 starttaskid: '0'
@@ -67,7 +139,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1650
+          "y": 2000
         }
       }
   '16':
@@ -97,7 +169,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1475
+          "y": 1825
         }
       }
   '18':
@@ -137,7 +209,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1155
+          "y": 1505
         }
       }
   '20':
@@ -147,7 +219,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - '28'
+      - '29'
     note: false
     quietmode: 0
     separatecontext: true
@@ -200,7 +272,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1330
+          "y": 1680
         }
       }
   '23':
@@ -232,7 +304,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1330
+          "y": 1680
         }
       }
   '24':
@@ -306,7 +378,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 152.5,
+          "x": 377.5,
           "y": 370
         }
       }
@@ -342,7 +414,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 152.5,
+          "x": 377.5,
           "y": 515
         }
       }
@@ -403,7 +475,124 @@ tasks:
       {
         "position": {
           "x": 265,
+          "y": 1360
+        }
+      }
+  '29':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.SetSLAs
+          operator: isEqualString
+          right:
+            value:
+              simple: 'True'
+      label: yes
+    id: '29'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '28'
+      yes:
+      - '30'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Checks if the SetSLAs input is set to True, and if so moves to the sub-playbook to set the SLAs based on Severity.
+      id: 231c97f8-f8b6-4a70-839f-e06648119fc6
+      iscommand: false
+      name: Should we set SLAs based on Severity?
+      type: condition
+      version: -1
+    taskid: 231c97f8-f8b6-4a70-839f-e06648119fc6
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 265,
           "y": 1010
+        }
+      }
+  '30':
+    id: '30'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '28'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      CriticalRemediationSLA:
+        complex:
+          root: inputs.CriticalRemediationSLA
+      CriticalTimeToAssignSLA:
+        complex:
+          root: inputs.CriticalTimeToAssignSLA
+      HighRemediationSLA:
+        complex:
+          root: inputs.HighRemediationSLA
+      HighTimeToAssignSLA:
+        complex:
+          root: inputs.HighTimeToAssignSLA
+      LowRemediationSLA:
+        complex:
+          root: inputs.LowRemediationSLA
+      LowTimeToAssignSLA:
+        complex:
+          root: inputs.LowTimeToAssignSLA
+      MediumRemediationSLA:
+        complex:
+          root: inputs.MediumRemediationSLA
+      MediumTimeToAssignSLA:
+        complex:
+          root: inputs.MediumTimeToAssignSLA
+      SetIncidentSLAs:
+        complex:
+          root: inputs.SetIncidentSLAs
+      SetRemediationTimerSLA:
+        complex:
+          root: inputs.SetRemediationTimerSLA
+      SetTimeToAssignmentSLAs:
+        complex:
+          root: inputs.SetTimeToAssignmentSLAs
+      Severity:
+        complex:
+          accessor: severity
+          root: incident
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 70d0f89c-9f27-441d-8acc-2b8cf37c051a
+      iscommand: false
+      name: Case Management - Generic - Set SLAs based on Severity
+      playbookId: Case Management - Generic - Set SLAs based on Severity
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 70d0f89c-9f27-441d-8acc-2b8cf37c051a
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 377.5,
+          "y": 1185
         }
       }
 version: -1
@@ -412,7 +601,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1665,
+        "height": 2015,
         "width": 810,
         "x": 50,
         "y": 50
