@@ -1076,7 +1076,7 @@ def test_retrieve_file_details_command(requests_mock):
     args = {
         'action_id': '1788'
     }
-    results, file_result = retrieve_file_details_command(client, args)
+    results, file_result = retrieve_file_details_command(client, args, False)
     assert results == retrieve_expected_hr
     assert file_result[0]['File'] == 'endpoint_test_1.zip'
 
