@@ -1689,6 +1689,15 @@ def main():
             command_result = CommandResults(readable_output=issue_response, raw_response=issue_response)
             return_results(command_result)
 
+        elif command == 'wiz-get-project-team':
+            demisto_args = demisto.args()
+            project_name = demisto_args.get('project_name')
+            projects_response = get_project_team(
+                project_name=project_name
+            )
+            command_result = CommandResults(readable_output=projects_response, raw_response=projects_response)
+            return_results(command_result)
+
         else:
             raise Exception('Unrecognized command: ' + command)
     except Exception as err:
