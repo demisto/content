@@ -2295,3 +2295,92 @@ Lists users in your organization.
 >|---|---|---|---|---|---|---|
 >| Dbot | XXXXX |  | XSOAR | dbot@xsoar.com |  | STAGED |
 > 
+### okta-create-zone
+***
+Creates a Zone with the specified name
+
+
+#### Base Command
+
+`okta-create-zone`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Zone name. | Required | 
+| gateway_ips | Update Gateway IP addresses: CIDR range (1.1.0.0/16) or single IP address (2.2.2.2). | Optional | 
+| proxies | Update Proxy IP addresses: CIDR range (1.1.0.0/16) or single IP address (2.2.2.2). | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+### okta-create-group
+***
+Create a new group in Okta tenant
+
+
+#### Base Command
+
+`okta-create-group`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Name of the group to be added. | Required | 
+| description | Description of the group to be added. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OktaGroup.ID | unknown | Group ID in Okta | 
+| OktaGroup.Name | unknown | Group Name in Okta | 
+| OktaGroup.Description | unknown | Group Description in Okta | 
+| OktaGroup.Type | unknown | Group Type in Okta | 
+
+#### Command example
+```!okta-create-group name="TestGroup" description="TestGroup description."```
+#### Context Example
+```json
+{
+    "OktaGroup": {
+        "Description": "TestGroup description.",
+        "ID": "00g3qb398kItYXzKd1d7",
+        "Name": "TestGroup",
+        "Type": "OKTA_GROUP"
+    }
+}
+```
+
+#### Human Readable Output
+
+>Group Created: [GroupID:00g3qb398kItYXzKd1d7, GroupName: TestGroup]
+
+### okta-assign-group-to-app
+***
+Assign a group to an application
+
+
+#### Base Command
+
+`okta-assign-group-to-app`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| groupName | Name of group that will be assigned to app. | Optional | 
+| groupId | ID of group to be assigned to app. | Optional | 
+| appName | Friendly name of app that the group will be assigned to. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!okta-assign-group-to-app appName="Default-App" groupName="TestGroup"```
+#### Human Readable Output
+
+>Group: TestGroup added to PA App successfully

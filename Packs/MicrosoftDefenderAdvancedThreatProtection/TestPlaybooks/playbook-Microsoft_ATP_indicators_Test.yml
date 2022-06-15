@@ -1,22 +1,22 @@
 id: Microsoft Defender - ATP - Indicators Test
 version: -1
 name: Microsoft Defender - ATP - Indicators Test
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 366c6434-55d2-4eec-88d0-5131035cbc9f
     type: start
     task:
       id: 366c6434-55d2-4eec-88d0-5131035cbc9f
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "20"
+      - '20'
     separatecontext: false
     view: |-
       {
@@ -30,8 +30,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: 61f69d72-222d-44f9-891c-c217b52200fb
     type: regular
     task:
@@ -45,20 +45,20 @@ tasks:
       brand: Microsoft Defender Advanced Threat Protection
     nexttasks:
       '#none#':
-      - "22"
+      - '22'
     scriptarguments:
       action:
         simple: allow
       confidence:
-        simple: "50"
+        simple: '50'
       description:
         simple: Test file indicator
       expiration_time:
         simple: 10 minutes
       file_compile_date_time:
-        simple: "2014-01-01T00:00:00Z"
+        simple: '2014-01-01T00:00:00Z'
       file_created_date_time:
-        simple: "2014-01-01T00:00:00Z"
+        simple: '2014-01-01T00:00:00Z'
       file_hash_type:
         simple: sha256
       file_hash_value:
@@ -68,7 +68,7 @@ tasks:
       file_path:
         simple: c:/win32/
       file_size:
-        simple: "1024"
+        simple: '1024'
       file_type:
         simple: zip
       severity:
@@ -92,8 +92,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: 28212985-4725-4127-8455-fd1ca173f77d
     type: regular
     task:
@@ -107,7 +107,7 @@ tasks:
       brand: Microsoft Defender Advanced Threat Protection
     nexttasks:
       '#none#':
-      - "13"
+      - '13'
     scriptarguments:
       indicator_id:
         complex:
@@ -126,8 +126,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     taskid: e437aa1a-1d21-42bb-8d91-292de8c00ccb
     type: regular
     task:
@@ -141,12 +141,12 @@ tasks:
       brand: Microsoft Defender Advanced Threat Protection
     nexttasks:
       '#none#':
-      - "24"
+      - '24'
     scriptarguments:
       action:
         simple: allow
       confidence:
-        simple: "50"
+        simple: '50'
       description:
         simple: Test URL
       expiration_time:
@@ -174,8 +174,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     taskid: 50a256cb-87f5-45d0-8873-115d2824d24d
     type: regular
     task:
@@ -186,13 +186,13 @@ tasks:
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
     scriptarguments:
       all:
-        simple: "yes"
+        simple: yes
     separatecontext: false
     view: |-
       {
@@ -206,8 +206,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "8":
-    id: "8"
+  '8':
+    id: '8'
     taskid: f87410c7-86b6-4304-84f2-990cd4eb2f42
     type: regular
     task:
@@ -221,12 +221,12 @@ tasks:
       brand: Microsoft Defender Advanced Threat Protection
     nexttasks:
       '#none#':
-      - "9"
+      - '9'
     scriptarguments:
       limit:
-        simple: "205"
+        simple: '205'
       page_size:
-        simple: "100"
+        simple: '100'
     separatecontext: false
     view: |-
       {
@@ -240,8 +240,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "9":
-    id: "9"
+  '9':
+    id: '9'
     taskid: a829532b-0974-40c1-8dab-fceb00dcb30b
     type: condition
     task:
@@ -250,13 +250,13 @@ tasks:
       name: Check number of indicators
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "19"
+      yes:
+      - '19'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: hasLength
           left:
@@ -267,7 +267,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "205"
+              simple: '205'
     view: |-
       {
         "position": {
@@ -280,8 +280,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "12":
-    id: "12"
+  '12':
+    id: '12'
     taskid: 02e0bbdc-30c4-4df6-8d0b-ca21dd51d30f
     type: title
     task:
@@ -290,12 +290,12 @@ tasks:
       name: Continue the test
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "4"
-      - "1"
+      - '4'
+      - '1'
     separatecontext: false
     view: |-
       {
@@ -309,8 +309,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "13":
-    id: "13"
+  '13':
+    id: '13'
     taskid: 3959c28f-b96b-4f20-8877-d20667625d74
     type: regular
     task:
@@ -321,10 +321,10 @@ tasks:
       script: '|||microsoft-atp-indicator-update'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "14"
+      - '14'
     scriptarguments:
       description:
         simple: Test desc!
@@ -349,8 +349,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "14":
-    id: "14"
+  '14':
+    id: '14'
     taskid: b89640d7-2a23-4823-8f76-7df4f77dd74c
     type: regular
     task:
@@ -361,13 +361,13 @@ tasks:
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "15"
+      - '15'
     scriptarguments:
       all:
-        simple: "yes"
+        simple: yes
     separatecontext: false
     view: |-
       {
@@ -381,8 +381,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "15":
-    id: "15"
+  '15':
+    id: '15'
     taskid: abd8b865-a0c4-429e-8555-82ce880f0c37
     type: regular
     task:
@@ -393,10 +393,10 @@ tasks:
       script: '|||microsoft-atp-indicator-list'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "16"
+      - '16'
     separatecontext: false
     view: |-
       {
@@ -410,8 +410,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "16":
-    id: "16"
+  '16':
+    id: '16'
     taskid: 603560dc-1c9d-431e-8338-5d0931c5ff10
     type: condition
     task:
@@ -420,15 +420,15 @@ tasks:
       name: Check the indicators returned with the new description and severity
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "18"
-      "yes":
-      - "17"
+      - '18'
+      yes:
+      - '17'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -472,8 +472,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "17":
-    id: "17"
+  '17':
+    id: '17'
     taskid: e204e565-4642-4f28-8017-5529ddb19f35
     type: title
     task:
@@ -482,7 +482,7 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     separatecontext: false
     view: |-
@@ -497,8 +497,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "18":
-    id: "18"
+  '18':
+    id: '18'
     taskid: 44428bdf-9fa8-4c1f-8e27-880b95dc2ad9
     type: regular
     task:
@@ -509,7 +509,7 @@ tasks:
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     scriptarguments:
       message:
         simple: Got back no entries. Shouldn't happen.
@@ -526,8 +526,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "19":
-    id: "19"
+  '19':
+    id: '19'
     taskid: 302b3e67-aa42-4ac2-8c92-2a6e1124f979
     type: regular
     task:
@@ -538,13 +538,13 @@ tasks:
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "12"
+      - '12'
     scriptarguments:
       all:
-        simple: "yes"
+        simple: yes
     separatecontext: false
     view: |-
       {
@@ -558,8 +558,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "20":
-    id: "20"
+  '20':
+    id: '20'
     taskid: 7b98db24-5f8f-4f60-8196-0a9458079d07
     type: title
     task:
@@ -568,11 +568,11 @@ tasks:
       name: Setup
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
     separatecontext: false
     view: |-
       {
@@ -586,8 +586,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "22":
-    id: "22"
+  '22':
+    id: '22'
     taskid: 189ff5ba-4384-4ac4-8439-89bbc4775a83
     type: condition
     task:
@@ -596,15 +596,15 @@ tasks:
       name: Check the indicators returned with the High severity
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "23"
-      "yes":
-      - "2"
+      - '23'
+      yes:
+      - '2'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -633,8 +633,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "23":
-    id: "23"
+  '23':
+    id: '23'
     taskid: 505c498a-1d0b-4dc6-8f6b-92a7452bf158
     type: regular
     task:
@@ -645,7 +645,7 @@ tasks:
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     scriptarguments:
       message:
         complex:
@@ -680,8 +680,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "24":
-    id: "24"
+  '24':
+    id: '24'
     taskid: 96ff92be-4d8f-4f65-8be7-a183af12dddf
     type: condition
     task:
@@ -690,15 +690,15 @@ tasks:
       name: Check the indicators returned with the Informational severity
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "25"
-      "yes":
-      - "2"
+      - '25'
+      yes:
+      - '2'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -727,8 +727,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "25":
-    id: "25"
+  '25':
+    id: '25'
     taskid: cc5ea8af-61c9-4381-8bab-59a8ddc5c3fb
     type: regular
     task:
@@ -739,7 +739,7 @@ tasks:
       scriptName: PrintErrorEntry
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     scriptarguments:
       message:
         complex:

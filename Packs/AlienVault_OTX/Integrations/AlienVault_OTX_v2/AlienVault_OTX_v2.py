@@ -208,13 +208,17 @@ def relationships_manager(client: Client, entity_a: str, entity_a_type: str, ind
 
     if client.max_indicator_relationships > 0:
         limit = str(client.max_indicator_relationships)
-        _, _, urls_raw_response = alienvault_get_related_urls_by_indicator_command(client, indicator_type, indicator, limit)
+        _, _, urls_raw_response = alienvault_get_related_urls_by_indicator_command(client, indicator_type, indicator,
+                                                                                   limit)
         urls_raw_response = delete_duplicated_entities(urls_raw_response.get('url_list', []), 'url')
-        relationships += create_relationships(client, urls_raw_response, entity_a, entity_a_type, 'url', FeedIndicatorType.URL)
+        relationships += create_relationships(client, urls_raw_response, entity_a, entity_a_type, 'url',
+                                              FeedIndicatorType.URL)
 
-        _, _, hash_raw_response = alienvault_get_related_hashes_by_indicator_command(client, indicator_type, indicator, limit)
+        _, _, hash_raw_response = alienvault_get_related_hashes_by_indicator_command(client, indicator_type, indicator,
+                                                                                     limit)
         hash_raw_response = delete_duplicated_entities(hash_raw_response.get('data', []), 'hash')
-        relationships += create_relationships(client, hash_raw_response, entity_a, entity_a_type, 'hash', FeedIndicatorType.File)
+        relationships += create_relationships(client, hash_raw_response, entity_a, entity_a_type, 'hash',
+                                              FeedIndicatorType.File)
 
         _, _, passive_dns_raw_response = alienvault_get_passive_dns_data_by_indicator_command(client, indicator_type,
                                                                                               indicator, limit)
@@ -223,7 +227,8 @@ def relationships_manager(client: Client, entity_a: str, entity_a_type: str, ind
         passive_dns_raw_response = validate_string_is_not_url(passive_dns_raw_response, field_for_passive_dns_rs)
         passive_dns_raw_response = passive_dns_raw_response[0:client.max_indicator_relationships]
         relationships += create_relationships(client, passive_dns_raw_response, entity_a,
-                                              entity_a_type, field_for_passive_dns_rs, feed_indicator_type_for_passive_dns_rs)
+                                              entity_a_type, field_for_passive_dns_rs,
+                                              feed_indicator_type_for_passive_dns_rs)
 
     return relationships
 
@@ -342,7 +347,8 @@ def ip_command(client: Client, ip_address: str, ip_version: str) -> List[Command
         if raw_response and raw_response != 404:
             ip_version = FeedIndicatorType.IP if ip_version == 'IPv4' else FeedIndicatorType.IPv6
             relationships = relationships_manager(client, entity_a=ip_, entity_a_type=ip_version,
-                                                  indicator_type=ip_version, indicator=ip_, field_for_passive_dns_rs="hostname",
+                                                  indicator_type=ip_version, indicator=ip_,
+                                                  field_for_passive_dns_rs="hostname",
                                                   feed_indicator_type_for_passive_dns_rs=FeedIndicatorType.Domain,
                                                   attack_ids=extract_attack_ids(raw_response))
 
@@ -380,9 +386,9 @@ def ip_command(client: Client, ip_address: str, ip_version: str) -> List[Command
                 relationships=relationships
             ))
         else:
-            command_results.append(CommandResults(
-                readable_output=f'IP {ip_} could not be found.'))
-
+            command_results.append(create_indicator_result_with_dbotscore_unknown(indicator=ip_,
+                                                                                  indicator_type=DBotScoreType.IP,
+                                                                                  reliability=client.reliability))
     if not command_results:
         return [CommandResults(f'{INTEGRATION_NAME} - Could not find any results for given query.')]
     return command_results
@@ -437,8 +443,9 @@ def domain_command(client: Client, domain: str) -> List[CommandResults]:
                 relationships=relationships
             ))
         else:
-            command_results.append(CommandResults(
-                readable_output=f'Domain {domain} could not be found.'))
+            command_results.append(create_indicator_result_with_dbotscore_unknown(indicator=domain,
+                                                                                  indicator_type=DBotScoreType.DOMAIN,
+                                                                                  reliability=client.reliability))
     if not command_results:
         return [CommandResults(f'{INTEGRATION_NAME} - Could not find any results for given query')]
 
@@ -467,12 +474,15 @@ def file_command(client: Client, file: str) -> List[CommandResults]:
                                              sub_section='analysis')
         raw_response_general = client.query(section='file',
                                             argument=hash_)
-        if raw_response_analysis and raw_response_general and raw_response_general != 404 and raw_response_analysis != 404:
+        if raw_response_analysis and raw_response_general and (
+                shortcut := dict_safe_get(raw_response_analysis, ['analysis', 'info', 'results'],
+                                          {})) and raw_response_general != 404 and raw_response_analysis != 404:
+
             relationships = create_relationships(client, extract_attack_ids(raw_response_general), hash_,
                                                  FeedIndicatorType.File, 'display_name',
-                                                 FeedIndicatorType.indicator_type_by_server_version("STIX Attack Pattern"))
+                                                 FeedIndicatorType.indicator_type_by_server_version(
+                                                     "STIX Attack Pattern"))
 
-            shortcut = dict_safe_get(raw_response_analysis, ['analysis', 'info', 'results'], {})
             dbot_score = Common.DBotScore(
                 indicator=hash_, indicator_type=DBotScoreType.FILE, integration_name=INTEGRATION_NAME,
                 score=calculate_dbot_score(client, raw_response_general),
@@ -507,8 +517,9 @@ def file_command(client: Client, file: str) -> List[CommandResults]:
                 relationships=relationships
             ))
         else:
-            command_results.append(CommandResults(
-                readable_output=f'File {hash_} could not be found.'))
+            command_results.append(create_indicator_result_with_dbotscore_unknown(indicator=hash_,
+                                                                                  indicator_type=DBotScoreType.FILE,
+                                                                                  reliability=client.reliability))
     if not command_results:
         return [CommandResults(f'{INTEGRATION_NAME} - Could not find any results for given query')]
 
@@ -530,16 +541,16 @@ def url_command(client: Client, url: str) -> List[CommandResults]:
 
     title = f'{INTEGRATION_NAME} - Results for url query'
     command_results: List[CommandResults] = []
-    raws: list = []
 
     for url in urls_list:
         url = re.sub(r'(\w+)://', lowercase_protocol_callback, url)
         raw_response = client.query(section='url', argument=url)
         if raw_response:
             if raw_response == 404:
-                command_results.append(CommandResults(readable_output=f'No matches for URL {url}'))
+                command_results.append(create_indicator_result_with_dbotscore_unknown(indicator=url,
+                                                                                      indicator_type=DBotScoreType.URL,
+                                                                                      reliability=client.reliability))
             else:
-                raws.append(raw_response)
 
                 relationships = []
                 if client.create_relationships:
@@ -550,7 +561,8 @@ def url_command(client: Client, url: str) -> List[CommandResults]:
                     domain = raw_response.get('domain')
                     if domain:
                         relationships.extend([EntityRelationship(
-                            name=EntityRelationship.Relationships.HOSTED_ON, entity_a=url, entity_a_type=FeedIndicatorType.URL,
+                            name=EntityRelationship.Relationships.HOSTED_ON, entity_a=url,
+                            entity_a_type=FeedIndicatorType.URL,
                             entity_b=domain, entity_b_type=FeedIndicatorType.Domain,
                             source_reliability=client.reliability, brand=INTEGRATION_NAME)])
 
@@ -579,7 +591,7 @@ def url_command(client: Client, url: str) -> List[CommandResults]:
                     relationships=relationships
                 ))
 
-    if not raws:
+    if not command_results:
         command_results.append(CommandResults(f'{INTEGRATION_NAME} - Could not find any results for given query'))
     return command_results
 
@@ -666,7 +678,8 @@ def alienvault_search_cve_command(client: Client, cve_id: str) -> Tuple[str, Dic
 
 
 @logger
-def alienvault_get_related_urls_by_indicator_command(client: Client, indicator_type: str, indicator: str, limit: str = '') \
+def alienvault_get_related_urls_by_indicator_command(client: Client, indicator_type: str, indicator: str,
+                                                     limit: str = '') \
         -> Tuple[str, Dict, Dict]:
     """Get related urls by indicator (IPv4,IPv6,domain,hostname,url)
 
@@ -702,7 +715,8 @@ def alienvault_get_related_urls_by_indicator_command(client: Client, indicator_t
 
 
 @logger
-def alienvault_get_related_hashes_by_indicator_command(client: Client, indicator_type: str, indicator: str, limit: str = '') \
+def alienvault_get_related_hashes_by_indicator_command(client: Client, indicator_type: str, indicator: str,
+                                                       limit: str = '') \
         -> Tuple[str, Dict, Dict]:
     """Get related file hashes by indicator (IPv4,IPv6,domain,hostname)
 

@@ -1,0 +1,22 @@
+{
+    "id": 1,
+    "organization_id": 1,
+    "name": "string",
+    "refresh_interval": 0,
+    "parent_server_group_id": 0,
+    "ui_color": "string",
+    "notes": "string",
+    "enable_os_auto_update": true,
+    "server_count": 0,
+    "wsus_config": {
+        "id": 0,
+        "server_group_id": 0,
+        "is_managed": true,
+        "server_url": "string",
+        "created_at": "string",
+        "updated_at": "string"
+    },
+    "policies": [
+        0
+    ]
+}

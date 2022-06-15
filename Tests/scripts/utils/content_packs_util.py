@@ -3,7 +3,8 @@ from pathlib import PosixPath
 from typing import Tuple, Union
 
 import demisto_sdk.commands.common.tools as tools
-from demisto_sdk.commands.common.constants import (PACK_METADATA_SUPPORT, PACKS_DIR, PACKS_PACK_META_FILE_NAME)
+from demisto_sdk.commands.common.constants import (PACK_METADATA_SUPPORT, PACKS_DIR, PACKS_PACK_META_FILE_NAME,
+                                                   MARKETPLACE_KEY_PACK_METADATA)
 
 SKIPPED_PACKS = ['DeprecatedContent', 'NonSupported']
 IGNORED_FILES = ['__init__.py', 'ApiModules', 'NonSupported']  # files to ignore inside Packs folder
@@ -41,14 +42,48 @@ def is_pack_deprecated(pack_path: str) -> bool:
     return pack_metadata.get('hidden', False)
 
 
-def should_test_content_pack(pack_name: str) -> Tuple[bool, str]:
+def get_pack_supported_marketplace_version(pack_name: str, id_set: dict) -> list:
+    """Checks the supported marketplace versions.
+
+    Args:
+        pack_name (str): The pack name
+        id_set (dict): Structure which holds all content entities to extract pack names from.
+
+    Returns:
+        list of supported marketplace versions
+    """
+    if id_set:
+        return id_set.get('Packs', {}).get(pack_name, {}).get(MARKETPLACE_KEY_PACK_METADATA, [])
+    else:
+        return []
+
+
+def is_pack_compatible_with_marketplace(pack_name: str, marketplace_version: str, id_set: dict) -> Tuple[bool, str]:
+    """Checks if content pack is supported in the given marketplace_version:
+    Args:
+        pack_name (str): The pack name to check if it should be tested
+        marketplace_version (str): the marketplace version to collect tests for ('xsoar'/'marketplacev2').
+        id_set (dict): Structure which holds all content entities to extract pack names from.
+    Returns:
+        bool: True if should be tested, False otherwise
+    """
+    pack_marketplace_versions = get_pack_supported_marketplace_version(pack_name, id_set)
+    if marketplace_version not in pack_marketplace_versions:
+        return False, f'This pack with marketplace version {pack_marketplace_versions} is not supported in the' \
+                      f' {marketplace_version} marketplace version'
+    return True, ''
+
+
+def should_test_content_pack(pack_name: str, marketplace_version: str, id_set: dict) -> Tuple[bool, str]:
     """Checks if content pack should be tested in the build:
         - Content pack is not in skipped packs
         - Content pack is certified
         - Content pack is not deprecated
-
+        - Content pack is supported in the given marketplace_version
     Args:
         pack_name (str): The pack name to check if it should be tested
+        marketplace_version (str): the marketplace version to collect tests for ('xsoar'/'marketplacev2').
+        id_set (dict): Structure which holds all content entities to extract pack names from.
 
     Returns:
         bool: True if should be tested, False otherwise
@@ -62,17 +97,19 @@ def should_test_content_pack(pack_name: str) -> Tuple[bool, str]:
         return False, 'Pack is not XSOAR supported'
     if is_pack_deprecated(pack_path):
         return False, 'Pack is Deprecated'
-    return True, ''
+    return is_pack_compatible_with_marketplace(pack_name, marketplace_version, id_set)
 
 
-def should_install_content_pack(pack_name: str) -> Tuple[bool, str]:
+def should_install_content_pack(pack_name: str, marketplace_version: str, id_set: dict) -> Tuple[bool, str]:
     """Checks if content pack should be installed:
         - Content pack is not in skipped packs
         - Content pack is not deprecated
+        - Content pack is supported in the given marketplace_version
 
     Args:
-        pack_name (str): The pack name to check if it should be tested
-
+        pack_name (str): The pack name to check if it should be tested.
+        marketplace_version (str): the marketplace version to collect tests for ('xsoar'/'marketplacev2').
+        id_set (dict): Structure which holds all content entities to extract pack names from.
     Returns:
         bool: True if should be installed, False otherwise
     """
@@ -85,4 +122,4 @@ def should_install_content_pack(pack_name: str) -> Tuple[bool, str]:
         return False, f'Pack should be ignored as it one of the files to ignore: {IGNORED_FILES}'
     if is_pack_deprecated(pack_path):
         return False, 'Pack is Deprecated'
-    return True, ''
+    return is_pack_compatible_with_marketplace(pack_name, marketplace_version, id_set)

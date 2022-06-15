@@ -1,12 +1,12 @@
 This playbook checks the file reputation and sets the verdict as a new context key.
 
-The verdict contains three main components:
+The verdict is composed by 3 main components:
 
 * VirusTotal detection rate
 * Digital certificate signers
 * NSRL DB
 
-**Note:** A user can provide a list of trusted signers of his own using the playbook inputs.
+Note: a user can provide a list of trusted signers of his own using the playbook inputs
  
 
 ## Dependencies
@@ -20,11 +20,11 @@ This playbook does not use any integrations.
 
 ### Scripts
 * http
-* Set
 * ParseJSON
+* Set
 
 ### Commands
-***file***
+* file
 
 ## Playbook Inputs
 ---
@@ -33,18 +33,18 @@ This playbook does not use any integrations.
 | --- | --- | --- | --- |
 | DetectionThreshold | The minimum number of positive engines needed to mark file as malicious. | 5 | Optional |
 | TrustedPublishers | A list of trusted publishers | Microsoft Root Authority,Microsoft Timestamping Service,<br/>Microsoft Code Signing PCA, Microsoft Corporation | Optional |
-| FileSHA256 |  |  | Optional |
+| FileSHA256 | The file SHA256. |  | Optional |
 
 ## Playbook Outputs
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| VTFileVerdict |  | unknown |
-| NSRLFileVerdict |  | unknown |
-| VTFileSigners |  | unknown |
-| XDRFileSigners |  | unknown |
+| VTFileVerdict | VirusTotal file verdict. | unknown |
+| NSRLFileVerdict | NSRL file verdict. | unknown |
+| VTFileSigners | VirusTotal file signers. | unknown |
+| XDRFileSigners | XDR file signers. | unknown |
 
 ## Playbook Image
 ---
-![File Reputation](https://raw.githubusercontent.com/demisto/content/7df4a9f44ec165fd2ada5db51510745f12518296/Packs/CommonPlaybooks/doc_files/File_Reputation.png)
+![File Reputation](https://raw.githubusercontent.com/demisto/content/48a7f1a1a628a2755201c55c24bc68d94e0dd49c/Packs/CommonPlaybooks/doc_files/File_Reputation.png)

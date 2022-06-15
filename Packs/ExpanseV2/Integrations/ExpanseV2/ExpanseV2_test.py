@@ -2033,3 +2033,21 @@ def test_domains_by_certificate(requests_mock):
     assert results.outputs_key_field == "SearchTerm"
     assert results.outputs['SearchTerm'] == domain_to_test
     assert results.outputs['TotalDomainCount'] == 1
+
+
+def test_format_domain_data_empty_domainStatuses():
+    """
+    Given:
+        - A domain with empty 'domainStatuses'.
+    When
+        - Calling format_domain_data method.
+    Then
+        - Ensure no errors are raised.
+    """
+    from ExpanseV2 import format_domain_data
+
+    mock_domain_data = util_load_json("test_data/domain.json")
+    mock_domain_data.get('whois')[0].get('domainStatuses').clear()
+
+    results = format_domain_data([mock_domain_data])
+    assert results

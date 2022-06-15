@@ -12,7 +12,13 @@ function sendRequest(method, url_suffix, headers, body) {
         headers.Accept = ['application/mwg+xml'];
     }
     if (!("Content-Type" in headers)) {
-        headers['Content-Type'] = ['application/mwg+xml'];
+        if (url_suffix == "/list") {
+            // If we set the content to XML we get full information of the lists.
+            headers.Accept = ['application/xml'];
+            headers['Content-Type'] = ['application/xml'];
+        } else {
+            headers['Content-Type'] = ['application/mwg+xml'];
+        }
     }
     headers.Cookie = ['JSESSIONID=' + session_id];
 
@@ -135,15 +141,15 @@ function get_lists() {
         logout();
     }
 
-    res = res.split('\n');
+    var lists = JSON.parse(x2j(res));
     list_names = [];
-    for (var i in res) {
-        if (res[i]) {
+
+    for (var i in lists.feed.entry) {
             list_names.push({
                 Index : i,
-                Name : res[i]
+                Name : lists.feed.entry[i].title,
+                McAfeeID: lists.feed.entry[i].id
             });
-        }
     }
 
     return createEntry(list_names, {
@@ -151,7 +157,8 @@ function get_lists() {
         title : 'All available lists',
         data : [
             {to : 'Index', from : 'Index'},
-            {to : 'Name', from : 'Name'}
+            {to : 'Name', from : 'Name'},
+            {to : 'McAfeeID', from: 'McAfeeID'}
         ],
     });
 }

@@ -12,8 +12,7 @@ configuration:
   defaultvalue: ""
   type: 9
   required: false
-- defaultvalue: ''
-  display: 'Trust any certificate (not secure)'
+- display: 'Trust any certificate (not secure)'
   name: unsecure
   required: false
   type: 8

@@ -1,0 +1,77 @@
+category: Analytics & SIEM
+commonfields:
+  id: Jira Event Collector
+  version: -1
+configuration:
+- defaultvalue: https://<your-domain>.atlassian.net/rest/api/3/auditing/record
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+- display: User name
+  additionalinfo: The user name (admin@example.com) and password
+  name: credentials
+  displaypassword: API token
+  required: true
+  type: 9
+- defaultvalue: 3 days
+  display: First fetch time (<number> <time unit>, e.g., 12 hours, 1 day, 3 months). default is 3 days.
+  name: first_fetch
+  required: true
+  type: 0
+- defaultvalue: 100
+  display: The maximum number of events per fetch. Default is 100.
+  name: max_fetch
+  required: true
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: jira
+  additionalinfo: "For the dataset name for example: jira"
+  display: Vendor name
+  name: vendor
+  required: false
+  type: 0
+- defaultvalue: jira
+  additionalinfo: "For the dataset name for example: jira"
+  display: Product name
+  name: product
+  required: false
+  type: 0
+description: 'Jira logs event collector integration for XSIAM.'
+display: Jira Event Collector
+name: Jira Event Collector
+script:
+  commands:
+  - deprecated: false
+    description: 'Returns a list of audit records'
+    execution: false
+    name: jira-get-events
+    arguments:
+    - description: The maximum number of incidents per fetch. Default is 100.
+      isArray: true
+      name: max_fetch
+      required: false
+      secret: false
+    - description: First fetch time (<number> <time unit>, e.g., 12 hours, 1 day, 3 months). default is 3 days.
+      isArray: true
+      name: first_fetch
+      required: false
+      secret: false
+  runonce: false
+  script: '-'
+  isfetchevents: true
+  type: python
+  subtype: python3
+  dockerimage: demisto/fastapi:1.0.0.29740
+marketplaces:
+- marketplacev2
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

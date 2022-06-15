@@ -9,11 +9,12 @@ class Client(BaseClient):
     Client to use in the Threat Vault integration. Overrides BaseClient.
     """
 
-    def __init__(self, api_key: str, verify: bool, proxy: bool):
+    def __init__(self, api_key: str, verify: bool, proxy: bool, reliability: str):
         super().__init__(base_url='https://autofocus.paloaltonetworks.com/api/intel/v1', verify=verify, proxy=proxy,
                          headers={'Content-Type': 'application/json'})
         self._params = {'api_key': api_key}
         self.name = 'ThreatVault'
+        self.reliability = reliability
 
     @logger
     def antivirus_signature_get_request(self, sha256: str = '', signature_id: str = '') -> dict:
@@ -170,6 +171,7 @@ def file_command(client: Client, args: Dict) -> List[CommandResults]:
     """
     sha256_list = argToList(args.get('file'))
     command_results_list: List[CommandResults] = []
+    dbot_reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(client.reliability)
 
     for sha256 in sha256_list:
         try:
@@ -178,7 +180,8 @@ def file_command(client: Client, args: Dict) -> List[CommandResults]:
                 indicator=sha256,
                 indicator_type=DBotScoreType.FILE,
                 integration_name=client.name,
-                score=Common.DBotScore.BAD
+                score=Common.DBotScore.BAD,
+                reliability=dbot_reliability
             )
             file = Common.File(
                 sha256=sha256,
@@ -193,6 +196,7 @@ def file_command(client: Client, args: Dict) -> List[CommandResults]:
                     indicator=sha256,
                     indicator_type=DBotScoreType.FILE,
                     integration_name=client.name,
+                    reliability=dbot_reliability,
                     score=Common.DBotScore.NONE
                 )
                 file = Common.File(
@@ -323,6 +327,8 @@ def ip_command(client: Client, args: dict) -> List[CommandResults]:
     """
     ip_list = argToList(args.get('ip', ''))
     command_results_list: List[CommandResults] = []
+    dbot_reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(client.reliability)
+
     for ip_ in ip_list:
         try:
             response = client.ip_geo_get_request(ip_)
@@ -330,6 +336,7 @@ def ip_command(client: Client, args: dict) -> List[CommandResults]:
                 indicator=ip_,
                 indicator_type=DBotScoreType.IP,
                 integration_name=client.name,
+                reliability=dbot_reliability,
                 score=Common.DBotScore.NONE
             )
             ip_obj = Common.IP(
@@ -345,6 +352,7 @@ def ip_command(client: Client, args: dict) -> List[CommandResults]:
                     indicator=ip_,
                     indicator_type=DBotScoreType.IP,
                     integration_name=client.name,
+                    reliability=dbot_reliability,
                     score=Common.DBotScore.NONE
                 )
                 ip_obj = Common.IP(
@@ -518,6 +526,9 @@ def main():
     """
     params = demisto.params()
     auto_focus_key_retriever = AutoFocusKeyRetriever(params.get('api_key'))
+    reliability = params.get('integrationReliability', 'D - Not usually reliable')
+    if not DBotScoreReliability.is_valid_type(reliability):
+        raise Exception("Please provide a valid value for the Source Reliability parameter.")
 
     verify = not params.get('insecure', False)
     proxy = params.get('proxy')
@@ -525,7 +536,7 @@ def main():
     try:
         command = demisto.command()
         LOG(f'Command being called is {demisto.command()}')
-        client = Client(api_key=auto_focus_key_retriever.key, verify=verify, proxy=proxy)
+        client = Client(api_key=auto_focus_key_retriever.key, verify=verify, proxy=proxy, reliability=reliability)
         commands = {
             'threatvault-antivirus-signature-get': antivirus_signature_get,
             'file': file_command,

@@ -49,6 +49,7 @@ INDICATOR_TYPE_TO_DBOT_TYPE = {
     'Url': DBotScoreType.URL,
     'DomainName': DBotScoreType.DOMAIN,
     'IpAddress': DBotScoreType.IP,
+    'CertificateThumbprint': None,
 }
 
 HEALTH_STATUS_TO_ENDPOINT_STATUS = {
@@ -703,7 +704,7 @@ class HuntingQueryBuilder:
 
     class NetworkConnections:
         """QUERY PREFIX"""
-        EXTERNAL_ADDRESSES_QUERY_PREFIX = 'DeviceNetworkEvents | where (RemoteIP !startswith "172.16" or RemoteIP !startswith "192.168" or RemoteIP !startswith "10.") and'  # noqa: E501
+        EXTERNAL_ADDRESSES_QUERY_PREFIX = 'DeviceNetworkEvents | where not(RemoteIP matches regex "(^10\\\\.)|(^172\\\\.1[6-9]\\\\.)|(^172\\\\.2[0-9]\\\\.)|(^172\\\\.3[0-1]\\\\.)|(^192\\\\.168\\\\.)") and'  # noqa: E501
         DNS_QUERY_PREFIX = 'DeviceNetworkEvents | where RemotePort == 53 and'
         ENCODED_COMMANDS_QUERY_PREFIX = 'DeviceProcessEvents | where FileName in ("powershell.exe","powershell_ise.exe") and ProcessCommandLine contains "-encoded" and'  # noqa: E501
 
@@ -818,7 +819,7 @@ class HuntingQueryBuilder:
             return query
 
     class Tampering:
-        QUERY_PREFIX = 'let includeProc = dynamic(["sc.exe","net1.exe","net.exe", "taskkill.exe", "cmd.exe", "powershell.exe"]); let action = dynamic(["stop","disable", "delete"]); let service1 = dynamic([\'sense\', \'windefend\', \'mssecflt\']); let service2 = dynamic([\'sense\', \'windefend\', \'mssecflt\', \'healthservice\']); let params1 = dynamic(["-DisableRealtimeMonitoring", "-DisableBehaviorMonitoring" ,"-DisableIOAVProtection"]); let params2 = dynamic(["sgrmbroker.exe", "mssense.exe"]); let regparams1 = dynamic([\'reg add "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows Defender"\', \'reg add "HKLM\\SOFTWARE\\Policies\\Microsoft\\Windows Advanced Threat Protection"\']); let regparams2 = dynamic([\'ForceDefenderPassiveMode\', \'DisableAntiSpyware\']); let regparams3 = dynamic([\'sense\', \'windefend\']); let regparams4 = dynamic([\'demand\', \'disabled\']); let timeframe = 1d; DeviceProcessEvents'  # noqa: E501
+        QUERY_PREFIX = 'let includeProc = dynamic(["sc.exe","net1.exe","net.exe", "taskkill.exe", "cmd.exe", "powershell.exe"]); let action = dynamic(["stop","disable", "delete"]); let service1 = dynamic([\'sense\', \'windefend\', \'mssecflt\']); let service2 = dynamic([\'sense\', \'windefend\', \'mssecflt\', \'healthservice\']); let params1 = dynamic(["-DisableRealtimeMonitoring", "-DisableBehaviorMonitoring" ,"-DisableIOAVProtection"]); let params2 = dynamic(["sgrmbroker.exe", "mssense.exe"]); let regparams1 = dynamic([\'reg add "HKLM\\\\SOFTWARE\\\\Policies\\\\Microsoft\\\\Windows Defender"\', \'reg add "HKLM\\\\SOFTWARE\\\\Policies\\\\Microsoft\\\\Windows Advanced Threat Protection"\']); let regparams2 = dynamic([\'ForceDefenderPassiveMode\', \'DisableAntiSpyware\']); let regparams3 = dynamic([\'sense\', \'windefend\']); let regparams4 = dynamic([\'demand\', \'disabled\']); let timeframe = 1d; DeviceProcessEvents'  # noqa: E501
         QUERY_SUFFIX = '\n| where InitiatingProcessFileName in~ (includeProc) | where (InitiatingProcessCommandLine has_any(action) and InitiatingProcessCommandLine has_any (service2) and InitiatingProcessParentFileName != \'cscript.exe\') or (InitiatingProcessCommandLine has_any (params1) and InitiatingProcessCommandLine has \'Set-MpPreference\' and InitiatingProcessCommandLine has \'$true\') or (InitiatingProcessCommandLine has_any (params2) and InitiatingProcessCommandLine has "/IM") or (InitiatingProcessCommandLine has_any (regparams1) and InitiatingProcessCommandLine has_any (regparams2) and InitiatingProcessCommandLine has \'/d 1\') or (InitiatingProcessCommandLine has_any("start") and InitiatingProcessCommandLine has "config" and InitiatingProcessCommandLine has_any (regparams3) and InitiatingProcessCommandLine has_any (regparams4))| extend Account = iff(isnotempty(InitiatingProcessAccountUpn), InitiatingProcessAccountUpn, InitiatingProcessAccountName), Computer = DeviceName| project Timestamp, Computer, Account, AccountDomain, ProcessName = InitiatingProcessFileName, ProcessNameFullPath = FolderPath, Activity = ActionType, CommandLine = InitiatingProcessCommandLine, InitiatingProcessParentFileName\n| limit {}'  # noqa: E501
 
         def __init__(self,
@@ -1899,6 +1900,40 @@ class MsClient:
         response = self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=request_body)
         return response
 
+    def get_machine_users(self, machine_id):
+        """Retrieves a collection of users related to a given machine ID (logon users).
+        https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/get-machine-log-on-users?view=o365-worldwide
+
+        Args:
+            machine_id (str): The machine ID
+
+        Returns:
+            dict. User entities
+        """
+        cmd_url = f"/machines/{machine_id}/logonusers"
+        try:
+            response = self.ms_client.http_request(method="GET", url_suffix=cmd_url)
+        except Exception:
+            raise Exception(f"Machine {machine_id} was not found")
+        return response
+
+    def get_machine_alerts(self, machine_id):
+        """Retrieves a collection of alerts related to a given machine ID.
+        https://docs.microsoft.com/en-us/microsoft-365/security/defender-endpoint/get-machine-related-alerts?view=o365-worldwide
+
+        Args:
+            machine_id (str): The machine ID
+
+        Returns:
+            dict. Alert entities
+        """
+        cmd_url = f"/machines/{machine_id}/alerts"
+        try:
+            response = self.ms_client.http_request(method="GET", url_suffix=cmd_url)
+        except Exception:
+            raise Exception(f"Machine {machine_id} not found")
+        return response
+
 
 ''' Commands '''
 
@@ -2665,6 +2700,35 @@ def get_machine_action_by_id_command(client: MsClient, args: dict):
     return human_readable, entry_context, response
 
 
+def request_download_investigation_package_command(client: MsClient, args: dict):
+    return run_polling_command(client, args, 'microsoft-atp-request-and-download-investigation-package',
+                               get_machine_investigation_package_command,
+                               get_machine_action_command, download_file_after_successful_status)
+
+
+def download_file_after_successful_status(client, res):
+    demisto.debug("post polling - download file")
+    machine_action_id = res['id']
+
+    # get file uri from action:
+    file_uri = client.get_investigation_package_sas_uri(machine_action_id)['value']
+    demisto.debug(f'Got file for downloading: {file_uri}')
+
+    # download link, create file result. File comes back as compressed gz file.
+    f_data = client.download_file(file_uri)
+    md_results = {
+        'Machine Action Id': res.get('id'),
+        'MachineId': res.get('machineId'),
+        'Status': res.get('status'),
+    }
+    return [fileResult('Response Result.gz', f_data.content),
+            CommandResults(
+                outputs_prefix='MicrosoftATP.MachineAction',
+                outputs=res,
+                readable_output=tableToMarkdown('Machine Action:', md_results)
+    )]
+
+
 def get_machine_action_data(machine_action_response):
     """Get machine raw response and returns the machine action info in context and human readable format.
 
@@ -2712,7 +2776,7 @@ def get_machine_investigation_package_command(client: MsClient, args: dict):
     entry_context = {
         'MicrosoftATP.MachineAction(val.ID === obj.ID)': action_data
     }
-    return human_readable, entry_context, machine_action_response
+    return CommandResults(readable_output=human_readable, outputs=entry_context, raw_response=machine_action_response)
 
 
 def get_investigation_package_sas_uri_command(client: MsClient, args: dict):
@@ -3820,13 +3884,14 @@ def sc_list_indicators_command(client: MsClient, args: Dict[str, str]) -> Union[
         return CommandResults(readable_output='No indicators found')
 
 
-def lateral_movement_evidence_command(client, args):
+def lateral_movement_evidence_command(client, args):  # pragma: no cover
     # prepare query
     timeout = int(args.pop('timeout', 10))
     time_range = args.pop('time_range', None)
     query_purpose = args.pop('query_purpose')
     page = int(args.get('page', 1))
     limit = int(args.get('limit', 50))
+    show_query = argToBoolean(args.pop('show_query', False))
     query_builder = HuntingQueryBuilder.LateralMovementEvidence(**args)
     query_options = {
         'network_connections': query_builder.build_network_connections_query,
@@ -3847,6 +3912,8 @@ def lateral_movement_evidence_command(client, args):
                                       results,
                                       removeNull=True
                                       )
+    if show_query:
+        readable_output = f'### The Query:\n{query}\n{readable_output}'
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f'MicrosoftATP.HuntLateralMovementEvidence.Result.{query_purpose}',
@@ -3854,11 +3921,12 @@ def lateral_movement_evidence_command(client, args):
     )
 
 
-def persistence_evidence_command(client, args):
+def persistence_evidence_command(client, args):  # pragma: no cover
     # prepare query
     timeout = int(args.pop('timeout', 10))
     time_range = args.pop('time_range', None)
     query_purpose = args.get('query_purpose')
+    show_query = argToBoolean(args.pop('show_query', False))
     query_builder = HuntingQueryBuilder.PersistenceEvidence(**args)
     query_options = {
         'scheduled_job': query_builder.build_scheduled_job_query,
@@ -3881,6 +3949,8 @@ def persistence_evidence_command(client, args):
     response = client.get_advanced_hunting(query, timeout, time_range)
     results = response.get('Results')
     readable_output = tableToMarkdown(f'Persistence EvidenceHunt Hunt ({query_purpose}) Results', results, removeNull=True)
+    if show_query:
+        readable_output = f'### The Query:\n{query}\n{readable_output}'
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f'MicrosoftATP.HuntPersistenceEvidence.Result.{query_purpose}',
@@ -3888,12 +3958,13 @@ def persistence_evidence_command(client, args):
     )
 
 
-def file_origin_command(client, args):
+def file_origin_command(client, args):  # pragma: no cover
     # prepare query
     timeout = int(args.pop('timeout', 10))
     time_range = args.pop('time_range', None)
     page = int(args.get('page', 1))
     limit = int(args.get('limit', 50))
+    show_query = argToBoolean(args.pop('show_query', False))
     query_builder = HuntingQueryBuilder.FileOrigin(**args)
     query = query_builder.build_file_origin_query()
 
@@ -3903,6 +3974,8 @@ def file_origin_command(client, args):
     if isinstance(results, list) and page > 1:
         results = results[(page - 1) * limit:limit * page]
     readable_output = tableToMarkdown('File Origin Hunt Results', results, removeNull=True)
+    if show_query:
+        readable_output = f'### The Query:\n{query}\n{readable_output}'
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='MicrosoftATP.HuntFileOrigin.Result',
@@ -3910,13 +3983,14 @@ def file_origin_command(client, args):
     )
 
 
-def process_details_command(client, args):
+def process_details_command(client, args):  # pragma: no cover
     # prepare query
     timeout = int(args.pop('timeout', 10))
     time_range = args.pop('time_range', None)
     query_purpose = args.get('query_purpose')
     page = int(args.get('page', 1))
     limit = int(args.get('limit', 50))
+    show_query = argToBoolean(args.pop('show_query', False))
     query_builder = HuntingQueryBuilder.ProcessDetails(**args)
     query_options = {
         'parent_process': query_builder.build_parent_process_query,
@@ -3936,6 +4010,8 @@ def process_details_command(client, args):
     if isinstance(results, list) and page > 1:
         results = results[(page - 1) * limit:limit * page]
     readable_output = tableToMarkdown(f'Process Details Hunt ({query_purpose}) Results', results, removeNull=True)
+    if show_query:
+        readable_output = f'### The Query:\n{query}\n{readable_output}'
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f'MicrosoftATP.HuntProcessDetails.Result.{query_purpose}',
@@ -3943,13 +4019,14 @@ def process_details_command(client, args):
     )
 
 
-def network_connections_command(client, args):
+def network_connections_command(client, args):  # pragma: no cover
     # prepare query
     timeout = int(args.pop('timeout', 10))
     time_range = args.pop('time_range', None)
     query_purpose = args.get('query_purpose')
     page = int(args.get('page', 1))
     limit = int(args.get('limit', 50))
+    show_query = argToBoolean(args.pop('show_query', False))
     query_builder = HuntingQueryBuilder.NetworkConnections(**args)
     query_options = {
         'external_addresses': query_builder.build_external_addresses_query,
@@ -3966,6 +4043,8 @@ def network_connections_command(client, args):
     if isinstance(results, list) and page > 1:
         results = results[(page - 1) * limit:limit * page]
     readable_output = tableToMarkdown(f'Network Connections Hunt ({query_purpose}) Results', results, removeNull=True)
+    if show_query:
+        readable_output = f'### The Query:\n{query}\n{readable_output}'
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f'MicrosoftATP.HuntNetworkConnections.Result.{query_purpose}',
@@ -3973,12 +4052,13 @@ def network_connections_command(client, args):
     )
 
 
-def privilege_escalation_command(client, args):
+def privilege_escalation_command(client, args):  # pragma: no cover
     # prepare query
     timeout = int(args.pop('timeout', 10))
     time_range = args.pop('time_range', None)
     page = int(args.get('page', 1))
     limit = int(args.get('limit', 50))
+    show_query = argToBoolean(args.pop('show_query', False))
     query_builder = HuntingQueryBuilder.PrivilegeEscalation(**args)
     query = query_builder.build_query()
 
@@ -3988,6 +4068,8 @@ def privilege_escalation_command(client, args):
     if isinstance(results, list) and page > 1:
         results = results[(page - 1) * limit:limit * page]
     readable_output = tableToMarkdown('Privilege Escalation Hunt Results', results, removeNull=True)
+    if show_query:
+        readable_output = f'### The Query:\n{query}\n{readable_output}'
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='MicrosoftATP.HuntPrivilegeEscalation.Result',
@@ -3995,12 +4077,13 @@ def privilege_escalation_command(client, args):
     )
 
 
-def tampering_command(client, args):
+def tampering_command(client, args):  # pragma: no cover
     # prepare query
     timeout = int(args.pop('timeout', 10))
     time_range = args.pop('time_range', None)
     page = int(args.get('page', 1))
     limit = int(args.get('limit', 50))
+    show_query = argToBoolean(args.pop('show_query', False))
     query_builder = HuntingQueryBuilder.Tampering(**args)
     query = query_builder.build_query()
 
@@ -4010,6 +4093,8 @@ def tampering_command(client, args):
     if isinstance(results, list) and page > 1:
         results = results[(page - 1) * limit:limit * page]
     readable_output = tableToMarkdown('Tampering Hunt Results', results, removeNull=True)
+    if show_query:
+        readable_output = f'### The Query:\n{query}\n{readable_output}'
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='MicrosoftATP.HuntTampering.Result',
@@ -4017,13 +4102,14 @@ def tampering_command(client, args):
     )
 
 
-def cover_up_command(client, args):
+def cover_up_command(client, args):  # pragma: no cover
     # prepare query
     timeout = int(args.pop('timeout', 10))
     time_range = args.pop('time_range', None)
     query_purpose = args.get('query_purpose')
     page = int(args.get('page', 1))
     limit = int(args.get('limit', 50))
+    show_query = argToBoolean(args.pop('show_query', False))
     query_builder = HuntingQueryBuilder.CoverUp(**args)
     query_options = {
         'file_deleted': query_builder.build_file_deleted_query,
@@ -4043,6 +4129,8 @@ def cover_up_command(client, args):
     if isinstance(results, list) and page > 1:
         results = results[(page - 1) * limit:limit * page]
     readable_output = tableToMarkdown(f'Cover Up Hunt ({query_purpose}) Results', results, removeNull=True)
+    if show_query:
+        readable_output = f'### The Query:\n{query}\n{readable_output}'
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f'MicrosoftATP.HuntCoverUp.Result.{query_purpose}',
@@ -4073,11 +4161,14 @@ def get_dbot_indicator(dbot_type, dbot_score, value):
 
 
 def get_indicator_dbot_object(indicator):
-    indicator_type = INDICATOR_TYPE_TO_DBOT_TYPE[indicator.get('indicatorType')]
-    indicator_value = indicator.get('indicatorValue')
-    dbot = Common.DBotScore(indicator=indicator_value, indicator_type=indicator_type,
-                            score=Common.DBotScore.NONE)  # type:ignore
-    return get_dbot_indicator(indicator_type, dbot, indicator_value)
+    indicator_type = INDICATOR_TYPE_TO_DBOT_TYPE.get(indicator.get('indicatorType'))
+    if indicator_type:
+        indicator_value = indicator.get('indicatorValue')
+        dbot = Common.DBotScore(indicator=indicator_value, indicator_type=indicator_type,
+                                score=Common.DBotScore.NONE)  # type:ignore
+        return get_dbot_indicator(indicator_type, dbot, indicator_value)
+    else:
+        return None
 
 
 def list_machines_by_vulnerability_command(client: MsClient, args: dict) -> CommandResults:
@@ -4288,6 +4379,67 @@ def endpoint_command(client: MsClient, args: dict) -> List[CommandResults]:
     return machines_outputs
 
 
+def get_machine_users_command(client: MsClient, args: dict) -> CommandResults:
+    """Retrieves a collection of logon users on a given machine
+
+    Returns:
+        CommandResults.
+    """
+    headers = ["ID", "AccountName", "AccountDomain", "FirstSeen", "LastSeen", "LogonTypes", "DomainAdmin", "NetworkUser"]
+    machine_id = args.get("machine_id")
+    response = client.get_machine_users(machine_id)
+    users_list = [dict(**get_user_data(r), MachineID=machine_id) for r in response.get("value", [])]
+
+    return CommandResults(
+        outputs=users_list,
+        outputs_key_field=["ID", "MachineID"],
+        outputs_prefix="MicrosoftATP.MachineUser",
+        readable_output=tableToMarkdown(
+            f"Microsoft Defender ATP logon users for machine {machine_id}:",
+            users_list,
+            headers=headers,
+            removeNull=True,
+        ),
+        raw_response=response,
+    )
+
+
+def get_machine_alerts_command(client: MsClient, args: dict) -> CommandResults:
+    """Retrieves a collection of alerts related to specific device.
+
+    Returns:
+        CommandResults.
+    """
+    headers = [
+        "ID",
+        "Title",
+        "Description",
+        "IncidentID",
+        "Severity",
+        "Status",
+        "Classification",
+        "Category",
+        "ThreatFamilyName",
+        "MachineID"
+    ]
+    machine_id = args.get("machine_id")
+    alerts_response = client.get_machine_alerts(machine_id)
+    alert_list = get_alerts_list(alerts_response)
+
+    return CommandResults(
+        outputs=alert_list,
+        outputs_key_field=["ID", "MachineID"],
+        outputs_prefix="MicrosoftATP.MachineAlerts",
+        readable_output=tableToMarkdown(
+            f"Alerts that are related to machine {machine_id}:",
+            alert_list,
+            headers=headers,
+            removeNull=True,
+        ),
+        raw_response=alerts_response,
+    )
+
+
 ''' EXECUTION CODE '''
 ''' LIVE RESPONSE CODE '''
 
@@ -4316,13 +4468,11 @@ def run_polling_command(client: MsClient, args: dict, cmd: str, action_func: Cal
 
     # distinguish between the initial run, which is the upload run, and the results run
     is_first_run = 'machine_action_id' not in args
-    demisto.debug(f'polling args: {args}')
     if is_first_run:
         command_results = action_func(client, args)
-        outputs = command_results.outputs
         # schedule next poll
         polling_args = {
-            'machine_action_id': outputs.get('action_id'),
+            'machine_action_id': command_results.raw_response.get("id"),
             'interval_in_seconds': interval_in_secs,
             'polling': True,
             **args,
@@ -4336,14 +4486,20 @@ def run_polling_command(client: MsClient, args: dict, cmd: str, action_func: Cal
         return command_results
 
     # not a first run
-
     command_result = results_function(client, args)
     action_status = command_result.outputs.get("status")
-    command_status = command_result.outputs.get("commands", [{}])[0].get("commandStatus")
+    demisto.debug(f"action status is: {action_status}")
+    if command_result.outputs.get("commands", []):
+        command_status = command_result.outputs.get("commands", [{}])[0].get("commandStatus")
+    else:
+        command_status = 'Completed' if action_status == "Succeeded" else None
     if action_status in ['Failed', 'Cancelled'] or command_status == 'Failed':
-        raise Exception(
-            f'Command {action_status}. Additional info: {command_result.outputs.get("commands", [{}])[0].get("errors")}')
+        error_msg = f"Command {action_status}."
+        if command_result.outputs.get("commands", []):
+            error_msg += f'{command_result.outputs.get("commands", [{}])[0].get("errors")}'
+        raise Exception(error_msg)
     elif command_status != 'Completed' or action_status == 'InProgress':
+        demisto.debug("action status is not completed")
         # schedule next poll
         polling_args = {
             'interval_in_seconds': interval_in_secs,
@@ -4590,7 +4746,7 @@ def put_file_get_successful_action_results(client, res):
     )
 
 
-def main():
+def main():  # pragma: no cover
     params: dict = demisto.params()
     base_url: str = params.get('url', '').rstrip('/') + '/api'
     tenant_id = params.get('tenant_id') or params.get('_tenant_id')
@@ -4682,7 +4838,7 @@ def main():
             return_outputs(*get_machine_action_by_id_command(client, args))
 
         elif command == 'microsoft-atp-collect-investigation-package':
-            return_outputs(*get_machine_investigation_package_command(client, args))
+            return_results(get_machine_investigation_package_command(client, args))
 
         elif command == 'microsoft-atp-get-investigation-package-sas-uri':
             return_outputs(*get_investigation_package_sas_uri_command(client, args))
@@ -4789,6 +4945,12 @@ def main():
             return_results(tampering_command(client, args))
         elif command == 'microsoft-atp-advanced-hunting-cover-up':
             return_results(cover_up_command(client, args))
+        elif command == 'microsoft-atp-get-machine-users':
+            return_results(get_machine_users_command(client, args))
+        elif command == 'microsoft-atp-get-machine-alerts':
+            return_results(get_machine_alerts_command(client, args))
+        elif command == 'microsoft-atp-request-and-download-investigation-package':
+            return_results(request_download_investigation_package_command(client, args))
     except Exception as err:
         return_error(str(err))
 

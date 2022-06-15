@@ -3512,7 +3512,7 @@ def unfold(s):
     :param string s: a string to unfold
     :rtype: string
     """
-    return re.sub(r'[ \t]*[\r\n][ \t\r\n]*', ' ', s).strip(' ')
+    return re.sub(r'[ \t]*[\r\n][ \t\r\n]*', ' ', s).strip(' ') if s else s
 
 
 def decode_attachment_payload(message):
@@ -3584,7 +3584,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
         header_list = []
         headers_map = {}  # type: dict
         for item in headers.items():
-            value = unfold(convert_to_unicode(item[1]))
+            value = unfold(convert_to_unicode(unfold(item[1])))
             item_dict = {
                 "name": item[0],
                 "value": value
@@ -3766,7 +3766,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                 'To': extract_address_eml(eml, 'to'),
                 'CC': extract_address_eml(eml, 'cc'),
                 'From': extract_address_eml(eml, 'from'),
-                'Subject': convert_to_unicode(eml['Subject']),
+                'Subject': convert_to_unicode(unfold(eml['Subject'])),
                 'HTML': convert_to_unicode(html, is_msg_header=False),
                 'Text': convert_to_unicode(text, is_msg_header=False),
                 'Headers': header_list,
@@ -3840,7 +3840,7 @@ def main():
 
         file_metadata = result[0]['FileMetadata']
         file_type = file_metadata.get('info', '') or file_metadata.get('type', '')
-        if 'MIME entity text, ISO-8859 text' in file_type:
+        if 'MIME entity text, ISO-8859 text' in file_type or 'MIME entity, ISO-8859 text' in file_type:
             file_type = 'application/pkcs7-mime'
 
     except Exception as ex:

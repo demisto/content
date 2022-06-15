@@ -1,4 +1,4 @@
-Zero Trust Analytics Platform (ZTAP) is the underlying investigation platform and user interface for CriticalStart's MDR service.
+Zero Trust Analytics Platform (ZTAP) is the underlying investigation platform and user interface for Critical Start's MDR service.
 This integration was integrated and tested with version 2021-06-25 of ZeroTrustAnalyticsPlatform
 
 ## Configure ZeroTrustAnalyticsPlatform on Cortex XSOAR
@@ -28,6 +28,7 @@ This integration was integrated and tested with version 2021-06-25 of ZeroTrustA
     | Maximum number of incidents to fetch |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -110,10 +111,6 @@ There is no context output for this command.
 #### Human Readable Output
 
 >```
->{
->    "contents": "Example comment.",
->    "files": [],
->    "occurred": "2021-10-28T18:57:01Z",
->    "type": "comment"
->}
+>Example comment.
+>Sent by User (test@test) via ZTAP
 >```

@@ -281,23 +281,45 @@ EXPECTED_RESP = {
     'resolutiondate': 'Resolved'
 }
 
-ATTACHMENT = {
-    "self": "https://localhost/rest/api/2/attachment/16188",
-    "id": "16188",
-    "filename": "test",
-    "author": {
-        "self": "https://localhost/rest/api/2/user?accountId=557058%3Afb80ffc0-b374-4260-99a0"
-                "-ea0c140a4e76",
-        "accountId": "account id",
-        "emailAddress": "mail",
-        "avatarUrls": {},
-        "displayName": "name",
-        "active": True,
-        "timeZone": "Asia/Jerusalem",
-        "accountType": "atlassian"
+ATTACHMENTS = {
+    "cloud_attachment": {
+        "self": "https://localhost/rest/api/2/attachment/16188",
+        "id": "16188",
+        "filename": "filename",
+        "author": {
+            "self": "https://localhost/rest/api/2/user?accountId=557058%3Afb80ffc0-b374-4260-99a0"
+                    "-ea0c140a4e76",
+            "accountId": "account id",
+            "emailAddress": "mail",
+            "avatarUrls": {},
+            "displayName": "name",
+            "active": True,
+            "timeZone": "Asia/Jerusalem",
+            "accountType": "atlassian"
+        },
+        "created": "2021-11-17T12:40:06.700+0200",
+        "size": 4,
+        "mimeType": "binary/octet-stream",
+        "content": "https://localhost/rest/api/2/attachment/content/16188"
     },
-    "created": "2021-11-17T12:40:06.700+0200",
-    "size": 4,
-    "mimeType": "binary/octet-stream",
-    "content": "https://localhost/rest/api/2/attachment/content/16188"
+    "on_prem_attachment": {
+        "self": "https://localhost/rest/api/2/attachment/18447",
+        "id": "16188",
+        "filename": "filename",
+        "author": {
+            "self": "https://localhost/rest/api/2/user?accountId=557058%3Afb80ffc0-b374-4260-99a0"
+                    "-ea0c140a4e76",
+            "accountId": "account id",
+            "emailAddress": "mail",
+            "avatarUrls": {},
+            "displayName": "name",
+            "active": True,
+            "timeZone": "Asia/Jerusalem",
+            "accountType": "atlassian"
+        },
+        "created": "2021-11-17T12:40:06.700+0200",
+        "size": 4,
+        "mimeType": "binary/octet-stream",
+        "content": "https://localhost/secure/attachment/18447/filename"
+    }
 }

@@ -1,2 +1,6 @@
 [file:SymantecDLP.yml]
 ignore=IN126
+
+[file:README.md]
+ignore=RM104
+

@@ -1,0 +1,31 @@
+{
+  "id": "incident_filecreationdate",
+  "version": -1,
+  "modified": "2022-03-06T12:04:40.564655082Z",
+  "name": "File Creation Date",
+  "ownerOnly": false,
+  "cliName": "filecreationdate",
+  "type": "shortText",
+  "closeForm": false,
+  "editForm": true,
+  "required": false,
+  "neverSetAsRequired": false,
+  "isReadOnly": false,
+  "useAsKpi": false,
+  "locked": false,
+  "system": false,
+  "content": true,
+  "group": 0,
+  "hidden": false,
+  "openEnded": false,
+  "associatedToAll": false,
+  "associatedTypes": [
+    "Symantec DLP Discover Incident"
+  ],
+  "unmapped": false,
+  "unsearchable": true,
+  "caseInsensitive": true,
+  "sla": 0,
+  "threshold": 72,
+  "fromVersion": "6.0.0"
+}

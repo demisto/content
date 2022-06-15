@@ -672,7 +672,7 @@ There is no context output for this command.
 
 ### archer-reset-cache
 ***
-Resets Archer's integration cache. Run this command if you change the fields of your Archer application.
+Resets Archer's integration cache. This cache is maintained in XSOAR based on previous search results and must be cleared when field mappings no longer make sense. Run this command if you change the fields of your Archer application, the Archer v2 integration's settings, or if the target Archer user moves between environments or settings.
 
 #### Base Command
 

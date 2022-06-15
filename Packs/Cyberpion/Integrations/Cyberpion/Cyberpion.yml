@@ -17,15 +17,20 @@ configuration:
   name: max_fetch
   required: false
   type: 0
-- additionalinfo: 'Allowed values: "DNS", "PKI", "Cloud", "Vulnerabilities".'
-  defaultvalue: DNS,PKI,Cloud,Vulnerabilities
+- additionalinfo: 'Allowed values: "Network", "Web", "Cloud", "DNS", "PKI", "Vulnerabilities", "TLS", "Email Server", "Mobile".'
+  defaultvalue: Network,Web,Cloud,DNS,PKI,Vulnerabilities,TLS,Email Server,Mobile
   display: Action items category to fetch as incidents.
   name: categories
   options:
+  - Network
+  - Web
+  - Cloud
   - DNS
   - PKI
-  - Cloud
   - Vulnerabilities
+  - TLS
+  - Email Server
+  - Mobile
   required: true
   type: 16
 - additionalinfo: |-
@@ -47,8 +52,7 @@ configuration:
   - '10'
   required: true
   type: 15
-- display: First fetch timestamp (in months)- Optional. If not set, all incidents
-    will be fetched
+- display: First fetch timestamp (in months)- Optional. If not set, all incidents will be fetched
   name: first_fetch
   options:
   - '1'
@@ -100,8 +104,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: The Cyberpion integration allows you to seamlessly receive all your Cyberpion
-  security solution Action Items and supportive information to your Cortex XSOAR.
+description: The Cyberpion integration allows you to seamlessly receive all your Cyberpion security solution Action Items and supportive information to your Cortex XSOAR.
 display: Cyberpion
 name: Cyberpion
 script:
@@ -185,7 +188,7 @@ script:
       description: Number of vulnerabilities associated with domain
       type: Number
     - contextPath: Cyberpion.DomainState.cname_chain
-      description: 'Domain''s CName chain (DNS record) '
+      description: "Domain's CName chain (DNS record) "
       type: String
     - contextPath: Cyberpion.DomainState.domain_types
       description: Domain's infrastructure info (provider etc.)
@@ -193,7 +196,7 @@ script:
     - contextPath: Cyberpion.DomainState.discovery_date
       description: The Date domain was discovered
       type: Date
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.4.28442
   feed: false
   isfetch: true
   longRunning: false

@@ -29223,6 +29223,20 @@
                 "MD5": "b44251a2f532cc8835f6ad164491ebae",
                 "SHA1": "277d75e0593937034e12ed185c91b6bb9bbdc3c5",
                 "SHA256": "4f5401cb5e64806c21175632eda4382a55551961f4986439fc9e48fa76dd452f",
+                "Hashes": [
+                            {
+                                "type": "MD5",
+                                "value": "b44251a2f532cc8835f6ad164491ebae"
+                            },
+                            {
+                                "type": "SHA1",
+                                "value": "277d75e0593937034e12ed185c91b6bb9bbdc3c5"
+                            },
+                            {
+                                "type": "SHA256",
+                                "value": "4f5401cb5e64806c21175632eda4382a55551961f4986439fc9e48fa76dd452f"
+                            }
+                        ],
                 "Malicious": {
                     "Vendor": "ReversingLabs A1000",
                     "Description": "cloud - Win32.Trojan.Graftor"

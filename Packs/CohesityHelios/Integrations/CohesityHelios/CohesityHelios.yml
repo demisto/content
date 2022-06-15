@@ -39,7 +39,7 @@ configuration:
   type: 0
 - display: Fetch incidents
   name: isFetch
-  defaultvalue: true
+  defaultvalue: 'true'
   required: false
   type: 8
 - defaultvalue: "15"

@@ -1,0 +1,153 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Luminar_IOCs_and_leaked_credentials
+  version: -1
+configuration:
+- additionalinfo: Luminar Base URL
+  defaultvalue: https://www.cyberluminar.com
+  display: Luminar Base URL
+  name: luminar_base_url
+  required: true
+  type: 0
+- additionalinfo: Luminar API Account ID
+  display: Luminar API Account ID
+  name: luminar_account_id
+  required: true
+  type: 0
+- additionalinfo: Luminar API Client ID
+  display: Luminar API Client ID
+  name: luminar_client_id
+  required: true
+  type: 0
+- additionalinfo: Luminar API Secret
+  display: Luminar API Client Secret
+  name: luminar_client_secret
+  required: true
+  type: 4
+- additionalinfo: Trust any certificate (not secure)
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- additionalinfo: Use system proxy settings
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: 'true'
+  display: Fetch indicators
+  type: 8
+  required: false
+  name: feed
+- additionalinfo: Indicators from this integration instance will be marked with this reputation.
+  defaultvalue: feedInstanceReputationNotSet
+  display: Indicator Reputation
+  name: feedReputation
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  required: false
+  type: 18
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: F - Reliability cannot be judged
+  display: Source Reliability
+  name: feedReliability
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- display: ''
+  type: 17
+  required: false
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  name: feedExpirationPolicy
+- display: ''
+  type: 1
+  required: false
+  name: feedExpirationInterval
+- display: Feed Fetch Interval
+  defaultvalue: "480"
+  type: 19
+  required: false
+  name: feedFetchInterval
+- display: Tags
+  required: false
+  type: 0
+  additionalinfo: Supports CSV values.
+  name: feedTags
+- display: Traffic Light Protocol Color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  required: false
+  type: 15
+  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  name: tlp_color
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  display: Bypass exclusion list
+  name: feedBypassExclusionList
+  required: false
+  type: 8
+- additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. As the determination if the indicator is new or modified happens on the 3rd-party vendor's side, and only indicators that are new or modified are sent to Cortex XSOAR, all indicators coming from these feeds are labeled new or modified.
+  display: Incremental Feed
+  name: feedIncremental
+  defaultvalue: 'true'
+  required: false
+  type: 8
+  hidden: true
+description: This connector allows integration of intelligence-based IOC data and customer-related leaked records identified by Luminar.
+display: Luminar IOCs & leaked credentials
+name: Luminar_IOCs_and_leaked_credentials
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The maximum number of indicators to return. Default is 50.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets Luminar Indicators
+    execution: false
+    name: luminar-get-indicators
+  - arguments:
+    - default: false
+      description: The maximum number of leaked records to return. Default is 50.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets Luminar Leaked Records
+    execution: false
+    name: luminar-get-leaked-records
+  - deprecated: false
+    description: This command will reset your fetch history.
+    execution: false
+    name: luminar-reset-fetch-indicators
+  dockerimage: demisto/python3:3.10.4.28442
+  feed: true
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

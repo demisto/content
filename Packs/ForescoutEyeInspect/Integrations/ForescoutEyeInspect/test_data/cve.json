@@ -1,0 +1,30 @@
+{
+    "id": "CVE-2020-0305",
+    "cve_id": "CVE-2020-0305",
+    "icsa_id": "",
+    "vendor_specific_id": "SSB-439005",
+    "published_date": "2018-11-27T01:00:00.000+01:00",
+    "last_modified_date": "2020-08-11T02:00:00.000+02:00",
+    "cvss_score": 4.4,
+    "cvss_temporal_score": 0.0,
+    "cvss_remediation_level": "UNAVAILABLE",
+    "cvss_version": "VERSION_2",
+    "references": [
+        {
+            "url": "https://cert-portal.siemens.com/productcert/pdf/ssb-439005.pdf",
+            "label": "Siemens CERT"
+        }
+    ],
+    "vendor": "Siemens",
+    "title": "Use-after-free vulnerability in the Linux subsystem of the SIMATIC S7-1500 CPU 1518(F)-4 PN/DP MFP",
+    "summary": "In cdev_get of char_dev.c, there is a possible use-after-free due to a race condition. This could lead to local escalation of privilege with System execution privileges needed. User interaction is not needed for exploitation.\n VULNERABLE PRODUCT\n - SIMATIC S7-1500 CPU 1518(F)-4 PN/DP MFP (incl. SIPLUS variant): firmware version V2.6.1, but previous versions might also be affected",
+    "solution": "This Linux vulnerability has been externally identified and will be fixed with the next firmware version.\n Siemens is working on an update for the firmware, and recommends the following mitigations until an update is available:\n - Apply Defense-in-Depth: https://www.siemens.com/cert/operational-guidelines-industrial-security\n - Only build and run applications from trusted sources",
+    "cvss_access_vector": "LOCAL",
+    "cvss_access_complexity": "MEDIUM",
+    "cvss_authentication": "NONE",
+    "cvss_exploitability": "UNDEFINED",
+    "cvss_confidentiality_impact": "PARTIAL",
+    "cvss_integrity_impact": "PARTIAL",
+    "cvss_availability_impact": "PARTIAL",
+    "cvss_reporting_confidence": "CONFIRMED"
+}

@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - additionalinfo: Set to true if connections are made through a broker
-  defaultvalue: false
+  defaultvalue: 'false'
   display: Broker
   name: broker
   required: false
@@ -20,7 +20,7 @@ configuration:
   required: true
   type: 9
 - additionalinfo: If set to false, will trust any certificate (not secure)
-  defaultvalue: false
+  defaultvalue: 'false'
   display: Verify SSL
   name: verify_ssl
   required: false

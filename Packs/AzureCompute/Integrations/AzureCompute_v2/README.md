@@ -1,1432 +1,679 @@
-<p>
-Create and Manage Azure Virtual Machines
-<br/>
+You can use this integration to create and manage Azure Virtual Machines.
 This integration was integrated and tested with Azure Compute API Version: 2017-12-01.
-</p>
-<h2>Authentication</h2>
-For more details about the authentication used in this integration, see <a href="https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication">Microsoft Integrations - Authentication</a>.
 
-<ul>
-<li>After authorizing the Demisto App or the Self-Deployed Application , you will get an ID, Token, and Key, which should be inserted in the integration instance configuration's corresponding fields. After giving consent, the application has to have a role assigned so it can access the relevant resources per subscription. </li>
-<li>In order to assign a role to the application after consent was given: 
-  <ul>
-    <li>Go to the Azure Portal UI.</li>
-    <li>Go to Subscriptions, and then Access Control (IAM).</li>
-    <li>Click "Add role assignment".</li>
-    <li>Create a new role or select a role that includes the following permissions:
-    <ul>
-      <li>Microsoft.Compute/virtualMachines/*</li>
-      <li>Microsoft.Network/networkInterfaces/read</li>
-      <li>Microsoft.Resources/subscriptions/resourceGroups/read</li>
-    </ul> </li>
-    <li>Select the Azure Compute application. By default, Azure AD applications aren't displayed in the available options. To find your application, search for the name and select it.</li>
-  </ul>
-</li>
-</ul>
-<h2>Configure Azure Compute v2 on Cortex XSOAR</h2>
-<ol>
-  <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
-  &nbsp;&gt;&nbsp;<strong>Servers &amp; Services</strong>.</li>
-  <li>Search for Azure Compute v2.</li>
-  <li>
-    Click&nbsp;<strong>Add instance</strong>&nbsp;to create and configure a new integration instance.
-    <ul>
-      <li><strong>Name</strong>: a textual name for the integration instance.</li>
-   <li><strong>Host URL (e.g. https://management.azure.com)</strong></li>
-   <li><strong>ID (received from the admin consent - see Detailed Instructions (?)</strong></li>
-   <li><strong>Token (received from the admin consent - see Detailed Instructions (?) section)</strong></li>
-   <li><strong>Key (received from the admin consent - see Detailed Instructions (?)</strong></li>
-   <li><strong>Certificate Thumbprint</strong></li>
-   <li><strong>Private Key</strong></li>
-   <li><strong>Default Subscription ID</strong></li>
-   <li><strong>Use system proxy</strong></li>
-   <li><strong>Trust any certificate (not secure)</strong></li>
-   <li><strong>Use a self-deployed Azure Application</strong></li>
-    </ul>
-  </li>
-  <li>
-    Click&nbsp;<strong>Test</strong>&nbsp;to validate the new instance.
-  </li>
-</ol>
+## Authentication
+For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication).
 
-<div class="cl-preview-section">
-  <h2 id="commands">Commands</h2>
-</div>
-<div class="cl-preview-section">
-  <p>
-    You can execute these commands from the Cortex XSOAR CLI, as part of an automation,
-    or in a playbook. After you successfully execute a command, a DBot message
-    appears in the War Room with the command details.
-  </p>
-</div>
-<div class="cl-preview-section">
-  <ol>
-    <li>
-      <a href="#list-vm-instances-for-a-resource-group" target="_self">List VM instances for a resource group: azure-vm-list-instances</a>
-    </li>
-    <li>
-      <a href="#power-on-a-vm" target="_self">Power on a VM: azure-vm-start-instance</a>
-    </li>
-    <li>
-      <a href="#power-off-a-vm" target="_self">Power off a VM: azure-vm-poweroff-instance</a>
-    </li>
-    <li>
-      <a href="#get-details-for-a-vm" target="_self">Get details for a VM: azure-vm-get-instance-details</a>
-    </li>
-    <li>
-      <a href="#create-a-vm-instance" target="_self">Create a VM instance: azure-vm-create-instance</a>
-    </li>
-    <li>
-      <a href="#list-all-subscriptions-for-the-application" target="_self">List all subscriptions for the application: azure-list-subscriptions</a>
-    </li>
-    <li>
-      <a href="#list-all-resource-groups-for-the-azure-subscription" target="_self">List all resource groups for the Azure subscription: azure-list-resource-groups</a>
-    </li>
-    <li>
-      <a href="#delete-a-vm-instance" target="_self">Delete a VM instance: azure-vm-delete-instance</a>
-    </li>
-  </ol>
-</div>
-<div class="cl-preview-section">
-  <h3 id="list-vm-instances-for-a-resource-group">1. List VM instances for a resource group</h3>
-</div>
-<div class="cl-preview-section">
-  <hr>
-</div>
-<div class="cl-preview-section">
-  <p>List the VM instances in the specified Resource Group.</p>
-</div>
-<div class="cl-preview-section">
-  <h5 id="base-command">Base Command</h5>
-</div>
-<div class="cl-preview-section">
-  <p>
-    <code>azure-vm-list-instances</code>
-  </p>
-</div>
-<div class="cl-preview-section">
-  <h5 id="input">Input</h5>
-</div>
-<div class="cl-preview-section">
-  <div class="table-wrapper">
-    <table style="width:747px">
-      <thead>
-        <tr>
-          <th style="width:130px">
-            <strong>Argument Name</strong>
-          </th>
-          <th style="width:539px">
-            <strong>Description</strong>
-          </th>
-          <th style="width:71px">
-            <strong>Required</strong>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td style="width:130px">resource_group</td>
-          <td style="width:539px">
-            Resource Group of the VMs. To see all the resource groups
-            associated with your subscription try executing the&nbsp;<code>azure-list-resource-groups</code>&nbsp;command.
-            If none are present then please visit the Azure Web Portal
-            to create resource groups.
-          </td>
-          <td style="width:71px">Required</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-<p>&nbsp;</p>
-<div class="cl-preview-section">
-  <h5 id="context-output">Context Output</h5>
-</div>
-<div class="cl-preview-section">
-  <div class="table-wrapper">
-    <table style="width:748px">
-      <thead>
-        <tr>
-          <th style="width:329px">
-            <strong>Path</strong>
-          </th>
-          <th style="width:45px">
-            <strong>Type</strong>
-          </th>
-          <th style="width:366px">
-            <strong>Description</strong>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td style="width:329px">Azure.Compute.Name</td>
-          <td style="width:45px">string</td>
-          <td style="width:366px">Name of the VM</td>
-        </tr>
-        <tr>
-          <td style="width:329px">Azure.Compute.Location</td>
-          <td style="width:45px">string</td>
-          <td style="width:366px">Location of the VM</td>
-        </tr>
-        <tr>
-          <td style="width:329px">Azure.Compute.ProvisioningState</td>
-          <td style="width:45px">string</td>
-          <td style="width:366px">Provisioning State of the VM</td>
-        </tr>
-        <tr>
-          <td style="width:329px">Azure.Compute.ResourceGroup</td>
-          <td style="width:45px">string</td>
-          <td style="width:366px">Resource group where the VM resides in</td>
-        </tr>
-        <tr>
-          <td style="width:329px">Azure.Compute.ID</td>
-          <td style="width:45px">string</td>
-          <td style="width:366px">ID of the VM</td>
-        </tr>
-        <tr>
-          <td style="width:329px">Azure.Compute.Size</td>
-          <td style="width:45px">number</td>
-          <td style="width:366px">Size of the deployed VM (in GB)</td>
-        </tr>
-        <tr>
-          <td style="width:329px">Azure.Compute.OS</td>
-          <td style="width:45px">string</td>
-          <td style="width:366px">OS running on the VM</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-<p>&nbsp;</p>
-<div class="cl-preview-section">
-  <h5 id="command-example">Command Example</h5>
-</div>
-<div class="cl-preview-section">
-  <pre>!azure-vm-list-instances resource_group=compute-integration</pre>
-</div>
-<div class="cl-preview-section">
-  <h5 id="context-example">Context Example</h5>
-</div>
-<div class="cl-preview-section">
-  <pre>{
-    "Azure.Compute": [
-        {
-            "Name": "TestOAuth", 
-            "ResourceGroup": "compute-integration", 
-            "Location": "westeurope", 
-            "Size": 32, 
-            "OS": "Linux", 
-            "ID": "a050ff2e-85ab-44d9-b822-3bc3111739e0", 
-            "ProvisioningState": "Succeeded"
+- After authorizing the Demisto App or the Self-Deployed Application, you will get an ID, Token, and Key, which should be inserted in the integration instance configuration's corresponding fields. After giving consent, the application has to have a role assigned so it can access the relevant resources per subscription.
+- In order to assign a role to the application after consent was given:
+  - Go to the Azure Portal UI. 
+  - Go to Subscriptions, and then Access Control (IAM). 
+  - Click "Add role assignment". 
+  - Create a new role or select a role that includes the following permissions:
+    - Microsoft.Compute/virtualMachines/*
+    - Microsoft.Network/networkInterfaces/read 
+    - Microsoft.Resources/subscriptions/resourceGroups/read 
+  - Select the Azure Compute application. By default, Azure AD applications aren't displayed in the available options. To find your application, search for the name and select it.
+
+## Configure Azure Compute v2 on Cortex XSOAR
+
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for Azure Compute v2.
+3. Click **Add instance** to create and configure a new integration instance.
+
+    | **Parameter** | **Required** |
+    | --- | --- |
+    | Host URL (e.g. https://management.azure.com) | True |
+    | ID (received from the admin consent - see Detailed Instructions (?) | True |
+    | Token (received from the admin consent - see Detailed Instructions (?) section) | True |
+    | Key (received from the admin consent - see Detailed Instructions (?) | True |
+    | Certificate Thumbprint | False |
+    | Private Key | False |
+    | Default Subscription ID | False |
+    | Use system proxy settings | False |
+    | Trust any certificate (not secure) | False |
+    | Use a self-deployed Azure Application | False |
+
+4. Click **Test** to validate the URLs, token, and connection.
+## Commands
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
+### azure-vm-list-instances
+***
+Lists the virtual machine instances in the given resource group.
+
+
+#### Base Command
+
+`azure-vm-list-instances`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource_group | The resource group of the virtual machines. To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Compute.Name | string | The name of the virtual machine. | 
+| Azure.Compute.Location | string | The location of the virtual machine. | 
+| Azure.Compute.ProvisioningState | string | The provisioning state of the virtual machine. | 
+| Azure.Compute.ResourceGroup | string | The resource group in which the virtual machine resides. | 
+| Azure.Compute.ID | string | The ID of the virtual machine. | 
+| Azure.Compute.Size | number | The size of the deployed virtual machine \(in gigabytes\). | 
+| Azure.Compute.OS | string | The OS running on the virtual machine. | 
+
+#### Command example
+```!azure-vm-list-instances resource_group=Compute-Labs```
+#### Context Example
+```json
+{
+    "Azure": {
+        "Compute": [
+            {
+                "ID": "d25e7ce9-258b-4d8d-a516-c2206eef08ef",
+                "Location": "eastus",
+                "Name": "test12",
+                "OS": "Windows",
+                "ProvisioningState": "Succeeded",
+                "ResourceGroup": "Compute-Labs",
+                "Size": 127
+            },
+            {
+                "ID": "befbbbba-64a6-49e9-84f7-27f3cc27818d",
+                "Location": "eastus",
+                "Name": "test1234",
+                "OS": "Windows",
+                "ProvisioningState": "Succeeded",
+                "ResourceGroup": "Compute-Labs",
+                "Size": 127
+            },
+            {
+                "ID": "xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx",
+                "Location": "eastus",
+                "Name": "webserver",
+                "OS": "Windows",
+                "ProvisioningState": "Succeeded",
+                "ResourceGroup": "Compute-Labs",
+                "Size": 127
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Microsoft Azure - List of Virtual Machines in Resource Group "Compute-Labs"
+>|Name|ID|Size|OS|Location|ProvisioningState|ResourceGroup|
+>|---|---|---|---|---|---|---|
+>| test12 | d25e7ce9-258b-4d8d-a516-c2206eef08ef | 127 | Windows | eastus | Succeeded | Compute-Labs |
+>| test1234 | befbbbba-64a6-49e9-84f7-27f3cc27818d | 127 | Windows | eastus | Succeeded | Compute-Labs |
+>| webserver | xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx | 127 | Windows | eastus | Succeeded | Compute-Labs |
+
+
+### azure-vm-start-instance
+***
+Powers on a given virtual machine.
+
+
+#### Base Command
+
+`azure-vm-start-instance`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource_group | Resource Group to which the virtual machine belongs. To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups. | Required | 
+| virtual_machine_name | Name of the virtual machine to power on. To see all virtual machines and their associated names for a specific resource group, run the `azure-vm-list-instances` command. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Compute.Name | string | Name of the VM that was started | 
+| Azure.Compute.ResourceGroup | string | Resource group the VM resides in | 
+| Azure.Compute.PowerState | string | Whether the VM instance is powered on or off | 
+
+#### Command example
+```!azure-vm-start-instance resource_group="Compute-Labs" virtual_machine_name="webserver"```
+#### Context Example
+```json
+{
+    "Azure": {
+        "Compute": {
+            "Name": "webserver",
+            "PowerState": "VM starting",
+            "ResourceGroup": "Compute-Labs"
         }
-    ]
-}
-</pre>
-</div>
-<div class="cl-preview-section">
-  <h5 id="human-readable-output">Human Readable Output</h5>
-</div>
-<div class="cl-preview-section">
-  <h3 id="microsoft-azure---list-of-virtual-machines-in-resource-group-compute-integration">
-    Microsoft Azure - List of Virtual Machines in Resource Group “compute-integration”
-  </h3>
-</div>
-<div class="cl-preview-section">
-  <div class="table-wrapper">
-    <table style="width:641px">
-      <thead>
-        <tr>
-          <th style="width:55px">Name</th>
-          <th style="width:187px">ID</th>
-          <th style="width:10px">Size</th>
-          <th style="width:20px">OS</th>
-          <th style="width:82px">Location</th>
-          <th style="width:167px">ProvisioningState</th>
-          <th style="width:112px">ResourceGroup</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td style="width:55px">TestOAuth</td>
-          <td style="width:187px">a050ff2e-85ab-44d9-b822-3bc3111739e0</td>
-          <td style="width:10px">32</td>
-          <td style="width:20px">Linux</td>
-          <td style="width:82px">westeurope</td>
-          <td style="width:167px">Succeeded</td>
-          <td style="width:112px">compute-integration</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-<p>&nbsp;</p>
-<div class="cl-preview-section">
-  <h3 id="power-on-a-vm">2. Power on a VM</h3>
-</div>
-<div class="cl-preview-section">
-  <hr>
-</div>
-<div class="cl-preview-section">
-  <p>Powers-on a specified VM.</p>
-</div>
-<div class="cl-preview-section">
-  <h5 id="base-command-1">Base Command</h5>
-</div>
-<div class="cl-preview-section">
-  <p>
-    <code>azure-vm-start-instance</code>
-  </p>
-</div>
-<div class="cl-preview-section">
-  <h5 id="input-1">Input</h5>
-</div>
-<div class="cl-preview-section">
-  <div class="table-wrapper">
-    <table style="width:745px">
-      <thead>
-        <tr>
-          <th style="width:130px">
-            <strong>Argument Name</strong>
-          </th>
-          <th style="width:556px">
-            <strong>Description</strong>
-          </th>
-          <th style="width:54px">
-            <strong>Required</strong>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td style="width:130px">resource_group</td>
-          <td style="width:556px">
-            Resource Group to which the virtual machine belongs.<br>
-            To see all the resource groups associated with your subscription
-            try executing the&nbsp;<code>azure-list-resource-groups</code>&nbsp;command.
-            If none are present visit the Azure Web Portal to create
-            resource groups.
-          </td>
-          <td style="width:54px">Required</td>
-        </tr>
-        <tr>
-          <td style="width:130px">virtual_machine_name</td>
-          <td style="width:556px">
-            Name of the virtual machine to power-on.<br>
-            To see all the VMs with their associated names for a specific
-            resource group try executing the&nbsp;<code>azure-vm-list-instances</code>&nbsp;command.
-          </td>
-          <td style="width:54px">Required</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-<p>&nbsp;</p>
-<div class="cl-preview-section">
-  <h5 id="context-output-1">Context Output</h5>
-</div>
-<div class="cl-preview-section">
-  <div class="table-wrapper">
-    <table style="width:748px">
-      <thead>
-        <tr>
-          <th style="width:295px">
-            <strong>Path</strong>
-          </th>
-          <th style="width:36px">
-            <strong>Type</strong>
-          </th>
-          <th style="width:409px">
-            <strong>Description</strong>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td style="width:295px">Azure.Compute.Name</td>
-          <td style="width:36px">string</td>
-          <td style="width:409px">Name of the VM that was started</td>
-        </tr>
-        <tr>
-          <td style="width:295px">Azure.Compute.ResourceGroup</td>
-          <td style="width:36px">string</td>
-          <td style="width:409px">Resource group the VM resides in</td>
-        </tr>
-        <tr>
-          <td style="width:295px">Azure.Compute.PowerState</td>
-          <td style="width:36px">string</td>
-          <td style="width:409px">Whether the VM instance is powered on or off</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-<p>&nbsp;</p>
-<div class="cl-preview-section">
-  <h5 id="command-example-1">Command Example</h5>
-</div>
-<div class="cl-preview-section">
-  <pre>!azure-vm-start-instance resource_group=compute-integration virtual_machine_name=TestOAuth</pre>
-</div>
-<div class="cl-preview-section">
-  <h5 id="context-example-1">Context Example</h5>
-</div>
-<div class="cl-preview-section">
-  <pre>{
-    "Azure.Compute": {
-        "ResourceGroup": "compute-integration", 
-        "PowerState": "VM starting", 
-        "Name": "TestOAuth"
     }
 }
-</pre>
-</div>
-<div class="cl-preview-section">
-  <h5 id="human-readable-output-1">Human Readable Output</h5>
-</div>
-<div class="cl-preview-section">
-  <h3 id="power-on-of-virtual-machine-testoauth-successfully-initiated">
-    Power-on of Virtual Machine “TestOAuth” Successfully Initiated
-  </h3>
-</div>
-<div class="cl-preview-section">
-  <div class="table-wrapper">
-    <table style="width:750px">
-      <thead>
-        <tr>
-          <th style="width:175px">ResourceGroup</th>
-          <th style="width:100px">PowerState</th>
-          <th style="width:108px">Name</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td style="width:175px">compute-integration</td>
-          <td style="width:100px">VM starting</td>
-          <td style="width:108px">TestOAuth</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-<p>&nbsp;</p>
-<div class="cl-preview-section">
-  <h3 id="power-off-a-vm">3. Power off a VM</h3>
-</div>
-<div class="cl-preview-section">
-  <hr>
-</div>
-<div class="cl-preview-section">
-  <p>Powers-off a specified VM.</p>
-</div>
-<div class="cl-preview-section">
-  <h5 id="base-command-2">Base Command</h5>
-</div>
-<div class="cl-preview-section">
-  <p>
-    <code>azure-vm-poweroff-instance</code>
-  </p>
-</div>
-<div class="cl-preview-section">
-  <h5 id="input-2">Input</h5>
-</div>
-<div class="cl-preview-section">
-  <div class="table-wrapper">
-    <table style="width:746px">
-      <thead>
-        <tr>
-          <th style="width:107px">
-            <strong>Argument Name</strong>
-          </th>
-          <th style="width:587px">
-            <strong>Description</strong>
-          </th>
-          <th style="width:46px">
-            <strong>Required</strong>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td style="width:107px">resource_group</td>
-          <td style="width:587px">
-            Resource Group to which the virtual machine belongs.<br>
-            To see all the resource groups associated with your subscription
-            try executing the&nbsp;<code>azure-list-resource-groups</code>&nbsp;command.
-            If none are present then please visit the Azure Web Portal
-            to create resource groups.
-          </td>
-          <td style="width:46px">Required</td>
-        </tr>
-        <tr>
-          <td style="width:107px">virtual_machine_name</td>
-          <td style="width:587px">
-            Name of the virtual machine to power-off.<br>
-            To see all the VMs with their associated names for a specific
-            resource group try executing the&nbsp;<code>azure-vm-list-instances</code>&nbsp;command.
-          </td>
-          <td style="width:46px">Required</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-<p>&nbsp;</p>
-<div class="cl-preview-section">
-  <h5 id="context-output-2">Context Output</h5>
-</div>
-<div class="cl-preview-section">
-  <div class="table-wrapper">
-    <table style="width:748px">
-      <thead>
-        <tr>
-          <th style="width:292px">
-            <strong>Path</strong>
-          </th>
-          <th style="width:39px">
-            <strong>Type</strong>
-          </th>
-          <th style="width:409px">
-            <strong>Description</strong>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td style="width:292px">Azure.Compute.Name</td>
-          <td style="width:39px">string</td>
-          <td style="width:409px">Name of the VM that was powered down</td>
-        </tr>
-        <tr>
-          <td style="width:292px">Azure.Compute.ResourceGroup</td>
-          <td style="width:39px">string</td>
-          <td style="width:409px">Resource group the VM resides in</td>
-        </tr>
-        <tr>
-          <td style="width:292px">Azure.Compute.PowerState</td>
-          <td style="width:39px">string</td>
-          <td style="width:409px">Whether the VM instance is powered on or off</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-<p>&nbsp;</p>
-<div class="cl-preview-section">
-  <h5 id="command-example-2">Command Example</h5>
-</div>
-<div class="cl-preview-section">
-  <pre>!azure-vm-poweroff-instance resource_group=compute-integration virtual_machine_name=TestOAuth</pre>
-</div>
-<div class="cl-preview-section">
-  <h5 id="context-example-2">Context Example</h5>
-</div>
-<div class="cl-preview-section">
-  <pre>{
-    "Azure.Compute": {
-        "ResourceGroup": "compute-integration", 
-        "PowerState": "VM stopping", 
-        "Name": "TestOAuth"
+```
+
+#### Human Readable Output
+
+>### Power-on of Virtual Machine "webserver" Successfully Initiated
+>|Name|PowerState|ResourceGroup|
+>|---|---|---|
+>| webserver | VM starting | Compute-Labs |
+
+
+### azure-vm-poweroff-instance
+***
+Powers off a given virtual machine.
+
+
+#### Base Command
+
+`azure-vm-poweroff-instance`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource_group | The resource group to which the virtual machine belongs. To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups. | Required | 
+| virtual_machine_name | The name of the virtual machine to power off. To see all virtual machines with their associated names for a specific resource group, run the `azure-vm-list-instances` command. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Compute.Name | string | The name of the virtual machine that was powered off. | 
+| Azure.Compute.ResourceGroup | string | The resource group in which the virtual machine resides. | 
+| Azure.Compute.PowerState | string | Whether the virtual machine instance is powered on or off. | 
+
+#### Command example
+```!azure-vm-poweroff-instance resource_group=Compute-Labs virtual_machine_name=test12```
+#### Context Example
+```json
+{
+    "Azure": {
+        "Compute": {
+            "Name": "test12",
+            "PowerState": "VM stopping",
+            "ResourceGroup": "Compute-Labs"
+        }
     }
 }
-</pre>
-</div>
-<div class="cl-preview-section">
-  <h5 id="human-readable-output-2">Human Readable Output</h5>
-</div>
-<div class="cl-preview-section">
-  <h3 id="power-off-of-virtual-machine-testoauth-successfully-initiated">
-    Power-off of Virtual Machine “TestOAuth” Successfully Initiated
-  </h3>
-</div>
-<div class="cl-preview-section">
-  <div class="table-wrapper">
-    <table style="width:429px">
-      <thead>
-        <tr>
-          <th style="width:216px">ResourceGroup</th>
-          <th style="width:133px">PowerState</th>
-          <th style="width:73px">Name</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td style="width:216px">compute-integration</td>
-          <td style="width:133px">VM stopping</td>
-          <td style="width:73px">TestOAuth</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-<p>&nbsp;</p>
-<div class="cl-preview-section">
-  <h3 id="get-details-for-a-vm">4. Get details for a VM</h3>
-</div>
-<div class="cl-preview-section">
-  <hr>
-</div>
-<div class="cl-preview-section">
-  <p>Gets the properties of a specified VM.</p>
-</div>
-<div class="cl-preview-section">
-  <h5 id="base-command-3">Base Command</h5>
-</div>
-<div class="cl-preview-section">
-  <p>
-    <code>azure-vm-get-instance-details</code>
-  </p>
-</div>
-<div class="cl-preview-section">
-  <h5 id="input-3">Input</h5>
-</div>
-<div class="cl-preview-section">
-  <div class="table-wrapper">
-    <table style="width:749px">
-      <thead>
-        <tr>
-          <th style="width:185px">
-            <strong>Argument Name</strong>
-          </th>
-          <th style="width:484px">
-            <strong>Description</strong>
-          </th>
-          <th style="width:71px">
-            <strong>Required</strong>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td style="width:185px">resource_group</td>
-          <td style="width:484px">
-            Resource Group to which the virtual machine belongs.<br>
-            To see all the resource groups associated with your subscription
-            try executing the&nbsp;<code>azure-list-resource-groups</code>&nbsp;command.
-            If none are present then please visit the Azure Web Portal
-            to create resource groups.
-          </td>
-          <td style="width:71px">Required</td>
-        </tr>
-        <tr>
-          <td style="width:185px">virtual_machine_name</td>
-          <td style="width:484px">
-            Name of the virtual machine you wish to view the details
-            of.<br>
-            To see all the VMs with their associated names for a specific
-            resource group try executing the&nbsp;<code>azure-vm-list-instances</code>&nbsp;command.
-          </td>
-          <td style="width:71px">Required</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-<p>&nbsp;</p>
-<div class="cl-preview-section">
-  <h5 id="context-output-3">Context Output</h5>
-</div>
-<div class="cl-preview-section">
-  <div class="table-wrapper">
-    <table style="width:748px">
-      <thead>
-        <tr>
-          <th style="width:303px">
-            <strong>Path</strong>
-          </th>
-          <th style="width:45px">
-            <strong>Type</strong>
-          </th>
-          <th style="width:392px">
-            <strong>Description</strong>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td style="width:303px">Azure.Compute.Name</td>
-          <td style="width:45px">string</td>
-          <td style="width:392px">Name of the VM whose details were requested</td>
-        </tr>
-        <tr>
-          <td style="width:303px">Azure.Compute.ID</td>
-          <td style="width:45px">string</td>
-          <td style="width:392px">ID of the VM</td>
-        </tr>
-        <tr>
-          <td style="width:303px">Azure.Compute.Size</td>
-          <td style="width:45px">number</td>
-          <td style="width:392px">Size of the deployed VM in gigabytes</td>
-        </tr>
-        <tr>
-          <td style="width:303px">Azure.Compute.OS</td>
-          <td style="width:45px">string</td>
-          <td style="width:392px">OS running in the specified VM</td>
-        </tr>
-        <tr>
-          <td style="width:303px">Azure.Compute.ProvisioningState</td>
-          <td style="width:45px">string</td>
-          <td style="width:392px">Provisioning state of the deployed VM</td>
-        </tr>
-        <tr>
-          <td style="width:303px">Azure.Compute.Location</td>
-          <td style="width:45px">string</td>
-          <td style="width:392px">Region in which the VM is hosted</td>
-        </tr>
-        <tr>
-          <td style="width:303px">Azure.Compute.PowerState</td>
-          <td style="width:45px">string</td>
-          <td style="width:392px">Whether the VM instance is powered on or off</td>
-        </tr>
-        <tr>
-          <td style="width:303px">Azure.Compute.ResourceGroup</td>
-          <td style="width:45px">string</td>
-          <td style="width:392px">Resource group in which the VM belongs</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-<p>&nbsp;</p>
-<div class="cl-preview-section">
-  <h5 id="command-example-3">Command Example</h5>
-</div>
-<div class="cl-preview-section">
-  <pre>!azure-vm-get-instance-details resource_group=compute-integration virtual_machine_name=TestOAuth</pre>
-</div>
-<div class="cl-preview-section">
-  <h5 id="context-example-3">Context Example</h5>
-</div>
-<div class="cl-preview-section">
-  <pre>{
-    "Azure.Compute": {
-        "PowerState": "VM starting", 
-        "Name": "TestOAuth", 
-        "ResourceGroup": "compute-integration", 
-        "Location": "westeurope", 
-        "Size": 32, 
-        "OS": "Linux", 
-        "ID": "a050ff2e-85ab-44d9-b822-3bc3111739e0", 
-        "ProvisioningState": "Updating"
+```
+
+#### Human Readable Output
+
+>### Power-off of Virtual Machine "test12" Successfully Initiated
+>|Name|PowerState|ResourceGroup|
+>|---|---|---|
+>| test12 | VM stopping | Compute-Labs |
+
+
+### azure-vm-get-instance-details
+***
+Gets the properties of a given virtual machine.
+
+
+#### Base Command
+
+`azure-vm-get-instance-details`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource_group | The resource group to which the virtual machine belongs. To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups. | Required | 
+| virtual_machine_name | The name of the virtual machine you want to view the details of. To see all the virtual machines with their associated names for a specific resource group, run the `azure-vm-list-instances` command. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Compute.Name | string | The name of the virtual machine you want to get details of. | 
+| Azure.Compute.ID | string | The ID of the virtual machine. | 
+| Azure.Compute.Size | number | The size of the deployed virtual machine \(in gigabytes\). | 
+| Azure.Compute.OS | string | The OS running on the given virtual machine. | 
+| Azure.Compute.ProvisioningState | string | The provisioning state of the deployed virtual machine. | 
+| Azure.Compute.Location | string | The region in which the virtual machine is hosted. | 
+| Azure.Compute.PowerState | string | Whether the virtual machine instance is powered on or off. | 
+| Azure.Compute.ResourceGroup | string | The resource group to which the virtual machine belongs. | 
+| Azure.Compute.NetworkInterfaces | Unknown | The list of network interfaces attached to this machine. | 
+
+#### Command example
+```!azure-vm-get-instance-details resource_group=Compute-Labs virtual_machine_name=webserver```
+#### Context Example
+```json
+{
+    "Azure": {
+        "Compute": {
+            "ID": "xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx",
+            "Location": "eastus",
+            "Name": "webserver",
+            "NetworkInterfaces": [
+                {
+                    "id": "/subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Network/networkInterfaces/webserver729",
+                    "properties": {
+                        "deleteOption": "Delete"
+                    }
+                }
+            ],
+            "OS": "Windows",
+            "PowerState": "VM running",
+            "ProvisioningState": "Succeeded",
+            "ResourceGroup": "Compute-Labs",
+            "Size": 127
+        }
     }
 }
-</pre>
-</div>
-<div class="cl-preview-section">
-  <h5 id="human-readable-output-3">Human Readable Output</h5>
-</div>
-<div class="cl-preview-section">
-  <h3 id="properties-of-vm-testoauth">Properties of VM “TestOAuth”</h3>
-</div>
-<div class="cl-preview-section">
-  <div class="table-wrapper">
-    <table style="width:750px">
-      <thead>
-        <tr>
-          <th style="width:49px">Name</th>
-          <th style="width:359px">ID</th>
-          <th style="width:30px">Size</th>
-          <th style="width:10px">OS</th>
-          <th style="width:152px">ProvisioningState</th>
-          <th style="width:57px">Location</th>
-          <th style="width:105px">PowerState</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td style="width:49px">TestOAuth</td>
-          <td style="width:359px">a050ff2e-85ab-44d9-b822-3bc3111739e0</td>
-          <td style="width:30px">32</td>
-          <td style="width:10px">Linux</td>
-          <td style="width:152px">Updating</td>
-          <td style="width:57px">westeurope</td>
-          <td style="width:105px">VM starting</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-<p>&nbsp;</p>
-<div class="cl-preview-section">
-  <h3 id="create-a-vm-instance">5. Create a VM instance</h3>
-</div>
-<div class="cl-preview-section">
-  <hr>
-</div>
-<div class="cl-preview-section">
-  <p>
-    Creates a virtual machine instance with the specified OS image.
-  </p>
-</div>
-<div class="cl-preview-section">
-  <h5 id="base-command-4">Base Command</h5>
-</div>
-<div class="cl-preview-section">
-  <p>
-    <code>azure-vm-create-instance</code>
-  </p>
-</div>
-<div class="cl-preview-section">
-  <h5 id="input-4">Input</h5>
-</div>
-<div class="cl-preview-section">
-  <div class="table-wrapper">
-    <table style="width:785px">
-      <thead>
-        <tr>
-          <th style="width:167px">
-            <strong>Argument Name</strong>
-          </th>
-          <th style="width:534px">
-            <strong>Description</strong>
-          </th>
-          <th style="width:75px">
-            <strong>Required</strong>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td style="width:167px">resource_group</td>
-          <td style="width:534px">
-            Resource group to which the new VM will belong.<br>
-            To see all the resource groups associated with your subscription
-            try executing the&nbsp;<code>azure-list-resource-groups</code>&nbsp;command.
-            If none are present then please visit the Azure Web Portal
-            to create resource groups.
-          </td>
-          <td style="width:75px">Required</td>
-        </tr>
-        <tr>
-          <td style="width:167px">virtual_machine_name</td>
-          <td style="width:534px">Name of the virtual machine to create</td>
-          <td style="width:75px">Required</td>
-        </tr>
-        <tr>
-          <td style="width:167px">virtual_machine_location</td>
-          <td style="width:534px">Location to create the VM</td>
-          <td style="width:75px">Required</td>
-        </tr>
-        <tr>
-          <td style="width:167px">nic_name</td>
-          <td style="width:534px">
-            The name of the Network Interface to link the VM with. A
-            Network Interface has to be created from within the Azure
-            Portal. Note that the vm’s location property must match that
-            of the Network Interface you choose to link it to.<br>
-            To see a list of available Network Interfaces visit the Azure
-            Web Portal, navigate to the search bar at the top of the
-            page, type in ‘network interfaces’ and in the drop-down menu
-            that appears as you type, click on the ‘Network interfaces’
-            option that appears under the ‘Services’ category. If none
-            are present, you will need to create a new Network Interface
-            which you can do by clicking the ‘+Add’ button towards the
-            top left of the page and following the instructions.<br>
-            For more information regarding Network Interfaces see the&nbsp;<a href="https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-network-interface" target="_self">Microsoft API documentation</a>.
-          </td>
-          <td style="width:75px">Required</td>
-        </tr>
-        <tr>
-          <td style="width:167px">vm_size</td>
-          <td style="width:534px">
-            The name of a VirtualMachineSize which determines the size
-            of the deployed vm.<br>
-            For more information see the&nbsp;<a href="https://docs.microsoft.com/en-us/rest/api/compute/virtualmachines/listavailablesizes#virtualmachinesize" target="_self">Microsoft API documentation</a>.
-          </td>
-          <td style="width:75px">Required</td>
-        </tr>
-        <tr>
-          <td style="width:167px">os_image</td>
-          <td style="width:534px">Choose the base operating system image of the vm</td>
-          <td style="width:75px">Optional</td>
-        </tr>
-        <tr>
-          <td style="width:167px">sku</td>
-          <td style="width:534px">
-            SKU of the OS image to be used.<br>
-            To see a list of available SKUs, visit your Azure Web Portal,
-            click the symbol that looks similar to a ‘&gt;’ along the
-            top bar of the page which should open a cloud shell. Make
-            sure it is a bash shell.<br>
-            At the command prompt enter&nbsp;<code>az vm image list-skus</code>&nbsp;along
-            with the appropriate arguments that it will prompt you with
-            to display the list of VM image SKUs available in the Azure
-            Marketplace.
-          </td>
-          <td style="width:75px">Optional</td>
-        </tr>
-        <tr>
-          <td style="width:167px">publisher</td>
-          <td style="width:534px">
-            Name of the publisher of the OS image.<br>
-            To see a list of available publishers, visit your Azure Web
-            Portal, click the symbol that looks similar to a ‘&gt;’ along
-            the top bar of the page which should open a cloud shell.
-            Make sure it is a bash shell.<br>
-            At the command prompt enter&nbsp;<code>az vm image list-publishers</code>&nbsp;along
-            with the appropriate arguments that it will prompt you with
-            to display the list of VM image publishers available in the
-            Azure Marketplace.
-          </td>
-          <td style="width:75px">Optional</td>
-        </tr>
-        <tr>
-          <td style="width:167px">version</td>
-          <td style="width:534px">
-            Version of the image to use.<br>
-            The allowed formats are Major.Minor.Build or ‘latest’. Major,
-            Minor, and Build are decimal numbers.<br>
-            Specify ‘latest’ to use the latest version of an image available
-            at deploy time.
-          </td>
-          <td style="width:75px">Optional</td>
-        </tr>
-        <tr>
-          <td style="width:167px">offer</td>
-          <td style="width:534px">
-            Specifies the offer of the platform image or marketplace
-            image used to create the virtual machine.<br>
-            To see a list of available offers, visit your Azure Web Portal,
-            click the symbol that looks similar to a ‘&gt;’ along the
-            top bar of the page which should open a cloud shell. Make
-            sure it is a bash shell.<br>
-            At the command prompt enter&nbsp;<code>az vm image list-offers</code>&nbsp;along
-            with the appropriate arguments that it will prompt you with
-            to display the list of VM image offers available in the Azure
-            Marketplace.
-          </td>
-          <td style="width:75px">Optional</td>
-        </tr>
-        <tr>
-          <td style="width:167px">admin_username</td>
-          <td style="width:534px">Admin Username to be used when creating the VM</td>
-          <td style="width:75px">Optional</td>
-        </tr>
-        <tr>
-          <td style="width:167px">admin_password</td>
-          <td style="width:534px">Admin Password to be used when creating the VM</td>
-          <td style="width:75px">Optional</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-<p>&nbsp;</p>
-<div class="cl-preview-section">
-  <h5 id="context-output-4">Context Output</h5>
-</div>
-<div class="cl-preview-section">
-  <div class="table-wrapper">
-    <table style="width:746px">
-      <thead>
-        <tr>
-          <th style="width:310px">
-            <strong>Path</strong>
-          </th>
-          <th style="width:41px">
-            <strong>Type</strong>
-          </th>
-          <th style="width:389px">
-            <strong>Description</strong>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td style="width:310px">Azure.Compute.Name</td>
-          <td style="width:41px">string</td>
-          <td style="width:389px">Name of the created VM instance</td>
-        </tr>
-        <tr>
-          <td style="width:310px">Azure.Compute.ResourceGroup</td>
-          <td style="width:41px">string</td>
-          <td style="width:389px">Resource group the VM resides in</td>
-        </tr>
-        <tr>
-          <td style="width:310px">Azure.Compute.ID</td>
-          <td style="width:41px">string</td>
-          <td style="width:389px">ID of the VM</td>
-        </tr>
-        <tr>
-          <td style="width:310px">Azure.Compute.Size</td>
-          <td style="width:41px">number</td>
-          <td style="width:389px">Size of the deployed VM in gigabytes</td>
-        </tr>
-        <tr>
-          <td style="width:310px">Azure.Compute.OS</td>
-          <td style="width:41px">string</td>
-          <td style="width:389px">OS running in the specified VM</td>
-        </tr>
-        <tr>
-          <td style="width:310px">Azure.Compute.ProvisioningState</td>
-          <td style="width:41px">string</td>
-          <td style="width:389px">Provisioning state of the deployed VM</td>
-        </tr>
-        <tr>
-          <td style="width:310px">Azure.Compute.Location</td>
-          <td style="width:41px">string</td>
-          <td style="width:389px">Region in which the VM is hosted</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-<p>&nbsp;</p>
-<div class="cl-preview-section">
-  <h5 id="command-example-4">Command Example</h5>
-</div>
-<div class="cl-preview-section">
-  <pre>!azure-vm-create-instance resource_group=compute-integration nic_name=compute-integration-nic1 virtual_machine_location=westeurope vm_size=Standard_D1_v2 virtual_machine_name=DemoVM os_image="Ubuntu Server 18.04 LTS"</pre>
-</div>
-<div class="cl-preview-section">
-  <h5 id="context-example-4">Context Example</h5>
-</div>
-<div class="cl-preview-section">
-  <pre>{
-    "Azure.Compute": {
-        "Name": "DemoVM", 
-        "ResourceGroup": "compute-integration", 
-        "Location": "westeurope", 
-        "Size": "NA", 
-        "OS": "Linux", 
-        "ID": "106a46b3-e999-44fd-be41-270a76e722fa", 
-        "ProvisioningState": "Creating"
+```
+
+#### Human Readable Output
+
+>### Properties of VM "webserver"
+>|Name|ID|Size|OS|ProvisioningState|Location|PowerState|
+>|---|---|---|---|---|---|---|
+>| webserver | xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx | 127 | Windows | Succeeded | eastus | VM running |
+
+
+### azure-vm-create-instance
+***
+Creates a virtual machine instance with the specified OS image.
+
+
+#### Base Command
+
+`azure-vm-create-instance`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource_group | The resource group to which the new virtual machine will belong. To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups. | Required | 
+| virtual_machine_name | The name of the virtual machine to create. | Required | 
+| virtual_machine_location | The location in which to create the virtual machine. Possible values are: westus2, westus, westindia, westeurope, westcentralus, uksouth, ukwest, southeastasia, northcentralus, northeurope, southcentralus, southindia, francesouth, francecentral, japaneast, japanwest, koreacentral, koreasouth, brazilsouth, canadacentral, canadaeast, centralindia, eastus2, eastasia, westus, centralus, eastus, australiacentral, australiacentral2, australiaeast, australiasoutheast. | Required | 
+| nic_name | The name of the Network Interface to link the virtual machine with. Note that the virtual machine's location property must match that of the Network Interface you choose to link it to. To see a list of available Network Interfaces visit the Azure Web Portal, navigate to the search bar at the top of the page, type "network interfaces", and in the dynamic drop-down menu that appears, click the 'Network interfaces' option that appears under the 'Services' category. If none are present, you will need to create a new Network Interface. | Required | 
+| vm_size | The name of a VirtualMachineSize, which determines the size of the deployed virtual machine. For more information, see the Azure documentation at https://docs.microsoft.com/en-us/rest/api/compute/virtualmachines/listavailablesizes#virtualmachinesize. Possible values are: Standard_D1_v2, Standard_D2_v2, Standard_D2s_v3, Standard_B1ms, Standard_B1s, Standard_B2s, Standard_B4ms, Standard_D4s_v3, Standard_DS1_v2, Standard_DS2_v2, Standard_DS3_v2, Promo_DS2_v2, Promo_DS3_v2. | Required | 
+| os_image | The base operating system image of the virtual machine. Possible values are: Ubuntu Server 14.04 LTS, Ubuntu Server 16.04 LTS, Ubuntu Server 18.04 LTS, Red Hat Enterprise Linux 7.6, CentOS-based 7.5, Windows Server 2012 R2 Datacenter, Windows Server 2016 Datacenter, Windows 10 Pro Version 1803, Windows 10 Pro Version 1809. | Optional | 
+| sku | SKU of the OS image to be used. To see a list of available SKUs, visit your Azure Web Portal, click the symbol that looks similar to a '&gt;' on the top bar of the page. This should open a cloud shell, make sure it is a bash shell. At the command prompt enter `az vm image list-skus` along with the appropriate arguments that it will prompt you with to display the list of VM image SKUs available in the Azure Marketplace. Default is 2016-Datacenter. | Optional | 
+| publisher | Name of the publisher of the OS image. To see a list of available publishers, visit your Azure Web Portal, click the symbol that looks similar to a '&gt;' on the top bar of the page which should open a cloud shell, make sure it is a bash shell. At the command prompt enter `az vm image list-publishers` along with the appropriate arguments that it will prompt you with to display the list of VM image publishers available in the Azure Marketplace. Default is MicrosoftWindowsServer. | Optional | 
+| version | Version of the image to use. The supported formats are Major.Minor.Build or 'latest'. Major, Minor, and Build are decimal numbers. Specify 'latest' to use the latest version of an image available at deploy time. Default is latest. | Optional | 
+| offer | Specifies the offer of the platform image or marketplace image used to create the virtual machine. To see a list of available offers, visit your Azure Web Portal, click the symbol that looks similar to a '&gt;' on the top bar of the page which should open a cloud shell, make sure it is a bash shell. At the command prompt enter `az vm image list-offers` along with the appropriate arguments that it will prompt you with to display the list of VM image offers available in the Azure Marketplace. Default is WindowsServer. | Optional | 
+| admin_username | The admin username to use when creating the virtual machine. Default is DemistoUser. | Optional | 
+| admin_password | The admin password to use when creating the virtual machine. Default is Passw0rd@123. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Compute.Name | string | The name of the created virtual machine instance. | 
+| Azure.Compute.ResourceGroup | string | The resource group in which the virtual machine resides. | 
+| Azure.Compute.ID | string | The ID of the virtual machine. | 
+| Azure.Compute.Size | number | The size of the deployed virtual machine \(in gigabytes\). | 
+| Azure.Compute.OS | string | The OS running on the specified virtual machine. | 
+| Azure.Compute.ProvisioningState | string | The provisioning state of the deployed virtual machine. | 
+| Azure.Compute.Location | string | The region in which the virtual machine is hosted. | 
+
+#### Command example
+```!azure-vm-create-instance nic_name=test_nic3 resource_group=Compute-Labs virtual_machine_location=eastus virtual_machine_name=test567 vm_size=Standard_D1_v2```
+#### Context Example
+```json
+{
+    "Azure": {
+        "Compute": {
+          "ID": "xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx",
+          "Location": "eastus",
+          "Name": "test567",
+          "OS": "Windows",
+          "ProvisioningState": "Creating",
+          "ResourceGroup": "Compute-Labs",
+          "Size": "127"
+
+        }
     }
 }
-</pre>
-</div>
-<div class="cl-preview-section">
-  <h5 id="human-readable-output-4">Human Readable Output</h5>
-</div>
-<div class="cl-preview-section">
-  <h3 id="created-virtual-machine-demovm">Created Virtual Machine “DemoVM”</h3>
-</div>
-<div class="cl-preview-section">
-  <div class="table-wrapper">
-    <table style="width:643px">
-      <thead>
-        <tr>
-          <th style="width:46px">Name</th>
-          <th style="width:182px">ResourceGroup</th>
-          <th style="width:21px">Location</th>
-          <th style="width:38px">Size</th>
-          <th style="width:41px">OS</th>
-          <th style="width:160px">ID</th>
-          <th style="width:140px">ProvisioningState</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td style="width:46px">DemoVM</td>
-          <td style="width:182px">compute-integration</td>
-          <td style="width:21px">westeurope</td>
-          <td style="width:38px">NA</td>
-          <td style="width:41px">Linux</td>
-          <td style="width:160px">106a46b3-e999-44fd-be41-270a76e722fa</td>
-          <td style="width:140px">Creating</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-<p>&nbsp;</p>
-<div class="cl-preview-section">
-  <h3 id="list-all-subscriptions-for-the-application">6. Lists the subscriptions for this application.</h3>
-</div>
-<div class="cl-preview-section">
-  <hr>
-</div>
-<div class="cl-preview-section">
-  <p>
-    Lists the subscriptions for this application.
-  </p>
-</div>
-<div class="cl-preview-section">
-  <h5 id="base-command-5">Base Command</h5>
-</div>
-<div class="cl-preview-section">
-  <p>
-    <code>azure-list-subscriptions</code>
-  </p>
-</div>
-<div class="cl-preview-section">
-  <h5 id="input-6">Input</h5>
-</div>
-<div class="cl-preview-section">
-  No inputs for this command.
-</div>
-<p>&nbsp;</p>
-<div class="cl-preview-section">
-  <h5 id="context-output-5">Context Output</h5>
-</div>
-<div class="cl-preview-section">
-  <div class="table-wrapper">
-    <table style="width:747px">
-      <thead>
-        <tr>
-          <th style="width:303px">
-            <strong>Path</strong>
-          </th>
-          <th style="width:33px">
-            <strong>Type</strong>
-          </th>
-          <th style="width:404px">
-            <strong>Description</strong>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td style="width:303px">Azure.Subscription.Name</td>
-          <td style="width:33px">string</td>
-          <td style="width:404px">Subscription Name</td>
-        </tr>
-        <tr>
-          <td style="width:303px">Azure.Subscription.ID</td>
-          <td style="width:33px">string</td>
-          <td style="width:404px">Subscription ID</td>
-        </tr>
-        <td style="width:303px">Azure.Subscription.State</td>
-          <td style="width:33px">string</td>
-          <td style="width:404px">Subscription State</td>
-      </tbody>
-    </table>
-  </div>
-</div>
-<p>&nbsp;</p>
-<div class="cl-preview-section">
-  <h5 id="command-example-5">Command Example</h5>
-</div>
-<div class="cl-preview-section">
-  <pre>!azure-list-subscriptions</pre>
-</div>
-<div class="cl-preview-section">
-  <h5 id="context-example-5">Context Example</h5>
-</div>
-<div class="cl-preview-section">
-  <pre>{
-    "Azure.Subscription": [
-        {
-            "Name": "My subscription", 
-            "ID": "/subscriptions/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/resourceGroups/cloud-shell-storage-eastus", 
+```
+
+#### Human Readable Output
+
+>### List of Resource Groups
+>|ID|Location|Name|OS|ProvisioningState|ResourceGroup|Size|
+>|---|---|---|---|---|---|---|
+>| 	xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx | eastus | test567 | Windows | Creating | Compute-Labs | 127 |
+
+
+### azure-list-resource-groups
+***
+Lists all resource groups that belong to your Azure subscription.
+
+
+#### Base Command
+
+`azure-list-resource-groups`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscripton ID will be used. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.ResourceGroup.Name | string | The name of the resource group. | 
+| Azure.ResourceGroup.ID | string | The ID of the resource group. | 
+| Azure.ResourceGroup.Location | string | The location of the resource group. | 
+| Azure.ResourceGroup.ProvisioningState | string | The provisioning state of the resource group. | 
+
+#### Command example
+```!azure-list-resource-groups```
+#### Context Example
+```json
+{
+    "Azure": {
+        "ResourceGroup": [
+            {
+                "ID": "/subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs",
+                "Location": "ukwest",
+                "Name": "Compute-Labs",
+                "ProvisioningState": "Succeeded"
+            },
+            {
+                "ID": "/subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/NetworkWatcherRG",
+                "Location": "eastus",
+                "Name": "NetworkWatcherRG",
+                "ProvisioningState": "Succeeded"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### List of Resource Groups
+>|ID|Location|Name|ProvisioningState|
+>|---|---|---|---|
+>| /subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs | ukwest | Compute-Labs | Succeeded |
+>| /subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/NetworkWatcherRG | eastus | NetworkWatcherRG | Succeeded |
+
+
+### azure-vm-delete-instance
+***
+Deletes a specified virtual machine.
+
+
+#### Base Command
+
+`azure-vm-delete-instance`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource_group | The resource group to which the virtual machine belongs. To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups. | Required | 
+| virtual_machine_name | The name of the virtual machine to delete. To see all the virtual machines with their associated names for a specific resource group, run the `azure-vm-list-instances` command. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!azure-vm-delete-instance resource_group=Compute-Labs virtual_machine_name=test1234```
+#### Human Readable Output
+
+>"test1234" VM Deletion Successfully Initiated
+
+### azure-list-subscriptions
+***
+Lists the subscriptions for this application.
+
+
+#### Base Command
+
+`azure-list-subscriptions`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Subscription.ID | String | The ID of the subscription. | 
+| Azure.Subscription.Name | String | The name of the subscription. | 
+| Azure.Subscription.State | String | The state of the subscription. | 
+
+#### Command example
+```!azure-list-subscriptions```
+#### Context Example
+```json
+{
+    "Azure": {
+        "Subscription": {
+            "ID": "/subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx",
+            "Name": "Azure subscription 1",
             "State": "Enabled"
-        }, 
-    ]
-}
-</pre>
-</div>
-<div class="cl-preview-section">
-  <h5 id="human-readable-output-5">Human Readable Output</h5>
-</div>
-<div class="cl-preview-section">
-  <h3 id="list-of-resource-groups">List of Resource Groups</h3>
-</div>
-<div class="cl-preview-section">
-  <div class="table-wrapper">
-    <table style="width:1036px">
-      <thead>
-        <tr>
-          <th style="width:67px">ID</th>
-          <th style="width:279px">Name</th>
-          <th style="width:523px">State</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td style="width:523px">
-            /subscriptions/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/resourceGroups/cloud-shell-storage-eastus
-          </td>
-          <td style="width:67px">My subscription</td>
-          <td style="width:155px">Enabled</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-<div class="cl-preview-section">
-  <h3 id="list-all-resource-groups-for-the-azure-subscription">6. List all resource groups for the Azure subscription</h3>
-</div>
-<div class="cl-preview-section">
-  <hr>
-</div>
-<div class="cl-preview-section">
-  <p>
-    Lists all resource groups belonging to your Azure subscription.
-  </p>
-</div>
-<div class="cl-preview-section">
-  <h5 id="base-command-5">Base Command</h5>
-</div>
-<div class="cl-preview-section">
-  <p>
-    <code>azure-list-resource-groups</code>
-  </p>
-</div>
-<div class="cl-preview-section">
-  <h5 id="input-6">Input</h5>
-</div>
-<div class="cl-preview-section">
-  <div class="table-wrapper">
-    <table style="width:748px">
-      <thead>
-        <tr>
-          <th style="width:162px">
-            <strong>Argument Name</strong>
-          </th>
-          <th style="width:507px">
-            <strong>Description</strong>
-          </th>
-          <th style="width:71px">
-            <strong>Required</strong>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td style="width:162px">subscription_id</td>
-          <td style="width:507px">
-            Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions
-            command. If not specified, the default subscripton ID will be used.
-          </td>
-          <td style="width:71px">Required</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-<p>&nbsp;</p>
-<div class="cl-preview-section">
-  <h5 id="context-output-5">Context Output</h5>
-</div>
-<div class="cl-preview-section">
-  <div class="table-wrapper">
-    <table style="width:747px">
-      <thead>
-        <tr>
-          <th style="width:303px">
-            <strong>Path</strong>
-          </th>
-          <th style="width:33px">
-            <strong>Type</strong>
-          </th>
-          <th style="width:404px">
-            <strong>Description</strong>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td style="width:303px">Azure.ResourceGroup.Name</td>
-          <td style="width:33px">string</td>
-          <td style="width:404px">Name of the Resource Group</td>
-        </tr>
-        <tr>
-          <td style="width:303px">Azure.ResourceGroup.ID</td>
-          <td style="width:33px">string</td>
-          <td style="width:404px">ID of the Resource Group</td>
-        </tr>
-        <tr>
-          <td style="width:303px">Azure.ResourceGroup.Location</td>
-          <td style="width:33px">string</td>
-          <td style="width:404px">Location of the Resource Group</td>
-        </tr>
-        <tr>
-          <td style="width:303px">Azure.ResourceGroup.ProvisioningState</td>
-          <td style="width:33px">string</td>
-          <td style="width:404px">Provisioning State of the Resource Group</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-<p>&nbsp;</p>
-<div class="cl-preview-section">
-  <h5 id="command-example-5">Command Example</h5>
-</div>
-<div class="cl-preview-section">
-  <pre>!azure-list-resource-groups</pre>
-</div>
-<div class="cl-preview-section">
-  <h5 id="context-example-5">Context Example</h5>
-</div>
-<div class="cl-preview-section">
-  <pre>{
-    "Azure.ResourceGroup": [
-        {
-            "Name": "cloud-shell-storage-eastus", 
-            "ProvisioningState": "Succeeded", 
-            "ID": "/subscriptions/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/resourceGroups/cloud-shell-storage-eastus", 
-            "Location": "eastus"
-        }, 
-        {
-            "Name": "compute-integration", 
-            "ProvisioningState": "Succeeded", 
-            "ID": "/subscriptions/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/resourceGroups/compute-integration", 
-            "Location": "eastus"
-        }, 
-        {
-            "Name": "NetworkWatcherRG", 
-            "ProvisioningState": "Succeeded", 
-            "ID": "/subscriptions/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/resourceGroups/NetworkWatcherRG", 
-            "Location": "westeurope"
-        }, 
-        {
-            "Name": "us-east-rg", 
-            "ProvisioningState": "Succeeded", 
-            "ID": "/subscriptions/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/resourceGroups/us-east-rg", 
-            "Location": "eastus"
-        }, 
-        {
-            "Name": "us-east-rg-backups", 
-            "ProvisioningState": "Succeeded", 
-            "ID": "/subscriptions/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/resourceGroups/us-east-rg-backups", 
-            "Location": "westus"
         }
-    ]
+    }
 }
-</pre>
-</div>
-<div class="cl-preview-section">
-  <h5 id="human-readable-output-5">Human Readable Output</h5>
-</div>
-<div class="cl-preview-section">
-  <h3 id="list-of-resource-groups">List of Resource Groups</h3>
-</div>
-<div class="cl-preview-section">
-  <div class="table-wrapper">
-    <table style="width:1036px">
-      <thead>
-        <tr>
-          <th style="width:67px">Location</th>
-          <th style="width:155px">ProvisioningState</th>
-          <th style="width:279px">Name</th>
-          <th style="width:523px">ID</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td style="width:67px">eastus</td>
-          <td style="width:155px">Succeeded</td>
-          <td style="width:279px">cloud-shell-storage-eastus</td>
-          <td style="width:523px">
-            /subscriptions/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/resourceGroups/cloud-shell-storage-eastus
-          </td>
-        </tr>
-        <tr>
-          <td style="width:67px">eastus</td>
-          <td style="width:155px">Succeeded</td>
-          <td style="width:279px">compute-integration</td>
-          <td style="width:523px">
-            /subscriptions/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/resourceGroups/compute-integration
-          </td>
-        </tr>
-        <tr>
-          <td style="width:67px">westeurope</td>
-          <td style="width:155px">Succeeded</td>
-          <td style="width:279px">NetworkWatcherRG</td>
-          <td style="width:523px">
-            /subscriptions/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/resourceGroups/NetworkWatcherRG
-          </td>
-        </tr>
-        <tr>
-          <td style="width:67px">eastus</td>
-          <td style="width:155px">Succeeded</td>
-          <td style="width:279px">us-east-rg</td>
-          <td style="width:523px">
-            /subscriptions/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/resourceGroups/us-east-rg
-          </td>
-        </tr>
-        <tr>
-          <td style="width:67px">westus</td>
-          <td style="width:155px">Succeeded</td>
-          <td style="width:279px">us-east-rg-backups</td>
-          <td style="width:523px">
-            /subscriptions/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/resourceGroups/us-east-rg-backups
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-<p>&nbsp;</p>
-<div class="cl-preview-section">
-  <h3 id="delete-a-vm-instance">7. Delete a VM instance</h3>
-</div>
-<div class="cl-preview-section">
-  <hr>
-</div>
-<div class="cl-preview-section">
-  <p>Deletes a specified VM instance.</p>
-</div>
-<div class="cl-preview-section">
-  <h5 id="base-command-6">Base Command</h5>
-</div>
-<div class="cl-preview-section">
-  <p>
-    <code>azure-vm-delete-instance</code>
-  </p>
-</div>
-<div class="cl-preview-section">
-  <h5 id="input-6">Input</h5>
-</div>
-<div class="cl-preview-section">
-  <div class="table-wrapper">
-    <table style="width:748px">
-      <thead>
-        <tr>
-          <th style="width:162px">
-            <strong>Argument Name</strong>
-          </th>
-          <th style="width:507px">
-            <strong>Description</strong>
-          </th>
-          <th style="width:71px">
-            <strong>Required</strong>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td style="width:162px">resource_group</td>
-          <td style="width:507px">
-            Resource Group to which the virtual machine belongs.<br>
-            To see all the resource groups associated with your subscription
-            try executing the&nbsp;<code>azure-list-resource-groups</code>&nbsp;command.
-            If none are present then please visit the Azure Web Portal
-            to create resource groups.
-          </td>
-          <td style="width:71px">Required</td>
-        </tr>
-        <tr>
-          <td style="width:162px">virtual_machine_name</td>
-          <td style="width:507px">
-            Name of the virtual machine to delete.<br>
-            To see all VMs with their associated names for a specific
-            resource group try executing the&nbsp;<code>azure-vm-list-instances</code>&nbsp;command.
-          </td>
-          <td style="width:71px">Optional</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-<p>&nbsp;</p>
-<div class="cl-preview-section">
-  <h5 id="context-output-6">Context Output</h5>
-</div>
-<div class="cl-preview-section">
-  <p>There is no context output for this command.</p>
-</div>
-<div class="cl-preview-section">
-  <h5 id="command-example-6">Command Example</h5>
-</div>
-<div class="cl-preview-section">
-  <pre>!azure-vm-delete-instance resource_group=compute-integration virtual_machine_name=DemoVM</pre>
-</div>
-<div class="cl-preview-section">
-  <h5 id="human-readable-output-6">Human Readable Output</h5>
-</div>
-<div class="cl-preview-section">
-  <p>“DemoVM” VM Deletion Successfully Initiated</p>
-</div>
+```
+
+#### Human Readable Output
+
+>### List of Subscriptions
+>|ID|Name|State|
+>|---|---|---|
+>| /subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx | Azure subscription 1 | Enabled |
+
+
+### azure-vm-get-nic-details
+***
+Gets the properties of a given network interface.
+
+
+#### Base Command
+
+`azure-vm-get-nic-details`
+#### Input
+
+| **Argument Name** | **Description**                                                                                                                                                                                                                                             | **Required** |
+| --- |-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| resource_group | The resource group to which the network interface belongs. To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups. | Required | 
+| nic_name | The name of the network interface you want to view the details of.                                                                                                                                                                                          | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Network.Interfaces.AttachedVirtualMachine | String | The attached virtual machine to this interface. | 
+| Azure.Network.Interfaces.IsPrimaryInterface | String | True if this interface is a primary interface of the attached VM. | 
+| Azure.Network.Interfaces.NICType | String | The interface type. | 
+| Azure.Network.Interfaces.IPConfigurations.ConfigID | String | The interface ipconfig id. | 
+| Azure.Network.Interfaces.IPConfigurations.ConfigName | String | The interface ipconfig name. | 
+| Azure.Network.Interfaces.IPConfigurations.PrivateIPAddress | String | The interface private ip addresse. | 
+| Azure.Network.Interfaces.IPConfigurations.PublicIPAddressID | Unknown | The interface public ip address id. | 
+| Azure.Network.Interfaces.MACAddress | String | The interface mac address. | 
+| Azure.Network.Interfaces.Name | String | The interface name. | 
+| Azure.Network.Interfaces.ResourceGroup | String | The interface resource group. | 
+| Azure.Network.Interfaces.NetworkSecurityGroup.id | String | The interface network security group id. | 
+| Azure.Network.Interfaces.Location | String | The interface location. | 
+| Azure.Network.Interfaces.ID | String | The interface id. | 
+
+#### Command example
+```!azure-vm-get-nic-details resource_group=Compute-Labs nic_name=webserver729```
+#### Context Example
+```json
+{
+    "Azure": {
+        "Network":{
+          "Interfaces": {
+            "AttachedVirtualMachine": "/subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Compute/virtualMachines/webserver",
+            "DNSSuffix": "test.bx.internal.cloudapp.net",
+            "ID": "/subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Network/networkInterfaces/webserver729",
+            "IPConfigurations": [
+              {
+                "ConfigID": "/subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Network/networkInterfaces/webserver729/ipConfigurations/ipconfig1",
+                "ConfigName": "ipconfig1",
+                "PrivateIPAddress": "10.0.0.4",
+                "PublicIPAddressID": "/subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Network/publicIPAddresses/webserver-ip"
+              }
+            ],
+            "IsPrimaryInterface": true,
+            "Location": "eastus",
+            "MACAddress": "00-22-48-1C-73-AF",
+            "NICType": "NA",
+            "Name": "webserver729",
+            "NetworkSecurityGroup": {
+              "id": "/subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Network/networkSecurityGroups/webserver-nsg"
+            },
+            "ResourceGroup": "Compute-Labs"
+          }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Properties of Network Interface "webserver729"
+>|Name|ID|MACAddress|NetworkSecurityGroup|NICType|PrivateIPAddresses|
+>|---|---|---|---|---|---|
+>| webserver729 | /subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Network/networkInterfaces/webserver729 | 00-22-48-1C-73-AF | id: /subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Network/networkSecurityGroups/webserver-nsg | NA | 10.0.0.4|
+
+
+### azure-vm-get-public-ip-details
+***
+Gets the properties of a given public ip address.
+
+
+#### Base Command
+
+`azure-vm-get-public-ip-details`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource_group | The resource group to which the ip address belongs. To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups. | Required | 
+| address_name | The ip address name. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Network.IPConfigurations.PublicIPAddress | String | The public ip address. | 
+| Azure.Network.IPConfigurations.PublicIPAddressFQDN | String | The address FQDN. | 
+| Azure.Network.IPConfigurations.PublicIPAddressAllocationMethod | String | The address allocation methond. | 
+| Azure.Network.IPConfigurations.PublicConfigID | String | The address configuration id. | 
+| Azure.Network.IPConfigurations.ResourceGroup | String | The address resource group. | 
+| Azure.Network.IPConfigurations.PublicIPAddressDomainName | String | The address domain name. | 
+| Azure.Network.IPConfigurations.PublicIPAddressVersion | String | The address version. | 
+| Azure.Network.IPConfigurations.Location | String | The address location. | 
+| Azure.Network.IPConfigurations.PublicConfigName | String | The address config name. | 
+| Azure.Network.IPConfigurations.PublicIPAddressID | String | The address id. | 
+
+#### Command example
+```!azure-vm-get-public-ip-details resource_group=Compute-Labs address_name=webserver-ip```
+#### Context Example
+```json
+{
+    "Azure": {
+        "Network": {
+            "IPConfigurations": {
+                "Location": "eastus",
+                "PublicConfigID": "/subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Network/networkInterfaces/webserver729/ipConfigurations/ipconfig1",
+                "PublicConfigName": "webserver-ip",
+                "PublicIPAddress": "xx.xx.xx.xx",
+                "PublicIPAddressAllocationMethod": "Dynamic",
+                "PublicIPAddressDomainName": "cortexmea-webserver",
+                "PublicIPAddressFQDN": "test.eastus.cloudapp.azure.com",
+                "PublicIPAddressID": "/subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Network/publicIPAddresses/webserver-ip",
+                "PublicIPAddressVersion": "IPv4",
+                "ResourceGroup": "Compute-Labs"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Properties of Public Address "webserver-ip"
+>|PublicConfigName|PublicIPAddress| Location |PublicIPAddressVersion|PublicIPAddressAllocationMethod|
+>|-----------|--------|---|------|--------|
+>| test-publicip1|xx.xx.xx.xx| ukwest | IPv4|Static|
+
+
+### azure-vm-create-nic
+***
+Creates a virtual machine network interface.
+
+
+#### Base Command
+
+`azure-vm-create-nic`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource_group | The resource group to which the new network interface will belong. To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups. | Required | 
+| nic_name | The network interface name. | Required | 
+| nic_location | The location in which to create the network interface. Possible values are: westus2, westus, westindia, westeurope, westcentralus, uksouth, ukwest, southeastasia, northcentralus, northeurope, southcentralus, southindia, francesouth, francecentral, japaneast, japanwest, koreacentral, koreasouth, brazilsouth, canadacentral, canadaeast, centralindia, eastus2, eastasia, westus, centralus, eastus, australiacentral, australiacentral2, australiaeast, australiasoutheast. | Required | 
+| vnet_name | The virtual network name of the inteface. | Required | 
+| subnet_name | The subnet name of the inteface. | Required | 
+| address_assignment_method | The address assignment method, the default is Dynamic. Possible values are: Static, Dynamic. Default is Dynamic. | Optional | 
+| private_ip_address | The private ip address of the interface incase you chose to use the static assignment method. | Optional | 
+| ip_config_name | The ip address config name. | Required | 
+| network_security_group | The network security group of the interface. | Optional | 
+
+
+#### Context Output
+
+| **Path**                                                   | **Type** | **Description** |
+|------------------------------------------------------------| --- | --- |
+| Azure.Network.Interfaces.IPConfigurations.ConfigID         | String | The interface ipconfig id. | 
+| Azure.Network.Interfaces.IPConfigurations.ConfigName       | String | The interface ipconfig name. | 
+| Azure.Network.Interfaces.IPConfigurations.PrivateIPAddress  | String | The interface private ip addresse. | 
+| Azure.Network.Interfaces.IPConfigurations.PublicIPAddressID | Unknown | The interface public ip address id. | 
+| Azure.Network.Interfaces.Name                               | String | The interface name. | 
+| Azure.Network.Interfaces.ResourceGroup                      | String | The interface resource group. | 
+| Azure.Network.Interfaces.NetworkSecurityGroup.id            | String | The interface network security group id. | 
+| Azure.Network.Interfaces.Location                           | String | The interface location. | 
+| Azure.Network.Interfaces.ID                                 | String | The interface id. | 
+
+#### Command example
+```!azure-vm-create-nic nic_location=eastus nic_name=test_nic2 resource_group=Compute-Labs subnet_name=default vnet_name=Compute-Labs-vnet ip_config_name=ipconfigtest```
+#### Context Example
+```json
+{
+    "Azure": {
+        "Network":{
+          "Interfaces": {
+            "DNSSuffix": "test.bx.internal.cloudapp.net",
+            "ID": "/subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Network/networkInterfaces/test_nic2",
+            "IPConfigurations": [
+              {
+                "ConfigID": "/subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Network/networkInterfaces/test_nic2/ipConfigurations/ipconfigtest",
+                "ConfigName": "ipconfigtest",
+                "PrivateIPAddress": "10.0.0.13",
+                "PublicIPAddressID": "NA",
+                "SubNet": "/subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Network/virtualNetworks/Compute-Labs-vnet/subnets/default"
+              }
+            ],
+            "Location": "eastus",
+            "Name": "test_nic2",
+            "NetworkSecurityGroup": "NA",
+            "ProvisioningState": "Succeeded",
+            "ResourceGroup": "Compute-Labs"
+          }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Created Network Interface "test_nic2"
+>|ID|PrivateIPAddresses|Location|Name|NetworkSecurityGroup|
+>|---|---|---|---|---|
+>| /subscriptions/xxxxxxxxx-xxxxx-xxxxx-xxxxx-xxxxxxxxxxxxx/resourceGroups/Compute-Labs/providers/Microsoft.Network/networkInterfaces/test_nic2 | 10.0.0.13 | eastus | test_nic2 | NA |

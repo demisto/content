@@ -133,6 +133,25 @@ class Client:
         return updated_incident
 
     @logger
+    def get_incident(self, incident_id: int, timeout: int) -> Dict:
+        """
+        GET request to get single incident.
+        Args:
+            incident_id (int): incident's id
+            timeout (int): waiting time for command execution
+
+
+       Returns( Dict): request results as dict:
+                    { '@odata.context',
+                      'value': updated incident,
+                    }
+
+        """
+        incident = self.ms_client.http_request(
+            method='GET', url_suffix=f'api/incidents/{incident_id}', timeout=timeout)
+        return incident
+
+    @logger
     def advanced_hunting(self, query: str, timeout: int):
         """
         POST request to the advanced hunting API:
@@ -377,6 +396,33 @@ def microsoft_365_defender_incident_update_command(client: Client, args: Dict) -
 
 
 @logger
+def microsoft_365_defender_incident_get_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Get an incident.
+    Args:
+        client(Client): Microsoft 365 Defender's client to preform the API calls.
+        args(Dict): Demisto arguments:
+              - id (int)        - incident's id (required)
+              - timeout (int)   - waiting time for command execution
+
+    Returns: CommandResults
+    """
+    incident_id = arg_to_number(args.get('id'))
+    timeout = arg_to_number(args.get('timeout', TIMEOUT))
+
+    incident = client.get_incident(incident_id=incident_id, timeout=timeout)
+    if incident.get('@odata.context'):
+        del incident['@odata.context']
+
+    readable_incident = convert_incident_to_readable(incident)
+    human_readable_table = tableToMarkdown(name=f"Incident No. {incident_id}:", t=readable_incident,
+                                           headers=list(readable_incident.keys()))
+
+    return CommandResults(outputs_prefix='Microsoft365Defender.Incident', outputs_key_field='incidentId',
+                          outputs=incident, readable_output=human_readable_table)
+
+
+@logger
 def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int, timeout: int = None) -> List[Dict]:
     """
     Uses to fetch incidents into Demisto
@@ -546,10 +592,6 @@ def main() -> None:
     enc_key = params.get('enc_key') or (params.get('credentials') or {}).get('password')
     certificate_thumbprint = params.get('certificate_thumbprint')
     private_key = params.get('private_key')
-    if not enc_key and not (certificate_thumbprint and private_key):
-        raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.'
-                               'For further information see '
-                               'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
 
     first_fetch_time = params.get('first_fetch', '3 days').strip()
     fetch_limit = arg_to_number(params.get('max_fetch', 10))
@@ -601,6 +643,10 @@ def main() -> None:
         elif command == 'microsoft-365-defender-advanced-hunting':
             test_context_for_token(client)
             return_results(microsoft_365_defender_advanced_hunting_command(client, args))
+
+        elif command == 'microsoft-365-defender-incident-get':
+            test_context_for_token(client)
+            return_results(microsoft_365_defender_incident_get_command(client, args))
 
         elif command == 'fetch-incidents':
             fetch_limit = arg_to_number(fetch_limit)

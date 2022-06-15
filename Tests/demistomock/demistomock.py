@@ -412,6 +412,19 @@ exampleAutoFocusApiKey = '1234'
 
 callingContext = {}  # type: dict
 
+contentSecrets = {
+    "WildFire-Reports": {
+        "token": "<ReplaceWithToken>"
+    },
+    "AutoFocusTagsFeed": {
+        "api_key": "<ReplaceWithApiKey>"
+    },
+    "Http_Connector": {
+        "token": "<ReplaceWithToken>",
+        "url": "<ReplaceWithURL>"
+    }
+}
+
 
 def params():
     """(Integration only)
@@ -596,19 +609,22 @@ def results(results):
 
     Args:
       results (Union[list, dict]): The entry object or array of entry objects to output
-      For example: results = {
-        'Type' : EntryType.NOTE,
-        'Contents': data,
-        'ContentsFormat' : EntryFormat.JSON,
-        'HumanReadable': md,
-        'ReadableContentsFormat' : EntryFormat.MARKDOWN,
-        'EntryContext' : context,
-        'Tags' : ['tag1', 'tag2']
-      }
 
     Returns:
       None: No data returned
 
+    An example of results argument:
+    ```
+    {
+        Type: EntryType.NOTE,
+        Contents: data,
+        ContentsFormat: EntryFormat.JSON,
+        HumanReadable: md,
+        ReadableContentsFormat: EntryFormat.MARKDOWN,
+        EntryContext: context,
+        Tags: [tag1, tag2]
+    }
+    ```
     """
     if isinstance(results, dict) and results.get("contents"):
         results = results.get("contents")
@@ -889,12 +905,14 @@ def mirrorInvestigation(id, mirrorType, autoClose=False):
     return ""
 
 
-def updateModuleHealth(error):
+def updateModuleHealth(data, is_error=False):
     """(Integration only)
-    Updated integration module health with given error message
+    Updated integration module health with given message
 
     Args:
-      error (str): The error message to display in the integration module health
+      data (Union[str, dict]): Either the message to display in the integration module health,
+        or a dictionary containing the "eventsPulled" field (number).
+      is_error (bool): Whether or not to display it as an error message in the fetch history.
 
     Returns:
       None: No data returned
@@ -1154,10 +1172,6 @@ def parentEntry():
     return {}
 
 
-def getLicenseCustomField(api_key):
-    return api_key
-
-
 def getLastMirrorRun():
     """(Integration only)
     Retrieves the LastMirrorRun object
@@ -1183,6 +1197,85 @@ def setLastMirrorRun(obj):
     return None
 
 
+def searchRelationships(args):
+    """
+    Retrieves Indicators Relationship data according to given filters.
+    Args:
+      args (dict): The relationships filter object.
+        Should contain a "filter" item, holding any of the relationship filters, E.g.:
+        - size (int)
+        - relationshipNames (List[str])
+        - entities (List[str])
+        - entityTypes (List[str])
+        - excludedEntities (List[str])
+        - query (str)
+        - fromDate (str)
+        - toDate (str)
+        - searchAfter (List[str])
+        - searchBefore (List[str])
+        - sort (List[Dict[str, Any]])
+
+    Returns:
+       (dict): The Relationship Search response.
+
+    Example (partial results):
+    ```
+    >>> demisto.searchRelationships({"filter": {"entities": ["8.8.8.8", "google.com"], "size": 2}})
+        {
+        "total": 2,
+        "data": [
+            {
+                "id": "27",
+                "entityA": "8.8.8.8",
+                "entityAFamily": "Indicator",
+                "entityAType": "IP",
+                "name": "contains",
+                "reverseName": "part-of",
+                "entityB": "1.1.1.1",
+                "entityBFamily": "Indicator",
+                "entityBType": "IP",
+                "type": "IndicatorToIndicator",
+                "createdInSystem": "2022-04-04T16:29:04.417942+03:00",
+                "sources": [
+                    {
+                        "reliability": "C - Fairly reliable",
+                    }
+                ]
+            },
+            {
+                "id": "26",
+                "entityA": "google.com",
+                "entityAFamily": "Indicator",
+                "entityAType": "Domain",
+                "name": "related-to",
+                "reverseName": "related-to",
+                "entityB": "bing.com",
+                "entityBFamily": "Indicator",
+                "entityBType": "Domain",
+                "type": "IndicatorToIndicator",
+                "createdInSystem": "2022-04-04T16:23:39.863033+03:00",
+                "updatedInSystemBySource": "2022-04-04T16:23:39.862853+03:00",
+                "sources": [
+                    {
+                        "reliability": "C - Fairly reliable",
+                    }
+                ]
+            }
+        ],
+        "SearchAfter": [
+            " \u0001\u0016q-\u0006`Uy'p",
+            "26"
+        ],
+        "SearchBefore": [
+            " \u0001\u0016q-\u0012\u0001\u0004n\u0013p",
+            "27"
+        ]
+    }
+    ```
+    """
+    return {'data': []}
+
+
 def _apiCall(name, params=None, data=None):
     """
     Special apiCall to internal xdr api. Only available to OOB content.
@@ -1198,3 +1291,17 @@ def _apiCall(name, params=None, data=None):
 
     """
     return {}
+
+
+def getLicenseCustomField(key):
+    """
+    Get a custom field from content XSOAR configuration (can only be run in system integrations)
+
+    Args:
+        key (str): The key name inside the content object to search for.
+
+    Returns:
+        str: the value stored in content object that matced the given key.
+    """
+
+    return get(contentSecrets, key)

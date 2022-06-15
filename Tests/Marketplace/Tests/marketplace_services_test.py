@@ -1,4 +1,3 @@
-
 # type: ignore[attr-defined]
 
 import shutil
@@ -21,7 +20,7 @@ from typing import List, Dict, Optional, Tuple, Any
 from Tests.Marketplace.marketplace_services import Pack, input_to_list, get_valid_bool, convert_price, \
     get_updated_server_version, load_json, \
     store_successful_and_failed_packs_in_ci_artifacts, is_ignored_pack_file, \
-    is_the_only_rn_in_block
+    is_the_only_rn_in_block, get_pull_request_numbers_from_file
 from Tests.Marketplace.marketplace_constants import PackStatus, PackFolders, Metadata, GCPConfig, BucketUploadFlow, \
     PACKS_FOLDER, PackTags, BASE_PACK_DEPENDENCY_DICT
 
@@ -77,6 +76,19 @@ def dummy_pack_metadata():
         pack_metadata = json.load(dummy_metadata_file)
 
     return pack_metadata
+
+
+class GitMock:
+    def log(self, file_name):
+        match file_name.rpartition('/')[-1]:
+            case '1_0_1.md':
+                return '(#11) (#111) 1111'
+            case '1_0_2.md':
+                return '(#22)'
+            case '1_0_3.md':
+                return '(#33)'
+            case _:
+                return 'no number'
 
 
 class TestMetadataParsing:
@@ -461,35 +473,44 @@ class TestHelperFunctions:
 
         assert result == expected_result
 
-    @pytest.mark.parametrize('yaml_context, yaml_type, is_actually_feed',
+    @pytest.mark.parametrize('yaml_context, yaml_type, is_actually_feed, is_actually_siem',
                              [
                                  # Check is_feed by Integration
                                  ({'category': 'TIM', 'configuration': [{'display': 'Services'}],
                                    'script': {'commands': [], 'dockerimage': 'bla', 'feed': True}},
-                                  'Integration', True),
+                                  'Integration', True, False),
                                  ({'category': 'TIM', 'configuration': [{'display': 'Services'}],
                                    'script': {'commands': [], 'dockerimage': 'bla', 'feed': False}},
-                                  'Integration', False),
+                                  'Integration', False, False),
                                  # Checks no feed parameter
                                  ({'category': 'NotTIM', 'configuration': [{'display': 'Services'}],
                                    'script': {'commands': [], 'dockerimage': 'bla'}},
-                                  'Integration', False),
+                                  'Integration', False, False),
 
                                  # Check is_feed by playbook
                                  ({'id': 'TIM - Example', 'version': -1, 'fromversion': '5.5.0',
                                    'name': 'TIM - Example', 'description': 'This is a playbook TIM example'},
-                                  'Playbook', True),
+                                  'Playbook', True, False),
                                  ({'id': 'NotTIM - Example', 'version': -1, 'fromversion': '5.5.0',
                                    'name': 'NotTIM - Example', 'description': 'This is a playbook which is not TIM'},
-                                  'Playbook', False)
+                                  'Playbook', False, False),
+
+                                 # Check is_siem for integration
+                                 ({'id': 'some-id', 'script': {'isfetchevents': True}}, 'Integration', False, True),
+                                 ({'id': 'some-id', 'script': {'isfetchevents': False}}, 'Integration', False, False),
+
+                                 # Check is_siem for rules
+                                 ({'id': 'some-id', 'rules': ''}, 'ParsingRule', False, True),
+                                 ({'id': 'some-id', 'rules': ''}, 'ModelingRule', False, True),
+                                 ({'id': 'some-id', 'rules': ''}, 'CorrelationRule', False, True),
                              ])
-    def test_is_feed(self, yaml_context, yaml_type, is_actually_feed):
-        """ Tests that is_feed for pack changes if it has a playbook that starts with "TIM " or an integration with
-            script.feed==true
+    def test_add_pack_type_tags(self, yaml_context, yaml_type, is_actually_feed, is_actually_siem):
+        """ Tests is_feed or is_seem is set to True for pack changes for tagging.
         """
         dummy_pack = Pack(pack_name="TestPack", pack_path="dummy_path")
-        dummy_pack.is_feed_pack(yaml_context, yaml_type)
+        dummy_pack.add_pack_type_tags(yaml_context, yaml_type)
         assert dummy_pack.is_feed == is_actually_feed
+        assert dummy_pack.is_siem == is_actually_siem
 
     def test_remove_unwanted_files(self):
         """
@@ -581,6 +602,8 @@ class TestChangelogCreation:
         open_mocker[os.path.join(dummy_pack.path, Pack.RELEASE_NOTES, '2_0_2.md')].read_data = 'wow'
         mocker.patch("Tests.Marketplace.marketplace_services.logging")
         mocker.patch("os.path.exists", return_value=True)
+
+        mocker.patch("git.Git", return_value=GitMock())
         dir_list = ['1_0_1.md', '2_0_2.md', '2_0_0.md']
         mocker.patch("os.listdir", return_value=dir_list)
         mocker.patch('builtins.open', open_mocker)
@@ -636,6 +659,8 @@ class TestChangelogCreation:
                - return True
        """
         dummy_pack.current_version = '2.0.0'
+
+        mocker.patch("git.Git", return_value=GitMock())
         mocker.patch("os.path.exists", return_value=True)
         mocker.patch("Tests.Marketplace.marketplace_services")
         dir_list = ['1_0_1.md', '2_0_0.md']
@@ -677,6 +702,41 @@ class TestChangelogCreation:
         dir_list = ['1_0_1.md', '1_0_2.md', '1_0_3.md']
         mocker.patch("os.listdir", return_value=dir_list)
         assert is_the_only_rn_in_block(release_notes_dir, version, AGGREGATED_CHANGELOG) == boolean_value
+
+    def test_get_version_to_pr_numbers(self, mocker):
+        """
+           Given:
+               - Mocked pr numbers for 3 files.
+           When:
+               - Calling get_version_to_pr_numbers.
+           Then:
+               - Receive a dict with the proper version to pr number.
+        """
+        dir_list = ['1_0_1.md', '1_0_2.md', '1_0_3.md']
+        mocker.patch("os.listdir", return_value=dir_list)
+        mocker.patch("os.path.exists", return_value=True)
+
+        mocker.patch("git.Git", return_value=GitMock())
+
+        versions_dict = Pack(pack_name='SomeName', pack_path='SomePath').get_version_to_pr_numbers('')
+        assert versions_dict == {'1.0.1': ['11', '111'], '1.0.2': ['22'], '1.0.3': ['33']}
+
+    def test_get_pull_request_numbers_from_file(self, mocker):
+        """
+
+        Given:
+            A git log with only two valid PR numbers
+
+        When:
+            calling get_pull_request_numbers_from_file with a mock file address
+
+        Then:
+            Only the numbers matching the regex will be found
+
+        """
+
+        mocker.patch("git.Git", return_value=GitMock())
+        assert get_pull_request_numbers_from_file("1_0_1.md") == ['11', '111']
 
     def test_get_same_block_versions(self, mocker, dummy_pack):
         """

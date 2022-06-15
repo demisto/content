@@ -177,6 +177,13 @@ After you successfully execute a command, a DBot message appears in the War Room
 99. [Shows the user ID interface configuration.](#pan-os-show-user-id-interfaces-config)
 100. [Shows the zones configuration.](#pan-os-show-zones-config)
 101. [Retrieves list of user-ID agents configured in the system.](#pan-os-list-configured-user-id-agents)
+102. [Gets global counter information from all the PAN-OS firewalls in the topology.](#pan-os-platform-get-global-counters)
+103. [Retrieves all BGP peer information from the PAN-OS firewalls in the topology.](#pan-os-platform-get-bgp-peers)
+104. [Check the devices for software that is available to be installed.](#pan-os-platform-get-available-software)
+105. [Get the HA state and associated details from the given device and any other details.](#pan-os-platform-get-ha-state)
+106. [Get all the jobs from the devices in the environment, or a single job when ID is specified.](#pan-os-platform-get-jobs)
+107. [Download The provided software version onto the device.](#pan-os-platform-download-software)
+
 
 
 ### panorama
@@ -330,7 +337,7 @@ Pushes rules from PAN-OS to the configured device group. In order to push the co
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Panorama.Push.DeviceGroup | String | Device group in which the policies were pushed. | 
-| Panorama.Push.JobID | Number | Job ID of the polices that were pushed. | 
+| Panorama.Push.JobID | Number | Job ID of the policies that were pushed. | 
 | Panorama.Push.Status | String | Push status. | 
 
 
@@ -957,7 +964,7 @@ Creates a service.
 | --- | --- | --- |
 | Panorama.Services.Name | string | Service name. | 
 | Panorama.Services.Protocol | string | Service protocol. | 
-| Panorama.Services.Descritpion | string | Service description. | 
+| Panorama.Services.Description | string | Service description. | 
 | Panorama.Services.DestinationPort | string | Service destination port. | 
 | Panorama.Services.SourcePort | string | Service source port. | 
 | Panorama.Services.DeviceGroup | string | Device group for the service \(Panorama instances\). | 
@@ -1083,7 +1090,7 @@ Returns a list of service groups.
 >|Name|Services|
 >|---|---|
 >| demisto_default_service_groups | service-http,<br/>service-https |
->| demisto_test_pb_service_group | serice_tcp_test_pb |
+>| demisto_test_pb_service_group | service_tcp_test_pb |
 
 
 ### pan-os-get-service-group
@@ -2438,14 +2445,14 @@ Returns information for a Panorama PCAP file. The recommended maximum file size 
 | --- | --- | --- |
 | pcapType | Type of Packet Capture. | Required |
 | serialNumber | The serial number of the firewall to download the PCAP from. | Optional |
-| from | The file name for the PCAP type ('dlp-pcap', 'filters-pcap', or 'application-pcap'). | Optional | 
+| from | The file name for the PCAP type ('dlp-pcap', 'filter-pcap', or 'application-pcap'). Required for 'filter-pcap'. | Optional | 
 | localName | The new name for the PCAP file after downloading. If this argument is not specified, the file name is the PCAP file name set in the firewall. | Optional | 
 | serialNo | Serial number for the request. For further information, see the Panorama XML API Documentation. | Optional | 
-| searchTime | The Search time for the request. For example: "2019/12/26 00:00:00", "2020/01/10". For more information, see the Panorama XML API documentation. | Optional | 
-| pcapID | The ID of the PCAP for the request. For further information, see the Panorama XML API Documentation. | Optional | 
+| searchTime | The Search time for the request. For example: "2019/12/26 00:00:00", "2020/01/10". For more information, see the Panorama XML API documentation. Required for "threat-pcap". | Optional | 
+| pcapID | The ID of the PCAP for the request. For further information, see the Panorama XML API Documentation. Required for 'threat-pcap'. | Optional | 
 | password | Password for Panorama, needed for the 'dlp-pcap' PCAP type only. | Optional | 
-| deviceName | The Device Name on which the PCAP is stored. For further information, see the Panorama XML API Documentation. | Optional | 
-| sessionID | The Session ID of the PCAP. For further information, see the Panorama XML API Documentation. | Optional | 
+| deviceName | The Device Name on which the PCAP is stored. For further information, see the Panorama XML API Documentation. Required for 'threat-pcap' in pan-os firewalls < 9.0.7 versions. | Optional | 
+| sessionID | The Session ID of the PCAP. For further information, see the Panorama XML API Documentation. Required for 'threat-pcap' in pan-os firewalls < 9.0.7 versions. | Optional | 
 
 
 #### Context Output
@@ -4692,7 +4699,9 @@ Gets all ARP tables from all firewalls in the topology.
 #### Input
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional | 
+| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional |
+| target | Single serial number to target with this command | Optional | 
+
 #### Context Output
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
@@ -4831,7 +4840,9 @@ Pulls all route summary information from the topology.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional | 
+| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional |
+| target | Single serial number to target with this command | Optional | 
+
 
 
 #### Context Output
@@ -4882,7 +4893,9 @@ Pulls all route information from the topology.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional | 
+| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional |
+| target | Single serial number to target with this command | Optional | 
+
 
 
 #### Context Output
@@ -5009,7 +5022,9 @@ Gets information from all PAN-OS systems in the topology.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional | 
+| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional |
+| target | Single serial number to target with this command | Optional | 
+
 
 
 #### Context Output
@@ -5174,7 +5189,8 @@ Gets the operational information of the template stacks in the topology.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional | 
+| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional |
+
 
 
 #### Context Output
@@ -5223,3 +5239,1891 @@ Gets the operational information of the template stacks in the topology.
 >|---|---|---|---|---|---|
 >| yes | 1.1.1.1 | vm-lab-fw1 | commit succeeded with warnings | LAB-STACK | 0111112222333444 |
 >| no | 1.1.1.1 | vm-lab-fw02 | commit succeeded with warnings | LAB-STACK | 0111112222333455 |
+
+
+### pan-os-platform-get-global-counters
+***
+Gets global counter information from all the PAN-OS firewalls in the topology.
+
+
+#### Base Command
+
+`pan-os-platform-get-global-counters`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional |
+| target | Single serial number to target with this command | Optional | 
+
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.ShowCounters.Summary.hostid | String | Host ID. | 
+| PANOS.ShowCounters.Summary.name | String | Human readable counter name. | 
+| PANOS.ShowCounters.Summary.value | Number | Current counter value. | 
+| PANOS.ShowCounters.Summary.rate | Number | Packets per second rate. | 
+| PANOS.ShowCounters.Summary.desc | String | Human readable counter description. | 
+| PANOS.ShowCounters.Result.hostid | String | Host ID. | 
+| PANOS.ShowCounters.Result.category | String | The counter category. | 
+| PANOS.ShowCounters.Result.name | String | Human readable counter name. | 
+| PANOS.ShowCounters.Result.value | Number | Current counter value. | 
+| PANOS.ShowCounters.Result.rate | Number | Packets per second rate. | 
+| PANOS.ShowCounters.Result.aspect | String | PAN-OS aspect. | 
+| PANOS.ShowCounters.Result.desc | String | Human readable counter description. | 
+| PANOS.ShowCounters.Result.id | String | Counter ID. | 
+| PANOS.ShowCounters.Result.severity | String | Counter severity. | 
+
+#### Command example
+```!pan-os-platform-get-global-counters```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "ShowCounters": {
+            "Result": [
+                {
+                    "aspect": "pktproc",
+                    "category": "packet",
+                    "desc": "Packets received",
+                    "hostid": "11111111111111",
+                    "id": "17",
+                    "name": "pkt_recv",
+                    "rate": 15,
+                    "severity": "info",
+                    "value": 17981379
+                    "severity": "info",
+                    "value": 2
+                },
+                {
+                    "aspect": "pktproc",
+                    "category": "ssl",
+                    "desc": "Number of failures when receiving SSL session cache msg from MP",
+                    "hostid": "11111111111111",
+                    "id": "3185",
+                    "name": "ssl_sess_cache_msg_from_mp_failure",
+                    "rate": 0,
+                    "severity": "info",
+                    "value": 1834071
+                }
+            ],
+            "Summary": [
+                {
+                    "desc": "Packets received",
+                    "hostid": "11111111111111",
+                    "name": "pkt_recv",
+                    "rate": 15,
+                    "value": 17981379
+                },
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Global Counters
+>|desc|hostid|name|rate|value|
+>|---|---|---|---|---|
+>| Packets received | 11111111111111 | pkt_recv | 15 | 17981379 |
+>| Full Burst Packets received on retry | 11111111111111 | pkt_recv_retry | 0 | 422240 |
+>| Packet receive error | 11111111111111 | pkt_recv_err | 0 | 225 |
+>| Packets drop due to passive VM in dpdk mode | 11111111111111 | pkt_recv_flush_passive | 0 | 2351 |
+>| Packets transmitted | 11111111111111 | pkt_sent | 3 | 5334628 |
+>| Packets successfully transmitted to host interface | 11111111111111 | pkt_sent_host | 0 | 685046 |
+>| STP BPDU packets received | 11111111111111 | pkt_stp_rcv | 1 | 1271742 |
+>| Sessions allocated | 11111111111111 | session_allocated | 0 | 537466 |
+>| Sessions freed | 11111111111111 | session_freed | 0 | 537440 |
+>| Sessions installed | 11111111111111 | session_installed | 0 | 449506 |
+>| Session aging timer modified by unverified RST | 11111111111111 | session_unverified_rst | 0 | 15579 |
+>| Session is closing or closed and still receive TCP pkt | 11111111111111 | session_pkt_in_closed_state | 0 | 3 |
+>| Session notifications retransmitted to offload processor | 11111111111111 | session_renotify | 0 | 3 |
+>| Packets dropped: 802.1q tag not configured | 11111111111111 | flow_rcv_dot1q_tag_err | 0 | 24 |
+>| Packets dropped: invalid interface | 11111111111111 | flow_no_interface | 0 | 24 |
+>| Packets dropped: IPv6 disabled on interface | 11111111111111 | flow_ipv6_disabled | 1 | 1505760 |
+>| Non-SYN TCP packets without session match | 11111111111111 | flow_tcp_non_syn | 0 | 83 |
+>| Packets dropped: non-SYN TCP without session match | 11111111111111 | flow_tcp_non_syn_drop | 0 | 83 |
+>| Packets dropped: unhandled IP broadcast | 11111111111111 | flow_fwd_l3_bcast_drop | 0 | 254789 |
+>| Packets dropped: no route for IP multicast | 11111111111111 | flow_fwd_l3_mcast_drop | 2 | 2450999 |
+>| Packets dropped: no ARP | 11111111111111 | flow_fwd_l3_noarp | 0 | 204 |
+>| Packet dropped at forwarding: noxmit | 11111111111111 | flow_fwd_drop_noxmit | 0 | 294 |
+>| Packets dropped: Packet too short to cover IP header | 11111111111111 | flow_parse_ip_hdr | 0 | 4 |
+>| Packets dropped: IPv6 packet truncated | 11111111111111 | flow_parse_ip6_truncated | 0 | 4 |
+>| Packets received: IPv6 multicast pkts with flow off | 11111111111111 | flow_ip6_mcast_off | 1 | 1505760 |
+>| IP broadcast pkt received | 11111111111111 | flow_bcast_pkt_rcv | 0 | 255147 |
+>| DHCP broadcast pkt received | 11111111111111 | flow_dhcp_bcast_pkt_rcv | 0 | 4 |
+>| ARP packets received | 11111111111111 | flow_arp_pkt_rcv | 3 | 4069186 |
+>| ARP packets transmitted | 11111111111111 | flow_arp_pkt_xmt | 0 | 87285 |
+>| ARP requests replied | 11111111111111 | flow_arp_pkt_replied | 0 | 82094 |
+>| ARP entry learned | 11111111111111 | flow_arp_pkt_learned | 0 | 68 |
+>| Gratuitous ARP packets received | 11111111111111 | flow_arp_rcv_gratuitous | 0 | 21524 |
+>| ARP receive error | 11111111111111 | flow_arp_rcv_err | 0 | 21202 |
+>| ARP resolution packets transmitted | 11111111111111 | flow_arp_resolve_xmt | 0 | 2477 |
+>| ND entry GC | 11111111111111 | flow_nd_neigh_gc | 0 | 1060 |
+>| Packets received from control plane | 11111111111111 | flow_host_pkt_rcv | 0 | 137018 |
+>| Packets transmitted to control plane | 11111111111111 | flow_host_pkt_xmt | 0 | 685046 |
+>| Packets dropped: receive error from control plane | 11111111111111 | flow_host_rcv_err | 0 | 11 |
+>| Packets dropped: decapsulation error from control plane | 11111111111111 | flow_host_decap_err | 0 | 26 |
+>| Device management session allowed | 11111111111111 | flow_host_service_allow | 0 | 136965 |
+>| Device management session denied | 11111111111111 | flow_host_service_deny | 0 | 38658 |
+>| Host vardata not sent: rate limit ok | 11111111111111 | flow_host_vardata_rate_limit_ok | 0 | 3 |
+>| Packet on VxLAN port without I bit | 11111111111111 | flow_tci_vxlan_without_vni | 0 | 2 |
+>| netconfig temporarily unavailable | 11111111111111 | device_invalid_netconf | 0 | 404 |
+>| netconfig switched | 11111111111111 | device_netconf_switch | 0 | 4 |
+>| tundconfig switched | 11111111111111 | device_tundconf_switch | 0 | 1 |
+>| Packets for which IP checksum validation was done in software | 11111111111111 | flow_ip_cksm_sw_validation | 6 | 8478257 |
+>| Packets not allowed to egress for pre-negotiation | 11111111111111 | flow_drop_preneg_egress | 0 | 2 |
+>| Application identified by simple signature | 11111111111111 | appid_ident_by_simple_sig | 0 | 92740 |
+>| Application identified by L4 dport first | 11111111111111 | appid_ident_by_dport_first | 0 | 174358 |
+>| The number of packets processed by Application identification | 11111111111111 | appid_proc | 0 | 177586 |
+>| The number of unknown applications caused by max. packets reached | 11111111111111 | appid_unknown_max_pkts | 0 | 9 |
+>| The number of unknown UDP applications after app engine | 11111111111111 | appid_unknown_udp | 0 | 271 |
+>| The number of unknown applications because of no data | 11111111111111 | appid_unknown_fini_empty | 0 | 97562 |
+>| The total number of dynamic_ip_port NAT translate called | 11111111111111 | nat_dynamic_port_xlat | 0 | 242839 |
+>| The total number of dynamic_ip_port NAT release called | 11111111111111 | nat_dynamic_port_release | 0 | 242825 |
+>| The total number of dfa match using software | 11111111111111 | dfa_sw | 1 | 1096816 |
+>| tcp reassembly case 1 | 11111111111111 | tcp_case_1 | 0 | 1 |
+>| tcp reassembly case 2 | 11111111111111 | tcp_case_2 | 0 | 346 |
+>| out-of-window packets dropped | 11111111111111 | tcp_drop_out_of_wnd | 0 | 116 |
+>| The number of sessions with sml exit in detector i  | 11111111111111 | ctd_sml_exit_detector_i | 0 | 200010 |
+>| The number of decoder resume requests | 11111111111111 | ctd_sml_unset_suspend | 0 | 30 |
+>| Handle reset and url exit | 11111111111111 | ctd_handle_reset_and_url_exit | 0 | 30 |
+>| ctd switch decoder | 11111111111111 | ctd_switch_decoder | 0 | 10 |
+>| ctd stops to process packet | 11111111111111 | ctd_stop_proc | 0 | 10 |
+>| run detector_i | 11111111111111 | ctd_run_detector_i | 0 | 200020 |
+>| SML VM opcode exit | 11111111111111 | ctd_sml_vm_run_impl_opcodeexit | 0 | 199980 |
+>| Forward to varrcvr error: TCP in establishment when session went away | 11111111111111 | ctd_fwd_err_tcp_state | 0 | 94652 |
+>| The total usage of software for pscan | 11111111111111 | ctd_pscan_sw | 1 | 1170516 |
+>| appid was changed | 11111111111111 | ctd_appid_reassign | 0 | 60011 |
+>| decoder was changed | 11111111111111 | ctd_decoder_reassign | 0 | 10 |
+>| session processed by ctd | 11111111111111 | ctd_process | 0 | 351954 |
+>| Packets processed by slowpath | 11111111111111 | ctd_pkt_slowpath | 1 | 1186304 |
+>| Number of Policy Hit Count periodical update | 11111111111111 | ctd_hitcount_period_update | 0 | 4237 |
+>| Number of url logs | 11111111111111 | log_url_cnt | 0 | 6060 |
+>| Number of uid request logs | 11111111111111 | log_uid_req_cnt | 0 | 241849 |
+>| Number of traffic logs | 11111111111111 | log_traffic_cnt | 0 | 449480 |
+>| Time (us) spent on writing packet-diag logs | 11111111111111 | log_pkt_diag_us | 0 | 16 |
+>| Number of URL database request | 11111111111111 | url_db_request | 0 | 1965 |
+>| Number of URL reply | 11111111111111 | url_db_reply | 9 | 4419218 |
+>| The number of packets get dropped because of waiting for url category request  | 11111111111111 | url_request_pkt_drop | 0 | 1771 |
+>| The session is not waiting for url  | 11111111111111 | url_session_not_in_wait | 0 | 10 |
+>| The number of HSM up/down events received | 11111111111111 | ssl_hsm_up_down_event_rcv | 0 | 2 |
+>| Number of failures when receiving SSL session cache msg from MP | 11111111111111 | ssl_sess_cache_msg_from_mp_failure | 0 | 1834071 |
+
+
+### pan-os-platform-get-bgp-peers
+***
+Retrieves all BGP peer information from the PAN-OS firewalls in the topology.
+
+
+#### Base Command
+
+`pan-os-platform-get-bgp-peers`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional |
+| target | Single serial number to target with this command | Optional | 
+
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.ShowBGPPeers.Summary.hostid | String | Host ID. | 
+| PANOS.ShowBGPPeers.Summary.peer | String | Name of the BGP peer. | 
+| PANOS.ShowBGPPeers.Summary.status | String | Peer connection status. | 
+| PANOS.ShowBGPPeers.Summary.incoming_accepted | String | Total accepted routes from the peer. | 
+| PANOS.ShowBGPPeers.Result.hostid | String | Host ID. | 
+| PANOS.ShowBGPPeers.Result.peer | String | Name of the BGP peer. | 
+| PANOS.ShowBGPPeers.Result.vr | String | Virtual router in which the peer resides. | 
+| PANOS.ShowBGPPeers.Result.remote_as | String | Remote AS \(Autonomous System\) of the peers | 
+| PANOS.ShowBGPPeers.Result.status | String | Peer connection statuss | 
+| PANOS.ShowBGPPeers.Result.peer_address | String | IP address and port of the peers | 
+| PANOS.ShowBGPPeers.Result.local_address | String | Local router address and port of the peer. | 
+| PANOS.ShowBGPPeers.Result.incoming_total | String | Total incoming routes from the peer. | 
+| PANOS.ShowBGPPeers.Result.incoming_accepted | String | Total accepted routes from the peer. | 
+| PANOS.ShowBGPPeers.Result.incoming_rejected | String | Total rejected routes from the peer. | 
+| PANOS.ShowBGPPeers.Result.policy_rejected | String | Total routes rejected by the peer by policy. | 
+| PANOS.ShowBGPPeers.Result.outgoing_total | String | Total routes advertised to the peer. | 
+| PANOS.ShowBGPPeers.Result.outgoing_advertised | String | Number of advertised routes to the peer. | 
+
+#### Command example
+```!pan-os-platform-get-bgp-peers```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "ShowBGPPeers": {
+            "Result": [
+                {
+                    "hostid": "11111111111111",
+                    "incoming_accepted": 0,
+                    "incoming_rejected": 0,
+                    "incoming_total": 0,
+                    "local_address": "10.10.0.1",
+                    "outgoing_advertised": 0,
+                    "outgoing_total": 0,
+                    "peer": "testlab-server",
+                    "peer_address": "10.10.0.12",
+                    "policy_rejected": 0,
+                    "remote_as": "64511",
+                    "status": "Active",
+                    "vr": "default"
+                }
+            ],
+            "Summary": [
+                {
+                    "hostid": "11111111111111",
+                    "incoming_accepted": 0,
+                    "peer": "testlab-server",
+                    "status": "Active"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS BGP Peers
+>|hostid|incoming_accepted|peer|status|
+>|---|---|---|---|
+>| 11111111111111 | 0 | testlab-server | Active |
+
+
+### pan-os-platform-get-available-software
+***
+Check the devices for software that is available to be installed.
+
+
+#### Base Command
+
+`pan-os-platform-get-available-software`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional |
+| target | Single serial number to target with this command | Optional | 
+
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.SoftwareVersions.Summary.hostid | String | Host ID. | 
+| PANOS.SoftwareVersions.Summary.version | String | The software version in Major.Minor.Maint format. | 
+| PANOS.SoftwareVersions.Summary.filename | String | Software version filename. | 
+| PANOS.SoftwareVersions.Summary.size | String | Size of the software in MB. | 
+| PANOS.SoftwareVersions.Summary.size_kb | String | Size of the software in KB. | 
+| PANOS.SoftwareVersions.Summary.release_notes | String | Link to version release notes on PAN knowledge base. | 
+| PANOS.SoftwareVersions.Summary.downloaded | Boolean | True if the software version is present on the system. | 
+| PANOS.SoftwareVersions.Summary.current | Boolean | True if this is the currently installed software on the system. | 
+| PANOS.SoftwareVersions.Summary.latest | Boolean | True if this is the most recently released software for this platform. | 
+| PANOS.SoftwareVersions.Summary.uploaded | Boolean | True if the software version has been uploaded to the system. | 
+
+#### Command example
+```!pan-os-platform-get-available-software```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "SoftwareVersions": {
+            "Summary": [
+                {
+                    "current": false,
+                    "downloaded": false,
+                    "filename": "PanOS_vm-10.2.0",
+                    "hostid": "11111111111111",
+                    "latest": true,
+                    "release_notes": "https://www.paloaltonetworks.com/documentation/10-2/pan-os/pan-os-release-notes",
+                    "size": "1010",
+                    "size_kb": "1034657",
+                    "uploaded": false,
+                    "version": "10.2.0"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Available Software Versions
+>|current|downloaded|filename|hostid|latest|release_notes|size|size_kb|uploaded|version|
+>|---|---|---|---|---|---|---|---|---|---|
+>| false | false | PanOS_vm-10.2.0 | 11111111111111 | true | https:<span>//</span>www.paloaltonetworks.com/documentation/10-2/pan-os/pan-os-release-notes | 1010 | 1034657 | false | 10.2.0 |
+>| false | false | PanOS_vm-10.1.5 | 11111111111111 | false | https:<span>//</span>www.paloaltonetworks.com/documentation/10-1/pan-os/pan-os-release-notes | 457 | 468174 | false | 10.1.5 |
+>| false | false | PanOS_vm-10.1.4-h4 | 11111111111111 | false | https:<span>//</span>www.paloaltonetworks.com/documentation/10-1/pan-os/pan-os-release-notes | 407 | 416843 | false | 10.1.4-h4 |
+
+### pan-os-platform-get-ha-state
+***
+Get the HA state and associated details from the given device and any other details.
+
+
+#### Base Command
+
+`pan-os-platform-get-ha-state`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional |
+| target | Single serial number to target with this command | Optional | 
+
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.HAState.hostid | String | Host ID. | 
+| PANOS.HAState.active | Boolean | Whether this is the active firewall in a pair. True if standalone as well. | 
+| PANOS.HAState.status | String | String HA status. | 
+| PANOS.HAState.peer | String | HA peer. | 
+
+#### Command example
+```!pan-os-platform-get-ha-state```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "HAState": [
+            {
+                "active": true,
+                "hostid": "11111111111111",
+                "peer": "",
+                "status": "HA Not enabled."
+            },
+            {
+                "active": true,
+                "hostid": "192.168.1.145",
+                "peer": "",
+                "status": "HA Not enabled."
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS HA State
+>|active|hostid|status|
+>|---|---|---|
+>| true | 11111111111111 | HA Not enabled. |
+>| true | 192.168.1.145 | HA Not enabled. |
+
+
+### pan-os-platform-get-jobs
+***
+Get all the jobs from the devices in the environment, or a single job when ID is specified.
+
+
+#### Base Command
+
+`pan-os-platform-get-jobs`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional |
+| target | Single serial number to target with this command | Optional |
+| status | Filter to return jobs by status. | Optional | 
+| job_type | Filter to return jobs by type. | Optional | 
+| id | Filter by ID. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.JobStatus.hostid | String | Host ID. | 
+| PANOS.JobStatus.id | String | ID of job. | 
+| PANOS.JobStatus.type | String | Job type. | 
+| PANOS.JobStatus.tfin | String | Time finished. | 
+| PANOS.JobStatus.status | String | Status of the job. | 
+| PANOS.JobStatus.result | String | The result of the job. | 
+| PANOS.JobStatus.user | String | The user who initiated the job. | 
+| PANOS.JobStatus.tenq | String | The time the job was enqueued into the system. | 
+| PANOS.JobStatus.stoppable | String | Whether the job can be stopped after it started. | 
+| PANOS.JobStatus.description | String | The job description. | 
+| PANOS.JobStatus.positionInQ | String | The position of the job in the current job queue. | 
+| PANOS.JobStatus.progress | String | The numerical progress of the job. | 
+
+#### Command example
+```!pan-os-platform-get-jobs```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "JobStatus": [
+            {
+                "description": null,
+                "hostid": "11111111111111",
+                "id": 6,
+                "positionInQ": "0",
+                "progress": "01:02:18",
+                "result": "OK",
+                "status": "FIN",
+                "stoppable": "no",
+                "tenq": "2022/03/30 01:02:04",
+                "tfin": "01:02:18",
+                "type": "Downld",
+                "user": null
+            },
+            {
+                "description": null,
+                "hostid": "192.168.1.145",
+                "id": 394,
+                "positionInQ": "0",
+                "progress": "100",
+                "result": "OK",
+                "status": "FIN",
+                "stoppable": "no",
+                "tenq": "2022/03/15 14:16:32",
+                "tfin": "14:16:33",
+                "type": "BuildXMLCache",
+                "user": null
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Job Status
+>|hostid|id|positionInQ|progress|result|status|stoppable|tenq|tfin|type|user|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| 11111111111111 | 6 | 0 | 01:02:18 | OK | FIN | no | 2022/03/30 01:02:04 | 01:02:18 | Downld |  |
+>| 11111111111111 | 5 | 0 | 01:02:15 | OK | FIN | no | 2022/03/23 01:02:04 | 01:02:15 | Downld |  |
+>| 11111111111111 | 4 | 0 | 02:10:09 | OK | FIN | no | 2022/03/18 02:06:36 | 02:10:09 | IoT | Auto update agent |
+>| 11111111111111 | 3 | 0 | 02:06:35 | OK | FIN | no | 2022/03/18 02:06:34 | 02:06:35 | Downld |  |
+>| 11111111111111 | 2 | 0 | 01:02:15 | OK | FIN | no | 2022/03/16 01:02:04 | 01:02:15 | Downld |  |
+>| 11111111111111 | 1 | 0 | 100 | OK | FIN | no | 2022/03/15 14:17:16 | 14:18:17 | AutoCom |  |
+>| 192.168.1.145 | 430 | 0 | 100 | OK | DeployFin | no | 2022/03/30 01:47:46 | 01:47:47 | RefreshLic |  |
+>| 192.168.1.145 | 428 | 0 | 01:02:17 | OK | FIN | no | 2022/03/30 01:02:03 | 01:02:17 | Downld |  |
+>| 192.168.1.145 | 427 | 0 | 100 | OK | DeployFin | no | 2022/03/29 01:56:45 | 01:56:46 | RefreshLic |  |
+>| 192.168.1.145 | 425 | 0 | 100 | OK | DeployFin | no | 2022/03/28 01:18:44 | 01:18:45 | RefreshLic |  |
+>| 192.168.1.145 | 423 | 0 | 100 | OK | DeployFin | no | 2022/03/27 01:31:43 | 01:31:44 | RefreshLic |  |
+>| 192.168.1.145 | 421 | 0 | 100 | OK | DeployFin | no | 2022/03/26 01:16:42 | 01:16:43 | RefreshLic |  |
+>| 192.168.1.145 | 419 | 0 | 100 | OK | DeployFin | no | 2022/03/25 01:27:41 | 01:27:43 | RefreshLic |  |
+>| 192.168.1.145 | 417 | 0 | 100 | OK | DeployFin | no | 2022/03/24 01:22:40 | 01:22:41 | RefreshLic |  |
+>| 192.168.1.145 | 415 | 0 | 100 | OK | DeployFin | no | 2022/03/23 01:37:39 | 01:37:40 | RefreshLic |  |
+>| 192.168.1.145 | 413 | 0 | 01:02:18 | OK | FIN | no | 2022/03/23 01:02:03 | 01:02:18 | Downld |  |
+>| 192.168.1.145 | 412 | 0 | 100 | OK | DeployFin | no | 2022/03/22 01:04:38 | 01:04:39 | RefreshLic |  |
+>| 192.168.1.145 | 410 | 0 | 100 | OK | DeployFin | no | 2022/03/21 01:38:37 | 01:38:38 | RefreshLic |  |
+>| 192.168.1.145 | 408 | 0 | 100 | OK | DeployFin | no | 2022/03/20 01:36:36 | 01:36:37 | RefreshLic |  |
+>| 192.168.1.145 | 406 | 0 | 100 | OK | DeployFin | no | 2022/03/19 01:59:35 | 01:59:37 | RefreshLic |  |
+>| 192.168.1.145 | 404 | 0 | 02:08:02 | OK | FIN | no | 2022/03/18 02:06:32 | 02:08:02 | IoT | Auto update agent |
+>| 192.168.1.145 | 403 | 0 | 02:06:31 | OK | FIN | no | 2022/03/18 02:06:30 | 02:06:31 | Downld |  |
+>| 192.168.1.145 | 402 | 0 | 100 | OK | DeployFin | no | 2022/03/18 01:51:34 | 01:51:35 | RefreshLic |  |
+>| 192.168.1.145 | 400 | 0 | 100 | OK | DeployFin | no | 2022/03/17 01:54:33 | 01:54:34 | RefreshLic |  |
+>| 192.168.1.145 | 398 | 0 | 100 | OK | DeployFin | no | 2022/03/16 01:05:32 | 01:05:33 | RefreshLic |  |
+>| 192.168.1.145 | 396 | 0 | 01:02:18 | OK | FIN | no | 2022/03/16 01:02:03 | 01:02:18 | Downld |  |
+>| 192.168.1.145 | 395 | 0 | 100 | OK | FIN | no | 2022/03/15 14:17:02 | 14:17:14 | AutoCom |  |
+>| 192.168.1.145 | 394 | 0 | 100 | OK | FIN | no | 2022/03/15 14:16:32 | 14:16:33 | BuildXMLCache |  |
+
+
+### pan-os-platform-download-software
+***
+Download the provided software version onto the device.
+
+
+#### Base Command
+
+`pan-os-platform-download-software`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| version | The software version to upgrade to, for example, 9.1.2. | Required | 
+| device_filter_string | String by which to filter the results to only install to sepecific devices or serial numbers. | Optional | 
+| target | Single serial number to target with this command | Optional | 
+| sync | If provided, runs the download synchronously. Make sure 'execution-timeout' is increased. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.DownloadStatus.Summary.hostid | String | Host ID. | 
+| PANOS.DownloadStatus.Summary.started | String | Whether the download process started. | 
+
+#### Command example
+```!pan-os-platform-download-software version=9.1.0```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "DownloadStatus": {
+            "Summary": [
+                {
+                    "hostid": "11111111111111",
+                    "started": true
+                },
+                {
+                    "hostid": "192.168.1.145",
+                    "started": true
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Software Download request Status
+>|hostid|started|
+>|---|---|
+>| 11111111111111 | true |
+>| 192.168.1.145 | true |
+
+### pan-os-apply-dns-signature-policy
+***
+Allows assigning of EDL to the Anti-Spyware profile under "DNS Signature Policies".
+
+
+#### Base Command
+
+`pan-os-apply-dns-signature-policy`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| anti_spyware_profile_name | The name of the anti spyware profile. If the profile exists, the command will operate on it, otherwise, if a new name is given, a new Anti-Spyware profile will be created. | Required | 
+| dns_signature_source | The EDL name to link to the profile. | Required | 
+| action | Action on the DNS queries. Possible values are: alert, allow, block, sinkhole. | Required | 
+| packet_capture | Allows capturing packets on match. Select "single-packet" to capture the first packet of the session or "extended-capture" to set between 1-50 packets. Packet capture can be very CPU intensive and can degrade firewall performance. Only use this feature when necessary and make sure you turn it off after you have collected the required packets. Possible values are: disable, single-packet, extended-capture. Default is disable. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Human Readable Output
+
+**success**
+### pan-os-platform-reboot
+***
+Reboot the given device by hostid. Warning: This command has no confirmation and the device
+will immediately reboot.
+
+
+#### Base Command
+
+`pan-os-platform-reboot`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| target | ID of host (serial or hostname) to reboot. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.RestartStatus.Summary.hostid | String | Host ID. | 
+| PANOS.RestartStatus.Summary.started | String | Whether the system reboot has started. | 
+
+#### Command example
+```!pan-os-platform-reboot target=11111111111111```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "RestartStatus": {
+            "Summary": [
+                {
+                    "hostid": "11111111111111",
+                    "started": true
+                }
+            ]
+        }
+    }
+}
+```
+
+### pan-os-platform-get-system-status
+***
+Checks the status of the given device, checking whether it's up or down and if the operational mode is normal.
+
+
+#### Base Command
+
+`pan-os-platform-get-system-status`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| target | ID of host (serial or hostname) to check. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.SystemStatus.hostid | String | Host ID. | 
+| PANOS.SystemStatus.up | String | Whether the host device is up or still unavailable. | 
+
+#### Command example
+```!pan-os-platform-get-system-status target=11111111111111```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "SystemStatus": {
+          "hostid": "11111111111111",
+          "up": true
+        }
+    }
+}
+```
+
+### pan-os-platform-update-ha-state
+***
+Checks the status of the given device, checking whether it's up or down and the operational mode normal.
+
+
+#### Base Command
+
+`pan-os-platform-update-ha-state`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| hostid | ID of host (serial or hostname) to update the state. | Required | 
+| state | New state. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.HAStateUpdate.hostid | String | Host ID. | 
+| PANOS.HAStateUpdate.state | String | New HA state. | 
+
+#### Command example
+```!pan-os-platform-update-ha-state hostid=11111111111111 state=functional```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "HAStateUpdate": {
+          "hostid": "11111111111111",
+          "state": "functional"
+        }
+    }
+}
+```
+
+### pan-os-hygiene-check-log-forwarding
+***
+Checks that at least one log forwarding profile is configured according to best practices.
+
+
+#### Base Command
+
+`pan-os-hygiene-check-log-forwarding`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | String by which to filter so that only the given device is checked. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.ConfigurationHygiene.Summary.description | String | The description of the hygiene check. | 
+| PANOS.ConfigurationHygiene.Summary.issue_code | String | The shorthand code for this hygiene check. | 
+| PANOS.ConfigurationHygiene.Summary.result | String | Whether the check passed or failed. | 
+| PANOS.ConfigurationHygiene.Summary.issue_count | String | Total number of matching issues. | 
+| PANOS.ConfigurationHygiene.Result.hostid | String | Host ID. | 
+| PANOS.ConfigurationHygiene.Result.container_name | String | The parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.ConfigurationHygiene.Result.issue_code | String | The shorthand code for the issue. | 
+| PANOS.ConfigurationHygiene.Result.description | String | Human readable description of the issue. | 
+| PANOS.ConfigurationHygiene.Result.name | String | The affected object name. | 
+
+#### Command example
+```!pan-os-hygiene-check-log-forwarding```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "ConfigurationHygiene": {
+            "Result": [
+                {
+                    "container_name": "LAB",
+                    "description": "Log forwarding profile missing log type 'threat'.",
+                    "hostid": "192.168.1.145",
+                    "issue_code": "BP-V-2",
+                    "name": "test_fwd_profile-1"
+                },
+                {
+                    "container_name": "LAB",
+                    "description": "Log forwarding profile missing log type 'threat'.",
+                    "hostid": "192.168.1.145",
+                    "issue_code": "BP-V-2",
+                    "name": "test_fwd_profile-1-1"
+                },
+                {
+                    "container_name": "shared",
+                    "description": "Log forwarding profile missing log type 'threat'.",
+                    "hostid": "192.168.1.145",
+                    "issue_code": "BP-V-2",
+                    "name": "test_fwd_profile"
+                }
+            ],
+            "Summary": [
+                {
+                    "description": "Fails if there are no valid log forwarding profiles configured.",
+                    "issue_code": "BP-V-1",
+                    "issue_count": 0,
+                    "result": "\u2714\ufe0f"
+                },
+                {
+                    "description": "Fails if the configured log forwarding profile has no match list.",
+                    "issue_code": "BP-V-2",
+                    "issue_count": 3,
+                    "result": "\u274c"
+                },
+                {
+                    "description": "Fails if enhanced application logging is not configured.",
+                    "issue_code": "BP-V-3",
+                    "issue_count": 0,
+                    "result": "\u2714\ufe0f"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Configuration Hygiene Check
+>|description|issue_code|issue_count|result|
+>|---|---|---|---|
+>| Fails if there are no valid log forwarding profiles configured. | BP-V-1 | 0 | ✔️ |
+>| Fails if the configured log forwarding profile has no match list. | BP-V-2 | 3 | ❌ |
+>| Fails if enhanced application logging is not configured. | BP-V-3 | 0 | ✔️ |
+
+
+### pan-os-hygiene-check-vulnerability-profiles
+***
+Checks the configured vulnerability profiles to ensure at least one meets best practices.
+
+
+#### Base Command
+
+`pan-os-hygiene-check-vulnerability-profiles`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | String by which to filter so that only the given device is checked. | Optional | 
+| minimum_block_severities | Comma-separated list of severities that must be in drop/reset/block-ip mode. Default is critical,high. | Optional | 
+| minimum_alert_severities | Comma-separated list of severities that must be in alert/default or higher mode. Default is medium,low. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.ConfigurationHygiene.Summary.description | String | The description of the hygiene check. | 
+| PANOS.ConfigurationHygiene.Summary.issue_code | String | The shorthand code for this hygiene check. | 
+| PANOS.ConfigurationHygiene.Summary.result | String | Whether the check passed or failed. | 
+| PANOS.ConfigurationHygiene.Summary.issue_count | Nunber | Total number of matching issues. | 
+| PANOS.ConfigurationHygiene.Result.hostid | String | Host ID. | 
+| PANOS.ConfigurationHygiene.Result.container_name | String | The parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.ConfigurationHygiene.Result.issue_code | String | The shorthand code for the issue. | 
+| PANOS.ConfigurationHygiene.Result.description | String | Human readable description of the issue. | 
+| PANOS.ConfigurationHygiene.Result.name | String | The affected object name | 
+
+#### Command example
+```!pan-os-hygiene-check-vulnerability-profiles```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "ConfigurationHygiene": {
+            "Summary": [
+                {
+                    "description": "Fails if no vulnerability profile is configured for visibility.",
+                    "issue_code": "BP-V-4",
+                    "issue_count": 0,
+                    "result": "\u2714\ufe0f"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Configuration Hygiene Check
+>|description|issue_code|issue_count|result|
+>|---|---|---|---|
+>| Fails if no vulnerability profile is configured for visibility. | BP-V-4 | 0 | ✔️ |
+
+
+### pan-os-platform-install-software
+***
+Install the given software version onto the device. Download the software first with panorama-download-panos-version.
+
+
+#### Base Command
+
+`pan-os-platform-install-software`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| version | Software version to upgrade to, for example: 9.1.2. | Required | 
+| device_filter_string | SString by which to filter to only install to specific devices or  serial numbers. | Optional | 
+| sync | If provided, runs the download synchronously. Make sure 'execution-timeout' is increased. | Optional | 
+| target | Single serial number to target with this command | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.InstallStatus.Summary.hostid | String | Host ID, | 
+| PANOS.InstallStatus.Summary.started | String | Whether the download process has started. | 
+
+#### Command example
+```!pan-os-platform-install-software version=9.1.0```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "InstallStatus": {
+            "Summary": [
+                {
+                    "hostid": "1111111111111",
+                    "started": true
+                },
+                {
+                    "hostid": "192.168.1.145",
+                    "started": true
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Software Install request Status
+>|hostid|started|
+>|---|---|
+>| 1111111111111 | true |
+>| 192.168.1.145 | true |
+
+### pan-os-hygiene-check-log-forwarding
+***
+Checks that at least one log forwarding profile is configured according to best practices.
+
+
+#### Base Command
+
+`pan-os-hygiene-check-log-forwarding`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | String by which to filter so that only the given device is checked. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.ConfigurationHygiene.Summary.description | String | The description of the hygiene check. | 
+| PANOS.ConfigurationHygiene.Summary.issue_code | String | The shorthand code for this hygiene check. | 
+| PANOS.ConfigurationHygiene.Summary.result | String | Whether the check passed or failed. | 
+| PANOS.ConfigurationHygiene.Summary.issue_count | Number | Total number of matching issues. | 
+| PANOS.ConfigurationHygiene.Result.hostid | String | Host ID. | 
+| PANOS.ConfigurationHygiene.Result.container_name | String | The parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.ConfigurationHygiene.Result.issue_code | String | The shorthand code for the issue. | 
+| PANOS.ConfigurationHygiene.Result.description | String | Human readable description of the issue. | 
+| PANOS.ConfigurationHygiene.Result.name | String | The affected object name. | 
+
+#### Command example
+```!pan-os-hygiene-check-log-forwarding```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "ConfigurationHygiene": {
+            "Result": [
+                {
+                    "container_name": "LAB",
+                    "description": "Log forwarding profile missing log type 'threat'.",
+                    "hostid": "192.168.1.145",
+                    "issue_code": "BP-V-2",
+                    "name": "test_fwd_profile-1"
+                },
+                {
+                    "container_name": "LAB",
+                    "description": "Log forwarding profile missing log type 'threat'.",
+                    "hostid": "192.168.1.145",
+                    "issue_code": "BP-V-2",
+                    "name": "test_fwd_profile-1-1"
+                },
+                {
+                    "container_name": "shared",
+                    "description": "Log forwarding profile missing log type 'threat'.",
+                    "hostid": "192.168.1.145",
+                    "issue_code": "BP-V-2",
+                    "name": "test_fwd_profile"
+                }
+            ],
+            "Summary": [
+                {
+                    "description": "Fails if there are no valid log forwarding profiles configured.",
+                    "issue_code": "BP-V-1",
+                    "issue_count": 0,
+                    "result": "\u2714\ufe0f"
+                },
+                {
+                    "description": "Fails if the configured log forwarding profile has no match list.",
+                    "issue_code": "BP-V-2",
+                    "issue_count": 3,
+                    "result": "\u274c"
+                },
+                {
+                    "description": "Fails if enhanced application logging is not configured.",
+                    "issue_code": "BP-V-3",
+                    "issue_count": 0,
+                    "result": "\u2714\ufe0f"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Configuration Hygiene Check
+>|description|issue_code|issue_count|result|
+>|---|---|---|---|
+>| Fails if there are no valid log forwarding profiles configured. | BP-V-1 | 0 | ✔️ |
+>| Fails if the configured log forwarding profile has no match list. | BP-V-2 | 3 | ❌ |
+>| Fails if enhanced application logging is not configured. | BP-V-3 | 0 | ✔️ |
+
+
+### pan-os-hygiene-check-vulnerability-profiles
+***
+Checks the configured vulnerability profiles to ensure at least one meets best practices.
+
+
+#### Base Command
+
+`pan-os-hygiene-check-vulnerability-profiles`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | String by which to filter so that only the given device is checked. | Optional | 
+| minimum_block_severities | Comma-separated list of severities that must be in drop/reset/block-ip mode. Default is critical,high. | Optional | 
+| minimum_alert_severities | Comma-separated list of severities that must be in alert/default or higher mode. Default is medium,low. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.ConfigurationHygiene.Summary.description | String | The description of the hygiene check. | 
+| PANOS.ConfigurationHygiene.Summary.issue_code | String | The shorthand code for this hygiene check. | 
+| PANOS.ConfigurationHygiene.Summary.result | String | Whether the check passed or failed. | 
+| PANOS.ConfigurationHygiene.Summary.issue_count | Number | Total number of matching issues. | 
+| PANOS.ConfigurationHygiene.Result.hostid | String | Host ID. | 
+| PANOS.ConfigurationHygiene.Result.container_name | String | The parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.ConfigurationHygiene.Result.issue_code | String | The shorthand code for the issue. | 
+| PANOS.ConfigurationHygiene.Result.description | String | Human readable description of the issue. | 
+| PANOS.ConfigurationHygiene.Result.name | String | The affected object name. | 
+
+#### Command example
+```!pan-os-hygiene-check-vulnerability-profiles```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "ConfigurationHygiene": {
+            "Summary": [
+                {
+                    "description": "Fails if no vulnerability profile is configured for visibility.",
+                    "issue_code": "BP-V-4",
+                    "issue_count": 0,
+                    "result": "\u2714\ufe0f"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Configuration Hygiene Check
+>|description|issue_code|issue_count|result|
+>|---|---|---|---|
+>| Fails if no vulnerability profile is configured for visibility. | BP-V-4 | 0 | ✔️ |
+
+
+### pan-os-hygiene-check-spyware-profiles
+***
+Checks the configured Anti-spyware profiles to ensure at least one meets best practices.
+
+
+#### Base Command
+
+`pan-os-hygiene-check-spyware-profiles`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | String to filter to only check given devices. | Optional | 
+| minimum_block_severities | csv list of severities that must be in drop/reset/block-ip mode. Default is critical,high. | Optional | 
+| minimum_alert_severities | csv list of severities that must be in alert/default or higher mode. Default is medium,low. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.ConfigurationHygiene.Summary.description | String | The description of the check | 
+| PANOS.ConfigurationHygiene.Summary.issue_code | String | The shorthand code for this hygiene check | 
+| PANOS.ConfigurationHygiene.Summary.result | String | Whether the check passed or failed | 
+| PANOS.ConfigurationHygiene.Summary.issue_count | String | Total number of matching issues | 
+| PANOS.ConfigurationHygiene.Result.hostid | String | Host ID. | 
+| PANOS.ConfigurationHygiene.Result.container_name | String | What parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.ConfigurationHygiene.Result.issue_code | String | The shorthand code for the issue | 
+| PANOS.ConfigurationHygiene.Result.description | String | Human readable description of issue | 
+| PANOS.ConfigurationHygiene.Result.name | String | The affected object name | 
+
+#### Command example
+```!pan-os-hygiene-check-spyware-profiles```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "ConfigurationHygiene": {
+            "Summary": [
+                {
+                    "description": "Fails if no spyware profile is configured for visibility.",
+                    "issue_code": "BP-V-5",
+                    "issue_count": 0,
+                    "result": "\u2714\ufe0f"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Configuration Hygiene Check
+>|description|issue_code|issue_count|result|
+>|---|---|---|---|
+>| Fails if no spyware profile is configured for visibility. | BP-V-5 | 0 | ✔️ |
+
+
+### pan-os-hygiene-check-url-filtering-profiles
+***
+Checks the configured URL Filtering profiles to ensure at least one meets best practices.
+
+
+#### Base Command
+
+`pan-os-hygiene-check-url-filtering-profiles`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | String to filter to only check given device. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.ConfigurationHygiene.Summary.description | String | The description of the check | 
+| PANOS.ConfigurationHygiene.Summary.issue_code | String | The shorthand code for this hygiene check | 
+| PANOS.ConfigurationHygiene.Summary.result | String | Whether the check passed or failed | 
+| PANOS.ConfigurationHygiene.Summary.issue_count | String | Total number of matching issues | 
+| PANOS.ConfigurationHygiene.Result.hostid | String | Host ID. | 
+| PANOS.ConfigurationHygiene.Result.container_name | String | What parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.ConfigurationHygiene.Result.issue_code | String | The shorthand code for the issue | 
+| PANOS.ConfigurationHygiene.Result.description | String | Human readable description of issue | 
+| PANOS.ConfigurationHygiene.Result.name | String | The affected object name | 
+
+#### Command example
+```!pan-os-hygiene-check-url-filtering-profiles```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "ConfigurationHygiene": {
+            "Summary": [
+                {
+                    "description": "Fails if no spyware profile is configured for url-filtering",
+                    "issue_code": "BP-V-6",
+                    "issue_count": 0,
+                    "result": "\u2714\ufe0f"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Configuration Hygiene Check
+>|description|issue_code|issue_count|result|
+>|---|---|---|---|
+>| Fails if no spyware profile is configured for url-filtering | BP-V-6 | 0 | ✔️ |
+
+
+### pan-os-hygiene-conforming-url-filtering-profiles
+***
+Returns a list of existing PANOS URL filtering objects that conform to best practices.
+
+
+#### Base Command
+
+`pan-os-hygiene-conforming-url-filtering-profiles`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | String to filter to only check given device. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.PanosObject.hostid | String | Host ID. | 
+| PANOS.PanosObject.container_name | String | What parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.PanosObject.name | String | The PAN-OS object name | 
+| PANOS.PanosObject.object_type | String | The PAN-OS-Python object type | 
+
+#### Command example
+```!pan-os-hygiene-conforming-url-filtering-profiles```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "PanosObject": [
+            {
+                "container_name": "shared",
+                "hostid": "192.168.1.145",
+                "name": "Outbound-URL",
+                "object_type": "URLFilteringProfile"
+            },
+            {
+                "container_name": "shared",
+                "hostid": "192.168.1.145",
+                "name": "Exception-URL",
+                "object_type": "URLFilteringProfile"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Objects
+>|container_name|hostid|name|object_type|
+>|---|---|---|---|
+>| shared | 192.168.1.145 | Outbound-URL | URLFilteringProfile |
+>| shared | 192.168.1.145 | Exception-URL | URLFilteringProfile |
+
+
+### pan-os-hygiene-conforming-spyware-profiles
+***
+Returns all Anti-spyware profiles that conform to best practices.
+
+
+#### Base Command
+
+`pan-os-hygiene-conforming-spyware-profiles`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | String to filter to only check given device. | Optional | 
+| minimum_block_severities | csv list of severities that must be in drop/reset/block-ip mode. Default is critical,high. | Optional | 
+| minimum_alert_severities | csv list of severities that must be in alert/default or higher mode. Default is medium,low. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.PanosObject.hostid | String | Host ID. | 
+| PANOS.PanosObject.container_name | String | What parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.PanosObject.name | String | The PAN-OS object name | 
+| PANOS.PanosObject.object_type | String | The PAN-OS-Python object type | 
+
+#### Command example
+```!pan-os-hygiene-conforming-spyware-profiles```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "PanosObject": [
+            {
+                "container_name": "shared",
+                "hostid": "192.168.1.145",
+                "name": "Outbound-AS",
+                "object_type": "AntiSpywareProfile"
+            },
+            {
+                "container_name": "shared",
+                "hostid": "192.168.1.145",
+                "name": "Inbound-AS",
+                "object_type": "AntiSpywareProfile"
+            },
+            {
+                "container_name": "shared",
+                "hostid": "192.168.1.145",
+                "name": "Internal-AS",
+                "object_type": "AntiSpywareProfile"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Objects
+>|container_name|hostid|name|object_type|
+>|---|---|---|---|
+>| shared | 192.168.1.145 | Outbound-AS | AntiSpywareProfile |
+>| shared | 192.168.1.145 | Inbound-AS | AntiSpywareProfile |
+>| shared | 192.168.1.145 | Internal-AS | AntiSpywareProfile |
+
+
+### pan-os-hygiene-conforming-vulnerability-profiles
+***
+Returns all Vulnerability profiles that conform to best practices.
+
+
+#### Base Command
+
+`pan-os-hygiene-conforming-vulnerability-profiles`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | String to filter to only check given device. | Optional | 
+| minimum_block_severities | csv list of severities that must be in drop/reset/block-ip mode. Default is critical,high. | Optional | 
+| minimum_alert_severities | csv list of severities that must be in alert/default or higher mode. Default is medium,low. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.PanosObject.hostid | String | Host ID. | 
+| PANOS.PanosObject.container_name | String | What parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.PanosObject.name | String | The PAN-OS object name | 
+| PANOS.PanosObject.object_type | String | The PAN-OS-Python object type | 
+
+#### Command example
+```!pan-os-hygiene-conforming-vulnerability-profiles```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "PanosObject": [
+            {
+                "container_name": "shared",
+                "hostid": "192.168.1.145",
+                "name": "Outbound-VP",
+                "object_type": "VulnerabilityProfile"
+            },
+            {
+                "container_name": "shared",
+                "hostid": "192.168.1.145",
+                "name": "Inbound-VP",
+                "object_type": "VulnerabilityProfile"
+            },
+            {
+                "container_name": "shared",
+                "hostid": "192.168.1.145",
+                "name": "Internal-VP",
+                "object_type": "VulnerabilityProfile"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Objects
+>|container_name|hostid|name|object_type|
+>|---|---|---|---|
+>| shared | 192.168.1.145 | Outbound-VP | VulnerabilityProfile |
+>| shared | 192.168.1.145 | Inbound-VP | VulnerabilityProfile |
+>| shared | 192.168.1.145 | Internal-VP | VulnerabilityProfile |
+
+
+### pan-os-hygiene-check-security-zones
+***
+Check configured security zones have correct settings.
+
+
+#### Base Command
+
+`pan-os-hygiene-check-security-zones`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | String to filter to only check given device. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.ConfigurationHygiene.Summary.description | String | The description of the check | 
+| PANOS.ConfigurationHygiene.Summary.issue_code | String | The shorthand code for this hygiene check | 
+| PANOS.ConfigurationHygiene.Summary.result | String | Whether the check passed or failed | 
+| PANOS.ConfigurationHygiene.Summary.issue_count | String | Total number of matching issues | 
+| PANOS.ConfigurationHygiene.Result.hostid | String | Host ID. | 
+| PANOS.ConfigurationHygiene.Result.container_name | String | What parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.ConfigurationHygiene.Result.issue_code | String | The shorthand code for the issue | 
+| PANOS.ConfigurationHygiene.Result.description | String | Human readable description of issue | 
+| PANOS.ConfigurationHygiene.Result.name | String | The affected object name | 
+
+#### Command example
+```!pan-os-hygiene-check-security-zones```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "ConfigurationHygiene": {
+            "Result": [
+                {
+                    "container_name": "LAB",
+                    "description": "Security zone has no log forwarding setting.",
+                    "hostid": "192.168.1.145",
+                    "issue_code": "BP-V-7",
+                    "name": "TEST_ZONE"
+                }
+            ],
+            "Summary": [
+                {
+                    "description": "Fails when a security zone has no log forwarding setting.",
+                    "issue_code": "BP-V-7",
+                    "issue_count": 1,
+                    "result": "\u274c"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Configuration Hygiene Check
+>|description|issue_code|issue_count|result|
+>|---|---|---|---|
+>| Fails when a security zone has no log forwarding setting. | BP-V-7 | 1 | ❌ |
+
+
+### pan-os-hygiene-check-security-rules
+***
+Check security rules are configured correctly.
+
+
+#### Base Command
+
+`pan-os-hygiene-check-security-rules`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | String to filter to only check given device. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.ConfigurationHygiene.Summary.description | String | The description of the check | 
+| PANOS.ConfigurationHygiene.Summary.issue_code | String | The shorthand code for this hygiene check | 
+| PANOS.ConfigurationHygiene.Summary.result | String | Whether the check passed or failed | 
+| PANOS.ConfigurationHygiene.Summary.issue_count | String | Total number of matching issues | 
+| PANOS.ConfigurationHygiene.Result.hostid | String | Host ID. | 
+| PANOS.ConfigurationHygiene.Result.container_name | String | What parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.ConfigurationHygiene.Result.issue_code | String | The shorthand code for the issue | 
+| PANOS.ConfigurationHygiene.Result.description | String | Human readable description of issue | 
+| PANOS.ConfigurationHygiene.Result.name | String | The affected object name | 
+
+#### Command example
+```!pan-os-hygiene-check-security-rules```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "ConfigurationHygiene": {
+            "Result": [
+                {
+                    "container_name": "shared",
+                    "description": "Security rule is not configured to log at session end.",
+                    "hostid": "192.168.1.145",
+                    "issue_code": "BP-V-8",
+                    "name": "Test-webapp-rule"
+                },
+                {
+                    "container_name": "shared",
+                    "description": "Security rule has no log forwarding profile.",
+                    "hostid": "192.168.1.145",
+                    "issue_code": "BP-V-9",
+                    "name": "Test-webapp-rule"
+                },
+                {
+                    "container_name": "shared",
+                    "description": "Security rule has no profile group or configured threat profiles.",
+                    "hostid": "192.168.1.145",
+                    "issue_code": "BP-V-10",
+                    "name": "Test-webapp-rule"
+                }
+            ],
+            "Summary": [
+                {
+                    "description": "Fails when a security rule is not configured to log at session end.",
+                    "issue_code": "BP-V-8",
+                    "issue_count": 1,
+                    "result": "\u274c"
+                },
+                {
+                    "description": "Fails when a security rule has no log forwarding profile configured.",
+                    "issue_code": "BP-V-9",
+                    "issue_count": 1,
+                    "result": "\u274c"
+                },
+                {
+                    "description": "Fails when a security rule has no configured profiles or profile groups.",
+                    "issue_code": "BP-V-10",
+                    "issue_count": 1,
+                    "result": "\u274c"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Configuration Hygiene Check
+>|description|issue_code|issue_count|result|
+>|---|---|---|---|
+>| Fails when a security rule is not configured to log at session end. | BP-V-8 | 1 | ❌ |
+>| Fails when a security rule has no log forwarding profile configured. | BP-V-9 | 1 | ❌ |
+>| Fails when a security rule has no configured profiles or profile groups. | BP-V-10 | 1 | ❌ |
+
+
+### pan-os-hygiene-fix-log-forwarding
+***
+Fix log forwarding issues identified by pan-os-hygiene-check-log-forwarding.
+
+
+#### Base Command
+
+`pan-os-hygiene-fix-log-forwarding`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issue | Dictionary of Hygiene issue, from a hygiene check command. Can be a list. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.ConfigurationHygieneFix.hostid | String | Host ID | 
+| PANOS.ConfigurationHygieneFix.container_name | String | What parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.ConfigurationHygieneFix.issue_code | String | The shorthand code for the issue | 
+| PANOS.ConfigurationHygieneFix.description | String | Human readable description of issue | 
+| PANOS.ConfigurationHygieneFix.name | String | The affected object name | 
+
+#### Command example
+```!pan-os-hygiene-fix-log-forwarding issue=${PANOS.ConfigurationHygiene.Result}```
+#### Context Example
+```json
+{
+  "PANOS": {
+    "ConfigurationHygieneFix": [
+      {
+        "container_name": "LAB",
+        "description": "Enabled Enhanced Application Logging.",
+        "hostid": "192.168.1.145",
+        "issue_code": "BP-V-2",
+        "name": "test_fwd_profile-1"
+      }
+    ]
+  }
+}
+```
+
+### pan-os-hygiene-fix-security-zone-log-settings
+***
+Fixes security zones that are configured without a valid log forwarding profile.
+
+
+#### Base Command
+
+`pan-os-hygiene-fix-security-zone-log-settings`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issue | Dictionary of Hygiene issue, from a hygiene check command. Can be a list. | Required | 
+| log_forwarding_profile_name | Name of log forwarding profile to set. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.ConfigurationHygieneFix.hostid | String | Host ID | 
+| PANOS.ConfigurationHygieneFix.container_name | String | What parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.ConfigurationHygieneFix.issue_code | String | The shorthand code for the issue | 
+| PANOS.ConfigurationHygieneFix.description | String | Human readable description of issue | 
+| PANOS.ConfigurationHygieneFix.name | String | The affected object name | 
+
+#### Command example
+```!pan-os-hygiene-fix-security-zone-log-settings issue=${PANOS.ConfigurationHygiene.Result} log_forwarding_profile_name="test-fwd-profile"```
+#### Context Example
+```json
+{
+  "PANOS": {
+    "ConfigurationHygieneFix": [
+      {
+        "container_name": "LAB",
+        "description": "Set log forwarding profile test-fwd-profile",
+        "hostid": "192.168.1.145",
+        "issue_code": "BP-V-7",
+        "name": "TEST_ZONE"
+      }
+    ]
+  }
+}
+```
+
+### pan-os-hygiene-fix-security-rule-log-settings
+***
+Fixed security rules that have incorrect log settings by adding a log forwarding profile and setting
+
+
+#### Base Command
+
+`pan-os-hygiene-fix-security-rule-log-settings`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issue | Dictionary of Hygiene issue, from a hygiene check command. Can be list. | Required | 
+| log_forwarding_profile_name | Name of log forwarding profile to use as log setting. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.ConfigurationHygieneFix.hostid | String | Host ID | 
+| PANOS.ConfigurationHygieneFix.container_name | String | What parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.ConfigurationHygieneFix.issue_code | String | The shorthand code for the issue | 
+| PANOS.ConfigurationHygieneFix.description | String | Human readable description of issue | 
+| PANOS.ConfigurationHygieneFix.name | String | The affected object name | 
+
+#### Command example
+```!pan-os-hygiene-fix-security-rule-log-settings issue=${PANOS.ConfigurationHygiene.Result.[0]} log_forwarding_profile_name="test-fwd-profile""```
+#### Context Example
+```json
+{
+  "PANOS": {
+    "ConfigurationHygieneFix": [
+      {
+        "container_name": "shared",
+        "description": "Set log forwarding profile to test-fwd-profile-3 andenabled log at session end.",
+        "hostid": "192.168.1.145",
+        "issue_code": "BP-V-8",
+        "name": "Test-webapp-rule"
+      }
+    ]
+  }
+}
+```
+
+### pan-os-hygiene-fix-security-rule-profile-settings
+***
+Fixed security rules that have incorrect log settings by adding a log forwarding profile and setting
+
+
+#### Base Command
+
+`pan-os-hygiene-fix-security-rule-profile-settings`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issue | Dictionary of Hygiene issue, from a hygiene check command. | Required | 
+| security_profile_group_name | Name of Security profile group to use as log setting. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.ConfigurationHygieneFix.hostid | String | Host ID | 
+| PANOS.ConfigurationHygieneFix.container_name | String | What parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.ConfigurationHygieneFix.issue_code | String | The shorthand code for the issue | 
+| PANOS.ConfigurationHygieneFix.description | String | Human readable description of issue | 
+| PANOS.ConfigurationHygieneFix.name | String | The affected object name | 
+
+#### Command example
+```!pan-os-hygiene-fix-security-rule-log-settings issue=${PANOS.ConfigurationHygiene.Result.[0]} log_forwarding_profile_name="test-fwd-profile""```
+#### Context Example
+```json
+{
+  "PANOS": {
+    "ConfigurationHygieneFix": [
+      {
+        "container_name": "shared",
+        "description": "Set security profile group Alert-Only",
+        "hostid": "192.168.1.145",
+        "issue_code": "BP-V-10",
+        "name": "Test-webapp-rule"
+      }
+    ]
+  }    
+}
+```
+
+### pan-os-config-get-object
+***
+Searches and returns a reference for the given object type and name. If no name is provided, all objects of the given type will be returned.
+
+
+#### Base Command
+
+`pan-os-config-get-object`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| object_type | The type of object to search; see https://pandevice.readthedocs.io/en/latest/module-objects.html. Possible values are: AddressObject, AddressGroup, ServiceGroup, ServiceObject, ApplicationObject, ApplicationGroup, LogForwardingProfile, SecurityProfileGroup. | Required | 
+| device_filter_string | If provided, only objects from the given device are returned. | Optional | 
+| object_name | The name of the object reference to return if looking for a specific object. Supports regex if "use_regex" is set. | Optional | 
+| parent | The parent vsys or device group to search. If not provided, all will be returned. | Optional | 
+| use_regex | Enables regex matching on object name. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.PanosObject.hostid | String | Host ID. | 
+| PANOS.PanosObject.container_name | String | The parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.PanosObject.name | String | The PAN-OS object name. | 
+| PANOS.PanosObject.object_type | String | The PAN-OS python object type. | 
+
+#### Command example
+```!pan-os-config-get-object object_type="AddressObject"```
+#### Context Example
+```json
+{
+    "PANOS": {
+        "PanosObject": [
+            {
+                "container_name": "shared",
+                "hostid": "192.168.1.145",
+                "name": "Sinkhole-IPv4",
+                "object_type": "AddressObject"
+            },
+            {
+                "container_name": "shared",
+                "hostid": "192.168.1.145",
+                "name": "Sinkhole-IPv6",
+                "object_type": "AddressObject"
+            },
+            {
+                "container_name": "shared",
+                "hostid": "192.168.1.145",
+                "name": "test-shared",
+                "object_type": "AddressObject"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### PAN-OS Objects
+>|container_name|hostid|name|object_type|
+>|---|---|---|---|
+>| shared | 192.168.1.145 | Sinkhole-IPv4 | AddressObject |
+>| shared | 192.168.1.145 | Sinkhole-IPv6 | AddressObject |
+>| shared | 192.168.1.145 | test-shared | AddressObject |
+
+
+### pan-os-platform-get-device-state
+***
+Get the device state from the provided device. Note: This will attempt to connect directly to the provided target to get the device state. If the IP address as reported in 'show system info' is unreachable, this command will fail.
+
+
+#### Base Command
+
+`pan-os-platform-get-device-state`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| target | String by which to filter to only show specific hostnames or serial numbers. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| InfoFile.Name | String | Filename | 
+| InfoFile.EntryID | String | Entry ID | 
+| InfoFile.Size | String | Size of file | 
+| InfoFile.Type | String | Type of file | 
+| InfoFile.Info | String | Basic information of file | 
+### pan-os-push-to-template
+***
+Pushes the given PAN-OS template to the given devices or all devices that belong to the template.
+
+
+#### Base Command
+
+`pan-os-push-to-template`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| template | The template to push. | Optional | 
+| validate-only | Whether to validate the policy. Possible values are: true, false. Default is false. | Optional | 
+| description | The push description. | Optional | 
+| serial_number | The serial number for a virtual system commit. If provided, the commit will be a virtual system commit. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.Push.Template | String | The device group in which the policies were pushed. | 
+| Panorama.Push.JobID | Number | The job ID of the policies that were pushed. | 
+| Panorama.Push.Status | String | The push status. | 
+| Panorama.Push.Warnings | String | The push warnings. | 
+| Panorama.Push.Errors | String | The push errors. | 
+
+#### Command example
+```!pan-os-push-to-template template=LAB```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "Push": {
+            "JobID": "564",
+            "Status": "Pending",
+            "Template": "LAB"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Push to Template:
+>|JobID|Status|
+>|---|---|
+>| 564 | Pending |
+
+
+### pan-os-push-to-template-stack
+***
+Pushes the given PAN-OS template-stack to the given devices or all devices that belong to the template stack.
+
+
+#### Base Command
+
+`pan-os-push-to-template-stack`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| template-stack | The template-stack to push. | Required | 
+| validate-only | Whether to validate the policy. Possible values are: true, false. Default is false. | Optional | 
+| description | The push description. | Optional | 
+| serial_number | The serial number for a virtual system commit. If provided, the commit will be a virtual system commit. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.Push.TemplateStack | String | The device group in which the policies were pushed. | 
+| Panorama.Push.JobID | Number | The job ID of the policies that were pushed. | 
+| Panorama.Push.Status | String | The push status. | 
+| Panorama.Push.Warnings | String | The push warnings. | 
+| Panorama.Push.Errors | String | The push errors. | 
+
+#### Command example
+```!pan-os-push-to-template-stack template-stack=LAB-STACK```
+#### Context Example
+```json
+{
+    "Panorama": {
+        "Push": {
+            "JobID": "565",
+            "Status": "Pending",
+            "TemplateStack": "LAB-STACK"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Push to Template:
+>|JobID|Status|
+>|---|---|
+>| 565 | Pending |

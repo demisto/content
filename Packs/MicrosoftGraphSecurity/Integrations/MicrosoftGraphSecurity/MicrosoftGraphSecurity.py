@@ -546,7 +546,7 @@ def main():
                                               )
         if command == "fetch-incidents":
             fetch_time = params.get('fetch_time', '1 day')
-            fetch_limit = params.get('fetch_limit', 10)
+            fetch_limit = params.get('fetch_limit', 10) or 10
             fetch_providers = params.get('fetch_providers', '')
             fetch_filter = params.get('fetch_filter', '')
             incidents = fetch_incidents(client, fetch_time=fetch_time, fetch_limit=int(fetch_limit),

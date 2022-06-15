@@ -1717,3 +1717,18 @@ Note: When using the Authorization Code flow, make sure the user you authenticat
 <div class="cl-preview-section">
 <p>user: <a href="mailto:%22test@demistodev.onmicrosoft.com">"test@demistodev.onmicrosoft.com</a>" session has been revoked successfully</p>
 </div>
+### msgraph-user-test
+***
+Tests connectivity to Microsoft Graph User.
+
+
+#### Base Command
+
+`msgraph-user-test`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
