@@ -1,4 +1,4 @@
-description: This playbook will extract and enrich indicators upon trigger, calculate Severity, and set SLAs and Timers.
+description: "This playbook will extract and enrich indicators upon trigger, calculate Severity, and set SLAs and Timers. \n\nCan be used as a default playbook to ingest new Incidents, or for manually created Incidents. "
 id: Case Management - Generic v2
 inputs:
 - description: |-
@@ -139,7 +139,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2000
+          "y": 2145
         }
       }
   '16':
@@ -169,7 +169,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1825
+          "y": 1970
         }
       }
   '18':
@@ -209,7 +209,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1505
+          "y": 1650
         }
       }
   '20':
@@ -219,7 +219,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - '29'
+      - '31'
     note: false
     quietmode: 0
     separatecontext: true
@@ -272,7 +272,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1680
+          "y": 1825
         }
       }
   '23':
@@ -304,7 +304,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 1680
+          "y": 1825
         }
       }
   '24':
@@ -475,7 +475,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1360
+          "y": 1505
         }
       }
   '29':
@@ -506,19 +506,19 @@ tasks:
     task:
       brand: ''
       description: Checks if the SetSLAs input is set to True, and if so moves to the sub-playbook to set the SLAs based on Severity.
-      id: 231c97f8-f8b6-4a70-839f-e06648119fc6
+      id: d1cca75f-7e05-4503-872f-75c5e596187e
       iscommand: false
       name: Should we set SLAs based on Severity?
       type: condition
       version: -1
-    taskid: 231c97f8-f8b6-4a70-839f-e06648119fc6
+    taskid: d1cca75f-7e05-4503-872f-75c5e596187e
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 1010
+          "y": 1155
         }
       }
   '30':
@@ -580,8 +580,8 @@ tasks:
       brand: ''
       id: 70d0f89c-9f27-441d-8acc-2b8cf37c051a
       iscommand: false
-      name: Case Management - Generic - Set SLAs based on Severity
-      playbookId: Case Management - Generic - Set SLAs based on Severity
+      name: cd1b3efe-1f9b-4574-8ef7-04afbaf88640
+      playbookId: cd1b3efe-1f9b-4574-8ef7-04afbaf88640
       type: playbook
       version: -1
       description: ''
@@ -592,7 +592,37 @@ tasks:
       {
         "position": {
           "x": 377.5,
-          "y": 1185
+          "y": 1330
+        }
+      }
+  '31':
+    id: '31'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '29'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: f629382c-7027-478b-8455-acaf88e39887
+      iscommand: false
+      name: Set SLAs
+      type: title
+      version: -1
+      description: ''
+    taskid: f629382c-7027-478b-8455-acaf88e39887
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1010
         }
       }
 version: -1
@@ -601,7 +631,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2015,
+        "height": 2160,
         "width": 810,
         "x": 50,
         "y": 50
