@@ -358,7 +358,7 @@ def main():
             return_results(user_profile)
 
     except Exception:
-        return_error(f'Failed to execute {command} command. Traceback: {traceback.format_exc()}')
+        return_error(f'Failed to execute {command} command.')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
