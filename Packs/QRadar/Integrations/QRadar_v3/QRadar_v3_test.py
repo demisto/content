@@ -17,8 +17,8 @@ from QRadar_v3 import LAST_FETCH_KEY, USECS_ENTRIES, OFFENSE_OLD_NEW_NAMES_MAP, 
     MIRRORED_OFFENSES_QUERIED_CTX_KEY, MIRRORED_OFFENSES_FINISHED_CTX_KEY, LAST_MIRROR_KEY, SearchQueryStatus
 from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_outputs, build_headers, \
     get_offense_types, get_offense_closing_reasons, get_domain_names, get_rules_names, enrich_assets_results, \
-    get_offense_addresses, get_minimum_id_to_fetch, poll_offense_events_with_retry, sanitize_outputs, \
-    create_search_with_retry, enrich_offense_with_events, enrich_offense_with_assets, get_offense_enrichment, \
+    get_offense_addresses, get_minimum_id_to_fetch, poll_offense_events, sanitize_outputs, \
+    create_search_with_retry, search_for_offense_events_with_retries, enrich_offense_with_assets, get_offense_enrichment, \
     add_iso_entries_to_asset, create_single_asset_for_offense_enrichment, create_incidents_from_offenses, \
     qradar_offenses_list_command, qradar_offense_update_command, qradar_closing_reasons_list_command, \
     qradar_offense_notes_list_command, qradar_offense_notes_create_command, qradar_rules_list_command, \
@@ -380,7 +380,7 @@ def test_poll_offense_events_with_retry(requests_mock, status_exception, status_
         f'{client.server}/api/ariel/searches/{search_id}/results',
         json=results_response
     )
-    assert poll_offense_events_with_retry(client, search_id, 16, 1) == expected
+    assert poll_offense_events(client, search_id, 16, 1) == expected
 
 
 @pytest.mark.parametrize('search_exception, fetch_mode, search_response',
@@ -538,7 +538,7 @@ def test_enrich_offense_with_events(mocker, offense: Dict, fetch_mode, mock_sear
     poll_events_mock = mocker.patch.object(QRadar_v3, "poll_offense_events_with_retry",
                                            return_value=poll_events_response)
 
-    enriched_offense = enrich_offense_with_events(client, offense, fetch_mode, event_columns_default_value,
+    enriched_offense = search_for_offense_events_with_retries(client, offense, fetch_mode, event_columns_default_value,
                                                   events_limit=events_limit, max_retries=1)
 
     if mock_search_response:
