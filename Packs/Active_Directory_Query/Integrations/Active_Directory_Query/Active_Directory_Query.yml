@@ -1,9 +1,8 @@
 commonfields:
-  id: Active Directory Query v2_copy
+  id: Active Directory Query v2
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
-name: Active Directory Query v2_copy
-display: Active Directory Query v2_copy
+name: Active Directory Query v2
+display: Active Directory Query v2
 category: Data Enrichment & Threat Intelligence
 description: The Active Directory Query integration enables you to access and manage Active Directory objects (users, contacts, and computers).
 configuration:
@@ -45,31 +44,32 @@ configuration:
   name: unsecure
   type: 8
   required: false
-- display: Incoming Mapper
-  name: mapper-in
+- additionalinfo: Used in the IAM commands.
   defaultvalue: User Profile - Active Directory (Incoming)
-  type: 0
+  display: Incoming Mapper
+  name: mapper-in
   required: true
-  additionalinfo: Used in the IAM commands.
-- display: Outgoing Mapper
-  name: mapper-out
+  type: 0
+- additionalinfo: Used in the IAM commands.
   defaultvalue: User Profile - Active Directory (Outgoing)
-  type: 0
+  display: Outgoing Mapper
+  name: mapper-out
   required: true
-  additionalinfo: Used in the IAM commands.
+  type: 0
 - display: Group CN for terminated employees
   name: group-cn
   type: 0
   required: false
-- display: Create user if does not exist
-  name: create-if-not-exists
+- additionalinfo: If true, the user is created if the user profile doesn't exist in AD. Used in IAM commands only.
   defaultvalue: 'true'
-  type: 8
+  display: Create user if does not exist
+  name: create-if-not-exists
   required: false
-  additionalinfo: If true, the user is created if the user profile doesn't exist in AD. Used in IAM commands only.
+  type: 8
 script:
   script: ''
   type: python
+  subtype: python3
   commands:
   - name: ad-expire-password
     arguments:
@@ -122,8 +122,8 @@ script:
       predefined:
       - yes
       - no
-      description: Whether to output the search results to the context.
       defaultValue: yes
+      description: Whether to output the search results to the context.
     outputs:
     - contextPath: ActiveDirectory.Search.dn
       description: The distinguished names that match the query.
@@ -221,6 +221,12 @@ script:
       description: The username of the account to enable (sAMAccountName).
     - name: base-dn
       description: Root. For example, DC=domain,DC=com). By default, the Base DN configured for the instance is used.
+    - name: restore_user
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      description: If true, the command will enable the user with his restored options
     description: Enables a previously disabled Active Directory account.
   - name: ad-unlock-account
     arguments:
@@ -430,16 +436,16 @@ script:
       defaultValue: person
     - name: attributes
       description: CSV list of attributes to include in the results, in addition to the default attributes.
-    - name: time_limit
+    - defaultValue: '180'
       description: Time limit (in seconds) for the search to run.
-      defaultValue: '180'
-    - name: disable-nested-search
-      auto: PREDEFINED
+      name: time_limit
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to disable recursive retrieval of group memberships of a user.
+      name: disable-nested-search
       predefined:
       - 'false'
       - 'true'
-      description: Whether to disable recursive retrieval of group memberships of a user.
-      defaultValue: 'false'
     - name: sAMAccountName
       description: Queries results by the samAccountName attribute.
       defaultValue: '*'
@@ -457,15 +463,15 @@ script:
   - name: ad-create-group
     arguments:
     - name: name
-      required: true
       description: The Active Directory name of the group.
+      required: true
     - name: group-type
+      description: 'The type of group. Can be: "security", or "distribution".'
       required: true
       auto: PREDEFINED
       predefined:
       - security
       - distribution
-      description: 'The type of group. Can be: "security", or "distribution".'
     - name: dn
       required: true
       description: The Full Distinguished Name (DN) of the group. Use double quotes ("") rather than single quotes ('') when initializing this command.
@@ -477,22 +483,23 @@ script:
   - name: ad-delete-group
     arguments:
     - name: dn
-      required: true
       description: The Active Directory Distinguished Name (DN) of the group.
+      required: true
     description: Deletes an existing Active Directory security or distribution group.
     execution: true
-  - name: iam-create-user
-    arguments:
+  - arguments:
     - name: user-profile
       required: true
       description: A User Profile indicator that contains user information, such as name, email address, etc.
-    - name: allow-enable
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: When set to true, after the command execution the status of the user in the 3rd-party integration will be active.
+      name: allow-enable
       predefined:
       - 'true'
       - 'false'
-      description: When set to true, after the command execution the status of the user in the 3rd-party integration will be active.
-      defaultValue: 'true'
+    description: Creates an Active Directory user. This command requires a secure connection (SSL,TLS).
+    name: iam-create-user
     outputs:
     - contextPath: IAM.UserProfile
       description: The user profile.
@@ -530,12 +537,12 @@ script:
     - contextPath: IAM.Vendor.action
       description: The command name.
       type: String
-    description: Creates an Active Directory user. This command requires a secure connection (SSL,TLS).
-  - name: iam-get-user
-    arguments:
+  - arguments:
     - name: user-profile
       required: true
       description: A User Profile indicator that contains user information, such as name and email address.
+    description: Retrieves a single user resource.
+    name: iam-get-user
     outputs:
     - contextPath: IAM.UserProfile
       description: The user profile.
@@ -573,19 +580,19 @@ script:
     - contextPath: IAM.Vendor.action
       description: The command name.
       type: String
-    description: Retrieves a single user resource.
-  - name: iam-update-user
-    arguments:
+  - arguments:
     - name: user-profile
       required: true
       description: A User Profile indicator that contains user information, such as name and email address.
-    - name: allow-enable
-      auto: PREDEFINED
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: When set to true, after the command executes the user status in the 3rd-party integration is active.
+      name: allow-enable
       predefined:
       - 'true'
       - 'false'
-      description: When set to true, after the command executes the user status in the 3rd-party integration is active.
-      defaultValue: 'true'
+    description: Updates an existing user with the data in the User Profile indicator that is passed in the user-profile argument.
+    name: iam-update-user
     outputs:
     - contextPath: IAM.UserProfile
       description: The user profile
@@ -623,12 +630,13 @@ script:
     - contextPath: IAM.Vendor.action
       description: The command name.
       type: String
-    description: Updates an existing user with the data in the User Profile indicator that is passed in the user-profile argument.
-  - name: iam-disable-user
-    arguments:
+  - arguments:
     - name: user-profile
       required: true
       description: A User Profile indicator that contains user information, such as name and email address.
+    description: Disables a user.
+    execution: true
+    name: iam-disable-user
     outputs:
     - contextPath: IAM.UserProfile
       description: The user profile.
@@ -666,24 +674,22 @@ script:
     - contextPath: IAM.Vendor.action
       description: The command name.
       type: String
-    description: Disables a user.
-    execution: true
-  - name: get-mapping-fields
+  - description: Retrieves a User Profile schema which holds all of the user fields in the application. Used for outgoing mapping through the Get Schema option.
+    name: get-mapping-fields
     arguments: []
-    description: Retrieves a User Profile schema which holds all of the user fields in the application. Used for outgoing mapping through the Get Schema option.
-  - name: ad-update-group
-    arguments:
-    - name: groupname
-      description: The group name of the group to update (sAMAccountName).
-    - name: attributename
+  - arguments:
+    - description: The group name of the group to update (sAMAccountName).
+      name: groupname
+    - description: The name of the attribute to modify. For example, Description and displayName.
+      name: attributename
       required: true
-      description: The name of the attribute to modify. For example, Description and displayName.
-    - name: attributevalue
+    - description: The value of the attribute to change.
+      name: attributevalue
       required: true
-      description: The value of the attribute to change.
-    - name: basedn
-      description: Root. For example, DC=domain,DC=com. By default, the Base DN configured for the instance is used.
+    - description: Root. For example, DC=domain,DC=com. By default, the Base DN configured for the instance is used.
+      name: basedn
     description: Updates attributes of an existing Active Directory group.
+    name: ad-update-group
   - name: ad-modify-password-never-expire
     arguments:
     - name: username
@@ -699,9 +705,10 @@ script:
       defaultValue: 'false'
     description: 'Modifies the AD account attribute "Password never expire".  '
     execution: true
-  dockerimage: demisto/py3-tools:0.0.1.30291
+  dockerimage: demisto/py3-tools:0.0.1.30715
   runonce: false
-  subtype: python3
   ismappable: true
   isremotesyncout: true
-sourcemoduleid: Active Directory Query v2
+fromversion: 5.0.0
+tests:
+- Active Directory Test
