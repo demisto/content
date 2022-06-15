@@ -1,5 +1,5 @@
-name: Microsoft 365 Defender Modeling Rule
-id: microsoft_365_defender_modeling_rule
+name: Microsoft 365 Defender Event Collector
+id: microsoft_365_defender_event_collector
 fromversion: 6.8.0
 tags: Microsoft 365 Defender
 rules: ''
@@ -57,7 +57,7 @@ schema: |-
       },
       "mitreTechniques": {
         "type": "string",
-        "is_array": false
+        "is_array": true
       },
       "evidence": {
         "type": "string",
