@@ -21,3 +21,5 @@
 !wiz-set-issue-due-date issue_id="12345678-1234-1234-1234-cc0a24716e0b" due_at="2022-01-20"
 
 !wiz-clear-issue-due-date issue_id="12345678-1234-1234-1234-cc0a24716e0b"
+
+!wiz-get-project-team project_name="project1"

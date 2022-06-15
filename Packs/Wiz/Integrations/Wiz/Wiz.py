@@ -157,6 +157,16 @@ def fetch_issues(max_fetch):
                 name
                 slug
                 businessUnit
+                projectOwners {
+                    id
+                    name
+                    email
+                }
+                securityChampions {
+                    id
+                    name
+                    email
+                }
                 riskProfile {
                     businessImpact
                 }
@@ -1227,6 +1237,106 @@ def rescan_machine_disk(vm_id):
     return response
 
 
+def get_project_team(project_name):
+    """
+    Get the Project Owners and Security Champions details
+    """
+
+    demisto.debug("wiz-get-project-team, enter")
+
+    if not project_name:
+        demisto.error("You should pass a Project name")
+        return "You should pass an Project name."
+
+    # find VM on the graph
+    project_variables = {
+        "first": 20,
+        "filterBy": {
+            "search": project_name
+        },
+        "orderBy": {
+            "field": "SECURITY_SCORE",
+            "direction": "ASC"
+        },
+        "analyticsSelection": {}
+    }
+    project_query = ("""
+    query ProjectsTable(
+        $filterBy: ProjectFilters
+        $first: Int
+        $after: String
+        $orderBy: ProjectOrder
+        $analyticsSelection: ProjectIssueAnalyticsSelection
+    ) {
+        projects(
+        filterBy: $filterBy
+        first: $first
+        after: $after
+        orderBy: $orderBy
+        ) {
+        nodes {
+            id
+            name
+            description
+            businessUnit
+            archived
+            slug
+            projectOwners {
+            id
+            name
+            email
+            }
+            securityChampions {
+            id
+            name
+            email
+            }
+            cloudAccountCount
+            repositoryCount
+            securityScore
+            riskProfile {
+            businessImpact
+            }
+            teamMemberCount
+            issueAnalytics(selection: $analyticsSelection) {
+            issueCount
+            scopeSize
+            informationalSeverityCount
+            lowSeverityCount
+            mediumSeverityCount
+            highSeverityCount
+            criticalSeverityCount
+            }
+        }
+        pageInfo {
+            hasNextPage
+            endCursor
+        }
+        }
+    }
+    """)
+
+    try:
+        response_json = checkAPIerrors(project_query, project_variables)
+    except DemistoException:
+        demisto.debug(f"Error with finding Project with name {project_name}")
+        return {}
+
+    project_response = response_json['data']['projects']['nodes']
+
+    demisto.log(f"Validating if Project with name \"{project_name}\" exists.")
+    if not project_response:
+        demisto.debug(f"Project with name {project_name} doesn not exist")
+        return {}
+
+    else:
+        project_team = {
+            "projectOwners": project_response[0]['projectOwners'],
+            "securityChampions": project_response[0]['securityChampions']
+        }
+        return project_team
+
+
 def main():
     global URL
     params = demisto.params()
@@ -1449,6 +1559,15 @@ def main():
                 vm_id=vm_id
             )
             command_result = CommandResults(readable_output=issue_response, raw_response=issue_response)
+            return_results(command_result)
+
+        elif command == 'wiz-get-project-team':
+            demisto_args = demisto.args()
+            project_name = demisto_args.get('project_name')
+            projects_response = get_project_team(
+                project_name=project_name
+            )
+            command_result = CommandResults(readable_output=projects_response, raw_response=projects_response)
             return_results(command_result)
 
         else:

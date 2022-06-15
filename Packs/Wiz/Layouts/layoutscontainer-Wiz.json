@@ -105,6 +105,33 @@
 								"index": 8,
 								"sectionItemType": "field",
 								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "wizissueprojects",
+								"height": 22,
+								"id": "5808c390-ebda-11ec-a8bc-85a2df42907e",
+								"index": 10,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "wizprojectowners",
+								"height": 22,
+								"id": "a2455ae0-ecb6-11ec-8e94-ad00867f0b0d",
+								"index": 11,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "wizprojectsecuritychampions",
+								"height": 22,
+								"id": "a8234710-ecb6-11ec-8e94-ad00867f0b0d",
+								"index": 12,
+								"sectionItemType": "field",
+								"startCol": 0
 							}
 						],
 						"maxW": 3,
