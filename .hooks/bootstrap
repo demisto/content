@@ -53,7 +53,7 @@ fi
 echo "Configure poetry to install virutal enviroment in the project repo (will be availible in (.venv)"
 poetry config virtualenvs.in-project true --local
 
-echo "Check if poetry is valid"
+echo "Check if poetry files are valid"
 poetry check
 echo "Installing dependencies..."
 if [ -n "$CI" ]; then
