@@ -1202,8 +1202,8 @@ def main():  # pragma: no cover
                                           polling_value=["PENDING",
                                                          "IN_PROGRESS",
                                                          "PENDING_ABORT"])
-            result = polling.raw_response.get('status') if isinstance(polling.raw_response, dict) else \
-                polling.raw_response[0].get('status')
+            raw = polling.raw_response
+            result = raw.get('status') if isinstance(raw, dict) else raw[0].get('status')
             if polling.scheduled_command or result != 'COMPLETED_SUCCESSFULLY':
                 return_results(polling)
             else:

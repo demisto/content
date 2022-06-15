@@ -1405,6 +1405,8 @@ def run_polling_command(client: CoreClient,
     # get polling result
     command_results = results_function(client, args)
     outputs_result_func = command_results.raw_response
+    if not outputs_result_func:
+        return_error(f"Command {cmd} didn't succeeded, received empty response.")
     result = outputs_result_func.get(polling_field) if isinstance(outputs_result_func, dict) else \
         outputs_result_func[0].get(polling_field)
     cond = result not in polling_value if stop_polling else result in polling_value
