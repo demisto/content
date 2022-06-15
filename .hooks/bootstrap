@@ -56,9 +56,11 @@ poetry config virtualenvs.in-project true --local
 echo "Check if poetry is valid"
 poetry check
 echo "Installing dependencies..."
-if [ -n "$BUILD" ]; then
-    poetry install --extras build
+if [ -n "$CI" ]; then
+    echo "In build so installing build envirmoent too"
+    poetry install -E build
 else
+    echo "Not in build, so not installing build environment"
     poetry install
 fi
 

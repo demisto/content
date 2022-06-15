@@ -150,7 +150,7 @@ references:
 
         if [ ! -e ".venv" ]; then
           echo "installing venv"
-          NO_HOOKS=1 BUILD=1 .hooks/bootstrap
+          NO_HOOKS=1 .hooks/bootstrap
           source ./.venv/bin/activate
         else
           echo "venv exists (from cache). activating"
