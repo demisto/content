@@ -105,6 +105,8 @@ var logout = function(token) {
 var convertIncidentToTicket = function(incident) {
     return {
         ID: incident['Request ID'],
+        EntryID: incident['Entry ID'],
+        IncidentNumber: incident['Incident Number'],
         Submitter: incident.Submitter,
         Status: incident.Status,
         Description: incident.Description,
@@ -172,7 +174,7 @@ var getIncident = function(id, title) {
     filterEmptyFields(incident);
 
     var context = {
-        'Ticket(val.ID && val.ID == obj.ID)': convertIncidentToTicket(incident)
+        'Ticket(val.IncidentNumber && val.IncidentNumber == obj.IncidentNumber)': convertIncidentToTicket(incident)
     };
     return createTableEntry(title || "Incident:",incident, context);
 };
@@ -192,7 +194,7 @@ var fetchIncidents = function(query, test_module=false) {
     var incidents = body.entries.map(function(b) { return b.values});
     incidents.forEach(filterEmptyFields);
     var context = {
-        'Ticket(val.ID && val.ID == obj.ID)': incidents.map(convertIncidentToTicket)
+        'Ticket(val.IncidentNumber && val.IncidentNumber == obj.IncidentNumber)': incidents.map(convertIncidentToTicket)
     };
     return createTableEntry("Incidents:",incidents, context);
 };

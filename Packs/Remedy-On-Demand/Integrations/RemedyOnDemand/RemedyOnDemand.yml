@@ -116,6 +116,10 @@ script:
       description: Ticket ID
     - contextPath: Ticket.Submitter
       description: Ticket submitter
+    - contextPath: Ticket.EntryID
+      description: Ticket entry ID
+    - contextPath: Ticket.IncidentNumber
+      description: Ticket incident number
     - contextPath: Ticket.Status
       description: Ticket status
     - contextPath: Ticket.Description
@@ -142,6 +146,10 @@ script:
       description: Ticket ID
     - contextPath: Ticket.Submitter
       description: Ticket submitter
+    - contextPath: Ticket.EntryID
+      description: Ticket entry ID
+    - contextPath: Ticket.IncidentNumber
+      description: Ticket incident number
     - contextPath: Ticket.Status
       description: Ticket status
     - contextPath: Ticket.Description
@@ -165,6 +173,10 @@ script:
       description: Ticket ID
     - contextPath: Ticket.Submitter
       description: Ticket submitter
+    - contextPath: Ticket.EntryID
+      description: Ticket entry ID
+    - contextPath: Ticket.IncidentNumber
+      description: Ticket incident number
     - contextPath: Ticket.Status
       description: Ticket status
     - contextPath: Ticket.Description

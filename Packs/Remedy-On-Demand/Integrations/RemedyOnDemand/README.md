@@ -47,16 +47,18 @@ Note: according to Remedy AR API documentation it is recommended to provide all 
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Ticket.ID | string | Ticket ID | 
-| Ticket.Submitter | string | Ticket submitter | 
-| Ticket.Status | string | Ticket status | 
-| Ticket.Description | string | Ticket description | 
-| Ticket.Source | string | Ticket reported source | 
-| Ticket.Impact | string | TicketiImpact | 
-| Ticket.Urgency | string | Ticket urgency | 
-| Ticket.Type | string | Ticket service type | 
+| **Path**              | **Type** | **Description**        |
+|-----------------------| --- |------------------------|
+| Ticket.ID             | string | Ticket ID              | 
+| Ticket.Submitter      | string | Ticket submitter       | 
+| Ticket.EntryID        | string | Ticket entry ID        |
+| Ticket.IncidentNumber | string | Ticket incident number |
+| Ticket.Status         | string | Ticket status          | 
+| Ticket.Description    | string | Ticket description     | 
+| Ticket.Source         | string | Ticket reported source | 
+| Ticket.Impact         | string | TicketiImpact          | 
+| Ticket.Urgency        | string | Ticket urgency         | 
+| Ticket.Type           | string | Ticket service type    | 
 
 
 #### Command Example
@@ -90,6 +92,8 @@ Get one incident by ID
 | --- | --- | --- |
 | Ticket.ID | string | Ticket ID | 
 | Ticket.Submitter | string | Ticket submitter | 
+| Ticket.EntryID        | string | Ticket entry ID        |
+| Ticket.IncidentNumber | string | Ticket incident number |
 | Ticket.Status | string | Ticket status | 
 | Ticket.Description | string | Ticket description | 
 | Ticket.Source | string | Ticket reported source | 
@@ -131,6 +135,8 @@ Fetch all incidents
 | Ticket.ID | string | Ticket ID | 
 | Ticket.Submitter | string | Ticket submitter | 
 | Ticket.Status | string | Ticket status | 
+| Ticket.EntryID        | string | Ticket entry ID        |
+| Ticket.IncidentNumber | string | Ticket incident number |
 | Ticket.Description | string | Ticket description | 
 | Ticket.Source | string | Ticket reported source | 
 | Ticket.Impact | string | TicketiImpact | 
