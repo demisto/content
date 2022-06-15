@@ -4,9 +4,10 @@ from CommonServerPython import *
 from urllib import parse
 
 DEMISTO_OCCURRED_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-Wiz_API_TIMEOUT = 300  # Increase timeout for Wiz API
-Wiz_HTTP_QUERIES_LIMIT = 500  # Request limit during run
-Wiz_API_LIMIT = 500  # limit number of returned records from the Wiz API
+WIZ_API_TIMEOUT = 300  # Increase timeout for Wiz API
+WIZ_HTTP_QUERIES_LIMIT = 500  # Request limit during run
+WIZ_API_LIMIT = 500  # limit number of returned records from the Wiz API
+WIZ = 'wiz'
 
 # Standard headers
 HEADERS_AUTH = dict()
@@ -35,7 +36,6 @@ def get_token():
     if response.status_code != requests.codes.ok:
         raise Exception('Error authenticating to Wiz [%d] - %s' % (response.status_code, response.text))
     try:
-
         response_json = response.json()
         TOKEN = response_json.get('access_token')
         if not TOKEN:
@@ -62,7 +62,7 @@ def checkAPIerrors(query, variables):
     except Exception as e:
         if '502: Bad Gateway' not in str(e) and '503: Service Unavailable' not in str(e):
             demisto.error("<p>Wiz-API-Error: %s</p>" % str(e))
-            return(e)
+            return (e)
         else:
             demisto.log("Retry")
 
@@ -112,7 +112,8 @@ def fetch_issues(max_fetch):
         last_run = dateparser.parse(demisto.params().get('first_fetch', '7 days').strip())
         last_run = (last_run.isoformat()[:-3] + 'Z')
 
-    query = ("""
+    query = (  # pragma: no cover
+        """
         query IssuesTable(
             $filterBy: IssueFilters
             $first: Int
@@ -265,7 +266,8 @@ def get_filtered_issues(issue_type, resource_id, severity, limit):
         demisto.info("You should (only) pass either issue_type or resource_id filters")
         return "You should (only) pass either issue_type or resource_id filters"
 
-    query = ("""
+    query = (  # pragma: no cover
+        """
         query IssuesTable(
             $filterBy: IssueFilters
             $first: Int
@@ -308,6 +310,16 @@ def get_filtered_issues(issue_type, resource_id, severity, limit):
                 name
                 slug
                 businessUnit
+                projectOwners {
+                    id
+                    name
+                    email
+                }
+                securityChampions {
+                    id
+                    name
+                    email
+                }
                 riskProfile {
                     businessImpact
                 }
@@ -410,11 +422,16 @@ def get_filtered_issues(issue_type, resource_id, severity, limit):
                 }
             }
         """)
-        graph_resource_response_json = checkAPIerrors(get_resource_graph_id_helper_query, get_resource_graph_id_helper_variables)
+        graph_resource_response_json = checkAPIerrors(get_resource_graph_id_helper_query,
+                                                      get_resource_graph_id_helper_variables)
         if graph_resource_response_json['data']['graphSearch']['nodes'] != []:
             graph_resource_id = graph_resource_response_json['data']['graphSearch']['nodes'][0]['entities'][0]['id']
-            variables = {"first": limit, "filterBy": {"status": ["OPEN", "IN_PROGRESS"], "relatedEntity": {"id":
-                         graph_resource_id}}, "orderBy": {"field": "SEVERITY", "direction": "DESC"}}
+            variables = \
+                {"first": limit,
+                 "filterBy": {"status": ["OPEN", "IN_PROGRESS"],
+                              "relatedEntity":
+                                  {"id": graph_resource_id}},
+                 "orderBy": {"field": "SEVERITY", "direction": "DESC"}}
         else:
             demisto.info("Resource not found.")
             return "Resource not found."
@@ -480,7 +497,8 @@ def get_resource(resource_id):
         "fetchTotalCount": True,
         "quick": True
     }
-    query = ("""
+    query = (  # pragma: no cover
+        """
         query GraphSearch(
             $query: GraphEntityQueryInput
             $controlId: ID
@@ -600,7 +618,8 @@ def reject_issue(issue_id, reject_reason, reject_note):
             'note': reject_note
         }
     }
-    query = ("""
+    query = (  # pragma: no cover
+        """
         mutation UpdateIssue(
             $issueId: ID!
             $patch: UpdateIssuePatch
@@ -650,7 +669,8 @@ def reopen_issue(issue_id, reopen_note):
             'note': reopen_note
         }
     }
-    query = ("""
+    query = (  # pragma: no cover
+        """
         mutation UpdateIssue(
             $issueId: ID!
             $patch: UpdateIssuePatch
@@ -699,7 +719,8 @@ def issue_in_progress(issue_id):
             'status': 'IN_PROGRESS'
         }
     }
-    query = ("""
+    query = (  # pragma: no cover
+        """
         mutation UpdateIssue(
             $issueId: ID!
             $patch: UpdateIssuePatch
@@ -746,7 +767,8 @@ def set_issue_note(issue_id, note):
     issue_variables = {
         'issueId': issue_id
     }
-    issue_query = ("""
+    issue_query = (  # pragma: no cover
+        """
         query IssueDrawer($issueId: ID!) {
           issue(id: $issueId) {
             id
@@ -779,7 +801,8 @@ def set_issue_note(issue_id, note):
             'note': new_note
         }
     }
-    query = ("""
+    query = (  # pragma: no cover
+        """
         mutation UpdateIssue(
             $issueId: ID!
             $patch: UpdateIssuePatch
@@ -823,7 +846,8 @@ def clear_issue_note(issue_id):
             'note': ''
         }
     }
-    query = ("""
+    query = (  # pragma: no cover
+        """
         mutation UpdateIssue(
             $issueId: ID!
             $patch: UpdateIssuePatch
@@ -886,7 +910,8 @@ def set_issue_due_date(issue_id, due_at):
             'dueAt': due_at
         }
     }
-    query = ("""
+    query = (  # pragma: no cover
+        """
         mutation UpdateIssue(
             $issueId: ID!
             $patch: UpdateIssuePatch
@@ -913,7 +938,7 @@ def set_issue_due_date(issue_id, due_at):
     if 'errors' in response:
         demisto.error(f"Could not find Issue with ID {issue_id}")
         demisto.error(f"Error: {response}")
-        return (f"Could not find Issue with ID {issue_id}")
+        return f"Could not find Issue with ID {issue_id}"
 
     return response
 
@@ -932,7 +957,8 @@ def clear_issue_due_date(issue_id):
     issue_variables = {
         'issueId': issue_id
     }
-    issue_query = ("""
+    issue_query = (  # pragma: no cover
+        """
         query IssueDrawer($issueId: ID!) {
             issue(id: $issueId) {
                 id
@@ -948,12 +974,12 @@ def clear_issue_due_date(issue_id):
         issue_response = checkAPIerrors(issue_query, issue_variables)
     except DemistoException:
         demisto.debug(f"could not find Issue with ID {issue_id}")
-        return (f"could not find Issue with ID {issue_id}")
+        return f"could not find Issue with ID {issue_id}"
 
     if 'errors' in issue_response:
         demisto.error(f"Could not find Issue with ID {issue_id}")
         demisto.error(f"Error: {issue_response}")
-        return (f"Could not find Issue with ID {issue_id}")
+        return f"Could not find Issue with ID {issue_id}"
 
     variables = {
         'issueId': issue_id,
@@ -964,7 +990,8 @@ def clear_issue_due_date(issue_id):
         }
     }
 
-    query = ("""
+    query = (  # pragma: no cover
+        """
         mutation UpdateIssue(
             $issueId: ID!
             $patch: UpdateIssuePatch
@@ -1011,7 +1038,8 @@ def get_issue_evidence(issue_id):
     issue_variables = {
         'issueId': issue_id
     }
-    issue_query = ("""
+    issue_query = (  # pragma: no cover
+        """
         query IssueDrawer($issueId: ID!) {
           issue(id: $issueId) {
             id
@@ -1033,7 +1061,7 @@ def get_issue_evidence(issue_id):
     if 'errors' in issue_response:
         demisto.error(f"Could not find Issue with ID {issue_id}")
         demisto.error(f"Error: {issue_response}")
-        return (f"Could not find Issue with ID {issue_id}")
+        return f"Could not find Issue with ID {issue_id}"
 
     # Run the Graph Query
     issue_response_json = issue_response['data']
@@ -1049,7 +1077,8 @@ def get_issue_evidence(issue_id):
         'fetchTotalCount': True
     }
 
-    query = ("""
+    query = (  # pragma: no cover
+        """
         query GraphSearch(
           $query: GraphEntityQueryInput
           $controlId: ID
@@ -1177,7 +1206,8 @@ def rescan_machine_disk(vm_id):
             }
         }
     }
-    vm_query = ("""
+    vm_query = (  # pragma: no cover
+        """
         query GraphEntityResourceFilterAutosuggest(
             $query: GraphEntityQueryInput
             $projectId: String!
@@ -1205,7 +1235,7 @@ def rescan_machine_disk(vm_id):
     # Run the rescan query
     if vm_response['data']['graphSearch']['nodes'] == []:
         demisto.log(f"could not find VM with ID {vm_id}")
-        return(f"could not find VM with ID {vm_id}")
+        return (f"could not find VM with ID {vm_id}")
 
     else:
         vm_id_wiz = vm_response['data']['graphSearch']['nodes'][0]['entities'][0]['id']
@@ -1217,7 +1247,8 @@ def rescan_machine_disk(vm_id):
             'type': 'VIRTUAL_MACHINE'
         }
     }
-    query = ("""
+    query = (  # pragma: no cover
+        """
         mutation RequestResourceScan($input: RequestConnectorEntityScanInput!) {
           requestConnectorEntityScan(input: $input) {
             success
@@ -1260,7 +1291,8 @@ def get_project_team(project_name):
         },
         "analyticsSelection": {}
     }
-    project_query = ("""
+    project_query = (  # pragma: no cover
+        """
     query ProjectsTable(
         $filterBy: ProjectFilters
         $first: Int
@@ -1455,7 +1487,7 @@ def main():
                 issue_type=issue_type,
                 resource_id=resource_id,
                 severity=severity,
-                limit=Wiz_API_LIMIT,
+                limit=WIZ_API_LIMIT,
             )
             if isinstance(issues, str):
                 #  this means the Issue is an error
@@ -1467,7 +1499,8 @@ def main():
 
         elif command == "wiz-get-resource":
             resource = get_resource(resource_id=demisto.args()['resource_id'])
-            command_result = CommandResults(outputs_prefix="Wiz.Manager.Resource", outputs=resource, raw_response=resource)
+            command_result = CommandResults(outputs_prefix="Wiz.Manager.Resource", outputs=resource,
+                                            raw_response=resource)
             return_results(command_result)
 
         elif command == 'wiz-reject-issue':
