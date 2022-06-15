@@ -30,6 +30,7 @@ demisto_score_to_core: Dict[int, str] = {
 
 
 class Client:
+
     severity: str = ''
     query: str = 'reputation:Bad and (type:File or type:Domain or type:IP)'
     tag = 'Cortex Core'
