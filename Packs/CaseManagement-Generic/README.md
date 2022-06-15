@@ -14,7 +14,7 @@ Setting Case as the default type means you can enable a fetch from any integrati
 
 The Case type has an optimized layout for both the summary pages, and the new/edit screen.  This layout includes some useful action buttons for Analysts to utilize in their day to day.
 
-This layout can use used as a template for future Incident types you create in your system.
+This layout can be used as a template for future Incident types you create in your system.
 
 ## Playbook
 
