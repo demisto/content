@@ -1513,7 +1513,7 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
     context_data, version = get_integration_context_with_version()
     if search_id == SearchQueryStatus.ERROR.value:
         failure_message = 'Search for events failed'
-        context_data[MIRRORED_OFFENSES_QUERIED_CTX_KEY] = search_id
+        context_data[MIRRORED_OFFENSES_QUERIED_CTX_KEY][offense_id] = search_id
         safely_update_context_data(context_data, version, offense_ids=[offense_id])
     else:
         for i in range(max_retries):
@@ -1526,7 +1526,7 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
         print_debug_msg(f'Fetched {events_fetched} events for offense {offense_id}')
         offense = dict(offense, events=events, events_fetched=events_fetched)
         if fetch_mode == FetchMode.all_events.value and events_fetched < min_events_size:
-            context_data[MIRRORED_OFFENSES_QUERIED_CTX_KEY] = SearchQueryStatus.ERROR.value
+            context_data[MIRRORED_OFFENSES_QUERIED_CTX_KEY][offense_id] = SearchQueryStatus.ERROR.value
             safely_update_context_data(context_data, version, offense_ids=[offense_id])
 
     return offense
@@ -3205,7 +3205,7 @@ def add_modified_remote_offenses(client: Client,
         for offense_id, search_id in top_queries.items():
             if search_id in {SearchQueryStatus.WAIT.value, SearchQueryStatus.ERROR.value}:
                 # if search_id is waiting or error, we will try to search again
-                search_id = create_events_search(client, fetch_mode, events_columns, events_limit, offense_id)
+                search_id = create_events_search(client, fetch_mode, events_columns, events_limit, int(offense_id))
                 mirrored_offenses_queries[offense_id] = search_id
                 changed_ids_ctx.append(offense_id)
             try:
