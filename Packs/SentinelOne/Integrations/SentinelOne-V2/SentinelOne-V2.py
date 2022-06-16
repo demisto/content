@@ -641,7 +641,23 @@ class Client(BaseClient):
         data = response.get('data')
         pagination = response.get('pagination')
         return data, pagination
-        
+
+    def create_power_query_request(self, limit, query, from_date, to_date):
+        endpoint_url = 'dv/events/pq'
+        payload = {
+                "limit": limit,
+                "query": query,
+                "toDate": to_date,
+                "fromDate": from_date
+        }
+        response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
+        return response.get('data', {})
+
+    def ping_power_query_request(self, params):
+        endpoint_url = 'dv/events/pq-ping'
+        response = self._http_request(method='GET', url_suffix=endpoint_url, params=params)
+        return response.get('data', [])
+
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
@@ -1428,6 +1444,68 @@ def get_iocs(client: Client, args: dict) -> CommandResults:
         outputs=context_entries,
         raw_response=iocs)
 
+def create_power_query(client: Client, args: dict) -> CommandResults:
+    """
+    Create the power query and get the events or get the query ID. Relavent for API version 2.1
+    """
+    context_entries = []
+
+    # Get arguments
+    limit = int(args.get('limit',1000))
+    query = args.get('query')
+    from_date = args.get('from_date')
+    to_date = args.get('to_date')
+
+    # Make request and get raw response
+    response = client.create_power_query_request(limit, query, from_date, to_date)
+
+    if response['status'] == 'RUNNING':
+        context_entries.append({
+            'queryId': response['queryId']
+        })
+        meta = "Ping a Deep Visibility Power Query using the queryId"
+
+    elif response['status'] == 'FINISHED':
+        for row in response['data']:
+            temp = {}
+            for i in range(len(row)):
+                temp.update({response['columns'][i]['name']: row[i]})
+            context_entries.append(temp)
+
+        meta = 'Provides summary information and details aboput the power query and its id \n your search criteria.'
+                                        
+    return CommandResults(
+        readable_output=tableToMarkdown('Sentinel One - Create a Power Query and Get QueryId', context_entries, removeNull=True,
+                                        metadata=meta, headerTransform=pascalToSpace),
+        outputs_prefix='SentinelOne.PowerQuery',
+        outputs=context_entries,
+        raw_response=response)
+
+def ping_power_query(client: Client, args: dict) -> CommandResults:
+    """
+    Create the power query and get the events or get the query ID. Relavent for API version 2.1
+    """
+    context_entries = []
+    query_params = assign_params(
+        queryId = args.get('queryId')
+    )
+
+    response = client.ping_power_query_request(query_params)
+    if response.get('data') is not None:
+        for row in response['data']:
+            temp = {}
+            for i in range(len(row)):
+                temp.update({response['columns'][i]['name']: row[i]})
+            context_entries.append(temp)
+    
+    return CommandResults(
+        readable_output=tableToMarkdown('Sentinel One - Ping the Power Query', context_entries, removeNull=True,
+                                        metadata='Provides summary information and details aboput the power query and its id '
+                                        ' your search criteria.', headerTransform=pascalToSpace),
+        outputs_prefix='SentinelOne.PowerQuery',
+        outputs=context_entries,
+        raw_response=response)
+    
 def resolve_threat_command(client: Client, args: dict) -> CommandResults:
     """
     Mark threats as resolved
@@ -2338,6 +2416,8 @@ def main():
             'sentinelone-create-ioc': create_ioc,
             'sentinelone-delete-ioc': delete_ioc,
             'sentinelone-get-iocs': get_iocs,
+            'sentinelone-create-power-query': create_power_query,
+            'sentinelone-ping-power-query': ping_power_query,
         },
     }
 
