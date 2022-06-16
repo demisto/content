@@ -1,28 +1,74 @@
 {
-    "contextPath": "",
-    "contextValue": "",
-    "defaultMapping": null,
+    "defaultMapping": {
+        "communitynotes": {
+            "simple": "",
+            "complex": {
+                "root": "Report",
+                "filters": [],
+                "accessor": "CommunityNotes",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "description": {
+            "simple": "Report.Description",
+            "complex": null
+        },
+        "publications": {
+            "simple": "Report.Publications",
+            "complex": null
+        },
+        "stixid": {
+            "simple": "Report.STIXID",
+            "complex": null
+        },
+        "tags": {
+            "simple": "",
+            "complex": {
+                "root": "Report",
+                "filters": [],
+                "accessor": "Tags",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "trafficlightprotocol": {
+            "simple": "",
+            "complex": {
+                "root": "Report",
+                "filters": [],
+                "accessor": "TrafficLightProtocol",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        }
+    },
     "details": "Report",
-    "legacyNames": ["STIX Report"],
+    "legacyNames": [
+        "STIX Report"
+    ],
     "disabled": false,
-    "enhancementScriptNames": [],
-    "excludedBrands": [],
     "expiration": 0,
     "file": false,
-    "fileHashesPriority": null,
-    "formatScript": "",
     "id": "Report",
     "locked": false,
-    "manualMapping": {},
     "mergeContext": false,
     "regex": "",
-    "reputationCommand": "",
-    "reputationScriptName": "",
-    "sortValues": null,
     "system": false,
     "updateAfter": 0,
     "version": -1,
     "fromVersion": "6.2.0",
     "layout": "STIX Report"
-
 }

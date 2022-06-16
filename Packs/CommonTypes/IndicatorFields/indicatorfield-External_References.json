@@ -1,0 +1,59 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Attack Pattern"
+    ],
+    "caseInsensitive": true,
+    "cliName": "externalreferences",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "Source Name",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "sourcename",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "Source ID",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "sourceid",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        }
+    ],
+    "content": true,
+    "defaultRows": [
+        {}
+    ],
+    "editForm": true,
+    "group": 2,
+    "hidden": false,
+    "id": "indicator_externalreferences",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "External References",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

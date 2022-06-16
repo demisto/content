@@ -12,10 +12,16 @@
     "neverSetAsRequired": false,
     "isReadOnly": false,
     "selectValues": [
-        "Vulnerability",
-        "Cyber Crime",
-        "Cyber Espionage",
-        "Hacktivism"
+        "accidental",
+        "coercion",
+        "dominance",
+        "ideology",
+        "notoriety",
+        "organizational-gain",
+        "personal-gain",
+        "personal-satisfaction",
+        "revenge",
+        "unpredictable"
     ],
     "useAsKpi": false,
     "locked": false,
@@ -24,15 +30,14 @@
     "group": 2,
     "hidden": false,
     "associatedTypes": [
-        "IP",
-        "Domain",
-        "URL",
+        "Threat Actor",
         "Intrusion Set"
     ],
     "associatedToAll": false,
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "caseInsensitive": true,
+    "openEnded": true,
     "sla": 0,
     "threshold": 72,
     "fromVersion": "5.0.0"

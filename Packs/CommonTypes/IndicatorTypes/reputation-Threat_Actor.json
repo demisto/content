@@ -1,28 +1,98 @@
 {
-    "contextPath": "",
-    "contextValue": "",
-    "defaultMapping": null,
+    "defaultMapping": {
+        "aliases": {
+            "simple": "Threat_Actor.aliases",
+            "complex": null
+        },
+        "communitynotes": {
+            "simple": "",
+            "complex": {
+                "root": "Threat_Actor",
+                "filters": [],
+                "accessor": "CommunityNotes",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "description": {
+            "simple": "Threat_Actor.Description",
+            "complex": null
+        },
+        "geocountry": {
+            "simple": "Threat_Actor.Geo.Country",
+            "complex": null
+        },
+        "goals": {
+            "simple": "Threat_Actor.Goals",
+            "complex": null
+        },
+        "primarymotivation": {
+            "simple": "Threat_Actor.Motivation.Primary",
+            "complex": null
+        },
+        "resourcelevel": {
+            "simple": "Threat_Actor.ResourceLevel",
+            "complex": null
+        },
+        "secondarymotivation": {
+            "simple": "Threat_Actor.Motivation.Secondary",
+            "complex": null
+        },
+        "Sophistication": {
+            "simple": "Threat_Actor.Sophistication",
+            "complex": null
+        },
+        "stixid": {
+            "simple": "Threat_Actor.STIXID",
+            "complex": null
+        },
+        "tags": {
+            "simple": "",
+            "complex": {
+                "root": "Threat_Actor",
+                "filters": [],
+                "accessor": "Tags",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        },
+        "trafficlightprotocol": {
+            "simple": "",
+            "complex": {
+                "root": "Threat_Actor",
+                "filters": [],
+                "accessor": "TrafficLightProtocol",
+                "transformers": [
+                    {
+                        "operator": "uniq",
+                        "args": {}
+                    }
+                ]
+            }
+        }
+    },
     "details": "Threat Actor",
-    "legacyNames": ["STIX Threat Actor"],
+    "legacyNames": [
+        "STIX Threat Actor"
+    ],
     "disabled": false,
-    "enhancementScriptNames": [],
-    "excludedBrands": [],
     "expiration": 0,
     "file": false,
-    "fileHashesPriority": null,
-    "formatScript": "",
     "id": "Threat Actor",
     "locked": false,
-    "manualMapping": {},
     "mergeContext": false,
     "regex": "",
-    "reputationCommand": "",
-    "reputationScriptName": "",
-    "sortValues": null,
     "system": false,
     "updateAfter": 0,
     "version": -1,
     "fromVersion": "6.2.0",
     "layout": "STIX Threat Actor"
-
 }

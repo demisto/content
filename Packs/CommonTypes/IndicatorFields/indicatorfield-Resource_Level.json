@@ -40,6 +40,7 @@
     "sla": 0,
     "system": false,
     "systemAssociatedTypes": null,
+    "openEnded": true,
     "threshold": 72,
     "type": "multiSelect",
     "unmapped": false,

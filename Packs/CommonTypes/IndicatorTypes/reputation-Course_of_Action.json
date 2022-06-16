@@ -12,21 +12,29 @@
     "file": false,
     "updateAfter": 0,
     "mergeContext": false,
-    "manualMapping": {
+    "expiration": 0,
+    "layout": "Course of Action",
+    "fromVersion": "5.5.0",
+    "defaultMapping": {
         "action": {
             "simple": "CourseofAction.action",
             "complex": null
         },
+        "communitynotes": {
+            "simple": "CourseofAction.CommunityNotes",
+            "complex": null
+        },
         "description": {
-            "simple": "CourseofAction.description",
+            "simple": "CourseofAction.Description",
             "complex": null
         },
         "stixid": {
             "simple": "CourseofAction.stixid",
             "complex": null
+        },
+        "tags": {
+            "simple": "CourseofAction.Tags",
+            "complex": null
         }
-    },
-    "expiration": 0,
-    "layout": "Course of Action",
-    "fromVersion": "5.5.0"
+    }
 }
