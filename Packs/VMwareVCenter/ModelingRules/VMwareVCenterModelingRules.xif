@@ -17,11 +17,11 @@ filter _raw_log contains "| vlsi |" or _raw_log contains "| vim" or _raw_log con
 | alter Description= coalesce(Description1 ,Description2,Description3 )
 | alter msg = arrayindex(regextract(_raw_log ,"INFO[^\|]+\|\s\S+\s+\|\s\w+\s+\|\s+([^\\]+)") ,0)
 | alter msg2= arrayindex(regextract(_raw_log ,"[endpoint|vmon]\s\-\s\-\s\-\s+([^\@]+)") ,0)
-| alter msg1= coalesce(msg ,message,LogLeve ,Description,msg2  )
+| alter msg1= concat(msg ,message,LogLeve ,Description,msg2  )
 | alter originator=arrayindex(regextract(_raw_log ,"Originator\@(\d+)") ,0)
 | alter sub = arrayindex(regextract(_raw_log ,"(\w+)\sopID") ,0) 
 | alter opID= arrayindex(regextract(_raw_log ,"opID\=([^\]]+)") ,0)
-| alter XDM.Audit.event_timestamp =parse_timestamp("%Y-%m-%d %H:%M:%E",TimeStamp)
+| alter XDM.Audit.event_timestamp =parse_timestamp("%Y-%m-%d %H:%M:%E3S",TimeStamp)
 , XDM.Audit.threat.description = Message
 | alter XDM.Audit.audited_resource.id =opID
 | alter XDM.Audit.TriggeredBy.identity.uuid= originator 
@@ -31,7 +31,9 @@ filter _raw_log contains "| vlsi |" or _raw_log contains "| vim" or _raw_log con
 
 [MODEL: dataset ="VMware_vCenter_raw", model=Auth] 
 filter _raw_log contains "vpxd" or _raw_log contains "[vmafdd]" or _raw_log contains " vmdird "
-| alter Timestamp= arrayindex(regextract(_raw_log ,"(\d+\-\d+\-\d+\w\d+\:\d+\:\d+)") ,0)
+| alter Date = arrayindex(regextract(_raw_log ,"(\d+\-\d+\-\d+).\d+\:\d+\:\d+") ,0)
+| alter Hour = arrayindex(regextract(_raw_log ,"\d+\-\d+\-\d+.(\d+\:\d+\:\d+)") ,0)
+| alter TimeStamp = concat(Date," ",Hour)
 | alter Message_vpxd= arrayindex(regextract(_raw_log ,"vpxd\[\d+\](.*)") ,0)
 | alter user0_vpxd= arrayindex(regextract(_raw_log ,"user\s\<([^\>]+)") ,0)
 | alter user1_vpxd= arrayindex(regextract(_raw_log ,"User\:\s'([^'])") ,0)
@@ -43,13 +45,13 @@ filter _raw_log contains "vpxd" or _raw_log contains "[vmafdd]" or _raw_log cont
 | alter XDM.Auth.threat.description = Message
 , XDM.Auth.threat.name  = eventName_vmafdd
 , XDM.Auth.Client.user.username  = user
-, XDM.Auth.event_timestamp  = parse_timestamp("",TimeStamp);
+| alter XDM.Audit.event_timestamp =parse_timestamp("%Y-%m-%d %H:%M:%E3S",TimeStamp)
 
 [MODEL: dataset ="VMware_vCenter_raw", model=Network] 
 filter _raw_log contains "tomcat" or _raw_log contains "HTTP" 
-| alter Timestamp0= arrayindex(regextract(_raw_log ,"(\d+\-\d+\-\d+\w\d+\:\d+\:\d+\.\d+\w+)") ,0)
-| alter Timestamp1 = arrayindex(regextract(_raw_log ,"\[(\d+\-\d+\-\d+\s\d+\:\d+\:\d+)") ,0)
-| alter Timestamp = coalesce(Timestamp0 ,Timestamp1 )
+| alter Date = arrayindex(regextract(_raw_log ,"(\d+\-\d+\-\d+).\d+\:\d+\:\d+") ,0)
+| alter Hour = arrayindex(regextract(_raw_log ,"\d+\-\d+\-\d+.(\d+\:\d+\:\d+)") ,0)
+| alter TimeStamp = concat(Date," ",Hour)
 | alter Message0 = arrayindex(regextract(_raw_log ,"\|\s\d+\s\|\s([^\t]+)") ,0)
 | alter Message1 = arrayindex(regextract(_raw_log ,"\]\s([^\t]+)") ,0)
 | alter Message2 = arrayindex(regextract(_raw_log ,"\|\s\S+\s\S+\S\s\<\S+([^\.]+)") ,0)
@@ -60,7 +62,7 @@ filter _raw_log contains "tomcat" or _raw_log contains "HTTP"
 | alter Description= coalesce(Description1 ,Description2,Description3 )
 | alter msg = arrayindex(regextract(_raw_log ,"INFO[^\|]+\|\s\S+\s+\|\s\w+\s+\|\s+([^\\]+)") ,0)
 | alter msg2= arrayindex(regextract(_raw_log ,"[endpoint|vmon]\s\-\s\-\s\-\s+([^\@]+)") ,0)
-| alter msg1= coalesce(msg ,message ,Description,msg2  )
+| alter msg1= concat(msg ,message ,Description,msg2  )
 | alter http_method1= arrayindex(regextract(_raw_log ,"\]\s\"(\w+)") ,0)
 | alter http_method2= arrayindex(regextract(_raw_log ,"HTTP\/\w+\.\d+\s(\w+)") ,0)
 | alter http_method= coalesce(http_method1 ,http_method2 )
@@ -82,6 +84,5 @@ filter _raw_log contains "tomcat" or _raw_log contains "HTTP"
 | alter XDM.Network.Destination.port=to_number(destination_port)
 | alter XDM.Network.http.response_code= http_respone_code
 | alter XDM.Network.Source.bytes= to_number(bytes_size)
+| alter XDM.Audit.event_timestamp =parse_timestamp("%Y-%m-%d %H:%M:%E3C",TimeStamp)
 | alter XDM.Network.http.url =request;
-
-
