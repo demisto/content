@@ -4,6 +4,8 @@ import dateparser
 import urllib3
 from MicrosoftApiModule import *
 
+ERR_NOT_CLIENT_CREDENTIALS = 'the reset_auth function is not functional when using the Client Credentials authentication flow.'
+
 urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
@@ -82,6 +84,7 @@ class AADClient(MicrosoftClient):
             set_integration_context(integration_context)
 
         self.client_credentials = client_credentials
+        print(f'{enc_key=}')
         args = {
             "azure_ad_endpoint": azure_ad_endpoint,
             "self_deployed": True,
@@ -365,11 +368,15 @@ def fetch_incidents(client: AADClient, params: Dict[str, str]):
 
 
 def start_auth(client: AADClient) -> CommandResults:
+    if client.client_credentials:
+        raise DemistoException(ERR_NOT_CLIENT_CREDENTIALS)
     result = client.start_auth('!azure-ad-auth-complete')
     return CommandResults(readable_output=result)
 
 
 def complete_auth(client: AADClient) -> str:
+    if client.client_credentials:
+        raise DemistoException(ERR_NOT_CLIENT_CREDENTIALS)
     client.get_access_token()  # exception on failure
     return '✅ Authorization completed successfully.'
 
@@ -379,7 +386,9 @@ def test_connection(client: AADClient) -> str:
     return '✅ Success!'
 
 
-def reset_auth() -> str:
+def reset_auth(client: AADClient) -> str:
+    if client.client_credentials:
+        raise DemistoException(ERR_NOT_CLIENT_CREDENTIALS)
     set_integration_context({})
     return 'Authorization was reset successfully. Run **!azure-ad-auth-start** to start the authentication process.'
 
@@ -388,6 +397,9 @@ def main() -> None:
     params = demisto.params()
     command = demisto.command()
     args = demisto.args()
+
+    print(f'{params=}')
+    print(f'{args=}')
 
     demisto.debug(f'Command being called is {command}')
     try:
@@ -404,7 +416,7 @@ def main() -> None:
 
         # auth commands
         if command == 'test-module':
-            return_results('The test module is not functional, run the azure-ad-auth-start command instead.')
+            return_results('The test module is not functional, run the azure-ad-auth-test command instead.')
         elif command == 'azure-ad-auth-start':
             return_results(start_auth(client))
         elif command == 'azure-ad-auth-complete':
@@ -412,7 +424,7 @@ def main() -> None:
         elif command == 'azure-ad-auth-test':
             return_results(test_connection(client))
         elif command == 'azure-ad-auth-reset':
-            return_results(reset_auth())
+            return_results(reset_auth(client))
 
         # actual commands
         elif command == 'azure-ad-identity-protection-risks-list':
