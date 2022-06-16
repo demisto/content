@@ -135,7 +135,7 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: 1500px
+      defaultValue: 1000px
       description: The html page width, for example, 1000px. Specify with or without
         the px suffix.
       isArray: false
@@ -143,7 +143,7 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: 1000px
+      defaultValue: 1500px
       description: The html page height, for example, 1500px. Specify with or without
         the px suffix.
       isArray: false
