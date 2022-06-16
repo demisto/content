@@ -397,9 +397,6 @@ def main() -> None:
     command = demisto.command()
     args = demisto.args()
 
-    print(f'{params=}')
-    print(f'{args=}')
-
     demisto.debug(f'Command being called is {command}')
     try:
         client = AADClient(
