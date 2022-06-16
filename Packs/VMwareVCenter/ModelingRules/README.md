@@ -7,3 +7,7 @@ Right-click, and select Syslog Collector -> Configure.
 When configuring the Syslog Collector, set:
 vendor as vendor<- VMware
 product as product<- VCenter
+
+
+
+
