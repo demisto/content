@@ -1591,7 +1591,7 @@ def run_git_diff(pack_id: str, build: Build) -> str:
     """
     compare_against = 'origin/master{}'.format('' if not build.branch_name == 'master' else '~1')
     return run_command(f'git diff --diff-filter=A '
-                       f'{compare_against}..refs/heads/{build.branch_name} -- Packs/{pack_id}')
+                       f'{compare_against}..refs/heads/{build.branch_name} -- Packs/{pack_id}/pack_metadata.json')
 
 
 def check_hidden_field_changed(pack_id: str, build: Build) -> bool:
