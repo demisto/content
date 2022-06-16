@@ -4,7 +4,7 @@ name: PAN-OS - Block Domain - External Dynamic List
 hidden: true
 deprecated: true
 fromversion: 5.0.0
-description: Deprecated. Deprecated. Use Generic Export Indicators Service instead.
+description: Deprecated. Use Generic Export Indicators Service instead.
 starttaskid: "0"
 tasks:
   "0":
