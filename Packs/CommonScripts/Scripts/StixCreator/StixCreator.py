@@ -13,7 +13,7 @@ from stix2 import Tool, CourseOfAction
 
 
 def main():
-    SCOs = {
+    SCOs: dict[str, str] = {
         "file md5": "[file:hashes.md5 ='{}']",
         "file sha1": "[file:hashes.sha1 = '{}']",
         "file sha256": "[file:hashes.sha256 = '{}']",
@@ -30,7 +30,7 @@ def main():
         "registry key": "[windows-registry-key:key = '{}']"
     }
 
-    SDOs = {
+    SDOs: dict[str, any] = {
         "malware": Malware,
         "attack pattern": AttackPattern,
         "campaign": Campaign,
@@ -59,7 +59,7 @@ def main():
     indicators = []
 
     for indicator_fields in all_args:
-        kwargs = {"allow_custom": True}
+        kwargs: dict[str, any] = {"allow_custom": True}
 
         demisto_indicator_type = all_args[indicator_fields].get('indicator_type', 'Unknown')
 
@@ -114,7 +114,7 @@ def main():
                     except KeyError:
                         pass
 
-                indicator = SDOs.get(indicator_type)(
+                indicator = SDOs[indicator_type](
                     name=value,
                     **kwargs
                 )
