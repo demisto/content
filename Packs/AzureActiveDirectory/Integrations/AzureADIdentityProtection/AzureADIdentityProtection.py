@@ -4,7 +4,7 @@ import dateparser
 import urllib3
 from MicrosoftApiModule import *
 
-ERR_NOT_CLIENT_CREDENTIALS = 'the reset_auth function is not functional when using the Client Credentials authentication flow.'
+ERR_NOT_CLIENT_CREDENTIALS = 'This function is not functional when using the Client Credentials authentication flow.'
 
 urllib3.disable_warnings()
 
