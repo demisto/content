@@ -12,7 +12,7 @@ from stix2 import AttackPattern, Campaign, Malware, Infrastructure, IntrusionSet
 from stix2 import Tool, CourseOfAction
 
 
-def extract_stix(all_args, doubleBackslash):
+def main():
     SCOs = {
         "file md5": "[file:hashes.md5 ='{}']",
         "file sha1": "[file:hashes.sha1 = '{}']",
@@ -42,6 +42,19 @@ def extract_stix(all_args, doubleBackslash):
         "cve": Vulnerability,
         "course of action": CourseOfAction
     }
+
+    user_args = demisto.args().get('indicators', 'Unknown')
+    doubleBackslash = demisto.args().get('doubleBackslash', True)
+    all_args = {}
+
+    if isinstance(user_args, dict):
+        all_args = json.loads(json.dumps(user_args))
+
+    else:
+        try:
+            all_args = json.loads(demisto.args().get('indicators', 'Unknown'))
+        except:     # noqa: E722
+            return_error('indicators argument is invalid json object')
 
     indicators = []
 
@@ -142,16 +155,4 @@ def extract_stix(all_args, doubleBackslash):
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):
-    user_args = demisto.args().get('indicators', 'Unknown')
-    double_backslash = demisto.args().get('doubleBackslash', True)
-
-    if isinstance(user_args, dict):
-        user_args = json.loads(json.dumps(user_args))
-
-    else:
-        try:
-            user_args = json.loads(demisto.args().get('indicators', 'Unknown'))
-        except:     # noqa: E722
-            return_error('indicators argument is invalid json object')
-
-    extract_stix(user_args, double_backslash)
+    main()
