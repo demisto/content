@@ -1320,7 +1320,9 @@ def run_command(command):
 
 
 def create_client():
-    username = demisto.params().get("credentials").get("identifier")
+    api_client_id = demisto.params().get("credentials").get("identifier")
+    if not api_client_id.startswith("key-") or "@" in api_client_id:
+        raise Exception(f"Got invalid API Client ID: {api_client_id}")
     password = demisto.params().get("credentials").get("password")
     base_url = demisto.params().get("console_url")
     verify_certificate = not demisto.params().get("insecure", False)
@@ -1328,7 +1330,7 @@ def create_client():
     return Code42Client(
         base_url=base_url,
         sdk=None,
-        auth=(username, password),
+        auth=(api_client_id, password),
         verify=verify_certificate,
         proxy=proxy,
     )
