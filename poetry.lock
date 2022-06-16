@@ -180,14 +180,14 @@ six = "*"
 
 [[package]]
 name = "boto3"
-version = "1.24.8"
+version = "1.24.9"
 description = "The AWS SDK for Python"
 category = "main"
 optional = false
 python-versions = ">= 3.7"
 
 [package.dependencies]
-botocore = ">=1.27.8,<1.28.0"
+botocore = ">=1.27.9,<1.28.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.6.0,<0.7.0"
 
@@ -196,7 +196,7 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.27.8"
+version = "1.27.9"
 description = "Low-level, data-driven core of boto 3."
 category = "main"
 optional = false
@@ -689,7 +689,7 @@ grpcio-gcp = ["grpcio-gcp (>=0.2.2,<1.0dev)"]
 
 [[package]]
 name = "google-auth"
-version = "2.7.0"
+version = "2.8.0"
 description = "Google Authentication Library"
 category = "main"
 optional = false
@@ -712,7 +712,7 @@ name = "google-cloud-bigquery"
 version = "3.2.0"
 description = "Google BigQuery API client library"
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.6, <3.11"
 
 [package.dependencies]
@@ -741,7 +741,7 @@ name = "google-cloud-bigquery-storage"
 version = "2.13.2"
 description = "BigQuery Storage API API client library"
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.6"
 
 [package.dependencies]
@@ -833,7 +833,7 @@ name = "grpcio"
 version = "1.46.3"
 description = "HTTP/2-based RPC framework"
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.6"
 
 [package.dependencies]
@@ -847,7 +847,7 @@ name = "grpcio-status"
 version = "1.46.3"
 description = "Status proto mapping for gRPC"
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.6"
 
 [package.dependencies]
@@ -1277,14 +1277,14 @@ tests = ["pytest", "pytest-cov", "pytest-lazy-fixture"]
 
 [[package]]
 name = "proto-plus"
-version = "1.20.5"
+version = "1.20.6"
 description = "Beautiful, Pythonic protocol buffers."
 category = "main"
-optional = false
+optional = true
 python-versions = ">=3.6"
 
 [package.dependencies]
-protobuf = ">=3.19.0,<4.0.0dev"
+protobuf = ">=3.19.0,<5.0.0dev"
 
 [package.extras]
 testing = ["google-api-core[grpc] (>=1.31.5)"]
@@ -2193,10 +2193,13 @@ python-versions = ">=3.7"
 docs = ["sphinx", "jaraco.packaging (>=9)", "rst.linker (>=1.9)"]
 testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-cov", "pytest-enabler (>=1.0.1)", "jaraco.itertools", "func-timeout", "pytest-black (>=0.3.7)", "pytest-mypy (>=0.9.1)"]
 
+[extras]
+build = ["google-cloud-bigquery"]
+
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "b4c18635879236592be0e874ede58ea167093189f66fdcfeeec8151e92caccd5"
+content-hash = "63d2edabe6986244dcde5b30f9d55939f22d94843a8b629277e1837bbfa4acdf"
 
 [metadata.files]
 aiohttp = [
@@ -2350,12 +2353,12 @@ blessings = [
     {file = "blessings-1.7.tar.gz", hash = "sha256:98e5854d805f50a5b58ac2333411b0482516a8210f23f43308baeb58d77c157d"},
 ]
 boto3 = [
-    {file = "boto3-1.24.8-py3-none-any.whl", hash = "sha256:28ab0947c49a6fb2409004d4a10b2828aec231cb95ca1d800cb1411e191cc201"},
-    {file = "boto3-1.24.8.tar.gz", hash = "sha256:833e67edfb73f2cc22ff27a1c33728686dc90a9e81ba2551f9462ea2d1b04f41"},
+    {file = "boto3-1.24.9-py3-none-any.whl", hash = "sha256:87d34861727699c795bf8d65703f2435e75f12879bdd483e08b35b7c5510e8c8"},
+    {file = "boto3-1.24.9.tar.gz", hash = "sha256:0821212ff521cb934801b1f655cef3c0e976775324b1018f1751700d0f42dbb4"},
 ]
 botocore = [
-    {file = "botocore-1.27.8-py3-none-any.whl", hash = "sha256:ad92702930d6cb7b587fc2f619672feb74d5218f8de387a28c2905820db79027"},
-    {file = "botocore-1.27.8.tar.gz", hash = "sha256:db6667b8dfd175d16187653942cd91dd1f0cf36adc0ea9d7a0805ba4d2a3321f"},
+    {file = "botocore-1.27.9-py3-none-any.whl", hash = "sha256:5669b982b0583e73daef1fe0a4df311055e6287326f857dbb1dcc2de1d8412ad"},
+    {file = "botocore-1.27.9.tar.gz", hash = "sha256:7a7588b0170e571317496ac4104803329d5bc792bc008e8a757ffd440f1b6fa6"},
 ]
 bracex = [
     {file = "bracex-2.3.post1-py3-none-any.whl", hash = "sha256:351b7f20d56fb9ea91f9b9e9e7664db466eb234188c175fd943f8f755c807e73"},
@@ -2657,8 +2660,8 @@ google-api-core = [
     {file = "google_api_core-2.8.1-py3-none-any.whl", hash = "sha256:ce1daa49644b50398093d2a9ad886501aa845e2602af70c3001b9f402a9d7359"},
 ]
 google-auth = [
-    {file = "google-auth-2.7.0.tar.gz", hash = "sha256:8a954960f852d5f19e6af14dd8e75c20159609e85d8db37e4013cc8c3824a7e1"},
-    {file = "google_auth-2.7.0-py2.py3-none-any.whl", hash = "sha256:df549a1433108801b11bdcc0e312eaf0d5f0500db42f0523e4d65c78722e8475"},
+    {file = "google-auth-2.8.0.tar.gz", hash = "sha256:819b70140d05501739e1387291d39f0de3b4dff3b00ae4aff8e7a05369957f89"},
+    {file = "google_auth-2.8.0-py2.py3-none-any.whl", hash = "sha256:9b1da39ab8731c3061f36fefde9f8bb902dbee9eb28e3a67e8cfa7dc1be76227"},
 ]
 google-cloud-bigquery = [
     {file = "google-cloud-bigquery-3.2.0.tar.gz", hash = "sha256:97fb4306e324cb86909ce32a9944e81d21fbcb28a780c5cdf01b6e4d47d4c322"},
@@ -3120,8 +3123,8 @@ prettytable = [
     {file = "prettytable-3.3.0.tar.gz", hash = "sha256:118eb54fd2794049b810893653b20952349df6d3bc1764e7facd8a18064fa9b0"},
 ]
 proto-plus = [
-    {file = "proto-plus-1.20.5.tar.gz", hash = "sha256:81794eb1be333c67986333948df70ebb8cdf538e039f8cfa92fd2a9d7176d405"},
-    {file = "proto_plus-1.20.5-py3-none-any.whl", hash = "sha256:fa29fec8a91cf178bc1d8bf9263769421d2dba7787eae42b67235676e211c158"},
+    {file = "proto-plus-1.20.6.tar.gz", hash = "sha256:449b4537e83f4776bd69051c4d776db8ffe3f9d0641f1e87b06c116eb94c90e9"},
+    {file = "proto_plus-1.20.6-py3-none-any.whl", hash = "sha256:c6c43c3fcfc360fdab46b47e2e9e805ff56e13169f9f2e45caf88b6b593215ab"},
 ]
 protobuf = [
     {file = "protobuf-3.20.1-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:3cc797c9d15d7689ed507b165cd05913acb992d78b379f6014e013f9ecb20996"},
