@@ -2348,3 +2348,47 @@ Get the IOCs of a specified Account that match the filter.
 
 #### Command Example
 ```!sentinelone-get-iocs account_ids="1068029618885547693" upload_time_gte="2022-04-25T07:52:09.428858Z" upload_time_lte="2022-06-30T07:52:09.428858Z"```
+
+
+### sentinelone-create-power-query
+*** 
+Start a Deep Visibility Power Query, get back status and potential results (ping afterwards using the queryId if query has not finished)
+
+#### Base Command
+
+`sentinelone-create-power-query`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query | Events matching the query search term will be returned. | Required |  
+| from_date | Events created after this timestamp. | Required |
+| to_date | Events created before or at this timestamp | Required |
+| limit | Limit number of returned items (1-100000) | Optional |
+
+#### Context Output
+
+The context outputs are based on the power query
+
+#### Command Example
+```!sentinelone-create-power-query query="event.time = * | columns eventTime = event.time, agentUuid = agent.uuid" from_date="2022-06-05T04:49:26.257525Z" to_date="2022-06-07T04:49:26.257525Z"```
+
+### sentinelone-ping-power-query
+***
+Ping a Deep Visibility Power Query using the queryId if results have not returned from an initial Power Query or a previous ping
+#### Base Command
+
+`sentinelone-ping-power-query`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| queryId | QueryId | Required |  
+
+
+#### Context Output
+
+The context outputs are based on the power query
+
+#### Command Example
+```!sentinelone-ping-power-query queryId="pqe18ccaaa69fedc65889eb155dbe039"```
