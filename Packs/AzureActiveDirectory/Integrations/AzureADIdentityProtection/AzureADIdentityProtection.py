@@ -84,7 +84,6 @@ class AADClient(MicrosoftClient):
             set_integration_context(integration_context)
 
         self.client_credentials = client_credentials
-        print(f'{enc_key=}')
         args = {
             "azure_ad_endpoint": azure_ad_endpoint,
             "self_deployed": True,
