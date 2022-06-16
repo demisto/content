@@ -92,7 +92,7 @@ def schedule_polling(items_to_schedule, next_polling_interval):
     return CommandResults(scheduled_command=scheduled_items)
 
 
-def http_request(client, method, url_suffix, json=None, wait=0, retries=0):
+def http_request(client, method, url_suffix, json=None, retries=0):
     headers = {'API-Key': client.api_key,
                'Accept': 'application/json'}
     if client.user_agent:
@@ -112,6 +112,8 @@ def http_request(client, method, url_suffix, json=None, wait=0, retries=0):
 
     rate_limit_remaining = int(r.headers.get('X-Rate-Limit-Remaining', 99))
     rate_limit_reset_after = int(r.headers.get('X-Rate-Limit-Reset-After', 60))
+    limit_action = r.headers.get('X-Rate-Limit-Action', 'search')
+    limit_window = r.headers.get('X-Rate-Limit-Window', 'minute')
     if rate_limit_remaining < 10:
         return_warning('Your available rate limit remaining is {} and is about to be exhausted. '
                        'The rate limit will reset at {}'.format(str(rate_limit_remaining),
@@ -122,11 +124,11 @@ def http_request(client, method, url_suffix, json=None, wait=0, retries=0):
                 return {}, ErrorTypes.QUOTA_ERROR, rate_limit_reset_after
             if retries <= 0:
                 # Error in API call to URLScan.io [429] - Too Many Requests
-                return_error('API rate limit reached [%d] - %s.\nUse the retries and wait arguments when submitting '
-                             'multiple URls' % (r.status_code, r.reason))
+                return_error(f'You have exceeded your {limit_action} limit for this {limit_window}. The rate limit will'
+                             f' reset in {rate_limit_reset_after} seconds')
             else:
-                time.sleep(wait)  # pylint: disable=sleep-exists
-                return http_request(method, url_suffix, json, wait, retries - 1)
+                time.sleep(rate_limit_reset_after)  # pylint: disable=sleep-exists
+                return http_request(method, url_suffix, json, rate_limit_reset_after, retries - 1)
 
         response_json = r.json()
         error_description = response_json.get('description')
@@ -255,9 +257,8 @@ def urlscan_submit_url(client, url):
         submission_dict['customagent'] = demisto.params().get('useragent')
 
     sub_json = json.dumps(submission_dict)
-    wait = int(demisto.args().get('wait', 5))
     retries = int(demisto.args().get('retries', 0))
-    r, metric, rate_limit_reset_after = http_request(client, 'POST', 'scan/', sub_json, wait, retries)
+    r, metric, rate_limit_reset_after = http_request(client, 'POST', 'scan/', sub_json, retries)
     return r, metric, rate_limit_reset_after
 
 
