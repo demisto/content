@@ -14,11 +14,11 @@ import pytz
 from QRadar_v3 import LAST_FETCH_KEY, USECS_ENTRIES, OFFENSE_OLD_NEW_NAMES_MAP, MINIMUM_API_VERSION, REFERENCE_SETS_OLD_NEW_MAP, \
     Client, ASSET_PROPERTIES_NAME_MAP, \
     FULL_ASSET_PROPERTIES_NAMES_MAP, EntryType, EntryFormat, MIRROR_OFFENSE_AND_EVENTS, \
-    MIRRORED_OFFENSES_QUERIED_CTX_KEY, MIRRORED_OFFENSES_FINISHED_CTX_KEY, LAST_MIRROR_KEY, SearchQueryStatus
+    MIRRORED_OFFENSES_QUERIED_CTX_KEY, MIRRORED_OFFENSES_FINISHED_CTX_KEY, LAST_MIRROR_KEY, SearchQueryStatus, enrich_offense_with_events
 from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_outputs, build_headers, \
     get_offense_types, get_offense_closing_reasons, get_domain_names, get_rules_names, enrich_assets_results, \
     get_offense_addresses, get_minimum_id_to_fetch, poll_offense_events, sanitize_outputs, \
-    create_search_with_retry, search_for_offense_events_with_retries, enrich_offense_with_assets, get_offense_enrichment, \
+    create_search_with_retry, enrich_offense_with_assets, get_offense_enrichment, \
     add_iso_entries_to_asset, create_single_asset_for_offense_enrichment, create_incidents_from_offenses, \
     qradar_offenses_list_command, qradar_offense_update_command, qradar_closing_reasons_list_command, \
     qradar_offense_notes_list_command, qradar_offense_notes_create_command, qradar_rules_list_command, \
@@ -341,12 +341,13 @@ def test_create_single_asset_for_offense_enrichment():
                            command_test_data['search_status_get']['response'],
                            command_test_data['search_results_get']['response'],
                            '19e90792-1a17-403b-ae5b-d0e60740b95e',
-                           (sanitize_outputs(command_test_data['search_results_get']['response']['events']), '')),
+                           (sanitize_outputs(command_test_data['search_results_get']['response']['events']),
+                            SearchQueryStatus.SUCCESS.value)),
                           (DemistoException('error occurred'),
                            None,
                            None,
                            None,
-                           ([], "DemistoException('error occurred', None, None) \nSee logs for further details."))
+                           ([], SearchQueryStatus.ERROR.value))
                           ])
 def test_poll_offense_events_with_retry(requests_mock, status_exception, status_response, results_response, search_id,
                                         expected):
@@ -521,15 +522,15 @@ def test_enrich_offense_with_events(mocker, offense: Dict, fetch_mode, mock_sear
     set_integration_context(context_data)
     poll_events = poll_events_response[0] if poll_events_response else []
     num_events = sum(event.get('eventcount', 1) for event in poll_events)
-
     if poll_events and num_events >= min(events_limit, offense.get('event_count')):
         events = poll_events[:min(events_limit, len(poll_events))] if poll_events else []
         num_events = sum(event.get('eventcount', 1) for event in poll_events)
         expected_offense = dict(offense, events=events,
-                                events_fetched=num_events)
+                                events_fetched=num_events,
+                                )
     else:
         expected_offense = dict(offense,
-                                events_fetched=num_events
+                                events_fetched=num_events,
                                 )
         if poll_events:
             expected_offense = dict(expected_offense, events=poll_events)
@@ -538,9 +539,10 @@ def test_enrich_offense_with_events(mocker, offense: Dict, fetch_mode, mock_sear
     poll_events_mock = mocker.patch.object(QRadar_v3, "poll_offense_events_with_retry",
                                            return_value=poll_events_response)
 
-    enriched_offense = search_for_offense_events_with_retries(client, offense, fetch_mode, event_columns_default_value,
-                                                  events_limit=events_limit, max_retries=1)
-
+    enriched_offense = enrich_offense_with_events(client, offense, fetch_mode, event_columns_default_value,
+                                                  events_limit=events_limit)
+    assert 'mirroring_events_message' in enriched_offense
+    del enriched_offense['mirroring_events_message']
     if mock_search_response:
         assert poll_events_mock.call_args[0][1] == mock_search_response['search_id']
     assert enriched_offense == expected_offense
@@ -1086,10 +1088,10 @@ def test_get_modified_with_events(mocker):
         Ensure that finished queries goes to finished queue,
         and modified incidents returns the modified offenses and the finished queries.
     """
-    context_data = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {1: '123', 2: '456', 10: SearchQueryStatus.WAIT.value},
-                    MIRRORED_OFFENSES_FINISHED_CTX_KEY: {3: '789', 4: '012'}}
-    expected_updated_context = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {2: '456', 10: '555'},
-                                MIRRORED_OFFENSES_FINISHED_CTX_KEY: {3: '789', 4: '012', 1: '123'},
+    context_data = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {'1': '123', '2': '456', '10': SearchQueryStatus.WAIT.value},
+                    MIRRORED_OFFENSES_FINISHED_CTX_KEY: {'3': '789', '4': '012'}}
+    expected_updated_context = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {'2': '456', '10': '555'},
+                                MIRRORED_OFFENSES_FINISHED_CTX_KEY: {'3': '789', '4': '012', '1': '123'},
                                 LAST_MIRROR_KEY: 3444}
     set_integration_context(context_data)
     status = {'123': {'status': 'COMPLETED'},
@@ -1102,11 +1104,11 @@ def test_get_modified_with_events(mocker):
     modified = get_modified_remote_data_command(client,
                                                 {'mirror_options': MIRROR_OFFENSE_AND_EVENTS},
                                                 {'lastUpdate': '0'})
-    assert modified.modified_incident_ids == [1, 6]
+    assert set(modified.modified_incident_ids) == {'1', '6'}
     assert get_integration_context() == expected_updated_context
 
 
-@pytest.mark.parametrize('offense_id', [1, 2, 3, 4, 5, 10])
+@pytest.mark.parametrize('offense_id', ['1', '2', '3', '4', '5', '10'])
 def test_remote_data_with_events(mocker, offense_id):
     """
     Given:
@@ -1118,7 +1120,7 @@ def test_remote_data_with_events(mocker, offense_id):
     Then:
         - Ensure that the offense data is returned and context_data is updated.
     """
-    context_data = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {'1': '123', '2': '456', '10': '-1'},
+    context_data = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {'1': '123', '2': '456', '10': SearchQueryStatus.WAIT.value},
                     MIRRORED_OFFENSES_FINISHED_CTX_KEY: {'3': '789', '4': '012'}}
     set_integration_context(copy.deepcopy(context_data))
 
@@ -1130,7 +1132,7 @@ def test_remote_data_with_events(mocker, offense_id):
                {'eventcount': 2},
                {'eventcount': 3}]}
     mocker.patch.object(client, 'search_results_get', return_value=events)
-
+    mocker.patch.object(client, 'search_status_get', return_value={'status': 'EXECUTE'})
     offense = {'id': offense_id}
     mocker.patch.object(client, 'offenses_list', return_value=offense)
     offense_data = get_remote_data_command(client,
@@ -1147,7 +1149,7 @@ def test_remote_data_with_events(mocker, offense_id):
 
     elif offense_id not in context_data[MIRRORED_OFFENSES_QUERIED_CTX_KEY] or \
             (offense_id in context_data[MIRRORED_OFFENSES_QUERIED_CTX_KEY]
-             and context_data[MIRRORED_OFFENSES_QUERIED_CTX_KEY][offense_id] == '-1'):
+             and context_data[MIRRORED_OFFENSES_QUERIED_CTX_KEY][offense_id] == SearchQueryStatus.WAIT.value):
         # offense is not yet queried, so we expect it to be added to the context
         assert updated_context[MIRRORED_OFFENSES_QUERIED_CTX_KEY][offense_id] == '555'
     else:
