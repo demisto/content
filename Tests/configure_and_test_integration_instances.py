@@ -31,7 +31,7 @@ from demisto_sdk.commands.validate.validate_manager import ValidateManager
 from ruamel import yaml
 
 from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies, \
-    upload_zipped_packs, install_all_content_packs_for_nightly, is_pack_hidden
+    upload_zipped_packs, install_all_content_packs_for_nightly
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.test_content import get_server_numeric_version
@@ -1663,7 +1663,8 @@ def update_integration_lists(new_integrations_names: List[str], turned_non_hidde
     Add the turned non-hidden integrations names to the new integrations names list and remove it from modified integrations names.
     Args:
         new_integrations_names (List[str]): The new integration ids (e.g. "AbnormalSecurity").
-        turned_non_hidden_packs_id (Set[str]): The turned non-hidden pack ids (e.g. "AbnormalSecurity/pack_metadata.json")
+        turned_non_hidden_packs_id (Set[str]): The turned non-hidden pack ids
+         (e.g. "AbnormalSecurity/pack_metadata.json").
         modified_integrations_names (List[str]): The modified integration ids (e.g. "AbnormalSecurity").
     Returns:
         Tuple[List[str], List[str]]: The updated lists.

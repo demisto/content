@@ -1,7 +1,7 @@
 import pytest
 
 from Tests.configure_and_test_integration_instances import XSOARBuild, create_build_object, \
-    options_handler, XSIAMBuild, get_non_added_packs_ids, get_turned_non_hidden_packs, update_integration_lists
+    options_handler, XSIAMBuild, get_turned_non_hidden_packs, update_integration_lists
 
 XSIAM_SERVERS = {
     "qa2-test-111111": {
@@ -150,8 +150,11 @@ UPDATE_INTEGRATION_LISTS = [
 ]
 
 
-@pytest.mark.parametrize('new_integrations_names, turned_non_hidden_packs_id, modified_integrations_names, the_expected_result', UPDATE_INTEGRATION_LISTS)
-def test_update_integration_lists(mocker, new_integrations_names, turned_non_hidden_packs_id, modified_integrations_names, the_expected_result):
+@pytest.mark.parametrize(
+    'new_integrations_names, turned_non_hidden_packs_id, modified_integrations_names, the_expected_result',
+    UPDATE_INTEGRATION_LISTS)
+def test_update_integration_lists(mocker, new_integrations_names, turned_non_hidden_packs_id,
+                                  modified_integrations_names, the_expected_result):
     """
     Given:
         - New integrations names, modifeid integrations names and turned non-hidden packs ids.
@@ -160,6 +163,7 @@ def test_update_integration_lists(mocker, new_integrations_names, turned_non_hid
     Then:
         - Assert the turned non-hidden integrations removed from the modified integrations list and added to the new integration list.
     """
-    mocker.patch('Tests.configure_and_test_integration_instances.packs_id_to_integrations_names', return_value=turned_non_hidden_packs_id)
+    mocker.patch('Tests.configure_and_test_integration_instances.packs_id_to_integrations_names',
+                 return_value=turned_non_hidden_packs_id)
     returned_results = update_integration_lists(new_integrations_names, set(), modified_integrations_names)
     assert the_expected_result(returned_results[0], returned_results[1])
