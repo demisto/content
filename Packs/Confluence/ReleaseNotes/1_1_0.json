@@ -1,0 +1,1 @@
+{"breakingChanges": true, "breakingChangesNotes": "edited the credentials parameter to contain the api token instead of the password, added two parameters (username and password) to contain the username and password."}
