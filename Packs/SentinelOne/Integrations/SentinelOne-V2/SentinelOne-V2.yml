@@ -1181,6 +1181,10 @@ script:
     description: Deletes a group, by the group ID.
     execution: false
     name: sentinelone-delete-group
+    outputs:
+    - contextPath: SentinelOne.DeleteGroup.Success
+      description: the status of the command.
+      type: String
   - arguments:
     - default: false
       description: The ID of the agent from which to retrieve the processes.
@@ -1286,6 +1290,10 @@ script:
     description: Broadcasts a message to all agents that match the input filters.
     execution: false
     name: sentinelone-broadcast-message
+    outputs:
+    - contextPath: SentinelOne.BroadcastMessage.Affected
+      description: Number of affected Endpoints
+      type: String
   - arguments:
     - default: false
       defaultValue: '50'
@@ -1503,6 +1511,10 @@ script:
     description: Sends an uninstall command to all agents that match the input filter.
     execution: false
     name: sentinelone-uninstall-agent
+    outputs:
+    - contextPath: SentinelOne.uninstall.Affected
+      description: Number of Affected Agents.
+      type: String
   - arguments:
     - name: action
       required: true
@@ -1598,10 +1610,10 @@ script:
       description: 'A comma separated list of site IDs'
       isArray: true
     - name: group_ids
-      description: 'A comma separated list of site IDs'
+      description: 'A comma separated list of Group IDs'
       isArray: true
     - name: account_ids
-      description: 'A comma separated list of site IDs'
+      description: 'A comma separated list of Account IDs'
       isArray: true
     - name: network_quarantine
       required: true
@@ -1770,10 +1782,10 @@ script:
       description: 'A comma separated list of site IDs'
       isArray: true
     - name: group_ids
-      description: 'A comma separated list of site IDs'
+      description: 'A comma separated list of Group IDs'
       isArray: true
     - name: account_ids
-      description: 'A comma separated list of site IDs'
+      description: 'A comma separated list of Account IDs'
       isArray: true
     - name: network_quarantine
       required: true
@@ -1815,9 +1827,6 @@ script:
     - contextPath: SentinelOne.StarRule.Treat As Threat
       description: The Treat As Threat of the star rule
       type: String
-    - contextPath: SentinelOne.StarRule.Treat As Threat
-      description: The Treat As Threat of the star rule
-      type: String
     - contextPath: SentinelOne.StarRule.Expiration Mode
       description: The expiration mode of the star rule
       type: String
@@ -1831,7 +1840,8 @@ script:
       description: The created time for the star rule
       type: String
     - contextPath: SentinelOne.StarRule.Updated At
-      description: The updated
+      description: The updated time for the star rule
+      type: String
   - arguments:
     - name: rule_ids
       required: true
@@ -1996,7 +2006,204 @@ script:
       required: true
     description: Download a file fetched using th sentinelone-fetch-file command to submit the request and the sentinelone-get-activities command to get the download path.
     name: sentinelone-download-fetched-file
-  dockerimage: demisto/python3:3.10.4.29342
+  - arguments:
+    - name: threat_ids
+      required: true
+      description: A comma-separated list of threat IDs.
+      isArray: true
+    - name: note
+      required: true
+      description: Threat Note Text
+    description: Add a threat note to one or more threats..
+    name: sentinelone-write-threat-note
+    outputs:
+    - contextPath: SentinelOne.Threat.ID
+      description: The Threat ID.
+      type: String
+    - contextPath: SentinelOne.Threat.Note
+      description: The Threat Note.
+      type: String
+    - contextPath: SentinelOne.Threat.Status
+      description: Whether the note was added successfully or not.
+      type: String
+  - arguments:
+    - name: name
+      required: true
+      description: Threat Intelligence indicator name.
+    - name: source
+      required: true
+      description: The source of the identified Threat Intelligence indicator.
+    - name: type
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - DNS
+      - IPV4
+      - IPV6
+      - MD5
+      - SHA1
+      - SHA256
+      - URL
+      description: The type of the Threat Intelligence indicator
+    - name: method
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - EQUALS
+      description: The comparison method used by SentinelOne to trigger the event.
+    - name: validUntil
+      required: true
+      description: Expiration date for the Threat Intelligence indicator.
+    - name: value
+      required: true
+      description: The value of the Threat Intelligence indicator.
+    - name: account_ids
+      required: true
+      description: List of Account IDs to filter by.
+      isArray: true
+    - name: externalId
+      description: The unique identifier of the indicator as provided by the Threat Intelligence source
+    - name: description
+      description: Description of the Threat Intelligence indicator
+    description: Add an IoC to the Threat Intelligence database.
+    name: sentinelone-create-ioc
+    outputs:
+    - contextPath: SentinelOne.IOC.UUID
+      description: The IOC UUID.
+      type: String
+    - contextPath: SentinelOne.IOC.Name
+      description: Threat Intelligence indicator name.
+      type: String
+    - contextPath: SentinelOne.IOC.Source
+      description: The source of the identified Threat Intelligence indicator.
+      type: String
+    - contextPath: SentinelOne.IOC.Type
+      description: The type of the Threat Intelligence indicator.
+      type: String
+    - contextPath: SentinelOne.IOC.Batch Id
+      description: The IOC Batch Id.
+      type: String
+    - contextPath: SentinelOne.IOC.Creator
+      description: The IOC Creator.
+      type: String
+    - contextPath: SentinelOne.IOC.Scope
+      description: The IOC Scope.
+      type: String
+    - contextPath: SentinelOne.IOC.Scope Id
+      description: The IOC Scope Id.
+      type: String
+    - contextPath: SentinelOne.IOC.Valid Until
+      description: Expiration date for the Threat Intelligence indicator.
+      type: String
+    - contextPath: SentinelOne.IOC.Description
+      description: Description of the Threat Intelligence indicator
+      type: String
+    - contextPath: SentinelOne.IOC.External Id
+      description: The unique identifier of the indicator as provided by the Threat Intelligence source
+      type: String
+  - arguments:
+    - name: account_ids
+      required: true
+      description: List of Account IDs to filter by.
+      isArray: true
+    - name: uuids
+      required: true
+      description: UUID of threat Intelligence indicator.
+    description: Delete an IoC from the Threat Intelligence database that matches a filter.
+    name: sentinelone-delete-ioc
+    outputs:
+    - contextPath: SentinelOne.IOC.UUID
+      description: The IOC UUID.
+      type: String
+    - contextPath: SentinelOne.IOC.Deleted
+      description: Threat Intelligence indicator deleted or not.
+      type: Boolean
+  - arguments:
+    - name: account_ids
+      required: true
+      description: List of Account IDs to filter by.
+      isArray: true
+    - name: upload_time_gte
+      required: true
+      description: 'The time at which the Threat Intelligence indicator was uploaded to SentinelOne DB greater or equal than. Example: "2022-07-13T20:33:29.007906Z".'
+    - name: upload_time_lte
+      required: true
+      description: 'The time at which the Threat Intelligence indicator was uploaded to SentinelOne DB lessthan or equal than. Example: "2022-07-13T20:33:29.007906Z".'
+    - name: limit
+      description: 'Limit number of returned items (1-1000). Example: "10". But limit is defaulted to 1000'
+    - name: cursor
+      description: 'Cursor position returned by the last request. Should be used for iterating over more than 1000 items. Example: "YWdlbnRfaWQ6NTgwMjkzODE=".'
+    - name: uuids
+      description: 'A list of unique Ids of the parent process of the indicator of compromise. Example: "2cffae871197f20d864fe8363eee6651".'
+    - name: type
+      auto: PREDEFINED
+      predefined:
+      - DNS
+      - IPV4
+      - IPV6
+      - MD5
+      - SHA1
+      - SHA256
+      - URL
+      description: The type of the Threat Intelligence indicator
+    - name: batch_id
+      description: 'Unique ID of the uploaded indicators batch. Example: "atmtn000000028a881bcf939dc6d92ab55443".'
+    - name: source
+      description: 'List of the sources of the identified Threat Intelligence indicator. Example: "AlienVault".'
+    - name: value
+      description: 'The value of the Threat Intelligence indicator. Example: "175.0.x.x".'
+    - name: external_id
+      description: 'The unique identifier of the indicator as provided by the Threat Intelligence source. Example: "e277603e-1060-5ad4-9937-c26c97f1ca68".'
+    - name: name_contains
+      description: 'Free-text filter by the Indicator name (supports multiple values). Example: "foo.dll".'
+    - name: creator_contains
+      description: 'Free-text filter by the user uploaded the Threat Intelligence indicator (supports multiple values). Example: "admin@sentinelone.com".'
+    - name: description_contains
+      description: 'Free-text filter by the description of the indicator (supports multiple values). Example: "Malicious-activity".' 
+    - name: category_in
+      description: 'The categories of the Threat Intelligence indicator, e.g. the malware type associated with the IOC'
+    - name: updated_at_gte
+      description: 'The time at which the indicator was last updated in SentinelOne DB greater or equal than. Example: "2021-07-13T20:33:29.007906Z".'
+    - name: updated_at_lte
+      description: 'The time at which the indicator was last updated in SentinelOne DB lessthan or equal than. Example: "2021-07-13T20:33:29.007906Z".'
+    - name: creation_time_gte
+      description: 'Creation Time as set by the user greater or equal than. Example: "2021-07-13T20:33:29.007906Z".' 
+    - name: creation_time_lte
+      description: 'Creation Time as set by the user lessthan or equal than. Example: "2021-07-13T20:33:29.007906Z".' 
+    description: Get the IOCs of a specified Account that match the filter.
+    name: sentinelone-get-iocs
+    outputs:
+    - contextPath: SentinelOne.IOC.UUID
+      description: The IOC UUID.
+      type: String
+    - contextPath: SentinelOne.IOC.Creator
+      description: Threat Intelligence indicator Creator.
+      type: String
+    - contextPath: SentinelOne.IOC.Name
+      description: Threat Intelligence indicator Name.
+      type: String
+    - contextPath: SentinelOne.IOC.Value
+      description: Threat Intelligence indicator Value.
+      type: String
+    - contextPath: SentinelOne.IOC.Description
+      description: Threat Intelligence indicator Description.
+      type: String
+    - contextPath: SentinelOne.IOC.Type
+      description: Threat Intelligence indicator Type.
+      type: String
+    - contextPath: SentinelOne.IOC.External Id
+      description: Threat Intelligence indicator External Id.
+      type: String
+    - contextPath: SentinelOne.IOC.Source
+      description: Threat Intelligence indicator Source.
+      type: String
+    - contextPath: SentinelOne.IOC.Upload Time
+      description: Threat Intelligence indicator Upload Time.
+      type: String
+    - contextPath: SentinelOne.IOC.Valid Until
+      description: Threat Intelligence indicator Expiration Time.
+      type: String
+  dockerimage: demisto/python3:3.10.4.30607
   isfetch: true
   longRunning: false
   longRunningPort: false

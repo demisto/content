@@ -589,6 +589,60 @@ class Client(BaseClient):
         response = self._http_request(method='DELETE', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
 
+    def write_threat_note_request(self, threat_ids, note):
+        endpoint_url = 'threats/notes'
+        payload = {
+                "data": {
+                    "text": note
+                },
+                "filter": {
+                    "ids": threat_ids
+                }
+        }
+        response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
+        return response.get('data', {})
+    
+    def create_ioc_request(self, name, source, ioc_type, method, validUntil, value, account_ids, externalId, description):
+        endpoint_url = 'threat-intelligence/iocs'
+        payload = {
+                "filter": {
+                    "accountIds": account_ids
+                },
+                "data": [
+                    {
+                    "source": source,
+                    "type": ioc_type,
+                    "method": method,
+                    "validUntil": validUntil,
+                    "name": name,
+                    "value": value,
+                    "externalId": externalId,                
+                    "description": description
+                    }
+                    ]
+        }
+        response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
+        return response.get('data', {})
+    
+    def delete_ioc_request(self, account_ids, uuids):
+        endpoint_url = 'threat-intelligence/iocs'
+        payload = {
+                "filter": {
+                        "accountIds": account_ids,
+                        "uuids": uuids
+                    }
+        }
+        response = self._http_request(method='DELETE', url_suffix=endpoint_url, json_data=payload)
+        return response.get('data', {})
+    
+    def get_iocs_request(self, params):
+        endpoint_url = 'threat-intelligence/iocs'
+        response = self._http_request(method='GET', url_suffix=endpoint_url, params=params)
+        data = response.get('data')
+        pagination = response.get('pagination')
+        return data, pagination
+        
+
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
@@ -673,15 +727,23 @@ def get_groups_command(client: Client, args: dict) -> CommandResults:
         raw_response=groups)
 
 
-def delete_group(client: Client, args: dict) -> str:
+def delete_group(client: Client, args: dict)  -> CommandResults:
     """
     Deletes a group by ID.
     """
     group_id = args.get('group_id')
     response = client.delete_group_request(group_id)
     if response.get('success'):
-        return f'Group: {group_id} was deleted successfully'
-    return f'The deletion of group: {group_id} has failed'
+        success = f'Group: {group_id} was deleted successfully'
+    success = f'The deletion of group: {group_id} has failed'
+    context = {'Success': success}
+    return CommandResults(
+        readable_output=tableToMarkdown('Sentinel One - Delete Group', context, removeNull=True,
+                                        headerTransform=pascalToSpace),
+        outputs_prefix='SentinelOne.DeleteGroup',
+        outputs_key_field='Success',
+        outputs=context,
+        raw_response=response)
 
 
 def move_agent_to_group_command(client: Client, args: dict) -> CommandResults:
@@ -1198,6 +1260,174 @@ def delete_star_rule(client: Client, args: dict) -> CommandResults:
         outputs=context_entries,
         raw_response=deleted_rules) 
 
+def write_threat_note(client: Client, args: dict) -> CommandResults:
+    """
+    Write the notes for particular threat(s). Relavent for API version 2.1
+    """
+    context_entries = []
+
+    # Get arguments
+    note = args.get('note')
+    threat_ids = argToList(args.get('threat_ids'))
+    
+    # Make request and get raw response
+    threat_notes = client.write_threat_note_request(threat_ids, note)
+
+    # Parse response into context & content entries
+    if threat_notes.get('affected') and int(threat_notes.get('affected')) > 0:
+        status = "Success"
+        meta = f'Total of {threat_notes.get("affected")} provided threats. THreat notes were successfully Added for them'
+    else:
+        status = "Failed"
+        meta = 'No threat notes were Added'
+    for threat_id in threat_ids:
+        context_entries.append({
+            'ID': threat_id,
+            'Note': note, 
+            'Status': status
+        })
+    return CommandResults(
+        readable_output=tableToMarkdown('Sentinel One - Write threat note', context_entries, removeNull=True,
+                                        metadata=meta, headerTransform=pascalToSpace),
+        outputs_prefix='SentinelOne.Threat',
+        outputs_key_field='ID',
+        outputs=context_entries,
+        raw_response=threat_notes) 
+
+def create_ioc(client: Client, args: dict) -> CommandResults:
+    """
+    Add an IoC to the Threat Intelligence database. . Relavent for API version 2.1
+    """
+    context = {}
+    
+    # Get arguments
+    name = args.get('name')
+    source = args.get('source')
+    ioc_type = args.get('type')
+    method = args.get('method')
+    validUntil = args.get('validUntil')
+    value = args.get('value')
+    account_ids = argToList(args.get('account_ids'))
+    # not-requied arguments
+    externalId = args.get('externalId')   
+    description = args.get("description")
+
+    # Make request and get raw response
+    ioc = client.create_ioc_request(name, source, ioc_type, method, validUntil, value, account_ids, externalId, description)[0]
+    
+    if ioc:
+        context = {
+            'UUID': ioc.get('uuid'),
+            'Name': ioc.get('name'),
+            'Source': ioc.get('source'),
+            'Type': ioc.get('type'),
+            'Batch Id': ioc.get('batchId'),
+            'Creator': ioc.get('creator'),
+            'Scope': ioc.get('scope'),
+            'Scope Id': ioc.get('scopeId')[0],
+            'Valid Until': ioc.get('validUntil'),
+            'Description': ioc.get('description'),
+            'External Id': ioc.get('externalId'),           
+        }
+    return CommandResults(
+        readable_output=tableToMarkdown('Sentinel One - Create IOC', context, removeNull=True),
+        outputs_prefix='SentinelOne.IOC',
+        outputs_key_field='UUID',
+        outputs=context,
+        raw_response=ioc)
+
+def delete_ioc(client: Client, args: dict) -> CommandResults:
+    """
+    Deletes an IoC from the Threat Intelligence database. Relavent for API version 2.1
+    """
+    context_entries = []
+
+    # Get arguments
+    account_ids = argToList(args.get('account_ids'))
+    uuids = argToList(args.get('uuids'))
+    
+    # Make request and get raw response
+    deleted_iocs = client.delete_ioc_request(account_ids, uuids) 
+
+    # Parse response into context & content entries
+    if deleted_iocs.get('affected') and int(deleted_iocs.get('affected')) > 0:
+        deleted = True
+        meta = f'Total of {deleted_iocs.get("affected")} provided IOCs were deleted successfully'
+    else:
+        deleted = False
+        meta = 'No IOC were deleted'
+
+    for uuid in uuids:
+        context_entries.append({
+            'UUID': uuid,
+            'Deleted': deleted
+        })
+    return CommandResults(
+        readable_output=tableToMarkdown('Sentinel One - Delete List of IOCs', context_entries, removeNull=True,
+                                        metadata=meta, headerTransform=pascalToSpace),
+        outputs_prefix='SentinelOne.IOC',
+        outputs_key_field='UUID',
+        outputs=context_entries,
+        raw_response=deleted_iocs)
+
+def get_iocs(client: Client, args: dict) -> CommandResults:
+    """
+    Get the IOCs of a specified Account that match the filter. Relavent for API version 2.1
+    """
+    context_entries = []
+    query_params = assign_params(
+        accountIds=args.get('account_ids'),
+        uploadTime__gte=args.get('upload_time_gte'),
+        uploadTime__lte=args.get('upload_time_lte'),
+        limit=int(args.get('limit',1000)),
+        cursor=args.get('cursor'),
+        uuids=args.get('uuids'),
+        type=args.get('type'),
+        batchId=args.get('batch_id'),
+        source=args.get('source'),
+        value=args.get('value'),
+        externalId=args.get('external_id'),
+        name__contains=args.get('name_contains'),
+        creator__contains=args.get('creator_contains'),
+        description__contains=args.get('description_contains'),
+        category__in=args.get('category_in'),
+        updatedAt__gte=args.get('updated_at_gte'),
+        updatedAt__lte=args.get('updated_at_lte'),
+        creationTime__gte=args.get('creation_time_gte'),
+        creationTime__lte=args.get('creation_time_lte'),
+    )
+
+    # Make request and get raw response
+    iocs, pagination = client.get_iocs_request(query_params) 
+    
+    if pagination['nextCursor'] is not None:
+        demisto.log("Use the below cursor value to get the next page iocs \n {}". format(pagination['nextCursor']))
+    
+    if iocs:
+        # Parse response into context & content entries
+        for ioc in iocs:
+            context_entries.append({
+                'UUID': ioc.get('uuid'),
+                'Creator': ioc.get('creator'),
+                'Name': ioc.get('name'),
+                'Value': ioc.get('value'),
+                'Description': ioc.get('description'),
+                'Type': ioc.get('type'),
+                'External Id': ioc.get('externalId'),
+                'Source': ioc.get('source'),
+                'Upload Time': ioc.get('uploadTime'),
+                'Valid Until': ioc.get('validUntil')
+            })
+
+    return CommandResults(
+        readable_output=tableToMarkdown('Sentinel One - Getting List of IOCs', context_entries, removeNull=True,
+                                        metadata='Provides summary information and details for all iocs that matched '
+                                                 'your search criteria.', headerTransform=pascalToSpace),
+        outputs_prefix='SentinelOne.IOC',
+        outputs_key_field='UUID',
+        outputs=context_entries,
+        raw_response=iocs)
+
 def resolve_threat_command(client: Client, args: dict) -> CommandResults:
     """
     Mark threats as resolved
@@ -1601,10 +1831,11 @@ def disconnect_agent_from_network(client: Client, args: dict) -> Union[CommandRe
     return 'No agents were disconnected from the network.'
 
 
-def broadcast_message(client: Client, args: dict) -> str:
+def broadcast_message(client: Client, args: dict) -> CommandResults:
     """
     Broadcasts a message to all agents matching the input filter.
     """
+    context = {}
     message = args.get('message')
     filters = assign_params(
         isActive=argToBoolean(args.get('active_agent', 'false')),
@@ -1616,11 +1847,19 @@ def broadcast_message(client: Client, args: dict) -> str:
     response = client.broadcast_message_request(message, filters)
 
     agents_affected = response.get('affected', 0)
+    context = {
+        "Affected": agents_affected
+    }
     if agents_affected > 0:
-        return 'The message was successfully delivered to the agent(s)'
-
-    return 'No messages were sent. Verify that the inputs are correct.'
-
+        meta = 'The message was successfully delivered to the agent(s)'
+    else:
+        meta = 'No messages were sent. Verify that the inputs are correct.'
+    return CommandResults(
+        readable_output=tableToMarkdown('Sentinel One - Broadcast Message', context, metadata=meta, removeNull=True),
+        outputs_prefix='SentinelOne.BroadcastMessage',
+        outputs_key_field='Affected',
+        outputs=context,
+        raw_response=response)
 
 def shutdown_agents(client: Client, args: dict) -> str:
     """
@@ -1641,10 +1880,11 @@ def shutdown_agents(client: Client, args: dict) -> str:
     return 'No agents were shutdown.'
 
 
-def uninstall_agent(client: Client, args: dict) -> str:
+def uninstall_agent(client: Client, args: dict) -> CommandResults:
     """
     Sends an uninstall command to all agents matching the input filter.
     """
+    context = {}
     query = args.get('query', '')
 
     agent_id = argToList(args.get('agent_id'))
@@ -1654,9 +1894,20 @@ def uninstall_agent(client: Client, args: dict) -> str:
 
     response = client.uninstall_agent_request(query, agent_id, group_id)
     affected_agents = response.get('affected', 0)
+    context = {
+        "Affected": affected_agents
+    }
     if affected_agents > 0:
-        return f'Uninstall was sent to {affected_agents} agent(s).'
-    return 'No agents were affected.'
+        meta = f'Uninstall was sent to {affected_agents} agent(s).'
+    else:
+        meta = 'No agents were affected.'
+    
+    return CommandResults(
+        readable_output=tableToMarkdown('Sentinel One - Uninstall Agent', context, metadata=meta, removeNull=True),
+        outputs_prefix='SentinelOne.uninstall',
+        outputs_key_field='Affected',
+        outputs=context,
+        raw_response=response)
 
 
 # Event Commands
@@ -2077,12 +2328,16 @@ def main():
             'sentinelone-update-star-rule': update_star_rule,
             'sentinelone-enable-star-rules': enable_star_rules,
             'sentinelone-disable-star-rules': disable_star_rules,
-            'sentinelone-delete-star-rule': delete_star_rule
+            'sentinelone-delete-star-rule': delete_star_rule,
             'sentinelone-add-hash-to-blocklist': add_hash_to_blocklist,
             'sentinelone-remove-hash-from-blocklist': remove_hash_from_blocklist,
             'sentinelone-get-blocklist': get_blocklist,
             'sentinelone-fetch-file': fetch_file,
             'sentinelone-download-fetched-file': download_fetched_file,
+            'sentinelone-write-threat-note': write_threat_note,
+            'sentinelone-create-ioc': create_ioc,
+            'sentinelone-delete-ioc': delete_ioc,
+            'sentinelone-get-iocs': get_iocs,
         },
     }
 
