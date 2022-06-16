@@ -285,10 +285,13 @@ def rasterize_webdriver(path: str, width: int, height: int, r_type: RasterizeTyp
 
 
 def rasterize_headless_cmd(path: str, width: int, height: int, r_type: RasterizeType = RasterizeType.PNG, wait_time: int = 0,
-                           offline_mode: bool = False, max_page_load_time: int = 180):
+                           offline_mode: bool = False, max_page_load_time: int = 180, full_screen: bool = False):
     demisto.debug(f'rasterizing headless cmd mode for path: [{path}]')
     if offline_mode:
         raise NotImplementedError(f'offile_mode: {offline_mode} is not supported in Headless CLI mode')
+    if full_screen:
+        demisto.info(f'full_screen param: [{full_screen}] ignored in headless cmd mode.'
+                     f' Will use width: : {width} and height: {height}.')
     cmd_options = merge_options(DEFAULT_CHROME_OPTIONS, USER_CHROME_OPTIONS)
     cmd_options.insert(0, CHROME_EXE)
     if width > 0 and height > 0:
