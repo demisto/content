@@ -178,9 +178,13 @@ def get_request_params(**kwargs: dict) -> dict:
     from_time = datetime.strftime(dateparser.parse(fetch_from, settings={'TIMEZONE': 'UTC'}) or default_from_day, DATETIME_FORMAT)
 
     params = {
-        'url': f'{str(kwargs.get("url", "")).removesuffix("/")}/RedRock/Query',
+        'url': f"{str(kwargs.get('url', '')).removesuffix('/')}/RedRock/Query",
         'data': json.dumps({
-            "Script": f"Select {', '.join(EVENT_FIELDS)} from Event where WhenOccurred > '{from_time}'"
+            'Script': f"Select {', '.join(EVENT_FIELDS)} from Event where WhenOccurred > '{from_time}'",
+            'args': {
+                'PageNumber': 1,
+                'PageSize': kwargs.get('limit', 1000)
+            }
         }),
         'verify': not kwargs.get('insecure')
     }
