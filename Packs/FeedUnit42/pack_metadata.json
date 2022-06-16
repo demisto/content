@@ -1,5 +1,5 @@
 {
-    "name": "Unit42 Feed",
+    "name": "Unit42 Feed (Deprecated)",
     "description": "Unit42 feed of published IOCs which contains malicious indicators.",
     "support": "xsoar",
     "serverMinVersion": "5.5.0",
