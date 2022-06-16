@@ -1,8 +1,8 @@
 [MODEL: dataset ="VMware_vCenter_raw", model=Audit] 
 filter _raw_log contains "| vlsi |" or _raw_log contains "| vim" or _raw_log contains "jointool" or _raw_log contains "heard-" or _raw_log contains "Stats"  or _raw_log contains "localhost" or _raw_log contains "Thread" or _raw_log contains "thread" or _raw_log contains "certificates" or _raw_log contains "DEBUG" or _raw_log contains "INFO" or _raw_log contains "appmgmt" or _raw_log contains "cloudvm" or _raw_log contains "pool" or _raw_log contains "vmon"
-| alter Timestamp0= arrayindex(regextract(_raw_log ,"(\d+\-\d+\-\d+\w\d+\:\d+\:\d+\.\d+\w+)") ,0)
-| alter Timestamp1 = arrayindex(regextract(_raw_log ,"\[(\d+\-\d+\-\d+\s\d+\:\d+\:\d+)") ,0)
-| alter Timestamp = coalesce(Timestamp0 ,Timestamp1 )
+| alter Date = arrayindex(regextract(_raw_log ,"(\d+\-\d+\-\d+).\d+\:\d+\:\d+") ,0)
+| alter Hour = arrayindex(regextract(_raw_log ,"\d+\-\d+\-\d+.(\d+\:\d+\:\d+)") ,0)
+| alter TimeStamp = concat(Date," ",Hour)
 | alter LogLevel = arrayindex(regextract(_raw_log ,"\d+\-\d+\-\d+\w\d+\:\d+\:\d+\.\d+\w+\s\|\s+(\S+)\s\s\|") ,0)
 | alter LogLeve2 = arrayindex(regextract(_raw_log ,"\[\w+\]\[(\w+)"),0)
 | alter LogLeve3 = arrayindex(regextract(_raw_log ,"\[\w+\-\d+\-\w+\-\S+\s(\w+)"),0)
@@ -21,7 +21,7 @@ filter _raw_log contains "| vlsi |" or _raw_log contains "| vim" or _raw_log con
 | alter originator=arrayindex(regextract(_raw_log ,"Originator\@(\d+)") ,0)
 | alter sub = arrayindex(regextract(_raw_log ,"(\w+)\sopID") ,0) 
 | alter opID= arrayindex(regextract(_raw_log ,"opID\=([^\]]+)") ,0)
-| alter XDM.Audit.event_timestamp =parse_timestamp("YYYY-MM-DDTHH:MM:SS.sssZ",Timestamp)
+| alter XDM.Audit.event_timestamp =parse_timestamp("%Y-%m-%d %H:%M:%E",TimeStamp)
 , XDM.Audit.threat.description = Message
 | alter XDM.Audit.audited_resource.id =opID
 | alter XDM.Audit.TriggeredBy.identity.uuid= originator 
@@ -43,7 +43,7 @@ filter _raw_log contains "vpxd" or _raw_log contains "[vmafdd]" or _raw_log cont
 | alter XDM.Auth.threat.description = Message
 , XDM.Auth.threat.name  = eventName_vmafdd
 , XDM.Auth.Client.user.username  = user
-, XDM.Auth.event_timestamp  = parse_timestamp("",Timestamp);
+, XDM.Auth.event_timestamp  = parse_timestamp("",TimeStamp);
 
 [MODEL: dataset ="VMware_vCenter_raw", model=Network] 
 filter _raw_log contains "tomcat" or _raw_log contains "HTTP" 
