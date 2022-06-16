@@ -4396,6 +4396,7 @@
         {
             "playbookID": "CrowdStrike_Falcon_X_-Test-Detonate_File",
             "fromversion": "6.1.0",
+            "memory_threshold": 90,
             "integrations": [
                 "CrowdStrike Falcon X"
             ],
