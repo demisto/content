@@ -10,6 +10,7 @@ import json
 from stix2 import Bundle, ExternalReference, Indicator, Vulnerability
 from stix2 import AttackPattern, Campaign, Malware, Infrastructure, IntrusionSet, Report, ThreatActor
 from stix2 import Tool, CourseOfAction
+from typing import Any, Callable
 
 
 def main():
@@ -30,7 +31,7 @@ def main():
         "registry key": "[windows-registry-key:key = '{}']"
     }
 
-    SDOs: dict[str, any] = {
+    SDOs: dict[str, Callable] = {
         "malware": Malware,
         "attack pattern": AttackPattern,
         "campaign": Campaign,
@@ -59,7 +60,7 @@ def main():
     indicators = []
 
     for indicator_fields in all_args:
-        kwargs: dict[str, any] = {"allow_custom": True}
+        kwargs: dict[str, Any] = {"allow_custom": True}
 
         demisto_indicator_type = all_args[indicator_fields].get('indicator_type', 'Unknown')
 
