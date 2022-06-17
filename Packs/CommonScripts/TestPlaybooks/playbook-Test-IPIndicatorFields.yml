@@ -1,21 +1,22 @@
 id: Test IP Indicator Fields
 version: -1
 name: Test IP Indicator Fields
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 840e9af7-bd61-487b-86ff-8ab283b84ce0
     type: start
     task:
       id: 840e9af7-bd61-487b-86ff-8ab283b84ce0
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     separatecontext: false
     view: |-
       {
@@ -27,8 +28,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "1":
-    id: "1"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
     taskid: 7e471176-b33d-4e40-8641-35293e602811
     type: regular
     task:
@@ -42,96 +47,24 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
-      accounttype: {}
-      actor: {}
-      address: {}
-      admincountry: {}
-      adminemail: {}
-      adminname: {}
-      adminphone: {}
       asn:
         simple: test
-      associatedfilenames: {}
-      biosversion: {}
-      comment: {}
-      country: {}
-      creationdate: {}
-      customFields: {}
-      cvedescription: {}
-      cvss: {}
       detectionengines:
-        simple: "5"
-      devicemodel: {}
-      dhcpserver: {}
-      displayname: {}
-      dns: {}
+        simple: '5'
       domainname:
         simple: TestName
-      domainstatus: {}
       emailaddress:
         simple: test@demisto.com
-      entryid: {}
-      expirationdate: {}
-      fileextension: {}
-      filetype: {}
-      geocountry: {}
-      geolocation: {}
-      groups: {}
-      hostname: {}
-      id: {}
       internal:
-        simple: "true"
-      ipaddress: {}
-      macaddress: {}
+        simple: 'true'
       malwarefamily:
         simple: test
-      md5: {}
-      memory: {}
-      merge: {}
-      modified: {}
-      name: {}
-      nameservers: {}
-      operatingsystem: {}
-      operatingsystemversion: {}
-      organization: {}
-      organizationalunitou: {}
-      path: {}
       positivedetections:
-        simple: "1"
-      processor: {}
-      processors: {}
-      published: {}
-      registrantcountry: {}
-      registrantemail: {}
-      registrantname: {}
-      registrantphone: {}
-      registrarabuseemail: {}
-      registrarabusephone: {}
-      registrarname: {}
-      relatedIncidents: {}
-      reputation: {}
-      seenNow: {}
-      sha1: {}
-      sha256: {}
-      sha512: {}
-      signatureauthentihash: {}
-      signaturecopyright: {}
-      signaturedescription: {}
-      signaturefileversion: {}
-      signatureinternalname: {}
-      signed: {}
-      size: {}
-      source: {}
-      sourceTimeStamp: {}
-      ssdeep: {}
-      subdomains: {}
-      tags: {}
+        simple: '1'
       type:
         simple: IP
-      updateddate: {}
-      username: {}
       value:
         simple: 5.6.4.1
     separatecontext: false
@@ -145,25 +78,31 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "2":
-    id: "2"
-    taskid: 0248968f-b8f4-47e5-8d89-743b3cb8d5c0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '2':
+    id: '2'
+    taskid: eb9497c2-8f49-456e-81d4-fc193aea17ef
     type: regular
     task:
-      id: 0248968f-b8f4-47e5-8d89-743b3cb8d5c0
+      id: eb9497c2-8f49-456e-81d4-fc193aea17ef
       version: -1
       name: Get Created Indicator
-      description: Gets the created indicator
-      scriptName: GetIndicator
+      description: commands.local.cmd.find.indicators
       type: regular
-      iscommand: false
-      brand: ""
+      iscommand: true
+      brand: Builtin
+      script: Builtin|||findIndicators
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     scriptarguments:
-      value:
-        simple: 5.6.4.1
+      extend-context:
+        simple: Indicator=
+      query:
+        simple: value:5.6.4.1
     separatecontext: false
     view: |-
       {
@@ -175,8 +114,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "3":
-    id: "3"
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '3':
+    id: '3'
     taskid: e325aea4-599a-43cc-88cb-f831331ecc5b
     type: condition
     task:
@@ -186,13 +129,13 @@ tasks:
       description: Asserts custom fields were populated correctly
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "4"
+      yes:
+      - '4'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -213,7 +156,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "5"
+              simple: '5'
       - - operator: isEqualString
           left:
             value:
@@ -261,8 +204,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "4":
-    id: "4"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '4':
+    id: '4'
     taskid: b390bc91-a3ee-4183-8066-40a23f49656c
     type: title
     task:
@@ -271,7 +218,8 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -283,6 +231,10 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -298,3 +250,7 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+contentitemexportablefields:
+  contentitemfields: {}
+system: true
+description: 'Test creation of an IP indicator'
