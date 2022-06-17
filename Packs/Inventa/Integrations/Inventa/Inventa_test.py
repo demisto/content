@@ -143,8 +143,6 @@ def mocker_automate(mocker, command_name, method_names):
     mocker.patch.object(demisto, "args", return_value=mock_args(command_name))
     mocker.patch.object(demisto, "command", return_value=command_name)
     mocker.patch.object(demisto, 'results')
-    # mocker.patch("demistomock.callingContext", return_value={}, new_callable=mocker.PropertyMock)
-    # mocker.patch.object(demisto, "callingContext", return_value={})
     for method_name in method_names:
         mocker.patch.object(Client, method_name, return_value=executeClient(method_name))
 
@@ -222,7 +220,6 @@ def test_get_datasubjects_cmd(mocker):
     main()
     assert demisto.results.call_count == 1
     results = demisto.results.call_args[0]
-    # assert results[0]["Contents"] == mock_data.get(command_name, "")
 
     A = results[0]["Contents"]
     B = mock_data.get(command_name, "")[0]
@@ -313,7 +310,6 @@ def test_get_sources_cmd(mocker):
     results = demisto.results.call_args[0]
     A = results[0]["Contents"][0]
     B = mock_data.get(command_name, "")[0]
-    # assert B == {}
     assert A["id"] == B["id"]
     assert A["applianceName"] == B["applianceName"]
     assert A["timestamp"] == B["timestamp"]
