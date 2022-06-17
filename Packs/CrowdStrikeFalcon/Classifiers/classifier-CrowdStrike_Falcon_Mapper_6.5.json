@@ -534,7 +534,7 @@
                                     "item": {
                                         "isContext": true,
                                         "value": {
-                                            "simple": "detection_id"
+                                            "simple": "incident_id"
                                         }
                                     }
                                 },
