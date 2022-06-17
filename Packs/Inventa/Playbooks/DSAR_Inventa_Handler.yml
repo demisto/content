@@ -6,10 +6,10 @@ starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: ebf0ff3b-0bb6-44f1-8500-028313fbb5f4
+    taskid: 7dc09ba8-13c6-4678-8ec4-9ca5a1489912
     type: start
     task:
-      id: ebf0ff3b-0bb6-44f1-8500-028313fbb5f4
+      id: 7dc09ba8-13c6-4678-8ec4-9ca5a1489912
       version: -1
       name: ''
       description: Entry point
@@ -23,7 +23,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": -60
+          "y": -350
         }
       }
     note: false
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '9':
     id: '9'
-    taskid: 9064b2b8-c337-4926-8692-5d8a5fa4aa4f
+    taskid: 8feb3370-b3ea-40ef-8d01-36e0b26541fa
     type: regular
     task:
-      id: 9064b2b8-c337-4926-8692-5d8a5fa4aa4f
+      id: 8feb3370-b3ea-40ef-8d01-36e0b26541fa
       version: -1
       name: get piis
       description: Get PII details from daatasubjest
@@ -57,13 +57,17 @@ tasks:
       retry-interval:
         simple: '5'
       datasubject_id:
-        simple: ${Inventa.DataSubjects.datasubject_id}
+        complex:
+          root: Inventa.DataSubjects
+          accessor: datasubject_id
+          transformers:
+          - operator: LastArrayElement
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 670,
-          "y": 1140
+          "y": 1110
         }
       }
     note: false
@@ -79,10 +83,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '15':
     id: '15'
-    taskid: 2c383620-cd29-4880-8854-26a821c09641
+    taskid: 9046859d-df10-42ab-8bdb-7258dbe7f760
     type: title
     task:
-      id: 2c383620-cd29-4880-8854-26a821c09641
+      id: 9046859d-df10-42ab-8bdb-7258dbe7f760
       version: -1
       name: Done
       description: Done
@@ -94,7 +98,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": 1470
+          "y": 1440
         }
       }
     note: false
@@ -106,10 +110,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '20':
     id: '20'
-    taskid: 5cbd8abb-9cea-4099-83d5-4e647c86c137
+    taskid: e4f3e460-9a29-4c35-805d-721d2fd9d43b
     type: regular
     task:
-      id: 5cbd8abb-9cea-4099-83d5-4e647c86c137
+      id: e4f3e460-9a29-4c35-805d-721d2fd9d43b
       version: -1
       name: Link
       description: commands.local.cmd.linkIncidents
@@ -140,7 +144,7 @@ tasks:
       {
         "position": {
           "x": 870,
-          "y": 820
+          "y": 790
         }
       }
     note: false
@@ -152,10 +156,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '21':
     id: '21'
-    taskid: 2e786200-a4f2-4016-8210-76f8c6d68b5f
+    taskid: e639e5c0-da47-4a62-8f54-5ac076764609
     type: regular
     task:
-      id: 2e786200-a4f2-4016-8210-76f8c6d68b5f
+      id: e639e5c0-da47-4a62-8f54-5ac076764609
       version: -1
       name: Find related incidents
       description: Searches Demisto incidents
@@ -174,7 +178,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": 490
+          "y": 430
         }
       }
     note: false
@@ -186,10 +190,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '27':
     id: '27'
-    taskid: 444210fe-04c6-4678-8047-7249b65911dd
+    taskid: 230e0777-4e34-4f4c-8492-a114190a7f05
     type: regular
     task:
-      id: 444210fe-04c6-4678-8047-7249b65911dd
+      id: 230e0777-4e34-4f4c-8492-a114190a7f05
       version: -1
       name: PIIs to Grid
       description: Creates a Grid table from items or key-value pairs.
@@ -216,7 +220,7 @@ tasks:
       {
         "position": {
           "x": 670,
-          "y": 1290
+          "y": 1270
         }
       }
     note: false
@@ -228,10 +232,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '29':
     id: '29'
-    taskid: eed298fb-4670-489a-8c49-cc866ed77f41
+    taskid: b84ec5f3-8faf-4bd8-837f-102acf34ede0
     type: title
     task:
-      id: eed298fb-4670-489a-8c49-cc866ed77f41
+      id: b84ec5f3-8faf-4bd8-837f-102acf34ede0
       version: -1
       name: Handle Context
       description: Handle Context
@@ -247,7 +251,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": 990
+          "y": 960
         }
       }
     note: false
@@ -259,10 +263,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '30':
     id: '30'
-    taskid: 4cb712ac-6be2-4d3c-85db-17e72a42b89e
+    taskid: 6fbb16e9-ec8b-4bab-877b-ad8e8f8479b8
     type: condition
     task:
-      id: 4cb712ac-6be2-4d3c-85db-17e72a42b89e
+      id: 6fbb16e9-ec8b-4bab-877b-ad8e8f8479b8
       version: -1
       name: Check if related incidents list is empty
       description: Check if related incidents found
@@ -300,7 +304,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": 650
+          "y": 620
         }
       }
     note: false
@@ -312,10 +316,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '31':
     id: '31'
-    taskid: 4c52dec9-eedf-4d3c-85a4-0b4c770cf6b2
+    taskid: 08af62e7-7a8d-4dde-85d6-c7e1e62df1c6
     type: regular
     task:
-      id: 4c52dec9-eedf-4d3c-85a4-0b4c770cf6b2
+      id: 08af62e7-7a8d-4dde-85d6-c7e1e62df1c6
       version: -1
       name: Validate Inputs
       description: Validates incident's inputs
@@ -328,7 +332,7 @@ tasks:
       - '35'
     scriptarguments:
       birthday:
-        simple: ${incident.inventabirthday}
+        simple: ${incident.birthday}
       cc_number:
         simple: ${incident.inventacreditcardnumber}
       city:
@@ -338,7 +342,7 @@ tasks:
       driver_license:
         simple: ${incident.inventadriverlicense}
       full_name:
-        simple: ${incident.inventafullname}
+        simple: ${incident.fullname}
       given_name:
         simple: ${incident.givenname}
       national_id:
@@ -364,7 +368,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": 90
+          "y": -200
         }
       }
     note: false
@@ -376,10 +380,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '33':
     id: '33'
-    taskid: de7118b3-b5f0-4429-8bf5-06eb7d5fb32c
+    taskid: 183a6396-3d16-4b81-879d-1692c228e7e2
     type: regular
     task:
-      id: de7118b3-b5f0-4429-8bf5-06eb7d5fb32c
+      id: 183a6396-3d16-4b81-879d-1692c228e7e2
       version: -1
       name: Get sources
       description: Get sources details
@@ -392,13 +396,17 @@ tasks:
       - '34'
     scriptarguments:
       datasubject_id:
-        simple: ${Inventa.DataSubjects.datasubject_id}
+        complex:
+          root: Inventa.DataSubjects
+          accessor: datasubject_id
+          transformers:
+          - operator: LastArrayElement
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 270,
-          "y": 1140
+          "y": 1110
         }
       }
     note: false
@@ -410,10 +418,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '34':
     id: '34'
-    taskid: c244b5dd-d03c-4d3c-8d20-7b017e532b17
+    taskid: a52d5a4c-fe1a-4ae5-8d45-02cc350606d9
     type: regular
     task:
-      id: c244b5dd-d03c-4d3c-8d20-7b017e532b17
+      id: a52d5a4c-fe1a-4ae5-8d45-02cc350606d9
       version: -1
       name: Sources to Grid
       description: Creates a Grid table from items or key-value pairs.
@@ -440,7 +448,7 @@ tasks:
       {
         "position": {
           "x": 270,
-          "y": 1290
+          "y": 1270
         }
       }
     note: false
@@ -452,10 +460,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '35':
     id: '35'
-    taskid: cad99c88-0733-428a-8a60-e0f0091d0c46
+    taskid: c8ad3715-07f6-4e26-8807-70729962cda6
     type: regular
     task:
-      id: cad99c88-0733-428a-8a60-e0f0091d0c46
+      id: c8ad3715-07f6-4e26-8807-70729962cda6
       version: -1
       name: DataSubject id
       description: Retrieves ID of a data subject from passed constraints
@@ -465,40 +473,137 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '21'
+      - '36'
     scriptarguments:
       birthday:
-        simple: ${inputs.Birthday}
+        simple: ${incident.birthday}
       cc_number:
-        simple: ${inputs.Credit Card Number}
+        simple: ${incident.inventacreditcardnumber}
       city:
-        simple: ${inputs.City}
+        simple: ${incident.city}
       driver_license:
-        simple: ${inputs.Driver License}
+        simple: ${incident.inventadriverlicense}
       full_name:
-        simple: ${inputs.Full Name}
+        simple: ${incident.fullname}
       given_name:
-        simple: ${inputs.First Name}
+        simple: ${incident.givenname}
       national_id:
-        simple: ${inputs.National ID}
+        simple: ${incident.inventanationalid}
       passport_number:
-        simple: ${inputs.Passport Number}
+        simple: ${incident.inventapassportnumber}
       phone_number:
-        simple: ${inputs.Phone Number}
+        simple: ${incident.phonenumber}
       street_address:
-        simple: ${inputs.Street Address}
+        simple: ${incident.streetaddress}
       surname:
-        simple: ${inputs.Surname}
+        simple: ${incident.surname}
       tax_id:
-        simple: ${inputs.Tax ID}
+        simple: ${incident.inventataxid}
       vehicle_number:
-        simple: ${inputs.Vehicle Number}
+        simple: ${incident.inventavehiclenumber}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 470,
-          "y": 290
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Inventa DSAR DataSubject ID
+      output:
+        complex:
+          root: Inventa.DataSubjects
+          accessor: datasubject_id
+          transformers:
+          - operator: LastArrayElement
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '36':
+    id: '36'
+    taskid: 2ac23655-3d38-474b-88e6-842d82b81b5f
+    type: condition
+    task:
+      id: 2ac23655-3d38-474b-88e6-842d82b81b5f
+      version: -1
+      name: Check for Datasubject Id
+      description: Check for Datasubject Id
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '37'
+      yes:
+      - '21'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: Inventa.DataSubjects
+                accessor: datasubject_id
+                transformers:
+                - operator: LastArrayElement
+            iscontext: true
+          right:
+            value:
+              simple: '0'
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '37':
+    id: '37'
+    taskid: a041af30-f9dc-4db1-862f-9a92d87bb758
+    type: regular
+    task:
+      id: a041af30-f9dc-4db1-862f-9a92d87bb758
+      version: -1
+      name: Close the incident
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments:
+      closeNotes:
+        simple: |-
+          No such datasubject found in Inventa.
+          You may want to recheck whether inputs are correct and reopen the incident if needed.
+      closeReason:
+        simple: No such datasubject found in Inventa.
+      id:
+        complex:
+          root: incident
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1080,
+          "y": 1270
         }
       }
     note: false
@@ -513,10 +618,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1595,
-        "width": 980,
+        "height": 1855,
+        "width": 1190,
         "x": 270,
-        "y": -60
+        "y": -350
       }
     }
   }
