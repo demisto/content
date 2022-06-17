@@ -484,6 +484,14 @@
                         "isVisible": true
                     },
                     {
+                        "fieldId": "incident_fullname",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_birthday",
+                        "isVisible": true
+                    },
+                    {
                         "fieldId": "incident_phonenumber",
                         "isVisible": true
                     },
@@ -493,14 +501,6 @@
                     },
                     {
                         "fieldId": "incident_streetaddress",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_inventafullname",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_inventabirthday",
                         "isVisible": true
                     },
                     {
