@@ -1346,6 +1346,7 @@ def init_filter_args_options():
         'action_local_port': AlertFilterArg('action_local_port', 'EQ', array),
         'action_remote_port': AlertFilterArg('action_remote_port', 'EQ', array),
         'dst_action_external_hostname': AlertFilterArg('dst_action_external_hostname', 'CONTAINS', array),
+        'mitre_technique_id_and_name': AlertFilterArg('mitre_technique_id_and_name', 'CONTAINS', array),
     }
 
 
@@ -1478,9 +1479,12 @@ def create_filter_from_args(args: dict) -> dict:
 
             # relative time frame
             else:
+                search_value = None
                 search_type = 'RELATIVE_TIMESTAMP'
-                date = dateparser.parse(arg_value)
-                search_value = date.strftime("%Y-%m-%dT%H:%M:%S") if date else None
+                relative_date = dateparser.parse(arg_value)
+                if relative_date:
+                    delta_in_milliseconds = int((datetime.now() - relative_date).total_seconds() * 1000)
+                    search_value = str(delta_in_milliseconds)
 
             and_operator_list.append({
                 'SEARCH_FIELD': arg_properties.search_field,
@@ -3181,6 +3185,7 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
     sort_order = args.pop('sort_order', 'DESC')
     prefix = args.pop("integration_context_brand", "CoreApiModule")
     args.pop("integration_name", None)
+    custom_filter = {}
     filter_data['sort'] = [{
         'FIELD': sort_field,
         'ORDER': sort_order
@@ -3195,20 +3200,25 @@ def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResul
         raise DemistoException('Please provide at least one filter argument.')
 
     # handle custom filter
-    custom_filter = args.pop('custom_filter', None)
+    custom_filter_str = args.pop('custom_filter', None)
 
-    if custom_filter:
-        if args:
-            raise DemistoException(
-                'Please provide either "custom_filter" argument or other filter arguments but not both.')
+    if custom_filter_str:
+        for arg in args:
+            if arg not in ['time_frame', 'start_time', 'end_time']:
+                raise DemistoException(
+                    'Please provide either "custom_filter" argument or other filter arguments but not both.')
         try:
-            filter_res = json.loads(custom_filter)
+            custom_filter = json.loads(custom_filter_str)
         except Exception as e:
             raise DemistoException('custom_filter format is not valid.') from e
 
-    # if custom filter was not given, we should create the filter from the given arguments.
-    else:
-        filter_res = create_filter_from_args(args)
+    filter_res = create_filter_from_args(args)
+    if custom_filter:  # if exists, add custom filter to the built filter
+        if 'AND' in custom_filter:
+            filter_obj = custom_filter['AND']
+            filter_res['AND'].extend(filter_obj)
+        else:
+            filter_res['AND'].append(custom_filter)
 
     filter_data['filter'] = filter_res
     demisto.debug(f'sending the following request data: {request_data}')
