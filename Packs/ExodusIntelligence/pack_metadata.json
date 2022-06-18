@@ -1,6 +1,6 @@
 {
     "name": "Exodus Intelligence EVE Platform",
-    "description": "Exodus Intelligence's EVE platform provides access to the latest vulnerabilities available.",
+    "description": "Our integration retrieves intelligence data for our enterprise N-day vulnerability feed via a first-class API and creates indicators in Palo Alto Networks Cortex XSOAR which can be searched and referenced by other content.",
     "support": "partner",
     "currentVersion": "1.0.0",
     "author": "Exodus Intelligence LLC",
@@ -9,9 +9,37 @@
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
-    "useCases": [],
-    "keywords": [],
+    "tags": [
+        "Security",
+        "Threat Intelligence",
+        "Attack",
+        "Courses of Action",
+        "Alerts",
+        "Incident Handling",
+        "Incident Response",
+        "Malware",
+        "Network",
+        "Security"
+    ],
+    "useCases": [
+        "Network Security",
+        "Brute Force",
+        "Vulnerability Management",
+        "Threat Intelligence Management",
+        "Incident Response",
+        "Asset Management",
+        "Case Management",
+        "Default",
+        "Hunting",
+        "Malware"
+    ],
+    "keywords": [
+        "Detection",
+        "Alert",
+        "Enrichment",
+        "Vulnerability",
+        "MITRE"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
