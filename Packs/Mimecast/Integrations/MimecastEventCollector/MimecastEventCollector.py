@@ -207,8 +207,8 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
             (dict): if the event had one of the following fields 'IP', 'SourceIP', 'Recipient'
                     they will the specified filed will be wrapped with an array.
         """
-        for key in ['IP', 'SourceIP', 'Recipient']:
-            if key in event.keys():
+        for key in ['IP', 'SourceIP', 'Recipient', 'Rcpt']:
+            if key in event.keys() and not isinstance(event[key], list):
                 event[key] = [event[key]]
 
     def get_req_object_siem(self):

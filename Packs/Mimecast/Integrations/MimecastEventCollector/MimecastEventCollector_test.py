@@ -132,7 +132,7 @@ def test_process_siem_data():
 
 
 @pytest.mark.parametrize('event, res', [({'IP': '54.243.138.1', 'Dir': 'Outbound', 'Rcpt': 'dimeff@demo-visionary.b41.one'},
-                                         {'IP': ['54.243.138.1'], 'Dir': 'Outbound', 'Rcpt': 'dimeff@demo-visionary.b41.one'}),
+                                         {'IP': ['54.243.138.1'], 'Dir': 'Outbound', 'Rcpt': ['dimeff@demo-visionary.b41.one']}),
                                         ({'a': 'b', 'c': 'd'}, {'a': 'b', 'c': 'd'}),
                                         ({'Rcpt': ['dimeff@demo-visionary.b41.one']}, {'Rcpt': ['dimeff@demo-visionary.b41.one']}),
                                         ({}, {})])

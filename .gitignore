@@ -52,6 +52,3 @@ Packs/**/report_pytest.json
 
 # devcontainer folders
 .devcontainer
-/Packs/MimecastEventCollector1/creds.txt
-/Packs/MimecastEventCollector/Integrations/MimecastEventCollector/creds.txt
-/Packs/Mimecast/Integrations/MimecastEventCollector/creds.txt
