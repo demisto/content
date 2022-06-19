@@ -3,7 +3,7 @@ import json
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-MAX_EVENTS = 15
+MAX_EVENTS = 10
 
 
 def main():
