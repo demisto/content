@@ -365,26 +365,17 @@ class Client(CoreClient):
 
         return reply.get('reply', {})
 
-    def replace_featured_field(self, field_type: str, values: list[str], featured_value: str, comment: str,
-                               ad_type: str = 'group', featured_ad_type: str = 'group') -> dict:
+    def replace_featured_field(self, field_type: str, values: list[str], comments: list[str], ad_type: list[str]) -> dict:
 
         request_data = {
             'request_data': {
                 'fields': [
-                    {
-                        'value': featured_value,
-                        'comment': comment,
-                    }
+                    {'value': field[0], 'comment': field[1], 'type': field[2]} for field in zip(values, comments, ad_type)
+                ] if field_type == 'ad_groups' else [
+                    {'value': field[0], 'comment': field[1]} for field in zip(values, comments)
                 ]
             }
         }
-        if field_type == 'ad_groups':
-            request_data['request_data']['fields'][0]['type'] = featured_ad_type
-            request_data['request_data']['fields'].extend(
-                [{'value': value, 'type': ad_type} for value in values]
-            )
-        else:
-            request_data['request_data']['fields'].extend([{'value': value} for value in values])
 
         reply = self._http_request(
             method='POST',
@@ -1011,24 +1002,24 @@ def get_contributing_event_command(client: Client, args: Dict) -> CommandResults
 
         for alert_id in alert_ids:
             if alert := client.get_contributing_event_by_alert_id(arg_to_number(alert_id, required=True)):
-                offset = max(arg_to_number(args.get('offset', 0)), 0)
-                limit = offset + max(arg_to_number(args.get('limit', 50)), 0)
-                # page_number = arg_to_number(args.get('page_number', 0))
-                # page_size = arg_to_number(args.get('page_size', 50))
-                # first_event = offset or page_size * page_number or 0
-                # last_event = limit or page_size * page_number + 50 or 50
+                page_number = max(arg_to_number(args.get('page_number', 1)), 1) - 1  # Min & default zero (First page)
+                page_size = max(arg_to_number(args.get('page_size', 50)), 0)  # Min zero & default 50
+                offset = page_number * page_size
+                limit = max(arg_to_number(args.get('limit', 0)), 0) or offset + page_size
 
                 alert_with_events = {
-                    'alert_id': alert_id,
+                    'alert id': alert_id,
                     'events': alert.get('events', [])[offset:limit],
                 }
                 alerts.append(alert_with_events)
 
-        readable_output = tableToMarkdown('Contributing events', alerts, headerTransform=pascalToSpace, removeNull=True)
+        readable_output = tableToMarkdown(
+            'Contributing events', alerts, headerTransform=pascalToSpace, removeNull=True, is_auto_json_transform=True
+        )
         return CommandResults(
             readable_output=readable_output,
             outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ContributingEvent',
-            outputs_key_field='alert_id',
+            outputs_key_field='alert id',
             outputs=alerts,
             raw_response=alerts
         )
@@ -1040,33 +1031,46 @@ def get_contributing_event_command(client: Client, args: Dict) -> CommandResults
 def replace_featured_field_command(client: Client, args: Dict) -> CommandResults:
     field_type = args.get('field_type')
     values = argToList(args.get('values'))
-    featured_value = args.get('featured_value')
-    comment = args.get('comment')
-    ad_type = args.get('ad_type')
-    featured_ad_type = args.get('featured_ad_type')
+    comments = argToList(args.get('comments'))
+    ad_type = argToList(args.get('ad_type'))
 
-    reply = client.replace_featured_field(field_type, values, featured_value, comment, ad_type, featured_ad_type)
+    len_values = len(values)
+    len_comments = len(comments)
+    len_ad_type = len(ad_type)
+
+    if len_values != len_comments:
+        # if the comments list is shorter we add empty comments to the end of the comment list.
+        # if the comments list is longer we cut the comment list to be the same length as the values list.
+        empty_comments = [] * (len_values - len_comments)
+        comments = comments.extend(empty_comments)[:len_values]
+
+    if field_type == 'ad_groups' and len_values != len_ad_type:
+        empty_ad_type = [] * (len_values - len_ad_type)
+        ad_type = ad_type.extend(empty_ad_type)[:len_values]
+
+    reply = client.replace_featured_field(field_type, values, comments, ad_type)
 
     # The reply could be either a boolean (true) if success
     # or a dict in this format: {"err_code": STATUS_CODE, "err_msg": GENERAL_MESSAGE, "err_extra": EXTRA_DATA}
     # For more information refer to:
     # https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-apis/incident-management/replace-featured-hosts
     if not isinstance(reply, dict):
-        result = {
-            # 'field': args.get('field_type'),
-            'old value': args.get('values'),
-            'new value': args.get('featured_value'),
-            'comment': args.get('comment'),
-        }
-        if args.get('field_type') == 'ad_groups':
-            result['old active directory type'] = args.get('ad_type')
-            result['new active directory type'] = args.get('featured_ad_type')
+        result = {}
+        if field_type == 'ad_groups':
+            result[field_type] = [
+                {'value': field[0], 'comment': field[1], 'type': field[2]} for field in zip(values, comments, ad_type)
+            ]
+        else:
+            result[field_type] = [
+                {'value': field[0], 'comment': field[1]} for field in zip(values, comments)
+            ]
 
         readable_output = tableToMarkdown('Replaced featured', result, headerTransform=pascalToSpace, removeNull=True)
+
         return CommandResults(
             readable_output=readable_output,
             outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.FeaturedField',
-            outputs_key_field='new_value',
+            outputs_key_field=field_type,
             outputs=result,
             raw_response=result
         )

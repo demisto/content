@@ -4138,15 +4138,8 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: '0'
-      description: First index to retrieve from. Default value is 0.
-      isArray: false
-      name: offset
-      required: false
-      secret: false
-    - default: false
       defaultValue: '1'
-      description: Page number to retrieve. Default is 1.
+      description: Page number to retrieve. Default (and minimum) is 1.
       isArray: false
       name: page_number
       required: false
@@ -4180,37 +4173,15 @@ script:
       required: true
       secret: false
     - default: false
-      description: The old values that should change
+      description: String value that defines the new field. Maximum length is 256 characters.
       isArray: true
       name: values
       required: true
       secret: false
     - default: false
-      description: The new value for the changed field
-      isArray: true
-      name: featured_value
-      required: true
-      secret: false
-    - default: false
-      description: String that represents additional information regarding the featured
-        alert field.
+      description: String that represents additional information regarding the featured alert field.
       isArray: false
-      name: comment
-      required: false
-      secret: false
-    - auto: PREDEFINED
-      default: false
-      defaultValue: group
-      description: |-
-        String value identifying if you want to replace an active directory group or organizational unit.
-        Valid values are either group or OU.
-        If no value is defined, group is sent by default.
-        Note: It is required when field_type argument is ad_groups
-      isArray: false
-      name: ad_type
-      predefined:
-      - group
-      - ou
+      name: comments
       required: false
       secret: false
     - auto: PREDEFINED
@@ -4220,9 +4191,8 @@ script:
         String value identifying if you want to replace to an active directory group or organizational unit.
         Valid values are either group or OU.
         If no value is defined, group is sent by default.
-        Note: It is required when field_type argument is ad_groups
       isArray: false
-      name: featured_ad_type
+      name: ad_type
       predefined:
       - group
       - ou
