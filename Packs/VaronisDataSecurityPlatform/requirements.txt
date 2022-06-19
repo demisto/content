@@ -1,0 +1,11 @@
+-i https://pypi.org/simple
+certifi==2021.5.30
+cffi==1.14.5
+chardet==4.0.0
+cryptography==3.4.7
+idna==2.10
+ntlm-auth==1.5.0
+pycparser==2.20
+requests-ntlm==1.1.0
+requests==2.25.1
+urllib3==1.26.5
