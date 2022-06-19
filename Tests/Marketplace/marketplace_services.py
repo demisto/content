@@ -1071,6 +1071,7 @@ class Pack(object):
 
         This is done by searching the modified files in the id_set, if the files were not found in id_set,
         then the modified entities probably not relevant for the current marketplace upload.
+        This check is done to identify changed items inside a pack that have both XSIAM and XSOAR entities.
 
         Args:
             id_set: The current id set.
@@ -1671,6 +1672,7 @@ class Pack(object):
             changelog_entry: The version changelog object.
             version: The changelog's version.
             modified_files_data: The data from id_set for the modified entities.
+            marketplace: The marketplace to which the upload is made.
 
         Returns:
             (dict) The filtered changelog entry.
