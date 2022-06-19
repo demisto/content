@@ -79,7 +79,6 @@ class Demisto:
         else:
             self.__do_no_res({'type': 'entryLog', 'args': {'message': msg}})
 
-
     def investigation(self):
         return self.callingContext[u'context'][u'Inv']
 
@@ -102,7 +101,6 @@ class Demisto:
     def get_incidents(self):
         self.raise_exception_if_not_implemented(INTEGRATION, 'get_incidents')
         return self.callingContext[u'context'][u'Incidents']
-
 
     def get_alerts(self):
         self.raise_exception_if_not_implemented(INTEGRATION, 'get_alerts')
@@ -215,12 +213,13 @@ class Demisto:
 
     def directMessage(self, message, username=None, email=None, anyoneCanOpenIncidents=None):
         self.raise_exception_if_not_implemented(INTEGRATION, 'directMessage')
-        tmp = self.__do({'type': 'executeCommand', 'command': 'directMessage', 'args': {'message': message,
-                                                                                        'username': username,
-                                                                                        'email': email,
-                                                                                        'anyoneCanOpenIncidents': anyoneCanOpenIncidents,
-                                                                                        'anyoneCanOpenAlerts': anyoneCanOpenIncidents}})
-        if tmp != None:
+        tmp = self.__do({'type': 'executeCommand', 'command': 'directMessage',
+                         'args': {'message': message,
+                                  'username': username,
+                                  'email': email,
+                                  'anyoneCanOpenIncidents': anyoneCanOpenIncidents,
+                                  'anyoneCanOpenAlerts': anyoneCanOpenIncidents}})
+        if tmp is not None:
             return tmp["res"]
 
     def mirrorInvestigation(self, id, mirrorType, autoClose=False):
@@ -246,12 +245,12 @@ class Demisto:
 
     def getAutoFocusApiKey(self):
         resObj = self.__do({'type': 'executeCommand', 'command': 'getLicenseCustomField', 'args': {'key': 'autofocus'}})
-        if resObj != None:
+        if resObj is not None:
             return resObj['value']
 
     def getLicenseCustomField(self, key):
         resObj = self.__do({'type': 'executeCommand', 'command': 'getLicenseCustomField', 'args': {'key': key}})
-        if resObj != None:
+        if resObj is not None:
             return resObj['value']
 
     def _apiCall(self, name, params=None, data=None):
@@ -356,7 +355,7 @@ class Demisto:
             while (time.time() - start) < timeout:  # type:ignore  [name-defined] # noqa: F821 # pylint: disable=E0602
                 if lock.acquire(False):
                     return True
-                time.sleep(0.1) # type:ignore  [name-defined] # noqa: F821 # pylint: disable=E0602
+                time.sleep(0.1)  # type:ignore  [name-defined] # noqa: F821 # pylint: disable=E0602
             # didn't get the lock
             return False
 
