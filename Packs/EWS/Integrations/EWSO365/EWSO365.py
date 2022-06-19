@@ -371,6 +371,26 @@ class EWSClient:
         message.account = account
         message.send_and_save()
 
+    def reply_mail(self, inReplyTo, to, body, subject, bcc, cc, htmlBody, attachments):
+        account = self.get_account()
+        item_to_reply_to = account.inbox.get(id=inReplyTo)
+        if isinstance(item_to_reply_to, ErrorItemNotFound):
+            raise Exception(item_to_reply_to)
+
+        subject = subject or item_to_reply_to.subject
+        message_body = HTMLBody(htmlBody) if htmlBody else body
+        reply = item_to_reply_to.create_reply(subject='Re: ' + subject, body=message_body, to_recipients=to,
+                                              cc_recipients=cc,
+                                              bcc_recipients=bcc)
+        reply = reply.save(account.drafts)
+        m = account.inbox.get(id=reply.id)
+
+        for attachment in attachments:
+            m.attach(attachment)
+        m.send()
+
+        return m
+
 
 class MarkAsJunk(EWSAccountService):
     """
@@ -1947,6 +1967,22 @@ def send_email(client: EWSClient, to, subject='', body="", bcc=None, cc=None, ht
     return 'Mail sent successfully', {}, {}
 
 
+def reply_mail(client: EWSClient, to, inReplyTo, subject='', body="", bcc=None, cc=None, htmlBody=None,
+               attachIDs="", attachCIDs="", attachNames="", manualAttachObj=None):
+    to = argToList(to)
+    cc = argToList(cc)
+    bcc = argToList(bcc)
+
+    # Basic validation - we allow pretty much everything but you have to have at least a recipient
+    # We allow messages without subject and also without body
+
+
+        # collect all types of attachments
+    attachments = collect_attachments(attachIDs, attachCIDs, attachNames)
+    attachments.extend(collect_manual_attachments(manualAttachObj))
+    client.reply_mail(inReplyTo, to, body, subject, bcc, cc, htmlBody, attachments)
+
+
 def get_item_as_eml(client: EWSClient, item_id, target_mailbox=None):
     """
     Retrieve item as an eml
@@ -2344,6 +2380,7 @@ def sub_main():
             "ews-expand-group": get_expanded_group,
             "ews-mark-items-as-read": mark_item_as_read,
             "send-mail": send_email,
+            "reply-mail": reply_mail,
         }
 
         # commands that may return multiple results or non-note result
