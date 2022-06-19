@@ -161,7 +161,8 @@ def test_update_integration_lists(mocker, new_integrations_names, turned_non_hid
     When:
         - Running 'update_integration_lists' method.
     Then:
-        - Assert the turned non-hidden integrations removed from the modified integrations list and added to the new integration list.
+        - Assert the turned non-hidden integrations removed from the modified integrations list and
+         added to the new integration list.
     """
     mocker.patch('Tests.configure_and_test_integration_instances.packs_names_to_integrations_names',
                  return_value=turned_non_hidden_packs_id)

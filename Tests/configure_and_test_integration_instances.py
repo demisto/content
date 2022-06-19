@@ -269,7 +269,7 @@ class Build:
         for server in self.servers:
             disable_all_integrations(server.client)
 
-    def get_changed_integrations(self, turned_non_hidden: Set[str]) -> Tuple[List[str], List[str]]:
+    def get_changed_integrations(self, turned_non_hidden: Set[str] = None) -> Tuple[List[str], List[str]]:
         """
         Return 2 lists - list of new integrations names and list of modified integrations names since the commit of the git_sha1.
         Args:
