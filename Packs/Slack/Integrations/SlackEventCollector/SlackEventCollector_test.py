@@ -57,6 +57,7 @@ def test_slack_events_params_good(params, expected_params):
 
 @pytest.mark.parametrize('params', [
     {'limit': 'hello'},
+    {'limit': '1001'},
     {'oldest': 'hello'},
     {'latest': 'hello'}
 ])
@@ -73,7 +74,7 @@ def test_slack_events_params_bad(params):
         prepare_query_params(params)
 
 
-def test_fetch_events_with_duplicates(mocker):
+def test_fetch_events(mocker):
     """
     Given:
         - fetch-events call, where oldest = 1521214343, last_id = 1
@@ -88,7 +89,7 @@ def test_fetch_events_with_duplicates(mocker):
     """
     from SlackEventCollector import fetch_events_command
 
-    last_run = {'oldest': 1521214343, 'last_id': '1'}
+    last_run = {'last_id': '1'}
 
     mock_response = MockResponse([
         {'id': '3', 'date_create': 1521214345},
@@ -101,7 +102,7 @@ def test_fetch_events_with_duplicates(mocker):
     assert len(events) == 2
     assert events[0].get('id') == '2'
     assert events[1].get('id') == '3'
-    assert new_last_run['last_id'] == '3' and new_last_run['oldest'] == 1521214345
+    assert new_last_run['last_id'] == '3'
 
 
 def test_get_events(mocker):
@@ -127,7 +128,7 @@ def test_get_events(mocker):
     _, results = get_events_command(Client(base_url=''), args={})
 
     assert len(results.outputs) == 3
-    assert results.outputs_prefix == 'SlackEvents'
+    assert results.raw_response == mock_response.json()
 
 
 def test_test_module(mocker):

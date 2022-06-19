@@ -27,9 +27,9 @@ configuration:
 - display: The maximum number of audit logs to fetch
   name: limit
   type: 0
-  defaultvalue: 1000
+  defaultvalue: 200
   required: false
-  additionalinfo: Maximum is 9999.
+  additionalinfo: Maximum is 1000. You may receive more than the passed `limit` results from a given request if there are multiple logs that were recorded at the exact same time.
 - display: First fetch time interval
   name: oldest
   type: 0
@@ -62,10 +62,16 @@ script:
       - 'false'
       required: true
     - default: false
-      description: Number of results to return, maximum is 9999.
+      description: Number of results to return, maximum is 1000. You may receive more than the passed `limit` results from a given request if there are multiple logs that were recorded at the exact same time.
       isArray: false
       name: limit
       defaultValue: 10
+      required: false
+      secret: false
+    - default: false
+      description: A string pointing at the next page of results. The cursor can be found within the response_metadata field, as part of the raw response of the Audit Logs API call. For further information, visit Slack documentation - https://api.slack.com/docs/pagination#cursors
+      isArray: false
+      name: cursor
       required: false
       secret: false
     - default: false
