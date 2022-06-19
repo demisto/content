@@ -201,3 +201,61 @@ AUDIT_LOG_AFTER_PROCESS = [
         "xsiem_classifier": "audit_event"
     }
 ]
+
+SIEM_LOG_PROCESS_EVENT = [
+    {
+        'siem_data_response': {
+            "type": "MTA",
+            "data": [
+                {
+                    "acc": "CUSA102A236",
+                    "Delivered": False,
+                    "Err": "Connection refused (Connection refused)",
+                    "RejType": "Recipient server unavailable or busy",
+                    "AttCnt": 0,
+                    "Dir": "Inbound",
+                    "ReceiptAck": None,
+                    "MsgId": "<bf4728c5f0c0657a-322064@nodered-mimecast-57449f7688-z6q5g.hamilton321.net>",
+                    "Subject": "Tesing Out of Office Agent",
+                    "Latency": 43470985,
+                    "Sender": "enronmessaging@pacific-concept.b41.one",
+                    "datetime": "2022-06-08T13:02:06-0400",
+                    "Rcpt": [
+                        "jeff.skilling@paloaltonetworks.mime.integration.com"
+                    ],
+                    "AttSize": 0,
+                    "Attempt": 17,
+                    "Snt": 0,
+                    "aCode": "xBACPCanOqaYecLvf58JhA",
+                    "UseTls": "No",
+                    "type": "MTA",
+                    "xsiem_classifier": "siem_log"
+                }
+            ]
+        },
+        'after_process': [{
+            "acc": "CUSA102A236",
+            "Delivered": False,
+            "Err": "Connection refused (Connection refused)",
+            "RejType": "Recipient server unavailable or busy",
+            "AttCnt": 0,
+            "Dir": "Inbound",
+            "ReceiptAck": None,
+            "MsgId": "<bf4728c5f0c0657a-322064@nodered-mimecast-57449f7688-z6q5g.hamilton321.net>",
+            "Subject": "Tesing Out of Office Agent",
+            "Latency": 43470985,
+            "Sender": "enronmessaging@pacific-concept.b41.one",
+            "datetime": "2022-06-08T13:02:06-0400",
+            "Rcpt": [
+                "jeff.skilling@paloaltonetworks.mime.integration.com"
+            ],
+            "AttSize": 0,
+            "Attempt": 17,
+            "Snt": 0,
+            "aCode": "xBACPCanOqaYecLvf58JhA",
+            "UseTls": "No",
+            "type": "MTA",
+            "xsiem_classifier": "siem_log"
+        }]
+    }
+]

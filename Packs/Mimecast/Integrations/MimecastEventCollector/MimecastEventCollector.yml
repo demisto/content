@@ -15,10 +15,6 @@ configuration:
   name: app_key
   required: true
   type: 0
-- display: Email address
-  name: email_address
-  required: true
-  type: 0
 - display: Access Key
   name: access_key
   required: true
@@ -52,7 +48,7 @@ configuration:
   required: false
   type: 8
 description: ''
-display: Mimecase Event Collector
+display: Mimecast Event Collector
 name: Mimecast Event Collector
 script:
   script: ""

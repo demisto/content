@@ -22,9 +22,10 @@ SIEM_EVENTS_FROM_LAST_RUN = 'siem_events_from_last_run'
 AUDIT_LAST_RUN = 'audit_last_run'
 AUDIT_EVENT_DEDUP_LIST = 'audit_event_dedup_list'
 
-LOCAL_LAST_RUN = {'siem_last_run': '',
-                  'audit_last_run': '',
-                  'audit_event_dedup_list': []
+LOCAL_LAST_RUN = {SIEM_LAST_RUN: '',
+                  SIEM_EVENTS_FROM_LAST_RUN: '',
+                  AUDIT_LAST_RUN: [],
+                  AUDIT_EVENT_DEDUP_LIST: []
                   }
 
 AUDIT_EVENT_PAGE_SIZE = 500
@@ -98,7 +99,7 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
         stored = []
         if self.events_from_prev_run and self.options.limit:
             if len(self.events_from_prev_run) >= self.options.limit:
-                demisto.debug(
+                demisto.info(
                     f'{self.options.limit=} reached. \
                     slicing from {len(self.events_from_prev_run)=}.'
                 )
@@ -108,18 +109,18 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
 
             else:
                 stored = self.events_from_prev_run
-                demisto.debug(f'added to stored {self.events_from_prev_run=}')
+                demisto.info(f'added to stored {self.events_from_prev_run=}')
                 self.events_from_prev_run = []
 
         for logs in self._iter_events():
             stored.extend(logs)
             if self.options.limit and len(stored) >= self.options.limit:
-                demisto.debug(
+                demisto.info(
                     f'{self.options.limit=} reached. \
                     slicing from {len(logs)=}.'
                 )
                 self.events_from_prev_run = stored[self.options.limit:]
-                demisto.debug(f'storing {len(self.events_from_prev_run)} siem events for next run')
+                demisto.info(f'storing {len(self.events_from_prev_run)} siem events for next run')
                 return stored[: self.options.limit]
 
         return stored
@@ -133,7 +134,7 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
             return []
 
         while True:
-            demisto.debug(f'\n {len(events)} Siem logs were fetched from mimecast \n')
+            demisto.info(f'\n {len(events)} Siem logs were fetched from mimecast \n')
             yield events
 
             # self.client.set_request_filter('after')    # set here the last run between runs
@@ -150,7 +151,11 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
 
         # End if response is JSON as there is no log file to download
         if content_type == 'application/json':
-            demisto.debug('No more logs available')
+            decoded_response = resp_body.decode('utf8')
+            json_response = json.loads(decoded_response)
+            if fail_reason := json_response.get('fail', []):
+                return_error(f'There was an error with siem events call {fail_reason}')
+            demisto.info('No more logs available')
             return []
         # Process log file
         elif content_type == 'application/octet-stream':
@@ -159,7 +164,6 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
 
             # Save the logs
             events = self.write_file(file_name, resp_body)
-            # events = self.write_file2(resp_body)
             # Save mc-siem-token page token to check point directory
             if events:
                 self.token = resp_headers['mc-siem-token']
@@ -168,22 +172,44 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
             return events
         else:
             # Handle errors
-            demisto.debug('Unexpected response from siem logs')
+            demisto.info('Unexpected response from siem logs')
             headers_list = []
             for header in resp_headers:
                 headers_list.append(header)
                 return_error(f'headers of failed request for siem errors: {headers_list}')
 
-    @staticmethod
-    def process_siem_events(siem_json_resp: list) -> list:
+    def process_siem_events(self, siem_json_resp: list) -> list:
+        """
+        Args:
+            - siem_json_resp (list): a list of the siem events after extracted as json format
+
+        Returns:
+            - list: A flattened list of all fields before under the data part of the resopnse with some
+                        additional fields.
+        """
         siem_log_type = siem_json_resp.get('type')
         data = siem_json_resp.get('data')
         events = []
         for event in data:
             event['type'] = siem_log_type
             event['xsiem_classifier'] = 'siem_log'
+            self.convert_field_to_xdm_type(event)
             events.append(event)
         return events
+
+    @staticmethod
+    def convert_field_to_xdm_type(event: dict) -> dict:
+        """
+        Args:
+            event (dict) - a siem event dict
+
+        Returns:
+            (dict): if the event had one of the following fields 'IP', 'SourceIP', 'Recipient'
+                    they will the specified filed will be wrapped with an array.
+        """
+        for key in ['IP', 'SourceIP', 'Recipient']:
+            if key in event.keys():
+                event[key] = [event[key]]
 
     def get_req_object_siem(self):
         req_obj = {
@@ -217,22 +243,12 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
                     for file in os.listdir(tmpdir):
                         with open(os.path.join(tmpdir, file)) as json_res:
                             extracted_logs_list.extend(self.process_siem_events(json.load(json_res)))
-                            # @TODO instead of append needs to be extend
                     return extracted_logs_list
             except Exception as e:
                 return_error('Error writing file ' + file_name + '. Cannot continue. Exception: ' + str(e))
 
         else:
-            try:
-                with open(file_name, 'w') as f:
-                    f.write(data_to_write)
-            except Exception as e:
-                return_error('Error writing file ' + file_name + '. Cannot continue. Exception: ' + str(e))
-
-    def write_file2(self, data_to_write):
-        my_json = data_to_write.decode('utf8')
-        event = [json.loads(my_json)]
-        return event
+            return_error('We support only compressed siem logs request.')
 
 
 class MimecastGetAuditEvents(IntegrationGetEvents):
@@ -261,7 +277,7 @@ class MimecastGetAuditEvents(IntegrationGetEvents):
             return []
 
         while True:
-            demisto.debug(f'\n {len(events)} Audit logs were fetched from mimecast \n')
+            demisto.info(f'\n {len(events)} Audit logs were fetched from mimecast \n')
             yield events
 
             # self.client.set_request_filter('after')    # set here the last run between runs
@@ -279,7 +295,7 @@ class MimecastGetAuditEvents(IntegrationGetEvents):
             event_list (list) - The processed audit events
         """
         if res.get('fail', []):
-            return_error(f'The was an error with audit events call {res.get("fail")}')
+            return_error(f'There was an error with audit events call {res.get("fail")}')
         data = res.get('data', [])
         pagination = res.get('meta', {}).get('pagination', {})
         event_list = []
@@ -348,13 +364,13 @@ def handle_last_run_entrance(user_inserted_last_run, audit_event_handler: Mimeca
     if not demisto.getLastRun():
         # first time to enter init with user specified time.
         audit_event_handler.start_time = audit_event_handler.to_audit_time_format(start_time_iso)
-        demisto.debug('first time setting last run')
+        demisto.info('first time setting last run')
     else:
         demisto_last_run = demisto.getLastRun()
         audit_event_handler.start_time = demisto_last_run.get(AUDIT_LAST_RUN)
         siem_event_handler.token = demisto_last_run.get(SIEM_LAST_RUN)
         siem_event_handler.events_from_prev_run = demisto_last_run.get(SIEM_EVENTS_FROM_LAST_RUN, [])
-        demisto.debug(f'\n handle_last_run_entrance \n audit start time: {audit_event_handler.start_time} \n'
+        demisto.info(f'\n handle_last_run_entrance \n audit start time: {audit_event_handler.start_time} \n'
                       f'siem next token: {siem_event_handler.token}\n'
                       f'duplicate list last run {demisto_last_run.get(AUDIT_EVENT_DEDUP_LIST)}\n')
 
@@ -388,7 +404,7 @@ def set_audit_next_run(audit_events: list) -> str:
     if not audit_events:
         return ''
     else:
-        return audit_events[0].get('eventTime')
+        return audit_events[0].get('eventTime', '')
 
 
 def handle_last_run_exit(siem_event_handler: MimecastGetSiemEvents, audit_events: list):
@@ -404,21 +420,26 @@ def handle_last_run_exit(siem_event_handler: MimecastGetSiemEvents, audit_events
         None
     """
     demisto_last_run = demisto.getLastRun()
+    # handle audit events last run
     audit_events = dedup_audit_events(audit_events, demisto_last_run.get(AUDIT_EVENT_DEDUP_LIST, []))
     audit_next_run = set_audit_next_run(audit_events) if set_audit_next_run(audit_events) else demisto_last_run.get(
         AUDIT_LAST_RUN)
-    siem_next_run = siem_event_handler.token if siem_event_handler.token else demisto_last_run.get(SIEM_LAST_RUN)
     potential_duplicates_audit = prepare_potential_audit_duplicates_for_next_run(audit_events, audit_next_run)
     audit_dedup_next_run = potential_duplicates_audit if potential_duplicates_audit else demisto_last_run.get(
         AUDIT_EVENT_DEDUP_LIST)
-    siem_fetched_events_for_next_run = siem_event_handler.events_from_prev_run
+    # handle siem events last run
+    siem_next_run = siem_event_handler.token if siem_event_handler.token else demisto_last_run.get(SIEM_LAST_RUN)
+    siem_fetched_events_for_next_run = siem_event_handler.events_from_prev_run if \
+        siem_event_handler.events_from_prev_run else demisto_last_run.get(SIEM_EVENTS_FROM_LAST_RUN)
+
     next_run_obj = {SIEM_LAST_RUN: siem_next_run,
                     SIEM_EVENTS_FROM_LAST_RUN: siem_fetched_events_for_next_run,  # setting for next run
                     AUDIT_LAST_RUN: audit_next_run,
                     AUDIT_EVENT_DEDUP_LIST: audit_dedup_next_run}
     demisto.setLastRun(next_run_obj)
-    demisto.debug(f'\naudit events next run: {audit_next_run} \n siem next run: {siem_next_run} \n'
-                  f'audit potential dups: {audit_dedup_next_run} , siem_events_for_next_run: {len(siem_fetched_events_for_next_run)}')
+    demisto.info(f'\naudit events next run: {audit_next_run} \n siem next run: {siem_next_run} \n'
+                 f'audit potential dups: {audit_dedup_next_run}\n'
+                 f'siem_events_for_next_run: {len(siem_fetched_events_for_next_run)}\n')
 
 
 def prepare_potential_audit_duplicates_for_next_run(audit_events: list, next_run_time: str) -> list:
@@ -460,9 +481,13 @@ def gather_events(siem_events: list, audit_events: list) -> list:
     return events
 
 
+def check_set_lastrun():
+    demisto.setLastRun({'a':'a', 'b':'b'})
+
+
 def main():
     # Args is always stronger. Get last run even stronger
-    demisto.debug('\n started running main\n')
+    demisto.info('\n started running main\n')
     demisto_params = demisto.params() | demisto.args()
     should_push_events = argToBoolean(demisto_params.get('should_push_events', 'false'))
     options = MimecastOptions(**demisto_params)
@@ -473,10 +498,11 @@ def main():
     command = demisto.command()
     handle_last_run_entrance(demisto.params().get('after'), audit_event_handler, siem_event_handler)
     try:
+
         events_audit = audit_event_handler.run()
-        demisto.debug(f'\n Total of {len(events_audit)} Audit Logs were fetched in this run')
+        demisto.info(f'\n Total of {len(events_audit)} Audit Logs were fetched in this run')
         events_siem = siem_event_handler.run()
-        demisto.debug(f'\n Total of {len(events_siem)} Siem Logs were fetched in this run')
+        demisto.info(f'\n Total of {len(events_siem)} Siem Logs were fetched in this run')
 
         if command == 'test-module':
             return_results('ok')
@@ -510,9 +536,18 @@ def main():
                     handle_last_run_exit(siem_event_handler, events_audit)
 
     except Exception as exc:
-        raise exc
-        return_error(f'Failed to execute {command} command.\nError:\n{str(exc)}', error=exc)
+        exc_message = str(exc)
+        if '401' in exc_message:
+            exc_message = exc_message + '\nTry checking your Application key, Access Key, or secret Key'
+        if 'multiple of 4' in exc_message:
+            exc_message = exc_message + '\n Try checking your Secret key - (wrong Secret key length)'
+        if 'HTTPSConnectionPool' in exc_message:
+            exc_message = exc_message + '\n Try checking your Base url'
+
+        return_error(f'Failed to execute {command} command.\nError:\n{exc_message}', error=exc)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
+
+
