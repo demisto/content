@@ -6,7 +6,7 @@ import sys
 SERVER_ERROR_MARKER = '[ERROR-fd5a7750-7182-4b38-90ba-091824478903]'
 
 
-class DemistoGeneral:
+class DemistoGeneral(object):
     """Wrapper class to interface with the Demisto server via stdin, stdout"""
 
     def __init__(self, context):
@@ -165,7 +165,7 @@ class DemistoScript(DemistoGeneral):
     """Wrapper class to interface with the Demisto server via stdin, stdout"""
 
     def __init__(self, context):
-        super().__init__(context)
+        super(DemistoScript, self).__init__(context)
 
     def log(self, msg):
         self._do_no_res({'type': 'entryLog', 'args': {'message': msg}})
@@ -245,7 +245,7 @@ class DemistoIntegration(DemistoGeneral):
     """Wrapper class to interface with the Demisto server via stdin, stdout"""
 
     def __init__(self, context):
-        super().__init__(context)
+        super(DemistoIntegration, self).__init__(context)
         self._heartbeat_enabled = False
         if context.get('command') == 'long-running-execution' and context.get('is_running_heartbeat'):
             self.long_running_heartbeat_thread()
