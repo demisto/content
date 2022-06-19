@@ -8,7 +8,6 @@ from CommonServerUserPython import *  # noqa
 
 from typing import Dict, List, Any, Tuple, Optional
 from ipaddress import IPv4Address, IPv4Network
-import traceback
 
 
 ''' STANDALONE FUNCTION '''
@@ -153,7 +152,6 @@ def main():
     try:
         return_results(aggregate_command(demisto.args()))
     except Exception as ex:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute ExpanseAggregateAttributionDevice. Error: {str(ex)}')
 
 
