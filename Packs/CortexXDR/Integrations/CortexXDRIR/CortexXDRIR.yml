@@ -4122,6 +4122,120 @@ script:
     - contextPath: PaloAltoNetworksXDR.blocklist.removed_hashes
       description: Removed fileHash from blocklist
       type: Number
+  - arguments:
+    - default: false
+      description: The alert ID's from where to retrieve the contributing events.
+      isArray: true
+      name: alert_ids
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of contributing events to retrieve. Default
+        is 50.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: First index to retrieve from. Default value is 0.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '1'
+      description: Page number to retrieve. Default is 1.
+      isArray: false
+      name: page_number
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Page size. Default is 50.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves contributing events for a specific alert.
+    execution: false
+    name: xdr-get-contributing-event
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.ContributingEvent
+      description: Contributing events per alert.
+      type: Unknown
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: The filed type that should change
+      isArray: false
+      name: field_type
+      predefined:
+      - hosts
+      - users
+      - ip_addresses
+      - ad_groups
+      required: true
+      secret: false
+    - default: false
+      description: The old values that should change
+      isArray: true
+      name: values
+      required: true
+      secret: false
+    - default: false
+      description: The new value for the changed field
+      isArray: true
+      name: featured_value
+      required: true
+      secret: false
+    - default: false
+      description: String that represents additional information regarding the featured
+        alert field.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: group
+      description: |-
+        String value identifying if you want to replace an active directory group or organizational unit.
+        Valid values are either group or OU.
+        If no value is defined, group is sent by default.
+        Note: It is required when field_type argument is ad_groups
+      isArray: false
+      name: ad_type
+      predefined:
+      - group
+      - ou
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: group
+      description: |-
+        String value identifying if you want to replace to an active directory group or organizational unit.
+        Valid values are either group or OU.
+        If no value is defined, group is sent by default.
+        Note: It is required when field_type argument is ad_groups
+      isArray: false
+      name: featured_ad_type
+      predefined:
+      - group
+      - ou
+      required: false
+      secret: false
+    deprecated: false
+    description: Replace the featured hosts\users\ips\active-directory_groups listed
+      in your environment.
+    execution: false
+    name: xdr-replace-featured-field
+    outputs:
+    - contextPath: PaloAltoNetworksXDR.FeaturedField
+      type: Unknown
   dockerimage: demisto/python3:3.10.4.29342
   feed: false
   isfetch: true

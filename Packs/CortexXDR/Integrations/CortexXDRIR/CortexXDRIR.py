@@ -349,6 +349,52 @@ class Client(CoreClient):
 
         set_integration_context({'modified_incidents': modified_incidents_context})
 
+    def get_contributing_event_by_alert_id(self, alert_id: int) -> dict:
+        request_data = {
+            "request_data": {
+                "alert_id": alert_id,
+            }
+        }
+
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/alerts/get_correlation_alert_data/',
+            json_data=request_data,
+            timeout=self.timeout,
+        )
+
+        return reply.get('reply', {})
+
+    def replace_featured_field(self, field_type: str, values: list[str], featured_value: str, comment: str,
+                               ad_type: str = 'group', featured_ad_type: str = 'group') -> dict:
+
+        request_data = {
+            'request_data': {
+                'fields': [
+                    {
+                        'value': featured_value,
+                        'comment': comment,
+                    }
+                ]
+            }
+        }
+        if field_type == 'ad_groups':
+            request_data['request_data']['fields'][0]['type'] = featured_ad_type
+            request_data['request_data']['fields'].extend(
+                [{'value': value, 'type': ad_type} for value in values]
+            )
+        else:
+            request_data['request_data']['fields'].extend([{'value': value} for value in values])
+
+        reply = self._http_request(
+            method='POST',
+            url_suffix=f'/featured_fields/replace_{field_type}',
+            json_data=request_data,
+            timeout=self.timeout,
+        )
+
+        return reply.get('reply')
+
 
 def get_incidents_command(client, args):
     """
@@ -958,6 +1004,79 @@ def get_endpoints_by_status_command(client: Client, args: Dict) -> CommandResult
         raw_response=raw_res)
 
 
+def get_contributing_event_command(client: Client, args: Dict) -> CommandResults:
+
+    if alert_ids := argToList(args.get('alert_ids')):
+        alerts = []
+
+        for alert_id in alert_ids:
+            if alert := client.get_contributing_event_by_alert_id(arg_to_number(alert_id, required=True)):
+                offset = max(arg_to_number(args.get('offset', 0)), 0)
+                limit = offset + max(arg_to_number(args.get('limit', 50)), 0)
+                # page_number = arg_to_number(args.get('page_number', 0))
+                # page_size = arg_to_number(args.get('page_size', 50))
+                # first_event = offset or page_size * page_number or 0
+                # last_event = limit or page_size * page_number + 50 or 50
+
+                alert_with_events = {
+                    'alert_id': alert_id,
+                    'events': alert.get('events', [])[offset:limit],
+                }
+                alerts.append(alert_with_events)
+
+        readable_output = tableToMarkdown('Contributing events', alerts, headerTransform=pascalToSpace, removeNull=True)
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ContributingEvent',
+            outputs_key_field='alert_id',
+            outputs=alerts,
+            raw_response=alerts
+        )
+
+    else:
+        return CommandResults(readable_output='The alert_ids argument cannot be empty.')
+
+
+def replace_featured_field_command(client: Client, args: Dict) -> CommandResults:
+    field_type = args.get('field_type')
+    values = argToList(args.get('values'))
+    featured_value = args.get('featured_value')
+    comment = args.get('comment')
+    ad_type = args.get('ad_type')
+    featured_ad_type = args.get('featured_ad_type')
+
+    reply = client.replace_featured_field(field_type, values, featured_value, comment, ad_type, featured_ad_type)
+
+    # The reply could be either a boolean (true) if success
+    # or a dict in this format: {"err_code": STATUS_CODE, "err_msg": GENERAL_MESSAGE, "err_extra": EXTRA_DATA}
+    # For more information refer to:
+    # https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-apis/incident-management/replace-featured-hosts
+    if not isinstance(reply, dict):
+        result = {
+            # 'field': args.get('field_type'),
+            'old value': args.get('values'),
+            'new value': args.get('featured_value'),
+            'comment': args.get('comment'),
+        }
+        if args.get('field_type') == 'ad_groups':
+            result['old active directory type'] = args.get('ad_type')
+            result['new active directory type'] = args.get('featured_ad_type')
+
+        readable_output = tableToMarkdown('Replaced featured', result, headerTransform=pascalToSpace, removeNull=True)
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.FeaturedField',
+            outputs_key_field='new_value',
+            outputs=result,
+            raw_response=result
+        )
+
+    else:
+        return CommandResults(
+            readable_output=json.dumps(reply)
+        )
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -1327,6 +1446,12 @@ def main():  # pragma: no cover
 
         elif command == 'xdr-remove-allowlist-files':
             return_results(remove_allowlist_files_command(client, args))
+
+        elif command == 'xdr-get-contributing-event':
+            return_results(get_contributing_event_command(client, args))
+
+        elif command == 'xdr-replace-featured-field':
+            return_results(replace_featured_field_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
