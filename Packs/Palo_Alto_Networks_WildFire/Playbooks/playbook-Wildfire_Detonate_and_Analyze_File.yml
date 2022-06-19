@@ -267,10 +267,9 @@ tasks:
       version: -1
       name: Is there a file to detonate?
       type: condition
-      description: Checks if there is a file available for detonation.
       iscommand: false
       brand: ""
-      description: ''
+      description: 'Checks if there is a file available for detonation.'
     nexttasks:
       '#default#':
       - "3"
