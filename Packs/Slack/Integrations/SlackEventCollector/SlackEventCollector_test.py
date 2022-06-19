@@ -40,7 +40,7 @@ class MockResponse:
 @pytest.mark.parametrize('params, expected_params', [
     ({'limit': '1'}, {'limit': 1}),
     ({'oldest': '1643806800'}, {'limit': 200, 'oldest': 1643806800}),
-    ({'latest': '02/02/2022 15:00:00'}, {'limit': 1000, 'latest': 1643814000}),
+    ({'latest': '02/02/2022 15:00:00'}, {'limit': 200, 'latest': 1643814000}),
     ({'action': 'user_login'}, {'limit': 200, 'action': 'user_login'}),
 ])
 def test_slack_events_params_good(params, expected_params):
