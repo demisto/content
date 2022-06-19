@@ -45,7 +45,7 @@ class Client(BaseClient):
     def get_logs(self, query_params: dict) -> dict:
         return self._http_request(method='GET', url_suffix='logs', params=query_params)
 
-    def get_logs_with_pagination(self, query_params: dict, last_run: dict) -> list:
+    def get_logs_with_pagination(self, query_params: dict, last_run: dict) -> List[dict]:
         """
         Aggregates logs using cursor-based pagination, until encounters an event
         that was already fetched in the previous run or reaches the end of the pagination.
@@ -53,7 +53,7 @@ class Client(BaseClient):
         If reaches rate limit, stores the last cursor used in the lastRun object,
         and returns the events that have been accumulated so far.
         """
-        aggregated_logs = []
+        aggregated_logs: List[dict] = []
         last_id = last_run.get('last_id')
         try:
             while raw_response := self.get_logs(query_params):

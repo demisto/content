@@ -39,9 +39,9 @@ class MockResponse:
 
 @pytest.mark.parametrize('params, expected_params', [
     ({'limit': '1'}, {'limit': 1}),
-    ({'oldest': '1643806800'}, {'limit': 1000, 'oldest': 1643806800}),
+    ({'oldest': '1643806800'}, {'limit': 200, 'oldest': 1643806800}),
     ({'latest': '02/02/2022 15:00:00'}, {'limit': 1000, 'latest': 1643814000}),
-    ({'action': 'user_login'}, {'limit': 1000, 'action': 'user_login'}),
+    ({'action': 'user_login'}, {'limit': 200, 'action': 'user_login'}),
 ])
 def test_slack_events_params_good(params, expected_params):
     """
@@ -100,8 +100,7 @@ def test_fetch_events(mocker):
     events, new_last_run = fetch_events_command(Client(base_url=''), params={}, last_run=last_run)
 
     assert len(events) == 2
-    assert events[0].get('id') == '2'
-    assert events[1].get('id') == '3'
+    assert events[0].get('id') != '1'
     assert new_last_run['last_id'] == '3'
 
 
@@ -127,7 +126,7 @@ def test_get_events(mocker):
     mocker.patch.object(Session, 'request', return_value=mock_response)
     _, results = get_events_command(Client(base_url=''), args={})
 
-    assert len(results.outputs) == 3
+    assert len(results.raw_response.get('entries', [])) == 3
     assert results.raw_response == mock_response.json()
 
 
