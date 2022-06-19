@@ -695,11 +695,14 @@ class MsGraphClient:
             'GET', suffix_endpoint, params=params
         ).get('value', [])
 
-        exclude_ids_size = len(exclude_ids)
-        if not fetched_emails or exclude_ids_size >= len(fetched_emails):
+        fetched_emails_ids = {email.get('id') for email in fetched_emails}
+        exclude_ids_set = set(exclude_ids)
+        if not fetched_emails or not (filtered_new_email_ids := fetched_emails_ids - exclude_ids_set):
             # no new emails
+            demisto.debug(f'No new emails: {fetched_emails_ids=}. {exclude_ids_set=}')
             return [], exclude_ids, last_fetch
-        new_emails = fetched_emails[exclude_ids_size:exclude_ids_size + self._emails_fetch_limit]
+        new_emails = [mail for mail in fetched_emails
+                      if mail.get('id') in filtered_new_email_ids][:self._emails_fetch_limit]
         last_email_time = new_emails[-1].get('receivedDateTime')
         if last_email_time == last_fetch:
             # next fetch will need to skip existing exclude_ids
@@ -890,6 +893,7 @@ class MsGraphClient:
             'LAST_RUN_ACCOUNT': self._mailbox_to_fetch,
         }
         demisto.info(f"MS-Graph-Listener: fetched {len(incidents)} incidents")
+        demisto.debug(next_run)
 
         return next_run, incidents
 
