@@ -3,7 +3,7 @@ import json
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-MAX_EVENTS = 20
+MAX_EVENTS = 15
 
 
 def main():
@@ -12,7 +12,7 @@ def main():
         events = incident.get('CustomFields', {}).get('events', {})
         if not events:
             return CommandResults()
-        title = f'Offense Events (Showing first {MAX_EVENTS}'
+        title = f'Offense Events (Showing first {MAX_EVENTS})'
         if isinstance(events, list):
             events_arr = []
             for event in events:
@@ -21,7 +21,7 @@ def main():
         else:
             markdown = tableToMarkdown(title, json.loads(events)[:MAX_EVENTS])
 
-        return {'ContentsFormat': formats['markdown'], 'Type': entryTypes['note'], 'Contents': markdown}
+        return CommandResults(outputs=markdown)
     except Exception as exp:
         return_error('could not parse QRadar events', error=exp)
 

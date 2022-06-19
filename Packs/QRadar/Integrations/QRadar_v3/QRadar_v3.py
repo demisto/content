@@ -682,6 +682,8 @@ def insert_to_updated_context(context_data: dict,
                               offense_ids: list = None,
                               should_update_last_fetch: bool = False,
                               should_update_last_mirror: bool = False,
+                              should_add_reset_key: bool = False,
+                              should_force_update: bool = False
                               ):
     """When we have a race condition, insert the changed data from context_data to the updated context data
 
@@ -696,6 +698,10 @@ def insert_to_updated_context(context_data: dict,
         offense_ids = []
     updated_context_data, version = get_integration_context_with_version()
     new_context_data = updated_context_data.copy()
+    if should_force_update:
+        return context_data, version
+    if should_add_reset_key:
+        new_context_data[RESET_KEY] = True
     for id_ in offense_ids:
         # need to update the change offense ids
         for key in {MIRRORED_OFFENSES_QUERIED_CTX_KEY, MIRRORED_OFFENSES_FINISHED_CTX_KEY}:
@@ -718,7 +724,9 @@ def safely_update_context_data(context_data: dict,
                                version: Any,
                                offense_ids: list = None,
                                should_update_last_fetch: bool = False,
-                               should_update_last_mirror: bool = False):
+                               should_update_last_mirror: bool = False,
+                               should_add_reset_key: bool = False,
+                               should_force_update: bool = False):
     """Safely updates context
 
     Args:
@@ -727,6 +735,8 @@ def safely_update_context_data(context_data: dict,
         offense_ids (list, optional): List of offenses ids to change. Defaults to None.
         should_update_last_fetch (bool, optional): If we should update last fetch. Defaults to False
         should_update_last_mirror (bool, optional): If we should update last mirror. Defaults to False
+        should_add_reset_key (bool, optional): If we should add reset key. Defaults to False
+        should_force_update (bool, optional): If we should force update the current context. Defaults to False
 
 
     Raises:
@@ -734,7 +744,11 @@ def safely_update_context_data(context_data: dict,
 
     Returns:
     """
-    if not offense_ids and not should_update_last_fetch and not should_update_last_mirror:
+    if not offense_ids and \
+            not should_update_last_fetch and \
+            not should_update_last_mirror and \
+            not should_add_reset_key and \
+            not should_force_update:
         print_debug_msg('No need to update context, no ids and no last fetch/mirror')
         return
     print_debug_msg(f'Attempting to update context data after version {version}')
@@ -747,7 +761,9 @@ def safely_update_context_data(context_data: dict,
             updated_context, new_version = insert_to_updated_context(context_data,
                                                                      offense_ids,
                                                                      should_update_last_fetch,
-                                                                     should_update_last_mirror)
+                                                                     should_update_last_mirror,
+                                                                     should_add_reset_key,
+                                                                     should_force_update)
 
             set_integration_context(updated_context, version=new_version)
             print_debug_msg(f'Updated integration context after version {new_version}.')
@@ -1294,9 +1310,10 @@ def is_reset_triggered():
     ctx = get_integration_context()
     if ctx and RESET_KEY in ctx:
         print_debug_msg('Reset fetch-incidents.')
-        set_integration_context({MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
-                                 MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
-                                'samples': []})
+        context_data = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
+                        MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
+                        'samples': []}
+        safely_update_context_data(context_data, should_force_update=True)
         return True
     return False
 
@@ -1541,7 +1558,9 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
                                                             fetch_mode=fetch_mode,
                                                             events_count=events_count,
                                                             events_mirrored=events_fetched,
-                                                            failure_message=failure_message
+                                                            events_mirrored_collapsed=len(events),
+                                                            failure_message=failure_message,
+                                                            offense_id=int(offense_id),
                                                             )
     offense['mirroring_events_message'] = mirroring_events_message
 
@@ -2879,9 +2898,8 @@ def qradar_reset_last_run_command() -> str:
     Returns:
         (str): 'fetch-incidents was reset successfully'.
     """
-    ctx = get_integration_context()
-    ctx[RESET_KEY] = True
-    set_integration_context(ctx)
+    ctx, version = get_integration_context_with_version()
+    safely_update_context_data(ctx, version, should_add_reset_key=True)
     return 'fetch-incidents was reset successfully.'
 
 
@@ -3022,9 +3040,15 @@ def qradar_get_mapping_fields_command(client: Client) -> Dict:
     return fields
 
 
-def update_events_mirror_message(mirror_options: Optional[Any], events_limit: int,
-                                 failure_message: str, events_count: int, events_mirrored: int,
-                                 fetch_mode: str) -> str:
+def update_events_mirror_message(mirror_options: Optional[Any],
+                                 events_limit: int,
+                                 failure_message: str,
+                                 events_count: int,
+                                 events_mirrored: int,
+                                 events_mirrored_collapsed: int,
+                                 fetch_mode: str,
+                                 offense_id: int,
+                                 ) -> str:
     """Return the offense's events' mirror error message.
 
     Args:
@@ -3037,7 +3061,8 @@ def update_events_mirror_message(mirror_options: Optional[Any], events_limit: in
     Returns: (str) An updated offense events mirror message.
     """
     mirroring_events_message = 'Unknown'
-    print_debug_msg(f"mirror_options {mirror_options}\n events_limit {events_limit} \n"
+    print_debug_msg(f"Events status for Offense {offense_id}:\n"
+                    f"mirror_options {mirror_options}\n events_limit {events_limit} \n"
                     f"failure_message {failure_message}\n events_count {events_count}\n "
                     f"events_mirrored {events_mirrored}")
 
@@ -3049,7 +3074,7 @@ def update_events_mirror_message(mirror_options: Optional[Any], events_limit: in
         mirroring_events_message = 'Mirroring events did not get all events of the offense'
     elif events_mirrored == events_count:
         mirroring_events_message = 'All available events in the offense were mirrored.'
-    elif events_mirrored == events_limit:
+    elif events_mirrored_collapsed == events_limit:
         mirroring_events_message = 'Mirroring events has reached events limit in this incident.'
 
     return mirroring_events_message
@@ -3121,6 +3146,7 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
 
     failure_message: str = ''
     if mirror_options == MIRROR_OFFENSE_AND_EVENTS:
+        is_events_mirrored = False
         changed_ids_ctx = []
         offenses_queried = context_data.get(MIRRORED_OFFENSES_QUERIED_CTX_KEY, {})
         offenses_finished = context_data.get(MIRRORED_OFFENSES_FINISHED_CTX_KEY, {})
@@ -3132,7 +3158,6 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
             search_id = create_events_search(client, fetch_mode, events_columns, events_limit, int(offense_id))
             offenses_queried[offense_id] = search_id
             changed_ids_ctx.append(offense_id)
-            failure_message = 'In queue.'
         elif offense_id in offenses_finished:
             # if our offense is in finished list, we will get the result
             search_id = offenses_finished[offense_id]
@@ -3141,6 +3166,7 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
                 offense['events'] = search_results.get('events', [])
                 del offenses_finished[offense_id]
                 changed_ids_ctx.append(offense_id)
+                is_events_mirrored = True
             except Exception as e:
                 print_debug_msg(f'No results for {offense_id}. Error: {e}. Stopping execution')
                 time.sleep(FAILURE_SLEEP)
@@ -3152,14 +3178,15 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
                 offense['events'] = events
                 del offenses_queried[offense_id]
                 changed_ids_ctx.append(offense_id)
-            else:
-                failure_message = 'In queue.'
 
         context_data.update({MIRRORED_OFFENSES_QUERIED_CTX_KEY: offenses_queried})
         context_data.update({MIRRORED_OFFENSES_FINISHED_CTX_KEY: offenses_finished})
         safely_update_context_data(context_data, context_version, offense_ids=changed_ids_ctx)
 
         print_context_data_stats(context_data, f"Get Remote Data End for id {offense_id}")
+        if not is_events_mirrored:
+            print_debug_msg(f'Events not mirrored yet for offense {offense_id}')
+            raise DemistoException(f'Events not mirrored yet for offense {offense_id}')
 
     enriched_offense = enrich_offenses_result(client, offense, ip_enrich, asset_enrich)
 
@@ -3172,7 +3199,9 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
         failure_message=failure_message,
         events_count=int(final_offense_data.get('event_count', 0)),
         events_mirrored=events_mirrored,
+        events_mirrored_collapsed=len(final_offense_data.get('events', [])),
         fetch_mode=fetch_mode,
+        offense_id=int(offense_id),
     )
     print_debug_msg(f'offense {offense_id} events_message: {events_message}')
     final_offense_data['last_mirror_in_time'] = datetime.now().isoformat()
@@ -3390,7 +3419,7 @@ def validate_integration_context() -> None:
     if not extract_works:
         cleared_ctx = migrate_integration_ctx(new_ctx)
         print_debug_msg(f"Change ctx context data was cleared and changing to {cleared_ctx}")
-        set_integration_context(cleared_ctx)
+        safely_update_context_data(cleared_ctx, context_version, should_force_update=True)
         print_debug_msg(f"Change ctx context data was cleared and changed to {cleared_ctx}")
 
 
