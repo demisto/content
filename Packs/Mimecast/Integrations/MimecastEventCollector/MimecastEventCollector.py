@@ -7,7 +7,6 @@ import json
 import os
 import base64
 import uuid
-import datetime
 import hashlib
 import hmac
 from zipfile import ZipFile
@@ -79,7 +78,9 @@ class MimecastClient(IntegrationEventsClient):
         return datetime.datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S UTC")
 
     def set_request_filter(self, after: Any):
-        pass
+        # @TODO check how to supress this error
+        if after or not after:
+            pass
 
 
 class MimecastGetSiemEvents(IntegrationGetEvents):
@@ -137,7 +138,6 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
             demisto.info(f'\n {len(events)} Siem logs were fetched from mimecast \n')
             yield events
 
-            # self.client.set_request_filter('after')    # set here the last run between runs
             self.client.request = IntegrationHTTPRequest(**(self.get_req_object_siem()))
             response = self.call()
             events = self.process_siem_response(response)
@@ -280,7 +280,6 @@ class MimecastGetAuditEvents(IntegrationGetEvents):
             demisto.info(f'\n {len(events)} Audit logs were fetched from mimecast \n')
             yield events
 
-            # self.client.set_request_filter('after')    # set here the last run between runs
             self.client.request = IntegrationHTTPRequest(**(self.get_req_object_audit()))
             response = self.call()
             events = self.process_audit_response(json.loads(response.text))
@@ -345,7 +344,7 @@ class MimecastGetAuditEvents(IntegrationGetEvents):
         return json.dumps(payload)
 
     @staticmethod
-    def to_audit_time_format(time_to_convert):
+    def to_audit_time_format(time_to_convert: str):
         """
         converts the iso8601 format (e.g. 2011-12-03T10:15:30+00:00),
         to be mimecast compatible (e.g. 2011-12-03T10:15:30+0000)
