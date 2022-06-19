@@ -51,12 +51,19 @@ if ! command -v poetry >/dev/null 2>&1; then
 fi
 
 echo "Configure poetry to install virutal enviroment in the project repo (will be availible in (.venv)"
-poetry config virtualenvs.in-project true
-echo "Deleting poetry cache"
-rm -rf ~/.cache/pypoetry
+poetry config virtualenvs.in-project true --local
 
+echo "Check if poetry files are valid"
+poetry check
 echo "Installing dependencies..."
-poetry install
+if [ -n "$CI" ]; then
+    echo "Detected CI env. Running extra requiements"
+    poetry install -E build
+else
+    echo "Detected local env."
+    poetry install
+fi
+
 echo "=========================="
 echo "Done setting up virtualenv with poetry"
 echo "Activate the venv by running: poetry shell"
