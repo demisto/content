@@ -347,7 +347,7 @@ def test_create_single_asset_for_offense_enrichment():
                            None,
                            None,
                            None,
-                           ([], SearchQueryStatus.ERROR.value))
+                           ([], SearchQueryStatus.WAIT.value))
                           ])
 def test_poll_offense_events_with_retry(requests_mock, status_exception, status_response, results_response, search_id,
                                         expected):
@@ -1135,10 +1135,19 @@ def test_remote_data_with_events(mocker, offense_id):
     mocker.patch.object(client, 'search_status_get', return_value={'status': 'EXECUTE'})
     offense = {'id': offense_id}
     mocker.patch.object(client, 'offenses_list', return_value=offense)
-    offense_data = get_remote_data_command(client,
-                                           {'mirror_options': MIRROR_OFFENSE_AND_EVENTS},
-                                           {'id': offense_id,
-                                            'lastUpdate': '0'}).mirrored_object
+    if offense_id in context_data[MIRRORED_OFFENSES_FINISHED_CTX_KEY]:
+        offense_data = get_remote_data_command(client,
+                                            {'mirror_options': MIRROR_OFFENSE_AND_EVENTS},
+                                            {'id': offense_id,
+                                                'lastUpdate': '0'}).mirrored_object
+
+    else:
+        # if not finished we expect to get an exception
+        with pytest.raises(DemistoException):
+            get_remote_data_command(client,
+                                    {'mirror_options': MIRROR_OFFENSE_AND_EVENTS},
+                                    {'id': offense_id,
+                                     'lastUpdate': '0'})
 
     updated_context = get_integration_context()
     if offense_id in context_data[MIRRORED_OFFENSES_FINISHED_CTX_KEY]:
@@ -1224,7 +1233,9 @@ def test_integration_context_during_run(test_case_data, mocker):
 
     init_context = test_case_data['init_context']
     init_context |= {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
-                     MIRRORED_OFFENSES_FINISHED_CTX_KEY: {}}
+                     MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
+                     LAST_FETCH_KEY: init_context.get(LAST_FETCH_KEY, 0),
+                     'samples': init_context.get('samples', [])}
 
     set_integration_context(init_context)
     if test_case_data['offenses_first_loop']:
@@ -1257,7 +1268,9 @@ def test_integration_context_during_run(test_case_data, mocker):
         mirror_direction=mirror_direction
     )
     expected_ctx_first_loop |= {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
-                                MIRRORED_OFFENSES_FINISHED_CTX_KEY: {}}
+                                MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
+                                LAST_FETCH_KEY: expected_ctx_first_loop.get(LAST_FETCH_KEY, 0),
+                                'samples': expected_ctx_first_loop.get('samples', [])}
 
     current_context = get_integration_context()
 
@@ -1292,7 +1305,9 @@ def test_integration_context_during_run(test_case_data, mocker):
         expected_ctx_second_loop[k] = v
 
     expected_ctx_second_loop |= {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
-                                 MIRRORED_OFFENSES_FINISHED_CTX_KEY: {}}
+                                 MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
+                                 LAST_FETCH_KEY: expected_ctx_second_loop.get(LAST_FETCH_KEY, 0),
+                                 'samples': expected_ctx_second_loop.get('samples', [])}
 
     current_context = get_integration_context()
     assert current_context == expected_ctx_second_loop
