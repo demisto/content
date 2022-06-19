@@ -34,7 +34,7 @@
             "display_name": "Common Types"
         },
         "PAN-OS": {
-            "mandatory": true,
+            "mandatory": false,
             "display_name": "PAN-OS"
         },
         "ServiceNow": {
@@ -45,9 +45,65 @@
             "mandatory": false,
             "display_name": "Atlassian Jira"
         },
-        "CommonScripts": {
-            "mandatory": true,
+                "CommonScripts": {
+            "mandatory": false,
             "display_name": "Common Scripts"
+        },
+        "CoreAlertFields": {
+            "mandatory": false,
+            "display_name": "Core Alert Fields"
+        },
+        "MailSenderNew": {
+            "mandatory": false,
+            "display_name": "Mail Sender (New)"
+        },
+        "CommonPlaybooks": {
+            "mandatory": true,
+            "display_name": "Common Playbooks"
+        },
+        "EWSMailSender": {
+            "mandatory": false,
+            "display_name": "EWS Mail Sender"
+        },
+        "CrowdStrikeFalconX": {
+            "mandatory": false,
+            "display_name": "CrowdStrike Falcon X"
+        },
+        "Palo_Alto_Networks_WildFire": {
+            "mandatory": false,
+            "display_name": "Palo Alto Networks WildFire"
+        },
+        "FeedMitreAttackv2": {
+            "mandatory": false,
+            "display_name": "MITRE ATT&CK v2"
+        },
+        "AutoFocus": {
+            "mandatory": false,
+            "display_name": "AutoFocus"
+        },
+        "Gmail": {
+            "mandatory": false,
+            "display_name": "Gmail"
+        },
+        "MicrosoftGraphMail": {
+            "mandatory": false,
+            "display_name": "Microsoft Graph Mail"
+        },
+        "VirusTotal": {
+            "mandatory": false,
+            "display_name": "VirusTotal"
+        },
+        "FortiGate":{
+            "mandatory": false,
+            "display_name": "FortiGate"
+        },
+        "CheckpointFirewall":{
+            "mandatory": false,
+            "display_name": "Checkpoint Firewall"
+        },
+        "ShiftManagement":{
+            "mandatory": false,
+            "display_name": "Shift Management"
         }
     },
     "displayedImages": [
