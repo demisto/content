@@ -13,6 +13,7 @@ from zipfile import ZipFile
 import io
 import tempfile
 import re
+from typing import Match
 
 urllib3.disable_warnings()
 
@@ -75,7 +76,7 @@ class MimecastClient(IntegrationEventsClient):
 
     @staticmethod
     def get_hdr_date():
-        return datetime.datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S UTC")
+        return datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S UTC")
 
     def set_request_filter(self, after: Any):
         # @TODO check how to supress this error
@@ -88,8 +89,8 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
     def __init__(self, client: MimecastClient, options: IntegrationOptions):  # pragma: no cover
         super().__init__(client=client, options=options)
         self.token: str = ''
-        self.uri = '/api/audit/get-siem-logs'
-        self.events_from_prev_run = []
+        self.uri: str = '/api/audit/get-siem-logs'
+        self.events_from_prev_run: list = []
 
     @staticmethod
     def get_last_run(events: list) -> dict:
@@ -178,7 +179,7 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
                 headers_list.append(header)
                 return_error(f'headers of failed request for siem errors: {headers_list}')
 
-    def process_siem_events(self, siem_json_resp: list) -> list:
+    def process_siem_events(self, siem_json_resp: dict) -> list:
         """
         Args:
             - siem_json_resp (list): a list of the siem events after extracted as json format
@@ -198,14 +199,14 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
         return events
 
     @staticmethod
-    def convert_field_to_xdm_type(event: dict) -> dict:
+    def convert_field_to_xdm_type(event: dict):
         """
         Args:
             event (dict) - a siem event dict
 
         Returns:
-            (dict): if the event had one of the following fields 'IP', 'SourceIP', 'Recipient'
-                    they will the specified filed will be wrapped with an array.
+            (None) this method works on the response as reference if the event had one of the following fields
+                    'IP', 'SourceIP', 'Recipient' they will the specified filed will be wrapped with an array.
         """
         for key in ['IP', 'SourceIP', 'Recipient', 'Rcpt']:
             if key in event.keys() and not isinstance(event[key], list):
@@ -223,7 +224,7 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
 
     def prepare_siem_log_data(self):
         # Build post body for request
-        post_body = dict()
+        post_body: dict = dict()
         post_body['data'] = [{}]
         post_body['data'][0]['type'] = 'MTA'
         post_body['data'][0]['compress'] = True
@@ -255,11 +256,11 @@ class MimecastGetAuditEvents(IntegrationGetEvents):
 
     def __init__(self, client: MimecastClient, options: IntegrationOptions):  # pragma: no cover
         super().__init__(client=client, options=options)
-        self.page_token = ''
-        self.start_time = ''
-        self.end_time = self.to_audit_time_format(
-            datetime.datetime.now().astimezone().replace(microsecond=0).isoformat())
-        self.uri = '/api/audit/get-audit-events'
+        self.page_token: str = ''
+        self.start_time: str = ''
+        self.end_time: str = self.to_audit_time_format(
+            datetime.now().astimezone().replace(microsecond=0).isoformat())
+        self.uri: str = '/api/audit/get-audit-events'
 
     @staticmethod
     def get_last_run(events: list) -> dict:
@@ -344,13 +345,13 @@ class MimecastGetAuditEvents(IntegrationGetEvents):
         return json.dumps(payload)
 
     @staticmethod
-    def to_audit_time_format(time_to_convert: str):
+    def to_audit_time_format(time_to_convert: str) -> str:
         """
         converts the iso8601 format (e.g. 2011-12-03T10:15:30+00:00),
         to be mimecast compatible (e.g. 2011-12-03T10:15:30+0000)
         """
         regex = r'(?!.*:)'
-        find_last_colon = re.search(regex, time_to_convert)
+        find_last_colon: Match[str] = re.search(regex, time_to_convert)
         index = find_last_colon.start()
         audit_time_format = time_to_convert[:index - 1] + time_to_convert[index:]
         return audit_time_format
