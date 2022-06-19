@@ -1,0 +1,227 @@
+id: Get WildFire Verdict
+version: -1
+name: Get WildFire Verdict
+description: This playbooks checks for WildFire verdict and submits a flip-verdict request if the file found as benign.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 960c2cb2-4524-461c-8350-fa5489560990
+    type: start
+    task:
+      id: 960c2cb2-4524-461c-8350-fa5489560990
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
+    taskid: 495a8d22-588b-490a-89cf-8824a5ba02d8
+    type: condition
+    task:
+      id: 495a8d22-588b-490a-89cf-8824a5ba02d8
+      version: -1
+      name: Check WildFire alert verdict
+      type: condition
+      iscommand: false
+      description: Checks the WildFire alert verdict
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '8'
+      Benign:
+      - '6'
+    separatecontext: false
+    conditions:
+    - label: Benign
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: WildFire.Verdicts
+                accessor: Verdict
+            iscontext: true
+          right:
+            value:
+              simple: '0'
+    - label: Greyware
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: WildFire.Verdicts
+                accessor: Verdict
+            iscontext: true
+          right:
+            value:
+              simple: '2'
+    - label: Unknown
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: WildFire.Verdicts
+                accessor: Verdict
+            iscontext: true
+          right:
+            value:
+              simple: '-102'
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 255
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
+    taskid: e60d0b1b-78a7-4a63-8c2c-fab6e512b101
+    type: regular
+    task:
+      id: e60d0b1b-78a7-4a63-8c2c-fab6e512b101
+      version: -1
+      name: WildFire report  - Flip verdict
+      description: Reports to WildFire about incorrect hash verdict through Cortex.
+      script: '|||core-report-incorrect-wildfire'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      file_hash:
+        complex:
+          root: inputs.FileHash
+      new_verdict:
+        simple: '0'
+      reason:
+        simple: Analysis found the file to be benign.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '7':
+    id: '7'
+    taskid: 7dd4dca3-3ee3-4181-81f5-0c47c5a0b415
+    type: title
+    task:
+      id: 7dd4dca3-3ee3-4181-81f5-0c47c5a0b415
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '8':
+    id: '8'
+    taskid: d2d41659-e271-45ec-8623-c8b433968c28
+    type: title
+    task:
+      id: d2d41659-e271-45ec-8623-c8b433968c28
+      version: -1
+      name: Malware / Phishing
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_6_Benign": 0.65,
+      "1_8_#default#": 0.66
+    },
+    "paper": {
+      "dimensions": {
+        "height": 595,
+        "width": 830,
+        "x": 460,
+        "y": 120
+      }
+    }
+  }
+inputs:
+- key: FileHash
+  value: {}
+  required: false
+  description: The file hash.
+  playbookInputQuery:
+outputs:
+- contextPath: DBotScore
+  description: The Indicator's object
+  type: unknown
+tests:
+- No tests (auto formatted)
