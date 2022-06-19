@@ -1,3 +1,4 @@
+beta: false
 category: Utilities
 commonfields:
   id: Rasterize
@@ -85,6 +86,18 @@ script:
       name: file_name
       required: false
       secret: false
+    - auto: PREDEFINED
+      defaultValue: 'False'
+      description: 'Get the full page. The actual page width and height will be auto calculated up to a max value of
+      8000px. (Marking full_screen as true means that the values for width and height arguments
+      might not be respected).'
+      isArray: false
+      name: full_screen
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
     deprecated: false
     description: Converts the contents of a URL to an image file or a PDF file.
     execution: false
@@ -142,6 +155,18 @@ script:
       name: file_name
       required: false
       secret: false
+    - auto: PREDEFINED
+      defaultValue: 'False'
+      description: 'Get the full page. The actual page width and height will be auto calculated up to a max value of
+      8000px. (Marking full_screen as true means that the values for width and height arguments
+      might not be respected).'
+      isArray: false
+      name: full_screen
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
     deprecated: false
     description: Converts the body of an email to an image file or a PDF file.
     execution: false
@@ -173,6 +198,18 @@ script:
       description: The name the file will be saved as.
       isArray: false
       name: file_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      defaultValue: 'False'
+      description: 'Get the full page. The actual page width and height will be auto calculated up to a max value of
+      8000px. (Marking full_screen as true means that the values for width and height arguments
+      might not be respected).'
+      isArray: false
+      name: full_screen
+      predefined:
+      - 'True'
+      - 'False'
       required: false
       secret: false
     deprecated: false
@@ -223,7 +260,7 @@ script:
     description: Converts a PDF file to an image file.
     execution: false
     name: rasterize-pdf
-  dockerimage: demisto/chromium:1.0.0.30170
+  dockerimage: demisto/chromium:1.0.0.30388
   feed: false
   isfetch: false
   longRunning: false
