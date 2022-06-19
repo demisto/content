@@ -692,9 +692,9 @@ def insert_to_updated_context(context_data: dict,
         should_update_last_fetch (bool, optional): Should update the last_fetch. Defaults to False.
         should_update_last_mirror (bool, optional): Should update the last mirror. Defaults to False.
     """
+    if offense_ids is None:
+        offense_ids = []
     updated_context_data, version = get_integration_context_with_version()
-    if not offense_ids:
-        return updated_context_data, version
     new_context_data = updated_context_data.copy()
     for id_ in offense_ids:
         # need to update the change offense ids
@@ -1455,7 +1455,8 @@ def poll_offense_events(client: Client, search_id: str, offense_id: int, should_
             f'Error while fetching offense {offense_id} events, search_id: {search_id}. Error details: {str(e)} \n'
             f'{traceback.format_exc()}')
         time.sleep(FAILURE_SLEEP)
-        return [], SearchQueryStatus.ERROR.value
+        # return WAIT because it's probably a temporary error due to QRadar service
+        return [], SearchQueryStatus.WAIT.value
 
 
 def poll_offense_events_with_retry(client: Client, search_id: str, offense_id: int,
@@ -1482,7 +1483,9 @@ def poll_offense_events_with_retry(client: Client, search_id: str, offense_id: i
         time.sleep(EVENTS_INTERVAL_SECS)
         events, status = poll_offense_events(client, search_id, offense_id, should_get_events=True)
         if status == SearchQueryStatus.SUCCESS.value:
-            return events, 'Events were fetched successfully.'
+            return events, ''
+        elif status == SearchQueryStatus.ERROR.value:
+            return [], 'Error while getting events.'
     print_debug_msg(f'Max retries for getting events for offense {offense_id}.')
     return [], 'Fetching events is in progress'
 
@@ -1505,7 +1508,8 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
         (Dict): Enriched offense with events.
     """
     offense_id = str(offense['id'])
-    min_events_size = min(offense.get('event_count', 0), events_limit)
+    events_count = offense.get('event_count', 0)
+    min_events_size = min(events_count, events_limit)
     events: List[dict] = []
     failure_message = ''
     search_id = create_search_with_retry(client, fetch_mode, offense, events_columns,
@@ -1523,15 +1527,23 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
         print_debug_msg(f'Fetched {events_fetched} events for offense {offense_id}')
         offense['events'] = events
         if fetch_mode == FetchMode.all_events.value and events_fetched < min_events_size:
+            print_debug_msg(f'Fetch mode is {FetchMode.all_events.value}, '
+                            f'but only {events_fetched}/{min_events_size} events were fetched for offense {offense_id}')
             context_data[MIRRORED_OFFENSES_QUERIED_CTX_KEY][offense_id] = SearchQueryStatus.ERROR.value
             safely_update_context_data(context_data, version, offense_ids=[offense_id])
-            failure_message = 'Not all events were fetched yet.'
     else:
         print_debug_msg(f'No events were fetched for offense {offense_id}'
-                        'Adding to mirroring quueue to be queried again.')
+                        'Adding to mirroring queue to be queried again.')
         context_data[MIRRORED_OFFENSES_QUERIED_CTX_KEY][offense_id] = search_id
         safely_update_context_data(context_data, version, offense_ids=[offense_id])
-    offense['mirroring_events_message'] = failure_message
+    mirroring_events_message = update_events_mirror_message(mirror_options=MIRROR_OFFENSE_AND_EVENTS,
+                                                            events_limit=events_limit,
+                                                            fetch_mode=fetch_mode,
+                                                            events_count=events_count,
+                                                            events_mirrored=events_fetched,
+                                                            failure_message=failure_message
+                                                            )
+    offense['mirroring_events_message'] = mirroring_events_message
 
     return offense
 
@@ -1712,9 +1724,8 @@ def perform_long_running_loop(client: Client, offenses_per_fetch: int, fetch_mod
         mirror_direction=mirror_direction
 
     )
+    print_debug_msg(f'Got incidents, Creating incidents and updating context data. new highest id is {new_highest_id}')
     context_data, ctx_version = get_integration_context_with_version()
-    context_data |= {LAST_FETCH_KEY: context_data.get(LAST_FETCH_KEY, 0),
-                     'samples': context_data.get('samples', [])}
     if incidents and new_highest_id:
         incident_batch_for_sample = incidents[:SAMPLE_SIZE] if incidents else context_data.get('samples', [])
         if incident_batch_for_sample:
@@ -1724,9 +1735,9 @@ def perform_long_running_loop(client: Client, offenses_per_fetch: int, fetch_mod
         # if incident creation fails, it'll drop the data and try again in the next iteration
         demisto.createIncidents(incidents)
 
-    safely_update_context_data(context_data=context_data,
-                               version=ctx_version,
-                               should_update_last_fetch=True)
+        safely_update_context_data(context_data=context_data,
+                                   version=ctx_version,
+                                   should_update_last_fetch=True)
 
 
 def long_running_execution_command(client: Client, params: Dict):
@@ -3013,7 +3024,7 @@ def qradar_get_mapping_fields_command(client: Client) -> Dict:
 
 def update_events_mirror_message(mirror_options: Optional[Any], events_limit: int,
                                  failure_message: str, events_count: int, events_mirrored: int,
-                                 fetch_mode: str, offense_id: str) -> str:
+                                 fetch_mode: str) -> str:
     """Return the offense's events' mirror error message.
 
     Args:
@@ -3036,13 +3047,10 @@ def update_events_mirror_message(mirror_options: Optional[Any], events_limit: in
         mirroring_events_message = failure_message
     elif fetch_mode == FetchMode.all_events.value and events_mirrored < min(events_count, events_limit):
         mirroring_events_message = 'Mirroring events did not get all events of the offense'
-        ctx, version = get_integration_context_with_version()
-        ctx[MIRRORED_OFFENSES_QUERIED_CTX_KEY][offense_id] = SearchQueryStatus.WAIT.value
-        safely_update_context_data(ctx, version, offense_ids=[offense_id])
-    elif events_mirrored == events_limit:
-        mirroring_events_message = 'Mirroring events has reached events limit in this incident.'
     elif events_mirrored == events_count:
         mirroring_events_message = 'All available events in the offense were mirrored.'
+    elif events_mirrored == events_limit:
+        mirroring_events_message = 'Mirroring events has reached events limit in this incident.'
 
     return mirroring_events_message
 
@@ -3117,14 +3125,14 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
         offenses_queried = context_data.get(MIRRORED_OFFENSES_QUERIED_CTX_KEY, {})
         offenses_finished = context_data.get(MIRRORED_OFFENSES_FINISHED_CTX_KEY, {})
         if offenses_queried.get(offense_id) == SearchQueryStatus.ERROR.value:
-            failure_message = 'Mirroring events failed to query offense events.'
+            failure_message = 'Failed to query offense events.'
         if offense_id not in offenses_finished or \
                 offenses_queried.get(offense_id, '') in {SearchQueryStatus.WAIT.value, SearchQueryStatus.ERROR.value}:
             # if our offense not in the finished list, we will create a new search
             search_id = create_events_search(client, fetch_mode, events_columns, events_limit, int(offense_id))
             offenses_queried[offense_id] = search_id
             changed_ids_ctx.append(offense_id)
-            failure_message = 'Mirroring events in progress'
+            failure_message = 'In queue.'
         elif offense_id in offenses_finished:
             # if our offense is in finished list, we will get the result
             search_id = offenses_finished[offense_id]
@@ -3145,7 +3153,7 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
                 del offenses_queried[offense_id]
                 changed_ids_ctx.append(offense_id)
             else:
-                failure_message = 'Mirroring events in progress'
+                failure_message = 'In queue.'
 
         context_data.update({MIRRORED_OFFENSES_QUERIED_CTX_KEY: offenses_queried})
         context_data.update({MIRRORED_OFFENSES_FINISHED_CTX_KEY: offenses_finished})
@@ -3165,7 +3173,6 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
         events_count=int(final_offense_data.get('event_count', 0)),
         events_mirrored=events_mirrored,
         fetch_mode=fetch_mode,
-        offense_id=offense_id,
     )
     print_debug_msg(f'offense {offense_id} events_message: {events_message}')
     final_offense_data['last_mirror_in_time'] = datetime.now().isoformat()
