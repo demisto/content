@@ -3,7 +3,7 @@ commonfields:
   id: Jira Event Collector
   version: -1
 configuration:
-- defaultvalue: https://<your-domain>.atlassian.net/rest/api/3/auditing/record
+- defaultvalue: https://<your-domain>.atlassian.net
   display: Server URL
   name: url
   required: true
@@ -19,8 +19,8 @@ configuration:
   name: first_fetch
   required: true
   type: 0
-- defaultvalue: 100
-  display: The maximum number of events per fetch. Default is 100.
+- defaultvalue: 1000
+  display: The maximum number of events per fetch. Default is 1000.
   name: max_fetch
   required: true
   type: 0
@@ -32,19 +32,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-- defaultvalue: jira
-  additionalinfo: "For the dataset name for example: jira"
-  display: Vendor name
-  name: vendor
-  required: false
-  type: 0
-- defaultvalue: jira
-  additionalinfo: "For the dataset name for example: jira"
-  display: Product name
-  name: product
-  required: false
-  type: 0
-description: 'Jira logs event collector integration for XSIAM.'
+description: 'Jira logs event collector integration for Cortex XSIAM.'
 display: Jira Event Collector
 name: Jira Event Collector
 script:
@@ -54,12 +42,12 @@ script:
     execution: false
     name: jira-get-events
     arguments:
-    - description: The maximum number of incidents per fetch. Default is 100.
+    - description: The maximum number of incidents per fetch. Default is 1000.
       isArray: true
       name: max_fetch
       required: false
       secret: false
-    - description: First fetch time (<number> <time unit>, e.g., 12 hours, 1 day, 3 months). default is 3 days.
+    - description: First fetch time (<number> <time unit>, e.g., 12 hours, 1 day, 3 months). Default is 3 days.
       isArray: true
       name: first_fetch
       required: false
