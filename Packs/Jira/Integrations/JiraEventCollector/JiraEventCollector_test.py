@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 
 DEMISTO_PARAMS = {
     'method': 'GET',
-    'url': 'https://your.domain/rest/api/3/auditing/record',
+    'url': 'https://your.domain.atlassian.net',
     'max_fetch': 100,
     'first_fetch': '3 days',
     'credentials': {
@@ -16,7 +16,7 @@ DEMISTO_PARAMS = {
         'password': '123456',
     }
 }
-URL = 'https://your.domain/rest/api/3/auditing/record'
+URL = 'https://your.domain.atlassian.net/rest/api/3/auditing/record'
 FIRST_REQUESTS_PARAMS = 'from=2022-04-11T00:00:00.000000&limit=1000&offset=0'
 SECOND_REQUESTS_PARAMS = 'from=2022-04-11T00:00:00.000000&limit=1000&offset=1000'
 DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
