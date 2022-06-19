@@ -78,10 +78,8 @@ class MimecastClient(IntegrationEventsClient):
     def get_hdr_date():
         return datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S UTC")
 
-    def set_request_filter(self, after: Any):
-        # @TODO check how to supress this error
-        if after or not after:
-            pass
+    def set_request_filter(self, after: Any):   # noqa: F841  # pragma: no cover
+        pass
 
 
 class MimecastGetSiemEvents(IntegrationGetEvents):
@@ -188,8 +186,8 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
             - list: A flattened list of all fields before under the data part of the resopnse with some
                         additional fields.
         """
-        siem_log_type = siem_json_resp.get('type')
-        data = siem_json_resp.get('data')
+        siem_log_type: str = siem_json_resp.get('type')
+        data: list = siem_json_resp.get('data', [])
         events = []
         for event in data:
             event['type'] = siem_log_type
@@ -214,7 +212,7 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
 
     def get_req_object_siem(self):
         req_obj = {
-            'headers': self.client.prepare_headers(self.uri),
+            'headers': self.client.prepare_headers(self.uri),   # type: ignore
             'data': self.prepare_siem_log_data(),
             'method': Method.POST,
             'url': self.options.base_url + self.uri,
@@ -314,7 +312,7 @@ class MimecastGetAuditEvents(IntegrationGetEvents):
 
     def get_req_object_audit(self):
         return {
-            'headers': self.client.prepare_headers(self.uri),
+            'headers': self.client.prepare_headers(self.uri),   # type: ignore
             'data': self.prepare_audit_events_data(),
             'method': Method.POST,
             'url': self.options.base_url + self.uri,
@@ -340,7 +338,7 @@ class MimecastGetAuditEvents(IntegrationGetEvents):
             }
         }
         if self.page_token:
-            payload['meta']['pagination']['pageToken'] = self.page_token
+            payload['meta']['pagination']['pageToken'] = self.page_token    # type: ignore
 
         return json.dumps(payload)
 
@@ -351,8 +349,8 @@ class MimecastGetAuditEvents(IntegrationGetEvents):
         to be mimecast compatible (e.g. 2011-12-03T10:15:30+0000)
         """
         regex = r'(?!.*:)'
-        find_last_colon: Match[str] = re.search(regex, time_to_convert)
-        index = find_last_colon.start()
+        find_last_colon = re.search(regex, time_to_convert)
+        index = find_last_colon.start()     # type: ignore
         audit_time_format = time_to_convert[:index - 1] + time_to_convert[index:]
         return audit_time_format
 
@@ -360,7 +358,7 @@ class MimecastGetAuditEvents(IntegrationGetEvents):
 def handle_last_run_entrance(user_inserted_last_run, audit_event_handler: MimecastGetAuditEvents,
                              siem_event_handler: MimecastGetSiemEvents):
     start_time = arg_to_datetime(user_inserted_last_run)
-    start_time_iso = start_time.astimezone().replace(microsecond=0).isoformat()
+    start_time_iso = start_time.astimezone().replace(microsecond=0).isoformat()     # type: ignore
     if not demisto.getLastRun():
         # first time to enter init with user specified time.
         audit_event_handler.start_time = audit_event_handler.to_audit_time_format(start_time_iso)
