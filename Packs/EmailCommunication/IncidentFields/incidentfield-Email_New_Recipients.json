@@ -1,0 +1,30 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Email Communication"
+    ],
+    "caseInsensitive": true,
+    "cliName": "emailnewrecipients",
+    "closeForm": false,
+    "content": true,
+    "description": "Use this field to specify recipients of new email message to send",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_emailnewrecipients",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Email New Recipients",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.2.0"
+}
