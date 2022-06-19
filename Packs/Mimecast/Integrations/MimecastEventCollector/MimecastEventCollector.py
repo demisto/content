@@ -1,6 +1,5 @@
-from CommonServerPython import *
-import demistomock as demisto
-from collections.abc import Generator
+from CommonServerPython import * # noqa # pylint: disable=unused-wildcard-import
+import demistomock as demisto # noqa # pylint: disable=unused-wildcard-import
 from SiemApiModule import *  # noqa: E402
 import urllib3
 import json
@@ -528,6 +527,8 @@ def main():
                     send_events_to_xsiam(events, demisto_params.get('vendor', 'mimecast'),
                                          demisto_params.get('product', 'mimecast'))
                     handle_last_run_exit(siem_event_handler, events_audit)
+        else:
+            raise NotImplementedError('This command is not implemented')
 
     except Exception as exc:
         exc_message = str(exc)

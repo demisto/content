@@ -1,22 +1,21 @@
 import pytest
-import demistomock
-from SiemApiModule import *
+import demistomock  # noqa # pylint: disable=unused-wildcard-import
+from SiemApiModule import *  # noqa # pylint: disable=unused-wildcard-import
 
 from MimecastEventCollector import *
 from test_data.test_data import WITH_OUT_DUP_TEST, WITH_DUP_TEST, EMPTY_EVENTS_LIST, FILTER_SAME_TIME_EVEMTS, \
     AUDIT_LOG_RESPONSE, AUDIT_LOG_AFTER_PROCESS, SIEM_LOG_PROCESS_EVENT
-from unittest.mock import Mock
 
 mimecast_options = MimecastOptions(**{
-        'app_id': "XXX",
-        'app_key': "XXX",
-        'uri': "/api/audit/get-siem-logs",
-        'email_address': 'XXX.mime.integration.com',
-        'access_key': 'XXX',
-        'secret_key': 'XXX',
-        'after': '7 days',
-        'base_url': 'https://us-api.mimecast.com'
-    })
+    'app_id': "XXX",
+    'app_key': "XXX",
+    'uri': "/api/audit/get-siem-logs",
+    'email_address': 'XXX.mime.integration.com',
+    'access_key': 'XXX',
+    'secret_key': 'XXX',
+    'after': '7 days',
+    'base_url': 'https://us-api.mimecast.com'
+})
 
 empty_first_request = IntegrationHTTPRequest(method=Method.GET, url='http://bla.com', headers={})
 client = MimecastClient(empty_first_request, mimecast_options)
@@ -74,11 +73,12 @@ def test_gather_events(lst1, lst2, res):
 
 
 def test_handle_last_run_entrance():
+    siem_event_handler_local = MimecastGetSiemEvents(client, mimecast_options)
     assert audit_event_handler.start_time == ''
-    handle_last_run_entrance('7 days', audit_event_handler, siem_event_handler)
+    handle_last_run_entrance('7 days', audit_event_handler, siem_event_handler_local)
     assert audit_event_handler.start_time != ''
-    assert siem_event_handler.token == ''
-    assert siem_event_handler.events_from_prev_run == []
+    assert siem_event_handler_local.token == ''
+    assert siem_event_handler_local.events_from_prev_run == []
 
 
 def test_handle_last_run_entrance_with_prev_run(mocker):
@@ -123,11 +123,12 @@ def test_process_siem_data():
     assert after_process == res
 
 
-@pytest.mark.parametrize('event, res', [({'IP': '54.243.138.1', 'Dir': 'Outbound', 'Rcpt': 'dimeff@demo-visionary.b41.one'},
-                                         {'IP': ['54.243.138.1'], 'Dir': 'Outbound', 'Rcpt': ['dimeff@demo-visionary.b41.one']}),
-                                        ({'a': 'b', 'c': 'd'}, {'a': 'b', 'c': 'd'}),
-                                        ({'Rcpt': ['dimeff@demo-visionary.b41.one']}, {'Rcpt': ['dimeff@demo-visionary.b41.one']}),
-                                        ({}, {})])
+@pytest.mark.parametrize('event, res',
+                         [({'IP': '54.243.138.1', 'Dir': 'Outbound', 'Rcpt': 'dimeff@demo-visionary.b41.one'},
+                           {'IP': ['54.243.138.1'], 'Dir': 'Outbound', 'Rcpt': ['dimeff@demo-visionary.b41.one']}),
+                          ({'a': 'b', 'c': 'd'}, {'a': 'b', 'c': 'd'}),
+                          ({'Rcpt': ['dimeff@demo-visionary.b41.one']}, {'Rcpt': ['dimeff@demo-visionary.b41.one']}),
+                          ({}, {})])
 def test_convert_field_to_xdm_type(event, res):
     """
     Given:
@@ -143,10 +144,11 @@ def test_convert_field_to_xdm_type(event, res):
 
 
 @pytest.mark.parametrize('audit_event_list, audit_next_run, res', [(
-    [{'eventTime': '2022-05-29T10:43:25+0000', 'id': '234'}], '2022-05-29T10:43:25+0000', ['234']),
+        [{'eventTime': '2022-05-29T10:43:25+0000', 'id': '234'}], '2022-05-29T10:43:25+0000', ['234']),
     ([{'eventTime': '2022-05-29T10:43:25+0000', 'id': '234'}], '', []),
     ([], '2022-05-29T10:43:25+0000', []),
-    ([{'eventTime': '2022-05-29T10:43:25+0000', 'id': '234'}, {'eventTime': '2022-05-29T10:43:25+0000', 'id': '567'}, {'eventTime': '2022-04-29T10:43:25+0000', 'id': '888'}],
+    ([{'eventTime': '2022-05-29T10:43:25+0000', 'id': '234'}, {'eventTime': '2022-05-29T10:43:25+0000', 'id': '567'},
+      {'eventTime': '2022-04-29T10:43:25+0000', 'id': '888'}],
      '2022-05-29T10:43:25+0000', ['234', '567'])])
 def test_prepare_potential_audit_duplicates_for_next_run(audit_event_list, audit_next_run, res):
     """
@@ -243,7 +245,3 @@ def test_handle_last_run_exit_without_values(mocker):
             SIEM_EVENTS_FROM_LAST_RUN: ['event1', 'event2'],
             AUDIT_LAST_RUN: '2011-12-03T10:15:30+0000',
             AUDIT_EVENT_DEDUP_LIST: ['id1', 'id2']} == set_last_run_call_args
-
-
-
-
