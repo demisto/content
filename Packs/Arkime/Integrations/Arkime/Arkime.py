@@ -1,5 +1,4 @@
 # ----------------------------------------- Imports ---------------------------
-
 import copy
 import math
 from typing import Tuple, Callable
@@ -11,7 +10,12 @@ from CommonServerPython import *  # noqa: F401
 from requests.auth import HTTPDigestAuth
 
 # ----------------------------------------- Constants ---------------------------
-
+PAGE_NUMBER_ERROR_MSG = 'Invalid input Error: page number should be a positive number'
+PAGE_SIZE_ERROR_MSG = 'Out Of Range Error: page size should be a positive number between 1-100'
+PAGINATION_ERROR_MSG = 'Invalid input Error: one of page size or page number are missing,' \
+                       ' need to send both or not send at all'
+LENGTH_ERROR_MSG = 'Out Of Range Error: limit/length should be a positive number between 0-{max_length}'
+MAX_LENGTH = 2000000
 DEFAULT_SEGMENTS = ['no']
 DEFAULT_BOUNDING = ['last']
 DEFAULT_COUNTS = 0
@@ -23,7 +27,7 @@ MIN_PAGE_SIZE = 1
 MAX_PAGE_SIZE = 100
 DEFAULT_PAGE_SIZE = 50
 DEFAULT_OFFSET = 0
-MAX_BATCH_LIMIT = 500
+MAX_BATCH_LIMIT = 500  # is changeable
 
 
 # ----------------------------------------- Client ---------------------------
@@ -420,21 +424,24 @@ def arrange_output_for_session_list_command(response: Dict) -> List:
 
 
 def page_size_validness(page_size: int) -> int:
-    if page_size < MIN_PAGE_SIZE:
-        return MIN_PAGE_SIZE
-    elif page_size > MAX_PAGE_SIZE:
-        return MAX_PAGE_SIZE
+    if page_size < MIN_PAGE_SIZE or page_size > MAX_PAGE_SIZE:
+        raise DemistoException(PAGE_SIZE_ERROR_MSG)
     return page_size
+
+
+def page_number_validness(page_number: int) -> int:
+    if page_number < 0:
+        raise DemistoException(PAGE_NUMBER_ERROR_MSG)
+    return page_number
 
 
 def length_validness(length: Optional[int], max_length: int) -> int:
     if not length:
         return DEFAULT_LIMIT
-    if length < 0:
-        return 1
-    elif length > max_length:
-        return max_length
-    return length
+    elif length < 0 or length > max_length:
+        raise DemistoException(LENGTH_ERROR_MSG.format(max_length=max_length))
+    else:
+        return length
 
 
 def remove_all_keys_endswith_histo(response: Dict) -> Dict:
@@ -483,45 +490,45 @@ def create_paging_header(results_num: int, page_number: int, length: int, pagina
     return f'Showing {results_num} results, limit={length}\n'
 
 
-def calculate_offset_and_limit(page_number: Optional[int], page_size: Optional[int]) -> Tuple[int, int, int, int]:
+def calculate_offset_and_limit(page_number: int, page_size: int) -> Tuple[int, int, int, int]:
     # start / offset == page_number * page_size, and limit is page size
-    assert not (page_number is None and page_size is None)
-    if page_size is not None and page_number is not None:
-        page_size = page_size_validness(page_size)
-        start = page_number * page_size
-        return start, page_size, page_number, page_size
-
-    # if page size is None, but we are in pagination case, so use DEFAULT_PAGE_SIZE (== 50)
-    if page_size is None:
-        return page_number * DEFAULT_PAGE_SIZE, DEFAULT_PAGE_SIZE, page_number, DEFAULT_PAGE_SIZE  # type: ignore
-
-    # if page number is None, but we are in pagination case, so use DEFAULT_OFFSET (== 0)
     page_size = page_size_validness(page_size)
-    return DEFAULT_OFFSET * page_size, page_size, DEFAULT_OFFSET, page_size
+    page_number = page_number_validness(page_number)
+    start = page_number * page_size  # type: ignore
+    return start, page_size, page_number, page_size  # type: ignore
 
 
-def pagination(page_size: Optional[int], page_number: Optional[int], length: int) -> Dict[str, Union[int, bool]]:
-    pagination = False
+def pagination(page_size: Optional[int], page_number: Optional[int], length: int) -> dict:
+    is_pagination = False
 
     # in pagination case, start/offset == page_number * page_size, length/limit == page_size
-    if page_size or page_number:
+    if page_size and page_number:
         start, length, page_number, page_size = calculate_offset_and_limit(page_number, page_size)
-        pagination = True
-        return {'pagination': pagination,
+        is_pagination = True
+        return {'pagination': is_pagination,
                 'start': start,
                 'length': length,
                 'page_number': page_number,
                 'page_size': page_size,
                 }
 
-    # otherwise start/offset == 0, length/limit == user input or default limit (== 100)
-    return {'start': 0,
-            'pagination': pagination,
-            'length': length,
-            }
+    # limit case (without pagination)  start/offset == 0, length/limit == user input or default limit (== 100)
+    elif page_size is None and page_number is None:
+        return {'start': 0,
+                'pagination': is_pagination,
+                'length': length,
+                }
+
+    # pagination case, but given only page_number or page_size - so in this case we throw an exception
+    else:
+        raise DemistoException(PAGINATION_ERROR_MSG)
 
 
 def union(dict1: dict, dict2: dict) -> dict:
+    """
+    When the limit is bigger than MAX_BATCH_LIMIT, to avoid timeout, we perform some api calls and chain the responses
+    together into one dictionary by this function.
+    """
     res = {}
     for key in dict2:
         if not dict1.get(key):
@@ -537,7 +544,7 @@ def responses_by_batches(request_method: Callable, length: int, start: int, **kw
     num_of_batches = math.ceil(length / MAX_BATCH_LIMIT)
     temp_length = MAX_BATCH_LIMIT
     temp_start = start
-    final_response: dict[str, Any] = {}
+    final_response: Dict[str, Any] = {}
     for i in range(num_of_batches):
         response = request_method(length=temp_length,
                                   start=temp_start,
@@ -570,7 +577,7 @@ def connection_csv_get_command(client: Client,
     """
     Gets a list of nodes and links in csv format and returns them to the client.
     """
-    length = length_validness(arg_to_number(limit), 2000000)
+    length = length_validness(arg_to_number(limit), MAX_LENGTH)
     start = arg_to_number(offset)
 
     response = client.connections_csv_request(source_field=source_field,
@@ -584,7 +591,7 @@ def connection_csv_get_command(client: Client,
                                               fields=fields,
                                               bounding=bounding,
                                               strictly=strictly,
-                                              length=length,
+                                              length=length,  # type: ignore
                                               start=start,
                                               )
 
@@ -611,11 +618,11 @@ def connection_list_command(client: Client,
     """
     Gets a list of nodes and links and returns them to the client.
     """
-    length = length_validness(arg_to_number(limit), 2000000)
+    length = length_validness(arg_to_number(limit), MAX_LENGTH)
     page_number = arg_to_number(page_number)
     page_size = arg_to_number(page_size)
 
-    pagination_dict = pagination(page_size, page_number, length)
+    pagination_dict = pagination(page_size, page_number, length)  # type: ignore
     start = pagination_dict.get('page_number', DEFAULT_OFFSET)
     length = pagination_dict.get('length', DEFAULT_LIMIT)
     is_pagination: bool = pagination_dict.get('pagination', False)  # type: ignore
@@ -738,7 +745,7 @@ def session_list_command(client: Client,
                          limit: int = DEFAULT_LIMIT,
                          page_number: int = None,
                          page_size: int = None) -> CommandResults:
-    length = length_validness(arg_to_number(limit), 2000000)
+    length = length_validness(arg_to_number(limit), MAX_LENGTH)
     page_number = arg_to_number(page_number)
     page_size = arg_to_number(page_size)
 
@@ -813,7 +820,7 @@ def sessions_csv_get_command(client: Client,
                              strictly: bool = None,
                              limit: int = DEFAULT_LIMIT,
                              offset: int = DEFAULT_OFFSET) -> Dict:
-    length = length_validness(arg_to_number(limit), 2000000)
+    length = length_validness(arg_to_number(limit), MAX_LENGTH)
     start = arg_to_number(offset)
 
     response = client.sessions_csv_request(date=date,
@@ -882,8 +889,6 @@ def spiview_get_command(client: Client,
                         fields: str = None,
                         bounding: List = DEFAULT_BOUNDING,
                         strictly: bool = False) -> dict:
-    spi = argToList(spi)
-
     response = client.spi_view_request(spi=spi,
                                        date=date,
                                        expression=expression,
@@ -938,7 +943,7 @@ def unique_field_list_command(client: Client,
                               page_number: int = None,
                               page_size: int = None,
                               ) -> CommandResults:
-    limit = length_validness(arg_to_number(limit), 2000000)
+    limit = length_validness(arg_to_number(limit), MAX_LENGTH)
     page_number = arg_to_number(page_number)
     page_size = arg_to_number(page_size)
 
@@ -977,7 +982,7 @@ def multi_unique_field_list_command(client: Client,
                                     limit: int = DEFAULT_INTERNAL_LIMIT,
                                     page_number: int = None,
                                     page_size: int = None) -> CommandResults:
-    limit = length_validness(arg_to_number(limit), 2000000)
+    limit = length_validness(arg_to_number(limit), MAX_LENGTH)
     page_number = arg_to_number(page_number)
     page_size = arg_to_number(page_size)
 

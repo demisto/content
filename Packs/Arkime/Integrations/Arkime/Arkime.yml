@@ -1025,4 +1025,4 @@ script:
       description: The file data packets.
 
 tests:
-- No tests (auto formatted)
+- Arkime Test playbook
