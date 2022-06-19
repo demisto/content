@@ -4,10 +4,10 @@ This playbook handles incident ingestion from the SIEM. The user provides the fi
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* CrowdStrike Falcon - Get Detections by Incident
+CrowdStrike Falcon - Get Detections by Incident
 
 ### Integrations
-* CrowdStrikeFalcon
+CrowdStrikeFalcon
 
 ### Scripts
 This playbook does not use any scripts.
@@ -53,7 +53,7 @@ This playbook does not use any scripts.
 | CrowdStrike.Detection.ID | The detection ID. | string |
 | CrowdStrike.Detection.ProcessStartTime | The start time of the process that generated the detection. | string |
 | Endpoint | The details of the endpoint. | string |
-| CrowdStrike.FoundDetections | Indicates whether detections were found  | string |
+| CrowdStrike.FoundDetections | Indicates whether detections were found. | string |
 
 ## Playbook Image
 ---
