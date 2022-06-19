@@ -272,10 +272,9 @@ class Build:
     def get_changed_integrations(self, turned_non_hidden: Set[str]) -> Tuple[List[str], List[str]]:
         """
         Return 2 lists - list of new integrations names and list of modified integrations names since the commit of the git_sha1.
-
         Args:
             self: the build object
-            turned_non_hidden (Set[str]): The set of packs id which are turned to non-hidden.
+            turned_non_hidden (Set[str]): The set of packs names which are turned to non-hidden.
         Returns:
             Tuple[List[str], List[str]]: The list of new integrations names and list of modified integrations names.
         """
@@ -1580,29 +1579,29 @@ def get_non_added_packs_ids(build: Build):
     return set(build.pack_ids_to_install) - set(added_pack_ids)
 
 
-def run_git_diff(pack_id: str, build: Build) -> str:
+def run_git_diff(pack_name: str, build: Build) -> str:
     """
     Call git diff command with the specific pack id.
     Args:
-        pack_id (str): The pack id to check.
+        pack_name (str): The pack id to check.
         build (Build): The build object.
     Returns:
         (str): The git diff output.
     """
     compare_against = 'origin/master{}'.format('' if not build.branch_name == 'master' else '~1')
-    return run_command(f'git diff {compare_against}..{build.branch_name} -- Packs/{pack_id}/pack_metadata.json')
+    return run_command(f'git diff {compare_against}..{build.branch_name} -- Packs/{pack_name}/pack_metadata.json')
 
 
-def check_hidden_field_changed(pack_id: str, build: Build) -> bool:
+def check_hidden_field_changed(pack_name: str, build: Build) -> bool:
     """
     Check if pack turned from hidden to non-hidden.
     Args:
-        pack_id (str): The pack id to check.
+        pack_name (str): The pack name to check.
         build (Build): The build object.
     Returns:
         (bool): True if the pack transformed to non-hidden.
     """
-    diff = run_git_diff(pack_id, build)
+    diff = run_git_diff(pack_name, build)
     logging.info(f"The git diff result: {diff}")
     for diff_line in diff.splitlines():
         if '"hidden": false' in diff_line and diff_line.split()[0].startswith('+'):
@@ -1610,20 +1609,20 @@ def check_hidden_field_changed(pack_id: str, build: Build) -> bool:
     return False
 
 
-def get_turned_non_hidden_packs(pack_ids: Set[str], build: Build) -> Set[str]:
+def get_turned_non_hidden_packs(modified_packs_names: Set[str], build: Build) -> Set[str]:
     """
     Return the packs that turned from hidden to non-hidden.
     Args:
-        pack_ids (Set[str]): The set of packs need to be installed.
+        modified_packs_names (Set[str]): The set of packs need to be installed.
         build (Build): The build object.
     Returns:
-        (Set[str]): The set of packs id which are non-hidden.
+        (Set[str]): The set of packs names which are non-hidden.
     """
     hidden_packs = set()
-    for pack_id in pack_ids:
+    for pack_name in modified_packs_names:
         # check if the pack turned from hidden to non-hidden.
-        if check_hidden_field_changed(pack_id, build):
-            hidden_packs.add(pack_id)
+        if check_hidden_field_changed(pack_name, build):
+            hidden_packs.add(pack_name)
     return hidden_packs
 
 
@@ -1638,38 +1637,40 @@ def create_build_object() -> Build:
         raise Exception(f"Wrong Build object type {options.build_object_type}.")
 
 
-def packs_id_to_integrations_names(turned_non_hidden_packs_id: Set[str]) -> List[str]:
+def packs_names_to_integrations_names(turned_non_hidden_packs_names: Set[str]) -> List[str]:
     """
     Convert packs_id to the integrations names contained in it.
     Args:
-        turned_non_hidden_packs_id (Set[str]): The turned non-hidden pack ids (e.g. "AbnormalSecurity/pack_metadata.json")
+        turned_non_hidden_packs_names (Set[str]): The turned non-hidden pack ids (e.g. "AbnormalSecurity/pack_metadata.json")
     Returns:
         List[str]: The turned non-hidden integrations names list.
     """
     hidden_integrations = []
-    hidden_integrations_paths = [f'Packs/{pack.split("/")[0]}/Integrations' for pack in turned_non_hidden_packs_id]
+    hidden_integrations_paths = [f'Packs/{pack_name}/Integrations' for pack_name in turned_non_hidden_packs_names]
     # extract integration names within the turned non-hidden packs.
     for hidden_integrations_path in hidden_integrations_paths:
-        hidden_integrations.extend(
-            map(lambda integrations: integrations.split("/")[-1], listdir_fullpath(hidden_integrations_path)))
+        pack_integrations_paths = listdir_fullpath(hidden_integrations_path)
+        for integration_path in pack_integrations_paths:
+            hidden_integrations.append(integration_path.split("/")[-1])
     hidden_integrations_names = [integration for integration in hidden_integrations if
                                  not str(integration).startswith('.')]
     return hidden_integrations_names
 
 
-def update_integration_lists(new_integrations_names: List[str], turned_non_hidden_packs_id: Set[str],
+def update_integration_lists(new_integrations_names: List[str], turned_non_hidden_packs_names: Set[str],
                              modified_integrations_names: List[str]) -> Tuple[List[str], List[str]]:
     """
-    Add the turned non-hidden integrations names to the new integrations names list and remove it from modified integrations names.
+    Add the turned non-hidden integrations names to the new integrations names list and
+     remove it from modified integrations names.
     Args:
-        new_integrations_names (List[str]): The new integration ids (e.g. "AbnormalSecurity").
-        turned_non_hidden_packs_id (Set[str]): The turned non-hidden pack ids
+        new_integrations_names (List[str]): The new integration name (e.g. "AbnormalSecurity").
+        turned_non_hidden_packs_names (Set[str]): The turned non-hidden pack names.
          (e.g. "AbnormalSecurity/pack_metadata.json").
-        modified_integrations_names (List[str]): The modified integration ids (e.g. "AbnormalSecurity").
+        modified_integrations_names (List[str]): The modified integration name (e.g. "AbnormalSecurity").
     Returns:
-        Tuple[List[str], List[str]]: The updated lists.
+        Tuple[List[str], List[str]]: The updated lists after filtering the turned non-hidden integrations.
     """
-    hidden_integrations_names = packs_id_to_integrations_names(turned_non_hidden_packs_id)
+    hidden_integrations_names = packs_names_to_integrations_names(turned_non_hidden_packs_names)
     # update the new integration and the modified integration with the non-hidden integrations.
     for hidden_integration_name in hidden_integrations_names:
         if hidden_integration_name in modified_integrations_names:
@@ -1713,11 +1714,11 @@ def main():
     if build.is_nightly:
         build.install_nightly_pack()
     else:
-        packs_names = get_non_added_packs_ids(build)
-        turned_non_hidden_packs_id = get_turned_non_hidden_packs(packs_names, build)
-        packs_to_install = packs_names - turned_non_hidden_packs_id
+        modified_packs_names = get_non_added_packs_ids(build)
+        turned_non_hidden_packs_names = get_turned_non_hidden_packs(modified_packs_names, build)
+        packs_to_install = modified_packs_names - turned_non_hidden_packs_names
         build.install_packs(pack_ids=packs_to_install)
-        new_integrations_names, modified_integrations_names = build.get_changed_integrations(turned_non_hidden_packs_id)
+        new_integrations_names, modified_integrations_names = build.get_changed_integrations(turned_non_hidden_packs_names)
         pre_update_configuration_results = build.configure_and_test_integrations_pre_update(new_integrations_names,
                                                                                             modified_integrations_names)
         modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre = pre_update_configuration_results
