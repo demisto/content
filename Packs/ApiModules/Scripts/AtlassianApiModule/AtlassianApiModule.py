@@ -7,6 +7,7 @@ REFRESH_TOKEN = 'refresh_token'  # guardrails-disable-line
 AUTHORIZATION_CODE = 'authorization_code'
 OAUTH1_AUTH = 'oauth1_auth'
 BASIC_AUTH = 'basic_auth'
+PERSONAL_ACCESS_TOKEN = "personal_access_token"
 
 
 class AtlassianClient(BaseClient):
@@ -30,6 +31,7 @@ class AtlassianClient(BaseClient):
             - use_oauth: a flag indicating whether the user wants to use OAuth 2.0 or basic authorization.
         """
         # todo: add param authentication code flow to fill in the grant type arg
+        # todo: add inn documentation offline_access to the scope to get refresh token in the first step
         super().__init__(verify=verify, *args, **kwargs)
         self.auth = None
         self.verify = verify
@@ -37,6 +39,7 @@ class AtlassianClient(BaseClient):
             self.grant_type = BASIC_AUTH
             self.auth = username, (api_token or password)
         elif consumer_key and private_key and access_token:
+            self.grant_type = OAUTH1_AUTH
             headers.update({'X-Atlassian-Token': 'nocheck'})
             self.auth = OAuth1(
                 client_key=consumer_key,
@@ -45,6 +48,8 @@ class AtlassianClient(BaseClient):
                 resource_owner_key=access_token,
             )
         elif access_token:
+            self.grant_type = PERSONAL_ACCESS_TOKEN
+            self.access_token = access_token
             headers.update({'Authorization': f'Bearer {access_token}'})
         elif client_id and client_secret and auth_code and redirect_uri:
             self.token_retrieval_url = 'https://auth.atlassian.com/oauth/token'
@@ -58,7 +63,7 @@ class AtlassianClient(BaseClient):
                 'Please provide the required Authorization information:'
                 '- Basic Authentication requires user name and API token or password'
                 '- OAuth 1.0 requires ConsumerKey, AccessToken and PrivateKey'
-                '- Personal Access Tokens requires AccessToken'
+                '- Personal Access Token requires AccessToken'
                 '- authorization code requires Client ID, Client Secret, authentication code and redirect uri'
             )
         # self.auth = None
@@ -112,24 +117,13 @@ class AtlassianClient(BaseClient):
     def _get_utcfromtimestamp(_time) -> datetime:
         return datetime.utcfromtimestamp(_time)
 
-    def get_refresh_token_from_auth_code_param(self):
-        refresh_prefix = "refresh_token:"
-        if self.auth_code.startswith(refresh_prefix):  # for testing we allow setting the refresh token directly
-            demisto.debug("Using refresh token set as auth_code")
-            return self.auth_code[len(refresh_prefix):]
-        return ''
-
     def get_access_token(self):
 
         integration_context = get_integration_context()
+
         refresh_token = integration_context.get('current_refresh_token', '')
-        # Set keywords. Default without the scope prefix.
-        access_token_keyword = 'access_token'
-        valid_until_keyword = 'valid_until'
-
-        access_token = integration_context.get(access_token_keyword)
-
-        valid_until = integration_context.get(valid_until_keyword)
+        access_token = integration_context.get("access_token")
+        valid_until = integration_context.get("valid_until")
 
         if access_token and valid_until:
             if self.epoch_seconds() < valid_until:
@@ -143,8 +137,8 @@ class AtlassianClient(BaseClient):
             expires_in = expires_in - time_buffer
         valid_until = time_now + expires_in
         integration_context.update({
-            access_token_keyword: access_token,
-            valid_until_keyword: valid_until,
+            "access_token": access_token,
+            "valid_until": valid_until,
             'current_refresh_token': refresh_token
         })
 
@@ -157,13 +151,12 @@ class AtlassianClient(BaseClient):
         else:
             headers = self.headers
 
-        if self.grant_type is not AUTHORIZATION_CODE:  # basic auth or Oauth 1.0 or bearer token
-            requests.request(method=method, url=url, auth=self.auth, headers=headers, *args, **kwargs)
-            # response = super()._http_request(  # type: ignore[misc]
-            #     *args, resp_type="response", headers=headers, auth= self.auth, **kwargs)
+        if self.auth:  # basic auth or Oauth 1.0
+            result = requests.request(method=method, url=url, auth=self.auth, headers=headers, *args, **kwargs)
         else:  # auth code
-            access_token = self.get_access_token()
-            # todo: update the headers
+            access_token = self.access_token or self.get_access_token()
+            headers.update({"Authorization": f"Bearer {access_token}", "Accept": "application/json"})
+            result = requests.request(method=method, url=url, headers=headers, *args, **kwargs)
 
     def get_token(self, refresh_token: str = ''):
         data = assign_params(
@@ -171,7 +164,6 @@ class AtlassianClient(BaseClient):
             client_secret=self.client_secret,
             redirect_uri=self.redirect_uri,
         )
-        refresh_token = refresh_token or self.get_refresh_token_from_auth_code_param()
         if refresh_token:
             data['grant_type'] = REFRESH_TOKEN
             data['refresh_token'] = refresh_token
@@ -201,25 +193,25 @@ class AtlassianClient(BaseClient):
     def get_headers(self):
         return self.headers
 
-    def http_request(self, method, full_url=None, headers=None, verify=False,
-                     params=None, data=None, files=None):
-        if headers:
-            headers.update(self.headers)
-        else:
-            headers = self.headers
-
-        try:
-            result = requests.request(
-                method=method,
-                url=full_url,
-                data=data,
-                auth=self.auth,
-                headers=headers,
-                verify=verify,
-                files=files,
-                params=params
-            )
-        except ValueError:
-            raise ValueError("Could not deserialize privateKey")
-
-        return result
+    # def http_request(self, method, full_url=None, headers=None, verify=False,
+    #                  params=None, data=None, files=None):
+    #     if headers:
+    #         headers.update(self.headers)
+    #     else:
+    #         headers = self.headers
+    #
+    #     try:
+    #         result = requests.request(
+    #             method=method,
+    #             url=full_url,
+    #             data=data,
+    #             auth=self.auth,
+    #             headers=headers,
+    #             verify=verify,
+    #             files=files,
+    #             params=params
+    #         )
+    #     except ValueError:
+    #         raise ValueError("Could not deserialize privateKey")
+    #
+    #     return result

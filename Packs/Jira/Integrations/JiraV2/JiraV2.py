@@ -59,6 +59,7 @@ class Client(BaseClient):
         result = self.atlassian_client.http_request(method=method,
                                                     full_url=resource_url if link else urljoin(self.base_url, resource_url),
                                                     data=body,
+                                                    resp_type=resp_type,
                                                     headers=headers,
                                                     verify=self.use_ssl,
                                                     files=files)
