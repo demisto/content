@@ -4396,6 +4396,7 @@
         {
             "playbookID": "CrowdStrike_Falcon_X_-Test-Detonate_File",
             "fromversion": "6.1.0",
+            "memory_threshold": 90,
             "integrations": [
                 "CrowdStrike Falcon X"
             ],
@@ -4448,7 +4449,8 @@
             "integrations": [
                 "EWS Mail Sender",
                 "Demisto REST API",
-                "CreateIncidents"
+                "CreateIncidents",
+                "Rasterize"
             ],
             "instance_names": [
                 "ews_mail_sender_srtest02",
@@ -5130,6 +5132,11 @@
             "fromversion": "6.1.0"
         },
         {
+            "integrations": "CloudflareWAF",
+            "playbookID": "TestCloudflareWAFPlaybook",
+            "fromversion": "6.2.0"
+        },
+        {
             "scripts": "CheckIfSubdomain",
             "playbookID": "CheckIfSubdomain_Test",
             "fromversion": "6.0.0"
@@ -5149,6 +5156,11 @@
         {
             "integrations": "Alibaba Action Trail Event Collector",
             "playbookID": "Alibaba Event Collector-test",
+            "fromversion": "6.8.0"
+        },
+        {
+            "integrations": "Salesforce Event Collector",
+            "playbookID": "Salesforce Event Collector-test",
             "fromversion": "6.8.0"
         },
         {
@@ -5291,7 +5303,8 @@
         "RecordedFutureFeed - Test": "Issue 43923",
         "RedLockTest": "Issue 24600",
         "SymantecEndpointProtection_Test": "Issue 30157",
-        "RSANetWitnessv115-Test": "Issue XDRSUP-12553"
+        "RSANetWitnessv115-Test": "Issue XDRSUP-12553",
+        "TestCloudflareWAFPlaybook": "No instance"
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
@@ -5412,6 +5425,7 @@
         "SentinelOne V2": "License expired issue #24933",
         "LogRhythm": "The integration is deprecated",
         "Alibaba Action Trail Event Collector": "XSIAM integration",
+        "Salesforce Event Collector": "XSIAM integration",
         "Github Event Collector" : "XSIAM integration"
     },
     "nightly_integrations": [

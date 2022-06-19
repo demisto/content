@@ -692,3 +692,4 @@ tests:
 fromversion: 6.0.0
 description: Deprecated. Use "Windows Application Deployment v2" playbook from the Ansible Microsoft Windows Pack instead.
 deprecated: true
+hidden: true
