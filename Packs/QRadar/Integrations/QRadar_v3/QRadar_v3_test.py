@@ -14,7 +14,7 @@ import pytz
 from QRadar_v3 import LAST_FETCH_KEY, USECS_ENTRIES, OFFENSE_OLD_NEW_NAMES_MAP, MINIMUM_API_VERSION, REFERENCE_SETS_OLD_NEW_MAP, \
     Client, ASSET_PROPERTIES_NAME_MAP, \
     FULL_ASSET_PROPERTIES_NAMES_MAP, EntryType, EntryFormat, MIRROR_OFFENSE_AND_EVENTS, \
-    MIRRORED_OFFENSES_QUERIED_CTX_KEY, MIRRORED_OFFENSES_FINISHED_CTX_KEY, LAST_MIRROR_KEY, SearchQueryStatus, enrich_offense_with_events
+    MIRRORED_OFFENSES_QUERIED_CTX_KEY, MIRRORED_OFFENSES_FINISHED_CTX_KEY, LAST_MIRROR_KEY, SearchQueryStatus
 from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_outputs, build_headers, \
     get_offense_types, get_offense_closing_reasons, get_domain_names, get_rules_names, enrich_assets_results, \
     get_offense_addresses, get_minimum_id_to_fetch, poll_offense_events, sanitize_outputs, \
@@ -30,7 +30,7 @@ from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_o
     qradar_log_sources_list_command, qradar_get_custom_properties_command, enrich_asset_properties, \
     flatten_nested_geolocation_values, get_modified_remote_data_command, get_remote_data_command, is_valid_ip, \
     qradar_ips_source_get_command, qradar_ips_local_destination_get_command, \
-    migrate_integration_ctx, \
+    migrate_integration_ctx, enrich_offense_with_events, \
     perform_long_running_loop, validate_integration_context
 
 from CommonServerPython import DemistoException, set_integration_context, CommandResults, \
@@ -1137,8 +1137,8 @@ def test_remote_data_with_events(mocker, offense_id):
     mocker.patch.object(client, 'offenses_list', return_value=offense)
     if offense_id in context_data[MIRRORED_OFFENSES_FINISHED_CTX_KEY]:
         offense_data = get_remote_data_command(client,
-                                            {'mirror_options': MIRROR_OFFENSE_AND_EVENTS},
-                                            {'id': offense_id,
+                                               {'mirror_options': MIRROR_OFFENSE_AND_EVENTS},
+                                               {'id': offense_id,
                                                 'lastUpdate': '0'}).mirrored_object
 
     else:

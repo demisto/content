@@ -1307,13 +1307,13 @@ def is_reset_triggered():
         - True if reset flag was set. If 'handle_reset' is true, also resets integration context.
         - False if reset flag was not found in integration context.
     """
-    ctx = get_integration_context()
+    ctx, version = get_integration_context_with_version()
     if ctx and RESET_KEY in ctx:
         print_debug_msg('Reset fetch-incidents.')
-        context_data = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
-                        MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
-                        'samples': []}
-        safely_update_context_data(context_data, should_force_update=True)
+        context_data: dict[str, Any] = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
+                                        MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
+                                        'samples': []}
+        safely_update_context_data(context_data, version=version, should_force_update=True)
         return True
     return False
 
