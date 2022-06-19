@@ -357,8 +357,8 @@ tasks:
     task:
       id: 7b6bcaea-fb99-450c-8652-d0258d398b0b
       version: -1
-      name: Cortex XDR - Get WildFire Verdict
-      playbookName: Cortex XDR - Get WildFire Verdict
+      name: Get WildFire Verdict
+      playbookName: Get WildFire Verdict
       type: playbook
       iscommand: false
       brand: ''
