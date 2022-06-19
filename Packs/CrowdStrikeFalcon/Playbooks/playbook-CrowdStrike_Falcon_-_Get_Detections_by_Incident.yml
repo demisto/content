@@ -259,7 +259,7 @@ outputs:
   description: CrowdStrike Detection Details
   type: string
 - contextPath: CrowdStrike.FoundDetections
-  description: 'Indicates whether detections were found '
+  description: 'Indicates whether detections were found. '
   type: string
 tests:
 - Test - CrowdStrike Falcon
