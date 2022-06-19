@@ -2380,7 +2380,6 @@ def sub_main():
             "ews-expand-group": get_expanded_group,
             "ews-mark-items-as-read": mark_item_as_read,
             "send-mail": send_email,
-            "reply-mail": reply_mail,
         }
 
         # commands that may return multiple results or non-note result
@@ -2388,6 +2387,7 @@ def sub_main():
             "ews-get-attachment": fetch_attachments_for_message,
             "ews-delete-attachment": delete_attachments_for_message,
             "ews-get-items-as-eml": get_item_as_eml,
+            "reply-mail": reply_mail,
         }
         # system commands:
         if command == "test-module":
