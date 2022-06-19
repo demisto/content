@@ -23,21 +23,18 @@ configuration:
   name: chrome_options
   required: false
   type: 0
-  additionalinfo: Add or remove Chrome options used to rasterize. Use for advanced
-    troubleshooting. See Help.
+  additionalinfo: Add or remove Chrome options used to rasterize. Use for advanced troubleshooting. See Help.
 - display: Rasterize Mode
   name: rasterize_mode
-  defaultvalue: WebDriver - Preferred
-  type: 15
   required: false
+  type: 15
+  defaultvalue: WebDriver - Preferred
   options:
   - WebDriver - Preferred
   - WebDriver - Only
   - Headless CLI - Preferred
   - Headless CLI - Only
-  additionalinfo: It is possible to rasterize either via Chrome WebDriver or Chrome
-    Headless CLI. A "Preferred" rasterizing mode will fall back to the other rasterizing
-    mode if it fails.
+  additionalinfo: It is possible to rasterize either via Chrome WebDriver or Chrome Headless CLI. A "Preferred" rasterizing mode will fall back to the other rasterizing mode if it fails.
 - display: Use system proxy settings
   name: proxy
   required: false
@@ -61,33 +58,28 @@ script:
       required: false
       secret: false
     - default: true
-      description: The URL to rasterize. Must be the full URL, including the http
-        prefix.
+      description: The URL to rasterize. Must be the full URL, including the http prefix.
       isArray: false
       name: url
       required: true
       secret: false
     - default: false
       defaultValue: 1024px
-      description: The page width, for example, 1024px. Specify with or without the
-        px suffix.
+      description: The page width, for example, 1024px. Specify with or without the px suffix.
       isArray: false
       name: width
       required: false
       secret: false
     - default: false
       defaultValue: 800px
-      description: The page height, for example, 800px. Specify with or without the
-        px suffix.
+      description: The page height, for example, 800px. Specify with or without the px suffix.
       isArray: false
       name: height
       required: false
       secret: false
     - default: false
-      description: The file type to which to convert the contents of the URL. Can
-        be "pdf","png" or "json" (for use with raw-response). Default is "png".
+      description: The file type to which to convert the contents of the URL. Can be "pdf","png" or "json" (for use with raw-response). Default is "png".
       isArray: false
-      auto: PREDEFINED
       name: type
       predefined:
       - pdf
@@ -95,30 +87,29 @@ script:
       - json
       required: false
       secret: false
+      auto: PREDEFINED
     - default: false
       description: Rasterize mode to use (WebDriver or Headless CLI). Optional. If not specified, will use according to the integration instance settings.
       isArray: false
-      auto: PREDEFINED
       name: mode
+      required: false
+      secret: false
+      auto: PREDEFINED
       predefined:
       - WebDriver - Preferred
       - WebDriver - Only
       - Headless CLI - Preferred
       - Headless CLI - Only
-      required: false
-      secret: false
-    - default: false
-      defaultValue: url
+    - defaultValue: url
       description: The name the file will be saved as.
       isArray: false
       name: file_name
       required: false
       secret: false
+      default: false
     - auto: PREDEFINED
       defaultValue: 'False'
-      description: 'Get the full page. The actual page width and height will be auto calculated up to a max value of
-      8000px. (Marking full_screen as true means that the values for width and height arguments
-      might not be respected).'
+      description: Get the full page. The actual page width and height will be auto calculated up to a max value of 8000px. (Marking full_screen as true means that the values for width and height arguments might not be respected).
       isArray: false
       name: full_screen
       predefined:
@@ -145,28 +136,25 @@ script:
       secret: false
     - default: false
       defaultValue: 600px
-      description: The html page width, for example, 600px. Specify with or without
-        the px suffix.
+      description: The html page width, for example, 600px. Specify with or without the px suffix.
       isArray: false
       name: width
       required: false
       secret: false
     - default: false
       defaultValue: 800px
-      description: The html page height, for example, 800px. Specify with or without
-        the px suffix.
+      description: The html page height, for example, 800px. Specify with or without the px suffix.
       isArray: false
       name: height
       required: false
       secret: false
     - default: false
-      description: The file type to which to convert the email body. Can be "pdf"
-        or "png". Default is "png".
+      description: The file type to which to convert the email body. Can be "pdf" or "png". Default is "png".
       isArray: false
-      auto: PREDEFINED
       name: type
       required: false
       secret: false
+      auto: PREDEFINED
       predefined:
       - pdf
       - png
@@ -183,27 +171,25 @@ script:
     - default: false
       description: Rasterize mode to use (WebDriver or Headless CLI). Optional. If not specified, will use according to the integration instance settings.
       isArray: false
-      auto: PREDEFINED
       name: mode
+      required: false
+      secret: false
+      auto: PREDEFINED
       predefined:
       - WebDriver - Preferred
       - WebDriver - Only
       - Headless CLI - Preferred
       - Headless CLI - Only
-      required: false
-      secret: false
-    - default: false
-      defaultValue: email
+    - defaultValue: email
       description: The name the file will be saved as.
       isArray: false
       name: file_name
       required: false
       secret: false
+      default: false
     - auto: PREDEFINED
       defaultValue: 'False'
-      description: 'Get the full page. The actual page width and height will be auto calculated up to a max value of
-      8000px. (Marking full_screen as true means that the values for width and height arguments
-      might not be respected).'
+      description: Get the full page. The actual page width and height will be auto calculated up to a max value of 8000px. (Marking full_screen as true means that the values for width and height arguments might not be respected).
       isArray: false
       name: full_screen
       predefined:
@@ -224,16 +210,14 @@ script:
       secret: false
     - default: false
       defaultValue: 600px
-      description: The image width, for example, 600px. Specify with or without the
-        px suffix.
+      description: The image width, for example, 600px. Specify with or without the px suffix.
       isArray: false
       name: width
       required: false
       secret: false
     - default: false
       defaultValue: 800px
-      description: The image height, for example, 800px. If empty, the height is the
-        entire image.
+      description: The image height, for example, 800px. If empty, the height is the entire image.
       isArray: false
       name: height
       required: false
@@ -246,9 +230,7 @@ script:
       secret: false
     - auto: PREDEFINED
       defaultValue: 'False'
-      description: 'Get the full page. The actual page width and height will be auto calculated up to a max value of
-      8000px. (Marking full_screen as true means that the values for width and height arguments
-      might not be respected).'
+      description: Get the full page. The actual page width and height will be auto calculated up to a max value of 8000px. (Marking full_screen as true means that the values for width and height arguments might not be respected).
       isArray: false
       name: full_screen
       predefined:
@@ -283,9 +265,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to stack the pages horizontally. If "true", will stack
-        the pages horizontally. If "false", will stack the pages vertically. Default
-        is "false".
+      description: Whether to stack the pages horizontally. If "true", will stack the pages horizontally. If "false", will stack the pages vertically. Default is "false".
       isArray: false
       name: horizontal
       predefined:
@@ -304,7 +284,7 @@ script:
     description: Converts a PDF file to an image file.
     execution: false
     name: rasterize-pdf
-  dockerimage: demisto/chromium:1.0.0.30388
+  dockerimage: demisto/chromium:1.0.0.30878
   feed: false
   isfetch: false
   longRunning: false
