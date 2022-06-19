@@ -1,30 +1,33 @@
-This playbook automatically queries Accenture IntelGraph API to pull context for IOC and associated intelligence reports into XSOAR incidents.
+- This playbook enriches Intelligence Alerts, Intelligence Reports, Malware Families, Threat Actors, Threat Groups & Threat Campaigns
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* ACTI Indicator Enrichment
-* Create Relationships
+This playbook does not use any sub-playbooks.
 
 ### Integrations
-This playbook does not use any integrations.
+* ACTI Indicator Query
 
 ### Scripts
-* Sleep
-* Print
+This playbook does not use any scripts.
 
 ### Commands
-* extractIndicators
+* acti-get-fundamentals-by-uuid
+* acti-getThreatIntelReport
 
 ## Playbook Inputs
 ---
-There are no inputs for this playbook.
 
-## Playbook Outputs
----
-There are no outputs for this playbook.
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| ia_uuid | Intelligence Alert unique ID. | ${intelligence_alerts}.None | Optional |
+| ir_uuid | Intelligence Report unique ID. | ${intelligence_reports}.None | Optional |
+| MalwareFamily_uuid | Malware Family unique ID. | ${acti_malware_family_uuid}.None | Optional |
+| ThreatGroup_uuid | Threat Group unique ID. | ${acti_threat_groups_uuid}.None | Optional |
+| ThreatCampaign_uuid | Threat Campaign unique ID. | ${acti_threat_campaigns_uuid}.None | Optional |
+| ThreatActor_uuid | Threat Actor unique ID. | ${acti_threat_actors_uuid}.None | Optional |
 
 ## Playbook Image
 ---
-![ACTI Incident Enrichment](https://user-images.githubusercontent.com/40510780/163380194-9a741fbe-dd79-461f-803b-e048b05bb169.png)
+![ACTI Incident Enrichment](https://user-images.githubusercontent.com/40510780/171863775-19f86d1d-e691-4d2d-bd20-f259f0747d52.png)
