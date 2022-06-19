@@ -1602,7 +1602,6 @@ def check_hidden_field_changed(pack_name: str, build: Build) -> bool:
         (bool): True if the pack transformed to non-hidden.
     """
     diff = run_git_diff(pack_name, build)
-    logging.info(f"The git diff result: {diff}")
     for diff_line in diff.splitlines():
         if '"hidden": false' in diff_line and diff_line.split()[0].startswith('+'):
             return True
