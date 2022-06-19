@@ -502,7 +502,7 @@ def pagination(page_size: Optional[int], page_number: Optional[int], length: int
     is_pagination = False
 
     # in pagination case, start/offset == page_number * page_size, length/limit == page_size
-    if page_size and page_number:
+    if page_size is not None and page_number is not None:
         start, length, page_number, page_size = calculate_offset_and_limit(page_number, page_size)
         is_pagination = True
         return {'pagination': is_pagination,
