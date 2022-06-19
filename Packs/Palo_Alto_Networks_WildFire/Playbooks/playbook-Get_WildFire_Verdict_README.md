@@ -10,7 +10,7 @@ This playbook does not use any sub-playbooks.
 This playbook does not use any integrations.
 
 ### Scripts
-This playbook does not use any scripts.
+* Set
 
 ### Commands
 * core-report-incorrect-wildfire
