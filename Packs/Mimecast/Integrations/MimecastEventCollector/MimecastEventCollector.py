@@ -528,7 +528,7 @@ def main():
                                          demisto_params.get('product', 'mimecast'))
                     handle_last_run_exit(siem_event_handler, events_audit)
         else:
-            raise NotImplementedError('This command is not implemented')
+            raise NotImplementedError(f'Command "{command}" is not implemented.')
 
     except Exception as exc:
         exc_message = str(exc)
