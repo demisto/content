@@ -1,4 +1,4 @@
-This playbooks checks for WildFire verdict and submits a flip-verdict request if the file found as benign.
+This playbook checks for WildFire verdict and submits a flip-verdict request if the file found as benign.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.

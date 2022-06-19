@@ -1,7 +1,7 @@
 id: Get WildFire Verdict
 version: -1
 name: Get WildFire Verdict
-description: This playbooks checks for WildFire verdict and submits a flip-verdict request if the file found as benign.
+description: This playbook checks for WildFire verdict and submits a flip-verdict request if the file found as benign.
 starttaskid: '0'
 tasks:
   '0':
