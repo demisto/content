@@ -23,6 +23,19 @@ siem_event_handler = MimecastGetSiemEvents(client, mimecast_options)
 audit_event_handler = MimecastGetAuditEvents(client, mimecast_options)
 
 
+def test_handle_last_run_entrance():
+    siem_event_handler_local = MimecastGetSiemEvents(client, mimecast_options)
+    token = siem_event_handler_local.token
+    print('******************', token)
+    assert audit_event_handler.start_time == ''
+    handle_last_run_entrance('7 days', audit_event_handler, siem_event_handler_local)
+    token = siem_event_handler_local.token
+    print('******************', token)
+    assert audit_event_handler.start_time != ''
+    assert siem_event_handler_local.token == ''
+    assert siem_event_handler_local.events_from_prev_run == []
+
+
 def test_process_audit_data():
     """
     Given:
@@ -70,19 +83,6 @@ def test_dedup_audit_events(audit_events, last_run_potential_dup, res):
 def test_gather_events(lst1, lst2, res):
     from MimecastEventCollector import gather_events
     assert gather_events(lst1, lst2) == res
-
-
-def test_handle_last_run_entrance():
-    siem_event_handler_local = MimecastGetSiemEvents(client, mimecast_options)
-    token = siem_event_handler_local.token
-    print('******************', token)
-    assert audit_event_handler.start_time == ''
-    handle_last_run_entrance('7 days', audit_event_handler, siem_event_handler_local)
-    token = siem_event_handler_local.token
-    print('******************', token)
-    assert audit_event_handler.start_time != ''
-    assert siem_event_handler_local.token == ''
-    assert siem_event_handler_local.events_from_prev_run == []
 
 
 def test_handle_last_run_entrance_with_prev_run(mocker):
