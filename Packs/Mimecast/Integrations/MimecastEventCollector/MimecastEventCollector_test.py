@@ -1,12 +1,4 @@
-import io
-import os
-from zipfile import ZipFile
-import tempfile
-import json
-
 import pytest
-import re
-
 import demistomock
 from SiemApiModule import *
 
