@@ -10170,7 +10170,7 @@ def create_indicator_result_with_dbotscore_unknown(indicator, indicator_type, re
                                             dbot_score=dbot_score,
                                             data={},
                                             context_prefix=context_prefix,
-                                            relationships=relationships
+                                            relationships=relationships,
                                             )
 
     indicator_type = indicator_type.upper()
