@@ -13,7 +13,7 @@ from zipfile import ZipFile
 import io
 import tempfile
 import re
-from typing import Match
+
 
 urllib3.disable_warnings()
 
@@ -46,7 +46,7 @@ class MimecastClient(IntegrationEventsClient):
     def __init__(self, request: IntegrationHTTPRequest, options: MimecastOptions):  # pragma: no cover
         super().__init__(request=request, options=options)
 
-    def prepare_headers(self, uri):
+    def prepare_headers(self, uri: str):
         """
         Args -
         """
@@ -143,7 +143,7 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
             if not events:
                 break
 
-    def process_siem_response(self, response):
+    def process_siem_response(self, response):  # ignore: type
         resp_body = response.content
         resp_headers = response.headers
         content_type = resp_headers['Content-Type']
@@ -186,7 +186,7 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
             - list: A flattened list of all fields before under the data part of the resopnse with some
                         additional fields.
         """
-        siem_log_type: str = siem_json_resp.get('type')
+        siem_log_type = siem_json_resp.get('type')
         data: list = siem_json_resp.get('data', [])
         events = []
         for event in data:
@@ -231,7 +231,7 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
             post_body['data'][0]['token'] = self.token
         return json.dumps(post_body)
 
-    def write_file(self, file_name, data_to_write):
+    def write_file(self, file_name: str, data_to_write):
         if '.zip' in file_name:
             try:
                 with tempfile.TemporaryDirectory() as tmpdir:
@@ -355,7 +355,7 @@ class MimecastGetAuditEvents(IntegrationGetEvents):
         return audit_time_format
 
 
-def handle_last_run_entrance(user_inserted_last_run, audit_event_handler: MimecastGetAuditEvents,
+def handle_last_run_entrance(user_inserted_last_run: str, audit_event_handler: MimecastGetAuditEvents,
                              siem_event_handler: MimecastGetSiemEvents):
     start_time = arg_to_datetime(user_inserted_last_run)
     start_time_iso = start_time.astimezone().replace(microsecond=0).isoformat()     # type: ignore
@@ -369,8 +369,8 @@ def handle_last_run_entrance(user_inserted_last_run, audit_event_handler: Mimeca
         siem_event_handler.token = demisto_last_run.get(SIEM_LAST_RUN)
         siem_event_handler.events_from_prev_run = demisto_last_run.get(SIEM_EVENTS_FROM_LAST_RUN, [])
         demisto.info(f'\n handle_last_run_entrance \n audit start time: {audit_event_handler.start_time} \n'
-                      f'siem next token: {siem_event_handler.token}\n'
-                      f'duplicate list last run {demisto_last_run.get(AUDIT_EVENT_DEDUP_LIST)}\n')
+                     f'siem next token: {siem_event_handler.token}\n'
+                     f'duplicate list last run {demisto_last_run.get(AUDIT_EVENT_DEDUP_LIST)}\n')
 
 
 def dedup_audit_events(audit_events: list, last_run_potential_dup: list) -> list:
@@ -479,10 +479,6 @@ def gather_events(siem_events: list, audit_events: list) -> list:
     return events
 
 
-def check_set_lastrun():
-    demisto.setLastRun({'a':'a', 'b':'b'})
-
-
 def main():
     # Args is always stronger. Get last run even stronger
     demisto.info('\n started running main\n')
@@ -547,5 +543,3 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-
-
