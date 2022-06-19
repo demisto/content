@@ -1713,10 +1713,9 @@ def main():
     if build.is_nightly:
         build.install_nightly_pack()
     else:
-        pack_ids = get_non_added_packs_ids(build)
-        turned_non_hidden_packs_id = get_turned_non_hidden_packs(pack_ids, build)
-        packs_to_install = pack_ids - turned_non_hidden_packs_id
-        logging.info(f"turned: {turned_non_hidden_packs_id}, packs_id: {pack_ids}, packs_to_install: {packs_to_install}")
+        packs_names = get_non_added_packs_ids(build)
+        turned_non_hidden_packs_id = get_turned_non_hidden_packs(packs_names, build)
+        packs_to_install = packs_names - turned_non_hidden_packs_id
         build.install_packs(pack_ids=packs_to_install)
         new_integrations_names, modified_integrations_names = build.get_changed_integrations(turned_non_hidden_packs_id)
         pre_update_configuration_results = build.configure_and_test_integrations_pre_update(new_integrations_names,
