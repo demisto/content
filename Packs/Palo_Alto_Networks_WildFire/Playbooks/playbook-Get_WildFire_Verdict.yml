@@ -223,5 +223,6 @@ outputs:
 - contextPath: DBotScore
   description: The Indicator's object
   type: unknown
+fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
