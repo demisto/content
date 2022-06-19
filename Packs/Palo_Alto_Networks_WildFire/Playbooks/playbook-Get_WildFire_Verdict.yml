@@ -249,7 +249,7 @@ tasks:
     taskid: c702c2b9-6119-4b6e-8f71-2b02894959ed
     type: regular
     task:
-      id: d2d41659-e271-45ec-8623-c8b433968c28
+      id: c702c2b9-6119-4b6e-8f71-2b02894959ed
       version: -1
       name: Set WildFire Verdict as Malware
       description: Set a value in context under the key you entered.
