@@ -33,13 +33,14 @@ class Demisto:
     def raise_exception_if_not_implemented(self, implemented_item_type, function_name):
         """
 
+        :param implemented_item_type: Integration or Script, type that te function works with
         :param function_name: The calling function name
-        :param item_type: Integration or Script
 
         :return:
         """
         if self.item_type != implemented_item_type:
-            raise Exception(f'Demisto object has no function `{function_name}` for {self.item_type}.')
+            raise Exception('Demisto object has no function `{function_name}` for {item_type}.'.format(
+                function_name=function_name, item_type=self.item_type))
 
     def enable_multithreading(self):
         from threading import Lock
@@ -47,7 +48,6 @@ class Demisto:
             self.__stdout_lock = Lock()
 
     def long_running_heartbeat_thread(self, enable=True):
-        # only integrations
         self.raise_exception_if_not_implemented(INTEGRATION, 'long_running_heartbeat_thread')
         if self._heartbeat_enabled == enable:
             # nothing to do as state hasn't changed
@@ -83,28 +83,29 @@ class Demisto:
     def investigation(self):
         return self.callingContext[u'context'][u'Inv']
 
-    def incidents(self):
-        # script:
-        return self.callingContext[u'context'][u'Incidents']
+    def incidents(self, incidents=None):
+        if self.is_integration:
+            self.results({'Type': 1, 'Contents': json.dumps(incidents), 'ContentsFormat': 'json'})
+        else:
+            return self.callingContext[u'context'][u'Incidents']
 
     def incident(self):
-        # script:
-        return self.incidents()[0]
+        if self.is_integration():
+            return self.get_incidents()[0]
+        else:
+            return self.incidents()[0]
 
     def alerts(self):
-        # script:
+        self.raise_exception_if_not_implemented(SCRIPT, 'alerts')
         return self.incidents()
 
     def get_incidents(self):
         self.raise_exception_if_not_implemented(INTEGRATION, 'get_incidents')
         return self.callingContext[u'context'][u'Incidents']
 
-    def incident(self):
-        # integration only
-        return self.get_incidents()[0]
 
     def get_alerts(self):
-        # integration only
+        self.raise_exception_if_not_implemented(INTEGRATION, 'get_alerts')
         return self.get_incidents()
 
     def alert(self):
@@ -117,7 +118,7 @@ class Demisto:
         return self.callingContext[u'context'][u'ExecutionContext']
 
     def integrationInstance(self):
-        # only integration
+        self.raise_exception_if_not_implemented(INTEGRATION, 'integrationInstance')
         return self.callingContext[u'context'][u'IntegrationInstance']
 
     def args(self):
@@ -130,110 +131,90 @@ class Demisto:
         return self.__do({'type': 'getFileByEntryID', 'command': 'getFilePath', 'args': {'id': id}})
 
     def getLastRun(self):
-        # integration only
+        self.raise_exception_if_not_implemented(INTEGRATION, 'getLastRun')
         return self.__do({'type': 'executeCommand', 'command': 'getLastRun', 'args': {}})
 
     def setLastRun(self, value):
-        # integration only
+        self.raise_exception_if_not_implemented(INTEGRATION, 'setLastRun')
         return self.__do({'type': 'executeCommand', 'command': 'setLastRun', 'args': {'value': value}})
 
     def getLastMirrorRun(self):
-        # integration only
+        self.raise_exception_if_not_implemented(INTEGRATION, 'getLastMirrorRun')
         return self.__do({'type': 'executeCommand', 'command': 'getLastMirrorRun', 'args': {}})
 
     def setLastMirrorRun(self, value):
-        # integration only
+        self.raise_exception_if_not_implemented(INTEGRATION, 'setLastMirrorRun')
         return self.__do({'type': 'executeCommand', 'command': 'setLastMirrorRun', 'args': {'value': value}})
 
     def internalHttpRequest(self, method, uri, body=None):
-        # integration only
         return self.__do({'type': 'executeCommand', 'command': 'internalHttpRequest',
                           'args': {'method': method, 'uri': uri, 'body': body}})
 
     def getIntegrationContext(self):
-        # integration only
+        self.raise_exception_if_not_implemented(INTEGRATION, 'getIntegrationContext')
         resObj = self.__do({'type': 'executeCommand', 'command': 'getIntegrationContext', 'args': {'refresh': False}})
         return resObj['context']
 
     def setIntegrationContext(self, value):
-        # integration only
+        self.raise_exception_if_not_implemented(INTEGRATION, 'setIntegrationContext')
         return self.__do({'type': 'executeCommand', 'command': 'setIntegrationContext',
                           'args': {'value': value, 'version': {"version": -1, "sequenceNumber": -1, "primaryTerm": -1},
                                    'sync': False}})
 
     def getIntegrationContextVersioned(self, refresh=False):
-        # integration only
+        self.raise_exception_if_not_implemented(INTEGRATION, 'getIntegrationContextVersioned')
         return self.__do({'type': 'executeCommand', 'command': 'getIntegrationContext', 'args': {'refresh': refresh}})
 
     def setIntegrationContextVersioned(self, value, version, sync=False):
-        # integration only
+        self.raise_exception_if_not_implemented(INTEGRATION, 'setIntegrationContextVersioned')
         return self.__do({'type': 'executeCommand', 'command': 'setIntegrationContext',
                           'args': {'value': value, 'version': version, 'sync': sync}})
 
-    def internalHttpRequest(self, method, uri, body=None):
-        # script only:
-        return self.__do({'type': 'executeCommand', 'command': 'internalHttpRequest',
-                          'args': {'method': method, 'uri': uri, 'body': body}})
-
-    def searchIndicators(self, value=None, query=None, size=None, page=None, sort=None, fromDate=None, toDate=None,
-                         searchAfter=None, populateFields=None):
-        # script only:
-        return self.__do({'type': 'executeCommand', 'command': 'searchIndicators',
-                          'args': {'value': value, 'query': query, 'size': size, 'page': page, 'sort': sort,
-                                   'fromDate': fromDate, 'searchAfter': searchAfter, 'toDate': toDate,
-                                   'populateFields': populateFields}})
-
     def searchRelationships(self, filter=None):
-        # script only:
         return self.__do({'type': 'executeCommand', 'command': 'searchRelationships', 'args': {'filter': filter}})
 
     def getLicenseID(self):
         return self.__do({'type': 'executeCommand', 'command': 'getLicenseID', 'args': {}})['id']
 
     def createIncidents(self, incidents, lastRun=None, userID=None):
-        # integration only
+        self.raise_exception_if_not_implemented(INTEGRATION, 'createIncidents')
         return self.__do({'type': 'executeCommand', 'command': 'createIncidents',
                           'args': {'incidents': incidents, 'lastRun': lastRun, 'userID': userID}})
 
     def createAlerts(self, alerts, lastRun=None, userID=None):
-        # integration only
+        self.raise_exception_if_not_implemented(INTEGRATION, 'createAlerts')
         return self.__do({'type': 'executeCommand', 'command': 'createAlerts',
                           'args': {'alerts': alerts, 'lastRun': lastRun, 'userID': userID}})
 
     def createIndicators(self, indicators, lastRun=None, noUpdate=False):
-        # integration only
+        self.raise_exception_if_not_implemented(INTEGRATION, 'createIndicators')
         return self.__do({'type': 'executeCommand', 'command': 'createIndicators',
                           'args': {'indicators': indicators, 'lastRun': lastRun, 'noUpdate': noUpdate}})
 
     def searchIndicators(self, value=None, query=None, size=None, page=None, sort=None, fromDate=None, toDate=None,
                          searchAfter=None, populateFields=None):
-        # integration only
         return self.__do({'type': 'executeCommand', 'command': 'searchIndicators',
                           'args': {'value': value, 'query': query, 'size': size, 'page': page, 'sort': sort,
                                    'fromDate': fromDate, 'searchAfter': searchAfter, 'toDate': toDate,
                                    'populateFields': populateFields}})
 
-    def searchRelationships(self, filter=None):
-        # integration only
-        return self.__do({'type': 'executeCommand', 'command': 'searchRelationships', 'args': {'filter': filter}})
-
     def getIndexHash(self):
-        # integration only
+        self.raise_exception_if_not_implemented(INTEGRATION, 'getIndexHash')
         return self.__do({'type': 'executeCommand', 'command': 'getIndexHash'})
 
     def updateModuleHealth(self, err, is_error=False):
-        # integration only
+        self.raise_exception_if_not_implemented(INTEGRATION, 'updateModuleHealth')
         return self.__do(
             {'type': 'executeCommand', 'command': 'updateModuleHealth', 'args': {'err': err, 'isError': is_error}})
 
     def addEntry(self, id, entry, username=None, email=None, footer=None):
-        # integration only
+        self.raise_exception_if_not_implemented(INTEGRATION, 'addEntry')
         return self.__do({'type': 'executeCommand', 'command': 'addEntry', 'args': {'id': id, 'username': username,
                                                                                     'email': email, 'entry': entry,
                                                                                     'footer': footer}})
 
     def directMessage(self, message, username=None, email=None, anyoneCanOpenIncidents=None):
-        # integration only
+        self.raise_exception_if_not_implemented(INTEGRATION, 'directMessage')
         tmp = self.__do({'type': 'executeCommand', 'command': 'directMessage', 'args': {'message': message,
                                                                                         'username': username,
                                                                                         'email': email,
@@ -243,54 +224,51 @@ class Demisto:
             return tmp["res"]
 
     def mirrorInvestigation(self, id, mirrorType, autoClose=False):
-        # integration only
+        self.raise_exception_if_not_implemented(INTEGRATION, 'mirrorInvestigation')
         return self.__do({'type': 'executeCommand', 'command': 'mirrorInvestigation', 'args': {'id': id,
                                                                                                'mirrorType': mirrorType,
                                                                                                'autoClose': autoClose}})
 
     def findUser(self, username="", email=""):
-        # integration only
+        self.raise_exception_if_not_implemented(INTEGRATION, 'findUser')
         return self.__do(
             {'type': 'executeCommand', 'command': 'findUser', 'args': {'username': username, 'email': email}})
 
     def handleEntitlementForUser(self, incidentID, guid, email, content, taskID=""):
-        # integration only
+        self.raise_exception_if_not_implemented(INTEGRATION, 'handleEntitlementForUser')
         return self.__do({'type': 'executeCommand', 'command': 'handleEntitlementForUser',
                           'args': {'incidentID': incidentID, 'alertID': incidentID,
                                    'guid': guid, 'taskID': taskID, 'email': email, 'content': content}})
 
     def mapObject(self, sourceObject, mapper, mapperType=""):
-        # integration only
         return self.__do({'type': 'executeCommand', 'command': 'mapObject',
                           'args': {'source': sourceObject, 'mapper': mapper, 'mapperType': mapperType}})
 
     def getAutoFocusApiKey(self):
-        # integration only
         resObj = self.__do({'type': 'executeCommand', 'command': 'getLicenseCustomField', 'args': {'key': 'autofocus'}})
         if resObj != None:
             return resObj['value']
 
     def getLicenseCustomField(self, key):
-        # integration only
         resObj = self.__do({'type': 'executeCommand', 'command': 'getLicenseCustomField', 'args': {'key': key}})
         if resObj != None:
             return resObj['value']
 
     def _apiCall(self, name, params=None, data=None):
-        # integration only
+        self.raise_exception_if_not_implemented(INTEGRATION, '_apiCall')
         return self.__do(
             {'type': 'executeCommand', 'command': '_apiCall', 'args': {'name': name, 'params': params, 'data': data}})
 
     def params(self):
-        # integration only
+        self.raise_exception_if_not_implemented(INTEGRATION, 'params')
         return self.callingContext.get(u'params', {})
 
     def command(self):
-        # integration only
+        self.raise_exception_if_not_implemented(INTEGRATION, 'command')
         return self.callingContext.get(u'command', '')
 
     def isFetch(self):
-        # integration only
+        self.raise_exception_if_not_implemented(INTEGRATION, 'isFetch')
         """ used to encapsulate/hide 'fetch-incident' command from the code """
         return self.command() == 'fetch-incidents'
 
@@ -305,19 +283,17 @@ class Demisto:
         return obj
 
     def gets(self, obj, field):
-        # script only
         return str(self.get(obj, field))
 
     def getArg(self, arg, defaultParam=None):
-        # script only:
         return self.get(self.callingContext, 'args.' + arg, defaultParam)
 
     def execute(self, module, command, args):
-        # script only:
+        self.raise_exception_if_not_implemented(SCRIPT, 'execute')
         return self.__do({'type': 'execute', 'module': module, 'command': command.strip(), 'args': args})
 
     def executeCommand(self, command, args):
-        # script only:
+        self.raise_exception_if_not_implemented(SCRIPT, 'executeCommand')
         return self.__do({'type': 'executeCommand', 'command': command.strip(), 'args': args})
 
     def demistoUrls(self):
@@ -327,7 +303,7 @@ class Demisto:
         return self.__do({'type': 'demistoVersion'})
 
     def heartbeat(self, msg):
-        # integration only
+        self.raise_exception_if_not_implemented(INTEGRATION, 'heartbeat')
         return self.__do_no_res({'type': 'executeCommand', 'command': 'heartbeat', 'args': {'message': msg}})
 
     def info(self, *args):
@@ -341,7 +317,7 @@ class Demisto:
         self.__do({'type': 'log', 'command': 'error', 'args': argsObj})
 
     def exception(self, ex):
-        # script only:
+        self.raise_exception_if_not_implemented(SCRIPT, 'exception')
         return self.__do({'type': 'exception', 'command': 'exception', 'args': ex})
 
     def debug(self, *args):
@@ -350,49 +326,24 @@ class Demisto:
         self.__do({'type': 'log', 'command': 'debug', 'args': argsObj})
 
     def getAllSupportedCommands(self):
-        # script only
+        self.raise_exception_if_not_implemented(SCRIPT, 'getAllSupportedCommands')
         return self.__do({'type': 'getAllModulesSupportedCmds'})
 
     def getModules(self):
-        # script only
+        self.raise_exception_if_not_implemented(SCRIPT, 'getModules')
         return self.__do({'type': 'getAllModules'})
 
     def setContext(self, name, value):
-        # script only
+        self.raise_exception_if_not_implemented(SCRIPT, 'setContext')
         return self.__do({'type': 'setContext', 'name': name, 'value': value})
 
-    def gets(self, obj, field):
-        # integration only
-        return str(self.get(obj, field))
-
-    def getArg(self, arg, defaultParam=None):
-        # integration only
-        return self.get(self.callingContext, 'args.' + arg, defaultParam)
-
     def getParam(self, p):
-        # integration only
+        self.raise_exception_if_not_implemented(INTEGRATION, 'getParam')
         return self.get(self.callingContext, 'params.' + p)
 
     def dt(self, data, q):
-        # integration only
+        self.raise_exception_if_not_implemented(INTEGRATION, 'dt')
         return self.__do({'type': 'dt', 'name': q, 'value': data})['result']
-
-    def mapObject(self, sourceObject, mapper, mapperType=""):
-        # script only:
-        return self.__do({'type': 'executeCommand', 'command': 'mapObject',
-                          'args': {'source': sourceObject, 'mapper': mapper, 'mapperType': mapperType}})
-
-    def getAutoFocusApiKey(self):
-        # script only:
-        resObj = self.__do({'type': 'executeCommand', 'command': 'getLicenseCustomField', 'args': {'key': 'autofocus'}})
-        if resObj != None:
-            return resObj['value']
-
-    def getLicenseCustomField(self, key):
-        # script only:
-        resObj = self.__do({'type': 'executeCommand', 'command': 'getLicenseCustomField', 'args': {'key': key}})
-        if resObj != None:
-            return resObj['value']
 
     def __do_lock(self, lock, timeout):
         if sys.version_info.major >= 3:
@@ -401,11 +352,11 @@ class Demisto:
             # python 2 doesn't have timeout we use polling
             if timeout < 0:
                 return lock.acquire()
-            start = time.time()
-            while (time.time() - start) < timeout:
+            start = time.time()  # type:ignore  [name-defined] # noqa: F821 # pylint: disable=E0602
+            while (time.time() - start) < timeout:  # type:ignore  [name-defined] # noqa: F821 # pylint: disable=E0602
                 if lock.acquire(False):
                     return True
-                time.sleep(0.1)
+                time.sleep(0.1) # type:ignore  [name-defined] # noqa: F821 # pylint: disable=E0602
             # didn't get the lock
             return False
 
@@ -443,8 +394,8 @@ class Demisto:
                 lock.release()
 
     def convert(self, results):
-        # script only:
         """ Convert whatever result into entry """
+        self.raise_exception_if_not_implemented(SCRIPT, 'convert')
         if type(results) is dict:
             if 'Contents' in results and 'ContentsFormat' in results:
                 return results
@@ -459,20 +410,9 @@ class Demisto:
             return {'Type': 1, 'Contents': results.decode('utf-8'), 'ContentsFormat': 'text'}
         return {'Type': 1, 'Contents': str(results), 'ContentsFormat': 'text'}
 
-    def results(self, results):
-        # script only:
-        res = []
-        converted = self.convert(results)
-        if type(converted) is list:
-            res = converted
-        else:
-            res.append(converted)
-
-        self.__do_no_res({'type': 'result', 'results': res})
-
     def __convert(self, results):
-        # integration only
         """ Convert whatever result into entry """
+        self.raise_exception_if_not_implemented(INTEGRATION, '__convert')
         if type(results) is dict:
             if 'Contents' in results and 'ContentsFormat' in results:
                 return results
@@ -488,9 +428,11 @@ class Demisto:
         return {'Type': 1, 'Contents': str(results), 'ContentsFormat': 'text'}
 
     def results(self, results):
-        # integration only
         res = []
-        converted = self.__convert(results)
+        if self.is_integration:
+            converted = self.__convert(results)
+        else:
+            converted = self.convert(results)
         if type(converted) is list:
             res = converted
         else:
@@ -498,24 +440,18 @@ class Demisto:
 
         self.__do_no_res({'type': 'result', 'results': res})
 
-    def incidents(self, incidents):
-        # integration only
-        self.results({'Type': 1, 'Contents': json.dumps(incidents), 'ContentsFormat': 'json'})
-
     def fetchResults(self, incidents_or_alerts):
-        # integration only
         """ used to encapsulate/hide 'incidents' from the code """
+        self.raise_exception_if_not_implemented(INTEGRATION, 'fetchResults')
         self.incidents(incidents_or_alerts)
 
     def credentials(self, credentials):
-        # integration only
+        self.raise_exception_if_not_implemented(INTEGRATION, 'credentials')
         self.results({'Type': 1, 'Contents': json.dumps(credentials), 'ContentsFormat': 'json'})
 
 
-is_integ_script = context['integration']  # type:ignore [name-defined] # noqa: F821 # pylint: disable=E0602
-
-if "demisto" not in locals():
-    demisto = Demisto(context)  # type:ignore [name-defined] # noqa: F821 # pylint: disable=E0602
+# if "demisto" not in locals():
+demisto = Demisto(context)  # type:ignore [name-defined] # noqa: F821 # pylint: disable=E0602
 
 
 try:
