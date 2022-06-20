@@ -28,3 +28,6 @@ ignore=IM111
 
 [file:classifier-Cymulate_v2.json]
 ignore=BA101
+
+[file:classifier-Cymulate_v2.json]
+ignore=BA101
