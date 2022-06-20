@@ -449,11 +449,12 @@ class Demisto:
         self.results({'Type': 1, 'Contents': json.dumps(credentials), 'ContentsFormat': 'json'})
 
 
-# if "demisto" not in locals():
-try:
-    demisto = Demisto(context)  # type:ignore [name-defined] # noqa: F821 # pylint: disable=E0602
-except NameError:
-    pass
+if "demisto" not in locals():
+    try:
+        # try except for CommonServerPython tests.
+        demisto = Demisto(context)  # type:ignore [name-defined] # noqa: F821 # pylint: disable=E0602
+    except NameError:
+        pass
 
 try:
     import __builtin__
