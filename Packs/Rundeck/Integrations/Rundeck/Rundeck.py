@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 
 import urllib3
-import traceback
 from typing import Any, Dict, Optional, Union
 import ntpath
 from dateparser import parse
@@ -1328,7 +1327,6 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         error_msg = str(e).replace("\\n", "\n")
         return_error(
             f"Failed to execute {demisto.command()} command.\n Error:\n {error_msg}"
