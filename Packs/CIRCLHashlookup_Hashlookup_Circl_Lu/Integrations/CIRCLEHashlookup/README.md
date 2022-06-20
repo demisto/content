@@ -1,5 +1,5 @@
 CIRCL hash lookup is a public API to lookup hash values against known database of files. NSRL RDS database is included and many others are also included. The API is accessible via HTTP ReST API and the API is also described as an OpenAPI. The service is free and served as a best-effort basis.
-This integration was integrated and tested with version xx of CIRCLEHashlookup
+This integration was integrated and tested with online version of CIRCLEHashlookup
 
 ## Configure CIRCLEHashlookup on Cortex XSOAR
 
