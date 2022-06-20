@@ -16,6 +16,7 @@
         "ActiveMQ"
     ],
     "marketplaces": [
+        "xsoar",
         "marketplacev2"
     ]
 }
