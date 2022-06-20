@@ -693,6 +693,9 @@ def insert_to_updated_context(context_data: dict,
         offense_ids (list, optional): Offense ids that were changed. Defaults to None.
         should_update_last_fetch (bool, optional): Should update the last_fetch. Defaults to False.
         should_update_last_mirror (bool, optional): Should update the last mirror. Defaults to False.
+        should_add_reset_key (bool, optional): If we should add reset key. Defaults to False
+        should_force_update (bool, optional): If we should force update the current context. Defaults to False
+
     """
     if offense_ids is None:
         offense_ids = []
