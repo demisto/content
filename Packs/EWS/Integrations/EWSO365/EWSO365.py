@@ -386,7 +386,12 @@ class EWSClient:
         m = account.inbox.get(id=reply.id)
 
         for attachment in attachments:
-            m.attach(attachment)
+            if not attachment.get('cid'):
+                new_attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'))
+            else:
+                new_attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'),
+                                                is_inline=True, content_id=attachment.get('cid'))
+            m.attach(new_attachment)
         m.send()
 
         return m
@@ -1973,11 +1978,7 @@ def reply_mail(client: EWSClient, to, inReplyTo, subject='', body="", bcc=None, 
     cc = argToList(cc)
     bcc = argToList(bcc)
 
-    # Basic validation - we allow pretty much everything but you have to have at least a recipient
-    # We allow messages without subject and also without body
-
-
-        # collect all types of attachments
+    # collect all types of attachments
     attachments = collect_attachments(attachIDs, attachCIDs, attachNames)
     attachments.extend(collect_manual_attachments(manualAttachObj))
     client.reply_mail(inReplyTo, to, body, subject, bcc, cc, htmlBody, attachments)
