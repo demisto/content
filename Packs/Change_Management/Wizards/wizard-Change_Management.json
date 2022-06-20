@@ -1,26 +1,26 @@
 {
-    "id": "Phishing Alerts Pack",
+    "id": "Change_Management",
     "version": -1,
     "modified": "2022-04-10T11:55:54.250933+03:00",
     "fromVersion": "6.8.0",
-    "name": "Phishing Alerts Pack",
+    "name": "Change Management Wizard",
     "description": "Welcome to the Deployment Wizard!  These steps will guide you through configuring your content pack so you'll have a working use case when the wizard finishes. Make sure to follow the steps in order, you can always continue the wizard where you left off. Learn more about this pack’s deployment.",
     "dependency_packs": [
       {
-        "name": "Email Integrations",
+        "name": "Firewall Intergations",
         "min_required": 1,
         "packs": [
           {
-            "name": "EWSMailSender",
-            "display_name": "EWS Mail Sender"
+            "name": "CheckpointFirewall",
+            "display_name": "Checkpoint Firewall"
           },
           {
-            "name": "Gmail",
-            "display_name": "Gmail"
+            "name": "PAN-OS",
+            "display_name": "PaloAlto Networks Firewall - PanOS"
           },
           {
-            "name": "MicrosoftGraphMail",
-            "display_name": "Microsoft Graph Mail"
+            "name": "FortiGate",
+            "display_name": "FortiGate"
           }
         ]
       },
@@ -83,7 +83,7 @@
       "fetching_integrations": [
         {
           "priority": 3,
-          "name": "Gmail",
+          "name": "CheckPointFirewall_v2",
           "action": {
             "existing": "Update your current instance to work with the new Malware Investigation and Response incident type: \n1. Enable fetching. \n2. Set the Incident type field to Phishing. \n3. Set the Mapper field to 'Default Mapper'. \n4. Check the 'Fetch alert evidence' option.",
             "new": "Set up new 'Microsoft Defender Advanced Threat Protection' instance to start fetching Malware Investigation and Response incidents: \n1. Enable fetching. \n2. Set the Incident type field to Phishing. \n3. Set the Mapper field to 'Default Mapper'. \n4. Check the 'Fetch alert evidence' option."
@@ -93,7 +93,7 @@
         },
         {
           "priority": 2,
-          "name": "EWS v2",
+          "name": "FortiGate",
           "action": {
             "existing": "Update your current instance to work with the new Malware incident type: \n1. Enable fetching. \n2. Set the Incident type field to Phishing. \n3. Set the Mapper field to 'CrowdStrike Falcon Mapper'.",
             "new": "Set up new 'Crowdstrike Falcon' instance to start fetching Malware Investigation and Response incidents: \n1. Enable fetching. \n2. Set the Incident type field to Phishing. \n3. Set the Mapper field to 'CrowdStrike Falcon Mapper'."
@@ -103,7 +103,7 @@
         },
         {
           "priority": 1,
-          "name": "MicrosoftGraphMail",
+          "name": "Palo Alto Networks PAN-OS",
           "action": {
             "existing": "Update your current instance to work with the new Phishing type: \n1. Enable fetching. \n2. Set the 'Cortex XDR Incident Handler - Classifier'.\n3. Set the Incident type field to Malware Investigation and Response. \n4. Set the Mapper field to 'Cortex XDR - IR-mapper'",
             "new": "Set up new 'Cortex XDR - IR' to work with the Phishing type: \n1. Turn on fetching. \n2. Choose the 'Cortex XDR Incident Handler - Classifier .\n3. Set the Incident type field to Malware Investigation and Response. \n4. Set the Mapper field to 'Cortex XDR - IR-mapper'."
