@@ -4173,13 +4173,15 @@ script:
       required: true
       secret: false
     - default: false
-      description: String value that defines the new field. Maximum length is 256 characters.
+      description: String value that defines the new field. Maximum length is 256
+        characters.
       isArray: true
       name: values
       required: true
       secret: false
     - default: false
-      description: String that represents additional information regarding the featured alert field.
+      description: String that represents additional information regarding the featured
+        alert field.
       isArray: false
       name: comments
       required: false
@@ -4204,8 +4206,12 @@ script:
     execution: false
     name: xdr-replace-featured-field
     outputs:
-    - contextPath: PaloAltoNetworksXDR.FeaturedField
-      type: Unknown
+    - contextPath: PaloAltoNetworksXDR.FeaturedField.field_type
+      description: The filed type that changed.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.FeaturedField.fields
+      description: String value that defines the new field.
+      type: String
   dockerimage: demisto/python3:3.10.4.29342
   feed: false
   isfetch: true

@@ -365,15 +365,10 @@ class Client(CoreClient):
 
         return reply.get('reply', {})
 
-    def replace_featured_field(self, field_type: str, values: list[str], comments: list[str], ad_type: list[str]) -> dict:
-
+    def replace_featured_field(self, field_type: str, fields: list[dict]) -> dict:
         request_data = {
             'request_data': {
-                'fields': [
-                    {'value': field[0], 'comment': field[1], 'type': field[2]} for field in zip(values, comments, ad_type)
-                ] if field_type == 'ad_groups' else [
-                    {'value': field[0], 'comment': field[1]} for field in zip(values, comments)
-                ]
+                'fields': fields
             }
         }
 
@@ -1032,45 +1027,54 @@ def replace_featured_field_command(client: Client, args: Dict) -> CommandResults
     field_type = args.get('field_type')
     values = argToList(args.get('values'))
     comments = argToList(args.get('comments'))
-    ad_type = argToList(args.get('ad_type'))
+    ad_type = argToList(args.get('ad_type', 'group'))
 
     len_values = len(values)
     len_comments = len(comments)
     len_ad_type = len(ad_type)
 
-    if len_values != len_comments:
-        # if the comments list is shorter we add empty comments to the end of the comment list.
-        # if the comments list is longer we cut the comment list to be the same length as the values list.
-        empty_comments = [] * (len_values - len_comments)
-        comments = comments.extend(empty_comments)[:len_values]
+    if len_values > len_comments:
+        # If the comments list is shorter we add empty comments to the end of the comment list.
+        empty_comments = [""] * (len_values - len_comments)
+        comments.extend(empty_comments)
+    elif len_values < len_comments:
+        # If the comments list is longer we cut the comment list to be the same length as the values list.
+        comments = comments[:len_values]
 
-    if field_type == 'ad_groups' and len_values != len_ad_type:
-        empty_ad_type = [] * (len_values - len_ad_type)
-        ad_type = ad_type.extend(empty_ad_type)[:len_values]
+    if field_type == 'ad_groups':
+        if len_values > len_ad_type:
+            # If the ad_type list is shorter we add empty strings to the end of the ad_type list.
+            empty_ad_types = [""] * (len_values - len_ad_type)
+            ad_type.extend(empty_ad_types)
+        elif len_values < len_ad_type:
+            # If the ad_type list is longer we cut the ad_type list to be the same length as the values list.
+            ad_type = ad_type[:len_values]
 
-    reply = client.replace_featured_field(field_type, values, comments, ad_type)
+        fields = [
+            {'value': field[0], 'comment': field[1], 'type': field[2]} for field in zip(values, comments, ad_type)
+        ]
+    else:
+        fields = [
+            {'value': field[0], 'comment': field[1]} for field in zip(values, comments)
+        ]
+
+    reply = client.replace_featured_field(field_type, fields)
 
     # The reply could be either a boolean (true) if success
     # or a dict in this format: {"err_code": STATUS_CODE, "err_msg": GENERAL_MESSAGE, "err_extra": EXTRA_DATA}
     # For more information refer to:
     # https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-apis/incident-management/replace-featured-hosts
     if not isinstance(reply, dict):
-        result = {}
-        if field_type == 'ad_groups':
-            result[field_type] = [
-                {'value': field[0], 'comment': field[1], 'type': field[2]} for field in zip(values, comments, ad_type)
-            ]
-        else:
-            result[field_type] = [
-                {'value': field[0], 'comment': field[1]} for field in zip(values, comments)
-            ]
+        result = {'field_type': field_type, 'fields': fields}
 
-        readable_output = tableToMarkdown('Replaced featured', result, headerTransform=pascalToSpace, removeNull=True)
+        readable_output = tableToMarkdown(
+            f'Replaced featured: {result.get("field_type")}', result.get('fields'), headerTransform=pascalToSpace
+        )
 
         return CommandResults(
             readable_output=readable_output,
             outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.FeaturedField',
-            outputs_key_field=field_type,
+            outputs_key_field='field_type',
             outputs=result,
             raw_response=result
         )

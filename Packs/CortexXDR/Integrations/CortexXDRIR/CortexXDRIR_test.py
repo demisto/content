@@ -739,8 +739,6 @@ def test_get_contributing_event_command(requests_mock):
     )
     args = {
         "alert_ids": "[1111]",
-        "limit": "50",
-        "offset": "0",
     }
 
     response = get_contributing_event_command(client, args)
@@ -755,25 +753,24 @@ def test_replace_featured_field_command(requests_mock):
     replace_featured_field = load_test_data('./test_data/replace_featured_field.json')
     requests_mock.post(f'{XDR_URL}/public_api/v1/featured_fields/replace_ad_groups', json=replace_featured_field)
     expected_response = {
-        'old value': '["old", "one more old"]',
-        'new value': 'new',
-        'comment': 'this is a comment',
-        'old active directory type': 'ou',
-        'new active directory type': 'group'
+        'field_type': 'ad_groups',
+        'fields': [
+            {'value': 'new value', 'comment': 'this is a comment', 'type': 'ou'},
+            {'value': 'one new value', 'comment': '', 'type': ''}
+        ]
     }
 
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', headers={}
     )
     args = {
-        "ad_type": "ou",
-        "comment": "this is a comment",
-        "featured_ad_type": "group",
-        "featured_value": "new",
+        "ad_type": "[\"ou\"]",
+        "comments": "[\"this is a comment\"]",
         "field_type": "ad_groups",
-        "values": "[\"old\", \"one more old\"]"
+        "values": "[\"new value\", \"one new value\"]",
     }
 
     response = replace_featured_field_command(client, args)
 
     assert response.outputs == expected_response
+    assert len(response.outputs.get('fields')) == 2
