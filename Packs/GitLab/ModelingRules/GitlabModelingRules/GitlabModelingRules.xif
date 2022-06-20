@@ -1,0 +1,15 @@
+[MODEL: model = Audit, dataset = gitlab_gitlab_raw]
+alter   XDM.Audit.original_event_id=to_string(id),
+        XDM.Audit.TriggeredBy.identity.uuid=to_string(author_id),
+        XDM.Audit.audited_resource.id=to_string(entity_id),
+        XDM.Audit.audited_resource.type=entity_type,
+        XDM.Audit.TriggeredBy.identity.name=json_extract_scalar(details, "$.author_name"),
+        XDM.Audit.audited_resource.sub_type=json_extract_scalar(details, "$.target_type"),
+        XDM.Audit.audited_resource.name=json_extract_scalar(details, "$.target_details"),
+        XDM.Audit.original_event_description=json_extract_scalar(details, "$.custom_message"),
+        XDM.Audit.TriggeredBy.ipv4=json_extract_scalar(details, "$.ip_address"),
+        XDM.Audit.audited_resource_before.value=json_extract_scalar(details, "$.from"),
+        XDM.Audit.audited_resource.value=json_extract_scalar(details, "$.to"),
+        XDM.Audit.operation=json_extract_scalar(details, "$.action"),
+        XDM.Audit.original_event_type=json_extract_scalar(details, "$.action_type"),
+        XDM.Audit.original_event_sub_type=json_extract_scalar(details, "$.action_category");

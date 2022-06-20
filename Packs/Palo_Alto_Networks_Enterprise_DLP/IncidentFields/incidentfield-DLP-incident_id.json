@@ -1,0 +1,30 @@
+{
+    "id": "incident_pandlpincidentid",
+    "version": -1,
+    "modified": "2022-02-02T17:36:25.466663453Z",
+    "name": "PAN DLP Incident ID",
+    "ownerOnly": false,
+    "cliName": "pandlpincidentid",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Data Loss Prevention"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": false,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.5.0"
+}

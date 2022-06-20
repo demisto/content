@@ -18,12 +18,12 @@ configuration:
   hiddenusername: true
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: false
+  defaultvalue: 'false'
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: false
+  defaultvalue: 'false'
   type: 8
   required: false
 script:

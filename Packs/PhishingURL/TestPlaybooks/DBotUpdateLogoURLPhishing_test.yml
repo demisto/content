@@ -52,7 +52,7 @@ tasks:
       associatedDomains: {}
       debug: {}
       logoName: {}
-      logoimageId: {}
+      logoImageId: {}
     separatecontext: false
     view: |-
       {

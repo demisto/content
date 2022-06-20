@@ -1983,6 +1983,12 @@ script:
     - contextPath: Core.ScriptResult.results.retention_date
       description: Timestamp in which the retrieved files will be deleted from the server.
       type: Date
+    - contextPath: Core.ScriptResult.results.command
+      description: The command that was executed by the script.
+      type: String
+    - contextPath: Core.ScriptResult.results.command_output
+      description: The output of the command executed by the script.
+      type: array
   - arguments:
     - default: false
       description: Action ID retrieved from the core-run-script command.
@@ -3090,7 +3096,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.4.27798
+  dockerimage: demisto/python3:3.10.4.29342
 tests:
 - No tests
 fromversion: 6.2.0

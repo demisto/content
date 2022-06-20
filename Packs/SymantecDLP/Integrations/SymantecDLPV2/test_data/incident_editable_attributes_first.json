@@ -13,7 +13,7 @@
             "name": "custom_attribute_group.default",
             "customAttributes": [
                 {
-                    "name": "Custom Attribue1",
+                    "name": "Custom Attribute1",
                     "index": 1,
                     "displayOrder": 1,
                     "value": null,

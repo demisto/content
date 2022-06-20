@@ -32,7 +32,7 @@ INVALID_DISTRIBUTION_LIST = ["invalid_distribution", 1.5, "53.5"]
 TEST_PREPARE_ARGS = [({'type': '1', 'to_ids': 0, 'from': '2', 'to': '3', 'event_id': '4', 'last': '5',
                        'include_decay_score': 0, 'include_sightings': 0, 'include_correlations': 0,
                        'enforceWarninglist': 0, 'tags': 'NOT:param3', 'value': 6, 'category': '7', 'limit': 10,
-                       'org': 7}, {'type_attribute': '1', 'to_ids': 0, 'date_from': '2', 'date_to': '3',
+                       'org': 7}, {'type_attribute': ['1'], 'to_ids': 0, 'date_from': '2', 'date_to': '3',
                                    'eventid': ['4'], 'publish_timestamp': '5', 'include_decay_score': 0,
                                    'include_sightings': 0, 'include_correlations': 0, 'enforceWarninglist': 0,
                                    'limit': 10, 'tags': {'NOT': ['param3']}, 'org': 7, 'value': 6, 'category': '7',
@@ -599,3 +599,25 @@ def test_build_attributes_search_response(mocker):
         for event_field in ATTRIBUTE_FIELDS:
             if actual_attribute.get(event_field):
                 assert actual_attribute.get(event_field) == expected_attribute.get(event_field)
+
+
+def test_warninglist_response(mocker):
+    """
+
+    Given:
+    - A MISP warninglist response (json).
+
+    When:
+    - Running misp-check-warninglist command.
+
+    Then:
+    - Ensure that the readable output to context data is valid and was parsed correctly.
+    """
+    mock_misp(mocker)
+    from MISPV3 import warninglist_command
+    demisto_args = {"value": "8.8.8.8"}
+    warninglist_response = util_load_json("test_data/warninglist_response.json")
+    with io.open("test_data/warninglist_outputs.md", mode="r", encoding="utf-8") as f:
+        warninglist_expected_output = f.read()
+    mocker.patch("pymisp.ExpandedPyMISP.values_in_warninglist", return_value=warninglist_response)
+    assert warninglist_command(demisto_args).to_context()['HumanReadable'] == warninglist_expected_output

@@ -7,7 +7,6 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 
 import requests
-import traceback
 import copy
 import json
 import base64
@@ -833,7 +832,7 @@ def format_domain_data(domains: List[Dict[str, Any]]) -> List[CommandResults]:
                 updated_date=whois.get('updatedDate'),
                 expiration_date=whois.get('registryExpiryDate'),
                 name_servers=whois.get('nameServers'),
-                domain_status=domain_statuses[0],
+                domain_status=domain_statuses[0] if domain_statuses else [],
                 organization=admin.get('organization'),
                 admin_name=admin.get('name'),
                 admin_email=admin.get('emailAddress'),
@@ -2786,7 +2785,6 @@ def main() -> None:
         #  To be compatible with 6.1
         if 'not implemented' in str(e):
             raise e
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(
             f"Failed to execute {command} command.\nError:\n{str(e)}"
         )

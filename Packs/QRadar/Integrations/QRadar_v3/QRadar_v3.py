@@ -1304,6 +1304,8 @@ def test_module_command(client: Client, params: Dict) -> str:
         - (str): 'ok' if test passed
         - raises DemistoException if something had failed the test.
     """
+    global DEFAULT_EVENTS_TIMEOUT
+    DEFAULT_EVENTS_TIMEOUT = 1
     try:
         ctx = extract_context_data(get_integration_context(), include_id=True)
         print_mirror_events_stats(ctx, "Test Module")
@@ -1866,9 +1868,12 @@ def long_running_execution_command(client: Client, params: Dict):
                 incident_type=incident_type,
                 mirror_direction=mirror_direction
             )
+            demisto.updateModuleHealth('')
 
-        except Exception:
-            demisto.error('Error occurred during long running loop')
+        except Exception as e:
+            msg = f'Error occurred during long running loop: {e}'
+            demisto.updateModuleHealth(msg)
+            demisto.error(msg)
             demisto.error(traceback.format_exc())
 
         finally:
@@ -3279,14 +3284,8 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
     raw_context, context_version = get_integration_context_with_version()
     context_data = extract_context_data(raw_context.copy())
     events_limit = int(params.get('events_limit') or DEFAULT_EVENTS_LIMIT)
-    processed_offenses = print_mirror_events_stats(context_data, f"Starting Get Remote Data For "
-                                                                 f"Offense {str(offense.get('id'))}")
-
-    # versions below 6.1 compatibility
-    last_update = get_time_parameter(args.get('lastUpdate'))
-    if last_update and last_update > offense_last_update and str(offense.get("id")) not in processed_offenses:
-        demisto.debug('Nothing new in the ticket')
-        return GetRemoteDataResponse({'id': offense_id, 'mirroring_events_message': 'Nothing new in the ticket.'}, [])
+    print_mirror_events_stats(context_data, f"Starting Get Remote Data For "
+                                            f"Offense {str(offense.get('id'))}")
 
     demisto.debug(f'Updating offense. Offense last update was {offense_last_update}')
     entries = []

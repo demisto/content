@@ -1,6 +1,6 @@
 Fetches indicators from an Accenture CTI feed. You can filter returned indicators by indicator type, indicator severity, threat type, confidence, and malware family (each of these are an integration parameter).
 Ingesting the indicator is being done in an incremental manner.
-This feed integration was integrated and tested with version v2.88.0 of ACTI.
+This feed integration was integrated and tested with version v2.93.0 of ACTI.
 
 ## Configure ACTI Indicator Feed on Cortex XSOAR
 
@@ -34,14 +34,14 @@ This feed integration was integrated and tested with version v2.88.0 of ACTI.
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### idefense-get-indicators
+### acti-get-indicators
 ***
 Gets the feed indicators.
 
 
 #### Base Command
 
-`idefense-get-indicators`
+`acti-get-indicators`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -54,7 +54,7 @@ Gets the feed indicators.
 There is no context output for this command.
 
 #### Command Example
-```!idefense-get-indicators limit=10```
+```!acti-get-indicators limit=10```
 
 #### Context Example
 There is no context output for this command.

@@ -492,19 +492,7 @@ tasks:
           left:
             value:
               complex:
-                root: inputs.agentIP
-            iscontext: true
-        - operator: isNotEmpty
-          left:
-            value:
-              complex:
                 root: inputs.agentID
-            iscontext: true
-        - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: inputs.agentHostname
             iscontext: true
     view: |-
       {
@@ -705,7 +693,12 @@ tasks:
         complex:
           root: inputs.timeRange
       query:
-        simple: (mitreattcktechnique:*1037* or mitreattcktechnique:*T1542* or mitreattcktechnique:*T1053* or mitreattcktechnique:*T1543.002* or mitreattcktechnique:*T1543.003* or mitreattcktechnique:*T1569.002* or mitreattcktechnique:*T1547.001* or mitreattcktechnique:*T1547.005* or mitreattcktechnique:*T1546.002* or mitreattcktechnique:*T1546.011* or mitreattcktechnique:*T1546.012* or mitreattcktechnique:*T1136* or mitreattcktechnique:*T1150*) and agentid:${inputs.agentID}
+        simple: (mitreattcktechnique:*1037* or mitreattcktechnique:*T1542* or mitreattcktechnique:*T1053*
+          or mitreattcktechnique:*T1543.002* or mitreattcktechnique:*T1543.003* or
+          mitreattcktechnique:*T1569.002* or mitreattcktechnique:*T1547.001* or mitreattcktechnique:*T1547.005*
+          or mitreattcktechnique:*T1546.002* or mitreattcktechnique:*T1546.011* or
+          mitreattcktechnique:*T1546.012* or mitreattcktechnique:*T1136* or mitreattcktechnique:*T1150*)
+          and agentid:${inputs.agentID}
     separatecontext: false
     view: |-
       {
@@ -1848,7 +1841,9 @@ tasks:
         complex:
           root: inputs.timeRange
       query:
-        simple: childprocesssha256:${inputs.FileSHA256} or filesha256:${inputs.FileSHA256} or parentprocesssha256:${inputs.FileSHA256} or osparentprocesssha256:${inputs.FileSHA256} or filemacrosha256:${inputs.FileSHA256}
+        simple: initiatorsha256:${inputs.FileSHA256} or cgosha256:${inputs.FileSHA256}
+          or filesha256:${inputs.FileSHA256} or filemacrosha256:${inputs.FileSHA256}
+          or osparentsha256:${inputs.FileSHA256}
     separatecontext: false
     view: |-
       {
@@ -2080,7 +2075,7 @@ inputs:
   playbookInputQuery:
 - key: timeRange
   value:
-    simple: 24 hours ago
+    simple: 2 hours ago
   required: false
   description: |-
     A time range to execute the hunting in.

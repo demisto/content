@@ -83,6 +83,10 @@ configuration:
   name: insecure
   required: false
   type: 8
+- display: Parse SQS message body as a JSON string
+  name: parse_body_as_json
+  required: false
+  type: 8
 script:
   script: ''
   type: python

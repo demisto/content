@@ -1,8 +1,8 @@
 args:
 - default: false
-  description: '"Entry ID" in XSOAR'
+  description: '"Entry ID" of the uploaded logo in Cortex XSOAR.'
   isArray: false
-  name: logoimageId
+  name: logoImageId
   required: false
   secret: false
 - default: false
@@ -21,8 +21,7 @@ args:
   secret: false
 - auto: PREDEFINED
   default: false
-  description: Action to execute on the model. Will be ignored if displayLogos is
-    set to True.
+  description: Action to execute on the model.
   isArray: false
   name: action
   predefined:
@@ -45,7 +44,7 @@ tags:
 - ml
 timeout: '0'
 type: python
-dockerimage: demisto/mlurlphishing:1.0.0.27710
+dockerimage: demisto/mlurlphishing:1.0.0.28347
 runas: DBotRole
 runonce: false
 tests:

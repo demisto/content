@@ -53,8 +53,8 @@ For more details about the authentication used in this integration, see [Microso
     | Private Key | Used for certificate authentication. The private key of the registered certificate. | eea810f5-a6f6 |
     | Fetch Incidents | Whether to fetch the incidents. | N/A |
     | Incident Type | The type of incident to select. | Phishing |
-    | Status to filter out alerts for fetching as incidents| The property values are, "New", "InProgress" or "Resolved". Comma-separated values supported. | New,Resolved |
-    | Severity to filter out alerts for fetching as incidents | The property values are, "Informational", "Low", "Medium" and "High". Comma-separated values supported. | Medium,High |
+    | Status to filter out alerts for fetching as incidents| The property values are, "New", "InProgress" or "Resolved". Comma-separated lists are supported, e.g., New,Resolved. | New,In Progress,Resolved |
+    | Severity to filter out alerts for fetching as incidents | The property values are, "Informational", "Low", "Medium" and "High". Comma-separated lists are supported, e.g., Medium,High. | Medium,High |
     | Trust any Certificate (Not Secure) | When selected, certificates are not checked. | N/A |
     | Use system proxy settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. | https://proxyserver.com |
     | First Fetch Timestamp | The first timestamp to be fetched in number, time unit format. | 12 hours, 7 days |
@@ -143,6 +143,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 46. endpoint
 47. microsoft-atp-indicator-batch-update
 48. microsoft-atp-get-alert-by-id
+49. microsoft-atp-request-and-download-investigation-package
 
 ### 1. microsoft-atp-isolate-machine
 ---
@@ -160,7 +161,7 @@ Machine.Isolate
 | --- | --- | --- |
 | machine_id | A comma-separated list of machine IDs to be used for isolation. e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424. | Required | 
 | comment | A comment to associate with the action. | Required | 
-| isolation_type | Full isolation or Selective isolation. (Restrict only limited set of applications from accessing the network). Possible values are: Full, Selective. | Required | 
+| isolation_type | Full isolation or selective isolation. (Restrict only limited set of applications from accessing the network). Possible values are: Full, Selective. | Required | 
 
 
 ##### Context Output
@@ -323,7 +324,7 @@ Machine.Isolate
 
 ### 3. microsoft-atp-get-machines
 ***
-Retrieves a collection of machines that have communicated with WDATP cloud in the last 30 days. Note, only one of ip and hostname can be a comma separeted list. If both given as lists, an error will appear.
+Retrieves a collection of machines that have communicated with WDATP cloud in the last 30 days. Note, only ip or hostname can be a comma-separated list. If both are given as lists, an error will appear.
 
 
 #### Base Command
@@ -334,9 +335,9 @@ Retrieves a collection of machines that have communicated with WDATP cloud in th
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | hostname | A comma-separated list of computer DNS name. | Optional | 
-| ip | A comma-separated list of the last machine IP to access the internet. | Optional | 
-| risk_score | The machine risk score. Possible values: "Low", "Medium", and "High". Possible values are: Low, Medium, High. | Optional | 
-| health_status | The machine health status. Possible values: "Active" and "Inactive". Possible values are: Active, Inactive. | Optional | 
+| ip | A comma-separated list of the last machine IPs to access the internet. | Optional | 
+| risk_score | The machine risk score. Possible values are: Low, Medium, High. | Optional | 
+| health_status | The machine health status. Possible values are: Active, Inactive. | Optional | 
 | os_platform | The machine's OS platform. Only a single platform can be added. | Optional | 
 
 
@@ -346,8 +347,8 @@ Retrieves a collection of machines that have communicated with WDATP cloud in th
 | --- | --- | --- |
 | MicrosoftATP.Machine.ID | String | The machine ID. | 
 | MicrosoftATP.Machine.ComputerDNSName | String | The machine DNS name. | 
-| MicrosoftATP.Machine.FirstSeen | Date | The first date and time where the machine was observed by Microsoft Defender ATP. | 
-| MicrosoftATP.Machine.LastSeen | Date | The last date and time where the machine was observed by Microsoft Defender ATP. | 
+| MicrosoftATP.Machine.FirstSeen | Date | The first date and time the machine was observed by Microsoft Defender ATP. | 
+| MicrosoftATP.Machine.LastSeen | Date | The last date and time the machine was observed by Microsoft Defender ATP. | 
 | MicrosoftATP.Machine.OSPlatform | String | The operating system platform. | 
 | MicrosoftATP.Machine.OSVersion | String | The operating system version. | 
 | MicrosoftATP.Machine.OSProcessor | String | The operating system processor. | 
@@ -614,7 +615,7 @@ Machine.ReadWrite.All
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| machine_id | A comma-separated list of machine IDs to be used for getting the machine details, e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424. | Required | 
+| machine_id | A comma-separated list of machine IDs used to get the machine details, e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424. | Required | 
 
 
 #### Context Output
@@ -639,10 +640,10 @@ Machine.ReadWrite.All
 | MicrosoftATP.Machine.IsAADJoined | Boolean | True if machine is AAD joined, False otherwise. | 
 | MicrosoftATP.Machine.AADDeviceID | String | The AAD Device ID. | 
 | MicrosoftATP.Machine.MachineTags | String | Set of machine tags. | 
-| MicrosoftATP.Machine.NetworkInterfaces.MACAddress | String | MAC Address for the Network interface | 
-| MicrosoftATP.Machine.NetworkInterfaces.IPAddresses | String | IP Address\(es\) for the Network interface | 
-| MicrosoftATP.Machine.NetworkInterfaces.Type | String | Type of the Network interface \(e.g. Ethernet\) | 
-| MicrosoftATP.Machine.NetworkInterfaces.Status | String | Status for the Network interface \(e.g. Up, Down\) | 
+| MicrosoftATP.Machine.NetworkInterfaces.MACAddress | String | MAC Address for the Network interface. | 
+| MicrosoftATP.Machine.NetworkInterfaces.IPAddresses | String | IP Address\(es\) for the Network interface. | 
+| MicrosoftATP.Machine.NetworkInterfaces.Type | String | Type of the Network interface \(e.g. Ethernet\). | 
+| MicrosoftATP.Machine.NetworkInterfaces.Status | String | Status for the Network interface \(e.g. Up, Down\). | 
 
 #### Command example
 ```!microsoft-atp-get-machine-details machine_id=f70f9fe6b29,4899036531e```
@@ -779,7 +780,7 @@ Machine.Scan
 | --- | --- | --- |
 | machine_id | A comma-separated list of machine IDs to run the scan on. | Required | 
 | comment | A comment to associate with the action. | Required | 
-| scan_type | Defines the type of the scan. Possible values: "Quick" and "Full". Possible values are: Quick, Full. | Required | 
+| scan_type | Defines the type of the scan. Possible values are: Quick, Full. | Required | 
 
 
 #### Context Output
@@ -866,10 +867,10 @@ Alert.ReadWrite.All
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| severity | Alert severity. Possible values: "High", "Medium", "Low", and "Informational". Possible values are: High, Medium, Low, Informational. | Optional |
-| status | Alert status. Possible values: "New", "InProgress", and "Resolved". Possible values are: New, InProgress, Resolved. | Optional |
-| category | Alert category, only one can be added. | Optional |
-| limit | The limit of files to display. Default is 50. | Optional |
+| severity | Alert severity. Possible values are: High, Medium, Low, Informational. | Optional |
+| status | Alert status. Possible values are: New, InProgress, Resolved. | Optional |
+| category | Alert category; only one can be added. | Optional |
+| limit | The maximum number of files to display. Default is 50. | Optional |
 | creation_time | The creation timestamp from which to get alerts (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). | Optional |
 
 
@@ -905,8 +906,8 @@ Alert.ReadWrite.All
 | MicrosoftATP.Alert.Evidence | Unknown | Evidence related to the alert. |
 | MicrosoftATP.Alert.DetectorID | String | The ID of the detector that triggered the alert. |
 | MicrosoftATP.Alert.ThreatName | String | The threat name. |
-| MicrosoftATP.Alert.RelatedUser | String | Details of user related to a specific alert. |
-| MicrosoftATP.Alert.MitreTechniques | String | Mitre Enterprise technique ID. |
+| MicrosoftATP.Alert.RelatedUser | String | Details of the user related to a specific alert. |
+| MicrosoftATP.Alert.MitreTechniques | String | MITRE Enterprise technique ID. |
 | MicrosoftATP.Alert.RBACGroupName | String | The device RBAC group name. |
 
 #### Command example
@@ -1009,8 +1010,8 @@ Alert.ReadWrite.All
 | alert_id | The alert ID to update. | Required | 
 | status | The alert status to update. Possible values: "New", "InProgress", and "Resolved". | Optional | 
 | assigned_to | The owner of the alert. | Optional | 
-| classification | Specifies the specification of the alert. Possible values: "Unknown", "FalsePositive", "TruePositive". | Optional | 
-| determination | Specifies the determination of the alert. Possible values: "NotAvailable", "Apt", "Malware", "SecurityPersonnel", "SecurityTesting", Unwan"tedSoftware, and "Other". | Optional | 
+| classification | The specification of the alert. Possible values: "Unknown", "FalsePositive", "TruePositive". | Optional | 
+| determination | The determination of the alert. Possible values: "NotAvailable", "Apt", "Malware", "SecurityPersonnel", "SecurityTesting", "UnwantedSoftware", and "Other". | Optional | 
 | comment | The comment to be added to the alert. | Optional | 
 
 
@@ -1078,7 +1079,7 @@ AdvancedQuery.Read.All
 | --- | --- | --- |
 | query | The query to run. | Required | 
 | timeout | The amount of time (in seconds) that a request waits for the query response before a timeout occurs. | Optional | 
-| time_range | Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day etc. | Optional |
+| time_range | Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day, etc. | Optional |
 
 ##### Context Output
 
@@ -1128,7 +1129,7 @@ Alert.ReadWrite.All
 | severity | The severity of the alert. Severity of the alert. Possible values: "Low", "Medium", and "High". | Required | 
 | title | The title of the alert. | Required | 
 | description | The description of the alert. | Required | 
-| recommended_action | The action that is recommended to be taken by the security officer when analyzing the alert. | Required | 
+| recommended_action | Recommended action for the security officer to take when analyzing the alert. | Required | 
 | event_time | The time of the event, as obtained from the advanced query. | Required | 
 | report_id | The report ID, as obtained from the advanced query. | Required | 
 | category | The category of the alert. | Required | 
@@ -1215,7 +1216,7 @@ Alert.ReadWrite.All
 
 ### 11. microsoft-atp-get-alert-related-user
 ---
-Retrieves the user associated to a specific alert.
+Retrieves the user associated with a specific alert.
 
 ##### Required Permissions
 User.Read.All	
@@ -1422,7 +1423,7 @@ Alert da637200417169017725_183736971 Related IPs: []
 
 ### 14. microsoft-atp-get-alert-related-domains
 ---
-Retrieves the domains associated to a specific alert.
+Retrieves the domains associated with a specific alert.
 
 ##### Required Permissions
 URL.Read.All	
@@ -1480,9 +1481,9 @@ Machine.ReadWrite.All
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | ID of the action. | Optional | 
-| status | The machine action status. Possible values: "Pending", "InProgress", "Succeeded", "Failed", "TimeOut", "Cancelled". Possible values are: Pending, InProgress, Succeeded, Failed, TimeOut, Cancelled. | Optional | 
+| status | The machine action status. Possible values are: Pending, InProgress, Succeeded, Failed, TimeOut, Cancelled. | Optional | 
 | machine_id | A comma-separated list of machine IDs on which the action was executed. | Optional | 
-| type | The machine action type. Possible values: "RunAntiVirusScan", "Offboard", "CollectInvestigationPackage", "Isolate", "Unisolate", "StopAndQuarantineFile", "RestrictCodeExecution", and "UnrestrictCodeExecution". Possible values are: RunAntiVirusScan, Offboard, CollectInvestigationPackage, Isolate, Unisolate, StopAndQuarantineFile, RestrictCodeExecution, UnrestrictCodeExecution. | Optional | 
+| type | The machine action type. Possible values are: RunAntiVirusScan, Offboard, CollectInvestigationPackage, Isolate, Unisolate, StopAndQuarantineFile, RestrictCodeExecution, UnrestrictCodeExecution. | Optional | 
 | requestor | The ID of the user that executed the action, only one can be added. | Optional | 
 | limit | The maximum number of machines to return. Default is 50. | Optional | 
 
@@ -1815,8 +1816,8 @@ Machine.StopAndQuarantine
 
 | **Argument Name** | **Description**                                                                                                                          | **Required** |
 | --- |------------------------------------------------------------------------------------------------------------------------------------------| --- |
-| machine_id | The ID of the machine. When providing multiple values, each will be checked for the same hash.                                           | Required | 
-| file_hash | The file SHA1 hash to stop and quarantine on the machine. When providing multiple values, each will be checked for the same machine_id.  | Required | 
+| machine_id | The ID of the machine. When providing multiple values, each value is checked for the same hash.                                           | Required | 
+| file_hash | The file SHA1 hash to stop and quarantine on the machine. When providing multiple values, each value is checked for the same machine_id.  | Required | 
 | comment | The comment to associate with the action.                                                                                                | Required | 
 
 
@@ -1865,7 +1866,7 @@ Machine.StopAndQuarantine
 
 ### 21. microsoft-atp-list-investigations
 ---
-Retrieves a collection of investigations or retrieves specific investigation by its ID.
+Retrieves a collection of investigations or retrieves a specific investigation by its ID.
 
 ##### Required Permissions
 Alert.ReadWrite.All	
@@ -2012,7 +2013,7 @@ Alert.ReadWrite.All
 
 ### 23. microsoft-atp-get-domain-statistics
 ---
-Retrieves the statistics on the given domain.
+Retrieves statistics on the given domain.
 
 ##### Required Permissions
 URL.Read.All
@@ -2216,7 +2217,7 @@ Machine.ReadWrite.All
 
 ### 26. microsoft-atp-get-file-statistics
 ---
-Retrieves the statistics for the given file.
+Retrieves statistics for the given file.
 
 ##### Required Permissions
 File.Read.All	
@@ -2397,7 +2398,7 @@ Alert.ReadWrite.All
 
 ### 28. microsoft-atp-get-ip-statistics
 ---
-Retrieves the statistics for the given IP address.
+Retrieves statistics for the given IP address.
 
 ##### Required Permissions
 Ip.Read.All	
@@ -2527,7 +2528,7 @@ Alert.ReadWrite.All
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| username | The user ID. The ID is not the full UPN, but only the user name. For example, to retrieve alerts for "user1@test.com" use "user1". | Required | 
+| username | The user ID. The ID is not the full UPN, but only the username. For example, to retrieve alerts for "user1@test.com" use "user1". | Required | 
 
 
 ##### Context Output
@@ -2804,7 +2805,7 @@ Machine.ReadWrite.All
 
 ### 32. microsoft-atp-add-remove-machine-tag
 ---
-Adds or removes a tag on a specific Machine.
+Adds or removes a tag on a specific machine.
 
 ##### Required Permissions
 Machine.ReadWrite.All
@@ -2903,7 +2904,7 @@ Deprecated. Use the microsoft-atp-sc-indicator-list command instead. Lists all i
 | --- | --- | --- |
 | MicrosoftATP.Indicators.id | String | Created by the system when the indicator is ingested. Generated GUID/unique identifier. | 
 | MicrosoftATP.Indicators.action | String | The action to apply if the indicator is matched from within the targetProduct security tool. Possible values are: unknown, allow, block, alert. | 
-| MicrosoftATP.Indicators.additionalInformation | String | A catchall area into which extra data from the indicator not covered by the other tiIndicator properties may be placed. Data placed into additionalInformation is typically not be utilized by the targetProduct security tool. | 
+| MicrosoftATP.Indicators.additionalInformation | String | A catchall area into which extra data from the indicator not covered by the other indicator properties may be placed. Data placed into additionalInformation is typically not be used by the targetProduct security tool. | 
 | MicrosoftATP.Indicators.azureTenantId | String | Stamped by the system when the indicator is ingested. The Azure Active Directory tenant ID of submitting client. | 
 | MicrosoftATP.Indicators.confidence | Number | An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Possible values are 0 – 100, with 100 being the highest. | 
 | MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. | 
@@ -2949,8 +2950,8 @@ Deprecated. Use the microsoft-atp-sc-indicator-list command instead. Lists all i
 | MicrosoftATP.Indicators.networkSourceIPv4 | String | IPv4 IP address source. | 
 | MicrosoftATP.Indicators.networkSourceIPv6 | String | IPv6 IP address source. | 
 | MicrosoftATP.Indicators.networkSourcePort | Number | TCP port source. | 
-| MicrosoftATP.Indicators.passiveOnly | Boolean | Determines if the indicator should trigger an event that is visible to an end-user. When set to ‘true,’ security tools will not notify the end user that a ‘hit’ has occurred. This is most often treated as audit or silent mode by security products where they will simply log that a match occurred but will not perform the action. Default value is false. | 
-| MicrosoftATP.Indicators.severity | Number | An integer representing the severity of the malicious behavior identified by the data within the indicator. Possible values are 0 – 5, where 5 is the most severe and zero is not severe at all. Default is 3 | 
+| MicrosoftATP.Indicators.passiveOnly | Boolean | Determines if the indicator should trigger an event that is visible to an end user. When set to ‘true,’ security tools will not notify the end user that a ‘hit’ has occurred. This is most often treated as audit or silent mode by security products where they will simply log that a match occurred but will not perform the action. Default value is false. | 
+| MicrosoftATP.Indicators.severity | Number | Severity of the malicious behavior identified by the data within the indicator. Possible values are 0 – 5, where 5 is the most severe and zero is not severe at all. Default is 3 | 
 | MicrosoftATP.Indicators.targetProduct | String | A string value representing a single security product to which the indicator should be applied. | 
 | MicrosoftATP.Indicators.threatType | String | Each indicator must have a valid Indicator Threat Type. Possible values are: Botnet, C2, CryptoMining, Darknet, DDoS, MaliciousUrl, Malware, Phishing, Proxy, PUA, WatchList. | 
 | MicrosoftATP.Indicators.tlpLevel | String | Traffic Light Protocol value for the indicator. Possible values are: unknown, white, green, amber, and red. | 
@@ -3014,7 +3015,7 @@ Deprecated. Use the microsoft-atp-sc-indicator-get-by-id command instead. Gets a
 | --- | --- | --- |
 | MicrosoftATP.Indicators.id | String | Created by the system when the indicator is ingested. Generated GUID/unique identifier. | 
 | MicrosoftATP.Indicators.action | String | The action to apply if the indicator is matched from within the targetProduct security tool. Possible values are: unknown, allow, block, alert. | 
-| MicrosoftATP.Indicators.additionalInformation | String | A catchall area into which extra data from the indicator not covered by the other tiIndicator properties may be placed. Data placed into additionalInformation will typically not be utilized by the targetProduct security tool. | 
+| MicrosoftATP.Indicators.additionalInformation | String | A catchall area into which extra data from the indicator not covered by the other indicator properties may be placed. Data placed into additionalInformation will typically not be used by the targetProduct security tool. | 
 | MicrosoftATP.Indicators.azureTenantId | String | Timestamp when the indicator was ingested into the system. | 
 | MicrosoftATP.Indicators.confidence | Number | An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Possible values are 0 – 100, with 100 being the highest. | 
 | MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. | 
@@ -3033,7 +3034,7 @@ Deprecated. Use the microsoft-atp-sc-indicator-get-by-id command instead. Gets a
 | MicrosoftATP.Indicators.externalId | String | An identification number that ties the indicator back to the indicator provider’s system \(e.g. a foreign key\). | 
 | MicrosoftATP.Indicators.fileCompileDateTime | Date | DateTime when the file was compiled. The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
 | MicrosoftATP.Indicators.fileCreatedDateTime | Date | DateTime when the file was created.The Timestamp type represents date and time information in ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 looks like: '2014-01-01T00:00:00Z' | 
-| MicrosoftATP.Indicators.fileHashType | String | The type of hash stored in fileHashValue.  Possible values are: unknown, sha1, sha256, md5, authenticodeHash256, lsHash, or ctph. Possible values are: unknown, sha1, sha256, md5, authenticodeHash256, lsHash, ctph. | 
+| MicrosoftATP.Indicators.fileHashType | String | The type of hash stored in fileHashValue.  Possible values are: unknown, sha1, sha256, md5, authenticodeHash256, lsHash, ctph. | 
 | MicrosoftATP.Indicators.fileHashValue | String | The file hash value. | 
 | MicrosoftATP.Indicators.fileMutexName | String | Mutex name used in file-based detections. | 
 | MicrosoftATP.Indicators.fileName | String | Name of the file if the indicator is file-based. Supports comma-separate list of file names. | 
@@ -3060,11 +3061,11 @@ Deprecated. Use the microsoft-atp-sc-indicator-get-by-id command instead. Gets a
 | MicrosoftATP.Indicators.networkSourceIPv4 | String | IPv4 IP address source. | 
 | MicrosoftATP.Indicators.networkSourceIPv6 | String | IPv6 IP address source. | 
 | MicrosoftATP.Indicators.networkSourcePort | Number | TCP port source. | 
-| MicrosoftATP.Indicators.passiveOnly | Boolean | Determines if the indicator should trigger an event that is visible to an end-user. When set to ‘true,’ security tools will not notify the end user that a ‘hit’ has occurred. This is most often treated as audit or silent mode by security products where they will simply log that a match occurred but will not perform the action. Default value is false. | 
-| MicrosoftATP.Indicators.severity | Number | An integer representing the severity of the malicious behavior identified by the data within the indicator. Possible values are 0 – 5, where 5 is the most severe and zero is not severe at all. Default is 3 | 
+| MicrosoftATP.Indicators.passiveOnly | Boolean | Determines if the indicator should trigger an event that is visible to an end user. When set to ‘true,’ security tools will not notify the end user that a ‘hit’ has occurred. This is most often treated as audit or silent mode by security products where they will simply log that a match occurred but will not perform the action. Default value is false. | 
+| MicrosoftATP.Indicators.severity | Number | Severity of the malicious behavior identified by the data within the indicator. Possible values are 0 – 5, where 5 is the most severe and zero is not severe at all. Default is 3 | 
 | MicrosoftATP.Indicators.targetProduct | String | A string value representing a single security product to which the indicator should be applied. | 
 | MicrosoftATP.Indicators.threatType | String | Each indicator must have a valid Indicator Threat Type. Possible values are: Botnet, C2, CryptoMining, Darknet, DDoS, MaliciousUrl, Malware, Phishing, Proxy, PUA, WatchList. | 
-| MicrosoftATP.Indicators.tlpLevel | String | Traffic Light Protocol value for the indicator. Possible values are: unknown, white, green, or amber. Possible values are: unknown, white, green, amber, and red. | 
+| MicrosoftATP.Indicators.tlpLevel | String | Traffic Light Protocol value for the indicator. Possible values are: unknown, white, green, or amber. | 
 | MicrosoftATP.Indicators.url | String | Uniform Resource Locator. This URL complies with RFC 1738. | 
 | MicrosoftATP.Indicators.userAgent | String | User-Agent string from a web request that could indicate compromise. | 
 | MicrosoftATP.Indicators.vendorInformation | String | Information about the vendor. | 
@@ -3124,7 +3125,7 @@ Deprecated. Use the microsoft-atp-sc-indicator-create command instead. Creates a
 | confidence | An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Possible values are 0 – 100 with 100 being the highest. | Optional | 
 | severity | The severity of the malicious behavior identified by the data within the indicator. Possible values are Informational, Low, MediumLow, MediumHigh, High, where 5 is the most severe and zero is not severe at all. | Optional | 
 | tags | A comma-separated list that stores arbitrary tags/keywords. | Optional | 
-| domain_name | Domain name associated with this indicator. Should be in the format subdomain.domain.topleveldomain (For example, baddomain.domain.net) | Optional | 
+| domain_name | Domain name associated with this indicator. Should be in the format subdomain.domain.topleveldomain (For example, example.domain.net) | Optional | 
 | network_cidr_block | CIDR Block notation representation of the network referenced in this indicator. Use only if the Source and Destination cannot be identified. | Optional | 
 | network_destination_asn | The destination autonomous system identifier of the network referenced in the indicator. | Optional | 
 | network_destination_cidr_block | CIDR Block notation representation of the destination network in this indicator. | Optional | 
@@ -3150,7 +3151,7 @@ Deprecated. Use the microsoft-atp-sc-indicator-create command instead. Creates a
 | --- | --- | --- |
 | MicrosoftATP.Indicators.id | String | Created by the system when the indicator is ingested. Generated GUID/unique identifier. | 
 | MicrosoftATP.Indicators.action | String | The action to apply if the indicator is matched from within the targetProduct security tool. Possible values are: unknown, allow, block, alert. | 
-| MicrosoftATP.Indicators.additionalInformation | String | A catchall area into which extra data from the indicator not covered by the other tiIndicator properties may be placed. Data placed into additionalInformation will typically not be utilized by the targetProduct security tool. | 
+| MicrosoftATP.Indicators.additionalInformation | String | A catchall area into which extra data from the indicator not covered by the other indicator properties may be placed. Data placed into additionalInformation will typically not be used by the targetProduct security tool. | 
 | MicrosoftATP.Indicators.azureTenantId | String | Timestamp when the indicator was ingested into the system. | 
 | MicrosoftATP.Indicators.confidence | Number | An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Possible values are 0 – 100, with 100 being the highest. | 
 | MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. | 
@@ -3196,11 +3197,11 @@ Deprecated. Use the microsoft-atp-sc-indicator-create command instead. Creates a
 | MicrosoftATP.Indicators.networkSourceIPv4 | String | IPv4 IP address source. | 
 | MicrosoftATP.Indicators.networkSourceIPv6 | String | IPv6 IP address source. | 
 | MicrosoftATP.Indicators.networkSourcePort | Number | TCP port source. | 
-| MicrosoftATP.Indicators.passiveOnly | Boolean | Determines if the indicator should trigger an event that is visible to an end-user. When set to ‘true,’ security tools will not notify the end user that a ‘hit’ has occurred. This is most often treated as audit or silent mode by security products where they will simply log that a match occurred but will not perform the action. Default value is false. | 
-| MicrosoftATP.Indicators.severity | Number | An integer representing the severity of the malicious behavior identified by the data within the indicator. Possible values are 0 – 5, where 5 is the most severe and zero is not severe at all. Default is 3 | 
+| MicrosoftATP.Indicators.passiveOnly | Boolean | Determines if the indicator should trigger an event that is visible to an end user. When set to ‘true,’ security tools will not notify the end user that a ‘hit’ has occurred. This is most often treated as audit or silent mode by security products where they will simply log that a match occurred but will not perform the action. Default value is false. | 
+| MicrosoftATP.Indicators.severity | Number | Severity of the malicious behavior identified by the data within the indicator. Possible values are 0 – 5, where 5 is the most severe and zero is not severe at all. Default is 3 | 
 | MicrosoftATP.Indicators.targetProduct | String | A string value representing a single security product to which the indicator should be applied. | 
 | MicrosoftATP.Indicators.threatType | String | Each indicator must have a valid Indicator Threat Type. Possible values are: Botnet, C2, CryptoMining, Darknet, DDoS, MaliciousUrl, Malware, Phishing, Proxy, PUA, WatchList. | 
-| MicrosoftATP.Indicators.tlpLevel | String | Traffic Light Protocol value for the indicator. Possible values are: unknown, white, green, or amber. Possible values are: unknown, white, green, amber, and red. | 
+| MicrosoftATP.Indicators.tlpLevel | String | Traffic Light Protocol value for the indicator. Possible values are: unknown, white, green, or amber. | 
 | MicrosoftATP.Indicators.url | String | Uniform Resource Locator. This URL complies with RFC 1738. | 
 | MicrosoftATP.Indicators.userAgent | String | User-Agent string from a web request that could indicate compromise. | 
 | MicrosoftATP.Indicators.vendorInformation | String | Information about the vendor. | 
@@ -3277,7 +3278,7 @@ Deprecated. Use the microsoft-atp-sc-indicator-create command instead. Creates a
 | --- | --- | --- |
 | MicrosoftATP.Indicators.id | String | Created by the system when the indicator is ingested. Generated GUID/unique identifier. | 
 | MicrosoftATP.Indicators.action | String | The action to apply if the indicator is matched from within the targetProduct security tool. Possible values are: unknown, allow, block, alert. | 
-| MicrosoftATP.Indicators.additionalInformation | String | A catchall area into which extra data from the indicator not covered by the other tiIndicator properties may be placed. Data placed into additionalInformation will typically not be utilized by the targetProduct security tool. | 
+| MicrosoftATP.Indicators.additionalInformation | String | A catchall area into which extra data from the indicator not covered by the other indicator properties may be placed. Data placed into additionalInformation will typically not be used by the targetProduct security tool. | 
 | MicrosoftATP.Indicators.azureTenantId | String | Timestamp when the indicator was ingested into the system. | 
 | MicrosoftATP.Indicators.confidence | Number | An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Possible values are 0 – 100, with 100 being the highest. | 
 | MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. | 
@@ -3323,11 +3324,11 @@ Deprecated. Use the microsoft-atp-sc-indicator-create command instead. Creates a
 | MicrosoftATP.Indicators.networkSourceIPv4 | String | IPv4 IP address source. | 
 | MicrosoftATP.Indicators.networkSourceIPv6 | String | IPv6 IP address source. | 
 | MicrosoftATP.Indicators.networkSourcePort | Number | TCP port source. | 
-| MicrosoftATP.Indicators.passiveOnly | Boolean | Determines if the indicator should trigger an event that is visible to an end-user. When set to ‘true,’ security tools will not notify the end user that a ‘hit’ has occurred. This is most often treated as audit or silent mode by security products where they will simply log that a match occurred but will not perform the action. Default value is false. | 
-| MicrosoftATP.Indicators.severity | Number | An integer representing the severity of the malicious behavior identified by the data within the indicator. Possible values are 0 – 5, where 5 is the most severe and zero is not severe at all. Default is 3 | 
+| MicrosoftATP.Indicators.passiveOnly | Boolean | Determines if the indicator should trigger an event that is visible to an end user. When set to ‘true,’ security tools will not notify the end user that a ‘hit’ has occurred. This is most often treated as audit or silent mode by security products where they will simply log that a match occurred but will not perform the action. Default value is false. | 
+| MicrosoftATP.Indicators.severity | Number | Severity of the malicious behavior identified by the data within the indicator. Possible values are 0 – 5, where 5 is the most severe and zero is not severe at all. Default is 3 | 
 | MicrosoftATP.Indicators.targetProduct | String | A string value representing a single security product to which the indicator should be applied. | 
 | MicrosoftATP.Indicators.threatType | String | Each indicator must have a valid Indicator Threat Type. Possible values are: Botnet, C2, CryptoMining, Darknet, DDoS, MaliciousUrl, Malware, Phishing, Proxy, PUA, WatchList. | 
-| MicrosoftATP.Indicators.tlpLevel | String | Traffic Light Protocol value for the indicator. Possible values are: unknown, white, green, or amber. Possible values are: unknown, white, green, amber, and red. | 
+| MicrosoftATP.Indicators.tlpLevel | String | Traffic Light Protocol value for the indicator. Possible values are: unknown, white, green, or amber. | 
 | MicrosoftATP.Indicators.url | String | Uniform Resource Locator. This URL complies with RFC 1738. | 
 | MicrosoftATP.Indicators.userAgent | String | User-Agent string from a web request that could indicate compromise. | 
 | MicrosoftATP.Indicators.vendorInformation | String | Information about the vendor. | 
@@ -3391,7 +3392,7 @@ Deprecated. Use the microsoft-atp-sc-indicator-update command instead. Updates t
 | --- | --- | --- |
 | MicrosoftATP.Indicators.id | String | Created by the system when the indicator is ingested. Generated GUID/unique identifier. | 
 | MicrosoftATP.Indicators.action | String | The action to apply if the indicator is matched from within the targetProduct security tool. Possible values are: unknown, allow, block, alert. | 
-| MicrosoftATP.Indicators.additionalInformation | String | A catchall area into which extra data from the indicator not covered by the other tiIndicator properties may be placed. Data placed into additionalInformation will typically not be utilized by the targetProduct security tool. | 
+| MicrosoftATP.Indicators.additionalInformation | String | A catchall area into which extra data from the indicator not covered by the other indicator properties may be placed. Data placed into additionalInformation will typically not be used by the targetProduct security tool. | 
 | MicrosoftATP.Indicators.azureTenantId | String | Timestamp when the indicator was ingested into the system. | 
 | MicrosoftATP.Indicators.confidence | Number | An integer representing the confidence with which the data within the indicator accurately identifies malicious behavior. Possible values are 0 – 100, with 100 being the highest. | 
 | MicrosoftATP.Indicators.description | String | Brief description \(100 characters or less\) of the threat represented by the indicator. | 
@@ -3437,11 +3438,11 @@ Deprecated. Use the microsoft-atp-sc-indicator-update command instead. Updates t
 | MicrosoftATP.Indicators.networkSourceIPv4 | String | IPv4 IP address source. | 
 | MicrosoftATP.Indicators.networkSourceIPv6 | String | IPv6 IP address source. | 
 | MicrosoftATP.Indicators.networkSourcePort | Number | TCP port source. | 
-| MicrosoftATP.Indicators.passiveOnly | Boolean | Determines if the indicator should trigger an event that is visible to an end-user. When set to ‘true,’ security tools will not notify the end user that a ‘hit’ has occurred. This is most often treated as audit or silent mode by security products where they will simply log that a match occurred but will not perform the action. Default value is false. | 
-| MicrosoftATP.Indicators.severity | Number | An integer representing the severity of the malicious behavior identified by the data within the indicator. Possible values are 0 – 5, where 5 is the most severe and zero is not severe at all. Default is 3 | 
+| MicrosoftATP.Indicators.passiveOnly | Boolean | Determines if the indicator should trigger an event that is visible to an end user. When set to ‘true,’ security tools will not notify the end user that a ‘hit’ has occurred. This is most often treated as audit or silent mode by security products where they will simply log that a match occurred but will not perform the action. Default value is false. | 
+| MicrosoftATP.Indicators.severity | Number | Severity of the malicious behavior identified by the data within the indicator. Possible values are 0 – 5, where 5 is the most severe and zero is not severe at all. Default is 3 | 
 | MicrosoftATP.Indicators.targetProduct | String | A string value representing a single security product to which the indicator should be applied. | 
 | MicrosoftATP.Indicators.threatType | String | Each indicator must have a valid Indicator Threat Type. Possible values are: Botnet, C2, CryptoMining, Darknet, DDoS, MaliciousUrl, Malware, Phishing, Proxy, PUA, WatchList. | 
-| MicrosoftATP.Indicators.tlpLevel | String | Traffic Light Protocol value for the indicator. Possible values are: unknown, white, green, or amber. Possible values are: unknown, white, green, amber, and red. | 
+| MicrosoftATP.Indicators.tlpLevel | String | Traffic Light Protocol value for the indicator. Possible values are: unknown, white, green, or amber. | 
 | MicrosoftATP.Indicators.url | String | Uniform Resource Locator. This URL complies with RFC 1738. | 
 | MicrosoftATP.Indicators.userAgent | String | User-Agent string from a web request that could indicate compromise. | 
 | MicrosoftATP.Indicators.vendorInformation | String | Information about the vendor. | 
@@ -3539,7 +3540,7 @@ Lists all indicators by the ID that the system creates when the indicator is ing
 | MicrosoftATP.Indicators.generateAlert | Boolean | Whether an alert was generated. | 
 | MicrosoftATP.Indicators.rbacGroupNames | Unknown | A list of RBAC device group names where the indicator is exposed and active. Empty list if it is exposed to all devices. | 
 | MicrosoftATP.Indicators.mitreTechniques | Unknown | A list of MITRE techniques. | 
-| MicrosoftATP.Indicators.indicatorType | String | Type of the indicator. Possible values: "FileSha1", "FileSha256", "IpAddress", "DomainName" and "Url". | 
+| MicrosoftATP.Indicators.indicatorType | String | Indicator Type. Possible values: "FileSha1", "FileSha256", "IpAddress", "DomainName" and "Url". | 
 | MicrosoftATP.Indicators.lastUpdateTime | Date | The last time the indicator was updated. | 
 | MicrosoftATP.Indicators.createdByDisplayName | String | Display name of the created app. | 
 | MicrosoftATP.Indicators.application | String | The application associated with the indicator. | 
@@ -3656,9 +3657,9 @@ Updates the specified indicator.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | indicator_value | The value of the indicator to update. | Required | 
-| indicator_type | Type of the indicator. Possible values: "FileSha1", "FileSha256", "IpAddress", "DomainName", and "Url". Possible values are: FileSha1, FileSha256, IpAddress, DomainName, Url. | Required | 
-| action | The action taken if the indicator is discovered in the organization. Possible values: "Alert", "AlertAndBlock", and "Allowed". Possible values are: Alert, AlertAndBlock, Allowed. | Required | 
-| severity | The severity of the malicious behavior identified by the data within the indicator. Possible values: "Informational", "Low", "Medium", and "High", where High is the most severe and Informational is not severe at all. Possible values are: Informational, Low, Medium, High. | Optional | 
+| indicator_type | Indicator Type. Possible values are: FileSha1, FileSha256, IpAddress, DomainName, Url. | Required | 
+| action | The action taken if the indicator is discovered in the organization. Possible values are: Alert, AlertAndBlock, Allowed. | Required | 
+| severity | The severity of the malicious behavior identified by the data within the indicator. Possible values: "Informational", "Low", "Medium", and "High", where High is the most severe and Informational is not severe at all. | Optional | 
 | expiration_time | DateTime string indicating when the indicator expires. Format: (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). Default is 14 days. | Optional | 
 | indicator_description | Brief description (100 characters or less) of the threat represented by the indicator. | Required | 
 | indicator_title | Indicator alert title. | Required | 
@@ -3681,7 +3682,7 @@ Updates the specified indicator.
 | MicrosoftATP.Indicators.generateAlert | Boolean | Whether an alert was generated. | 
 | MicrosoftATP.Indicators.rbacGroupNames | Unknown | A list of RBAC device group names where the indicator is exposed and active. Empty list if it is exposed to all devices. | 
 | MicrosoftATP.Indicators.mitreTechniques | Unknown | A list of MITRE techniques. | 
-| MicrosoftATP.Indicators.indicatorType | String | Type of the indicator. Possible values: "FileSha1", "FileSha256", "IpAddress", "DomainName" and "Url". | 
+| MicrosoftATP.Indicators.indicatorType | String | Indicator Type. Possible values: "FileSha1", "FileSha256", "IpAddress", "DomainName" and "Url". | 
 | MicrosoftATP.Indicators.lastUpdateTime | Date | The last time the indicator was updated. | 
 | MicrosoftATP.Indicators.createdByDisplayName | String | Display name of the created app. | 
 | MicrosoftATP.Indicators.application | String | The application associated with the indicator. | 
@@ -3786,7 +3787,7 @@ Gets an indicator by its ID.
 | MicrosoftATP.Indicators.generateAlert | Boolean | Whether an alert was generated. | 
 | MicrosoftATP.Indicators.rbacGroupNames | Unknown | A list of RBAC device group names where the indicator is exposed and active. Empty list if it is exposed to all devices. | 
 | MicrosoftATP.Indicators.mitreTechniques | Unknown | A list of MITRE techniques. | 
-| MicrosoftATP.Indicators.indicatorType | String | Type of the indicator. Possible values: "FileSha1", "FileSha256", "IpAddress", "DomainName" and "Url". | 
+| MicrosoftATP.Indicators.indicatorType | String | Indicator Type. Possible values: "FileSha1", "FileSha256", "IpAddress", "DomainName" and "Url". | 
 | MicrosoftATP.Indicators.lastUpdateTime | Date | The last time the indicator was updated. | 
 | MicrosoftATP.Indicators.createdByDisplayName | String | Display name of the created app. | 
 | MicrosoftATP.Indicators.application | String | The application associated with the indicator. | 
@@ -3912,9 +3913,9 @@ Creates a new indicator.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | indicator_value | The value of the indicator to update. | Required | 
-| indicator_type | Type of the indicator. Possible values: "FileSha1", "FileSha256", "IpAddress", "DomainName", and "Url". Possible values are: FileSha1, FileSha256, IpAddress, DomainName, Url. | Required | 
-| action | The action taken if the indicator is discovered in the organization. Possible values: "Alert", "AlertAndBlock", and "Allowed". Possible values are: Alert, AlertAndBlock, Allowed. | Required | 
-| severity | The severity of the malicious behavior identified by the data within the indicator. Possible values: "Informational", "Low", "Medium", and "High", where High is the most severe and Informational is not severe at all. Possible values are: Informational, Low, Medium, High. | Optional | 
+| indicator_type | Indicator Type. Possible values are: FileSha1, FileSha256, IpAddress, DomainName, Url. | Required | 
+| action | The action taken if the indicator is discovered in the organization. Possible values are: Alert, AlertAndBlock, Allowed. | Required | 
+| severity | The severity of the malicious behavior identified by the data within the indicator. Possible values: "Informational", "Low", "Medium", and "High", where High is the most severe and Informational is not severe at all. | Optional | 
 | expiration_time | DateTime string indicating when the indicator expires. Format: (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). Default is 14 days. | Optional | 
 | indicator_description | Brief description (100 characters or less) of the threat represented by the indicator. | Required | 
 | indicator_title | Indicator alert title. | Required | 
@@ -4022,7 +4023,7 @@ Vulnerability.Read.All
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cve_id | A comma-separated list of CVE IDs to be used for getting the machines. | Required | 
+| cve_id | A comma-separated list of CVE IDs used for getting the machines. | Required | 
 
 
 #### Context Output
@@ -4071,7 +4072,7 @@ Vulnerability.Read.All
 
 ### microsoft-atp-get-file-info
 ***
-Retrieves file info by a file hash (Sha1 or Sha256).
+Retrieves file information by a file hash (SHA1 or SHA256).
 
 ##### Required Permissions
 File.Read.All
@@ -4083,7 +4084,7 @@ File.Read.All
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hash | A comma-separated list of file hashs (Sha1 or Sha256) to be used for getting the file info. | Required | 
+| hash | A comma-separated list of file hashes (SHA1 or SHA256) used for getting the file information. | Required | 
 
 
 #### Context Output
@@ -4091,9 +4092,9 @@ File.Read.All
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MicrosoftATP.File.Sha1 | String | The SHA1 hash of the file. | 
-| MicrosoftATP.File.Md5 | String | The Md5 hash of the file. | 
+| MicrosoftATP.File.Md5 | String | The MD5 hash of the file. | 
 | MicrosoftATP.File.Sha256 | String | The SHA256 hash of the file. | 
-| MicrosoftATP.File.GlobalPrevalence | Number | The file prevalence across organization. | 
+| MicrosoftATP.File.GlobalPrevalence | Number | The file prevalence across the organization. | 
 | MicrosoftATP.File.GlobalFirstObserved | Date | The first time the file was observed. | 
 | MicrosoftATP.File.GlobalLastObserved | Date | The last time the file was observed. | 
 | MicrosoftATP.File.Size | Number | The size of the file. | 
@@ -4398,7 +4399,7 @@ We suggest using the [TransformIndicatorToMSDefenderIOC automation](https://gith
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| indicator_batch | A JSON object with list of MS defender ATP indicators to update. indicator_batch query should by list of dictionaries. For example: [{"indicatorValue": "value1"}, {"indicatorValue": "value2"}]. | Required | 
+| indicator_batch | A JSON object with a list of MS defender ATP indicators to update. The indicator_batch query should be a list of dictionaries. For example: [{"indicatorValue": "value1"}, {"indicatorValue": "value2"}]. | Required | 
 
 
 #### Context Output
@@ -4408,7 +4409,7 @@ We suggest using the [TransformIndicatorToMSDefenderIOC automation](https://gith
 | MicrosoftATP.Indicators.ID | String | Created by the system when the indicator is ingested. Generated GUID/unique identifier. | 
 | MicrosoftATP.Indicators.Value | String | The value of the indicator. | 
 | MicrosoftATP.Indicators.FailureReason | String | The reason for update failure. | 
-| MicrosoftATP.Indicators.IsFailed | Boolean | Whether the update was failed. | 
+| MicrosoftATP.Indicators.IsFailed | Boolean | Whether the update failed. | 
 
 #### Command example
 ```!microsoft-atp-indicator-batch-update indicator_batch=`[{"indicatorValue": "220e7d15b011d7fac48f2bd61114db1022197f7f","indicatorType": "FileSha1","title": "demo","application": "demo-test", "action": "Alert","severity": "Informational","description": "demo2","recommendedActions": "nothing","rbacGroupNames": ["group1", "group2"]},{"indicatorValue": "2233223322332233223322332233223322332233223322332233223322332222","indicatorType": "FileSha256","title": "demo2","application": "demo-test2","action": "Alert","severity": "Medium","description": "demo2","recommendedActions": "nothing","rbacGroupNames": []}]````
@@ -4465,8 +4466,8 @@ Alert.ReadWrite.All
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MicrosoftATP.Alert.ID | String | The alert ID. | 
-| MicrosoftATP.Alert.IncidentID | Number | The Incident ID of the alert. | 
-| MicrosoftATP.Alert.InvestigationID | Number | The Investigation ID related to the alert. | 
+| MicrosoftATP.Alert.IncidentID | Number | The incident ID of the alert. | 
+| MicrosoftATP.Alert.InvestigationID | Number | The investigation ID related to the alert. | 
 | MicrosoftATP.Alert.InvestigationState | String | The current state of the Investigation. | 
 | MicrosoftATP.Alert.AssignedTo | String | The owner of the alert. | 
 | MicrosoftATP.Alert.Severity | String | The severity of the alert. | 
@@ -4482,7 +4483,7 @@ Alert.ReadWrite.All
 | MicrosoftATP.Alert.FirstEventTime | Date | The first event time that triggered the alert on that machine. | 
 | MicrosoftATP.Alert.LastEventTime | Date | The last event time that triggered the alert on that machine. | 
 | MicrosoftATP.Alert.LastUpdateTime | Date | The UTC time of the last update. | 
-| MicrosoftATP.Alert.ResolvedTime | Date | The date and time in which the status of the alert was changed to 'Resolved'. | 
+| MicrosoftATP.Alert.ResolvedTime | Date | The date and time when the status of the alert was changed to 'Resolved'. | 
 | MicrosoftATP.Alert.MachineID | String | The machine ID that is associated with the alert. | 
 | MicrosoftATP.Alert.ComputerDNSName | String | The machine DNS name. | 
 | MicrosoftATP.Alert.AADTenantID | String | The AAD tenant ID. | 
@@ -4492,8 +4493,8 @@ Alert.ReadWrite.All
 | MicrosoftATP.Alert.Evidence | Unknown | Evidence related to the alert. | 
 | MicrosoftATP.Alert.DetectorID | String | The ID of the detector that triggered the alert. | 
 | MicrosoftATP.Alert.ThreatName | String | The threat name. | 
-| MicrosoftATP.Alert.RelatedUser | String | Details of user related to a specific alert. | 
-| MicrosoftATP.Alert.MitreTechniques | String | Mitre Enterprise technique ID. | 
+| MicrosoftATP.Alert.RelatedUser | String | Details of the user related to a specific alert. | 
+| MicrosoftATP.Alert.MitreTechniques | String | MITRE Enterprise technique ID. | 
 | MicrosoftATP.Alert.RBACGroupName | String | The device RBAC group name. | 
 
 #### Command example
@@ -4828,7 +4829,7 @@ Gets a result file for a specified action.
 >file_link: https:<span>//</span>automatedirstrprdeus.blob.core.windows.net/investigation-actions-data/b7df6ab7-5c73-4e13-8cd3-82e1f3d849ed/CustomPlaybookCommandOutput/7ef257a5069c45fe790be86d479d1518?se=2022-02-07T14%3A33%3A07Z&sp=rt&sv=2020-06-12&sr=b&rscd=attachment%3B%20filename%3Doutput_11a86b87-12b8-423b-9e8d-9775ab2da78f_0.json&skoid=34334208-452d-4d6d-afc6-0c319d62a726&sktid=124edf19-b350-4797-aefc-3206115ffdb3&skt=2022-02-07T13%3A48%3A07Z&ske=2022-02-07T14%3A33%3A07Z&sks=b&skv=2020-06-12&sig=IRxMKavzQqHplTsAL350holkkm%2B3NI2mhUUWxaHbOAM%3D
 ### microsoft-atp-advanced-hunting-lateral-movement-evidence
 ***
-Is there evidence of attempted lateral movement. By selecting a “query_purpose” argument, a designated query template will be used.
+Detects evidence of attempted lateral movement. When you select a “query_purpose” argument, a designated query template is used.
 
 
 #### Base Command
@@ -4838,7 +4839,7 @@ Is there evidence of attempted lateral movement. By selecting a “query_purpose
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query_purpose | By selecting a “query_purpose” argument, a designated query template will be used. "network_connections" - The network connections initiated by the host/file to other internal hosts. "smb_connections" - SMB connections. "credential_dumping" - Was there a use of credential dumping? If so can we detect the use of the dumped users on other hosts on the network. "management_connection" - Management connection attempts to other hosts. Possible values are: network_connections, smb_connections, credential_dumping, management_connection. | Required |
+| query_purpose | When you select a “query_purpose” argument, a designated query template is used. "network_connections" - The network connections initiated by the host/file to other internal hosts. "smb_connections" - SMB connections. "credential_dumping" - Was there a use of credential dumping? If so can we detect the use of the dumped users on other hosts on the network. "management_connection" - Management connection attempts to other hosts. | Required |
 | device_name | Device name to look for. | Optional |
 | remote_ip_count | Threshold for network enumeration in smb_connection. | Optional |
 | file_name | File name to look for. | Optional |
@@ -4847,8 +4848,8 @@ Is there evidence of attempted lateral movement. By selecting a “query_purpose
 | md5 | MD5 hash to look for. | Optional |
 | device_id | Device ID to look for. | Optional |
 | query_operation | Query operator to use with provided arguments. Possible values are: or, and. Default is or. | Optional |
-| limit | Max number of results to retrieve. Default is 50. | Optional |
-| time_range | Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day etc. | Optional |
+| limit | The maximum number of results to retrieve. Default is 50. | Optional |
+| time_range | Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day, etc. | Optional |
 | timeout | The amount of time (in seconds) that a request waits for the query response before a timeout occurs. Default is 10. | Optional |
 | page | The page number from which to start a search. Default is 1. | Optional |
 | show_query | Show the query as part of the entry result. | Optional |
@@ -4972,7 +4973,7 @@ Is there evidence of attempted lateral movement. By selecting a “query_purpose
 
 ### microsoft-atp-advanced-hunting-persistence-evidence
 ***
-Is there evidence of persistence. By selecting a “query_purpose” argument, a designated query template will be used.
+Detects evidence of persistence. When you select a “query_purpose” argument, a designated query template is used.
 
 
 #### Base Command
@@ -4982,7 +4983,7 @@ Is there evidence of persistence. By selecting a “query_purpose” argument, a
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query_purpose | By selecting a “query_purpose” argument, a designated query template will be used. "scheduled_job" - Did the process create any scheduled jobs? "registry_entry" - Did it write to the registry? Requires also argument process_cmd to be provided. "startup_folder_changes" - Was anything added to the startup folder? "new_service_created" - Was a new service created? "service_updated" - Was an existing service edited? "file_replaced" - Was a file replaced in program files? "new_user" - Was a new user created? (On the local machine). "new_group" - Was a new group created? "group_user_change" - Was a user added to a group?  (On the local machine) "local_firewall_change" - Was there a change to the local FW rules? "host_file_change" - Was there a change to the hosts file?. Possible values are: scheduled_job, registry_entry, startup_folder_changes, new_service_created, service_updated, file_replaced, new_user, new_group, group_user_change, local_firewall_change, host_file_change. | Required |
+| query_purpose | When you select a “query_purpose” argument, a designated query template is used. "scheduled_job" - Did the process create any scheduled jobs? "registry_entry" - Did it write to the registry? Requires also argument process_cmd to be provided. "startup_folder_changes" - Was anything added to the startup folder? "new_service_created" - Was a new service created? "service_updated" - Was an existing service edited? "file_replaced" - Was a file replaced in program files? "new_user" - Was a new user created? (On the local machine). "new_group" - Was a new group created? "group_user_change" - Was a user added to a group?  (On the local machine) "local_firewall_change" - Was there a change to the local FW rules? "host_file_change" - Was there a change to the hosts file?. Possible values are: scheduled_job, registry_entry, startup_folder_changes, new_service_created, service_updated, file_replaced, new_user, new_group, group_user_change, local_firewall_change, host_file_change. | Required |
 | device_name | Device name to look for. | Optional |
 | file_name | File name to look for. | Optional |
 | sha1 | SHA1 hash to look for. | Optional |
@@ -4990,8 +4991,8 @@ Is there evidence of persistence. By selecting a “query_purpose” argument, a
 | md5 | MD5 hash to look for. | Optional |
 | device_id | Device ID to look for. | Optional |
 | query_operation | Query operator to use with provided arguments. Possible values are: or, and. Default is or. | Optional |
-| limit | Max number of results to retrieve. Default is 50. | Optional |
-| time_range | Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day etc. | Optional |
+| limit | Maximum number of results to retrieve. Default is 50. | Optional |
+| time_range | Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day, etc. | Optional |
 | timeout | The amount of time (in seconds) that a request waits for the query response before a timeout occurs. Default is 10. | Optional |
 | process_cmd | Proccess command line that initiated the registry entry. Can only be used with "registry_entry" query_purpose. | Optional |
 | page | The page number from which to start a search. Default is 1. | Optional |
@@ -5181,7 +5182,7 @@ Is there evidence of persistence. By selecting a “query_purpose” argument, a
 
 ### microsoft-atp-advanced-hunting-process-details
 ***
-Process investigation. By selecting a “query_purpose” argument, a designated query template will be used.
+Detects process details. When you select a “query_purpose” argument, a designated query template is used.
 
 
 #### Base Command
@@ -5191,7 +5192,7 @@ Process investigation. By selecting a “query_purpose” argument, a designated
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query_purpose | By selecting a “query_purpose” argument, a designated query template will be used. "parent_process" - Parent process. "grandparent_process" - Grandparent process. "process_details" - Process hash, path, signature details. "beaconing_evidence" - Does the process appear to be beaconing? "powershell_execution_unsigned_files" - Has the file executed PowerShell? Query without specifying processes. No additional arguments are required. "process_excecution_powershell" - Has the file executed PowerShell?. Possible values are: parent_process, grandparent_process, process_details, beaconing_evidence, powershell_execution_unsigned_files, process_excecution_powershell. | Required |
+| query_purpose | When you select a “query_purpose” argument, a designated query template is used. "parent_process" - Parent process. "grandparent_process" - Grandparent process. "process_details" - Process hash, path, signature details. "beaconing_evidence" - Does the process appear to be beaconing? "powershell_execution_unsigned_files" - Has the file executed PowerShell? Query without specifying processes. No additional arguments are required. "process_excecution_powershell" - Has the file executed PowerShell?. Possible values are: parent_process, grandparent_process, process_details, beaconing_evidence, powershell_execution_unsigned_files, process_excecution_powershell. | Required |
 | device_name | Device name to look for. | Optional |
 | file_name | File name to look for. | Optional |
 | sha1 | SHA1 hash to look for. | Optional |
@@ -5199,8 +5200,8 @@ Process investigation. By selecting a “query_purpose” argument, a designated
 | md5 | MD5 hash to look for. | Optional |
 | device_id | Device ID to look for. | Optional |
 | query_operation | Query operator to use with provided arguments. Possible values are: or, and. Default is or. | Optional |
-| limit | Max number of results to retrieve. Default is 50. | Optional |
-| time_range | Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day etc. | Optional |
+| limit | Maximum number of results to retrieve. Default is 50. | Optional |
+| time_range | Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day, etc. | Optional |
 | timeout | The amount of time (in seconds) that a request waits for the query response before a timeout occurs. Default is 10. | Optional |
 | page | The page number from which to start a search. Default is 1. | Optional |
 | show_query | Show the query as part of the entry result. | Optional |
@@ -5278,7 +5279,7 @@ Process investigation. By selecting a “query_purpose” argument, a designated
 
 ### microsoft-atp-advanced-hunting-network-connections
 ***
-Network connections investigation. By selecting a “query_purpose” argument, a designated query template will be used.
+Detects network connections. When you select a “query_purpose” argument, a designated query template is used.
 
 
 #### Base Command
@@ -5288,7 +5289,7 @@ Network connections investigation. By selecting a “query_purpose” argument, 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query_purpose | By selecting a “query_purpose” argument, a designated query template will be used. "external_addresses" - Network connections to external addresses. "dns_query" - DNS query. Query by providing hash or filename or specific processes. At least one of file arguments (file_name, sha1, sha256, md5) is required and one of device arguments (device_name, device_id). "encoded_commands" - Are there commands with base 64 encoding? Only device arguments are required (device_name, device_id), at least one. Possible values are: external_addresses, dns_query, encoded_commands. | Required |
+| query_purpose | When you select a “query_purpose” argument, a designated query template is used. "external_addresses" - Network connections to external addresses. "dns_query" - DNS query. Query by providing hash or filename or specific processes. At least one of file arguments (file_name, sha1, sha256, md5) is required and one of device arguments (device_name, device_id). "encoded_commands" - Are there commands with base 64 encoding? Only device arguments are required (device_name, device_id), at least one. Possible values are: external_addresses, dns_query, encoded_commands. | Required |
 | device_name | Device name to look for. | Optional |
 | file_name | File name to look for. | Optional |
 | sha1 | SHA1 hash to look for. | Optional |
@@ -5296,8 +5297,8 @@ Network connections investigation. By selecting a “query_purpose” argument, 
 | md5 | MD5 hash to look for. | Optional |
 | device_id | Device ID to look for. | Optional |
 | query_operation | Query operator to use with provided arguments. Possible values are: or, and. Default is or. | Optional |
-| limit | Max number of results to retrieve. Default is 50. | Optional |
-| time_range | Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day etc. | Optional |
+| limit | Maximum number of results to retrieve. Default is 50. | Optional |
+| time_range | Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day, etc. | Optional |
 | timeout | The amount of time (in seconds) that a request waits for the query response before a timeout occurs. Default is 10. | Optional |
 | page | The page number from which to start a search. Default is 1. | Optional |
 | show_query | Show the query as part of the entry result. | Optional |
@@ -5350,7 +5351,7 @@ Network connections investigation. By selecting a “query_purpose” argument, 
 
 ### microsoft-atp-advanced-hunting-cover-up
 ***
-Cover up action investigation. By selecting a “query_purpose” argument, a designated query template will be used.
+Detects cover up actions. When you select a “query_purpose” argument, a designated query template is used.
 
 
 #### Base Command
@@ -5360,7 +5361,7 @@ Cover up action investigation. By selecting a “query_purpose” argument, a de
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query_purpose | By selecting a “query_purpose” argument, a designated query template will be used. "file_deleted" - Did the file delete itself? "event_log_cleared" - Was the event log cleared? Requires at least one of device arguments (device_name/device_id). "compromised_information" - Information on a compromised user and Its activities Requires only username argument. "connected_devices" - All connected devices by compromised user Requires only username argument. "action_types" - All action types created by a user on each machine Requires only username argument. "common_files" - Most common files associated with a user Requires only username argument. Possible values are: file_deleted, event_log_cleared, compromised_information, connected_devices, action_types, common_files. | Required |
+| query_purpose | When you select a “query_purpose” argument, a designated query template is used. "file_deleted" - Did the file delete itself? "event_log_cleared" - Was the event log cleared? Requires at least one of device arguments (device_name/device_id). "compromised_information" - Information on a compromised user and Its activities Requires only username argument. "connected_devices" - All connected devices by compromised user Requires only username argument. "action_types" - All action types created by a user on each machine Requires only username argument. "common_files" - Most common files associated with a user Requires only username argument. Possible values are: file_deleted, event_log_cleared, compromised_information, connected_devices, action_types, common_files. | Required |
 | device_name | Device name to look for. | Optional |
 | file_name | File name to look for. | Optional |
 | sha1 | SHA1 hash to look for. | Optional |
@@ -5369,8 +5370,8 @@ Cover up action investigation. By selecting a “query_purpose” argument, a de
 | device_id | Device ID to look for. | Optional |
 | username | Username to look for in relevant query types. | Optional |
 | query_operation | Query operator to use with provided arguments. Possible values are: or, and. Default is or. | Optional |
-| limit | Max number of results to retrieve. Default is 50. | Optional |
-| time_range | Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day etc. | Optional |
+| limit | Maximum number of results to retrieve. Default is 50. | Optional |
+| time_range | Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day, etc. | Optional |
 | timeout | The amount of time (in seconds) that a request waits for the query response before a timeout occurs. Default is 10. | Optional |
 | page | The page number from which to start a search. Default is 1. | Optional |
 | show_query | Show the query as part of the entry result. | Optional |
@@ -5630,8 +5631,8 @@ How did the file get on the machine. Possible details are "dropped_file" - Was t
 | md5 | MD5 hash to look for. | Optional |
 | device_id | Device ID to look for. | Optional |
 | query_operation | Query operator to use with provided arguments. Possible values are: or, and. Default is or. | Optional |
-| limit | Max number of results to retrieve. Default is 50. | Optional |
-| time_range | Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day etc. | Optional |
+| limit | Maximum number of results to retrieve. Default is 50. | Optional |
+| time_range | Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day, etc. | Optional |
 | timeout | The amount of time (in seconds) that a request waits for the query response before a timeout occurs. Default is 10. | Optional |
 | page | The page number from which to start a search. Default is 1. | Optional |
 | show_query | Show the query as part of the entry result. | Optional |
@@ -5656,8 +5657,8 @@ Is there evidence for privilege escalation.
 | device_name | Device name to look for. | Optional |
 | device_id | Device ID to look for. | Optional |
 | query_operation | Query operator to use with provided arguments. Possible values are: or, and. Default is or. | Optional |
-| limit | Max number of results to retrieve. Default is 50. | Optional |
-| time_range | Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day etc. | Optional |
+| limit | Maximum number of results to retrieve. Default is 50. | Optional |
+| time_range | Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day, etc. | Optional |
 | timeout | The amount of time (in seconds) that a request waits for the query response before a timeout occurs. Default is 10. | Optional |
 | page | The page number from which to start a search. Default is 1. | Optional |
 | show_query | Show the query as part of the entry result. | Optional |
@@ -5683,8 +5684,8 @@ Detect if there was any evidence of MSDE agent/sensor manipulation.
 | device_name | Device name to look for. | Optional |
 | device_id | Device ID to look for. | Optional |
 | query_operation | Query operator to use with provided arguments. Possible values are: or, and. Default is or. | Optional |
-| limit | Max number of results to retrieve. Default is 50. | Optional |
-| time_range | Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day etc. | Optional |
+| limit | Maximum number of results to retrieve. Default is 50. | Optional |
+| time_range | Time range to look back. Expected syntax is a human readable time range, e.g. 60 minutes, 6 hours, 1 day, etc. | Optional |
 | timeout | The amount of time (in seconds) that a request waits for the query response before a timeout occurs. Default is 10. | Optional |
 | page | The page number from which to start a search. Default is 1. | Optional |
 | show_query | Show the query as part of the entry result. | Optional |
@@ -5693,3 +5694,177 @@ Detect if there was any evidence of MSDE agent/sensor manipulation.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | MicrosoftATP.HuntTampering.Result | String | The query results. |
+
+### microsoft-atp-live-response-cancel-action
+***
+Cancels an action with an unfinished status.
+
+
+#### Base Command
+
+`microsoft-atp-live-response-cancel-action`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| machine_action_id | Action ID to retrieve status and data for. | Required | 
+| comment | A comment to associate with the action. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+
+### microsoft-atp-get-machine-users
+---
+Retrieves a collection of logged on users on a specific device.
+
+##### Required Permissions
+User.Read.All
+
+#### Base Command
+
+`microsoft-atp-get-machine-users`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| machine_id | A machine ID used for getting logged on users. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.MachineUser.ID | String | The user ID. | 
+| MicrosoftATP.MachineUser.AccountName | String | The user account name. | 
+| MicrosoftATP.MachineUser.AccountDomain | String | The domain of the user account. | 
+| MicrosoftATP.MachineUser.FirstSeen | Date | The first date and time the user has logged on the machine. | 
+| MicrosoftATP.MachineUser.LastSeen | Date | The last date and time the user has logged on the machine. | 
+| MicrosoftATP.MachineUser.LogonTypes | String | The logon types of the user on the machine. | 
+| MicrosoftATP.MachineUser.DomainAdmin | Boolean | True if user is Domain Admin, False otherwise. | 
+| MicrosoftATP.MachineUser.NetworkUser | Boolean | True if user is network user, False otherwise. | 
+| MicrosoftATP.MachineUser.MachineID | String | The machine ID. | 
+
+#### Command example
+```!microsoft-atp-get-machine-users machine_id=0a3250e0693a109f1affc9217be9459028aa8424```
+#### Context Example
+```json
+{
+    "MicrosoftATP": {
+        "MachineUser": [
+            {
+                "id": "contoso\\user1",
+                "accountName": "user1",
+                "accountDomain": "contoso",
+                "firstSeen": "2019-12-18T08:02:54Z",
+                "lastSeen": "2020-01-06T08:01:48Z",
+                "logonTypes": "Interactive",
+                "isDomainAdmin": true,
+                "isOnlyNetworkUser": false,
+                "machineId": "111e6dd8c833c8a052ea231ec1b19adaf497b625"
+            },
+            ...
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Microsoft Defender ATP logon users for machine 111e6dd8c833c8a052ea231ec1b19adaf497b625:
+>|ID|AccountName|AccountDomain|FirstSeen|LastSeen|LogonTypes|DomainAdmin|NetworkUser|
+>|---|---|---|---|---|---|---|---|
+>| contoso\\user1 | user1 | contoso | 2019-12-18T08:02:54Z | 2020-01-06T08:01:48Z | Interactive | True | False |
+
+
+### microsoft-atp-get-machine-alerts
+---
+Retrieves all alerts related to a specific device.
+
+##### Required Permissions
+Alert.ReadWrite.All
+
+#### Base Command
+
+`microsoft-atp-get-machine-alerts`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| machine_id |A machine ID used for getting machine related alerts, e.g. 0a3250e0693a109f1affc9217be9459028aa8424. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.MachineAlerts.ID | String | The alert ID. | 
+| MicrosoftATP.MachineAlerts.Title | String | The alert title. | 
+| MicrosoftATP.MachineAlerts.Description | String | The alert description. | 
+| MicrosoftATP.MachineAlerts.IncidentID | String | The incident ID, if alert belongs to one. | 
+| MicrosoftATP.MachineAlerts.Severity | String | The alert severtiy. | 
+| MicrosoftATP.MachineAlerts.Status | String | The alert status. | 
+| MicrosoftATP.MachineAlerts.Classification | String | The alert classification. | 
+| MicrosoftATP.MachineAlerts.Category | String | The alert category. | 
+| MicrosoftATP.MachineAlerts.ThreatFamilyName | String | The alert threat family name. | 
+| MicrosoftATP.MachineAlerts.MachineID | String | The alerts machine ID. | 
+
+#### Command example
+```!microsoft-atp-get-machine-alerts machine_id=0a3250e0693a109f1affc9217be9459028aa8424```
+#### Context Example
+```json
+{
+    "MicrosoftATP": {
+        "MachineAlerts": [
+            {
+                "id": "da637472900382838869_1364969609",
+                "incidentId": 1126093,
+                "severity": "Low",
+                "status": "New",
+                "category": "Execution",
+                "classification": null,
+                "threatFamilyName": null,
+                "title": "Low-reputation arbitrary code executed by signed executable",
+                "description": "Binaries signed by Microsoft can be used to run low-reputation arbitrary code. This technique hides the execution of malicious code within a trusted process. As a result, the trusted process might exhibit suspicious behaviors, such as opening a listening port or connecting to a command-and-control (C&C) server.",
+                "machineId": "111e6dd8c833c8a052ea231ec1b19adaf497b625"
+            },
+            ...
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Alerts that are related to machine 111e6dd8c833c8a052ea231ec1b19adaf497b625:
+>|ID|Title|Description|IncidentID|Severity|Status|Classification|Category|ThreatFamilyName|MachineID|
+>|---|---|---|---|---|---|---|---|---|---|
+>| da637472900382838869_1364969609 | Low-reputation arbitrary code executed by signed executable | Binaries signed by Microsoft can be used to run low-reputation arbitrary code. This technique hides the execution of malicious code within a trusted process. As a result, the trusted process might exhibit suspicious behaviors, such as opening a listening port or connecting to a command-and-control (C&C) server. | 1126093 | Low | New |  | Execution |  | 111e6dd8c833c8a052ea231ec1b19adaf497b625 |
+
+### microsoft-atp-request-and-download-investigation-package
+***
+Collect and download an investigation package as a gz file.
+
+
+#### Base Command
+
+`microsoft-atp-request-and-download-investigation-package`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| machine_id | The machine ID. | Required | 
+| comment | A comment to associate with the action. | Required | 
+| timeout_in_seconds | Timeout for polling. | Optional | 
+| machine_action_id | Action ID to retrieve status and data for. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.MachineAction.ID | String | The machine action ID. | 
+| MicrosoftATP.MachineAction.Status | String | The current status of the machine action. | 
+| MicrosoftATP.MachineAction.MachineID | String |  The machine ID on which the action was executed. |

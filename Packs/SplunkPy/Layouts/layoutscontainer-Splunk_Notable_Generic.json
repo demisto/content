@@ -397,6 +397,17 @@
                                 "startCol": 0
                             },
                             {
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "splunknotablereviewer",
+								"height": 22,
+								"id": "52b88640-be18-11ec-8ba7-2999d56659d0",
+								"index": 7,
+								"listId": "caseinfoid-dwdtwscjnm-field-changed-dwdtwscjnm-caseinfoid-dwdtwscjnm-field-changed-caseinfoid-dwdtwscjnm-field-changed-dwdtwscjnm-caseinfoid-85c580e0-a606-11eb-be83-13538195756f",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+                            {
                                 "endCol": 2,
                                 "fieldId": "occurred",
                                 "height": 22,

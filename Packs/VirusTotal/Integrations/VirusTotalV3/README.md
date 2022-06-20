@@ -32,8 +32,8 @@ The integration was integrated and tested with version v3 API of VirusTotal.
 
 ### Acquiring your API key
 
-Your API key can be found in your VirusTotal account user menu:  
-![how to get api key in virus total](https://files.readme.io/ddeb298-Screen_Shot_2019-10-17_at_3.17.04_PM.png)  
+Your API key can be found in your VirusTotal account user menu:
+![how to get api key in virus total](https://files.readme.io/ddeb298-Screen_Shot_2019-10-17_at_3.17.04_PM.png)
 Your API key carries all your privileges, so keep it secure and don't share it with anyone.
 
 ## DBot Score / Reputation scores
@@ -66,7 +66,7 @@ Example of a VirusTotal (API v3) DBot score log:
 
 ```log
 Basic analyzing of "<domain>"
-Found popularity ranks. Analyzing. 
+Found popularity ranks. Analyzing.
 The average of the ranks is 809009.0 and the threshold is 10000
 Indicator is good by popularity ranks.
 Analyzing by get_domain_communicating_files
@@ -114,7 +114,7 @@ The following lists the changes in this version according to the commands from t
   - **Detonate File - VirusTotal (API v3)**
   - **Detonate URL - VirusTotal (API v3)**
 - Each reputation command will use at least 1 API call. For advanced reputation commands, use the *Premium API* flag.
-- For each reputation command there is the new *extended_data* argument . When set to "true", the results returned by the commands will contain  
+- For each reputation command there is the new *extended_data* argument . When set to "true", the results returned by the commands will contain
   additional information as *last_analysis_results* which contains the service name and its specific analysis.
 - Reputation commands can return relationships of the indicator.
   The relationships that are supported are defined as part of the instance configuration.
@@ -123,6 +123,7 @@ The following lists the changes in this version according to the commands from t
   For more information regarding Domain relationships, see: <https://developers.virustotal.com/v3.0/reference#domains-1>
   For more information regarding File relationships, see: <https://developers.virustotal.com/v3.0/reference#files>
 
+- Starting with XSOAR version 6.8.0, You may monitor API usage via the *VirusTotal API Execution Metrics* dashboard.
 ### Comments
 
 In VirusTotal (API v3) you can now add comments to all indicator types (IP, Domain, File and URL) so each command now has the *resource_type* argument.
@@ -1402,7 +1403,7 @@ Search for an indicator in VirusTotal.
                     "timeout": 0,
                     "undetected": 7
                 },
-                "last_dns_records": [  
+                "last_dns_records": [
                     {
                         "ttl": 14399,
                         "type": "TXT",
@@ -2014,3 +2015,113 @@ Retrieves resolutions of the given IP.
 >|Id|Stats|Status|
 >|---|---|---|
 >| u-20694f234fbac92b1dcc16f424aa1c85e9dd7af75b360745df6484dcae410853-1613980758 | harmless: 69<br/>malicious: 7<br/>suspicious: 0<br/>undetected: 7<br/>timeout: 0 | completed |
+
+### vt-file-sigma-analysis
+
+***
+Retrieves result of the last Sigma analysis.
+
+#### Base Command
+
+`vt-file-sigma-analysis`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file | File hash (md5, sha1, sha256). | Required |
+| only_stats | Print only Sigma analysis summary stats. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| VirusTotal.SigmaAnalysis.data.attributes.last_modification_date | Number | Date of the last update in epoch format. |
+| VirusTotal.SigmaAnalysis.data.attributes.analysis_date | Number | Date of the last update in epoch format. |
+| VirusTotal.SigmaAnalysis.data.attributes.stats.rule_matches.match_context | String | Matched strings from the log file. |
+| VirusTotal.SigmaAnalysis.data.attributes.stats.rule_matches.rule_author | String | Rule authors separated by commas. |
+| VirusTotal.SigmaAnalysis.data.attributes.stats.rule_matches.rule_description | String | Brief summary about what the rule detects. |
+| VirusTotal.SigmaAnalysis.data.attributes.stats.rule_matches.rule_id | String | Rule ID in VirusTotal's database. |
+| VirusTotal.SigmaAnalysis.data.attributes.stats.rule_matches.rule_level | String | Rule severity. Can be "low", "medium", "high" or "critical". |
+| VirusTotal.SigmaAnalysis.data.attributes.stats.rule_matches.rule_source | String | Ruleset where the rule belongs. |
+| VirusTotal.SigmaAnalysis.data.attributes.stats.rule_matches.rule_title | String | Rule title. |
+| VirusTotal.SigmaAnalysis.data.attributes.stats.severity_stats.critical | Number | Number of matched rules having a "critical" severity. |
+| VirusTotal.SigmaAnalysis.data.attributes.stats.severity_stats.high | Number | Number of matched rules having a "high" severity. |
+| VirusTotal.SigmaAnalysis.data.attributes.stats.severity_stats.low | Number | Number of matched rules having a "low" severity. |
+| VirusTotal.SigmaAnalysis.data.attributes.stats.severity_stats.medium | Number | Number of matched rules having a "medium" severity. |
+| VirusTotal.SigmaAnalysis.data.attributes.stats.source_severity_stats | unknown | Same as severity_stats but grouping stats by ruleset. Keys are ruleset names as string and values are stats in a dictionary. |
+| VirusTotal.SigmaAnalysis.data.id | String | ID of the analysis. |
+
+#### Command Example
+
+```!vt-file-sigma-analysis file=f912398cb3542ab704fe917af4a60d4feee21ac577535b10453170f10c6fd6de```
+
+#### Context Example
+
+```json
+{
+    "VirusTotal": {
+        "SigmaAnalysis": {
+            "meta": {
+                "count": 1
+            },
+            "data": {
+                "attributes": {
+                    "last_modification_date": 1650970667,
+                    "analysis_date": 1650968852,
+                    "rule_matches": [
+                        {
+                            "match_context": "$EventID: '1117'",
+                            "rule_level": "high",
+                            "rule_description": "Detects all actions taken by Windows Defender malware detection engines",
+                            "rule_source": "Sigma Integrated Rule Set (GitHub)",
+                            "rule_title": "Windows Defender Threat Detected",
+                            "rule_id": "cf90b923dcb2c8192e6651425886607684aac6680bf25b20c39ae3f8743aebf1",
+                            "rule_author": "Ján Trenčanský"
+                        },
+                        {
+                            "match_context": "$EventID: '2002'",
+                            "rule_level": "low",
+                            "rule_description": "Setting have been change in Windows Firewall",
+                            "rule_source": "Sigma Integrated Rule Set (GitHub)",
+                            "rule_title": "Setting Change in Windows Firewall with Advanced Security",
+                            "rule_id": "693c36f61ac022fd66354b440464f490058c22b984ba1bef05ca246aba210ed1",
+                            "rule_author": "frack113"
+                        }
+                    ],
+                    "source_severity_stats": {
+                        "Sigma Integrated Rule Set (GitHub)": {
+                            "high": 1,
+                            "medium": 0,
+                            "critical": 0,
+                            "low": 1
+                        },
+                    },
+                    "severity_stats": {
+                        "high": 1,
+                        "medium": 0,
+                        "critical": 0,
+                        "low": 1
+                    }
+                },
+                "type": "sigma_analysis",
+                "id": "f912398cb3542ab704fe917af4a60d4feee21ac577535b10453170f10c6fd6de",
+                "links": {
+                    "self": "https://www.virustotal.com/api/v3/sigma_analyses/f912398cb3542ab704fe917af4a60d4feee21ac577535b10453170f10c6fd6de"
+                }
+            },
+            "links": {
+                "self": "https://www.virustotal.com/api/v3/files/f912398cb3542ab704fe917af4a60d4feee21ac577535b10453170f10c6fd6de/sigma_analysis"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Last Sigma analysis results
+>
+>|MatchContext|RuleLevel|RuleDescription|RuleSource|RuleTitle|RuleId|RuleAuthor|
+>|---|---|---|---|---|---|---|
+>| $EventID: '1117' | high | Detects all actions taken by Windows Defender malware detection engines | Sigma Integrated Rule Set (GitHub) | Windows Defender Threat Detected | 693c36f61ac022fd66354b440464f490058c22b984ba1bef05ca246aba210ed1 | Ján Trenčanský |

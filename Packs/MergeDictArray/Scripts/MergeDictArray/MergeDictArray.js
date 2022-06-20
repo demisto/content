@@ -2,13 +2,19 @@ function is_object(o) {
       return o instanceof Object && !(o instanceof Array);
 }
 
-function set_object_value(obj, path, value) {
+function set_object_value(obj, path, value, append) {
     const root = obj;
     path.split('.').forEach((key, i, keys) => {
         if (!key) {
             throw path + ' has an emtpy node.';
         }else if (keys.length-1 === i) {
-            obj[key] = value;
+            if (!append || !(key in obj)) {
+                obj[key] = value;
+            } else if (Array.isArray(obj[key])) {
+                obj[key] = obj[key].concat(value);
+            } else {
+                obj[key] = [obj[key], value];
+            }
         } else {
             if (!is_object(obj[key])) {
                 obj[key] = {};
@@ -88,33 +94,33 @@ function merge_object_value(dst, src) {
                 }
             }
         } else {
-           out[k] = src[k];
+            out[k] = src[k];
         }
     }
     return out;
 }
 
 function merge_array(dst, src, kmap, out_key, appendable) {
-    let out = dst.concat();
+    dst = dst.concat();
     src.forEach(sval => {
         let merged = false;
         if (is_object(sval)) {
             dst.forEach((dval, index) => {
                 if (contains_object_value(dval, sval, kmap)) {
                     if (out_key) {
-                        out[index] = set_object_value(dval, out_key, sval);
+                        dst[index] = set_object_value(dval, out_key, sval, true);
                     } else {
-                        out[index] = merge_object_value(dval, sval);
+                        dst[index] = merge_object_value(dval, sval);
                     }
                     merged = true;
                 }
             });
         }
         if (!merged && appendable) {
-            out.push(sval);
+            dst.push(sval);
         }
     });
-    return out;
+    return dst;
 }
 
 let dst_value = args.value;
@@ -125,16 +131,21 @@ if (src_array) {
     if (args.array_path) {
         dst_value.forEach(v => {
             let dst_array = dq(v, args.array_path);
+            let new_array;
             if (!Array.isArray(dst_array)) {
-                throw 'dst_value.' + args.array_path + ' is not array.';
+                new_array = merge_array([dst_array], src_array, key_map, args.out_key, appendable);
+                if (new_array.length == 1) {
+                    new_array = new_array[0];
+                }
+            } else {
+                new_array = merge_array(dst_array, src_array, key_map, args.out_key, appendable);
             }
-            const new_array = merge_array(dst_array, src_array, key_map, args.out_key, appendable);
-            set_object_value(v, args.out_path ? args.out_path : args.array_path, new_array);
+            set_object_value(v, args.out_path ? args.out_path : args.array_path, new_array, false);
         });
     } else {
         dst_value = merge_array(dst_value, src_array, key_map, args.out_key, appendable);
         if (args.out_path) {
-            dst_value = [set_object_value({}, args.out_path, dst_value)];
+            dst_value = [set_object_value({}, args.out_path, dst_value, false)];
         }
     }
 }

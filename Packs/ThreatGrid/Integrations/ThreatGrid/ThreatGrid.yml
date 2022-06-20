@@ -18,12 +18,10 @@ configuration:
   required: true
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ""
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
   type: 8
   required: false
 script:
@@ -1011,7 +1009,7 @@ script:
       description: File containing result
     description: Returns data regarding the analysis processes
   runonce: false
-  dockerimage: demisto/python:2.7.18.24398
+  dockerimage: demisto/python:2.7.18.27799
 tests:
 - ThreatGridTest
 fromversion: 5.0.0

@@ -8123,5 +8123,49 @@
                 ]
             }
         ]
+    }, {
+        "path": "",
+        "operation": "if-then-else",
+        "filter": {
+            "if": {
+                "===": true
+            },
+            "then": {
+                "ends with": ".exe"
+            },
+            "lhs": "${enable_filter}"
+        },
+        "ctx_demisto": {
+          "enable_filter": true
+        },
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["a.dat", "b.exe", "c.txt"],
+                "result": ["b.exe"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "if-then-else",
+        "filter": {
+            "if": {
+                "===": true
+            },
+            "then": {
+                "ends with": ".exe"
+            },
+            "lhs": "${enable_filter}"
+        },
+        "ctx_demisto": {},
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["a.dat", "b.exe", "c.txt"],
+                "result": ["a.dat", "b.exe", "c.txt"]
+            }
+        ]
     }
 ]

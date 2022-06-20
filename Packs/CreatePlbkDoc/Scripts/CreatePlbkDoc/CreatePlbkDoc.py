@@ -264,7 +264,7 @@ def main():
 
     while j < len(retVal):
 
-        PlaybookNameTempStr = retVal[j].get('id')
+        PlaybookNameTempStr = retVal[j].get('nameRaw')
 
         if (PlaybookNameTempStr == PlaybookName):
             PlaybookIndex = j

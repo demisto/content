@@ -1,11 +1,11 @@
-This playbook uses the EDR and insights data to detect abnormal and malicious activity and provide out of the box queries based on:  
+This playbook handles all the endpoint investigation actions available with Cortex XSIAM, including the following tasks:
 * Pre-defined MITRE Tactics
 * Host fields (Host ID)
 * Attacker fields (Attacker IP, External host)
 * MITRE techniques
-* File hash (currently, the playbook supports only SHA256)
+* File hash (currently, the playbook supports only SHA256)  
 
-**Note:** The playbook inputs enable manipulating the execution flow; read the input descriptions for details.
+Note: The playbook inputs enable manipulating the execution flow; read the input descriptions for details.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -27,10 +27,10 @@ This playbook does not use any commands.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| HuntReconnaissanceTechniques |Set to True to hunt for identified alerts with MITRE Reconnaissance techniques. | True | Optional |
+| HuntReconnaissanceTechniques | Set to True to hunt for identified alerts with MITRE Reconnaissance techniques. | True | Optional |
 | HuntInitialAccessTechniques | Set to True to hunt for identified alerts with MITRE Access techniques. | True | Optional |
 | HuntExecutionTechniques | Set to True to hunt for identified alerts with MITRE Execution techniques. | True | Optional |
-| HuntPersistenceTechniques |Set to True to hunt for identified alerts with MITRE Persistence techniques. | True | Optional |
+| HuntPersistenceTechniques | Set to True to hunt for identified alerts with MITRE Persistence techniques. | True | Optional |
 | HuntPrivilegeEscalationTechniques | Set to True to hunt for identified alerts with MITRE Privilege Escalation techniques. | True | Optional |
 | HuntDefenseEvasionTechniques | Set to True to hunt for identified alerts with MITRE Defense Evasion techniques. | True | Optional |
 | HuntDiscoveryTechniques | Set to True to hunt for identified alerts with MITRE Discovery techniques. | True | Optional |
@@ -41,13 +41,13 @@ This playbook does not use any commands.
 | HuntAttacker | Set to True to hunt the attacker IP address or external hostname. |  | Optional |
 | HuntByTechnique | Set to True to hunt by a specific MITRE technique. |  | Optional |
 | HuntByHost | Set to True to hunt by the endpoint ID. The agentID input must be provided as well. |  | Optional |
-| HuntByFile | Set to True to hunt by a specific file hash.<br/>Supports SHA256. |  | Optional |
+| HuntByFile | Boolean. Set to True to hunt by a specific file hash.<br/>Supports SHA256. |  | Optional |
 | agentID | The agent ID. | * | Optional |
-| attackerRemoteIP | The IP address of the attacker. The **HuntAttacker** inputs should also be set to True. |  | Optional |
-| attackerExternalHost | The external host used by the attacker. The **HuntAttacker** inputs should also be set to True. |  | Optional |
-| mitreTechniqueID | A MITRE technique identifier. The **HuntByTechnique** inputs should also be set to True. |  | Optional |
-| FileSHA256 | The file SHA256. The **HuntByFile** inputs should also be set to True. |  | Optional |
-| timeRange | A time range to execute the hunting in.<br/>The input should be in the following format:<br/>\* 1 day ago<br/>\* 2 minutes ago<br/>\* 4 hours ago<br/>\* 8 days ago<br/>etc. | 24 hours ago | Optional |
+| attackerRemoteIP | The IP address of the attacker. The 'HuntAttacker' inputs should also be set to True. |  | Optional |
+| attackerExternalHost | The external host used by the attacker. The 'HuntAttacker' inputs should also be set to True. |  | Optional |
+| mitreTechniqueID | A MITRE technique identifier. The 'HuntByTechnique' inputs should also be set to True. |  | Optional |
+| FileSHA256 | The file SHA256. The 'HuntByFile' inputs should also be set to True. |  | Optional |
+| timeRange | A time range to execute the hunting in.<br/>The input should be in the following format:<br/>\* 1 day ago<br/>\* 2 minutes ago<br/>\* 4 hours ago<br/>\* 8 days ago<br/>etc. | 2 hours ago | Optional |
 
 ## Playbook Outputs
 ---
@@ -55,4 +55,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Endpoint Investigation Plan](https://raw.githubusercontent.com/demisto/content/f3d7d9140f4d82efde1704ed92b8de3176c35b2e/Packs/CommonPlaybooks/doc_files/Endpoint_Investigation_Plan.png)
+![Endpoint Investigation Plan](https://raw.githubusercontent.com/demisto/content/master/Packs/CommonPlaybooks/doc_files/Endpoint_Investigation_Plan.png)

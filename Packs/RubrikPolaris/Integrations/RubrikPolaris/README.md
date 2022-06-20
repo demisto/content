@@ -679,7 +679,7 @@ Retrieve the download link for the requested scanned file.
 ### Sonar On-Demand Scan Result
 |Scan result CSV Download Link|
 |---|
-| Download the [CSV](dummy-download-link) file to see the result. |
+| Download the [CSV](https://www.example.com/csv_file) file to see the result. |
 
 
 
@@ -717,7 +717,7 @@ Request for the analysis and retrieve the download link for the Radar CSV analyz
 ### Radar Anomaly CSV Analysis
 |CSV Download Link|
 |---|
-| Download the analyzed [CSV](dummy_link) file. |
+| Download the analyzed [CSV](https://www.example.com/csv_file) file. |
 
 
 
@@ -1035,7 +1035,7 @@ Retrieve the download link for the requested Sonar CSV Snapshot file.
 ### Sonar CSV Result
 |Download URL|
 |---|
-| Download the [CSV](dummy_link) file to see the result. |
+| Download the [CSV](https://www.example.com/csv_file) file to see the result. |
 
 
 
@@ -1590,7 +1590,7 @@ Retrieve the result of an asynchronous request. This command will retrieve the r
 ### GPS Asynchronous Request Result
 |ID|Status|Node ID|Links|
 |---|---|---|---|
-| dummy_id | FAILED | cluster:::RVMHM219S004941 | [self](dummy_link)<br/> |
+| dummy_id | FAILED | cluster:::RVMHM219S004941 | [self](https://www.example.com/)<br/> |
 
 
 

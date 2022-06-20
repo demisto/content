@@ -46,7 +46,7 @@ configuration:
   name: auto_notifications
   required: false
   type: 8
-  defaultvalue: false
+  defaultvalue: 'false'
 - display: Allow external users to create incidents via direct message
   name: allow_external_incidents_creation
   required: false
