@@ -15,3 +15,12 @@ ignore=SC106
 
 [known_words]
 SendEmailReply
+
+[file:classifier-MSGraphMail_-_Classifier_-_Email_Communication.json]
+ignore=BA101
+
+[file:classifier-Gmail_-_Classifier_-_Email_Communication.json]
+ignore=BA101
+
+[file:classifier-EWS_-_Classifier_-_Email_Communication.json]
+ignore=BA101
