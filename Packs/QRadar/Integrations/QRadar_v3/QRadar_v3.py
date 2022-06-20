@@ -1526,7 +1526,6 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
     """
     offense_id = str(offense['id'])
     events_count = offense.get('event_count', 0)
-    min_events_size = min(events_count, events_limit)
     events: List[dict] = []
     failure_message = ''
     search_id = create_search_with_retry(client, fetch_mode, offense, events_columns,
@@ -1539,16 +1538,9 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
     else:
         events, failure_message = poll_offense_events_with_retry(client, search_id, int(offense_id))
     events_fetched = sum(int(event.get('eventcount', 1)) for event in events)
+    print_debug_msg(f'Events fetched for offense {offense_id}: {events_fetched}/{events_count}.')
     offense['events_fetched'] = events_fetched
-    if events:
-        print_debug_msg(f'Fetched {events_fetched} events for offense {offense_id}')
-        offense['events'] = events
-        if fetch_mode == FetchMode.all_events.value and events_fetched < min_events_size:
-            print_debug_msg(f'Fetch mode is {FetchMode.all_events.value}, '
-                            f'but only {events_fetched}/{min_events_size} events were fetched for offense {offense_id}')
-            context_data[MIRRORED_OFFENSES_QUERIED_CTX_KEY][offense_id] = SearchQueryStatus.ERROR.value
-            safely_update_context_data(context_data, version, offense_ids=[offense_id])
-    else:
+    if not events:
         print_debug_msg(f'No events were fetched for offense {offense_id}'
                         'Adding to mirroring queue to be queried again.')
         context_data[MIRRORED_OFFENSES_QUERIED_CTX_KEY][offense_id] = search_id
@@ -3185,6 +3177,7 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
 
         print_context_data_stats(context_data, f"Get Remote Data End for id {offense_id}")
         if not is_events_mirrored:
+            # we raise an exception because we don't want to change the offense until all events are fetched.
             print_debug_msg(f'Events not mirrored yet for offense {offense_id}')
             raise DemistoException(f'Events not mirrored yet for offense {offense_id}')
 
