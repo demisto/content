@@ -996,11 +996,11 @@ def get_contributing_event_command(client: Client, args: Dict) -> CommandResults
         alerts = []
 
         for alert_id in alert_ids:
-            if alert := client.get_contributing_event_by_alert_id(arg_to_number(alert_id, required=True)):
-                page_number = max(arg_to_number(args.get('page_number', 1)), 1) - 1  # Min & default zero (First page)
-                page_size = max(arg_to_number(args.get('page_size', 50)), 0)  # Min zero & default 50
+            if alert := client.get_contributing_event_by_alert_id(int(alert_id)):
+                page_number = max(int(args.get('page_number', 1)), 1) - 1  # Min & default zero (First page)
+                page_size = max(int(args.get('page_size', 50)), 0)  # Min zero & default 50
                 offset = page_number * page_size
-                limit = max(arg_to_number(args.get('limit', 0)), 0) or offset + page_size
+                limit = max(int(args.get('limit', 0)), 0) or offset + page_size
 
                 alert_with_events = {
                     'alertID': str(alert_id),
@@ -1058,7 +1058,7 @@ def replace_featured_field_command(client: Client, args: Dict) -> CommandResults
             {'value': field[0], 'comment': field[1]} for field in zip(values, comments)
         ]
 
-    reply = client.replace_featured_field(field_type, fields)
+    reply = client.replace_featured_field(str(field_type), fields)
 
     # The reply could be either a boolean (true) if success
     # or a dict in this format: {"err_code": STATUS_CODE, "err_msg": GENERAL_MESSAGE, "err_extra": EXTRA_DATA}

@@ -1839,8 +1839,8 @@ Retrieves files from selected endpoints. This command will be deprecated soon, u
 | PaloAltoNetworksXDR.RetrievedFiles.action_id | string | ID of the action to retrieve files from selected endpoints. | 
 
 #### Command Examples
-```!xdr-retrieve-files endpoint_ids=aeec6a2cc92e46fab3b6f621722e9916 windows_file_paths="C:\Users\demisto\Desktop\demisto.txt"```
-```!xdr-retrieve-files endpoint_ids=aeec6a2cc92e46fab3b6f621722e9916 generic_file_path="C:\Users\demisto\Desktop\demisto.txt"```
+```!xdr-retrieve-files endpoint_ids=abcdef windows_file_paths="C:\Users\demisto\Desktop\demisto.txt"```
+```!xdr-retrieve-files endpoint_ids=abcdef generic_file_path="C:\Users\demisto\Desktop\demisto.txt"```
 
 #### Context Example
 ```
@@ -2589,3 +2589,151 @@ Multiple filter arguments will be concatenated using AND operator, while argumen
 | PaloAltoNetworksXDR.Alert.mitre_tactic_id_and_name | String | The MITRE attack tactic. | 
 | PaloAltoNetworksXDR.Alert.mitre_technique_id_and_name | String | The MITRE attack technique. | 
 | PaloAltoNetworksXDR.Alert.starred | Boolean | Whether the alert is starred or not. | 
+
+
+### xdr-get-contributing-event
+***
+Retrieves contributing events for a specific alert.
+
+
+#### Base Command
+
+`xdr-get-contributing-event`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert_ids | The alert ID's from where to retrieve the contributing events. | Required | 
+| limit | The maximum number of contributing events to retrieve. Default is 50. Default is 50. | Optional | 
+| page_number | Page number to retrieve. Default (and minimum) is 1. Default is 1. | Optional | 
+| page_size | Page size. Default is 50. Default is 50. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.alertID | String | The alert ID. | 
+| PaloAltoNetworksXDR.ContributingEvent | Unknown | Contributing events per alert. | 
+
+#### Command example
+```!xdr-get-contributing-event alert_ids=`[123456 , 123457]````
+
+#### Context Example
+```json
+{
+    "PaloAltoNetworksXDR": {
+        "ContributingEvent": [
+            {
+                "alert_id": "123456",
+                "events": [
+                    {
+                        "Domain": "WIN10X64",
+                        "Host_Name": "WIN10X64",
+                        "Logon_Type": "7",
+                        "Process_Name": "C:\\Windows\\System32\\svchost.exe",
+                        "Raw_Message": "An account was successfully logged on.\r\n\r\nSubject:\r\n\tSecurity ID:\t\tS-1-5-18\r\n\tAccount Name:\t\tWIN10X64$\r\n\tAccount Domain:\t\tWORKGROUP\r\n\tLogon ID:\t\t0x3E7\r\n\r\nLogon Information:\r\n\tLogon Type:\t\t7\r\n\tRestricted Admin Mode:\t-\r\n\tVirtual Account:\t\t%%1843\r\n\tElevated Token:\t\t%%1842\r\n\r\nImpersonation Level:\t\t%%1833\r\n\r\nNew Logon:\r\n\tSecurity ID:\t\tS-1-5-21-1477464407-4226676169-1633655561-1002\r\n\tAccount Name:\t\txsoar\r\n\tAccount Domain:\t\tWIN10X64\r\n\tLogon ID:\t\t0x12518091\r\n\tLinked Logon ID:\t\t0x125181B7\r\n\tNetwork Account Name:\t-\r\n\tNetwork Account Domain:\t-\r\n\tLogon GUID:\t\t{00000000-0000-0000-0000-000000000000}\r\n\r\nProcess Information:\r\n\tProcess ID:\t\t0x95C\r\n\tProcess Name:\t\tC:\\Windows\\System32\\svchost.exe\r\n\r\nNetwork Information:\r\n\tWorkstation Name:\tWIN10X64\r\n\tSource Network Address:\t1.1.1.1\r\n\tSource Port:\t\t0\r\n\r\nDetailed Authentication Information:\r\n\tLogon Process:\t\tUser32 \r\n\tAuthentication Package:\tNegotiate\r\n\tTransited Services:\t-\r\n\tPackage Name (NTLM only):\t-\r\n\tKey Length:\t\t0\r\n\r\nThis event is generated when a logon session is created. It is generated on the computer that was accessed.\r\n\r\nThe subject fields indicate the account on the local system which requested the logon. This is most commonly a service such as the Server service, or a local process such as Winlogon.exe or Services.exe.\r\n\r\nThe logon type field indicates the kind of logon that occurred. The most common types are 2 (interactive) and 3 (network).\r\n\r\nThe New Logon fields indicate the account for whom the new logon was created, i.e. the account that was logged on.\r\n\r\nThe network fields indicate where a remote logon request originated. Workstation name is not always available and may be left blank in some cases.\r\n\r\nThe impersonation level field indicates the extent to which a process in the logon session can impersonate.\r\n\r\nThe authentication information fields provide detailed information about this specific logon request.\r\n\t- Logon GUID is a unique identifier that can be used to correlate this event with a KDC event.\r\n\t- Transited services indicate which intermediate services have participated in this logon request.\r\n\t- Package name indicates which sub-protocol was used among the NTLM protocols.\r\n\t- Key length indicates the length of the generated session key. This will be 0 if no session key was requested. ",
+                        "Source_IP": "1.1.1.1",
+                        "User_Name": "xsoar",
+                        "111111": 15,
+                        "222222": 165298280000,
+                        "333333": "abcdef",
+                        "444444": 1,
+                        "555555": "ghijk",
+                        "_is_cardable": true,
+                        "_product": "XDR agent",
+                        "_time": 165298280000,
+                        "_vendor": "PANW",
+                        "insert_timestamp": 165298280001
+                    }
+                ]
+            },
+            {
+                "alert_id": "123457",
+                "events": [
+                    {
+                        "Domain": "WIN10X64",
+                        "Host_Name": "WIN10X64",
+                        "Logon_Type": "7",
+                        "Process_Name": "C:\\Windows\\System32\\svchost.exe",
+                        "Raw_Message": "An account was successfully logged on",
+                        "Source_IP": "1.1.1.1",
+                        "User_Name": "xsoar",
+                        "111111": 15,
+                        "222222": 165298280000,
+                        "333333": "abcdef",
+                        "444444": 1,
+                        "555555": "ghijk",
+                        "_is_cardable": true,
+                        "_product": "XDR agent",
+                        "_time": 165298280000,
+                        "_vendor": "PANW",
+                        "insert_timestamp": 165298280001
+                    }
+                ]
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Contributing events
+>|Alert _ Id|Events|
+>|---|---|
+>| 123456 | **-**	***Logon_Type***: 7<br/>	***User_Name***: xsoar<br/>	***Domain***: WIN10X64<br/>	***Source_IP***: 1.1.1.1<br/>	***Process_Name***: C:\Windows\System32\svchost.exe<br/>	***Host_Name***: WIN10X64<br/>	***Raw_Message***: An account was successfully logged on.<br/><br/>Subject:<br/>	Security ID:		S-1-5-18<br/>	Account Name:		WIN10X64$<br/>	Account Domain:		WORKGROUP<br/>	Logon ID:		0x3E7<br/><br/>Logon Information:<br/>	Logon Type:		7<br/>	Restricted Admin Mode:	-<br/>	Virtual Account:		%%1843<br/>	Elevated Token:		%%1842<br/><br/>Impersonation Level:		%%1833<br/><br/>New Logon:<br/>	Security ID:		S-1-5-21-1477464407-4226676169-1633655561-1002<br/>	Account Name:		xsoar<br/>	Account Domain:		WIN10X64<br/>	Logon ID:		0x12518091<br/>	Linked Logon ID:		0x125181B7<br/>	Network Account Name:	-<br/>	Network Account Domain:	-<br/>	Logon GUID:		{00000000-0000-0000-0000-000000000000}<br/><br/>Process Information:<br/>	Process ID:		0x95C<br/>	Process Name:		C:\Windows\System32\svchost.exe<br/><br/>Network Information:<br/>	Workstation Name:	WIN10X64<br/>	Source Network Address:	1.1.1.1<br/>	Source Port:		0<br/><br/>Detailed Authentication Information:<br/>	Logon Process:		User32 <br/>	Authentication Package:	Negotiate<br/>	Transited Services:	-<br/>	Package Name (NTLM only):	-<br/>	Key Length:		0<br/><br/>This event is generated when a logon session is created. It is generated on the computer that was accessed.<br/><br/>The subject fields indicate the account on the local system which requested the logon. This is most commonly a service such as the Server service, or a local process such as Winlogon.exe or Services.exe.<br/><br/>The logon type field indicates the kind of logon that occurred. The most common types are 2 (interactive) and 3 (network).<br/><br/>The New Logon fields indicate the account for whom the new logon was created, i.e. the account that was logged on.<br/><br/>The network fields indicate where a remote logon request originated. Workstation name is not always available and may be left blank in some cases.<br/><br/>The impersonation level field indicates the extent to which a process in the logon session can impersonate.<br/><br/>The authentication information fields provide detailed information about this specific logon request.<br/>	- Logon GUID is a unique identifier that can be used to correlate this event with a KDC event.<br/>	- Transited services indicate which intermediate services have participated in this logon request.<br/>	- Package name indicates which sub-protocol was used among the NTLM protocols.<br/>	- Key length indicates the length of the generated session key. This will be 0 if no session key was requested. <br/>	***_time***: 165298280000<br/>	***555555***: a1b2c3d4<br/>	***222222***: 165298280000<br/>	***333333***: abcdef<br/>	***111111***: 15<br/>	***444444***: 1<br/>	***insert_timestamp***: 165298280001<br/>	***_vendor***: PANW<br/>	***_product***: XDR agent<br/>	***_is_cardable***: true |
+>| 123457 | **-**	***Logon_Type***: 7<br/>	***User_Name***: xsoar<br/>	***Domain***: WIN10X64<br/>	***Source_IP***: 1.1.1.1<br/>	***Process_Name***: C:\Windows\System32\svchost.exe<br/>	***Host_Name***: WIN10X64<br/>	***Raw_Message***: An account was successfully logged on.<br/><br/>Subject:<br/>	Security ID:		S-1-5-18<br/>	Account Name:		WIN10X64$<br/>	Account Domain:		WORKGROUP<br/>	Logon ID:		0x3E7<br/><br/>Logon Information:<br/>	Logon Type:		7<br/>	Restricted Admin Mode:	-<br/>	Virtual Account:		%%1843<br/>	Elevated Token:		%%1843<br/><br/>Impersonation Level:		%%1833<br/><br/>New Logon:<br/>	Security ID:		S-1-5-21-1477464407-4226676169-1633655561-1002<br/>	Account Name:		xsoar<br/>	Account Domain:		WIN10X64<br/>	Logon ID:		0x125181B7<br/>	Linked Logon ID:		0x12518091<br/>	Network Account Name:	-<br/>	Network Account Domain:	-<br/>	Logon GUID:		{00000000-0000-0000-0000-000000000000}<br/><br/>Process Information:<br/>	Process ID:		0x95C<br/>	Process Name:		C:\Windows\System32\svchost.exe<br/><br/>Network Information:<br/>	Workstation Name:	WIN10X64<br/>	Source Network Address:	1.1.1.1<br/>	Source Port:		0<br/><br/>Detailed Authentication Information:<br/>	Logon Process:		User32 <br/>	Authentication Package:	Negotiate<br/>	Transited Services:	-<br/>	Package Name (NTLM only):	-<br/>	Key Length:		0<br/><br/>This event is generated when a logon session is created. It is generated on the computer that was accessed.<br/><br/>The subject fields indicate the account on the local system which requested the logon. This is most commonly a service such as the Server service, or a local process such as Winlogon.exe or Services.exe.<br/><br/>The logon type field indicates the kind of logon that occurred. The most common types are 2 (interactive) and 3 (network).<br/><br/>The New Logon fields indicate the account for whom the new logon was created, i.e. the account that was logged on.<br/><br/>The network fields indicate where a remote logon request originated. Workstation name is not always available and may be left blank in some cases.<br/><br/>The impersonation level field indicates the extent to which a process in the logon session can impersonate.<br/><br/>The authentication information fields provide detailed information about this specific logon request.<br/>	- Logon GUID is a unique identifier that can be used to correlate this event with a KDC event.<br/>	- Transited services indicate which intermediate services have participated in this logon request.<br/>	- Package name indicates which sub-protocol was used among the NTLM protocols.<br/>	- Key length indicates the length of the generated session key. This will be 0 if no session key was requested. <br/>	***_time***: 165298280000<br/>	***555555***: ghijk<br/>	***222222***: 165298280000<br/>	***333333***: abcdef<br/>	***111111***: 15<br/>	***444444***: 1<br/>	***insert_timestamp***: 165298280001<br/>	***_vendor***: PANW<br/>	***_product***: XDR agent<br/>	***_is_cardable***: true |
+
+
+### xdr-replace-featured-field
+***
+Replace the featured hosts\users\ips\active-directory_groups listed in your environment.
+
+
+#### Base Command
+
+`xdr-replace-featured-field`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| field_type | The filed type that should change. Possible values are: hosts, users, ip_addresses, ad_groups. | Required | 
+| values | String value that defines the new field. Maximum length is 256 characters. | Required | 
+| comments | String that represents additional information regarding the featured alert field. | Optional | 
+| ad_type | String value identifying if you want to replace to an active directory group or organizational unit.<br/>Valid values are either group or OU.<br/>If no value is defined, group is sent by default. Possible values are: group, ou. Default is group. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.FeaturedField.fieldType | String | The filed type that changed. | 
+| PaloAltoNetworksXDR.FeaturedField.fields | String | String value that defines the new field. | 
+
+#### Command example
+```!xdr-replace-featured-field field_type=ip_addresses values=`["1.1.1.1"]` comments=`new ip address````
+
+#### Context Example
+```json
+{
+    "PaloAltoNetworksXDR": {
+        "FeaturedField": {
+            "field_type": "ip_addresses",
+            "fields": [
+                {
+                    "comment": "new ip address",
+                    "value": "1.1.1.1"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Replaced featured: ip_addresses
+>|Comment|Value|
+>|---|---|
+>| new ip address | 1.1.1.1 |

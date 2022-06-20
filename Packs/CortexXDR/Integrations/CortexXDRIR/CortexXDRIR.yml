@@ -4161,11 +4161,11 @@ script:
     execution: false
     name: xdr-get-contributing-event
     outputs:
-    - contextPath: PaloAltoNetworksXDR.alertID
+    - contextPath: PaloAltoNetworksXDR.ContributingEvent.alertID
       description: The alert ID.
       type: String
-    - contextPath: PaloAltoNetworksXDR.ContributingEvent
-      description: Contributing events per alert.
+    - contextPath: PaloAltoNetworksXDR.ContributingEvent.events
+      description: The contributing events.
       type: Unknown
   - arguments:
     - auto: PREDEFINED
