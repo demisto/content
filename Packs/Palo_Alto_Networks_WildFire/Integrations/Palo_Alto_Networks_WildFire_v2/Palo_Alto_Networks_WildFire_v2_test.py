@@ -472,26 +472,26 @@ def test_parse_file_report_network():
 
 
 @pytest.mark.parametrize('response, expected_output', [
-    (b'<?xml version="1.0" encoding="UTF-8"?><wildfire><version>2.0</version><file_info>' \
-                                   b'<file_signer>None</file_signer><malware>no</malware><sha1></sha1><filetype>PDF' \
-                                   b'</filetype><sha256>' \
-                                   b'8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51</sha256><md5>' \
-                                   b'4b41a3475132bd861b30a878e30aa56a</md5><size>3028</size></file_info><task_info>' \
-                                   b'<report><version>2.0</version><platform>100</platform><software>' \
-                                   b'PDF Static Analyzer</software><sha256>' \
-                                   b'8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51</sha256>' \
-                                   b'<md5>4b41a3475132bd861b30a878e30aa56a</md5><malware>no</malware><summary/>' \
-                                   b'</report></task_info></wildfire>', []),
-    (b'<?xml version="1.0" encoding="UTF-8"?><wildfire><version>2.0</version><file_info>' \
-                                   b'<file_signer>None</file_signer><malware>yes</malware><sha1></sha1><filetype>PDF' \
-                                   b'</filetype><sha256>' \
-                                   b'8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51</sha256><md5>' \
-                                   b'4b41a3475132bd861b30a878e30aa56a</md5><size>3028</size></file_info><task_info>' \
-                                   b'<report><version>2.0</version><platform>100</platform><software>' \
-                                   b'PDF Static Analyzer</software><sha256>' \
-                                   b'8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51</sha256>' \
-                                   b'<md5>4b41a3475132bd861b30a878e30aa56a</md5><malware>no</malware><summary/>' \
-                                   b'</report></task_info></wildfire>', ['malware'])
+    (b'<?xml version="1.0" encoding="UTF-8"?><wildfire><version>2.0</version><file_info>'
+     b'<file_signer>None</file_signer><malware>no</malware><sha1></sha1><filetype>PDF'
+     b'</filetype><sha256>'
+     b'8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51</sha256><md5>'
+     b'4b41a3475132bd861b30a878e30aa56a</md5><size>3028</size></file_info><task_info>'
+     b'<report><version>2.0</version><platform>100</platform><software>'
+     b'PDF Static Analyzer</software><sha256>'
+     b'8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51</sha256>'
+     b'<md5>4b41a3475132bd861b30a878e30aa56a</md5><malware>no</malware><summary/>'
+     b'</report></task_info></wildfire>', []),
+    (b'<?xml version="1.0" encoding="UTF-8"?><wildfire><version>2.0</version><file_info>'
+     b'<file_signer>None</file_signer><malware>yes</malware><sha1></sha1><filetype>PDF'
+     b'</filetype><sha256>'
+     b'8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51</sha256><md5>'
+     b'4b41a3475132bd861b30a878e30aa56a</md5><size>3028</size></file_info><task_info>'
+     b'<report><version>2.0</version><platform>100</platform><software>'
+     b'PDF Static Analyzer</software><sha256>'
+     b'8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51</sha256>'
+     b'<md5>4b41a3475132bd861b30a878e30aa56a</md5><malware>no</malware><summary/>'
+     b'</report></task_info></wildfire>', ['malware'])
 ])
 def test_tags_file_report_response(mocker, response, expected_output):
     """
