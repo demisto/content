@@ -1,12 +1,12 @@
 name: Trigger Contribution Build
 on:
-  pull_request
-    # types: [labeled]
+  pull_request_target:
+    types: [labeled]
 
 jobs:
   trigget_contrib_build:
     runs-on: ubuntu-latest
-    # if: github.event.action == 'labeled' && contains(github.event.pull_request.labels.*.name, 'ready-for-instance-test') == true
+    if: github.event.action == 'labeled' && contains(github.event.pull_request.labels.*.name, 'ready-for-instance-test') == true && github.event.pull_request.head.repo.fork == true
     steps:
       - name: Checkout
         uses: actions/checkout@v3
