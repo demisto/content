@@ -11,15 +11,15 @@ fi
 echo "Validating files..."
 DO_DEACTIVATE=""
 DO_ACTIVATE=""
-if [[ -n "${VIRTUAL_ENV}" && "${VIRTUAL_ENV}" != "${PWD}/venv" && -e "${VIRTUAL_ENV}/bin/activate" ]] && command -v deactivate >/dev/null 2>&1; then
+if [[ -n "${VIRTUAL_ENV}" && "${VIRTUAL_ENV}" != "${PWD}/.venv" && -e "${VIRTUAL_ENV}/bin/activate" ]] && command -v deactivate >/dev/null 2>&1; then
     # we are in a vritual env. Deactivate and store the previous VIRTUAL_ENV
     echo "Deactivating current virtual env: $VIRTUAL_ENV"
     DO_ACTIVATE="${VIRTUAL_ENV}"
     deactivate
 fi
-if [ -e "./venv/bin/activate" -a -z "${VIRTUAL_ENV}" ]; then
+if [ -e "./.venv/bin/activate" -a -z "${VIRTUAL_ENV}" ]; then
     echo "Activating Demisto Content virtual env..."
-    source ./venv/bin/activate
+    source ./.venv/bin/activate
     DO_DEACTIVATE=1
 fi
 
