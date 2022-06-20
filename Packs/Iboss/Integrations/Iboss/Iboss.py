@@ -6,7 +6,6 @@ from dateutil.parser import parse
 
 import enum
 import requests
-import traceback
 import re
 from typing import Dict, Any
 from functools import wraps
