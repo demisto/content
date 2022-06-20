@@ -5151,10 +5151,6 @@
             ],
             "playbookID": "Github Event Collector-test",
             "fromversion": "6.6.0"
-        },
-        {
-            "integrations": "GLIMPS_Detect",
-            "playbookID": "Run all tests"
         }
     ],
     "skipped_tests": {
