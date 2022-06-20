@@ -31,15 +31,12 @@ configuration:
   required: true
   type: 15
 - additionalinfo: Create relationships between indicators as part of Enrichment.
-  defaultvalue: "true"
+  defaultvalue: 'true'
   display: Create relationships
   name: create_relationships
   required: false
   type: 8
-description: CIRCL hash lookup is a public API to lookup hash values against known
-  database of files. NSRL RDS database is included and many others are also included.
-  The API is accessible via HTTP ReST API and the API is also described as an OpenAPI.
-  The service is free and served as a best-effort basis.
+description: CIRCL hash lookup is a public API to lookup hash values against known database of files. NSRL RDS database is included and many others are also included. The API is accessible via HTTP ReST API and the API is also described as an OpenAPI. The service is free and served as a best-effort basis.
 display: CIRCLEHashlookup
 name: CIRCLEHashlookup
 script:
@@ -81,6 +78,7 @@ script:
       name: file
       required: true
       type: textArea
+      default: true
     description: Checks the file reputation of the specified hash.
     name: file
     outputs:
@@ -132,3 +130,6 @@ script:
   script: ''
   subtype: python3
   type: python
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)
