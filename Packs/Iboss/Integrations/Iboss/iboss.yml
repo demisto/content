@@ -707,6 +707,6 @@ script:
   runonce: false
   longRunning: false
   longRunningPort: false
-fromversion: 5.0.0
+fromversion: 6.2.0
 tests:
 - No tests
