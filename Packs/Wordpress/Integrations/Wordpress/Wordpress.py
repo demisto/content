@@ -63,6 +63,62 @@ class Client(BaseClient):
         response = self._http_request('DELETE', url_suffix=url_suffix, params=params)
         return response
 
+    def list_categories(self):
+        url_suffix = "wp-json/wp/v2/categories"
+        response = self._http_request('GET', url_suffix)
+        return response
+
+    def create_category(self, params: dict):
+        url_suffix = "wp-json/wp/v2/categories"
+        response = self._http_request('POST', url_suffix, params=params)
+        return response
+
+    def get_category(self, category_id, params: dict):
+        url_suffix = f"wp-json/wp/v2/categories/{category_id}"
+        response = self._http_request('GET', url_suffix, params=params)
+        return response
+
+    def update_category(self, category_id, args: dict):
+        url_suffix = f"wp-json/wp/v2/categories/{category_id}"
+        response = self._http_request('POST', url_suffix, json_data=args)
+        return response
+
+    def delete_category(self, category_id):
+        url_suffix = f"/wp-json/wp/v2/categories/{category_id}"
+        params = {
+            "force": True
+        }
+        response = self._http_request('DELETE', url_suffix=url_suffix, params=params)
+        return response
+
+    def list_tags(self):
+        url_suffix = "wp-json/wp/v2/tags"
+        response = self._http_request('GET', url_suffix)
+        return response
+
+    def create_tag(self, params: dict):
+        url_suffix = "wp-json/wp/v2/tags"
+        response = self._http_request('POST', url_suffix, params=params)
+        return response
+
+    def get_tag(self, tag_id, params: dict):
+        url_suffix = f"wp-json/wp/v2/tags/{tag_id}"
+        response = self._http_request('GET', url_suffix, params=params)
+        return response
+
+    def update_tag(self, tag_id, args: dict):
+        url_suffix = f"wp-json/wp/v2/tags/{tag_id}"
+        response = self._http_request('POST', url_suffix, json_data=args)
+        return response
+
+    def delete_tag(self, tag_id):
+        url_suffix = f"/wp-json/wp/v2/tags/{tag_id}"
+        params = {
+            "force": True
+        }
+        response = self._http_request('DELETE', url_suffix=url_suffix, params=params)
+        return response
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -146,7 +202,7 @@ def create_post_command(client: Client, args: dict):
         outputs_prefix='Wordpress.Posts',
         outputs_key_field='id',
         outputs=response,
-        readable_output=tableToMarkdown(f"Post created:", response)
+        readable_output=tableToMarkdown("Post created:", response)
     )
     return_results(command_results)
 
@@ -190,6 +246,120 @@ def delete_post_command(client: Client, args: dict):
     return_results(command_results)
 
 
+def list_categories_command(client: Client, args: dict):
+    response = client.list_categories()
+    command_results = CommandResults(
+        outputs_prefix='Wordpress.Categories',
+        outputs_key_field='id',
+        outputs=response,
+        readable_output=tableToMarkdown("Categories:", response)
+    )
+    return_results(command_results)
+
+
+def create_category_command(client: Client, args: dict):
+    response = client.create_category(args)
+    command_results = CommandResults(
+        outputs_prefix='Wordpress.Categories',
+        outputs_key_field='id',
+        outputs=response,
+        readable_output=tableToMarkdown(f"Created new category:", response)
+    )
+    return_results(command_results)
+
+
+def get_category_command(client: Client, args: dict):
+    category_id = args.get('id')
+    params = {k: v for k, v in args.items() if k != 'id'}
+    response = client.get_category(category_id, params)
+    command_results = CommandResults(
+        outputs_prefix='Wordpress.Categories',
+        outputs_key_field='id',
+        outputs=response,
+        readable_output=tableToMarkdown(f"Category {category_id}:", response)
+    )
+    return_results(command_results)
+
+
+def update_category_command(client: Client, args: dict):
+    category_id = args.get('id')
+    args = {k: v for k, v in args.items() if k != "id"}
+    response = client.update_category(category_id, args)
+    command_results = CommandResults(
+        outputs_prefix='Wordpress.Categories',
+        outputs_key_field='id',
+        outputs=response,
+        readable_output=tableToMarkdown(f"Category {category_id} updated:", response)
+    )
+    return_results(command_results)
+
+
+def delete_category_command(client: Client, args: dict):
+    post_id = args.get('id')
+    client.delete_category(post_id)
+    command_results = CommandResults(
+        readable_output=f"Category {post_id} permanently deleted."
+    )
+    return_results(command_results)
+
+
+def list_tags_command(client: Client, args: dict):
+    response = client.list_tags()
+    command_results = CommandResults(
+        outputs_prefix='Wordpress.Tags',
+        outputs_key_field='id',
+        outputs=response,
+        readable_output=tableToMarkdown("Tags:", response)
+    )
+    return_results(command_results)
+
+
+def create_tag_command(client: Client, args: dict):
+    response = client.create_tag(args)
+    command_results = CommandResults(
+        outputs_prefix='Wordpress.Tags',
+        outputs_key_field='id',
+        outputs=response,
+        readable_output=tableToMarkdown(f"Created new tag:", response)
+    )
+    return_results(command_results)
+
+
+def get_tag_command(client: Client, args: dict):
+    tag_id = args.get('id')
+    params = {k: v for k, v in args.items() if k != 'id'}
+    response = client.get_tag(tag_id, params)
+    command_results = CommandResults(
+        outputs_prefix='Wordpress.Tags',
+        outputs_key_field='id',
+        outputs=response,
+        readable_output=tableToMarkdown(f"Tag {tag_id}:", response)
+    )
+    return_results(command_results)
+
+
+def update_tag_command(client: Client, args: dict):
+    tag_id = args.get('id')
+    args = {k: v for k, v in args.items() if k != "id"}
+    response = client.update_tag(tag_id, args)
+    command_results = CommandResults(
+        outputs_prefix='Wordpress.Tags',
+        outputs_key_field='id',
+        outputs=response,
+        readable_output=tableToMarkdown(f"Tag {tag_id} updated:", response)
+    )
+    return_results(command_results)
+
+
+def delete_tag_command(client: Client, args: dict):
+    tag_id = args.get('id')
+    client.delete_tag(tag_id)
+    command_results = CommandResults(
+        readable_output=f"Tag {tag_id} permanently deleted."
+    )
+    return_results(command_results)
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -212,7 +382,17 @@ def main() -> None:
             'wordpress-url-request': url_request_command,
             'wordpress-create-post': create_post_command,
             'wordpress-update-post': update_post_command,
-            'wordpress-delete-post': delete_post_command
+            'wordpress-delete-post': delete_post_command,
+            'wordpress-list-categories': list_categories_command,
+            'wordpress-create-category': create_category_command,
+            'wordpress-get-category': get_category_command,
+            'wordpress-update-category': update_category_command,
+            'wordpress-delete-category': delete_category_command,
+            'wordpress-list-tags': list_tags_command,
+            'wordpress-create-tag': create_tag_command,
+            'wordpress-get-tag': get_tag_command,
+            'wordpress-update-tag': update_tag_command,
+            'wordpress-delete-tag': delete_tag_command
         }
 
         headers: Dict = {}

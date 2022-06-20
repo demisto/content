@@ -903,6 +903,469 @@ script:
     - contextPath: Wordpress.Posts.ping_status
       description: 'Ping status'
       type: String
+  - name: wordpress-list-categories
+    deprecated: false
+    description: 'List categories'
+    execution: false
+    outputs:
+    - contextPath: Wordpress.Categories.meta
+      description: 'Metadata'
+      type: Unknown
+    - contextPath: Wordpress.Categories.parent
+      description: 'Parent'
+      type: Number
+    - contextPath: Wordpress.Categories.name
+      description: 'Name'
+      type: String
+    - contextPath: Wordpress.Categories.slug
+      description: 'Slug'
+      type: String
+    - contextPath: Wordpress.Categories.count
+      description: 'Count'
+      type: Number
+    - contextPath: Wordpress.Categories.taxonomy
+      description: 'Taxonomy'
+      type: String
+    - contextPath: Wordpress.Categories._links
+      description: 'Links'
+      type: List
+    - contextPath: Wordpress.Categories.link
+      description: 'Link'
+      type: String
+    - contextPath: Wordpress.Categories.id
+      description: 'ID'
+      type: Number
+    - contextPath: Wordpress.Categories.description
+      description: 'Description'
+      type: String
+  - name: wordpress-create-category
+    arguments:
+    - description: 'HTML description of the term.'
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - description: 'HTML title for the term.'
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - description: 'An alphanumeric identifier for the term unique to its type.'
+      isArray: false
+      name: slug
+      required: false
+      secret: false
+    - description: 'The parent term ID.'
+      isArray: false
+      name: parent
+      required: false
+      secret: false
+    - description: 'Meta fields (JSON dict).'
+      isArray: false
+      name: meta
+      required: false
+      secret: false
+    deprecated: false
+    description: 'Create a category'
+    execution: false
+    outputs:
+    - contextPath: Wordpress.Categories.meta
+      description: 'Metadata'
+      type: Unknown
+    - contextPath: Wordpress.Categories.parent
+      description: 'Parent'
+      type: Number
+    - contextPath: Wordpress.Categories.name
+      description: 'Name'
+      type: String
+    - contextPath: Wordpress.Categories.slug
+      description: 'Slug'
+      type: String
+    - contextPath: Wordpress.Categories.count
+      description: 'Count'
+      type: Number
+    - contextPath: Wordpress.Categories.taxonomy
+      description: 'Taxonomy'
+      type: String
+    - contextPath: Wordpress.Categories._links
+      description: 'Links'
+      type: List
+    - contextPath: Wordpress.Categories.link
+      description: 'Link'
+      type: String
+    - contextPath: Wordpress.Categories.id
+      description: 'ID'
+      type: Number
+    - contextPath: Wordpress.Categories.description
+      description: 'Description'
+      type: String
+  - name: wordpress-get-category
+    arguments:
+    - description: 'Unique identifier for the category.'
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      defaultValue: "view"
+      description: 'Scope under which the request is made; determines fields present in response (default is view).'
+      isArray: false
+      name: context
+      required: false
+      secret: false
+      predefined:
+      - "view"
+      - "edit"
+      - "embed"
+    deprecated: false
+    description: 'Retrieve a category'
+    execution: false
+    outputs:
+    - contextPath: Wordpress.Categories.meta
+      description: 'Metadata'
+      type: Unknown
+    - contextPath: Wordpress.Categories.parent
+      description: 'Parent'
+      type: Number
+    - contextPath: Wordpress.Categories.name
+      description: 'Name'
+      type: String
+    - contextPath: Wordpress.Categories.slug
+      description: 'Slug'
+      type: String
+    - contextPath: Wordpress.Categories.count
+      description: 'Count'
+      type: Number
+    - contextPath: Wordpress.Categories.taxonomy
+      description: 'Taxonomy'
+      type: String
+    - contextPath: Wordpress.Categories._links
+      description: 'Links'
+      type: List
+    - contextPath: Wordpress.Categories.link
+      description: 'Link'
+      type: String
+    - contextPath: Wordpress.Categories.id
+      description: 'ID'
+      type: Number
+    - contextPath: Wordpress.Categories.description
+      description: 'Description'
+      type: String
+  - name: wordpress-update-category
+    arguments:
+    - description: 'Category ID.'
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - description: 'HTML description of the term.'
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - description: 'HTML title for the term.'
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - description: 'An alphanumeric identifier for the term unique to its type.'
+      isArray: false
+      name: slug
+      required: false
+      secret: false
+    - description: 'The parent term ID.'
+      isArray: false
+      name: parent
+      required: false
+      secret: false
+    - description: 'Meta fields (JSON dict).'
+      isArray: false
+      name: meta
+      required: false
+      secret: false
+    deprecated: false
+    description: 'Update a category'
+    execution: false
+    outputs:
+    - contextPath: Wordpress.Categories.meta
+      description: 'Metadata'
+      type: Unknown
+    - contextPath: Wordpress.Categories.parent
+      description: 'Parent'
+      type: Number
+    - contextPath: Wordpress.Categories.name
+      description: 'Name'
+      type: String
+    - contextPath: Wordpress.Categories.slug
+      description: 'Slug'
+      type: String
+    - contextPath: Wordpress.Categories.count
+      description: 'Count'
+      type: Number
+    - contextPath: Wordpress.Categories.taxonomy
+      description: 'Taxonomy'
+      type: String
+    - contextPath: Wordpress.Categories._links
+      description: 'Links'
+      type: List
+    - contextPath: Wordpress.Categories.link
+      description: 'Link'
+      type: String
+    - contextPath: Wordpress.Categories.id
+      description: 'ID'
+      type: Number
+    - contextPath: Wordpress.Categories.description
+      description: 'Description'
+      type: String
+  - name: wordpress-delete-category
+    arguments:
+    - description: 'Category ID.'
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: 'Delete a category'
+    execution: false
+  - name: wordpress-list-tags
+    arguments:
+    - auto: PREDEFINED
+      defaultValue: "view"
+      description: 'Scope under which the request is made; determines fields present in response (default is view).'
+      isArray: false
+      name: context
+      required: false
+      secret: false
+      predefined:
+      - "view"
+      - "edit"
+      - "embed"
+    - description: 'Current page of the collection (defaults is 1).'
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - description: 'Maximum number of items to be returned in result set (default is 10).'
+      isArray: false
+      name: per_page
+      required: false
+      secret: false
+    - description: 'Limit results to those matching a string.'
+      isArray: false
+      name: search
+      required: false
+      secret: false
+    - description: 'Ensure result set excludes specific IDs.'
+      isArray: false
+      name: exclude
+      required: false
+      secret: false
+    - description: 'Limit result set to specific IDs.'
+      isArray: false
+      name: include
+      required: false
+      secret: false
+    - description: 'Offset the result set by a specific number of items.'
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      defaultValue: "desc"
+      description: 'Order sort attribute ascending or descending (default is desc).'
+      isArray: false
+      name: order
+      predefined:
+      - "desc"
+      - "asc"
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      defaultValue: "date"
+      description: 'Sort collection by object attribute (default is date).'
+      isArray: false
+      name: orderby
+      predefined:
+      - "author"
+      - "date"
+      - "id"
+      - "include"
+      - "modified"
+      - "parent"
+      - "relevance"
+      - "slug"
+      - "include_slugs"
+      - "title"
+      required: false
+      secret: false
+    - description: 'Limit result set to posts with one or more specific slugs.'
+      isArray: false
+      name: slug
+      required: false
+      secret: false
+    - description: 'Whether to hide terms not assigned to any posts.'
+      isArray: false
+      name: hide_empty
+      required: false
+      secret: false
+    - description: 'Limit result set to terms assigned to a specific post.'
+      isArray: false
+      name: post
+      required: false
+      secret: false
+    deprecated: false
+    description: 'Lists all tags'
+    execution: false
+    outputs:
+    - contextPath: Wordpress.Tags.meta
+      description: 'Metadata'
+      type: Unknown
+    - contextPath: Wordpress.Tags.name
+      description: 'Name'
+      type: String
+    - contextPath: Wordpress.Tags.slug
+      description: 'Slug'
+      type: String
+    - contextPath: Wordpress.Tags.count
+      description: 'Count'
+      type: Number
+    - contextPath: Wordpress.Tags.taxonomy
+      description: 'Taxonomy'
+      type: String
+    - contextPath: Wordpress.Tags._links
+      description: 'Links'
+      type: List
+    - contextPath: Wordpress.Tags.link
+      description: 'Link'
+      type: String
+    - contextPath: Wordpress.Tags.id
+      description: 'ID'
+      type: Number
+    - contextPath: Wordpress.Tags.description
+      description: 'Description'
+      type: String
+  - name: wordpress-get-tag
+    arguments:
+    - auto: PREDEFINED
+      defaultValue: "view"
+      description: 'Scope under which the request is made; determines fields present in response (default is view).'
+      isArray: false
+      name: context
+      required: false
+      secret: false
+      predefined:
+      - "view"
+      - "edit"
+      - "embed"
+    - description: 'Tag ID'
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: 'Retrieves a tag'
+    execution: false
+    outputs:
+    - contextPath: Wordpress.Tags.meta
+      description: 'Metadata'
+      type: Unknown
+    - contextPath: Wordpress.Tags.name
+      description: 'Name'
+      type: String
+    - contextPath: Wordpress.Tags.slug
+      description: 'Slug'
+      type: String
+    - contextPath: Wordpress.Tags.count
+      description: 'Count'
+      type: Number
+    - contextPath: Wordpress.Tags.taxonomy
+      description: 'Taxonomy'
+      type: String
+    - contextPath: Wordpress.Tags._links
+      description: 'Links'
+      type: List
+    - contextPath: Wordpress.Tags.link
+      description: 'Link'
+      type: String
+    - contextPath: Wordpress.Tags.id
+      description: 'ID'
+      type: Number
+    - contextPath: Wordpress.Tags.description
+      description: 'Description'
+      type: String
+  - name: wordpress-update-tag
+    arguments:
+    - description: 'Tag ID.'
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - description: 'HTML description of the term.'
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - description: 'HTML title for the term.'
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - description: 'An alphanumeric identifier for the term unique to its type.'
+      isArray: false
+      name: slug
+      required: false
+      secret: false
+    - description: 'The parent term ID.'
+      isArray: false
+      name: parent
+      required: false
+      secret: false
+    - description: 'Meta fields (JSON dict).'
+      isArray: false
+      name: meta
+      required: false
+      secret: false
+    deprecated: false
+    description: 'Update a tag'
+    execution: false
+    outputs:
+    - contextPath: Wordpress.Tags.meta
+      description: 'Metadata'
+      type: Unknown
+    - contextPath: Wordpress.Tags.name
+      description: 'Name'
+      type: String
+    - contextPath: Wordpress.Tags.slug
+      description: 'Slug'
+      type: String
+    - contextPath: Wordpress.Tags.count
+      description: 'Count'
+      type: Number
+    - contextPath: Wordpress.Tags.taxonomy
+      description: 'Taxonomy'
+      type: String
+    - contextPath: Wordpress.Tags._links
+      description: 'Links'
+      type: List
+    - contextPath: Wordpress.Tags.link
+      description: 'Link'
+      type: String
+    - contextPath: Wordpress.Tags.id
+      description: 'ID'
+      type: Number
+    - contextPath: Wordpress.Tags.description
+      description: 'Description'
+      type: String
+  - name: wordpress-delete-tag
+    arguments:
+    - description: 'Tag ID.'
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    deprecated: false
+    description: 'Delete a tag'
+    execution: false
   isfetch: false
   runonce: false
   script: '-'
