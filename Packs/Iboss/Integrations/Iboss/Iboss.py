@@ -1271,9 +1271,6 @@ def remove_entity_from_allow_list_command(client: Client, args: Dict[str, Any]) 
 
 def main() -> None:
     """main function, parses params and runs command functions
-
-    :return:
-    :rtype:
     """
 
     demisto.debug("Enter MAIN method")
