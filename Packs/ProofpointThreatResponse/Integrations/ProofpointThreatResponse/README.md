@@ -571,8 +571,62 @@ Verify if an email has been quarantined
 |------------------------------|----------|--------------------------|
 | ProofPointTRAP.Quarantine | String   | Result of the quarantine | 
 #### Command Example
-``` ```
+``` !proofpoint-tr-verify-quarantine messageid=<message_id_example> time="2022-06-02T17:22:45Z" recipient=example@example.com```
 
+#### Context Example
+```json
+{
+    "ProofPointTRAP": {
+        "Quarantine": [
+            {
+                "alert": {
+                    "id": 1030,
+                    "time": "2022-06-02T17:33:18Z"
+                },
+                "incident": {
+                    "id": 265,
+                    "time": "2022-06-02T17:33:18Z"
+                },
+                "quarantine": {
+                    "alertSource": "Admin Portal",
+                    "details": "Success",
+                    "endTime": "2022-06-02T17:33:37.926Z",
+                    "isRead": "false",
+                    "messageId": "message_id_example",
+                    "recipient": "example@example.com",
+                    "recipientType": "Original Recipient",
+                    "startTime": "2022-06-02T17:33:20.352Z",
+                    "status": "successful",
+                    "wasUndone": "false"
+                }
+            },
+            {
+                "alert": {
+                    "id": 1030,
+                    "time": "2022-06-02T17:33:18Z"
+                },
+                "incident": {
+                    "id": 265,
+                    "time": "2022-06-02T17:33:18Z"
+                },
+                "quarantine": {
+                    "alertSource": "Admin Portal",
+                    "details": "Success",
+                    "endTime": "2022-06-02T17:33:37.321Z",
+                    "isRead": "false",
+                    "messageId": "message_id_example",
+                    "recipient": "example@example.com",
+                    "recipientType": "Original Recipient",
+                    "startTime": "2022-06-02T17:33:20.283Z",
+                    "status": "successful",
+                    "wasUndone": "false"
+                }
+            }
+        ]
+    }
+}
+
+```
 #### Human Readable Output 
 
 

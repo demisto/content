@@ -875,12 +875,12 @@ script:
       - description: The recipient of the email
         name: recipient
         isArray: false
-        required: false
+        required: true
         secret: false
       - description: The reception time of the email
         name: time
         isArray: false
-        required: false
+        required: true
         secret: false
     outputs:
       - contextPath: ProofPointTRAP.Quarantine

@@ -422,13 +422,13 @@ def test_close_incident_command(mocker, requests_mock):
 def test_search_quarantine_command(mocker, requests_mock):
     """
     Given:
-    - Message ID
+    - Message ID, Recipient and Delivery Time (Email recived time)
 
     When:
     - Running search-quarantine command
 
     Then:
-    - Ensure output is success message
+    - Ensure output is success message (at least one success).
     """
     base_url = 'https://server_url/'
     with open('./test_data/incidents.json', 'r') as f:
