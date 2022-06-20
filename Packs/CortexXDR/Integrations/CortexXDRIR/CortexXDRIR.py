@@ -1003,7 +1003,7 @@ def get_contributing_event_command(client: Client, args: Dict) -> CommandResults
                 limit = max(arg_to_number(args.get('limit', 0)), 0) or offset + page_size
 
                 alert_with_events = {
-                    'alert_id': alert_id,
+                    'alertID': str(alert_id),
                     'events': alert.get('events', [])[offset:limit],
                 }
                 alerts.append(alert_with_events)
@@ -1014,7 +1014,7 @@ def get_contributing_event_command(client: Client, args: Dict) -> CommandResults
         return CommandResults(
             readable_output=readable_output,
             outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ContributingEvent',
-            outputs_key_field='alert_id',
+            outputs_key_field='alertID',
             outputs=alerts,
             raw_response=alerts
         )
@@ -1065,16 +1065,16 @@ def replace_featured_field_command(client: Client, args: Dict) -> CommandResults
     # For more information refer to:
     # https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-apis/incident-management/replace-featured-hosts
     if not isinstance(reply, dict):
-        result = {'field_type': field_type, 'fields': fields}
+        result = {'fieldType': field_type, 'fields': fields}
 
         readable_output = tableToMarkdown(
-            f'Replaced featured: {result.get("field_type")}', result.get('fields'), headerTransform=pascalToSpace
+            f'Replaced featured: {result.get("fieldType")}', result.get('fields'), headerTransform=pascalToSpace
         )
 
         return CommandResults(
             readable_output=readable_output,
             outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.FeaturedField',
-            outputs_key_field='field_type',
+            outputs_key_field='fieldType',
             outputs=result,
             raw_response=result
         )

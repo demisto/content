@@ -743,7 +743,7 @@ def test_get_contributing_event_command(requests_mock):
 
     response = get_contributing_event_command(client, args)
 
-    assert response.outputs[0].get('alert_id') == int(args.get('alert_ids').replace('[', '').replace(']', ''))
+    assert response.outputs[0].get('alertID') == args.get('alert_ids').replace('[', '').replace(']', '')
     assert len(response.outputs[0].get('events')) == 1
 
 
@@ -753,7 +753,7 @@ def test_replace_featured_field_command(requests_mock):
     replace_featured_field = load_test_data('./test_data/replace_featured_field.json')
     requests_mock.post(f'{XDR_URL}/public_api/v1/featured_fields/replace_ad_groups', json=replace_featured_field)
     expected_response = {
-        'field_type': 'ad_groups',
+        'fieldType': 'ad_groups',
         'fields': [
             {'value': 'new value', 'comment': 'this is a comment', 'type': 'ou'},
             {'value': 'one new value', 'comment': '', 'type': ''}

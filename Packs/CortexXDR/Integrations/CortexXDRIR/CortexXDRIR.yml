@@ -4161,7 +4161,7 @@ script:
     execution: false
     name: xdr-get-contributing-event
     outputs:
-    - contextPath: PaloAltoNetworksXDR.alert_id
+    - contextPath: PaloAltoNetworksXDR.alertID
       description: The alert ID.
       type: String
     - contextPath: PaloAltoNetworksXDR.ContributingEvent
@@ -4214,7 +4214,7 @@ script:
     execution: false
     name: xdr-replace-featured-field
     outputs:
-    - contextPath: PaloAltoNetworksXDR.FeaturedField.field_type
+    - contextPath: PaloAltoNetworksXDR.FeaturedField.fieldType
       description: The filed type that changed.
       type: String
     - contextPath: PaloAltoNetworksXDR.FeaturedField.fields
