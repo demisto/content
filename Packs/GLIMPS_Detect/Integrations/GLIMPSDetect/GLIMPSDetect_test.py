@@ -30,20 +30,20 @@ mocked_gdetect_get = {
             "magic": "PE32 executable (GUI) Intel 80386, for MS Windows",
             "av_results": [
                 {
-                        "av": "SignatureOyster",
-                        "result": "Win.Ransomware.Buhtrap-9865977-0",
-                        "score": 1000
-                        },
+                    "av": "SignatureOyster",
+                    "result": "Win.Ransomware.Buhtrap-9865977-0",
+                    "score": 1000
+                },
                 {
-                        "av": "SignatureUmbrella",
-                        "result": "TR/Redcap.ltkcp",
-                        "score": 1000
-                        },
+                    "av": "SignatureUmbrella",
+                    "result": "TR/Redcap.ltkcp",
+                    "score": 1000
+                },
                 {
-                        "av": "SignatureSophos",
-                        "result": "Mal/Behav-010",
-                        "score": 1000
-                        }
+                    "av": "SignatureSophos",
+                    "result": "Mal/Behav-010",
+                    "score": 1000
+                }
             ],
             "size": 219648,
             "is_malware": True

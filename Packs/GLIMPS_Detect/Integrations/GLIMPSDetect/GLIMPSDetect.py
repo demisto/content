@@ -86,7 +86,7 @@ def gdetect_send_command(client, args):  # TO TEST
     res = demisto.getFilePath(entry_id)
     demisto.log(f'File: {str(res)}')
     if not res:
-        return_error(f'File entry: {entry_id} not found')
+        return f'File entry: {entry_id} not found'
     filepath = res.get('path')
     uuid = client.gdetect_send(filepath)
     readable_output = f'## The file was sent successfully, UUID: {uuid}'
@@ -262,7 +262,7 @@ def main():
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
             res = test_module(client)
-            code = client.gclient.response.response.status_code 
+            code = client.gclient.response.response.status_code
             if code != 200 and code != 404:
                 return_error(f'GDetect server error: {code} {status_msg(code)}')
             return_results(res)
@@ -290,6 +290,7 @@ def main():
             return_error(f'GDetectError: {str(e)}')
     except Exception as e:
         return_error(f'Failed to execute {command} command. Error: {str(e)}')
+
 
 # Start Main
 if __name__ in ('__main__', '__builtin__', 'builtins'):

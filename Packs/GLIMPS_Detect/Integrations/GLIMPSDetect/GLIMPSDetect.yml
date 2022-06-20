@@ -4,7 +4,7 @@ commonfields:
 category: Forensics & Malware Analysis
 name: GLIMPS_Detect
 display: GLIMPS Detect
-fromversion: 5.0.0
+fromversion: 6.0.0
 tests:
 - Run all tests
 description: Use the GLIMPS Detect Integration to send files to GLIMPS Malware and get results from it
