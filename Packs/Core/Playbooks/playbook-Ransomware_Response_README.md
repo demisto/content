@@ -101,4 +101,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Ransomware Response](https://raw.githubusercontent.com/demisto/content/6b468656734d10b98f9deee7d24897b0acec6292/Packs/Core/doc_files/Ransomware_Response.png)
+![Ransomware Response](../doc_files/Ransomware_Response.png)
