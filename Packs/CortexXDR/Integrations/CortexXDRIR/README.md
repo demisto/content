@@ -2613,8 +2613,8 @@ Retrieves contributing events for a specific alert.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksXDR.alertID | String | The alert ID. | 
-| PaloAltoNetworksXDR.ContributingEvent | Unknown | Contributing events per alert. | 
+| PaloAltoNetworksXDR.ContributingEvent.alertID | String | The alert ID. | 
+| PaloAltoNetworksXDR.ContributingEvent.events | Unknown | Contributing events per alert. | 
 
 #### Command example
 ```!xdr-get-contributing-event alert_ids=`[123456 , 123457]````
@@ -2625,7 +2625,7 @@ Retrieves contributing events for a specific alert.
     "PaloAltoNetworksXDR": {
         "ContributingEvent": [
             {
-                "alert_id": "123456",
+                "alertID": "123456",
                 "events": [
                     {
                         "Domain": "WIN10X64",
@@ -2719,7 +2719,7 @@ Replace the featured hosts\users\ips\active-directory_groups listed in your envi
 {
     "PaloAltoNetworksXDR": {
         "FeaturedField": {
-            "field_type": "ip_addresses",
+            "fieldType": "ip_addresses",
             "fields": [
                 {
                     "comment": "new ip address",
