@@ -1276,16 +1276,17 @@ def main() -> None:
     demisto.debug("Enter MAIN method")
 
     args = demisto.args()
+    params = demisto.params()
     command = demisto.command()
 
-    username = demisto.params().get('auth', {}).get('identifier')
-    password = demisto.params().get('auth', {}).get('password')
-    account_settings_id = demisto.params().get('account_settings_id')
+    username = params.get('auth', {}).get('identifier')
+    password = params.get('auth', {}).get('password')
+    account_settings_id = params.get('account_settings_id')
 
-    verify_certificate = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy', False)
+    verify_certificate = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
 
-    demisto.debug(f'Command being called is {demisto.command()}')
+    demisto.debug(f'Command being called is {command}')
     try:
         client = Client(
             username=username,
