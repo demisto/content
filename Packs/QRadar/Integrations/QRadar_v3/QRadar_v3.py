@@ -708,12 +708,13 @@ def get_remote_events(client: Client,
     offenses_queried = context_data.get(MIRRORED_OFFENSES_QUERIED_CTX_KEY, {})
     offenses_finished = context_data.get(MIRRORED_OFFENSES_FINISHED_CTX_KEY, {})
     events: list[dict] = []
-    status = QueryStatus.SUCCESS.value
+    status = QueryStatus.ERROR.value
     if offenses_queried.get(offense_id) == QueryStatus.ERROR.value:
         return events, QueryStatus.ERROR.value
     if offense_id not in offenses_finished or \
             offenses_queried.get(offense_id, '') in {QueryStatus.WAIT.value, QueryStatus.ERROR.value}:
         # if our offense not in the finished list, we will create a new search
+        # the value will be error because we don't want to wait until the search is complete
         search_id = create_events_search(client, fetch_mode, events_columns, events_limit, int(offense_id))
         offenses_queried[offense_id] = search_id
         changed_ids_ctx.append(offense_id)
