@@ -1839,8 +1839,8 @@ Retrieves files from selected endpoints. This command will be deprecated soon, u
 | PaloAltoNetworksXDR.RetrievedFiles.action_id | string | ID of the action to retrieve files from selected endpoints. | 
 
 #### Command Examples
-```!xdr-retrieve-files endpoint_ids=abcdef windows_file_paths="C:\Users\demisto\Desktop\demisto.txt"```
-```!xdr-retrieve-files endpoint_ids=abcdef generic_file_path="C:\Users\demisto\Desktop\demisto.txt"```
+```!xdr-retrieve-files endpoint_ids=aeec6a2cc92e46fab3b6f621722e9916 windows_file_paths="C:\Users\demisto\Desktop\demisto.txt"```
+```!xdr-retrieve-files endpoint_ids=aeec6a2cc92e46fab3b6f621722e9916 generic_file_path="C:\Users\demisto\Desktop\demisto.txt"```
 
 #### Context Example
 ```
