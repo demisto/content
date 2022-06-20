@@ -1136,7 +1136,6 @@ def main():
 
         if not task_status:
             pack.status = PackStatus.CHANGES_ARE_NOT_RELEVANT_FOR_MARKETPLACE.name
-            pack.cleanup()
             continue
 
         task_status, is_missing_dependencies = pack.format_metadata(index_folder_path,
