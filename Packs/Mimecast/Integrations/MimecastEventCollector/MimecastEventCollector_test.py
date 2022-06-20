@@ -24,16 +24,12 @@ audit_event_handler = MimecastGetAuditEvents(client, mimecast_options)
 
 
 def test_handle_last_run_entrance():
-    siem_event_handler_local = MimecastGetSiemEvents(client, mimecast_options)
-    token = siem_event_handler_local.token
-    print('******************', token)
+    local_siem_event_handler = MimecastGetSiemEvents(client, mimecast_options)
     assert audit_event_handler.start_time == ''
-    handle_last_run_entrance('7 days', audit_event_handler, siem_event_handler_local)
-    token = siem_event_handler_local.token
-    print('******************', token)
+    handle_last_run_entrance('7 days', audit_event_handler, local_siem_event_handler)
     assert audit_event_handler.start_time != ''
-    assert siem_event_handler_local.token == ''
-    assert siem_event_handler_local.events_from_prev_run == []
+    assert local_siem_event_handler.token == ''
+    assert local_siem_event_handler.events_from_prev_run == []
 
 
 def test_process_audit_data():

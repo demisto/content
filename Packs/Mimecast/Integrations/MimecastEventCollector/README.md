@@ -1,5 +1,5 @@
 
-This integration was integrated and tested with version xx of Mimecast Event Collector
+This integration was integrated and tested with version 1 of Mimecast Event Collector
 
 ## Configure Mimecast Event Collector on Cortex XSOAR
 
