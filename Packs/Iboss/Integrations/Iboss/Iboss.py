@@ -1302,7 +1302,6 @@ def main() -> None:
             return_results(url_lookup(client, args))
         elif command == 'domain':
             return_results(domain_lookup(client, args))
-
         elif command == 'iboss-add-entity-to-block-list':
             return_results(add_entity_to_block_list_command(client, args))
         elif command == 'iboss-remove-entity-from-block-list':
