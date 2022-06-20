@@ -1,5 +1,5 @@
 {
-    "name": "MITRE ATT&CK (Deprecated)",
+    "name": "MITRE IDs (Deprecated)",
     "description": "Fetches indicators from MITRE ATT&CK.",
     "support": "xsoar",
     "currentVersion": "1.2.1",
