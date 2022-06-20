@@ -34,7 +34,6 @@ MAX_SEARCHES_QUEUE = 10  # maximum number of searches to poll in the search queu
 SAMPLE_SIZE = 2  # number of samples to store in integration context
 EVENTS_INTERVAL_SECS = 60  # interval between events polling
 EVENTS_MODIFIED_SECS = 5  # interval between events status polling in modified
-EVENTS_FAILURE_LIMIT = DEFAULT_EVENTS_TIMEOUT - 2  # amount of consecutive failures events fetch will tolerate
 EVENTS_SEARCH_FAILURE_LIMIT = 3  # amount of consecutive failures events search will tolerate
 
 
@@ -44,7 +43,7 @@ ADVANCED_PARAMETERS_STRING_NAMES = [
 ]
 ADVANCED_PARAMETER_INT_NAMES = [
     'EVENTS_INTERVAL_SECS',
-    'EVENTS_FAILURE_LIMIT',
+    'MAX_SEARCHES_QUEUE',
     'EVENTS_SEARCH_FAILURE_LIMIT',
     'FAILURE_SLEEP',
     'FETCH_SLEEP',
@@ -749,6 +748,7 @@ def get_remote_events(client: Client,
 
 def update_user_query(user_query: str) -> str:
     return f' AND ({user_query})' if user_query else ''
+
 
 def insert_to_updated_context(context_data: dict,
                               offense_ids: list = None,
@@ -1552,7 +1552,7 @@ def poll_offense_events(client: Client, search_id: str, offense_id: int, should_
 
 
 def poll_offense_events_with_retry(client: Client, search_id: str, offense_id: int,
-                                   max_retries: int = EVENTS_FAILURE_LIMIT) -> Tuple[List[Dict], str]:
+                                   max_retries: int = DEFAULT_EVENTS_TIMEOUT - 2) -> Tuple[List[Dict], str]:
     """
     Polls QRadar service for search ID given until status returned is within '{'CANCELED', 'ERROR', 'COMPLETED'}'.
     Afterwards, performs a call to retrieve the events returned by the search.
@@ -1564,11 +1564,12 @@ def poll_offense_events_with_retry(client: Client, search_id: str, offense_id: i
         client (Client): Client to perform the API calls.
         search_id (str): ID of the search to poll for its status.
         offense_id (int): ID of the offense to enrich with events returned by search. Used for logging purposes here.
-        max_retries (int): Number of retries.
+        max_retries (int): Number of retries. The default is 2 minutes under the `DEFAULT_EVENTS_TIMEOUT`:
+                            (X - 2) minutes for polling events and 2 minutes for the rest of the enrichment
 
     Returns:
         (List[Dict], str): List of events returned by query. Returns empty list if number of retries exceeded limit,
-                           A failure message in case an error occured.
+                           A failure message in case an error occurred.
     """
     for retry in range(max_retries):
         print_debug_msg(f'Polling for events for offense {offense_id}. Retry number {retry+1}/{max_retries}')
