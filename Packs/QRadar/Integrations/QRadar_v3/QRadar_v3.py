@@ -15,11 +15,6 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' ADVANCED GLOBAL PARAMETERS '''
-SAMPLE_SIZE = 2  # number of samples to store in integration context
-EVENTS_INTERVAL_SECS = 60  # interval between events polling
-EVENTS_MODIFIED_SECS = 5  # interval between events status polling in modified
-EVENTS_FAILURE_LIMIT = 28  # amount of consecutive failures events fetch will tolerate
-EVENTS_SEARCH_FAILURE_LIMIT = 3  # amount of consecutive failures events search will tolerate
 
 FAILURE_SLEEP = 15  # sleep between consecutive failures events fetch
 FETCH_SLEEP = 60  # sleep between fetches
@@ -34,6 +29,12 @@ MAX_NUMBER_OF_OFFENSES_TO_CHECK_SEARCH = 5  # Number of offenses to check during
 DEFAULT_EVENTS_TIMEOUT = 30  # default timeout for the events enrichment in minutes
 PROFILING_DUMP_ROWS_LIMIT = 20
 MAX_RETRIES_CONTEXT = 5  # max number of retries to update the context
+
+SAMPLE_SIZE = 2  # number of samples to store in integration context
+EVENTS_INTERVAL_SECS = 60  # interval between events polling
+EVENTS_MODIFIED_SECS = 5  # interval between events status polling in modified
+EVENTS_FAILURE_LIMIT = DEFAULT_EVENTS_TIMEOUT - 2  # amount of consecutive failures events fetch will tolerate
+EVENTS_SEARCH_FAILURE_LIMIT = 3  # amount of consecutive failures events search will tolerate
 
 
 ADVANCED_PARAMETERS_STRING_NAMES = [
