@@ -1,0 +1,166 @@
+{
+    "events": [
+        {
+            "timestamp": "2022-05-16T11:37:17Z",
+            "event_category": {
+                ".tag": "members"
+            },
+            "actor": {
+                ".tag": "admin",
+                "admin": {
+                    ".tag": "team_member",
+                    "account_id": "123456",
+                    "display_name": "John Smith",
+                    "email": "JohnSmith@example.com",
+                    "team_member_id": "111111"
+                }
+            },
+            "origin": {
+                "geo_location": {
+                    "city": "Tel Aviv",
+                    "region": "Tel Aviv",
+                    "country": "IL",
+                    "ip_address": "1.1.1.1"
+                },
+                "access_method": {
+                    ".tag": "end_user",
+                    "end_user": {
+                        ".tag": "web",
+                        "session_id": "222222"
+                    }
+                }
+            },
+            "involve_non_team_member": false,
+            "context": {
+                ".tag": "team_member",
+                "account_id": "333333",
+                "display_name": "",
+                "email": "meichler@example.com",
+                "team_member_id": "444444"
+            },
+            "participants": [],
+            "assets": [],
+            "event_type": {
+                ".tag": "member_change_status",
+                "description": "Changed member status (invited, joined, suspended, etc.)"
+            },
+            "details": {
+                ".tag": "member_change_status_details",
+                "previous_value": {
+                    ".tag": "not_joined"
+                },
+                "new_value": {
+                    ".tag": "invited"
+                },
+                "action": {
+                    ".tag": "team_invite_details",
+                    "invite_method": {
+                        ".tag": "member_invite"
+                    }
+                }
+            }
+        },
+        {
+            "timestamp": "2022-05-16T11:37:33Z",
+            "event_category": {
+                ".tag": "members"
+            },
+            "actor": {
+                ".tag": "admin",
+                "admin": {
+                    ".tag": "team_member",
+                    "account_id": "123456",
+                    "display_name": "John Smith",
+                    "email": "JohnSmith@example.com",
+                    "team_member_id": "111111"
+                }
+            },
+            "origin": {
+                "geo_location": {
+                    "city": "Tel Aviv",
+                    "region": "Tel Aviv",
+                    "country": "IL",
+                    "ip_address": "1.1.1.1"
+                },
+                "access_method": {
+                    ".tag": "end_user",
+                    "end_user": {
+                        ".tag": "web",
+                        "session_id": "222222"
+                    }
+                }
+            },
+            "involve_non_team_member": false,
+            "context": {
+                ".tag": "team_member",
+                "account_id": "333333",
+                "display_name": "",
+                "email": "meichler@example.com",
+                "team_member_id": "444444"
+            },
+            "participants": [],
+            "assets": [],
+            "event_type": {
+                ".tag": "member_change_admin_role",
+                "description": "Changed team member admin role"
+            },
+            "details": {
+                ".tag": "member_change_admin_role_details",
+                "new_value": {
+                    ".tag": "team_admin"
+                },
+                "previous_value": {
+                    ".tag": "member_only"
+                }
+            }
+        },
+        {
+            "timestamp": "2022-05-16T11:48:28Z",
+            "event_category": {
+                ".tag": "apps"
+            },
+            "actor": {
+                ".tag": "admin",
+                "admin": {
+                    ".tag": "team_member",
+                    "account_id": "123456",
+                    "display_name": "John Smith",
+                    "email": "JohnSmith@example.com",
+                    "team_member_id": "111111"
+                }
+            },
+            "origin": {
+                "geo_location": {
+                    "city": "Tel Aviv",
+                    "region": "Tel Aviv",
+                    "country": "IL",
+                    "ip_address": "1.1.1.1"
+                },
+                "access_method": {
+                    ".tag": "api",
+                    "request_id": "444444"
+                }
+            },
+            "involve_non_team_member": false,
+            "context": {
+                ".tag": "team"
+            },
+            "participants": [],
+            "assets": [],
+            "event_type": {
+                ".tag": "app_link_team",
+                "description": "Linked app for team"
+            },
+            "details": {
+                ".tag": "app_link_team_details",
+                "app_info": {
+                    ".tag": "team_linked_app",
+                    "app_id": "555555",
+                    "display_name": "XSIAM"
+                }
+            }
+        }
+    ],
+    "cursor": "789012",
+    "has_more": false
+}
