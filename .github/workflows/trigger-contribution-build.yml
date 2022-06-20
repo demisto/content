@@ -28,5 +28,5 @@ jobs:
           PASSWORD: ${{ secrets.TRIGGER_BUILD_PASSWORD }}
         run: |
           echo "Trigger contribution build for PR: $PR_NUMBER with base branch: $BASE_BRANCH contrib branch: $CONTRIB_BRANCH"
-          echo ls -la ./Utils/github_workflow_scripts/
+          ls -la ./Utils/github_workflow_scripts/
           poetry run ./Utils/github_workflow_scripts/trigger_contribution_build.py --pr_number $PR_NUMBER --base_branch $BASE_BRANCH --contrib_branch $CONTRIB_BRANCH --username $USERNAME --password $PASSWORD
