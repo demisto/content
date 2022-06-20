@@ -277,20 +277,20 @@ def main():
     except GDetectError as e:
         resp = client.gclient.response
         if isinstance(resp.error, BadAuthenticationToken):
-            error=f'Given token has bad format: {resp.message}'
+            error = f'Given token has bad format: {resp.message}'
         elif isinstance(resp.error, NoAuthenticateToken):
-            error=f'No token to authentication exists: {resp.message}'
+            error = f'No token to authentication exists: {resp.message}'
         elif isinstance(resp.error, NoURL):
-            error=f'No URL to API found: {resp.message}'
+            error = f'No URL to API found: {resp.message}'
         elif isinstance(resp.error, UnauthorizedAccess):
-            error=f'Access to API is unauthorized: {resp.message}'
+            error = f'Access to API is unauthorized: {resp.message}'
         elif isinstance(resp.error, BadUUID):
-            error=f'Given UUID is wrong: {resp.message}'
+            error = f'Given UUID is wrong: {resp.message}'
         else:
-            error=f'GDetectError: {str(e)}'
+            error = f'GDetectError: {str(e)}'
     except Exception as e:
-        error=f'Failed to execute {command} command. Error: {str(e)}'
-    if error != None:
+        error = f'Failed to execute {command} command. Error: {str(e)}'
+    if error is None:
         return_error(error)
 
 
