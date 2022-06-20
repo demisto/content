@@ -23,7 +23,8 @@ siem_event_handler = MimecastGetSiemEvents(client, mimecast_options)
 audit_event_handler = MimecastGetAuditEvents(client, mimecast_options)
 
 
-def test_handle_last_run_entrance():
+def test_handle_last_run_entrance(mocker):
+    mocker.patch.object(demisto, 'getLastRun', return_value={})
     local_siem_event_handler = MimecastGetSiemEvents(client, mimecast_options)
     assert audit_event_handler.start_time == ''
     handle_last_run_entrance('7 days', audit_event_handler, local_siem_event_handler)
