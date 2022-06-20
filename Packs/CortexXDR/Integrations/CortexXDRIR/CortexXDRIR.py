@@ -1003,7 +1003,7 @@ def get_contributing_event_command(client: Client, args: Dict) -> CommandResults
                 limit = max(arg_to_number(args.get('limit', 0)), 0) or offset + page_size
 
                 alert_with_events = {
-                    'alert id': alert_id,
+                    'alert_id': alert_id,
                     'events': alert.get('events', [])[offset:limit],
                 }
                 alerts.append(alert_with_events)
@@ -1014,7 +1014,7 @@ def get_contributing_event_command(client: Client, args: Dict) -> CommandResults
         return CommandResults(
             readable_output=readable_output,
             outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ContributingEvent',
-            outputs_key_field='alert id',
+            outputs_key_field='alert_id',
             outputs=alerts,
             raw_response=alerts
         )
