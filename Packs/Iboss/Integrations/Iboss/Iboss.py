@@ -500,7 +500,7 @@ def test_module(client: Client) -> str:
         return client.auth()
     except Exception as e:
         if any(x in str(e) for x in ["401", "Forbidden", "Authorization"]) or getattr(e.res, "status_code",
-                                                                                      0) == 401:  # TODO: make sure you capture authentication errors
+                                                                                      0) == 401:
             return 'Authorization Error: make sure username and password are correctly set'
         else:
             raise (e)
@@ -640,14 +640,20 @@ def test_module(client: Client) -> str:
             prefix="iboss", output_type=int),
     ]
 )
+
+
 def ip_lookup(client: Client, args: Dict[str, Any]) -> [CommandResults]:
     """Looks up reputation data for IP addresses"""
+    # TODO use get_ip
+    ips = _get_validate_argument("ip", args, validator=lambda x: x and len(x) > 0, message="value is not specified")
 
-    ips = _get_validate_argument(
-        "ip", args, validator=lambda x: x and len(x) > 0, message="value is not specified")
+    ips = argToList(ips)
+    for ip in ips:
+        if not is_ip_valid(ip):
+            raise ValueError(f"ip ({ip}) - Is not valid IP")
 
     command_results = []
-    for ip in argToList(ips):
+    for ip in ips:
         command_results.append(_iboss_entity_lookup(client, ip, "IP", "Address"))
 
     return command_results
