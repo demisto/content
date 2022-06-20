@@ -6,8 +6,8 @@ from CommonServerPython import *  # noqa: F401
 
 def mapper_command(args: Dict[str, Any]) -> CommandResults:
     format = str(args.get('format', '{1}-{2}'))
-    list1 = args.get('list1', [])
-    list2 = args.get('list2', [])
+    list1 = argToList(args.get('list1', []))
+    list2 = argToList(args.get('list2', []))
     if isinstance(list1, str):
         list1 = [list1]
     if isinstance(list2, str):
