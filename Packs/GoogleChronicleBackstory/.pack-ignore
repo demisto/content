@@ -61,3 +61,6 @@ ignore=PB114
 
 [file:GoogleChronicleBackstory_image.png]
 ignore=IM111
+
+[file:classifier-Chronicle.json]
+ignore=BA101
