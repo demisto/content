@@ -1,4 +1,4 @@
-This playbook is responsible for alert data enrichment and response.
+This playbook is responsible for ransomware alert data enrichment and response.
 The playbook executes the following:
 
 1.Checks if the initiator is a remote attacker and allows isolating the remote host, if possible.
