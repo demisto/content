@@ -3,16 +3,4 @@ id: jamf_modeling_rule
 fromversion: 6.8.0
 tags: jamf
 rules: ''
-schema: |-
-  {
-    "jamf_pro_raw": {
-      "event": {
-        "type": "string",
-        "is_array": false
-      },
-      "webhook": {
-        "type": "string",
-        "is_array": false
-      }
-    }
-  }
+schema: ''
