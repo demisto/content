@@ -836,7 +836,7 @@ tasks:
     task:
       id: 1a61ccc8-5920-43d6-80da-7325d4551d4d
       version: -1
-      name: Manual containment of the remote attcker
+      name: Manual containment of the remote attacker
       description: A manual containment is needed for the remote attacker.
       type: regular
       iscommand: false
