@@ -1,0 +1,23 @@
+{
+    "name": "Wordpress",
+    "description": "The WordPress REST API provides an interface for applications to interact with your WordPress site by sending and receiving data as JSON (JavaScript Object Notation) objects. It is the foundation of the WordPress Block Editor, and can likewise enable your theme, plugin or custom application to present new, powerful interfaces for managing and publishing your site content",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Adam Burt",
+    "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
+    "email": "",
+    "categories": [
+        "IT Services"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "devEmail": [
+        "aburt@paloaltonetworks.com"
+    ],
+    "githubUser": []
+}

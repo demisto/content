@@ -1,0 +1,914 @@
+category: IT Services
+commonfields:
+  id: Wordpress
+  version: -1
+configuration:
+- defaultvalue: https://example.com/
+  display: Your server URL
+  name: url
+  required: true
+  type: 0
+- displaypassword: User
+  additionalinfo: Username
+  name: username
+  required: true
+  type: 0
+- displaypassword: Application Password
+  additionalinfo: The Application Password to use for connection
+  name: app_password
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: 'The WordPress REST API provides an interface for applications to interact with your WordPress site by sending and receiving data as JSON (JavaScript Object Notation) objects. It is the foundation of the WordPress Block Editor, and can likewise enable your theme, plugin or custom application to present new, powerful interfaces for managing and publishing your site content.'
+display: Wordpress
+name: Wordpress
+script:
+  commands:
+  - name: wordpress-list-posts
+    arguments:
+    - auto: PREDEFINED
+      defaultValue: "view"
+      description: 'Scope under which the request is made; determines fields present in response (default is view).'
+      isArray: false
+      name: context
+      required: false
+      secret: false
+      predefined:
+      - "view"
+      - "edit"
+      - "embed"
+    - description: 'Current page of the collection (defaults is 1).'
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - description: 'Maximum number of items to be returned in result set (default is 10).'
+      isArray: false
+      name: per_page
+      required: false
+      secret: false
+    - description: 'Limit results to those matching a string.'
+      isArray: false
+      name: search
+      required: false
+      secret: false
+    - description: 'Limit response to posts published after a given ISO8601 compliant date.'
+      isArray: false
+      name: after
+      required: false
+      secret: false
+    - description: 'Limit result set to posts assigned to specific authors.'
+      isArray: false
+      name: author
+      required: false
+      secret: false
+    - description: 'Ensure result set excludes posts assigned to specific authors.'
+      isArray: false
+      name: author_exclude
+      required: false
+      secret: false
+    - description: 'Limit response to posts published before a given ISO8601 compliant date.'
+      isArray: false
+      name: before
+      required: false
+      secret: false
+    - description: 'Ensure result set excludes specific IDs.'
+      isArray: false
+      name: exclude
+      required: false
+      secret: false
+    - description: 'Limit result set to specific IDs.'
+      isArray: false
+      name: include
+      required: false
+      secret: false
+    - description: 'Offset the result set by a specific number of items.'
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      defaultValue: "desc"
+      description: 'Order sort attribute ascending or descending (default is desc).'
+      isArray: false
+      name: order
+      predefined:
+      - "desc"
+      - "asc"
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      defaultValue: "date"
+      description: 'Sort collection by object attribute (default is date).'
+      isArray: false
+      name: orderby
+      predefined:
+      - "author"
+      - "date"
+      - "id"
+      - "include"
+      - "modified"
+      - "parent"
+      - "relevance"
+      - "slug"
+      - "include_slugs"
+      - "title"
+      required: false
+      secret: false
+    - description: 'Limit result set to posts with one or more specific slugs.'
+      isArray: false
+      name: slug
+      required: false
+      secret: false
+    - defaultValue: "publish"
+      description: 'Limit result set to posts assigned one or more statuses (default is publish).'
+      isArray: false
+      name: status
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      description: 'Limit result set based on relationship between multiple taxonomies.'
+      isArray: false
+      name: tax_relation
+      predefined:
+      - "AND"
+      - "OR"
+      required: false
+      secret: false
+    - description: 'Limit result set to all items that have the specified term assigned in the categories taxonomy.'
+      isArray: false
+      name: categories
+      required: false
+      secret: false
+    - description: 'Limit result set to all items except those that have the specified term assigned in the categories taxonomy.'
+      isArray: false
+      name: categories_exclude
+      required: false
+      secret: false
+    - description: 'Limit result set to all items that have the specified term assigned in the tags taxonomy.'
+      isArray: false
+      name: tags
+      required: false
+      secret: false
+    - description: 'Limit result set to all items except those that have the specified term assigned in the tags taxonomy.'
+      isArray: false
+      name: tags_exclude
+      required: false
+      secret: false
+    - description: 'Limit result set to items that are sticky.'
+      isArray: false
+      name: sticky
+      required: false
+      secret: false
+    deprecated: false
+    description: 'Lists all posts'
+    execution: false
+    outputs:
+    - contextPath: Wordpress.Posts.excerpt.protected
+      description: 'Exerpt protected'
+      type: Boolean
+    - contextPath: Wordpress.Posts.excerpt.rendered
+      description: 'Exerpt rendered'
+      type: String
+    - contextPath: Wordpress.Posts.meta
+      description: 'Metadata'
+      type: Unknown
+    - contextPath: Wordpress.Posts.sticky
+      description: 'Sticky'
+      type: Boolean
+    - contextPath: Wordpress.Posts.guid.rendered
+      description: 'GUID rendered'
+      type: String
+    - contextPath: Wordpress.Posts.modified
+      description: 'Modified'
+      type: String
+    - contextPath: Wordpress.Posts.author
+      description: 'Author'
+      type: String
+    - contextPath: Wordpress.Posts.slug
+      description: 'Slug'
+      type: String
+    - contextPath: Wordpress.Posts.date
+      description: 'Date'
+      type: String
+    - contextPath: Wordpress.Posts.comment_status
+      description: 'Comment status'
+      type: String
+    - contextPath: Wordpress.Posts.status
+      description: 'Status'
+      type: String
+    - contextPath: Wordpress.Posts.featured_media
+      description: 'Featured media'
+      type: Number
+    - contextPath: Wordpress.Posts.format
+      description: 'Format'
+      type: String
+    - contextPath: Wordpress.Posts.modified_gmt
+      description: 'Modified GMT'
+      type: String
+    - contextPath: Wordpress.Posts.title.rendered
+      description: 'Title rendered'
+      type: String
+    - contextPath: Wordpress.Posts.tags
+      description: 'Tags'
+      type: List
+    - contextPath: Wordpress.Posts.content.protected
+      description: 'Content protected'
+      type: Boolean
+    - contextPath: Wordpress.Posts.content.rendered
+      description: 'Content rendered'
+      type: String
+    - contextPath: Wordpress.Posts.template
+      description: 'Template'
+      type: String
+    - contextPath: Wordpress.Posts._links
+      description: 'Links'
+      type: Unknown
+    - contextPath: Wordpress.Posts.type
+      description: 'Type'
+      type: String
+    - contextPath: Wordpress.Posts.link
+      description: 'Link'
+      type: String
+    - contextPath: Wordpress.Posts.id
+      description: 'ID'
+      type: String
+    - contextPath: Wordpress.Posts.categories
+      description: 'Categories'
+      type: List
+    - contextPath: Wordpress.Posts.date_gmt
+      description: 'Date GMT'
+      type: String
+    - contextPath: Wordpress.Posts.ping_status
+      description: 'Ping status'
+      type: String    
+  - name: wordpress-get-post
+    arguments:
+    - default: false
+      description: 'Unique identifier for the object.'
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      defaultValue: "view"
+      description: 'Scope under which the request is made; determines fields present in response (default is view).'
+      isArray: false
+      name: context
+      required: false
+      secret: false
+      predefined:
+      - "view"
+      - "edit"
+      - "embed"
+    - default: false
+      description: 'The password for the post if it is password protected.'
+      isArray: false
+      name: password
+      required: false
+      secret: false
+    deprecated: false
+    description: 'Retrieve a specific post record.'
+    execution: false
+    outputs:
+    - contextPath: Wordpress.Posts.excerpt.protected
+      description: 'Exerpt protected'
+      type: Boolean
+    - contextPath: Wordpress.Posts.excerpt.rendered
+      description: 'Exerpt rendered'
+      type: String
+    - contextPath: Wordpress.Posts.meta
+      description: 'Metadata'
+      type: Unknown
+    - contextPath: Wordpress.Posts.sticky
+      description: 'Sticky'
+      type: Boolean
+    - contextPath: Wordpress.Posts.guid.rendered
+      description: 'GUID rendered'
+      type: String
+    - contextPath: Wordpress.Posts.modified
+      description: 'Modified'
+      type: String
+    - contextPath: Wordpress.Posts.author
+      description: 'Author'
+      type: String
+    - contextPath: Wordpress.Posts.slug
+      description: 'Slug'
+      type: String
+    - contextPath: Wordpress.Posts.date
+      description: 'Date'
+      type: String
+    - contextPath: Wordpress.Posts.comment_status
+      description: 'Comment status'
+      type: String
+    - contextPath: Wordpress.Posts.status
+      description: 'Status'
+      type: String
+    - contextPath: Wordpress.Posts.featured_media
+      description: 'Featured media'
+      type: Number
+    - contextPath: Wordpress.Posts.format
+      description: 'Format'
+      type: String
+    - contextPath: Wordpress.Posts.modified_gmt
+      description: 'Modified GMT'
+      type: String
+    - contextPath: Wordpress.Posts.title.rendered
+      description: 'Title rendered'
+      type: String
+    - contextPath: Wordpress.Posts.tags
+      description: 'Tags'
+      type: List
+    - contextPath: Wordpress.Posts.content.protected
+      description: 'Content protected'
+      type: Boolean
+    - contextPath: Wordpress.Posts.content.rendered
+      description: 'Content rendered'
+      type: String
+    - contextPath: Wordpress.Posts.template
+      description: 'Template'
+      type: String
+    - contextPath: Wordpress.Posts._links
+      description: 'Links'
+      type: Unknown
+    - contextPath: Wordpress.Posts.type
+      description: 'Type'
+      type: String
+    - contextPath: Wordpress.Posts.link
+      description: 'Link'
+      type: String
+    - contextPath: Wordpress.Posts.id
+      description: 'ID'
+      type: String
+    - contextPath: Wordpress.Posts.categories
+      description: 'Categories'
+      type: List
+    - contextPath: Wordpress.Posts.date_gmt
+      description: 'Date GMT'
+      type: String
+    - contextPath: Wordpress.Posts.ping_status
+      description: 'Ping status'
+      type: String
+  - name: wordpress-url-request
+    arguments:
+    - auto: PREDEFINED
+      defaultValue: "get"
+      description: 'Method'
+      isArray: false
+      name: method
+      predefined:
+      - "get"
+      - "post"
+      - "put"
+      - "delete"
+      - "patch"
+      required: true
+      secret: false
+    - description: 'URL suffix to append to the base URL'
+      isArray: false
+      name: url
+      required: true
+      secret: false
+    - description: 'Body data (JSON)'
+      isArray: false
+      name: body
+      required: false
+      secret: false
+    - description: 'Parameters'
+      isArray: false
+      name: params
+      required: false
+      secret: false
+    deprecated: false
+    description: 'Get information from a custom URL'
+    execution: false
+    outputs:
+    - contextPath: Wordpress.URL
+      description: 'URL output data'
+      type: Unknown
+  - name: wordpress-create-post
+    arguments:
+    - auto: PREDEFINED
+      defaultValue: "draft"
+      description: 'A named status for the object (default is draft).'
+      isArray: false
+      name: status
+      predefined:
+      - "publish"
+      - "future"
+      - "draft"
+      - "pending"
+      - "private"
+      required: true
+      secret: false
+    - description: 'An alphanumeric identifier for the object unique to its type.'
+      isArray: false
+      name: slug
+      required: false
+      secret: false
+    - description: 'A password to protect access to the content and excerpt.'
+      isArray: false
+      name: password
+      required: false
+      secret: false
+    - description: 'The title for the object.'
+      isArray: false
+      name: title
+      required: true
+      secret: false
+    - description: 'The content for the object.'
+      isArray: false
+      name: content
+      required: true
+      secret: false
+    - description: 'The ID for the author of the object.'
+      isArray: false
+      name: author
+      required: true
+      secret: false
+    - description: 'The excerpt for the object.'
+      isArray: false
+      name: exerpt
+      required: false
+      secret: false
+    - description: 'The ID of the featured media for the object.'
+      isArray: false
+      name: featured_media
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      description: 'Whether or not comments are open on the object.'
+      isArray: false
+      name: comment_status
+      predefined:
+      - "open"
+      - "closed"
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      description: 'Whether or not the object can be pinged.'
+      isArray: false
+      name: ping_status
+      predefined:
+      - "open"
+      - "closed"
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      defaultValue: "standard"
+      description: 'The format for the object (default is standard).'
+      isArray: false
+      name: format
+      predefined:
+      - "standard"
+      - "aside"
+      - "chat"
+      - "gallery"
+      - "link"
+      - "image"
+      - "quote"
+      - "status"
+      - "video"
+      - "audio"
+      required: true
+      secret: false
+    - description: 'Meta fields (JSON dict).'
+      isArray: false
+      name: meta
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: 'Whether or not the object should be treated as sticky (default is false).'
+      isArray: false
+      name: sticky
+      predefined:
+      - "true"
+      - "false"
+      required: false
+      secret: false
+    - description: 'The theme file to use to display the object.'
+      isArray: false
+      name: template
+      required: false
+      secret: false
+    - description: 'The terms assigned to the object in the category taxonomy (CSV of IDs).'
+      isArray: false
+      name: categories
+      required: false
+      secret: false
+    - description: 'The terms assigned to the object in the post_tag taxonomy (CSV).'
+      isArray: false
+      name: tags
+      required: false
+      secret: false
+    deprecated: false
+    description: 'Create a post'
+    execution: false
+    outputs:
+    - contextPath: Wordpress.Posts.excerpt.protected
+      description: 'Exerpt protected'
+      type: Boolean
+    - contextPath: Wordpress.Posts.excerpt.rendered
+      description: 'Exerpt rendered'
+      type: String
+    - contextPath: Wordpress.Posts.meta
+      description: 'Metadata'
+      type: Unknown
+    - contextPath: Wordpress.Posts.sticky
+      description: 'Sticky'
+      type: Boolean
+    - contextPath: Wordpress.Posts.guid.rendered
+      description: 'GUID rendered'
+      type: String
+    - contextPath: Wordpress.Posts.modified
+      description: 'Modified'
+      type: String
+    - contextPath: Wordpress.Posts.author
+      description: 'Author'
+      type: String
+    - contextPath: Wordpress.Posts.slug
+      description: 'Slug'
+      type: String
+    - contextPath: Wordpress.Posts.date
+      description: 'Date'
+      type: String
+    - contextPath: Wordpress.Posts.comment_status
+      description: 'Comment status'
+      type: String
+    - contextPath: Wordpress.Posts.status
+      description: 'Status'
+      type: String
+    - contextPath: Wordpress.Posts.featured_media
+      description: 'Featured media'
+      type: Number
+    - contextPath: Wordpress.Posts.format
+      description: 'Format'
+      type: String
+    - contextPath: Wordpress.Posts.modified_gmt
+      description: 'Modified GMT'
+      type: String
+    - contextPath: Wordpress.Posts.title.rendered
+      description: 'Title rendered'
+      type: String
+    - contextPath: Wordpress.Posts.tags
+      description: 'Tags'
+      type: List
+    - contextPath: Wordpress.Posts.content.protected
+      description: 'Content protected'
+      type: Boolean
+    - contextPath: Wordpress.Posts.content.rendered
+      description: 'Content rendered'
+      type: String
+    - contextPath: Wordpress.Posts.template
+      description: 'Template'
+      type: String
+    - contextPath: Wordpress.Posts._links
+      description: 'Links'
+      type: Unknown
+    - contextPath: Wordpress.Posts.type
+      description: 'Type'
+      type: String
+    - contextPath: Wordpress.Posts.link
+      description: 'Link'
+      type: String
+    - contextPath: Wordpress.Posts.id
+      description: 'ID'
+      type: String
+    - contextPath: Wordpress.Posts.categories
+      description: 'Categories'
+      type: List
+    - contextPath: Wordpress.Posts.date_gmt
+      description: 'Date GMT'
+      type: String
+    - contextPath: Wordpress.Posts.ping_status
+      description: 'Ping status'
+      type: String
+  - name: wordpress-update-post
+    arguments:
+    - description: 'Post ID'
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - description: 'The date the object was published, in the sites timezone.'
+      isArray: false
+      name: date
+      required: false
+      secret: false
+    - description: 'The date the object was published, as GMT.'
+      isArray: false
+      name: date_gmt
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      defaultValue: "draft"
+      description: 'A named status for the object (default is draft).'
+      isArray: false
+      name: status
+      predefined:
+      - "publish"
+      - "future"
+      - "draft"
+      - "pending"
+      - "private"
+      required: false
+      secret: false
+    - description: 'An alphanumeric identifier for the object unique to its type.'
+      isArray: false
+      name: slug
+      required: false
+      secret: false
+    - description: 'A password to protect access to the content and excerpt.'
+      isArray: false
+      name: password
+      required: false
+      secret: false
+    - description: 'The title for the object.'
+      isArray: false
+      name: title
+      required: false
+      secret: false
+    - description: 'The content for the object.'
+      isArray: false
+      name: content
+      required: false
+      secret: false
+    - description: 'The ID for the author of the object.'
+      isArray: false
+      name: author
+      required: false
+      secret: false
+    - description: 'The excerpt for the object.'
+      isArray: false
+      name: exerpt
+      required: false
+      secret: false
+    - description: 'The ID of the featured media for the object.'
+      isArray: false
+      name: featured_media
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      description: 'Whether or not comments are open on the object.'
+      isArray: false
+      name: comment_status
+      predefined:
+      - "open"
+      - "closed"
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      description: 'Whether or not the object can be pinged.'
+      isArray: false
+      name: ping_status
+      predefined:
+      - "open"
+      - "closed"
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      defaultValue: "standard"
+      description: 'The format for the object (default is standard).'
+      isArray: false
+      name: format
+      predefined:
+      - "standard"
+      - "aside"
+      - "chat"
+      - "gallery"
+      - "link"
+      - "image"
+      - "quote"
+      - "status"
+      - "video"
+      - "audio"
+      required: false
+      secret: false
+    - description: 'Meta fields (JSON dict).'
+      isArray: false
+      name: meta
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: 'Whether or not the object should be treated as sticky (default is false).'
+      isArray: false
+      name: sticky
+      predefined:
+      - "true"
+      - "false"
+      required: false
+      secret: false
+    - description: 'The theme file to use to display the object.'
+      isArray: false
+      name: template
+      required: false
+      secret: false
+    - description: 'The terms assigned to the object in the category taxonomy (CSV of IDs).'
+      isArray: false
+      name: categories
+      required: false
+      secret: false
+    - description: 'The terms assigned to the object in the post_tag taxonomy (CSV).'
+      isArray: false
+      name: tags
+      required: false
+      secret: false
+    deprecated: false
+    description: 'Update a post'
+    execution: false
+    outputs:
+    - contextPath: Wordpress.Posts.excerpt.protected
+      description: 'Exerpt protected'
+      type: Boolean
+    - contextPath: Wordpress.Posts.excerpt.rendered
+      description: 'Exerpt rendered'
+      type: String
+    - contextPath: Wordpress.Posts.meta
+      description: 'Metadata'
+      type: Unknown
+    - contextPath: Wordpress.Posts.sticky
+      description: 'Sticky'
+      type: Boolean
+    - contextPath: Wordpress.Posts.guid.rendered
+      description: 'GUID rendered'
+      type: String
+    - contextPath: Wordpress.Posts.modified
+      description: 'Modified'
+      type: String
+    - contextPath: Wordpress.Posts.author
+      description: 'Author'
+      type: String
+    - contextPath: Wordpress.Posts.slug
+      description: 'Slug'
+      type: String
+    - contextPath: Wordpress.Posts.date
+      description: 'Date'
+      type: String
+    - contextPath: Wordpress.Posts.comment_status
+      description: 'Comment status'
+      type: String
+    - contextPath: Wordpress.Posts.status
+      description: 'Status'
+      type: String
+    - contextPath: Wordpress.Posts.featured_media
+      description: 'Featured media'
+      type: Number
+    - contextPath: Wordpress.Posts.format
+      description: 'Format'
+      type: String
+    - contextPath: Wordpress.Posts.modified_gmt
+      description: 'Modified GMT'
+      type: String
+    - contextPath: Wordpress.Posts.title.rendered
+      description: 'Title rendered'
+      type: String
+    - contextPath: Wordpress.Posts.tags
+      description: 'Tags'
+      type: List
+    - contextPath: Wordpress.Posts.content.protected
+      description: 'Content protected'
+      type: Boolean
+    - contextPath: Wordpress.Posts.content.rendered
+      description: 'Content rendered'
+      type: String
+    - contextPath: Wordpress.Posts.template
+      description: 'Template'
+      type: String
+    - contextPath: Wordpress.Posts._links
+      description: 'Links'
+      type: Unknown
+    - contextPath: Wordpress.Posts.type
+      description: 'Type'
+      type: String
+    - contextPath: Wordpress.Posts.link
+      description: 'Link'
+      type: String
+    - contextPath: Wordpress.Posts.id
+      description: 'ID'
+      type: String
+    - contextPath: Wordpress.Posts.categories
+      description: 'Categories'
+      type: List
+    - contextPath: Wordpress.Posts.date_gmt
+      description: 'Date GMT'
+      type: String
+    - contextPath: Wordpress.Posts.ping_status
+      description: 'Ping status'
+      type: String
+  - name: wordpress-delete-post
+    arguments:
+    - description: 'Post ID'
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: 'Whether to bypass Trash and force deletion (default is false).'
+      isArray: false
+      name: force
+      predefined:
+      - "true"
+      - "false"
+      required: false
+      secret: false
+    deprecated: false
+    description: 'Delete a post'
+    execution: false
+    outputs:
+    - contextPath: Wordpress.Posts.excerpt.protected
+      description: 'Exerpt protected'
+      type: Boolean
+    - contextPath: Wordpress.Posts.excerpt.rendered
+      description: 'Exerpt rendered'
+      type: String
+    - contextPath: Wordpress.Posts.meta
+      description: 'Metadata'
+      type: Unknown
+    - contextPath: Wordpress.Posts.sticky
+      description: 'Sticky'
+      type: Boolean
+    - contextPath: Wordpress.Posts.guid.rendered
+      description: 'GUID rendered'
+      type: String
+    - contextPath: Wordpress.Posts.modified
+      description: 'Modified'
+      type: String
+    - contextPath: Wordpress.Posts.author
+      description: 'Author'
+      type: String
+    - contextPath: Wordpress.Posts.slug
+      description: 'Slug'
+      type: String
+    - contextPath: Wordpress.Posts.date
+      description: 'Date'
+      type: String
+    - contextPath: Wordpress.Posts.comment_status
+      description: 'Comment status'
+      type: String
+    - contextPath: Wordpress.Posts.status
+      description: 'Status'
+      type: String
+    - contextPath: Wordpress.Posts.featured_media
+      description: 'Featured media'
+      type: Number
+    - contextPath: Wordpress.Posts.format
+      description: 'Format'
+      type: String
+    - contextPath: Wordpress.Posts.modified_gmt
+      description: 'Modified GMT'
+      type: String
+    - contextPath: Wordpress.Posts.title.rendered
+      description: 'Title rendered'
+      type: String
+    - contextPath: Wordpress.Posts.tags
+      description: 'Tags'
+      type: List
+    - contextPath: Wordpress.Posts.content.protected
+      description: 'Content protected'
+      type: Boolean
+    - contextPath: Wordpress.Posts.content.rendered
+      description: 'Content rendered'
+      type: String
+    - contextPath: Wordpress.Posts.template
+      description: 'Template'
+      type: String
+    - contextPath: Wordpress.Posts._links
+      description: 'Links'
+      type: Unknown
+    - contextPath: Wordpress.Posts.type
+      description: 'Type'
+      type: String
+    - contextPath: Wordpress.Posts.link
+      description: 'Link'
+      type: String
+    - contextPath: Wordpress.Posts.id
+      description: 'ID'
+      type: String
+    - contextPath: Wordpress.Posts.categories
+      description: 'Categories'
+      type: List
+    - contextPath: Wordpress.Posts.date_gmt
+      description: 'Date GMT'
+      type: String
+    - contextPath: Wordpress.Posts.ping_status
+      description: 'Ping status'
+      type: String
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.4.30607
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)
