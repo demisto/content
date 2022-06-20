@@ -1351,7 +1351,7 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: Whether to execute the Ransomware Advanced Analysis playbook.
+  description: Whether to execute the Ransomware Advanced Analysis playbook.  Note that advanced analysis contains manual tasks which will stop the playbook's flow until the analysts's response.
   playbookInputQuery:
 - key: ShouldCloseAutomatically
   value:

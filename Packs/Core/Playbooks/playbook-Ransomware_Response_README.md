@@ -92,7 +92,7 @@ This playbook does not use any scripts.
 | AutoEradication | Whether to execute the eradication actions automatically. | True | Optional |
 | isolateRemoteAttacker | Whether to isolate the remote endpoint if the attack has been triggered remotely. | True | Optional |
 | isolateSimilarEndpoints | Whether to isolate the endpoints identified with similar IoCs to the ransomware alert. | True | Optional |
-| RunAdvancedAnalysis | Whether to execute the Ransomware Advanced Analysis playbook. | True | Optional |
+| RunAdvancedAnalysis | Whether to execute the Ransomware Advanced Analysis playbook. Note that advanced analysis contains manual tasks which will stop the playbook's flow until the analysts's response. | True | Optional |
 | ShouldCloseAutomatically | Whether to close the alert automatically. | False | Optional |
 
 ## Playbook Outputs
