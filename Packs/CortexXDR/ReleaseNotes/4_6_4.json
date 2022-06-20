@@ -1,0 +1,1 @@
+{"breakingChanges":true,"breakingChangesNotes":"**Important Note**: Please make sure that you are validating your current integration settings with the following classifier: 'Cortex XDR Incident Handler - Classifier'. Make sure that the classifier is set appropriately within your instance (By choosing it again in the integration settings)."}
