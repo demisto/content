@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: ThreatConnect v2
+  id: ThreatConnect v3
   version: -1
 configuration:
 - defaultvalue: https://api.threatconnect.com
@@ -49,20 +49,24 @@ configuration:
   name: freshness
   required: false
   type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
 description: ThreatConnect's intelligence-driven security operations solution with
   intelligence, automation, analytics, and workflows.
-display: ThreatConnect v2
-name: ThreatConnect v2
+display: ThreatConnect v3
+name: ThreatConnect v3
 script:
   commands:
   - arguments:
     - default: true
-      description: The IPv4 or IPv6 address.
-      name: ip
+      description: A comma-separated list of IPv4 or IPv6 address.
+      name: ips
       required: true
       isArray: false
     - description: A comma-separated list of a client's organizations, sources, or
@@ -137,7 +141,7 @@ script:
       type: string
   - arguments:
     - default: true
-      description: The URL for which to search. For example, "www.demisto.com".
+      description: A comma-separated list of URLs for which to search. For example, "www.demisto.com".
       name: url
       required: true
       isArray: false
@@ -213,8 +217,8 @@ script:
       type: string
   - arguments:
     - default: true
-      description: The hash of the file. Can be "MD5", "SHA-1", or "SHA-256".
-      name: file
+      description: A comma-separated list of the hash of the files. Can be "MD5", "SHA-1", or "SHA-256".
+      name: files
       required: true
       isArray: false
     - description: A comma-separated list of a client's organizations, sources, or
@@ -318,6 +322,8 @@ script:
   - arguments:
     - description: A list of results filtered by the owner of the indicator.
       name: owner
+    - description: The page to take the results from.
+      name: page
     - description: The maximum number of results that can be returned. The default
         is 500.
       name: limit
@@ -1004,8 +1010,8 @@ script:
       type: string
   - arguments:
     - default: true
-      description: The name of the domain.
-      name: domain
+      description: A comma-separated list of names of the domain.
+      name: domains
       required: true
       isArray: false
     - description: A comma-separated list of a client's organizations, sources, or
@@ -1549,6 +1555,7 @@ script:
       - signatures
       - threats
       required: true
+    deprecated: true
     description: Adds an attribute to a specified group.
     name: tc-add-group-attribute
     outputs:
@@ -1737,6 +1744,7 @@ script:
         command.
       name: group_id
       required: true
+    deprecated: true
     description: Associates an indicator with a group.
     name: tc-group-associate-indicator
     outputs:
@@ -1819,6 +1827,7 @@ script:
         command.
       name: group_id
       required: true
+    deprecated: true
     description: Retrieves a single group.
     name: tc-get-group
     outputs:
@@ -2118,6 +2127,7 @@ script:
     - description: The ID of the group to associate.
       name: associated_group_id
       required: true
+    deprecated: true
     description: Associates one group with another group.
     name: tc-associate-group-to-group
     outputs:
@@ -2136,6 +2146,18 @@ script:
   - arguments:
     - description: Indicator Value
       name: indicator
+      required: true
+    - auto: PREDEFINED
+      description: The type of the indicator. Can be "ADDRESSES", "EMAIL_ADDRESSES",
+        "URLS", "HOSTS", "FILES", or "CUSTOM_INDICATORS".
+      name: indicatorType
+      predefined:
+      - addresses
+      - email_addresses
+      - urls
+      - hosts
+      - files
+      - custom_indicators
       required: true
     description: Get Owner for Indicator
     name: tc-get-indicator-owners
@@ -2195,4 +2217,4 @@ script:
   type: python
 fromversion: 5.0.0
 tests:
-- ThreatConnect v2 - Test
+- No tests
