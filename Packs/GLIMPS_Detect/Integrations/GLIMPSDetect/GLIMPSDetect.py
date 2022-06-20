@@ -3,7 +3,7 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 from gdetect.api import status_msg, Client as gClient, logger as gLogger
-from gdetect.exceptions import *
+from gdetect.exceptions import GDetectError, NoAuthenticateToken, NoURL, BadAuthenticationToken, BadUUID, UnauthorizedAccess
 import logging
 ''' IMPORTS '''
 
@@ -263,9 +263,9 @@ def main():
             # This is the call made when pressing the integration Test button.
             res = test_module(client)
             code = client.gclient.response.response.status_code
-            if code != 200 and code != 404:
-                return_error(f'GDetect server error: {code} {status_msg(code)}')
-            return_results(res)
+            if code == 200 or code == 404:
+                return_results(res)
+            error = f'GDetect server error: {code} {status_msg(code)}'
         elif command == 'gdetect-send':
             return_results(gdetect_send_command(client, demisto.args()))
         elif command == 'gdetect-get-all':
@@ -277,19 +277,21 @@ def main():
     except GDetectError as e:
         resp = client.gclient.response
         if isinstance(resp.error, BadAuthenticationToken):
-            return_error(f'Given token has bad format: {resp.message}')
+            error=f'Given token has bad format: {resp.message}'
         elif isinstance(resp.error, NoAuthenticateToken):
-            return_error(f'No token to authentication exists: {resp.message}')
+            error=f'No token to authentication exists: {resp.message}'
         elif isinstance(resp.error, NoURL):
-            return_error(f'No URL to API found: {resp.message}')
+            error=f'No URL to API found: {resp.message}'
         elif isinstance(resp.error, UnauthorizedAccess):
-            return_error(f'Access to API is unauthorized: {resp.message}')
+            error=f'Access to API is unauthorized: {resp.message}'
         elif isinstance(resp.error, BadUUID):
-            return_error(f'Given UUID is wrong: {resp.message}')
+            error=f'Given UUID is wrong: {resp.message}'
         else:
-            return_error(f'GDetectError: {str(e)}')
+            error=f'GDetectError: {str(e)}'
     except Exception as e:
-        return_error(f'Failed to execute {command} command. Error: {str(e)}')
+        error=f'Failed to execute {command} command. Error: {str(e)}'
+    if error != None:
+        return_error(error)
 
 
 # Start Main
