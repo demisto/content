@@ -450,8 +450,10 @@ class Demisto:
 
 
 # if "demisto" not in locals():
-demisto = Demisto(context)  # type:ignore [name-defined] # noqa: F821 # pylint: disable=E0602
-
+try:
+    demisto = Demisto(context)  # type:ignore [name-defined] # noqa: F821 # pylint: disable=E0602
+except NameError:
+    pass
 
 try:
     import __builtin__
