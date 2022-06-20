@@ -4,7 +4,7 @@
     "support": "partner",
     "currentVersion": "1.0.3",
     "author": "Skyformation",
-    "hidden": false,
+    "hidden": true,
     "url": "https://support.skyformation.com/hc/en-us",
     "email": "",
     "created": "2020-04-14T00:00:00Z",
