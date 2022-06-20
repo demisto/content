@@ -4144,14 +4144,14 @@ script:
       secret: false
     - default: false
       defaultValue: '1'
-      description: Page number to retrieve. Default (and minimum) is 1.
+      description: The page number to retrieve. Default (and minimum) is 1.
       isArray: false
       name: page_number
       required: false
       secret: false
     - default: false
       defaultValue: '50'
-      description: Page size. Default is 50.
+      description: The page size. Default is 50.
       isArray: false
       name: page_size
       required: false
@@ -4170,7 +4170,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The filed type that should change
+      description: The filed type to change.
       isArray: false
       name: field_type
       predefined:
@@ -4181,14 +4181,14 @@ script:
       required: true
       secret: false
     - default: false
-      description: String value that defines the new field. Maximum length is 256
+      description: The string value, which defines the new field. Maximum length is 256
         characters.
       isArray: true
       name: values
       required: true
       secret: false
     - default: false
-      description: String that represents additional information regarding the featured
+      description: The string value, which represents additional information regarding the featured
         alert field.
       isArray: false
       name: comments
@@ -4198,7 +4198,7 @@ script:
       default: false
       defaultValue: group
       description: |-
-        String value identifying if you want to replace to an active directory group or organizational unit.
+        The string value to replace an active directory group or organizational unit.
         Valid values are either group or OU.
         If no value is defined, group is sent by default.
       isArray: false
@@ -4209,7 +4209,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Replace the featured hosts\users\ips\active-directory_groups listed
+    description: Replace the featured hosts\users\IP addresses\active directory groups listed
       in your environment.
     execution: false
     name: xdr-replace-featured-field
