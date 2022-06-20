@@ -55,14 +55,15 @@ class Client(BaseClient):
                      link: bool = False,
                      resp_type: str = 'text',
                      headers: Optional[dict] = None,
-                     files: Optional[dict] = None):
+                     files: Optional[dict] = None,
+                     params = None):
         result = self.atlassian_client.http_request(method=method,
                                                     full_url=resource_url if link else urljoin(self.base_url, resource_url),
                                                     data=body,
-                                                    resp_type=resp_type,
                                                     headers=headers,
                                                     verify=self.use_ssl,
-                                                    files=files)
+                                                    files=files,
+                                                    params=params)
         if not result.ok:
             demisto.debug(result.text)
             try:
@@ -99,21 +100,19 @@ def get_custom_field_names(client: Client):
     """
     custom_id_name_mapping = {}
     try:
-        res = requests.request(
-            method='GET',
-            url=urljoin(client.base_url, 'rest/api/latest/field'),
-            headers=client.headers.update({'accept': "application/json"}),
-            verify=client.use_ssl,
-            auth=client.atlassian_client.get_auth(),
-        )
+        custom_fields_list = client.send_request(method='GET', resource_url='rest/api/latest/field',
+                                                 headers={'accept': "application/json"}, resp_type='json')
+        # res = requests.request(
+        #     method='GET',
+        #     url=urljoin(client.base_url, 'rest/api/latest/field'),
+        #     headers=client.headers.update({'accept': "application/json"}),
+        #     verify=client.use_ssl,
+        #     auth=client.atlassian_client.get_auth(),
+        # )
     except Exception as e:
         demisto.error(f'Could not get custom fields because got the next exception: {e}')
     else:
-        if res.ok:
-            custom_fields_list = res.json()
-            custom_id_name_mapping = {field.get('id'): field.get('name') for field in custom_fields_list}
-        else:
-            demisto.error(f'Could not get custom fields. status code: {res.status_code}. reason: {res.reason}')
+        custom_id_name_mapping = {field.get('id'): field.get('name') for field in custom_fields_list}
     finally:
         return custom_id_name_mapping
 
@@ -133,7 +132,6 @@ def run_query(client: Client, query, start_at='', max_results=None, extra_fields
     }
     """
     demisto.debug(f'querying with: {query}')
-    url = urljoin(client.base_url, 'rest/api/latest/search/')
     query_params = {
         'jql': query,
         "startAt": start_at,
@@ -150,20 +148,22 @@ def run_query(client: Client, query, start_at='', max_results=None, extra_fields
         else:
             return_warning(f'{",".join(nofields)} does not exist')
     try:
-        result = requests.get(
-            url=url,
-            headers=client.headers,
-            verify=client.use_ssl,
-            params=query_params,
-            auth=client.atlassian_client.get_auth(),
-        )
+        result = client.send_request(method='GET', resource_url='rest/api/latest/search/',
+                                     params=query_params)
+        # result = requests.get(
+        #     url=url,
+        #     headers=client.headers,
+        #     verify=client.use_ssl,
+        #     params=query_params,
+        #     auth=client.atlassian_client.get_auth(),
+        # )
     except ValueError:
         raise ValueError("Could not deserialize privateKey")
 
     try:
         rj = result.json()
         if rj.get('issues'):
-            return rj
+            return result
 
         errors = ",".join(rj.get("errorMessages", ['could not fetch any issues, please check your query']))
         if 'could not fetch any issues, please check your query' in errors:

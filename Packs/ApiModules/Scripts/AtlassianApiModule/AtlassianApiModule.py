@@ -145,18 +145,18 @@ class AtlassianClient(BaseClient):
         set_integration_context(integration_context)
         return access_token
 
-    def http_request(self, method: str, url: str, resp_type='json', headers=None, *args, **kwargs):
+    def http_request(self, method: str, url: str, headers=None, *args, **kwargs):
         if headers:
             headers.update(self.headers)
         else:
             headers = self.headers
 
         if self.auth:  # basic auth or Oauth 1.0
-            result = requests.request(method=method, url=url, auth=self.auth, headers=headers, *args, **kwargs)
+            return requests.request(method=method, url=url, auth=self.auth, headers=headers, *args, **kwargs)
         else:  # auth code
             access_token = self.access_token or self.get_access_token()
             headers.update({"Authorization": f"Bearer {access_token}", "Accept": "application/json"})
-            result = requests.request(method=method, url=url, headers=headers, *args, **kwargs)
+            return requests.request(method=method, url=url, headers=headers, *args, **kwargs)
 
     def get_token(self, refresh_token: str = ''):
         data = assign_params(
@@ -192,26 +192,3 @@ class AtlassianClient(BaseClient):
 
     def get_headers(self):
         return self.headers
-
-    # def http_request(self, method, full_url=None, headers=None, verify=False,
-    #                  params=None, data=None, files=None):
-    #     if headers:
-    #         headers.update(self.headers)
-    #     else:
-    #         headers = self.headers
-    #
-    #     try:
-    #         result = requests.request(
-    #             method=method,
-    #             url=full_url,
-    #             data=data,
-    #             auth=self.auth,
-    #             headers=headers,
-    #             verify=verify,
-    #             files=files,
-    #             params=params
-    #         )
-    #     except ValueError:
-    #         raise ValueError("Could not deserialize privateKey")
-    #
-    #     return result
