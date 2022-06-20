@@ -1540,7 +1540,9 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
     events_fetched = sum(int(event.get('eventcount', 1)) for event in events)
     print_debug_msg(f'Events fetched for offense {offense_id}: {events_fetched}/{events_count}.')
     offense['events_fetched'] = events_fetched
-    if not events:
+    if events:
+        offense['events'] = events
+    else:
         print_debug_msg(f'No events were fetched for offense {offense_id}'
                         'Adding to mirroring queue to be queried again.')
         context_data[MIRRORED_OFFENSES_QUERIED_CTX_KEY][offense_id] = search_id
