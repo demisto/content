@@ -53,6 +53,7 @@ Converts the contents of a URL to an image file or a PDF file.
 | type | The file type to which to convert the contents of the URL. Can be "pdf" or "png". Default is "png". | Optional | 
 | file_name | The name the file will be saved as. Default is "url". | Optional |
 | full_screen | Get the full page. The actual page width and height will be auto calculated up to a max value of 8000px. (Marking full_screen as true means that the values for width and height arguments might not be respected). | Optional | 
+| mode | Rasterize mode to use (WebDriver or Headless CLI). If not specified, will use according to the integration instance settings. | Optional |
 
 
 #### Context Output
@@ -99,6 +100,7 @@ Converts the body of an email to an image file or a PDF file.
 | offline | If "true", will block all outgoing communication. | Optional | 
 | file_name | The name the file will be saved as. Default is "email". | Optional |
 | full_screen | Get the full page. The actual page width and height will be auto calculated up to a max value of 8000px. (Marking full_screen as true means that the values for width and height arguments might not be respected). | Optional | 
+| mode | Rasterize mode to use (WebDriver or Headless CLI). If not specified, will use according to the integration instance settings. | Optional |
 
 
 #### Context Output
