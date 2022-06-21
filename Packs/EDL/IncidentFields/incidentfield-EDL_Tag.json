@@ -1,0 +1,33 @@
+{
+    "id": "incident_genericexportindicatorsservicetag",
+    "version": -1,
+    "modified": "2022-03-23T23:48:29.730780579-03:00",
+    "name": "Generic Export Indicators Service Tag",
+    "ownerOnly": false,
+    "placeholder": "Tag that adds indicators to EDL",
+    "description": "Tag that adds indicators to EDL. Must match tag value used in EDL query in the instance configuration.",
+    "cliName": "genericexportindicatorsservicetag",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "EDL Change"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.6.0"
+}
