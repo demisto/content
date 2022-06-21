@@ -35,3 +35,6 @@ ignore=IF100
 
 [file:incidentfield-Number_Of_Fetched_Events.json]
 ignore=IF100
+
+[file:classifier-QRadar.json]
+ignore=BA101
