@@ -5311,7 +5311,8 @@
         "RedLockTest": "Issue 24600",
         "SymantecEndpointProtection_Test": "Issue 30157",
         "RSANetWitnessv115-Test": "Issue XDRSUP-12553",
-        "TestCloudflareWAFPlaybook": "No instance"
+        "TestCloudflareWAFPlaybook": "No instance",
+        "RasterizeImageTest": "GenerateImageFileEntry script is missing"
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
