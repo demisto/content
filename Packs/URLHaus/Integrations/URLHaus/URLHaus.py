@@ -227,7 +227,7 @@ def url_create_tags(urlhaus_data: dict) -> List[str]:
 
 def url_create_payloads(url_information: dict) -> List[dict]:
     """
-        Returns a list of payloads.
+        Returns a list of payloads  .
 
         Args:
             url_information (dict): The data retrieved from URLHaus db.
