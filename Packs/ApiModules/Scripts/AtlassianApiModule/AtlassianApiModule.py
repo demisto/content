@@ -1,6 +1,4 @@
 from CommonServerPython import *
-from CommonServerUserPython import *
-from typing import Tuple
 from requests_oauthlib import OAuth1
 
 REFRESH_TOKEN = 'refresh_token'  # guardrails-disable-line
@@ -15,7 +13,7 @@ class AtlassianClient(BaseClient):
     def __init__(self, access_token: str = '', api_token: str = '', username: str = '',
                  password: str = '', consumer_key: str = '', private_key: str = '', headers: dict = {},
                  client_id: str = '', client_secret: str = '',
-                 auth_code: str = '', redirect_uri: str = '', verify: bool = True,  *args, **kwargs):
+                 auth_code: str = '', redirect_uri: str = '', verify: bool = True, *args, **kwargs):
         """
         Atlassian Client class. It can use either basic authorization with username and password,OAuth1 or Oauth2.
         Args:
@@ -31,8 +29,9 @@ class AtlassianClient(BaseClient):
             - use_oauth: a flag indicating whether the user wants to use OAuth 2.0 or basic authorization.
         """
         # todo: add inn documentation offline_access to the scope to get refresh token in the first step
-        super().__init__(verify=verify, *args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.auth = None
+        self.access_token = None
         self.verify = verify
         if username and (api_token or password):
             self.grant_type = BASIC_AUTH
@@ -65,33 +64,6 @@ class AtlassianClient(BaseClient):
                 '- Personal Access Token requires AccessToken'
                 '- authorization code requires Client ID, Client Secret, authentication code and redirect uri'
             )
-        # self.auth = None
-        # self.access_token = access_token
-        # is_oauth1 = consumer_key and access_token and private_key
-        #
-        # if username and (password or api_token):  # basic authentication
-        #     self.auth = username, (api_token or password)
-        #
-        # elif is_oauth1:  # oauth
-        #     headers.update({'X-Atlassian-Token': 'nocheck'})
-        #     self.auth = OAuth1(
-        #         client_key=consumer_key,
-        #         rsa_key=private_key,
-        #         signature_method='RSA-SHA1',
-        #         resource_owner_key=access_token,
-        #     )
-        #
-        # elif access_token and not is_oauth1:  # bearer
-        #     # Personal Access Token Authentication
-        #     # HEADERS.update({'Authorization': f'Bearer {access_token}'})
-        #     headers.update({'Authorization': f'Bearer {access_token}'})
-        # else:
-        #     return_error(
-        #         'Please provide the required Authorization information:'
-        #         '- Basic Authentication requires user name and password or API token'
-        #         '- OAuth 1.0 requires ConsumerKey, AccessToken and PrivateKey'
-        #         '- Personal Access Tokens requires AccessToken'
-        #     )
         self.headers = headers
 
     @staticmethod
@@ -144,18 +116,18 @@ class AtlassianClient(BaseClient):
         set_integration_context(integration_context)
         return access_token
 
-    def http_request(self, method: str, full_url: str, headers=None, *args, **kwargs):
+    def http_request(self, headers=None, *args, **kwargs):
         if headers:
             headers.update(self.headers)
         else:
             headers = self.headers
 
         if self.auth:  # basic auth or Oauth 1.0
-            return requests.request(method=method, url=full_url, auth=self.auth, headers=headers, *args, **kwargs)
+            return requests.request(auth=self.auth, headers=headers, *args, **kwargs)
         else:  # auth code
             access_token = self.access_token or self.get_access_token()
             headers.update({"Authorization": f"Bearer {access_token}", "Accept": "application/json"})
-            return requests.request(method=method, url=full_url, headers=headers, *args, **kwargs)
+            return requests.request(headers=headers, *args, **kwargs)
 
     def get_token(self, refresh_token: str = ''):
         data = assign_params(
