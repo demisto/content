@@ -6,7 +6,11 @@ import copy
 
 REPUTATION_RESPONSE_UNREACHABLE_MALICIOUS_DOMAIN = {
     "activeMalwareSubscription": 1,
-    "categories": "0",
+    "categories": '0000000000000000000000000000000000000001000000000000000000000000000000000000000'
+                  '0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'
+                  '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'
+                  '000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'
+                  '000000000000000000000000000000000000',
     "categorized": "true", "googleSafeBrowsingDescription": "", "googleSafeBrowsingEnabled": 1,
     "googleSafeBrowsingIsSafeUrl": 1, "googleSafeBrowsingSuccess": 1, "googleSafeBrowsingSupport": 1,
     "isSafeUrl": 0, "malwareEngineAnalysisDescription": "Unreachable - HTTP Error Code: 503",
@@ -27,7 +31,11 @@ REPUTATION_RESPONSE_UNREACHABLE_MALICIOUS_DOMAIN = {
 
 REPUTATION_RESPONSE_UNREACHABLE_SUSPICIOUS_DOMAIN = {
     "activeMalwareSubscription": 1,
-    "categories": "0",
+    "categories": '0000000000000000000000000000000000000001000000000000000000000000000000000000000'
+                  '0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'
+                  '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'
+                  '000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'
+                  '000000000000000000000000000000000000',
     "categorized": "true", "googleSafeBrowsingDescription": "", "googleSafeBrowsingEnabled": 1,
     "googleSafeBrowsingIsSafeUrl": 1, "googleSafeBrowsingSuccess": 1, "googleSafeBrowsingSupport": 1,
     "isSafeUrl": 0, "malwareEngineAnalysisDescription": "Unreachable - HTTP Error Code: 503",
@@ -264,7 +272,7 @@ def test_ip_lookup(requests_mock, mocker):
     assert results[0].outputs['iboss']['webRequestHeuristicBlockUnreachableSites'] == "1"
 
 
-def test_domain_lookup(requests_mock, mocker):
+def test_domain_lookup_malicious(requests_mock, mocker):
     """
        Scenario: Attempt to lookup domain reputation (malicious due to reputation)
        Given:
@@ -282,40 +290,49 @@ def test_domain_lookup(requests_mock, mocker):
 
     client = get_mock_client(mocker)
 
-    http_data = {"activeMalwareSubscription": 1,
-                 "categories": "000000000000000000000000000000000000000000000000000000000000000000000000000000"
-                               "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
-                               "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
-                               "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
-                               "00000000000000000000000000000000000000000",
-                 "categorized": "true", "googleSafeBrowsingDescription": "", "googleSafeBrowsingEnabled": 1,
-                 "googleSafeBrowsingIsSafeUrl": 1, "googleSafeBrowsingSuccess": 1, "googleSafeBrowsingSupport": 1,
-                 "isSafeUrl": 0, "malwareEngineAnalysisDescription": "Unreachable - HTTP Error Code: 503",
-                 "malwareEngineAnalysisEnabled": 1, "malwareEngineAnalysisSuccess": 1, "malwareEngineIsSafeUrl": 1,
-                 "malwareEngineResultCode": 2, "message": "Status: Suspicious Url. Please see below.",
-                 "realtimeCloudLookupDomainIsGrey": 0, "realtimeCloudLookupEnabled": 1,
-                 "realtimeCloudLookupIsSafeUrl": 1, "realtimeCloudLookupRiskDescription": "",
-                 "realtimeCloudLookupSuccess": 1, "reputationDatabaseBotnetDetection": 0,
-                 "reputationDatabaseEnabled": 1, "reputationDatabaseIsSafeUrl": 0, "reputationDatabaseLookupSuccess": 1,
-                 "reputationDatabaseMalwareDetection": 1, "url": "myetherevvalliet.com",
-                 "webRequestHeuristicBlockUnreachableSites": "1",
-                 "webRequestHeuristicDescription": "Heuristic Engine Detection", "webRequestHeuristicIsSafeUrl": 0,
-                 "webRequestHeuristicLevelHighScore": "79", "webRequestHeuristicLevelLowScore": "10",
-                 "webRequestHeuristicLevelMediumScore": "60", "webRequestHeuristicLevelNoneScore": "0",
-                 "webRequestHeuristicProtectionActionHigh": "0", "webRequestHeuristicProtectionActionLow": "0",
-                 "webRequestHeuristicProtectionActionMedium": "0", "webRequestHeuristicProtectionLevel": "1",
-                 "webRequestHeuristicSuccess": 1, "webRequestHeuristicSupport": 1}
+    requests_mock.post(
+        'https://pswg.com/json/controls/urlLookup',
+        json=REPUTATION_RESPONSE_UNREACHABLE_MALICIOUS_DOMAIN)
+
+    results = domain_lookup(client, {"domain": "unreachable.com"})
+
+    assert len(results) == 1
+    assert results[0].indicator.dbot_score.score == 3
+    assert results[0].outputs['categories'][0] == 'Technology'
+    expected = "Status: Suspicious Url. Please see below; Unreachable - HTTP Error Code: 503; Heuristic Engine " \
+               "Detection"
+    assert results[0].indicator.dbot_score.malicious_description == expected
+
+
+def test_domain_lookup_suspicious(requests_mock, mocker):
+    """
+       Scenario: Attempt to lookup domain reputation (suspicious due to reputation)
+       Given:
+        - User has provided valid credentials and arguments.
+       When:
+        - A url command is called
+       Then:
+        - Ensure number of items is correct.
+        - Ensure a sample value from the API matches what is generated in the context.
+        - Ensure DBotScore is malicious
+        - Ensure Malicious context message exists
+        - Ensure reputationDatabaseMalwareDetection == 1
+   """
+    from Iboss import domain_lookup
+
+    client = get_mock_client(mocker)
 
     requests_mock.post(
         'https://pswg.com/json/controls/urlLookup',
-        json=http_data)
+        json=REPUTATION_RESPONSE_UNREACHABLE_SUSPICIOUS_DOMAIN)
 
-    results = domain_lookup(client, {"domain": "myetherevvalliet.com"})
+    results = domain_lookup(client, {"domain": "unreachable.com"})
 
-    assert results[0].outputs['DBotScore']['score'] == 3
-    expected = "Status: Suspicious Url. Please see below; Unreachable - HTTP Error Code: 503; Heuristic Engine Detection"
-    assert results[0].outputs['Domain']['Malicious']['Description'] == expected
-    assert results[0].outputs['iboss']['reputationDatabaseMalwareDetection'] == 1
+    assert len(results) == 1
+    assert results[0].indicator.dbot_score.score == 2
+    assert results[0].outputs['categories'][0] == 'Technology'
+    expected = ""
+    assert results[0].indicator.dbot_score.malicious_description == expected
 
 
 def test_reputation_calculate_dbot_score_malicious():
