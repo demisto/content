@@ -8,7 +8,7 @@ subtype: python3
 tags:
 - infra
 - server
-comment: todo
+comment: Demisto API Module class.
 system: true
 scripttarget: 0
 dependson: {}
