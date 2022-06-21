@@ -1,5 +1,5 @@
 Manage block lists, manage allow lists, and perform domain, IP, and/or URL reputation and categorization lookups.
-This integration was integrated and tested with version 10.0.0.90 of iboss Cloud.
+This integration was integrated and tested with iboss Zero Trust Secure Service Edge 10.1.
 
 ## Configure iboss on Cortex XSOAR
 
