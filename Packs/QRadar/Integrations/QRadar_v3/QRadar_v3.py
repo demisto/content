@@ -36,6 +36,7 @@ EVENTS_INTERVAL_SECS = 60  # interval between events polling
 EVENTS_MODIFIED_SECS = 5  # interval between events status polling in modified
 EVENTS_SEARCH_FAILURE_LIMIT = 3  # amount of consecutive failures events search will tolerate
 
+ONE_HOUR_AFTER_EPOCH = 3600000  # One hour after epoch - 60*60*1000. QRadar supports start_time only after this time
 
 ADVANCED_PARAMETERS_STRING_NAMES = [
     'DOMAIN_ENRCH_FLG',
@@ -1499,10 +1500,9 @@ def create_search_with_retry(client: Client, fetch_mode: str, offense: Dict, eve
     """
     num_of_failures = 0
     offense_id = offense['id']
-    offense_start_time = offense['start_time']
     while num_of_failures <= max_retries:
         try:
-            ret_value = create_events_search(client, fetch_mode, event_columns, events_limit, offense_id, offense_start_time)
+            ret_value = create_events_search(client, fetch_mode, event_columns, events_limit, offense_id)
             time.sleep(EVENTS_MODIFIED_SECS)
             return ret_value
         except Exception:
@@ -3322,24 +3322,21 @@ def create_events_search(client: Client,
                          events_columns: str,
                          events_limit: int,
                          offense_id: int,
-                         offense_start_time: int = None) -> str:
+                         ) -> str:
     additional_where = ''' AND LOGSOURCETYPENAME(devicetype) = 'Custom Rule Engine' ''' \
         if fetch_mode == FetchMode.correlations_events_only.value else ''
     try:
-        if offense_start_time is None:
-            offense = client.offenses_list(offense_id=offense_id)
-            offense_start_time = offense['start_time']
-        # Decrease 1 minute from start_time to avoid the case where the minute queried of start_time equals end_time.
-        offense_start_time = offense_start_time - 60 * 1000
+        # Get all the events starting from one hour after epoch
+        start_time = ONE_HOUR_AFTER_EPOCH
         query_expression = (
             f'SELECT {events_columns} FROM events WHERE INOFFENSE({offense_id}) {additional_where} limit {events_limit} '
-            f'START {offense_start_time}'
+            f'START {start_time}'
         )
         print_debug_msg(f'Creating search for offense ID: {offense_id}, '
                         f'query_expression: {query_expression}')
         search_response = client.search_create(query_expression)
         print_debug_msg(f'Created search for offense ID: {offense_id}, '
-                        f'offense_start_time: {offense_start_time}, '
+                        f'Start Time: {ONE_HOUR_AFTER_EPOCH}, '
                         f'events_limit: {events_limit}, '
                         f'ret_value: {search_response}.')
         return search_response['search_id'] if search_response['search_id'] else QueryStatus.ERROR.value
