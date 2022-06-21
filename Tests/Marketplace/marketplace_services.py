@@ -1083,11 +1083,12 @@ class Pack(object):
 
         task_status = False
         modified_files_data = {}
+        logging.debug(f"NOY: self._modified_files = {self._modified_files}")
 
         for pack_folder, modified_file_paths in self._modified_files.items():
-
             modified_entities = [list(entity.values())[0] for entity in id_set[PACK_FOLDERS_TO_ID_SET_KEYS[pack_folder]]
                                  if list(entity.values())[0]['file_path'] in modified_file_paths]
+            logging.debug(f"NOY: modified_entities = {modified_entities}")
 
             # Check for Mappers since they are in the same folder as Classifiers
             if pack_folder == PackFolders.CLASSIFIERS.value:
@@ -1098,6 +1099,7 @@ class Pack(object):
                 modified_files_data[pack_folder] = modified_entities
 
         if not self._modified_files or modified_files_data:
+            logging.debug(f"NOY: only inside condition, modified_files_data = {modified_files_data}")
             task_status = True
 
         return task_status, modified_files_data
