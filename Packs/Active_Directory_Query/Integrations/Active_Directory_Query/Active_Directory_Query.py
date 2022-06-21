@@ -25,7 +25,7 @@ conn: Optional[Connection] = None
 DEFAULT_OUTGOING_MAPPER = "User Profile - Active Directory (Outgoing)"
 DEFAULT_INCOMING_MAPPER = "User Profile - Active Directory (Incoming)"
 
-COOMON_ACCOUNT_CONTROL_FLAGS = {
+COMMON_ACCOUNT_CONTROL_FLAGS = {
     512: "Enabled Account",
     514: "Disabled account",
     544: "Password Not Required",
@@ -627,7 +627,7 @@ def search_users(default_base_dn, page_size):
 
         # display a literal translation of the numeric account control flag
         if args.get('user-account-control-out', '') == 'true':
-            user['userAccountControl'] = COOMON_ACCOUNT_CONTROL_FLAGS.get(user_account_control) or user_account_control
+            user['userAccountControl'] = COMMON_ACCOUNT_CONTROL_FLAGS.get(user_account_control) or user_account_control
 
     demisto_entry = {
         'ContentsFormat': formats['json'],
@@ -1637,6 +1637,49 @@ def get_mapping_fields_command(search_base):
 '''
 
 
+def set_password_not_expire(default_base_dn):
+    args = demisto.args()
+    sam_account_name = args.get('username')
+    pwd_n_exp = args.get('value')
+
+    # query by sAMAccountName
+    if sam_account_name or args.get('sAMAccountName'):
+        if sam_account_name:
+            username = escape_filter_chars(sam_account_name)
+        else:
+            username = escape_filter_chars(args['sAMAccountName'])
+        query = "(&(objectClass=User)(objectCategory=person)(sAMAccountName={}))".format(username)
+
+    entries = search_with_paging(query, default_base_dn, attributes='userAccountControl', size_limit=0, time_limit=0)
+    user = entries.get('flat')[0]
+    user_account_control = user.get('userAccountControl')[0]
+
+    # Check if UAC flag for "Password Never Expire" (0x10000) is set to True or False:
+    if pwd_n_exp == 'true':
+        # Sets the bit 16 to 1
+        user_account_control |= 1 << 16
+        content_output = f"AD account {username} has set \"password never expire\" attribute. Value is set to True"
+    else:
+        # Clears the bit 16 to 0
+        user_account_control &= ~(1 << 16)
+        content_output = f"AD account {username} has cleared \"password never expire\" attribute. Value is set to False"
+
+    attribute_name = 'userAccountControl'
+    attribute_value = user_account_control
+    dn = user_dn(sam_account_name, default_base_dn)
+    modification = {}
+    modification[attribute_name] = [('MODIFY_REPLACE', attribute_value)]
+
+    # modify user
+    modify_object(dn, modification)
+    demisto_entry = {
+        'ContentsFormat': formats['text'],
+        'Type': entryTypes['note'],
+        'Contents': content_output
+    }
+    demisto.results(demisto_entry)
+
+
 def main():
     """ INSTANCE CONFIGURATION """
     params = demisto.params()
@@ -1729,6 +1772,9 @@ def main():
 
         if command == 'ad-search':
             free_search(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE)
+            
+        if command == 'ad-modify-password-never-expire':
+            set_password_not_expire(DEFAULT_BASE_DN)
 
         if command == 'ad-expire-password':
             expire_user_password(DEFAULT_BASE_DN)
