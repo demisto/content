@@ -39,14 +39,13 @@ External resources:
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Containment Plan
-* Handle False Positive Alerts
-* Cortex XDR - Get WildFire Verdict
-* Enrichment for Verdict
 * Recovery Plan
-* Wildfire Detonate and Analyze File
-* Eradication Plan
+* Containment Plan
 * Endpoint Investigation Plan
+* Wildfire Detonate and Analyze File
+* Handle False Positive Alerts
+* Enrichment for Verdict
+* Eradication Plan
 
 ### Integrations
 * CortexCoreIR
@@ -57,8 +56,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Commands
 * core-retrieve-files
-* core-retrieve-file-details
 * closeInvestigation
+* core-retrieve-file-details
+* core-report-incorrect-wildfire
 
 ## Playbook Inputs
 ---

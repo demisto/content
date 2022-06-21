@@ -203,7 +203,7 @@ tasks:
       brand: ''
     nexttasks:
       '#default#':
-      - '38'
+      - '39'
       Benign:
       - '59'
     separatecontext: false
@@ -310,7 +310,7 @@ tasks:
       {
         "position": {
           "x": 440,
-          "y": 2200
+          "y": 2150
         }
       }
     note: false
@@ -350,105 +350,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '36':
-    id: '36'
-    taskid: 7b6bcaea-fb99-450c-8652-d0258d398b0b
-    type: playbook
-    task:
-      id: 7b6bcaea-fb99-450c-8652-d0258d398b0b
-      version: -1
-      name: Get WildFire Verdict
-      playbookName: Get WildFire Verdict
-      type: playbook
-      iscommand: false
-      brand: ''
-      description: ''
-    nexttasks:
-      '#none#':
-      - '38'
-    scriptarguments:
-      FileHash:
-        complex:
-          root: File
-          accessor: SHA256
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ''
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 660,
-          "y": 1690
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  '38':
-    id: '38'
-    taskid: 38724964-d336-424d-8df6-3b7f09cbf395
-    type: condition
-    task:
-      id: 38724964-d336-424d-8df6-3b7f09cbf395
-      version: -1
-      name: Was the hash found is malicious?
-      description: Checks the verdict after the file detonation.
-      type: condition
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#default#':
-      - '33'
-      yes:
-      - '39'
-    separatecontext: false
-    conditions:
-    - label: yes
-      condition:
-      - - operator: greaterThanOrEqual
-          left:
-            value:
-              complex:
-                root: DBotScore
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: DBotScore.Indicator
-                      iscontext: true
-                    right:
-                      value:
-                        simple: File.SHA256
-                      iscontext: true
-                    ignorecase: true
-                accessor: Score
-                transformers:
-                - operator: uniq
-            iscontext: true
-          right:
-            value:
-              simple: '2'
-    view: |-
-      {
-        "position": {
-          "x": 900,
-          "y": 1860
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   '39':
     id: '39'
     taskid: 920e8ad9-ccf9-4b82-8375-b17b2c26eb42
@@ -469,7 +370,7 @@ tasks:
       {
         "position": {
           "x": 900,
-          "y": 2370
+          "y": 2320
         }
       }
     note: false
@@ -500,7 +401,7 @@ tasks:
       {
         "position": {
           "x": 1440,
-          "y": 2850
+          "y": 2790
         }
       }
     note: false
@@ -542,7 +443,7 @@ tasks:
       {
         "position": {
           "x": 900,
-          "y": 2670
+          "y": 2620
         }
       }
     note: false
@@ -573,7 +474,7 @@ tasks:
       {
         "position": {
           "x": 900,
-          "y": 3990
+          "y": 3930
         }
       }
     note: false
@@ -618,7 +519,7 @@ tasks:
       {
         "position": {
           "x": 900,
-          "y": 3305
+          "y": 3245
         }
       }
     note: false
@@ -663,7 +564,7 @@ tasks:
       {
         "position": {
           "x": 900,
-          "y": 3650
+          "y": 3590
         }
       }
     note: false
@@ -693,7 +594,7 @@ tasks:
       {
         "position": {
           "x": 1220,
-          "y": 3820
+          "y": 3760
         }
       }
     note: false
@@ -723,7 +624,7 @@ tasks:
       {
         "position": {
           "x": 900,
-          "y": 3160
+          "y": 3100
         }
       }
     note: false
@@ -750,7 +651,7 @@ tasks:
       {
         "position": {
           "x": 440,
-          "y": 4160
+          "y": 4110
         }
       }
     note: false
@@ -986,7 +887,7 @@ tasks:
       {
         "position": {
           "x": 660,
-          "y": 1190
+          "y": 1180
         }
       }
     note: false
@@ -1202,7 +1103,7 @@ tasks:
       {
         "position": {
           "x": 900,
-          "y": 2500
+          "y": 2450
         }
       }
     note: false
@@ -1299,7 +1200,7 @@ tasks:
       {
         "position": {
           "x": 1650,
-          "y": 2990
+          "y": 2930
         }
       }
     note: false
@@ -1354,7 +1255,7 @@ tasks:
       {
         "position": {
           "x": 1230,
-          "y": 2990
+          "y": 2930
         }
       }
     note: false
@@ -1408,7 +1309,7 @@ tasks:
       {
         "position": {
           "x": 1220,
-          "y": 3480
+          "y": 3420
         }
       }
     note: false
@@ -1464,7 +1365,7 @@ tasks:
       {
         "position": {
           "x": 440,
-          "y": 2670
+          "y": 2620
         }
       }
     note: false
@@ -1499,7 +1400,7 @@ tasks:
       {
         "position": {
           "x": 660,
-          "y": 1350
+          "y": 1330
         }
       }
     note: false
@@ -1525,7 +1426,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '36'
+      - '70'
     scriptarguments:
       File:
         complex:
@@ -1582,7 +1483,91 @@ tasks:
       {
         "position": {
           "x": 660,
-          "y": 1520
+          "y": 1480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '70':
+    id: '70'
+    taskid: 4bdcb352-0176-4423-897b-abac5ffcc221
+    type: condition
+    task:
+      id: 4bdcb352-0176-4423-897b-abac5ffcc221
+      version: -1
+      name: Check WildFire alert verdict
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '39'
+      Benign:
+      - '71'
+    separatecontext: false
+    conditions:
+    - label: Benign
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: WildFire.Verdicts
+                accessor: Verdict
+            iscontext: true
+          right:
+            value:
+              simple: '0'
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 1630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '71':
+    id: '71'
+    taskid: cd14d799-ed48-415c-820a-59e35a1b3698
+    type: regular
+    task:
+      id: cd14d799-ed48-415c-820a-59e35a1b3698
+      version: -1
+      name: WildFire report  - Flip verdict
+      description: Reports to WildFire about incorrect hash verdict through Cortex.
+      script: '|||core-report-incorrect-wildfire'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '33'
+    scriptarguments:
+      file_hash:
+        complex:
+          root: WildFire.Report
+          accessor: SHA256
+      new_verdict:
+        simple: '1'
+      reason:
+        simple: XDR Local Analysis found the file to be malicious.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 1860
         }
       }
     note: false
@@ -1595,14 +1580,12 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "14_38_#default#": 0.42,
+      "14_39_#default#": 0.11,
       "14_59_Benign": 0.44,
       "2_33_#default#": 0.1,
       "2_6_True Positive": 0.71,
       "34_39_No": 0.34,
       "34_67_#default#": 0.69,
-      "38_33_#default#": 0.34,
-      "38_39_yes": 0.26,
       "44_41_yes": 0.68,
       "44_50_#default#": 0.45,
       "46_47_#default#": 0.54,
@@ -1611,11 +1594,13 @@ view: |-
       "55_35_#default#": 0.19,
       "58_35_#default#": 0.33,
       "6_35_Blocked": 0.12,
-      "6_57_#default#": 0.58
+      "6_57_#default#": 0.58,
+      "70_39_#default#": 0.46,
+      "70_71_Benign": 0.63
     },
     "paper": {
       "dimensions": {
-        "height": 5125,
+        "height": 5075,
         "width": 1590,
         "x": 440,
         "y": -900
