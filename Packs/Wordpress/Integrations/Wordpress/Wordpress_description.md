@@ -1,8 +1,18 @@
-## BaseIntegration Help
+## Wordpress Help
 
-Markdown file for integration configuration  help snippet. In this file add:
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
+### Instance settings
 
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
+**Name**: Give a unique name for your instance
+**Your server URL**: This is the base URL of your site (example: https://<domain>)
+**username**: Username for which the application password was generated
+**app_password**: The application password generated for the username (see below for generation)
 
+### Generating a new application password
+To obtain your application password (API key) do the following:
+
+- Navigate to your wordpress admin site (typically <domain>/wp-admin)
+- Navigate to users
+- Click on 'edit' for the user you wish to generate the application password for
+- Scroll down to **Application Passwords**
+- Enter a new application name and click **Add New Application Password**
+- Copy the Application Password (API key)
