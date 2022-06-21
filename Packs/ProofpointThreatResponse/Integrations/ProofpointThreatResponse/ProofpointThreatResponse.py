@@ -18,7 +18,8 @@ if BASE_URL and BASE_URL[-1] != '/':
 API_KEY = demisto.params().get('apikey')
 VERIFY_CERTIFICATE = not demisto.params().get('insecure')
 # How many time before the first fetch to retrieve incidents
-FIRST_FETCH, _ = parse_date_range(demisto.params().get('first_fetch', '12 hours') or '12 hours', date_format=TIME_FORMAT)
+FIRST_FETCH, _ = parse_date_range(demisto.params().get('first_fetch', '12 hours') or '12 hours',
+                                  date_format=TIME_FORMAT)
 
 ''' COMMAND FUNCTIONS '''
 
@@ -801,12 +802,13 @@ def search_quarantine():
     incidents_list = get_incidents_request({})
     found = {'email': False, 'mid': False, 'quarantine': False}
     resQ = []
-    
+
     # Collecting emails inside alert to find those with same recipient and messageId
     for incident in incidents_list:
         for alert in incident.get('events'):
             for email in alert.get('emails'):
-                if email.get('messageId') == mid and email.get('recipient').get('email') == recipient and email.get('messageDeliveryTime', {}).get('millis'):
+                if email.get('messageId') == mid and email.get('recipient').get('email') == recipient and email.get(
+                        'messageDeliveryTime', {}).get('millis'):
                     found['mid'] = True
                     emailTRAPtimestamp = int(email.get('messageDeliveryTime', {}).get('millis') / 1000)
                     if emailTAPtime == emailTRAPtimestamp:
@@ -821,7 +823,7 @@ def search_quarantine():
                         })
 
     quarantineFoundcpt = 0
-    
+
     # Go though the alert list, and check the quarantine results:
     for alert in lstAlert:
         for quarantine in alert.get('quarantine_results'):
@@ -848,15 +850,17 @@ def search_quarantine():
                         quarantineFoundcpt += 1
                 else:
                     demisto.debug(f"Failed to parse timestamp of incident: {alert=} {quarantine=}.")
-    
+
     if quarantineFoundcpt > 0:
-        return CommandResults(readable_output=f"{mid} Message ID matches to {quarantineFoundcpt} emails quarantined but time alert does not match")
+        return CommandResults(
+            readable_output=f"{mid} Message ID matches to {quarantineFoundcpt} emails quarantined but time alert does not match")
     if not found['mid']:
         return CommandResults(readable_output=f"Message ID {mid} not found in TRAP incidents")
-    
+
     midtxt = f'{mid} Message ID found in TRAP alerts,'
     if not found['email']:
-        return CommandResults(readable_output=f"{midtxt} but timestamp between email delivery time and time given as argument doesn't match")
+        return CommandResults(
+            readable_output=f"{midtxt} but timestamp between email delivery time and time given as argument doesn't match")
     elif not found['quarantine']:
         demisto.debug("\n".join([json.dumps(alt, indent=4) for alt in lstAlert]))
         return CommandResults(f"{midtxt} but not in the quarantine list meaning that email has not be quarantined.")
@@ -867,7 +871,6 @@ def search_quarantine():
         readable_output=tableToMarkdown("Quarantine Result", resQ),
         raw_response=resQ
     )
-
 
 
 ''' EXECUTION CODE '''
