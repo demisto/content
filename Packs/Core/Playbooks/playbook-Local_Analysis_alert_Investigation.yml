@@ -1093,7 +1093,7 @@ tasks:
           accessor: agentid
       timeRange:
         simple: 2 hours ago
-    separatecontext: true
+    separatecontext: false
     loop:
       iscommand: false
       exitCondition: ''
