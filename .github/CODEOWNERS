@@ -70,3 +70,7 @@ Utils/trigger_nightly_sdk_build.sh @dorschw
 /Packs/CortexXDR/Integrations/* @dansterenson
 /Packs/Core/Integrations/* @dansterenson
 /Packs/ApiModules/Scripts/CoreIRApiModule/* @dansterenson
+
+# Dependencies
+pyproject.toml @ilaner
+poetry.lock @ilaner
