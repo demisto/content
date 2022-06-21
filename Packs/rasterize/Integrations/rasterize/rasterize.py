@@ -231,7 +231,7 @@ def rasterize(path: str, width: int, height: int, r_type: RasterizeType = Raster
                 if i < (len(rasterize_funcs) - 1):
                     demisto.info(f'Failed rasterize preferred option trying second option. Exception: {ex}')
                 else:
-                    demisto.info(f'Failed rasterizing using all avialable options. Raising last exception: {ex}')
+                    demisto.info(f'Failed rasterizing using all available options. Raising last exception: {ex}')
                     raise
     except (InvalidArgumentException, NoSuchElementException) as ex:
         if 'invalid argument' in str(ex):
