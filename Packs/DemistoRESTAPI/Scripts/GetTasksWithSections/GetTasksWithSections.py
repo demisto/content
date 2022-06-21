@@ -1,7 +1,6 @@
 from CommonServerPython import *
 import copy
 from itertools import chain
-import traceback
 
 
 def find_start_task(tasks: Dict):
@@ -160,7 +159,6 @@ def main():
             incident_id = demisto.incident().get('id')
         return_results(get_tasks(incident_id))
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute  GetTasksWithSections.\nError:\n{str(e)}')
 
 

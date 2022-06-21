@@ -7,7 +7,6 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 
 import requests
-import traceback
 import base64
 from datetime import datetime, timedelta
 from ipaddress import IPv4Address, AddressValueError, summarize_address_range
@@ -687,7 +686,6 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(
             f"Failed to execute {command} command.\nError:\n{str(e)}"
         )
