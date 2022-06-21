@@ -426,8 +426,6 @@ class Client(BaseClient):
 
 
 ''' HELPER FUNCTIONS '''
-
-
 def _iboss_entity_lookup_response_to_dbot_score(entity, lookup_response, dbot_score_type):
     if any(lookup_response.get(field, -1) == 0 for field in REPUTATION_MALICIOUS_FIELDS):
         dbot_score_value = Common.DBotScore.BAD
@@ -438,11 +436,12 @@ def _iboss_entity_lookup_response_to_dbot_score(entity, lookup_response, dbot_sc
     else:
         dbot_score_value = Common.DBotScore.NONE
 
-    dbot_score = Common.DBotScore(indicator=entity, indicator_type=dbot_score_type, score=dbot_score_value)
+    message = _iboss_entity_lookup_response_to_message(lookup_response)
+    dbot_score = Common.DBotScore(
+        indicator=entity, indicator_type=dbot_score_type, score=dbot_score_value, message=message)
 
     if dbot_score_value == Common.DBotScore.BAD:
-        dbot_score.malicious_description = _iboss_entity_lookup_response_to_message(lookup_response)
-
+        dbot_score.malicious_description = message
     return dbot_score
 
 
@@ -459,9 +458,9 @@ def _iboss_entity_lookup_response_to_indicator(entity, lookup_response, context_
 def _iboss_ip_reputation(client, ip):
     response = client.get_url_reputation(ip)
     dbot_score = _iboss_entity_lookup_response_to_dbot_score(ip, response, DBotScoreType.IP)
-    result = {"DBotScore": dbot_score, "iboss": response}
+    result = {"DBotScore": dbot_score.__dict__, "iboss": response}
 
-    if dbot_score.BAD:
+    if dbot_score.score == dbot_score.BAD:
         result.update(_iboss_entity_lookup_response_to_indicator(ip, response, 'IP', 'Address'))
     return result
 
@@ -469,9 +468,9 @@ def _iboss_ip_reputation(client, ip):
 def _iboss_url_reputation(client, url):
     response = client.get_url_reputation(url)
     dbot_score = _iboss_entity_lookup_response_to_dbot_score(url, response, DBotScoreType.URL)
-    result = {"DBotScore": dbot_score, "iboss": response}
+    result = {"DBotScore": dbot_score.__dict__, "iboss": response}
 
-    if dbot_score.BAD:
+    if dbot_score.score == dbot_score.BAD:
         result.update(_iboss_entity_lookup_response_to_indicator(url, response, 'URL', 'Data'))
     return result
 
@@ -479,9 +478,9 @@ def _iboss_url_reputation(client, url):
 def _iboss_domain_reputation(client, domain):
     response = client.get_url_reputation(domain)
     dbot_score = _iboss_entity_lookup_response_to_dbot_score(domain, response, DBotScoreType.DOMAIN)
-    result = {"DBotScore": dbot_score, "iboss": response}
+    result = {"DBotScore": dbot_score.__dict__, "iboss": response}
 
-    if dbot_score.BAD:
+    if dbot_score.score == dbot_score.BAD:
         result.update(_iboss_entity_lookup_response_to_indicator(domain, response, 'Domain', 'Name'))
     return result
 
@@ -689,6 +688,7 @@ def ip_lookup(client: Client, args: Dict[str, Any]) -> [CommandResults]:
     command_results = []
     for ip in ips:
         result = _iboss_ip_reputation(client, ip)
+
         command_result = CommandResults(
             readable_output=tableToMarkdown("Result", result, removeNull=True),
             outputs_key_field='message',
