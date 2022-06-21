@@ -1557,7 +1557,7 @@ def create_test_file(is_nightly, skip_save=False, path_to_pack='', marketplace_v
 
 
 if __name__ == "__main__":
-    install_logging('Collect_Tests_And_Content_Packs.log', logger=logging)
+    install_logging('Collect_Tests_And_Content_Packs.log')
     logging.info("Starting creation of test filter file")
 
     parser = argparse.ArgumentParser(description='Utility CircleCI usage')
