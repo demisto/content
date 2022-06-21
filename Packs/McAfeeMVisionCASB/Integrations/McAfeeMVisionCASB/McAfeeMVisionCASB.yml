@@ -1,0 +1,297 @@
+category: CASB
+commonfields:
+  id: McAfee MVision CASB
+  version: -1
+configuration:
+- defaultvalue: https://www.myshn.net/
+  display: Your server URL
+  name: URL
+  required: true
+  type: 0
+- additionalinfo: The UserName and Password to use for connection
+  name: credentials
+  required: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Skyhigh CASB is a cloud-based, multi-tenant service that enables Cloud
+  Discovery and Risk Monitoring, Cloud Usage Analytics, Cloud Access and Control.
+display: McAfee MVision CASB
+name: McAfee MVision CASB
+script:
+  commands:
+  - arguments:
+    - default: true
+      defaultValue: '50'
+      description: Maximum number of items that will be returned within a single response.
+        If value exceeds maximum 500 it will not be flagged as an error but will also
+        not increase results.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Pagination support for use with a big “limit” value.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: Pagination support for use with a big “limit” value.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: true
+      defaultValue: 3 days
+      description: For time arguments use the ISO-8601 standard - '%Y-%m-%dT%H:%M:%SZ'
+        or relative time (last X days).
+      isArray: false
+      name: start_time
+      required: false
+      secret: false
+    - default: false
+      isArray: false
+      name: end_time
+      required: false
+      secret: false
+    - default: false
+      description: The actor ids of the incidents to retrieve.
+      isArray: true
+      name: actor_ids
+      required: false
+      secret: false
+    - default: false
+      description: The service names of the incidents to retrieve.
+      isArray: true
+      name: service_names
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The type of the incidents to retrieve.
+      isArray: true
+      name: incident_types
+      predefined:
+      - Alert
+      - Event
+      - Threat
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The categories of the incidents to retrieve.
+      isArray: true
+      name: categories
+      predefined:
+      - Access
+      - Admin
+      - Audit
+      - CompromisedAccount
+      - Data
+      - InsiderThreat
+      - Policy
+      - PrivilegeAccess
+      - Vulnerability
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves a list of incidents in ascending time modified order.
+    execution: false
+    name: mvision-casb-incident-query
+    outputs:
+    - contextPath: MVisionCASB.Incident
+      description: The incident that wes returned.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The incidents ids that should be updated.
+      isArray: true
+      name: incident_ids
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The new status of the incidents.
+      isArray: false
+      name: status
+      predefined:
+      - new
+      - opened
+      - false positive
+      - resolved
+      - suppressed
+      - archived
+      required: true
+      secret: false
+    deprecated: false
+    description: |-
+      Update status of single/multiple incidents.
+      Note!
+      For multiple Ids  - single status will be changed for all IDs
+      e.g. 123, 456, 789 >> change status to >> closed.
+    execution: false
+    name: mvision-casb-incident-status-update
+  - arguments:
+    - default: false
+      description: The anomaly id from where to retrieve the activities. Only incident
+        of type anomaly (ANO-123).
+      isArray: false
+      name: anomaly_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Fetches activities for a given anomaly Id.
+    execution: false
+    name: mvision-casb-anomaly-activity-list
+    outputs:
+    - contextPath: MVisionCASB.AnomalyActivity.timeStamp
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.actionName
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.asnName
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.city
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.collabGroup
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.count
+      type: Number
+    - contextPath: MVisionCASB.AnomalyActivity.country
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.deviceManaged
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.directory
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.downloadBytes
+      type: Number
+    - contextPath: MVisionCASB.AnomalyActivity.eventCount
+      type: Number
+    - contextPath: MVisionCASB.AnomalyActivity.fileFolderPath
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.fileName
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.fileSharingEnabled
+      type: Boolean
+    - contextPath: MVisionCASB.AnomalyActivity.fileSize
+      type: Number
+    - contextPath: MVisionCASB.AnomalyActivity.fileType
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.geoOrgNameV1
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.httpMethod
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.instanceId
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.isSourceTrusted
+      type: Boolean
+    - contextPath: MVisionCASB.AnomalyActivity.networkType
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.objectType
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.operation
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.proxyDescription
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.proxyType
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.region
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.serviceName
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.siteUrl
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.sourceIP
+      type: IP
+    - contextPath: MVisionCASB.AnomalyActivity.sourceIdentifier
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.targetId
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.targetType
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.tenantId
+      type: Number
+    - contextPath: MVisionCASB.AnomalyActivity.threatCategory
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.trustEntity
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.trustReason
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.uploadBytes
+      type: Number
+    - contextPath: MVisionCASB.AnomalyActivity.url
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.user
+      type: String
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: Maximum number of policies that will be returned within a single
+        response. Default is 50.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Pagination support for use with a big “limit” value.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: Pagination support for use with a big “limit” value.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      description: The name of the policies to retrieve.
+      isArray: true
+      name: name
+      required: false
+      secret: false
+    deprecated: false
+    description: List existing Policy Dictionaries.
+    execution: false
+    name: mvision-casb-policy-dictionary-list
+  - arguments:
+    - default: false
+      description: The dictionary where to set the policy.
+      isArray: false
+      name: dictionary_id
+      required: true
+      secret: false
+    - default: false
+      description: A name for the new key-value which will be added in the dictionary.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: The value to be set in the dictionary for the given key-name.
+      isArray: true
+      name: content
+      required: true
+      secret: false
+    deprecated: false
+    description: Adds new content to an existing Policy Dictionaries.
+    execution: false
+    name: mvision-casb-policy-dictionary-update
+  dockerimage: demisto/python3:3.9.8.24399
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 5.5.0
