@@ -249,8 +249,7 @@ view: |-
   }
 inputs:
 - key: IncidentID
-  value:
-    simple: inc:15dbb9d8f06b45fe9f61eb46e829d986:227c5e4e248e4a7d89ad8ef13b277fab
+  value: {}
   required: false
   description: The ID of the CrowdStrike incident.
   playbookInputQuery:
@@ -262,7 +261,7 @@ outputs:
   description: 'Indicates whether detections were found. '
   type: string
 tests:
-- Test - CrowdStrike Falcon
+-  No tests
 contentitemexportablefields:
   contentitemfields: {}
 system: true
