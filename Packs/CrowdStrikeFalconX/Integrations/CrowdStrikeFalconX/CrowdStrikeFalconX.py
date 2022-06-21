@@ -750,7 +750,7 @@ def upload_file_command(  # type: ignore[return]
         enable_tor: str = "false",
         submit_name: str = "",
         system_date: str = "",
-        system_time: str = ""
+        system_time: str = "",
 ) -> CommandResults:
     """Upload a file for sandbox analysis.
     :param client: the client object with an access token
