@@ -728,16 +728,16 @@ def create_issue_command():
 
 
 def edit_issue_command(issue_id, mirroring=False, headers=None, status=None, transition=None, **kwargs):
-    url = f'rest/api/latest/issue/{issue_id}/'
-    issue = get_issue_fields(mirroring=mirroring, **kwargs)
-    #jira_req('PUT', url, json.dumps(issue))
+    issue = get_issue_fields(mirroring=mirroring, **kwargs)    
     if status and transition:
         return_error("Please provide only status or transition, but not both.")
     elif status:
         edit_status(issue_id, status, issue)
     elif transition:
         edit_transition(issue_id, transition, issue)
-
+    else:
+        url = f'rest/api/latest/issue/{issue_id}/'
+        jira_req('PUT', url, json.dumps(issue))
     return get_issue(issue_id, headers, is_update=True)
 
 
@@ -750,8 +750,7 @@ def edit_status(issue_id, status, issue):
         if transition.lower() == status.lower():
             url = f'rest/api/latest/issue/{issue_id}/transitions?expand=transitions.fields'
             issue['transition'] = {"id": str(j_res.get('transitions')[i].get('id'))}
-            #json_body = {"transition": {"id": str(j_res.get('transitions')[i].get('id'))}}
-            return jira_req('POST', url, json.dumps(json_body))
+            return jira_req('POST', url, json.dumps(issue))
 
     return_error(f'Status "{status}" not found. \nValid transitions are: {transitions} \n')
 
@@ -779,7 +778,6 @@ def edit_transition(issue_id, transition_name, issue):
         if transition.get('name') == transition_name:
             url = f'rest/api/latest/issue/{issue_id}/transitions?expand=transitions.fields'
             issue['transition'] = {"id": transition.get("id")}
-            #json_body = {"transition": {"id": transition.get("id")}}
             return jira_req('POST', url, json.dumps(issue))
 
     return_error(f'Transitions "{transition_name}" not found. \nValid transitions are: {transitions_data} \n')
