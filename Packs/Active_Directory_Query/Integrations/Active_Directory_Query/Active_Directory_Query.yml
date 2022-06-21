@@ -788,16 +788,15 @@ script:
     arguments:
     - name: username
       required: true
-      description: The username (samAccountName) of the user to modify.
+      description: The sAMAccountName of the user to modify.
     - name: value
       required: true
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-      description: Value to set "Password Never Expire" (default is false).
-      defaultValue: 'false'
-    description: 'Modifies the AD account attribute "Password never expire".  '
+      description: Value to set "Password Never Expire".
+    description: 'Modifies the AD account attribute "Password never expire".'
     execution: true                                 
   dockerimage: demisto/py3-tools:0.0.1.30715
   runonce: false
