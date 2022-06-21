@@ -1658,17 +1658,19 @@ def set_password_not_expire(default_base_dn):
             if pwd_n_exp:
                 # Sets the bit 16 to 1
                 user_account_control |= 1 << 16
-                content_output = f"AD account {sam_account_name} has set \"password never expire\" attribute. Value is set to True"
+                content_output = f"AD account {sam_account_name} has set \"password never expire\" attribute. \
+                Value is set to True"
             else:
                 # Clears the bit 16 to 0
                 user_account_control &= ~(1 << 16)
-                content_output = f"AD account {sam_account_name} has cleared \"password never expire\" attribute. Value is set to False"
+                content_output = f"AD account {sam_account_name} has cleared \"password never expire\" attribute. \
+                Value is set to False"
 
             attribute_name = 'userAccountControl'
             attribute_value = user_account_control
             dn = user_dn(sam_account_name, default_base_dn)
-            modification = {attribute_name: [('MODIFY_REPLACE', attribute_value)]} 
-	 
+            modification = {attribute_name: [('MODIFY_REPLACE', attribute_value)]}
+            
             # modify user
             modify_object(dn, modification)
             demisto_entry = {
