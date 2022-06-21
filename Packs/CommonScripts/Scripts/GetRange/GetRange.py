@@ -1,3 +1,4 @@
+import traceback
 import demistomock as demisto
 from CommonServerPython import *
 
@@ -31,6 +32,7 @@ def main():
         indexes = argToList(args.get('range', ''))
         return_results(results=get_range_command(indexes, val))
     except Exception as ex:
+        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute GetRange. Error: {str(ex)}')
 
 

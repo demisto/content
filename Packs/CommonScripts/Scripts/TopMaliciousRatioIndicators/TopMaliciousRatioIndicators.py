@@ -71,6 +71,7 @@ def main():
         })
 
     except Exception:
+        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute TopMaliciousRatioIndicators. Error: {traceback.format_exc()}')
 
 

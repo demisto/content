@@ -6,6 +6,7 @@ from typing import (
     Dict, Any, Optional,
     Union, List
 )
+import traceback
 
 import dns.message
 import dns.resolver
@@ -106,6 +107,7 @@ def main():
     try:
         return_results(get_domain_dns_details_command(demisto.args()))
     except Exception as ex:
+        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute GetDomainDNSDetails. Error: {str(ex)}')
 
 

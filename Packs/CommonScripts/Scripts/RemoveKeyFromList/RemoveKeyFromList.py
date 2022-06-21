@@ -7,6 +7,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 
 from typing import Dict, Any
+import traceback
 
 
 ''' STANDALONE FUNCTION '''
@@ -66,6 +67,7 @@ def main():
     try:
         return_results(remove_key_from_list_command(demisto.args()))
     except Exception as ex:
+        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute RemoveKeyFromList. Error: {str(ex)}')
 
 
