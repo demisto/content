@@ -104,6 +104,18 @@ URL_CATEGORIES_DICT = {
     81: 'Not Rated'
 }
 
+REPUTATION_MESSAGE_FIELDS = [
+    'message',
+    'googleSafeBrowsingDescription',
+    'malwareEngineAnalysisDescription',
+    'realtimeCloudLookupRiskDescription',
+    'webRequestHeuristicDescription'
+]
+
+REPUTATION_MALICIOUS_FIELDS = ['googleSafeBrowsingISSafeUrl', 'malwareEngineIsSafeUrl', 'reputationDatabaseIsSafeUrl']
+REPUTATION_SUSPICIOUS_FIELDS = ['webRequestHeuristicIsSafeUrl', 'realtimeCloudLookupIsSafeUrl']
+REPUTATION_SAFE_FIELDS = ['isSafeUrl']
+
 # Starting with init of metadata_collector
 metadata_collector = YMLMetadataCollector(
     integration_name="iboss",
@@ -283,7 +295,6 @@ class Client(BaseClient):
         xsrf_token = f"XSRF-TOKEN={result['uid']}&{result['sessionId']}"
         return xsrf_token
 
-
     def _list_error_handler(self, res):
         if res.status_code == 422:
             resp = res.json()
@@ -411,48 +422,68 @@ class Client(BaseClient):
 
 ''' HELPER FUNCTIONS '''
 
-def _iboss_entity_lookup(client, entity, _type, sub_type):
-    response = client.get_url_reputation(entity)
 
-    response['categories'] = [URL_CATEGORIES_DICT[i] for i in range(0, 81) if "1" == response.get('categories', '')[i]]
-    dbot_score = 0
-    if response['googleSafeBrowsingIsSafeUrl'] == 0 \
-            or response['malwareEngineIsSafeUrl'] == 0 \
-            or response['reputationDatabaseIsSafeUrl'] == 0:
-        dbot_score = 3
-    elif response['webRequestHeuristicIsSafeUrl'] == 0 or response['realtimeCloudLookupIsSafeUrl'] == 0:
-        dbot_score = 2
-    elif response['isSafeUrl'] == 1:
-        dbot_score = 1
+def _iboss_entity_lookup_response_to_dbot_score(entity, lookup_response, dbot_score_type):
+    if any(lookup_response.get(field, -1) == 0 for field in REPUTATION_MALICIOUS_FIELDS):
+        dbot_score_value = Common.DBotScore.BAD
+    elif any(lookup_response.get(field, -1) == 0 for field in REPUTATION_SUSPICIOUS_FIELDS):
+        dbot_score_value = Common.DBotScore.SUSPICIOUS
+    elif any(lookup_response.get(field, -1) == 0 for field in REPUTATION_SAFE_FIELDS):
+        dbot_score_value = Common.DBotScore.GOOD
+    else:
+        dbot_score_value = Common.DBotScore.NONE
 
-    result = {
-        "DBotScore": {
-            "Indicator": entity,
-            "Type": _type.lower(),
-            "Vendor": "iboss",
-            "Score": dbot_score
-        },
-        "iboss": response
-    }
-    if dbot_score == 3:
-        message = '; '.join(
-            [response.get(x).strip(".") for x in
-             ['message', 'googleSafeBrowsingDescription', 'malwareEngineAnalysisDescription',
-              'realtimeCloudLookupRiskDescription', 'webRequestHeuristicDescription'] if response.get(x)])
+    dbot_score = Common.DBotScore(indicator=entity, indicator_type=dbot_score_type, score=dbot_score_value)
 
-        result[_type] = {
-            sub_type: entity,
-            "Malicious": {
-                "Vendor": "iboss",
-                "Description": message
-            },
+    if dbot_score_value == Common.DBotScore.BAD:
+        dbot_score.malicious_description = _iboss_entity_lookup_response_to_message(lookup_response)
+
+    return dbot_score
+
+
+def _iboss_entity_lookup_response_to_indicator(entity, lookup_response, context_type, indicator_type):
+    malicious_message = _iboss_entity_lookup_response_to_message(lookup_response)
+    indicator = {
+        context_type: {
+            indicator_type: entity, 'Malicious': {'Vendor': 'iboss', 'Description': malicious_message}
         }
+    }
+    return indicator
 
-    return CommandResults(
-        readable_output=tableToMarkdown("Result", result, removeNull=True),
-        outputs_key_field='message',
-        outputs=result,
-    )
+
+def _iboss_ip_reputation(client, ip):
+    response = client.get_url_reputation(ip)
+    dbot_score = _iboss_entity_lookup_response_to_dbot_score(ip, response, DBotScoreType.IP)
+    result = {"DBotScore": dbot_score, "iboss": response}
+
+    if dbot_score.BAD:
+        result.update(_iboss_entity_lookup_response_to_indicator(ip, response, 'IP', 'Address'))
+    return result
+
+
+def _iboss_url_reputation(client, url):
+    response = client.get_url_reputation(url)
+    dbot_score = _iboss_entity_lookup_response_to_dbot_score(url, response, DBotScoreType.URL)
+    result = {"DBotScore": dbot_score, "iboss": response}
+
+    if dbot_score.BAD:
+        result.update(_iboss_entity_lookup_response_to_indicator(url, response, 'URL', 'Data'))
+    return result
+
+
+def _iboss_domain_reputation(client, domain):
+    response = client.get_url_reputation(domain)
+    dbot_score = _iboss_entity_lookup_response_to_dbot_score(domain, response, DBotScoreType.DOMAIN)
+    result = {"DBotScore": dbot_score, "iboss": response}
+
+    if dbot_score.BAD:
+        result.update(_iboss_entity_lookup_response_to_indicator(domain, response, 'Domain', 'Name'))
+    return result
+
+
+def _iboss_entity_lookup_response_to_message(lookup_response):
+    return '; '.join([lookup_response.get(x).strip(".") for x in REPUTATION_MESSAGE_FIELDS if lookup_response.get(x)])
+
 
 def _get_validate_argument(name, args, default=None, validator=None, message="invalid argument", return_type=None):
     value = args.get(name, default)
@@ -640,8 +671,6 @@ def test_module(client: Client) -> str:
             prefix="iboss", output_type=int),
     ]
 )
-
-
 def ip_lookup(client: Client, args: Dict[str, Any]) -> [CommandResults]:
     """Looks up reputation data for IP addresses"""
     # TODO use get_ip
@@ -654,9 +683,16 @@ def ip_lookup(client: Client, args: Dict[str, Any]) -> [CommandResults]:
 
     command_results = []
     for ip in ips:
-        command_results.append(_iboss_entity_lookup(client, ip, "IP", "Address"))
+        result = _iboss_ip_reputation(client, ip)
+        command_result = CommandResults(
+            readable_output=tableToMarkdown("Result", result, removeNull=True),
+            outputs_key_field='message',
+            outputs=result,
+        )
+        command_results.append(command_result)
 
     return command_results
+
 
 @metadata_collector.command(
     command_name='domain',
@@ -800,8 +836,13 @@ def domain_lookup(client: Client, args: Dict[str, Any]) -> [CommandResults]:
 
     command_results = []
     for domain in argToList(domains):
-        command_results.append(_iboss_entity_lookup(client, domain, "Domain", "Name"))
-
+        result = _iboss_domain_reputation(client, domain)
+        command_result = CommandResults(
+            readable_output=tableToMarkdown("Result", result, removeNull=True),
+            outputs_key_field='message',
+            outputs=result,
+        )
+        command_results.append(command_result)
     return command_results
 
 
@@ -944,9 +985,16 @@ def url_lookup(client: Client, args: Dict[str, Any]) -> [CommandResults]:
 
     command_results = []
     for url in argToList(urls):
-        command_results.append(_iboss_entity_lookup(client, url, "URL", "Data"))
+        result = _iboss_url_reputation(client, url)
+        command_result = CommandResults(
+            readable_output=tableToMarkdown("Result", result, removeNull=True),
+            outputs_key_field='message',
+            outputs=result,
+        )
+        command_results.append(command_result)
 
     return command_results
+
 
 @metadata_collector.command(
     command_name='iboss-add-entity-to-block-list', outputs_prefix='iboss.AddEntityToBlockList',
@@ -1007,7 +1055,7 @@ def add_entity_to_block_list_command(client: Client, args: Dict[str, Any]) -> li
 
     # entity = args.get('entity')
     entities = _get_validate_argument("entity", args, validator=lambda x: x and len(x) > 0,
-                                    message="value is not specified")
+                                      message="value is not specified")
 
     current_policy_being_edited = _get_validate_argument(
         "current_policy_being_edited", args, validator=lambda x: (x or x == 0) and x > 0, message="value must be >= 0",
@@ -1062,7 +1110,8 @@ def add_entity_to_block_list_command(client: Client, args: Dict[str, Any]) -> li
     description="Removes domains, IPs, and/or URLs to a block list.",
     outputs_prefix='iboss.RemoveEntityFromBlockList',
     inputs_list=[
-        InputArgument(name="entity", description="Domains, IPs, and/or URLs to remove from a block list.", required=True,
+        InputArgument(name="entity", description="Domains, IPs, and/or URLs to remove from a block list.",
+                      required=True,
                       is_array=True),
         InputArgument(name="current_policy_being_edited", description="The group/policy number to update.", default="1")
     ],
@@ -1222,7 +1271,8 @@ def add_entity_to_allow_list_command(client: Client, args: Dict[str, Any]) -> li
     outputs_prefix='iboss.RemoveEntityFromAllowList',
     description="Removes domains, IPs, and/or URLs from an allow list",
     inputs_list=[
-        InputArgument(name="entity", description="Domains, IPs, and/or URLs to remove from an allow list.", required=True,
+        InputArgument(name="entity", description="Domains, IPs, and/or URLs to remove from an allow list.",
+                      required=True,
                       is_array=True),
         InputArgument(name="current_policy_being_edited", description="The group/policy number to update.", default="1")
     ],
