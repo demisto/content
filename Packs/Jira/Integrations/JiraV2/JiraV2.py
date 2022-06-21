@@ -730,18 +730,18 @@ def create_issue_command():
 def edit_issue_command(issue_id, mirroring=False, headers=None, status=None, transition=None, **kwargs):
     url = f'rest/api/latest/issue/{issue_id}/'
     issue = get_issue_fields(mirroring=mirroring, **kwargs)
-    jira_req('PUT', url, json.dumps(issue))
+    #jira_req('PUT', url, json.dumps(issue))
     if status and transition:
         return_error("Please provide only status or transition, but not both.")
     elif status:
-        edit_status(issue_id, status)
+        edit_status(issue_id, status, issue)
     elif transition:
-        edit_transition(issue_id, transition)
+        edit_transition(issue_id, transition, issue)
 
     return get_issue(issue_id, headers, is_update=True)
 
 
-def edit_status(issue_id, status):
+def edit_status(issue_id, status, issue):
     # check for all authorized transitions available for this user
     # if the requested transition is available, execute it.
     j_res = list_transitions_data_for_issue(issue_id)
@@ -749,7 +749,8 @@ def edit_status(issue_id, status):
     for i, transition in enumerate(transitions):
         if transition.lower() == status.lower():
             url = f'rest/api/latest/issue/{issue_id}/transitions?expand=transitions.fields'
-            json_body = {"transition": {"id": str(j_res.get('transitions')[i].get('id'))}}
+            issue['transition'] = {"id": str(j_res.get('transitions')[i].get('id'))}
+            #json_body = {"transition": {"id": str(j_res.get('transitions')[i].get('id'))}}
             return jira_req('POST', url, json.dumps(json_body))
 
     return_error(f'Status "{status}" not found. \nValid transitions are: {transitions} \n')
@@ -765,7 +766,7 @@ def list_transitions_data_for_issue(issue_id):
     return jira_req('GET', url, resp_type='json')
 
 
-def edit_transition(issue_id, transition_name):
+def edit_transition(issue_id, transition_name, issue):
     """
     This function changes a transition for a given issue.
     :param issue_id: The ID of the issue.
@@ -777,8 +778,9 @@ def edit_transition(issue_id, transition_name):
     for transition in transitions_data:
         if transition.get('name') == transition_name:
             url = f'rest/api/latest/issue/{issue_id}/transitions?expand=transitions.fields'
-            json_body = {"transition": {"id": transition.get("id")}}
-            return jira_req('POST', url, json.dumps(json_body))
+            issue['transition'] = {"id": transition.get("id")}
+            #json_body = {"transition": {"id": transition.get("id")}}
+            return jira_req('POST', url, json.dumps(issue))
 
     return_error(f'Transitions "{transition_name}" not found. \nValid transitions are: {transitions_data} \n')
 
