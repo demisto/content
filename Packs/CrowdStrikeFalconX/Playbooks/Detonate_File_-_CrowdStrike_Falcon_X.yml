@@ -406,11 +406,20 @@ tasks:
       '#none#':
       - "15"
     scriptarguments:
-      comment: {}
+      enable_tor:
+        simple: "false"
+      environment_id:
+        simple: '160: Windows 10'
       file:
         simple: ${inputs.File.EntryID}
       file_name:
         simple: ${inputs.File.Name}
+      action_script: {}
+      command_line: {}
+      document_password: {}
+      submit_name: {}
+      system_date: {}
+      system_time: {}
       is_confidential: {}
     separatecontext: false
     view: |-
