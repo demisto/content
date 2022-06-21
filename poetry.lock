@@ -31,7 +31,7 @@ frozenlist = ">=1.1.0"
 
 [[package]]
 name = "ansible-runner"
-version = "2.2.0"
+version = "2.2.1"
 description = "\"Consistent Ansible Python API and CLI with container and process isolation runtime capabilities\""
 category = "main"
 optional = false
@@ -2204,7 +2204,7 @@ build = ["google-cloud-bigquery"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "8d8c3bd6a00a1ab1088f54da4872ae675be7c1db7350af522b39fef1be2caf91"
+content-hash = "09282d311cc29e1d299244f7c2d9ad5a0f643c4ccb9313a6ef5dd1a0abb4dc2a"
 
 [metadata.files]
 aiohttp = [
@@ -2286,8 +2286,8 @@ aiosignal = [
     {file = "aiosignal-1.2.0.tar.gz", hash = "sha256:78ed67db6c7b7ced4f98e495e572106d5c432a93e1ddd1bf475e1dc05f5b7df2"},
 ]
 ansible-runner = [
-    {file = "ansible-runner-2.2.0.tar.gz", hash = "sha256:6fafe0bcfdaa51b58bd3ae9c950a382549f4d9c194350ab135421dbbd0184d98"},
-    {file = "ansible_runner-2.2.0-py3-none-any.whl", hash = "sha256:e25a4cfbcc188cfd7d5f4e2962905ff2ef3af9a1144f4af14e47df55b88224de"},
+    {file = "ansible-runner-2.2.1.tar.gz", hash = "sha256:cd9b6cb1174011b4e2e0a5993d4d04d928cde5fe22a8993aed4438493387c182"},
+    {file = "ansible_runner-2.2.1-py3-none-any.whl", hash = "sha256:bc3348580b0cbb8b5831039dadad6cce115e155b91c7ad0f66d751d54a0586a0"},
 ]
 astor = [
     {file = "astor-0.8.1-py2.py3-none-any.whl", hash = "sha256:070a54e890cefb5b3739d19f30f5a5ec840ffc9c50ffa7d23cc9fc1a38ebbfc5"},
