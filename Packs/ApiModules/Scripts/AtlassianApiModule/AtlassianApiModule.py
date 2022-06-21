@@ -129,7 +129,7 @@ class AtlassianClient(BaseClient):
             headers.update({"Authorization": f"Bearer {access_token}", "Accept": "application/json"})
             return requests.request(method=method, url=full_url, headers=headers, **kwargs)
 
-    def get_token(self, refresh_token: str = ''):
+    def get_token(self, refresh_token: str = ''):  # pragma: no cover
         data = assign_params(
             client_id=self.client_id,
             client_secret=self.client_secret,
