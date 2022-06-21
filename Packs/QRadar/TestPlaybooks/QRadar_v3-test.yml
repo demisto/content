@@ -487,7 +487,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'API_user: engadmin'
+              simple: 'API_user: demistoadmin'
       - - operator: containsGeneral
           left:
             value:
