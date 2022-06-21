@@ -1501,6 +1501,7 @@ tasks:
       id: 4bdcb352-0176-4423-897b-abac5ffcc221
       version: -1
       name: Check WildFire alert verdict
+      description: cheks the WildFire verdict received.
       type: condition
       iscommand: false
       brand: ''
