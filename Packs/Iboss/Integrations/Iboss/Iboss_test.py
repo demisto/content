@@ -208,7 +208,7 @@ def test_ip_lookup(requests_mock, mocker):
 
     results = ip_lookup(client, {"ip": "1.1.1.1"})
 
-    assert results[0].outputs['DBotScore']['Score'] == 2
+    assert results[0].outputs['DBotScore']['score'] == 2
     assert results[0].outputs['iboss'][
                'malwareEngineAnalysisDescription'] == "Redirect - Redirects to: https://1.1.1.1/"
     assert results[0].outputs['iboss']['webRequestHeuristicBlockUnreachableSites'] == "1"
