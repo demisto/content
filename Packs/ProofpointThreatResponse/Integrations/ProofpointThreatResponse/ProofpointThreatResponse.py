@@ -793,7 +793,7 @@ def search_quarantine():
     if isinstance(arg_time, datetime):
         emailTAPtime = int(arg_time.timestamp())
     else:
-        raise Exception("Timestamp was bad")
+        return_error("Timestamp was bad")
 
     lstAlert = []
     mid = demisto.args().get('message_id')
