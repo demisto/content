@@ -135,17 +135,14 @@ class UmbrellaAuthAPI:
 
 
 def main() -> None:
-    token_url = demisto.params().get('token_url')
-    org_id = demisto.params().get('orgId')
-
-    api_key = demisto.params().get('apiKey')
-    api_secret = demisto.params().get('apiSecret')
-
-    base_url = demisto.params()['url']
-
-    verify_certificate = not demisto.params().get('insecure', False)
-
-    proxy = demisto.params().get('proxy', False)
+    params = demisto.params()
+    token_url = params.get('token_url')
+    org_id = params.get('orgId')
+    api_key = params.get('apiKey')
+    api_secret = params.get('apiSecret')
+    base_url = params['url']
+    verify_certificate = not params.get('insecure', False)
+    proxy = params.get('proxy', False)
 
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
