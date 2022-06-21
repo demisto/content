@@ -1,22 +1,22 @@
 id: IndicatorFormatterFilterTest
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: IndicatorFormatterFilterTest
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: bec9cbfc-c0b4-42c8-854b-f5af2d26572a
     type: start
     task:
       id: bec9cbfc-c0b4-42c8-854b-f5af2d26572a
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     separatecontext: false
     view: |-
       {
@@ -32,8 +32,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: 07b67bbf-f7e0-42e5-8b41-57912b7a85ae
     type: regular
     task:
@@ -47,7 +47,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "9"
+      - '9'
     scriptarguments:
       text:
         simple: 3:00:00:00.0000000 2001:0db8:85a3:0000:0000:8a2e:0370:7334 1:00:00:00.0000000
@@ -66,8 +66,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: 218d9262-d25b-45e4-87c5-c759ed8036f6
     type: regular
     task:
@@ -81,7 +81,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     scriptarguments:
       value:
         simple: 2001:0db8:85a3:0000:0000:8a2e:0370:7334
@@ -100,8 +100,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     taskid: 0375b86a-3a1a-440f-8e9b-a5cd71e92efa
     type: condition
     task:
@@ -110,13 +110,13 @@ tasks:
       name: Validate IPv6
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "4"
+      yes:
+      - '4'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -140,8 +140,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     taskid: 1f486410-cdd8-4c7f-8486-8a0423accf70
     type: title
     task:
@@ -150,7 +150,8 @@ tasks:
       name: Untitled Task
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -166,8 +167,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     taskid: 6d86b824-ff0a-441b-8a15-340139e7143a
     type: regular
     task:
@@ -181,7 +182,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
     scriptarguments:
       text:
         simple: invalid@dbot.zip valid01@dbot.com
@@ -200,8 +201,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     taskid: 59af905d-9a71-4bce-8d49-eada0f8eed88
     type: regular
     task:
@@ -215,7 +216,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
     scriptarguments:
       value:
         simple: valid01@dbot.com
@@ -234,8 +235,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
+  '7':
+    id: '7'
     taskid: 255a14f1-99ad-495a-89c4-862eeda02b88
     type: condition
     task:
@@ -244,13 +245,13 @@ tasks:
       name: Validate Email
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "1"
+      yes:
+      - '1'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -274,8 +275,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
+  '8':
+    id: '8'
     taskid: a176df9f-baef-4027-86b5-65f7205e9a52
     type: regular
     task:
@@ -286,13 +287,13 @@ tasks:
       scriptName: Sleep
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
     scriptarguments:
       seconds:
-        simple: "1"
+        simple: '1'
     separatecontext: false
     view: |-
       {
@@ -308,8 +309,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "9":
-    id: "9"
+  '9':
+    id: '9'
     taskid: af99be74-d576-4564-8011-062ce60647c3
     type: regular
     task:
@@ -320,13 +321,13 @@ tasks:
       scriptName: Sleep
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       seconds:
-        simple: "1"
+        simple: '1'
     separatecontext: false
     view: |-
       {
@@ -356,3 +357,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 6.2.0
+description: Test Playbook
