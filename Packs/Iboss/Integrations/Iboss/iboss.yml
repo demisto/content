@@ -219,13 +219,13 @@ script:
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator.
-      type: Unknown
+      type: String
     - contextPath: DBotScore.Type
       description: The indicator type.
-      type: Unknown
+      type: String
     - contextPath: DBotScore.Vendor
       description: The vendor.
-      type: Unknown
+      type: String
     - contextPath: DBotScore.Score
       description: The DBot score.
       type: Number
@@ -237,13 +237,13 @@ script:
       type: String
     - contextPath: Domain.Name
       description: The domain.
-      type: Unknown
+      type: String
     - contextPath: iboss.isSafeUrl
       description: Whether entity is deemed safe
       type: Number
     - contextPath: iboss.categories
       description: The entity categories.
-      type: Unknown
+      type: String
     - contextPath: DBotScore.activeMalwareSubscription
       description: Whether active malware subscription is active
       type: Number
@@ -368,13 +368,13 @@ script:
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator.
-      type: Unknown
+      type: String
     - contextPath: DBotScore.Type
       description: The indicator type.
-      type: Unknown
+      type: String
     - contextPath: DBotScore.Vendor
       description: The vendor.
-      type: Unknown
+      type: String
     - contextPath: DBotScore.Score
       description: The DBot score.
       type: Number
@@ -386,13 +386,13 @@ script:
       type: String
     - contextPath: IP.Address
       description: The IP address.
-      type: Unknown
+      type: String
     - contextPath: iboss.isSafeUrl
       description: Whether entity is deemed safe
       type: Number
     - contextPath: iboss.categories
       description: The entity categories.
-      type: Unknown
+      type: String
     - contextPath: DBotScore.activeMalwareSubscription
       description: Whether active malware subscription is active
       type: Number
@@ -557,13 +557,13 @@ script:
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator.
-      type: Unknown
+      type: String
     - contextPath: DBotScore.Type
       description: The indicator type.
-      type: Unknown
+      type: String
     - contextPath: DBotScore.Vendor
       description: The vendor.
-      type: Unknown
+      type: String
     - contextPath: DBotScore.Score
       description: The DBot score.
       type: Number
@@ -575,13 +575,13 @@ script:
       type: String
     - contextPath: URL.Data
       description: The URL.
-      type: Unknown
+      type: String
     - contextPath: iboss.isSafeUrl
       description: Whether entity is deemed safe
       type: Number
     - contextPath: iboss.categories
       description: The entity categories.
-      type: Unknown
+      type: String
     - contextPath: DBotScore.activeMalwareSubscription
       description: Whether active malware subscription is active
       type: Number
