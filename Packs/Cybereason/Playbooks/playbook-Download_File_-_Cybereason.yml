@@ -1,6 +1,6 @@
-id: Download_File
+id: Download File - Cybereason
 version: -1
-name: Download_File
+name: Download File - Cybereason
 description: This playbook starts the file download operation and finally give an
   option to download the file if possible based on the Malop ID and username provided.
 starttaskid: "0"
@@ -117,6 +117,9 @@ tasks:
       type: regular
       iscommand: true
       brand: Cybereason
+    nexttasks:
+      '#none#':
+      - "4"
     scriptarguments:
       batchID:
         simple: ${Download.progress.batchID}
@@ -135,12 +138,39 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: eeada645-264c-404e-8d7d-cd6ee0381737
+    type: title
+    task:
+      id: eeada645-264c-404e-8d7d-cd6ee0381737
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 635,
+        "height": 805,
         "width": 380,
         "x": 450,
         "y": 50

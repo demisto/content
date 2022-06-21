@@ -1,4 +1,4 @@
-This playbook download the files basen on the malop GUID and username provided.
+This playbook starts the file download operation and finally give an option to download the file if possible based on the Malop ID and username provided.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
