@@ -259,5 +259,34 @@ def test_domain_lookup(requests_mock, mocker):
     results = domain_lookup(client, {"domain": "myetherevvalliet.com"})
 
     assert results[0].outputs['DBotScore']['score'] == 3
-    assert results[0].outputs['Domain']['Malicious']['Description'] == "Status: Suspicious Url. Please see below; Unreachable - HTTP Error Code: 503; Heuristic Engine Detection"
+    assert results[0].outputs['Domain']['Malicious'][
+               'Description'] == "Status: Suspicious Url. Please see below; Unreachable - HTTP Error Code: 503; Heuristic Engine Detection"
     assert results[0].outputs['iboss']['reputationDatabaseMalwareDetection'] == 1
+
+
+def test__iboss_entity_lookup_response_to_message(requests_mock, mocker):
+    from Iboss import _iboss_entity_lookup_response_to_message
+
+    http_data = {
+        "activeMalwareSubscription": 1,
+        "categories": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "categorized": "true", "googleSafeBrowsingDescription": "", "googleSafeBrowsingEnabled": 1,
+        "googleSafeBrowsingIsSafeUrl": 1, "googleSafeBrowsingSuccess": 1, "googleSafeBrowsingSupport": 1,
+        "isSafeUrl": 0, "malwareEngineAnalysisDescription": "Unreachable - HTTP Error Code: 503",
+        "malwareEngineAnalysisEnabled": 1, "malwareEngineAnalysisSuccess": 1, "malwareEngineIsSafeUrl": 1,
+        "malwareEngineResultCode": 2, "message": "Status: Suspicious Url. Please see below.",
+        "realtimeCloudLookupDomainIsGrey": 0, "realtimeCloudLookupEnabled": 1,
+        "realtimeCloudLookupIsSafeUrl": 1, "realtimeCloudLookupRiskDescription": "",
+        "realtimeCloudLookupSuccess": 1, "reputationDatabaseBotnetDetection": 0,
+        "reputationDatabaseEnabled": 1, "reputationDatabaseIsSafeUrl": 0, "reputationDatabaseLookupSuccess": 1,
+        "reputationDatabaseMalwareDetection": 1, "url": "myetherevvalliet.com",
+        "webRequestHeuristicBlockUnreachableSites": "1",
+        "webRequestHeuristicDescription": "Heuristic Engine Detection", "webRequestHeuristicIsSafeUrl": 0,
+        "webRequestHeuristicLevelHighScore": "79", "webRequestHeuristicLevelLowScore": "10",
+        "webRequestHeuristicLevelMediumScore": "60", "webRequestHeuristicLevelNoneScore": "0",
+        "webRequestHeuristicProtectionActionHigh": "0", "webRequestHeuristicProtectionActionLow": "0",
+        "webRequestHeuristicProtectionActionMedium": "0", "webRequestHeuristicProtectionLevel": "1",
+        "webRequestHeuristicSuccess": 1, "webRequestHeuristicSupport": 1}
+
+    results = _iboss_entity_lookup_response_to_message(http_data)
+    assert results == 'Status: Suspicious Url. Please see below; Unreachable - HTTP Error Code: 503; Heuristic Engine Detection'
