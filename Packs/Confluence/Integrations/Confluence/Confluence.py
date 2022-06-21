@@ -13,7 +13,8 @@ requests.packages.urllib3.disable_warnings()
 class Client(BaseClient):
 
     def __init__(self, base_url, api_token: str, access_token: str, username: str, password: str,
-                 consumer_key: str, private_key: str, headers: dict, use_ssl: bool):
+                 consumer_key: str, private_key: str, headers: dict, use_ssl: bool, client_id: str = '',
+                 client_secret: str = '', redirect_uri: str = '', auth_code: str = ''):
         try:
             self.base_url = base_url
             self.use_ssl = use_ssl
@@ -26,7 +27,11 @@ class Client(BaseClient):
                 password=password,
                 consumer_key=consumer_key,
                 private_key=private_key,
-                headers=headers
+                headers=headers,
+                client_id=client_id,
+                client_secret=client_secret,
+                redirect_uri=redirect_uri,
+                auth_code=auth_code
             )
             headers.update(self.atlassian_client.get_headers())
             self.headers = headers
@@ -428,16 +433,35 @@ def test(client: Client, args: dict = {}):
 def main():
 
     params = demisto.params()
-    client = Client(base_url=urljoin(params.get('url'), '/rest/api'),
-                    api_token=params.get('credentials', {}).get('password'),
-                    access_token=params.get('access_token'),
-                    username=params.get('username'),
-                    password=params.get('password'),
-                    consumer_key=params.get('consumer_key'),
-                    private_key=params.get('private_key'),
-                    headers={'Content-Type': 'application/json',
-                             'Accept': 'application/json'},
-                    use_ssl=not params.get('insecure', False))
+    client_args = {
+        "base_url": urljoin(params.get('url'), '/rest/api'),
+        "access_token": params.get('access_token'),
+        "username": params.get('username'),
+        "password": params.get('password'),
+        "consumer_key": params.get('consumer_key'),
+        "private_key": params.get('private_key'),
+        "headers": {'Content-Type': 'application/json', 'Accept': 'application/json'},
+        "use_ssl": not params.get('insecure', False)
+    }
+    if not params.get('use_code', False):
+        client_args['api_token'] = (params.get('credentials', {})).get('password')
+    else:
+        client_args['client_id'] = (params.get('credentials', {})).get('identifier')
+        client_args['client_secret'] = (params.get('credentials', {})).get('password')
+        client_args['redirect_uri'] = params.get('redirect_uri')
+        client_args['auth_code'] = params.get('auth_code')
+    client = Client(**client_args)
+    #
+    # client = Client(base_url=urljoin(params.get('url'), '/rest/api'),
+    #                 api_token=params.get('credentials', {}).get('password'),
+    #                 access_token=params.get('access_token'),
+    #                 username=params.get('username'),
+    #                 password=params.get('password'),
+    #                 consumer_key=params.get('consumer_key'),
+    #                 private_key=params.get('private_key'),
+    #                 headers={'Content-Type': 'application/json',
+    #                          'Accept': 'application/json'},
+    #                 use_ssl=not params.get('insecure', False))
 
     LOG(f'Command being called is {demisto.command()}')
     commands: Dict[str, Callable] = {

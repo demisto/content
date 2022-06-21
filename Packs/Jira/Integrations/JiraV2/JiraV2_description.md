@@ -19,3 +19,6 @@ To use OAuth1.0 follow [this tutorial](https://developer.atlassian.com/cloud/jir
 ##### 3. Private Access Token
 To use a Private Access Token, please follow [this tutorial](https://confluence.atlassian.com/enterprise/using-personal-access-tokens-1026032365.html) to obtain your Access Tokens. Authorizing using a PAT requires the Access Token only.
 Insert the generated token in the `Access Token` field.
+
+#### 4. Authentication Code (OAuth 2.0)
+To use Authentication code flow, please follow [this tutorial](https://developer.atlassian.com/cloud/confluence/oauth-2-3lo-apps/) to get authentication code, client id and client secret.

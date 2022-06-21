@@ -30,7 +30,6 @@ class AtlassianClient(BaseClient):
             - headers: The request headers, for example: {'Accept`: `application/json`}. Can be None.
             - use_oauth: a flag indicating whether the user wants to use OAuth 2.0 or basic authorization.
         """
-        # todo: add param authentication code flow to fill in the grant type arg
         # todo: add inn documentation offline_access to the scope to get refresh token in the first step
         super().__init__(verify=verify, *args, **kwargs)
         self.auth = None
@@ -145,18 +144,18 @@ class AtlassianClient(BaseClient):
         set_integration_context(integration_context)
         return access_token
 
-    def http_request(self, method: str, url: str, headers=None, *args, **kwargs):
+    def http_request(self, method: str, full_url: str, headers=None, *args, **kwargs):
         if headers:
             headers.update(self.headers)
         else:
             headers = self.headers
 
         if self.auth:  # basic auth or Oauth 1.0
-            return requests.request(method=method, url=url, auth=self.auth, headers=headers, *args, **kwargs)
+            return requests.request(method=method, url=full_url, auth=self.auth, headers=headers, *args, **kwargs)
         else:  # auth code
             access_token = self.access_token or self.get_access_token()
             headers.update({"Authorization": f"Bearer {access_token}", "Accept": "application/json"})
-            return requests.request(method=method, url=url, headers=headers, *args, **kwargs)
+            return requests.request(method=method, url=full_url, headers=headers, *args, **kwargs)
 
     def get_token(self, refresh_token: str = ''):
         data = assign_params(

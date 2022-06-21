@@ -1,37 +1,51 @@
 category: Case Management
 commonfields:
-  id: jira-v2
+  id: jira-v2 test
   version: -1
 configuration:
 - display: 'Jira URL, for example: https://demisto.atlassian.net/'
   name: url
   required: true
   type: 0
-- display: Username (Basic Authentication)
+- display: Username :Basic Authentication
   name: username
   required: false
   type: 0
-- display: Password (Deprecated - Use API token)
+- display: Password (Recommended to use API token) :Basic Authentication flow
   name: password
   required: false
   type: 4
-- displaypassword: API token (Recommended)
+- additionalinfo: Check when authenticating using the authentication code flow.
+  display: Use Authentication Code Flow
+  name: use_code
+  required: false
+  type: 8
+- displaypassword: "Client Secret :Authentication Code flow, API token :Basic Authentication"
+  display: Client ID :Auhtentication Code flow
   name: credentials
   required: false
   type: 9
-  hiddenusername: true
+- display: Application redirect URI :Authentication Code flow
+  name: redirect_uri
+  required: false
+  type: 0
+- additionalinfo: Get the Authorization code from steps 3-5 in the authentication code authorization process.
+  display: Authorization code :Authentication code flow
+  name: auth_code
+  required: false
+  type: 4
 - defaultvalue: OauthKey
   additionalinfo: This field is ignored if other required fields are not provided (for example both the access token and the private key).
-  display: Consumer key (OAuth 1.0)
+  display: Consumer key :OAuth 1.0
   name: consumerKey
   required: false
   type: 0
-- display: Access Token
+- display: Access Token :OAuth 1.0 or Personal Access Token
   additionalinfo: This token is used for both OAuth 1.0 and personal access token authentication methods.
   name: accessToken
   required: false
   type: 0
-- display: Private key (PKCS8 format)
+- display: Private key (PKCS8 format) :OAuth 1.0
   name: privateKey
   required: false
   type: 14
@@ -113,8 +127,8 @@ configuration:
 description: Use the Jira integration to manage issues and create Cortex XSOAR incidents
   from Jira projects. From Cortex XSOAR version 6.0 and above, the integration also mirrors issues to
   existing issue incidents in Cortex XSOAR.
-display: Atlassian Jira v2
-name: jira-v2
+display: Atlassian Jira v2 test
+name: jira-v2 test
 script:
   commands:
   - arguments:

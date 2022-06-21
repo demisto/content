@@ -11,19 +11,33 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
-- display: Username (Basic Authentication)
+- display: Username :Basic Authentication
   name: username
   required: false
   type: 0
-- display: Password (Deprecated - Use API token)
+- display: Password :Deprecated - Use API token
   name: password
   required: false
   type: 4
-- displaypassword: API token (Recommended)
-  hiddenusername: true
+- additionalinfo: Check when authenticating using the authentication code flow.
+  display: Use Authentication Code Flow
+  name: use_code
+  required: false
+  type: 8
+- displaypassword: "Client Secret :Authentication Code flow, API token :Basic Authentication"
+  display: Client ID :Auhtentication Code flow
   name: credentials
   required: false
   type: 9
+- display: Application redirect URI :Authentication Code flow
+  name: redirect_uri
+  required: false
+  type: 0
+- additionalinfo: Get the Authorization code from steps 3-5 in the authentication code authorization process.
+  display: Authorization code :Authentication code flow
+  name: auth_code
+  required: false
+  type: 4
 - defaultvalue: OauthKey
   additionalinfo: This field is ignored if other required fields are not provided (for example both the access token and the private key).
   display: Consumer key (OAuth 1.0)

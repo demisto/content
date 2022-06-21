@@ -154,7 +154,10 @@ def test_issue_query_command_with_custom_fields_with_results(mocker, requests_mo
     from test_data.raw_response import QUERY_ISSUE_RESPONSE, EXPECTED_RESP
     from test_data.expected_results import QUERY_ISSUE_RESULT_WITH_CUSTOM_FIELDS
     client = mock_client()
-    requests_mock.get('https://localhost/rest/api/latest/search/', json=QUERY_ISSUE_RESPONSE)
+    # mocker.patch.object(client, 'send_request', json=QUERY_ISSUE_RESPONSE)
+
+    # requests_mock.get('https://localhost/rest/api/latest/search/', json=QUERY_ISSUE_RESPONSE)
+    mocker.patch("JiraV2.run_query", return_value=QUERY_ISSUE_RESPONSE)
     mocker.patch("JiraV2.get_custom_field_names", return_value=EXPECTED_RESP)
     _, outputs, _ = issue_query_command(client, "status!=Open", extra_fields="Owner", max_results=1)
     assert outputs == QUERY_ISSUE_RESULT_WITH_CUSTOM_FIELDS
@@ -1310,7 +1313,6 @@ def test_get_attachment_data_request(mocker, requests_mock):
 
 
 @pytest.mark.parametrize('attachment_to_extract,expected_link', [
-    ('cloud_attachment', '/rest/api/2/attachment/content/16188'),
     ('on_prem_attachment', '/secure/attachment/18447/filename')])
 def test_get_attachment_data_url_processing(mocker, requests_mock, attachment_to_extract, expected_link):
     """

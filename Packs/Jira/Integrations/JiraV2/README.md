@@ -13,48 +13,63 @@ For more information about JQL syntax, go to https://www.atlassian.com/software/
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for jira-v2.
-3. **Authentiction**: As of June 2019, basic authentication using passwords for Jira is no longer supported. Use an API token or OAuth 1.0 instead.
+3. **Authentication**: As of June 2019, basic authentication using passwords for Jira is no longer supported. Use an API token or OAuth 1.0 instead or OAuth 2.0 (authentication code).
 4. Click **Add instance** to create and configure a new integration instance.
     *  ______________ Basic Authentication ________________
     
         To use basic authentication, follow [this tutorial](https://confluence.atlassian.com/cloud/api-tokens-938839638.html) to get the API token. Authorizing the use of basic authentication requires:
     
-        * __Username__
-        * __Password (Deprecated)__
-        * __API token__
+        * __Username__ (fill in the username field)
+        * __Password (Deprecated)__ (fill in the password field)
+        * __API token__ (fill in the credentials' password field)
         
     * ____________________ OAuth 1.0 __________________
            
       To use OAuth1.0 follow [this tutorial](https://developer.atlassian.com/cloud/jira/platform/jira-rest-api-oauth-authentication/) to get the Access token. Authorizing the use of OAuth1.0 requires:
 
-        * __ConsumerKey__
-        * __AccessToken__
-        * __PrivateKey__
+        * __ConsumerKey__ (fill in the consumer key field)
+        * __AccessToken__ (fill in the access token field)
+        * __PrivateKey__ (fill in the private key field)
+      
+    * ____________________ OAuth 2.0 (Authentication Code) __________________
+   
+      To use OAuth 2.0 follow [this tutorial](https://developer.atlassian.com/cloud/confluence/oauth-2-3lo-apps/) to get your authentication code, client id and client secret:
+        1. Copy the following URL and replace `CLIENT_ID`, `scope` and `REDIRECT_URI` with your own client ID, Scope and redirect URI:
+           ```https://auth.atlassian.com/authorize?audience=api.atlassian.com&client_id=CLIENT_ID&scope=offline_access%20REQUESTED_SCOPE_TWO&redirect_uri=REDIRECT_URI&state=YOUR_USER_BOUND_VALUE&response_type=code&prompt=consent```
+        2. Enter the link.
+      
+        If successful, the user will be redirected to the app's callback URL, with an authorization code provided as a query parameter called code.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Jira URL, for example: https://demisto.atlassian.net/ |  | True |
-    | Username (API or Basic Authentication) |  | False |
-    | Password (Deprecated - Use API token) |  | False |
-    | API token |  | False |
-    | Consumer key (OAuth 1.0) | Will be ignored if other required fields are not provided (for example both the Access Token and the Private Key). | False |
-    | Access token | Used for both OAuth 1.0 and Personal Access Token authentication methods. | False |
-    | Private key (PKCS8 format) |  | False |
-    | Query (in JQL) for fetching incidents |  | False |
-    | Issue index to start fetching incidents from |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Fetch incidents |  | False |
-    | Mirror incoming incidents |  | False |
-    | Incident type |  | False |
-    | Use created field to fetch incidents |  | False |
-    | Mirror outgoing incidents |  | False |
-    | File entry tag | Choose the tag to add to an entry to mirror it as an attachment in Jira. | False |
-    | Comment entry tag | Choose the tag to add to an entry to mirror it as a comment in Jira. | False |
-    | Fetch comments | Fetch comments for Jira ticket. | False |
-    | Fetch attachments | Fetch attachments for Jira ticket. | False |
+        3. Copy the `code` (without the `“code=”` prefix) and paste it in your instance configuration under the **Authorization code** parameter. 
+        4. Enter your client ID in the **Client ID** parameter (credentials username). 
+        5. Enter your client secret in the **Client Secret** parameter (credentials password).
+        6. Enter your redirect URI in the **Redirect URI** parameter.
+        7. Check the 
 
-5. Click **Test** to validate the URLs, token, and connection.
+     | **Parameter** | **Description** | **Required** |
+     | --- | --- | --- |
+     | Jira URL, for example: https://demisto.atlassian.net/ |  | True |
+     | Username (API or Basic Authentication) |  | False |
+     | Password (Deprecated - Use API token) |  | False |
+     | API token |  | False |
+     | Consumer key (OAuth 1.0) | Will be ignored if other required fields are not provided (for example both the Access Token and the Private Key). | False |
+     | Access token | Used for both OAuth 1.0 and Personal Access Token authentication methods. | False |
+     | Private key (PKCS8 format) |  | False |
+     | Query (in JQL) for fetching incidents |  | False |
+     | Issue index to start fetching incidents from |  | False |
+     | Trust any certificate (not secure) |  | False |
+     | Use system proxy settings |  | False |
+     | Fetch incidents |  | False |
+     | Mirror incoming incidents |  | False |
+     | Incident type |  | False |
+     | Use created field to fetch incidents |  | False |
+     | Mirror outgoing incidents |  | False |
+     | File entry tag | Choose the tag to add to an entry to mirror it as an attachment in Jira. | False |
+     | Comment entry tag | Choose the tag to add to an entry to mirror it as a comment in Jira. | False |
+     | Fetch comments | Fetch comments for Jira ticket. | False |
+     | Fetch attachments | Fetch attachments for Jira ticket. | False |
+
+11. Click **Test** to validate the URLs, token, and connection.
 
 ## Fetched Incidents Data
 ---

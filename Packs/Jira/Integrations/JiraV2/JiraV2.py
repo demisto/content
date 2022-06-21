@@ -28,7 +28,8 @@ JIRA_RESOLVE_REASON = 'Issue was marked as "Done"'
 class Client(BaseClient):
 
     def __init__(self, base_url, api_token: str, access_token: str, username: str, password: str,
-                 consumer_key: str, private_key: str, headers: dict, use_ssl: bool):
+                 consumer_key: str, private_key: str, headers: dict, use_ssl: bool, client_id: str = '',
+                 client_secret: str = '', redirect_uri: str = '', auth_code: str = ''):
         try:
             self.base_url = base_url
             self.use_ssl = use_ssl
@@ -41,7 +42,12 @@ class Client(BaseClient):
                 password=password,
                 consumer_key=consumer_key,
                 private_key=private_key,
-                headers=headers
+                headers=headers,
+                verify=self.use_ssl,
+                client_id=client_id,
+                client_secret=client_secret,
+                redirect_uri=redirect_uri,
+                auth_code=auth_code
             )
             headers.update(self.atlassian_client.get_headers())
             self.headers = headers
@@ -56,7 +62,8 @@ class Client(BaseClient):
                      resp_type: str = 'text',
                      headers: Optional[dict] = None,
                      files: Optional[dict] = None,
-                     params = None):
+                     params=None,
+                     return_raw: bool = False):
         result = self.atlassian_client.http_request(method=method,
                                                     full_url=resource_url if link else urljoin(self.base_url, resource_url),
                                                     data=body,
@@ -64,6 +71,8 @@ class Client(BaseClient):
                                                     verify=self.use_ssl,
                                                     files=files,
                                                     params=params)
+        if return_raw:
+            return result
         if not result.ok:
             demisto.debug(result.text)
             try:
@@ -100,19 +109,15 @@ def get_custom_field_names(client: Client):
     """
     custom_id_name_mapping = {}
     try:
-        custom_fields_list = client.send_request(method='GET', resource_url='rest/api/latest/field',
-                                                 headers={'accept': "application/json"}, resp_type='json')
-        # res = requests.request(
-        #     method='GET',
-        #     url=urljoin(client.base_url, 'rest/api/latest/field'),
-        #     headers=client.headers.update({'accept': "application/json"}),
-        #     verify=client.use_ssl,
-        #     auth=client.atlassian_client.get_auth(),
-        # )
+        res = client.send_request(method='GET', resource_url='rest/api/latest/field',
+                                  headers={'accept': "application/json"}, return_raw=True)
+
     except Exception as e:
         demisto.error(f'Could not get custom fields because got the next exception: {e}')
     else:
-        custom_id_name_mapping = {field.get('id'): field.get('name') for field in custom_fields_list}
+        if res.ok:
+            custom_fields_list = res.json()
+            custom_id_name_mapping = {field.get('id'): field.get('name') for field in custom_fields_list}
     finally:
         return custom_id_name_mapping
 
@@ -149,14 +154,8 @@ def run_query(client: Client, query, start_at='', max_results=None, extra_fields
             return_warning(f'{",".join(nofields)} does not exist')
     try:
         result = client.send_request(method='GET', resource_url='rest/api/latest/search/',
-                                     params=query_params)
-        # result = requests.get(
-        #     url=url,
-        #     headers=client.headers,
-        #     verify=client.use_ssl,
-        #     params=query_params,
-        #     auth=client.atlassian_client.get_auth(),
-        # )
+                                     params=query_params, return_raw=True)
+
     except ValueError:
         raise ValueError("Could not deserialize privateKey")
 
@@ -195,21 +194,14 @@ def get_custom_fields(client: Client):
     """
     custom_id_description_mapping = {}
     try:
-        res = requests.request(
-            method='GET',
-            url=urljoin(client.base_url, 'rest/api/latest/field'),
-            headers=client.headers.update({'accept': "application/json"}),
-            verify=client.use_ssl,
-            auth=client.atlassian_client.get_auth(),
-        )
+        res = client.send_request(method='GET', resource_url='rest/api/latest/field',
+                                  headers={'accept': "application/json"}, return_raw=True)
     except Exception as e:
         demisto.error(f'Could not get custom fields because got the next exception: {e}')
     else:
-        if res.status_code == 200:
+        if res.ok:
             custom_fields_list = res.json()
             custom_id_description_mapping = {field.get('id'): field.get('description') for field in custom_fields_list}
-        else:
-            demisto.error(f'Could not get custom fields. status code: {res.status_code}. reason: {res.reason}')
     finally:
         return custom_id_description_mapping
 
@@ -1163,11 +1155,8 @@ def get_user_info_data(client: Client):
     This function returns details for a current user in order to get timezone.
     :return: API response
     """
-    return requests.request(method='GET',
-                            url=urljoin(client.base_url, 'rest/api/latest/myself'),
-                            headers=client.headers.update({'accept': "application/json"}),
-                            verify=client.use_ssl,
-                            auth=client.atlassian_client.get_auth())
+    return client.atlassian_client.http_request(method='GET', headers={'accept': "application/json"},
+                                                full_url=urljoin(client.base_url, 'rest/api/latest/myself'))
 
 
 def get_modified_remote_data_command(client: Client, args):
@@ -1298,15 +1287,25 @@ def get_remote_data_command(client: Client, args) -> GetRemoteDataResponse:
 def main():
     params = demisto.params()
     args = demisto.args()
-    client = Client(base_url=params.get('url').rstrip('/') + '/',
-                    api_token=params.get('APItoken') or (params.get('credentials', {})).get('password'),  # type: ignore
-                    access_token=params.get('accessToken'),
-                    username=params.get('username'),
-                    password=params.get('password'),
-                    consumer_key=params.get('consumerKey'),
-                    private_key=params.get('privateKey'),
-                    headers={'Content-Type': 'application/json'},
-                    use_ssl=not params.get('insecure', False))
+
+    client_args = {
+        "base_url": params.get('url').rstrip('/') + '/',
+        "access_token": params.get('accessToken'),
+        "username": params.get('username'),
+        "password": params.get('password'),
+        "consumer_key": params.get('consumerKey'),
+        "private_key": params.get('privateKey'),
+        "headers": {'Content-Type': 'application/json'},
+        "use_ssl": not params.get('insecure', False)
+    }
+    if not params.get('use_code', False):
+        client_args['api_token'] = (params.get('credentials', {})).get('password')
+    else:
+        client_args['client_id'] = (params.get('credentials', {})).get('identifier')
+        client_args['client_secret'] = (params.get('credentials', {})).get('password')
+        client_args['redirect_uri'] = params.get('redirect_uri')
+        client_args['auth_code'] = params.get('auth_code')
+    client = Client(**client_args)
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
