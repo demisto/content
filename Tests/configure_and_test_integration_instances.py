@@ -269,12 +269,14 @@ class Build:
         for server in self.servers:
             disable_all_integrations(server.client)
 
-    def get_changed_integrations(self, turned_non_hidden_packs_names: Set[str] = None) -> Tuple[List[str], List[str]]:
+    def get_changed_integrations(self, packs_not_to_install: Set[str] = None) -> Tuple[List[str], List[str]]:
         """
         Return 2 lists - list of new integrations names and list of modified integrations names since the commit of the git_sha1.
+        The modified list is exclude the packs_not_to_install and the new list is including it
+        in order to ignore the turned non-hidden tests in the pre-update stage.
         Args:
-            self: the build object
-            turned_non_hidden_packs_names (Set[str]): The set of packs names which are turned to non-hidden.
+            self: the build object.
+            packs_not_to_install (Set[str]): The set of packs names which are turned to non-hidden.
         Returns:
             Tuple[List[str], List[str]]: The list of new integrations names and list of modified integrations names.
         """
@@ -289,7 +291,7 @@ class Build:
         if modified_integrations_files:
             modified_integrations_names = get_integration_names_from_files(modified_integrations_files)
             logging.debug(f'Updated Integrations Since Last Release:\n{modified_integrations_names}')
-        return update_integration_lists(new_integrations_names, turned_non_hidden_packs_names, modified_integrations_names)
+        return update_integration_lists(new_integrations_names, packs_not_to_install, modified_integrations_names)
 
     @abstractmethod
     def concurrently_run_function_on_servers(self, function=None, pack_path=None, service_account=None):
@@ -1656,25 +1658,37 @@ def packs_names_to_integrations_names(turned_non_hidden_packs_names: Set[str]) -
     return hidden_integrations_names
 
 
-def update_integration_lists(new_integrations_names: List[str], turned_non_hidden_packs_names: Set[str],
+def update_integration_lists(new_integrations_names: List[str], packs_not_to_install: Set[str],
                              modified_integrations_names: List[str]) -> Tuple[List[str], List[str]]:
     """
     Add the turned non-hidden integrations names to the new integrations names list and
      remove it from modified integrations names.
     Args:
         new_integrations_names (List[str]): The new integration name (e.g. "AbnormalSecurity").
-        turned_non_hidden_packs_names (Set[str]): The turned non-hidden packs names.
+        packs_not_to_install (Set[str]): The turned non-hidden packs names.
         modified_integrations_names (List[str]): The modified integration name (e.g. "AbnormalSecurity").
     Returns:
         Tuple[List[str], List[str]]: The updated lists after filtering the turned non-hidden integrations.
     """
-    hidden_integrations_names = packs_names_to_integrations_names(turned_non_hidden_packs_names)
+    hidden_integrations_names = packs_names_to_integrations_names(packs_not_to_install)
     # update the new integration and the modified integration with the non-hidden integrations.
     for hidden_integration_name in hidden_integrations_names:
         if hidden_integration_name in modified_integrations_names:
             modified_integrations_names.remove(hidden_integration_name)
             new_integrations_names.append(hidden_integration_name)
     return list(set(new_integrations_names)), modified_integrations_names
+
+
+def get_packs_not_to_install(modified_packs_names: Set[str], build: Build) -> Set[str]:
+    """
+    Return a set of packs to install only in the post-update.
+    Args:
+        modified_packs_names (Set[str]): The set of packs to install.
+        build (Build): The build object.
+    Returns:
+        (Set[str]): The set of the packs names that supposed to be not installed in the pre-update.
+    """
+    return get_turned_non_hidden_packs(modified_packs_names, build)
 
 
 def main():
@@ -1713,10 +1727,10 @@ def main():
         build.install_nightly_pack()
     else:
         modified_packs_names = get_non_added_packs_ids(build)
-        turned_non_hidden_packs_names = get_turned_non_hidden_packs(modified_packs_names, build)
-        packs_to_install = modified_packs_names - turned_non_hidden_packs_names
+        packs_not_to_install = get_packs_not_to_install(modified_packs_names, build)
+        packs_to_install = modified_packs_names - packs_not_to_install
         build.install_packs(pack_ids=packs_to_install)
-        new_integrations_names, modified_integrations_names = build.get_changed_integrations(turned_non_hidden_packs_names)
+        new_integrations_names, modified_integrations_names = build.get_changed_integrations(packs_not_to_install)
         pre_update_configuration_results = build.configure_and_test_integrations_pre_update(new_integrations_names,
                                                                                             modified_integrations_names)
         modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre = pre_update_configuration_results
