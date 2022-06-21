@@ -1183,16 +1183,11 @@ def get_incident_name(incident: Dict, incident_id: str) -> str:
         incident name.
     """
     incident_reasons = incident.get('reason', [])
-    demisto.debug(f"$$$REASON FIELD$$$\n\n{incident_reasons}\n\n\n$$REASON FIELD TYPE$$\n {type(incident_reasons)}")
-
     try:
         incident_reason = ''
         for reason in incident_reasons:
-            if reason.startswith('Policy: '):
-                incident_reason += f"{reason[8:]}, "
-            if isinstance(reason, dict):
-                if reason.get('Policies'):
-                    incident_reason += f"{incident_reasons.get('Policies')[0]},"
+            if reason.startswith('Threat Model: '):
+                incident_reason += f"{reason[14:]}, "
         if incident_reason:
             # Remove ", " last chars and concatenate with the incident ID
             incident_name = f"{incident_reason[:-2]}: {incident_id}"
