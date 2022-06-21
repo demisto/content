@@ -1,14 +1,18 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-
-'''IMPORTS'''
 import collections
 import json as JSON
 import time
 
+import demistomock as demisto  # noqa: F401
 import requests
+from CommonServerPython import *  # noqa: F401
 from requests.utils import quote  # type: ignore
 from urlparse import urlparse
+
+register_module_line('urlscan.io', 'start', __line__())
+
+
+'''IMPORTS'''
+
 
 """ POLLING FUNCTIONS"""
 try:
@@ -20,8 +24,7 @@ except ImportError:
 requests.packages.urllib3.disable_warnings()
 
 '''GLOBAL VARS'''
-BLACKLISTED_URL_ERROR_MESSAGE = 'The submitted domain is on our blacklist. ' \
-                                'For your own safety we did not perform this scan...'
+BLACKLISTED_URL_ERROR_MESSAGE = 'The submitted domain is on our blacklist, we will not scan it.'
 BRAND = 'urlscan.io'
 
 """ RELATIONSHIP TYPE"""
@@ -755,3 +758,5 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
+
+register_module_line('urlscan.io', 'end', __line__())
