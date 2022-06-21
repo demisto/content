@@ -1187,12 +1187,12 @@ def get_incident_name(incident: Dict, incident_id: str) -> str:
 
     try:
         incident_reason = ''
-        if isinstance(incident_reasons, list):
-            for reason in incident_reasons:
-                if reason.startswith('Policy: '):
-                    incident_reason += f"{reason[8:]}, "
-        elif isinstance(incident_reasons, dict):
-            incident_reason += incident_reasons.get('Policy', '')
+        for reason in incident_reasons:
+            if reason.startswith('Policy: '):
+                incident_reason += f"{reason[8:]}, "
+            if isinstance(reason, dict):
+                if reason.get('Policies'):
+                    incident_reason += f"{incident_reasons.get('Policies')[0]},"
         if incident_reason:
             # Remove ", " last chars and concatenate with the incident ID
             incident_name = f"{incident_reason[:-2]}: {incident_id}"
