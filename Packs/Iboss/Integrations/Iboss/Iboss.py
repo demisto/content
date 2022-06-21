@@ -1056,13 +1056,13 @@ def add_entity_to_block_list_command(client: Client, args: Dict[str, Any]) -> li
         end_port (ZeroOneTwoEnum): Which end ports(s) to match. 0 indicates all ports. defaultValue=0.
         global (ZeroOneEnum): Whether to apply to all groups. defaultValue=0. Options=[0, 1]. defaultValue=0
         is_regex (ZeroOneEnum): Whether entity consists of a regex pattern. Options=[0, 1]. defaultValue=0
-        priority: Priority of entry (higher number takes precedence) when conflicting entry in allow list. 
-            defaultValue=0
+        priority: Priority of entry (higher number takes precedence) when conflicting entry in allow list.
+        defaultValue=0
         time_url_expires_in_minutes: The expiration time in minutes for the entry 
-            (0 indicates an entry that does not expire). defaultValue=0.
+        (0 indicates an entry that does not expire). defaultValue=0.
 
-    Returns:
-        A ``CommandResults`` object that is then passed to ``return_results``, that contains the update result of the entry.
+    Returns: A ``CommandResults`` object that is then passed to ``return_results``, that contains the update result 
+    of the entry. 
 
     Context Outputs:
         message (str): Update result.

@@ -210,14 +210,14 @@ def test_ip_lookup(requests_mock, mocker):
         'webRequestHeuristicSuccess': 1, 'webRequestHeuristicSupport': 1}
 
     requests_mock.post(
-        f'https://pswg.com/json/controls/urlLookup',
+        'https://pswg.com/json/controls/urlLookup',
         json=http_data)
 
     results = ip_lookup(client, {"ip": "1.1.1.1"})
 
     assert results[0].outputs['DBotScore']['score'] == 2
-    assert results[0].outputs['iboss'][
-               'malwareEngineAnalysisDescription'] == "Redirect - Redirects to: https://1.1.1.1/"
+    expected = "Redirect - Redirects to: https://1.1.1.1/"
+    assert results[0].outputs['iboss']['malwareEngineAnalysisDescription'] == expected
     assert results[0].outputs['iboss']['webRequestHeuristicBlockUnreachableSites'] == "1"
 
 
@@ -264,15 +264,14 @@ def test_domain_lookup(requests_mock, mocker):
                  "webRequestHeuristicSuccess": 1, "webRequestHeuristicSupport": 1}
 
     requests_mock.post(
-        f'https://pswg.com/json/controls/urlLookup',
+        'https://pswg.com/json/controls/urlLookup',
         json=http_data)
 
     results = domain_lookup(client, {"domain": "myetherevvalliet.com"})
 
     assert results[0].outputs['DBotScore']['score'] == 3
-    assert results[0].outputs['Domain']['Malicious'][
-               'Description'] == "Status: Suspicious Url. Please see below; Unreachable - HTTP Error Code: 503; " \
-                                 "Heuristic Engine Detection"
+    expected = "Status: Suspicious Url. Please see below; Unreachable - HTTP Error Code: 503; Heuristic Engine Detection"
+    assert results[0].outputs['Domain']['Malicious']['Description'] == expected
     assert results[0].outputs['iboss']['reputationDatabaseMalwareDetection'] == 1
 
 
@@ -314,5 +313,5 @@ def test__iboss_entity_lookup_response_to_message():
         "webRequestHeuristicSuccess": 1, "webRequestHeuristicSupport": 1}
 
     results = _iboss_entity_lookup_response_to_message(http_data)
-    assert results == 'Status: Suspicious Url. Please see below; Unreachable - HTTP Error Code: 503; ' \
-            'Heuristic Engine Detection'
+    expected = 'Status: Suspicious Url. Please see below; Unreachable - HTTP Error Code: 503; Heuristic Engine Detection'
+    assert results == expected
