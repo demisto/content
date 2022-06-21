@@ -21,7 +21,7 @@ def main():
         else:
             markdown = tableToMarkdown(title, json.loads(events)[:MAX_EVENTS])
 
-        return CommandResults(outputs=markdown)
+        return CommandResults(readable_output=markdown)
     except Exception as exp:
         return_error('could not parse QRadar events', error=exp)
 
