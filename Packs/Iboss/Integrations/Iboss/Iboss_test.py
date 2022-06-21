@@ -5,54 +5,47 @@ import datetime
 import copy
 
 REPUTATION_RESPONSE_UNREACHABLE_MALICIOUS_DOMAIN = {
-        "activeMalwareSubscription": 1,
-        "categories": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
-        "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
-        "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
-        "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
-        "00000000000000",
-        "categorized": "true", "googleSafeBrowsingDescription": "", "googleSafeBrowsingEnabled": 1,
-        "googleSafeBrowsingIsSafeUrl": 1, "googleSafeBrowsingSuccess": 1, "googleSafeBrowsingSupport": 1,
-        "isSafeUrl": 0, "malwareEngineAnalysisDescription": "Unreachable - HTTP Error Code: 503",
-        "malwareEngineAnalysisEnabled": 1, "malwareEngineAnalysisSuccess": 1, "malwareEngineIsSafeUrl": 1,
-        "malwareEngineResultCode": 2, "message": "Status: Suspicious Url. Please see below.",
-        "realtimeCloudLookupDomainIsGrey": 0, "realtimeCloudLookupEnabled": 1,
-        "realtimeCloudLookupIsSafeUrl": 1, "realtimeCloudLookupRiskDescription": "",
-        "realtimeCloudLookupSuccess": 1, "reputationDatabaseBotnetDetection": 0,
-        "reputationDatabaseEnabled": 1, "reputationDatabaseIsSafeUrl": 0, "reputationDatabaseLookupSuccess": 1,
-        "reputationDatabaseMalwareDetection": 1, "url": "unreachable.com",
-        "webRequestHeuristicBlockUnreachableSites": "1",
-        "webRequestHeuristicDescription": "Heuristic Engine Detection", "webRequestHeuristicIsSafeUrl": 0,
-        "webRequestHeuristicLevelHighScore": "79", "webRequestHeuristicLevelLowScore": "10",
-        "webRequestHeuristicLevelMediumScore": "60", "webRequestHeuristicLevelNoneScore": "0",
-        "webRequestHeuristicProtectionActionHigh": "0", "webRequestHeuristicProtectionActionLow": "0",
-        "webRequestHeuristicProtectionActionMedium": "0", "webRequestHeuristicProtectionLevel": "1",
-        "webRequestHeuristicSuccess": 1, "webRequestHeuristicSupport": 1}
+    "activeMalwareSubscription": 1,
+    "categories": "0",
+    "categorized": "true", "googleSafeBrowsingDescription": "", "googleSafeBrowsingEnabled": 1,
+    "googleSafeBrowsingIsSafeUrl": 1, "googleSafeBrowsingSuccess": 1, "googleSafeBrowsingSupport": 1,
+    "isSafeUrl": 0, "malwareEngineAnalysisDescription": "Unreachable - HTTP Error Code: 503",
+    "malwareEngineAnalysisEnabled": 1, "malwareEngineAnalysisSuccess": 1, "malwareEngineIsSafeUrl": 1,
+    "malwareEngineResultCode": 2, "message": "Status: Suspicious Url. Please see below.",
+    "realtimeCloudLookupDomainIsGrey": 0, "realtimeCloudLookupEnabled": 1,
+    "realtimeCloudLookupIsSafeUrl": 1, "realtimeCloudLookupRiskDescription": "",
+    "realtimeCloudLookupSuccess": 1, "reputationDatabaseBotnetDetection": 0,
+    "reputationDatabaseEnabled": 1, "reputationDatabaseIsSafeUrl": 0, "reputationDatabaseLookupSuccess": 1,
+    "reputationDatabaseMalwareDetection": 1, "url": "unreachable.com",
+    "webRequestHeuristicBlockUnreachableSites": "1",
+    "webRequestHeuristicDescription": "Heuristic Engine Detection", "webRequestHeuristicIsSafeUrl": 0,
+    "webRequestHeuristicLevelHighScore": "79", "webRequestHeuristicLevelLowScore": "10",
+    "webRequestHeuristicLevelMediumScore": "60", "webRequestHeuristicLevelNoneScore": "0",
+    "webRequestHeuristicProtectionActionHigh": "0", "webRequestHeuristicProtectionActionLow": "0",
+    "webRequestHeuristicProtectionActionMedium": "0", "webRequestHeuristicProtectionLevel": "1",
+    "webRequestHeuristicSuccess": 1, "webRequestHeuristicSupport": 1}
 
 REPUTATION_RESPONSE_UNREACHABLE_SUSPICIOUS_DOMAIN = {
-        "activeMalwareSubscription": 1,
-        "categories": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
-        "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
-        "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
-        "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
-        "00000000000000",
-        "categorized": "true", "googleSafeBrowsingDescription": "", "googleSafeBrowsingEnabled": 1,
-        "googleSafeBrowsingIsSafeUrl": 1, "googleSafeBrowsingSuccess": 1, "googleSafeBrowsingSupport": 1,
-        "isSafeUrl": 0, "malwareEngineAnalysisDescription": "Unreachable - HTTP Error Code: 503",
-        "malwareEngineAnalysisEnabled": 1, "malwareEngineAnalysisSuccess": 1, "malwareEngineIsSafeUrl": 1,
-        "malwareEngineResultCode": 2, "message": "Status: Suspicious Url. Please see below.",
-        "realtimeCloudLookupDomainIsGrey": 0, "realtimeCloudLookupEnabled": 1,
-        "realtimeCloudLookupIsSafeUrl": 1, "realtimeCloudLookupRiskDescription": "",
-        "realtimeCloudLookupSuccess": 1, "reputationDatabaseBotnetDetection": 0,
-        "reputationDatabaseEnabled": 1, "reputationDatabaseIsSafeUrl": 1, "reputationDatabaseLookupSuccess": 1,
-        "reputationDatabaseMalwareDetection": 1, "url": "unreachable.com",
-        "webRequestHeuristicBlockUnreachableSites": "1",
-        "webRequestHeuristicDescription": "Heuristic Engine Detection", "webRequestHeuristicIsSafeUrl": 0,
-        "webRequestHeuristicLevelHighScore": "79", "webRequestHeuristicLevelLowScore": "10",
-        "webRequestHeuristicLevelMediumScore": "60", "webRequestHeuristicLevelNoneScore": "0",
-        "webRequestHeuristicProtectionActionHigh": "0", "webRequestHeuristicProtectionActionLow": "0",
-        "webRequestHeuristicProtectionActionMedium": "0", "webRequestHeuristicProtectionLevel": "1",
-        "webRequestHeuristicSuccess": 1, "webRequestHeuristicSupport": 1}
+    "activeMalwareSubscription": 1,
+    "categories": "0",
+    "categorized": "true", "googleSafeBrowsingDescription": "", "googleSafeBrowsingEnabled": 1,
+    "googleSafeBrowsingIsSafeUrl": 1, "googleSafeBrowsingSuccess": 1, "googleSafeBrowsingSupport": 1,
+    "isSafeUrl": 0, "malwareEngineAnalysisDescription": "Unreachable - HTTP Error Code: 503",
+    "malwareEngineAnalysisEnabled": 1, "malwareEngineAnalysisSuccess": 1, "malwareEngineIsSafeUrl": 1,
+    "malwareEngineResultCode": 2, "message": "Status: Suspicious Url. Please see below.",
+    "realtimeCloudLookupDomainIsGrey": 0, "realtimeCloudLookupEnabled": 1,
+    "realtimeCloudLookupIsSafeUrl": 1, "realtimeCloudLookupRiskDescription": "",
+    "realtimeCloudLookupSuccess": 1, "reputationDatabaseBotnetDetection": 0,
+    "reputationDatabaseEnabled": 1, "reputationDatabaseIsSafeUrl": 1, "reputationDatabaseLookupSuccess": 1,
+    "reputationDatabaseMalwareDetection": 1, "url": "unreachable.com",
+    "webRequestHeuristicBlockUnreachableSites": "1",
+    "webRequestHeuristicDescription": "Heuristic Engine Detection", "webRequestHeuristicIsSafeUrl": 0,
+    "webRequestHeuristicLevelHighScore": "79", "webRequestHeuristicLevelLowScore": "10",
+    "webRequestHeuristicLevelMediumScore": "60", "webRequestHeuristicLevelNoneScore": "0",
+    "webRequestHeuristicProtectionActionHigh": "0", "webRequestHeuristicProtectionActionLow": "0",
+    "webRequestHeuristicProtectionActionMedium": "0", "webRequestHeuristicProtectionLevel": "1",
+    "webRequestHeuristicSuccess": 1, "webRequestHeuristicSupport": 1}
+
 
 def get_mock_client(mocker):
     from Iboss import Client
@@ -237,10 +230,10 @@ def test_ip_lookup(requests_mock, mocker):
     http_data = {
         'activeMalwareSubscription': 1,
         'categories': '0000000000000000000000000000000000000001000000000000000000000000000000000000000'
-        '0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'
-        '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'
-        '000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'
-        '000000000000000000000000000000000000',
+                      '0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'
+                      '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'
+                      '000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'
+                      '000000000000000000000000000000000000',
         'categorized': 'true', 'googleSafeBrowsingDescription': '', 'googleSafeBrowsingEnabled': 1,
         'googleSafeBrowsingIsSafeUrl': 1, 'googleSafeBrowsingSuccess': 1, 'googleSafeBrowsingSupport': 1,
         'isSafeUrl': 0, 'malwareEngineAnalysisDescription': 'Redirect - Redirects to: https://1.1.1.1/',
@@ -291,10 +284,10 @@ def test_domain_lookup(requests_mock, mocker):
 
     http_data = {"activeMalwareSubscription": 1,
                  "categories": "000000000000000000000000000000000000000000000000000000000000000000000000000000"
-                 "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
-                 "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
-                 "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
-                 "00000000000000000000000000000000000000000",
+                               "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+                               "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+                               "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+                               "00000000000000000000000000000000000000000",
                  "categorized": "true", "googleSafeBrowsingDescription": "", "googleSafeBrowsingEnabled": 1,
                  "googleSafeBrowsingIsSafeUrl": 1, "googleSafeBrowsingSuccess": 1, "googleSafeBrowsingSupport": 1,
                  "isSafeUrl": 0, "malwareEngineAnalysisDescription": "Unreachable - HTTP Error Code: 503",
@@ -324,6 +317,7 @@ def test_domain_lookup(requests_mock, mocker):
     assert results[0].outputs['Domain']['Malicious']['Description'] == expected
     assert results[0].outputs['iboss']['reputationDatabaseMalwareDetection'] == 1
 
+
 def test_reputation_calculate_dbot_score_malicious():
     """
        Scenario: Derive dbot score from iboss domain lookup response
@@ -339,6 +333,7 @@ def test_reputation_calculate_dbot_score_malicious():
     results = reputation_calculate_dbot_score(REPUTATION_RESPONSE_UNREACHABLE_MALICIOUS_DOMAIN)
     expected = 3
     assert results == expected
+
 
 def test_reputation_calculate_dbot_score_suspicious():
     """
@@ -373,6 +368,7 @@ def test_reputation_get_malicious_message_suspicious():
     expected = ''
     assert results == expected
 
+
 def test_reputation_get_malicious_message_malicious():
     """
        Scenario: Derive message from iboss domain lookup response
@@ -388,6 +384,7 @@ def test_reputation_get_malicious_message_malicious():
     results = reputation_get_malicious_message(REPUTATION_RESPONSE_UNREACHABLE_MALICIOUS_DOMAIN, 3)
     expected = 'Status: Suspicious Url. Please see below; Unreachable - HTTP Error Code: 503; Heuristic Engine Detection'
     assert results == expected
+
 
 def test_reputation_get_headers():
     """
@@ -411,6 +408,7 @@ def test_reputation_get_headers():
     ]
     assert results == expected
 
+
 def test_reputation_get_headers_malware_disabled():
     """
        Scenario: Derive headers from iboss domain lookup response (malware engine analysis disabled)
@@ -428,7 +426,7 @@ def test_reputation_get_headers_malware_disabled():
 
     results = reputation_get_headers(response)
     expected = [
-        'categories', 'isSafeUrl', 'message',
+        'message', 'categories', 'isSafeUrl',
         'reputationDatabaseLookupSuccess', 'reputationDatabaseMalwareDetection', 'reputationDatabaseBotnetDetection',
         'webRequestHeuristicSuccess', 'webRequestHeuristicProtectionLevel', 'webRequestHeuristicDescription',
         'googleSafeBrowsingSuccess', 'googleSafeBrowsingIsSafeUrl', 'googleSafeBrowsingDescription',
