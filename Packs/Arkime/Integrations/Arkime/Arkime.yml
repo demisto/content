@@ -86,18 +86,6 @@ script:
       description: 'Which connections to display when a baseline date range is applied. Default is all. Options include: ‘all’ - All Nodes: all nodes are visible. ‘actual’ - Actual Nodes: nodes present in the “current” timeframe query results are visible. ‘actualold’ - Baseline Nodes: nodes present in the “baseline” timeframe query results are visible. ‘new’ - New Nodes Only: nodes present in the “current” but NOT the “baseline” timeframe are visible. ‘old’ - Baseline Nodes Only: nodes present in the “baseline” but NOT the “current” timeframe are visible.'
       required: false
       isArray: false
-    - name: limit
-      description: The number of items to return. Defaults to 100, Max is 2,000,000
-      required: false
-      isArray: false
-    - name: page_number
-      description: The page at which to start. The default is 0
-      required: false
-      isArray: false
-    - name: page_size
-      description: Page size. Minimum page size is 1, maximum is 100.
-      required: false
-      isArray: false
     outputs:
     - contextPath: Arkime.Connection.nodes.id
       description: The source ip.
@@ -200,15 +188,6 @@ script:
       description: When set the entire session must be inside the date range to be observed, otherwise if it overlaps it is displayed. Overwrites the bounding parameter, sets bonding to ‘both’
       required: false
       isArray: false
-    - name: limit
-      description: The number of items to return. Defaults to 100, Max is 2,000,000
-      required: false
-      isArray: false
-    - name: offset
-      description: The entry to start at. Defaults to 0
-      required: false
-      isArray: false
-      defaultValue: '0'
     outputs:
     - contextPath: Arkime.Connection.InfoFile.Name
       description: The file name.

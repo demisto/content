@@ -47,9 +47,7 @@ class Client(BaseClient):
                                 order: Optional[str],
                                 fields: Optional[str],
                                 bounding: Optional[str],
-                                strictly: Optional[bool],
-                                length: int,
-                                start: Optional[int]):
+                                strictly: Optional[bool]):
         params = assign_params(srcField=source_field,
                                dstField=destination_field,
                                date=date,
@@ -61,8 +59,6 @@ class Client(BaseClient):
                                fields=fields,
                                bounding=bounding,
                                strictly=strictly,
-                               length=length,
-                               start=start,
                                )
 
         headers = self._headers
@@ -85,9 +81,7 @@ class Client(BaseClient):
                                 bounding: Optional[str],
                                 strictly: Optional[bool],
                                 baseline_date: Optional[List[str]],
-                                baseline_view: Optional[List[str]],
-                                length: Optional[int],
-                                start: Optional[int]):
+                                baseline_view: Optional[List[str]]):
         params = assign_params(srcField=source_field,
                                dstField=destination_field,
                                date=date,
@@ -101,8 +95,6 @@ class Client(BaseClient):
                                strictly=strictly,
                                baselineDate=baseline_date,
                                baselineVis=baseline_view,
-                               length=length,
-                               start=start,
                                )
 
         headers = self._headers
@@ -571,14 +563,10 @@ def connection_csv_get_command(client: Client,
                                order: str = None,
                                fields: str = None,
                                bounding: str = None,
-                               strictly: bool = None,
-                               limit: int = DEFAULT_LIMIT,
-                               offset: int = DEFAULT_OFFSET) -> Dict:
+                               strictly: bool = None) -> Dict:
     """
     Gets a list of nodes and links in csv format and returns them to the client.
     """
-    length = length_validness(arg_to_number(limit), MAX_LENGTH)
-    start = arg_to_number(offset)
 
     response = client.connections_csv_request(source_field=source_field,
                                               destination_field=destination_field,
@@ -591,8 +579,6 @@ def connection_csv_get_command(client: Client,
                                               fields=fields,
                                               bounding=bounding,
                                               strictly=strictly,
-                                              length=length,  # type: ignore
-                                              start=start,
                                               )
 
     return fileResult(filename='connections_list.csv', data=response.content, file_type=EntryType.ENTRY_INFO_FILE)
@@ -611,58 +597,25 @@ def connection_list_command(client: Client,
                             bounding: str = None,
                             strictly: bool = None,
                             baseline_date: List[str] = None,
-                            baseline_view: List[str] = None,
-                            limit: int = DEFAULT_LIMIT,
-                            page_number: int = None,
-                            page_size: int = None) -> CommandResults:
+                            baseline_view: List[str] = None
+                            ) -> CommandResults:
     """
     Gets a list of nodes and links and returns them to the client.
     """
-    length = length_validness(arg_to_number(limit), MAX_LENGTH)
-    page_number = arg_to_number(page_number)
-    page_size = arg_to_number(page_size)
-
-    pagination_dict = pagination(page_size, page_number, length)  # type: ignore
-    start = pagination_dict.get('page_number', DEFAULT_OFFSET)
-    length = pagination_dict.get('length', DEFAULT_LIMIT)
-    is_pagination: bool = pagination_dict.get('pagination', False)  # type: ignore
-
-    # To avoid time out, we do api calls by batches
-    if not is_pagination and length > MAX_BATCH_LIMIT:
-        response = responses_by_batches(client.get_connections_request,
-                                        length=length,
-                                        start=start,
-                                        source_field=source_field,
-                                        destination_field=destination_field,
-                                        date=date,
-                                        expression=expression,
-                                        start_time=start_time,
-                                        stop_time=stop_time,
-                                        view=view,
-                                        order=order,
-                                        fields=fields,
-                                        bounding=bounding,
-                                        strictly=strictly,
-                                        baseline_date=baseline_date,
-                                        baseline_view=baseline_view,
-                                        )
-    else:
-        response = client.get_connections_request(source_field=source_field,
-                                                  destination_field=destination_field,
-                                                  date=date,
-                                                  expression=expression,
-                                                  start_time=start_time,
-                                                  stop_time=stop_time,
-                                                  view=view,
-                                                  order=order,
-                                                  fields=fields,
-                                                  bounding=bounding,
-                                                  strictly=strictly,
-                                                  baseline_date=baseline_date,
-                                                  baseline_view=baseline_view,
-                                                  length=length,
-                                                  start=start
-                                                  )
+    response = client.get_connections_request(source_field=source_field,
+                                              destination_field=destination_field,
+                                              date=date,
+                                              expression=expression,
+                                              start_time=start_time,
+                                              stop_time=stop_time,
+                                              view=view,
+                                              order=order,
+                                              fields=fields,
+                                              bounding=bounding,
+                                              strictly=strictly,
+                                              baseline_date=baseline_date,
+                                              baseline_view=baseline_view,
+                                              )
 
     headers = ['id', 'cnt', 'sessions', 'node']
     mapping = {'id': 'Source IP',
@@ -674,12 +627,11 @@ def connection_list_command(client: Client,
         outputs_prefix='Arkime.Connection',
         outputs=response,
         raw_response=response,
-        readable_output=create_paging_header(len(response.get('nodes', [])), start, length,
-                                             is_pagination) + tableToMarkdown('Connection Results:',
-                                                                              response.get('nodes'),
-                                                                              headerTransform=lambda
-                                                                              header: mapping.get(header, header),
-                                                                              headers=headers)
+        readable_output=tableToMarkdown('Connection Results:',
+                                        response.get('nodes'),
+                                        headerTransform=lambda
+                                        header: mapping.get(header, header),
+                                        headers=headers)
     )
 
     return command_results

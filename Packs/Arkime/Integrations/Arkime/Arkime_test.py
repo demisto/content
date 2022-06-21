@@ -66,8 +66,6 @@ def test_connection_csv_get_command(mocker, arkime_client):
     res = connection_csv_get_command(arkime_client, **args)
 
     params = {'date': 1,
-              'length': 100,
-              'start': 0,
               'startTime': '1648817940',
               'stopTime': '1649595540',
               }
@@ -101,16 +99,13 @@ def test_connection_list_command_with_default_start(mocker, arkime_client):
 
     params = {'baselineDate': '720',
               'date': 1,
-              'length': 100,
-              'start': 0,
               'startTime': '1648817940',
               'stopTime': '1649595540',
               }
 
     http_request.assert_called_with('POST', 'api/connections', params=params, headers=HEADERS)
 
-    assert res.readable_output == 'Showing 1 results, limit=100\n' \
-                                  '### Connection Results:\n' \
+    assert res.readable_output == '### Connection Results:\n' \
                                   '|Source IP|Count|Sessions|Node|\n' \
                                   '|---|---|---|---|\n' \
                                   '| 1.1.1.1 | 1 | 2 | localhost |\n'
