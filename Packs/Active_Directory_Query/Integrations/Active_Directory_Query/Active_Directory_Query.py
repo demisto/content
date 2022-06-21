@@ -1640,7 +1640,7 @@ def get_mapping_fields_command(search_base):
 def set_password_not_expire(default_base_dn):
     args = demisto.args()
     sam_account_name = args.get('username')
-    pwd_n_exp = arg_to_boolean(args.get('value'))
+    pwd_n_exp = argToBoolean(args.get('value'))
     
     # query by sAMAccountName
     if sam_account_name:
