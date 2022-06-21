@@ -1650,8 +1650,8 @@ def set_password_not_expire(default_base_dn):
     if not check_if_user_exists_by_attribute(default_base_dn, "sAMAccountName", sam_account_name):
         return_error(f"sAMAccountName {sam_account_name} was not found.")
     else:
-	if entries.get('flat'):
-	    user = entries.get('flat')[0]
+        if entries.get('flat'):
+            user = entries.get('flat')[0]
             user_account_control = user.get('userAccountControl')[0]
 
             # Check if UAC flag for "Password Never Expire" (0x10000) is set to True or False:
@@ -1667,7 +1667,7 @@ def set_password_not_expire(default_base_dn):
             attribute_name = 'userAccountControl'
             attribute_value = user_account_control
             dn = user_dn(sam_account_name, default_base_dn)
-	    modification = {attribute_name: [('MODIFY_REPLACE', attribute_value)]} 
+            modification = {attribute_name: [('MODIFY_REPLACE', attribute_value)]} 
 	 
             # modify user
             modify_object(dn, modification)
@@ -1677,8 +1677,8 @@ def set_password_not_expire(default_base_dn):
                 'Contents': content_output
             }
             demisto.results(demisto_entry)
-	else:
-	    raise DemistoException(f"Unable to fetch attribute 'userAccountControl' for user {sam_account_name}.")
+        else:
+            raise DemistoException(f"Unable to fetch attribute 'userAccountControl' for user {sam_account_name}.")
 
 
 def main():
