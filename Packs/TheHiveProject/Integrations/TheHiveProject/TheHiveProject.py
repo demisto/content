@@ -1059,7 +1059,6 @@ def main() -> None:
             return_results(command_map[command](client, args))  # type: ignore
 
     except Exception as err:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {command} command. \nError: {str(err)}')
 
 

@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-import traceback
 from typing import Any, Dict, List, get_type_hints, get_origin, get_args, Callable, Type, no_type_check
 
 import urllib3
@@ -1813,15 +1812,12 @@ def main():
         else:
             return_results(command_function(client, **convert_args(command_function, demisto.args())))
     except (ConnectionError, InvalidURL, InvalidSchema) as e:
-        demisto.error(traceback.format_exc())
         error_message = f"{INVALID_URL_ERROR}\nError:\n{e}"
         return_error(error_message)
     except HTTPError as e:
-        demisto.error(traceback.format_exc())
         error_message = f"Error in API call [{e.response.status_code}]\n{e.response.json().get('message')}"
         return_error(error_message)
     except Exception as e:
-        demisto.error(traceback.format_exc())
         error_message = f"Failed to execute {demisto.command()} command.\nError:\n{e}"
         return_error(error_message)
 
