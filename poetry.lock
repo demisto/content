@@ -180,14 +180,14 @@ six = "*"
 
 [[package]]
 name = "boto3"
-version = "1.24.9"
+version = "1.24.13"
 description = "The AWS SDK for Python"
 category = "main"
 optional = false
 python-versions = ">= 3.7"
 
 [package.dependencies]
-botocore = ">=1.27.9,<1.28.0"
+botocore = ">=1.27.13,<1.28.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.6.0,<0.7.0"
 
@@ -196,7 +196,7 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.27.9"
+version = "1.27.13"
 description = "Low-level, data-driven core of boto 3."
 category = "main"
 optional = false
@@ -239,7 +239,7 @@ python-versions = "~=3.7"
 
 [[package]]
 name = "certifi"
-version = "2022.5.18.1"
+version = "2022.6.15"
 description = "Python package for providing Mozilla's CA Bundle."
 category = "main"
 optional = false
@@ -288,7 +288,7 @@ colorama = {version = "*", markers = "platform_system == \"Windows\""}
 
 [[package]]
 name = "colorama"
-version = "0.4.4"
+version = "0.4.5"
 description = "Cross-platform colored terminal text."
 category = "main"
 optional = false
@@ -424,85 +424,92 @@ version = "1.6.8"
 description = "\"A Python library for the Demisto SDK\""
 category = "main"
 optional = false
-python-versions = ">=3.8,<4.0"
+python-versions = "^3.8"
+develop = false
 
 [package.dependencies]
-autopep8 = ">=1.6.0,<2.0.0"
-bandit = ">=1.7.4,<2.0.0"
-bs4 = ">=0.0.1,<0.0.2"
-chardet = ">=4.0.0,<5.0.0"
-click = ">=8.0.0,<9.0.0"
-colorama = ">=0.4.4,<0.5.0"
-coloredlogs = ">=15.0.1,<16.0.0"
-configparser = ">=5.2.0,<6.0.0"
-coverage = "6.3.2"
-cryptography = ">=36.0.2,<37.0.0"
-dateparser = ">=1.1.1,<2.0.0"
-decorator = ">=5.1.1,<6.0.0"
-demisto-py = ">=3.1.6,<4.0.0"
-dictdiffer = ">=0.9.0,<0.10.0"
-dictor = ">=0.1.9,<0.2.0"
-docker = ">=5.0.3,<6.0.0"
-flake8 = ">=4.0.1,<5.0.0"
-flatten-dict = ">=0.4.2,<0.5.0"
-gitdb = ">=4.0.9,<5.0.0"
-GitPython = ">=3.1.27,<4.0.0"
-giturlparse = ">=0.10.0,<0.11.0"
-google-cloud-storage = ">=2.2.1,<3.0.0"
-imagesize = ">=1.3.0,<2.0.0"
-importlib-resources = ">=5.6.0,<6.0.0"
-inflection = ">=0.5.1,<0.6.0"
-isort = ">=5.10.1,<6.0.0"
-Jinja2 = ">=3.1.1,<4.0.0"
-jsonschema = ">=4.4.0,<5.0.0"
-klara = ">=0.6.3,<0.7.0"
-MarkupSafe = ">=2.1.1,<3.0.0"
-mergedeep = ">=1.3.4,<2.0.0"
-mypy = ">=0.942,<0.943"
-networkx = ">=2.7.1,<3.0.0"
-nltk = ">=3.7,<4.0"
-ordered-set = ">=4.1.0,<5.0.0"
-paramiko = ">=2.11.0,<3.0.0"
-Pebble = ">=4.6.3,<5.0.0"
-pipenv = ">=2022.3.28,<2023.0.0"
-prettytable = ">=3.2.0,<4.0.0"
-pykwalify = ">=1.8.0,<2.0.0"
+autopep8 = "^1.6.0"
+bandit = "^1.7.4"
+bs4 = "^0.0.1"
+chardet = "^4.0.0"
+click = "^8.0.0"
+colorama = "^0.4.4"
+coloredlogs = "^15.0.1"
+configparser = "^5.2.0"
+coverage = "=6.3.2"
+cryptography = "^36.0.2"
+dateparser = "^1.1.1"
+decorator = "^5.1.1"
+demisto-py = "^3.1.6"
+dictdiffer = "^0.9.0"
+dictor = "^0.1.9"
+docker = "^5.0.3"
+flake8 = "^4.0.1"
+flatten-dict = "^0.4.2"
+gitdb = "^4.0.9"
+GitPython = "^3.1.27"
+giturlparse = "^0.10.0"
+google-cloud-storage = "^2.2.1"
+imagesize = "^1.3.0"
+importlib-resources = "^5.6.0"
+inflection = "^0.5.1"
+isort = "^5.10.1"
+Jinja2 = "^3.1.1"
+jsonschema = "^4.4.0"
+klara = "^0.6.3"
+MarkupSafe = "^2.1.1"
+mergedeep = "^1.3.4"
+mypy = "^0.942"
+networkx = "^2.7.1"
+nltk = "^3.7"
+ordered-set = "^4.1.0"
+paramiko = "^2.11.0"
+Pebble = "^4.6.3"
+pipenv = "^2022.3.28"
+prettytable = "^3.2.0"
+pykwalify = "^1.8.0"
 pylint = "2.12.2"
-PyPDF2 = ">=1.26.0,<2.0.0"
-pyspellchecker = ">=0.6.3,<0.7.0"
-pytest-freezegun = ">=0.4.2,<0.5.0"
-python-dotenv = ">=0.20.0,<0.21.0"
-requests = ">=2.27.1,<3.0.0"
-"ruamel.yaml" = ">=0.17.21,<0.18.0"
-slackclient = ">=2.9.3,<3.0.0"
-tabulate = ">=0.8.9,<0.9.0"
-typed-ast = ">=1.5.2,<2.0.0"
-types-chardet = ">=4.0.3,<5.0.0"
-types-dateparser = ">=1.1.0,<2.0.0"
-types-emoji = ">=1.2.7,<2.0.0"
-types-filelock = ">=3.2.5,<4.0.0"
-types-futures = ">=3.3.8,<4.0.0"
-types-ipaddress = ">=1.0.8,<2.0.0"
-types-Markdown = ">=3.3.21,<4.0.0"
-types-paramiko = ">=2.8.17,<3.0.0"
-types-protobuf = ">=3.19.15,<4.0.0"
-types-PyMySQL = ">=1.0.15,<2.0.0"
-types-python-dateutil = ">=2.8.10,<3.0.0"
-types-pytz = ">=2021.3.6,<2022.0.0"
-types-pyvmomi = ">=7.0.6,<8.0.0"
-types-PyYAML = ">=6.0.5,<7.0.0"
+PyPDF2 = "^1.26.0"
+pyspellchecker = "^0.6.3"
+pytest-freezegun = "^0.4.2"
+python-dotenv = "^0.20.0"
+requests = "^2.27.1"
+"ruamel.yaml" = "^0.17.21"
+slackclient = "^2.9.3"
+tabulate = "^0.8.9"
+typed-ast = "^1.5.2"
+types-chardet = "^4.0.3"
+types-dateparser = "^1.1.0"
+types-emoji = "^1.2.7"
+types-filelock = "^3.2.5"
+types-futures = "^3.3.8"
+types-ipaddress = "^1.0.8"
+types-Markdown = "^3.3.21"
+types-paramiko = "^2.8.17"
+types-protobuf = "^3.19.15"
+types-PyMySQL = "^1.0.15"
+types-python-dateutil = "^2.8.10"
+types-pytz = "^2021.3.6"
+types-pyvmomi = "^7.0.6"
+types-PyYAML = "^6.0.5"
 types-requests = "2.26.3"
-types-six = ">=1.16.12,<2.0.0"
-types-tabulate = ">=0.8.6,<0.9.0"
-typing-extensions = ">=4.1.1,<5.0.0"
-ujson = ">=5.1.0,<6.0.0"
-urllib3 = ">=1.26.9,<2.0.0"
-vulture = ">=2.3,<3.0"
-wcmatch = ">=8.3,<9.0"
-yamlordereddictloader = ">=0.4.0,<0.5.0"
+types-six = "^1.16.12"
+types-tabulate = "^0.8.6"
+typing-extensions = "^4.1.1"
+ujson = "^5.1.0"
+urllib3 = "^1.26.9"
+vulture = "^2.3"
+wcmatch = "^8.3"
+yamlordereddictloader = "^0.4.0"
 
 [package.extras]
 build = ["gsutil (==5.8)"]
+
+[package.source]
+type = "git"
+url = "https://github.com/demisto/demisto-sdk.git"
+reference = "4cb6e8bded67a17174aa36069aa71fe00b3548a3"
+resolved_reference = "4cb6e8bded67a17174aa36069aa71fe00b3548a3"
 
 [[package]]
 name = "deprecated"
@@ -668,7 +675,7 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "google-api-core"
-version = "2.8.1"
+version = "2.8.2"
 description = "Google API client core library"
 category = "main"
 optional = false
@@ -679,13 +686,11 @@ google-auth = ">=1.25.0,<3.0dev"
 googleapis-common-protos = ">=1.56.2,<2.0dev"
 grpcio = {version = ">=1.33.2,<2.0dev", optional = true, markers = "extra == \"grpc\""}
 grpcio-status = {version = ">=1.33.2,<2.0dev", optional = true, markers = "extra == \"grpc\""}
-protobuf = ">=3.15.0,<4.0.0dev"
+protobuf = ">=3.15.0,<5.0.0dev"
 requests = ">=2.18.0,<3.0.0dev"
 
 [package.extras]
 grpc = ["grpcio (>=1.33.2,<2.0dev)", "grpcio-status (>=1.33.2,<2.0dev)"]
-grpcgcp = ["grpcio-gcp (>=0.2.2,<1.0dev)"]
-grpcio-gcp = ["grpcio-gcp (>=0.2.2,<1.0dev)"]
 
 [[package]]
 name = "google-auth"
@@ -884,7 +889,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [[package]]
 name = "importlib-resources"
-version = "5.7.1"
+version = "5.8.0"
 description = "Read resources from Python packages"
 category = "main"
 optional = false
@@ -943,7 +948,7 @@ i18n = ["Babel (>=2.7)"]
 
 [[package]]
 name = "jmespath"
-version = "1.0.0"
+version = "1.0.1"
 description = "JSON Matching Expressions"
 category = "main"
 optional = false
@@ -1938,7 +1943,7 @@ python-versions = "*"
 
 [[package]]
 name = "types-paramiko"
-version = "2.10.0"
+version = "2.11.0"
 description = "Typing stubs for paramiko"
 category = "main"
 optional = false
@@ -1949,7 +1954,7 @@ types-cryptography = "*"
 
 [[package]]
 name = "types-protobuf"
-version = "3.19.21"
+version = "3.19.22"
 description = "Typing stubs for protobuf"
 category = "main"
 optional = false
@@ -2131,7 +2136,7 @@ python-versions = "*"
 
 [[package]]
 name = "websocket-client"
-version = "1.3.2"
+version = "1.3.3"
 description = "WebSocket client for Python with low level API options"
 category = "main"
 optional = false
@@ -2199,7 +2204,7 @@ build = ["google-cloud-bigquery"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "63d2edabe6986244dcde5b30f9d55939f22d94843a8b629277e1837bbfa4acdf"
+content-hash = "8d8c3bd6a00a1ab1088f54da4872ae675be7c1db7350af522b39fef1be2caf91"
 
 [metadata.files]
 aiohttp = [
@@ -2353,12 +2358,12 @@ blessings = [
     {file = "blessings-1.7.tar.gz", hash = "sha256:98e5854d805f50a5b58ac2333411b0482516a8210f23f43308baeb58d77c157d"},
 ]
 boto3 = [
-    {file = "boto3-1.24.9-py3-none-any.whl", hash = "sha256:87d34861727699c795bf8d65703f2435e75f12879bdd483e08b35b7c5510e8c8"},
-    {file = "boto3-1.24.9.tar.gz", hash = "sha256:0821212ff521cb934801b1f655cef3c0e976775324b1018f1751700d0f42dbb4"},
+    {file = "boto3-1.24.13-py3-none-any.whl", hash = "sha256:13efff22f1cb6d25ec7027edaccdfdd515ba593e093173beb09094cff898a8cc"},
+    {file = "boto3-1.24.13.tar.gz", hash = "sha256:945d49941541a3cbb02710361be64b22f98e68c2e447229f0d51f7c215009e28"},
 ]
 botocore = [
-    {file = "botocore-1.27.9-py3-none-any.whl", hash = "sha256:5669b982b0583e73daef1fe0a4df311055e6287326f857dbb1dcc2de1d8412ad"},
-    {file = "botocore-1.27.9.tar.gz", hash = "sha256:7a7588b0170e571317496ac4104803329d5bc792bc008e8a757ffd440f1b6fa6"},
+    {file = "botocore-1.27.13-py3-none-any.whl", hash = "sha256:fbc09558c02d415e8646520f95db7e8d313460938780fa6040b00865f098fd55"},
+    {file = "botocore-1.27.13.tar.gz", hash = "sha256:df75e53576b061818bbce4bd70221749e40cc91d16a2b6c03fbeec8023665734"},
 ]
 bracex = [
     {file = "bracex-2.3.post1-py3-none-any.whl", hash = "sha256:351b7f20d56fb9ea91f9b9e9e7664db466eb234188c175fd943f8f755c807e73"},
@@ -2372,8 +2377,8 @@ cachetools = [
     {file = "cachetools-5.2.0.tar.gz", hash = "sha256:6a94c6402995a99c3970cc7e4884bb60b4a8639938157eeed436098bf9831757"},
 ]
 certifi = [
-    {file = "certifi-2022.5.18.1-py3-none-any.whl", hash = "sha256:f1d53542ee8cbedbe2118b5686372fb33c297fcd6379b050cca0ef13a597382a"},
-    {file = "certifi-2022.5.18.1.tar.gz", hash = "sha256:9c5705e395cd70084351dd8ad5c41e65655e08ce46f2ec9cf6c2c08390f71eb7"},
+    {file = "certifi-2022.6.15-py3-none-any.whl", hash = "sha256:fe86415d55e84719d75f8b69414f6438ac3547d2078ab91b67e779ef69378412"},
+    {file = "certifi-2022.6.15.tar.gz", hash = "sha256:84c85a9078b11105f04f3036a9482ae10e4621616db313fe045dd24743a0820d"},
 ]
 cffi = [
     {file = "cffi-1.15.0-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:c2502a1a03b6312837279c8c1bd3ebedf6c12c4228ddbad40912d671ccc8a962"},
@@ -2440,8 +2445,8 @@ click = [
     {file = "click-8.1.3.tar.gz", hash = "sha256:7682dc8afb30297001674575ea00d1814d808d6a36af415a82bd481d37ba7b8e"},
 ]
 colorama = [
-    {file = "colorama-0.4.4-py2.py3-none-any.whl", hash = "sha256:9f47eda37229f68eee03b24b9748937c7dc3868f906e8ba69fbcbdd3bc5dc3e2"},
-    {file = "colorama-0.4.4.tar.gz", hash = "sha256:5941b2b48a20143d2267e95b1c2a7603ce057ee39fd88e7329b0c292aa16869b"},
+    {file = "colorama-0.4.5-py2.py3-none-any.whl", hash = "sha256:854bf444933e37f5824ae7bfc1e98d5bce2ebe4160d46b5edf346a89358e99da"},
+    {file = "colorama-0.4.5.tar.gz", hash = "sha256:e6c6b4334fc50988a639d9b98aa429a0b57da6e17b9a44f0451f930b6967b7a4"},
 ]
 coloredlogs = [
     {file = "coloredlogs-15.0.1-py2.py3-none-any.whl", hash = "sha256:612ee75c546f53e92e70049c9dbfcc18c935a2b9a53b66085ce9ef6a6e5c0934"},
@@ -2536,10 +2541,7 @@ demisto-py = [
     {file = "demisto-py-3.1.7.tar.gz", hash = "sha256:43b1263effa3e2dc8cff0d32007a65c20a32614eb53fb2d4283e58c0df607563"},
     {file = "demisto_py-3.1.7-py3-none-any.whl", hash = "sha256:edb5e5ef9bb3a687002169bd1109e694d432f9e0eda578753fba7a9244566547"},
 ]
-demisto-sdk = [
-    {file = "demisto-sdk-1.6.8.tar.gz", hash = "sha256:4dad4b14b0e0e1ff581954411faa9387d93ef645440501dc602163b62566dece"},
-    {file = "demisto_sdk-1.6.8-py3-none-any.whl", hash = "sha256:7b5c572487f88697add33e1a5c0da3143181df76b7bd2ca1828f25fd4bda63fc"},
-]
+demisto-sdk = []
 deprecated = [
     {file = "Deprecated-1.2.13-py2.py3-none-any.whl", hash = "sha256:64756e3e14c8c5eea9795d93c524551432a0be75629f8f29e67ab8caf076c76d"},
     {file = "Deprecated-1.2.13.tar.gz", hash = "sha256:43ac5335da90c31c24ba028af536a91d41d53f9e6901ddb021bcc572ce44e38d"},
@@ -2656,8 +2658,8 @@ giturlparse = [
     {file = "giturlparse-0.10.0.tar.gz", hash = "sha256:2595ab291d30717cda8474b874c9fd509f1b9802ad7f6968c36a45e4b13eb337"},
 ]
 google-api-core = [
-    {file = "google-api-core-2.8.1.tar.gz", hash = "sha256:958024c6aa3460b08f35741231076a4dd9a4c819a6a39d44da9627febe8b28f0"},
-    {file = "google_api_core-2.8.1-py3-none-any.whl", hash = "sha256:ce1daa49644b50398093d2a9ad886501aa845e2602af70c3001b9f402a9d7359"},
+    {file = "google-api-core-2.8.2.tar.gz", hash = "sha256:06f7244c640322b508b125903bb5701bebabce8832f85aba9335ec00b3d02edc"},
+    {file = "google_api_core-2.8.2-py3-none-any.whl", hash = "sha256:93c6a91ccac79079ac6bbf8b74ee75db970cc899278b97d53bc012f35908cf50"},
 ]
 google-auth = [
     {file = "google-auth-2.8.0.tar.gz", hash = "sha256:819b70140d05501739e1387291d39f0de3b4dff3b00ae4aff8e7a05369957f89"},
@@ -2805,8 +2807,8 @@ imagesize = [
     {file = "imagesize-1.3.0.tar.gz", hash = "sha256:cd1750d452385ca327479d45b64d9c7729ecf0b3969a58148298c77092261f9d"},
 ]
 importlib-resources = [
-    {file = "importlib_resources-5.7.1-py3-none-any.whl", hash = "sha256:e447dc01619b1e951286f3929be820029d48c75eb25d265c28b92a16548212b8"},
-    {file = "importlib_resources-5.7.1.tar.gz", hash = "sha256:b6062987dfc51f0fcb809187cffbd60f35df7acb4589091f154214af6d0d49d3"},
+    {file = "importlib_resources-5.8.0-py3-none-any.whl", hash = "sha256:7952325ffd516c05a8ad0858c74dff2c3343f136fe66a6002b2623dd1d43f223"},
+    {file = "importlib_resources-5.8.0.tar.gz", hash = "sha256:568c9f16cb204f9decc8d6d24a572eeea27dacbb4cee9e6b03a8025736769751"},
 ]
 inflection = [
     {file = "inflection-0.5.1-py2.py3-none-any.whl", hash = "sha256:f38b2b640938a4f35ade69ac3d053042959b62a0f1076a5bbaa1b9526605a8a2"},
@@ -2825,8 +2827,8 @@ jinja2 = [
     {file = "Jinja2-3.1.2.tar.gz", hash = "sha256:31351a702a408a9e7595a8fc6150fc3f43bb6bf7e319770cbc0db9df9437e852"},
 ]
 jmespath = [
-    {file = "jmespath-1.0.0-py3-none-any.whl", hash = "sha256:e8dcd576ed616f14ec02eed0005c85973b5890083313860136657e24784e4c04"},
-    {file = "jmespath-1.0.0.tar.gz", hash = "sha256:a490e280edd1f57d6de88636992d05b71e97d69a26a19f058ecf7d304474bf5e"},
+    {file = "jmespath-1.0.1-py3-none-any.whl", hash = "sha256:02e2e4cc71b5bcab88332eebf907519190dd9e6e82107fa7f83b1003a6252980"},
+    {file = "jmespath-1.0.1.tar.gz", hash = "sha256:90261b206d6defd58fdd5e85f478bf633a2901798906be2ad389150c5c60edbe"},
 ]
 joblib = [
     {file = "joblib-1.1.0-py2.py3-none-any.whl", hash = "sha256:f21f109b3c7ff9d95f8387f752d0d9c34a02aa2f7060c2135f465da0e5160ff6"},
@@ -3626,12 +3628,12 @@ types-markdown = [
     {file = "types_Markdown-3.3.28-py3-none-any.whl", hash = "sha256:7868cfa3f8a2304d9ecea2ca9b02c14fcb2e34bd26fdbaf01d8c4d362a85d345"},
 ]
 types-paramiko = [
-    {file = "types-paramiko-2.10.0.tar.gz", hash = "sha256:ab6893d5fce5ed06964d61939ed6a7168ab14952945a90995a628a5e82a5e161"},
-    {file = "types_paramiko-2.10.0-py3-none-any.whl", hash = "sha256:f558bb26ff3b085f7282125559927ebf9e1c08410cd4aac5766addbf4d15c8bc"},
+    {file = "types-paramiko-2.11.0.tar.gz", hash = "sha256:41e6d65b092155f018c161f49f9df97fbce4ab6dfab034d9b4d74c92849e32fa"},
+    {file = "types_paramiko-2.11.0-py3-none-any.whl", hash = "sha256:fb4261063a443fd88385b14f236a3e89d8eef1902bfef58e9de076ae36e16f98"},
 ]
 types-protobuf = [
-    {file = "types-protobuf-3.19.21.tar.gz", hash = "sha256:ecbff0b17b4196aecec055ae4bd25eb344aaf5d848ce38043a44d68a0d51ec3e"},
-    {file = "types_protobuf-3.19.21-py3-none-any.whl", hash = "sha256:6ac25d57f6d674a3f31c9657997aeebdd1196b3ead87e0b798b174243d719856"},
+    {file = "types-protobuf-3.19.22.tar.gz", hash = "sha256:d2b26861b0cb46a3c8669b0df507b7ef72e487da66d61f9f3576aa76ce028a83"},
+    {file = "types_protobuf-3.19.22-py3-none-any.whl", hash = "sha256:d291388678af91bb045fafa864f142dc4ac22f5d4cdca097c7d8d8a32fa9b3ab"},
 ]
 types-pymysql = [
     {file = "types-PyMySQL-1.0.19.tar.gz", hash = "sha256:f79a1f4d9df4a65db999537f9a47de419be162dfeab3b2c91bcba8bb1a362a65"},
@@ -3754,8 +3756,8 @@ wcwidth = [
     {file = "wcwidth-0.2.5.tar.gz", hash = "sha256:c4d647b99872929fdb7bdcaa4fbe7f01413ed3d98077df798530e5b04f116c83"},
 ]
 websocket-client = [
-    {file = "websocket-client-1.3.2.tar.gz", hash = "sha256:50b21db0058f7a953d67cc0445be4b948d7fc196ecbeb8083d68d94628e4abf6"},
-    {file = "websocket_client-1.3.2-py3-none-any.whl", hash = "sha256:722b171be00f2b90e1d4fb2f2b53146a536ca38db1da8ff49c972a4e1365d0ef"},
+    {file = "websocket-client-1.3.3.tar.gz", hash = "sha256:d58c5f284d6a9bf8379dab423259fe8f85b70d5fa5d2916d5791a84594b122b1"},
+    {file = "websocket_client-1.3.3-py3-none-any.whl", hash = "sha256:5d55652dc1d0b3c734f044337d929aaf83f4f9138816ec680c1aefefb4dc4877"},
 ]
 wrapt = [
     {file = "wrapt-1.13.3-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:e05e60ff3b2b0342153be4d1b597bbcfd8330890056b9619f4ad6b8d5c96a81a"},
