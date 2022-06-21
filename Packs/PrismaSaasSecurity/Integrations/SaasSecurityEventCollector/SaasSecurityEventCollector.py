@@ -2,7 +2,6 @@ import demistomock as demisto
 import urllib3
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
-import traceback
 from typing import Dict, Tuple
 
 # Disable insecure warnings
@@ -244,7 +243,6 @@ def main() -> None:
         else:
             raise ValueError(f'Command {command} is not implemented in saas-security integration.')
     except Exception as e:
-        demisto.error(traceback.format_exc())
         raise Exception(f'Error in Palo Alto Saas Security Event Collector Integration [{e}]')
 
 
