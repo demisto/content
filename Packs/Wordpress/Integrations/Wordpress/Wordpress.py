@@ -21,21 +21,6 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 class Client(BaseClient):
     
-    def list_posts(self, args: dict = {}):
-        url_suffix = '/wp-json/wp/v2/posts'
-        response = self._http_request('GET', url_suffix, params=args)
-        return response
-
-    def list_events(self):
-        url_suffix = 'wp-json/tribe/events/v1/events'
-        response = self._http_request('GET', url_suffix)
-        return response
-
-    def get_post(self, post_id, params: dict = {}):
-        url_suffix = f"wp-json/wp/v2/posts/{post_id}"
-        response = self._http_request('GET', url_suffix, params=params)
-        return response
-
     def url_request(self, method, url, body: dict = None, params: dict = None):
         response = self._http_request(
             method,
@@ -43,6 +28,16 @@ class Client(BaseClient):
             json_data=body,
             params=params
         )
+        return response
+        
+    def list_posts(self, args: dict = {}):
+        url_suffix = '/wp-json/wp/v2/posts'
+        response = self._http_request('GET', url_suffix, params=args)
+        return response
+
+    def get_post(self, post_id, params: dict = {}):
+        url_suffix = f"wp-json/wp/v2/posts/{post_id}"
+        response = self._http_request('GET', url_suffix, params=params)
         return response
 
     def create_post(self, args: dict):
@@ -119,6 +114,59 @@ class Client(BaseClient):
         response = self._http_request('DELETE', url_suffix=url_suffix, params=params)
         return response
 
+    def list_comments(self, args: dict = {}):
+        url_suffix = '/wp-json/wp/v2/comments'
+        response = self._http_request('GET', url_suffix, params=args)
+        return response
+
+    def get_comment(self, comment_id, params: dict = {}):
+        url_suffix = f"wp-json/wp/v2/comments/{comment_id}"
+        response = self._http_request('GET', url_suffix, params=params)
+        return response
+
+    def create_comment(self, args: dict):
+        url_suffix = "/wp-json/wp/v2/comments"
+        response = self._http_request('POST', url_suffix=url_suffix, json_data=args)
+        return response
+
+    def update_comment(self, comment_id, args: dict):
+        url_suffix = f"/wp-json/wp/v2/comments/{comment_id}"
+        response = self._http_request('POST', url_suffix=url_suffix, json_data=args)
+        return response
+
+    def delete_comment(self, comment_id, force):
+        url_suffix = f"/wp-json/wp/v2/comments/{comment_id}"
+        params = {
+            "force": force
+        }
+        response = self._http_request('DELETE', url_suffix=url_suffix, params=params)
+        return response
+
+    def list_users(self, args: dict = {}):
+        url_suffix = '/wp-json/wp/v2/users'
+        response = self._http_request('GET', url_suffix, params=args)
+        return response
+
+    def get_user(self, user_id, params: dict = {}):
+        url_suffix = f"wp-json/wp/v2/users/{user_id}"
+        response = self._http_request('GET', url_suffix, params=params)
+        return response
+
+    def create_user(self, args: dict):
+        url_suffix = "/wp-json/wp/v2/users"
+        response = self._http_request('POST', url_suffix=url_suffix, json_data=args)
+        return response
+
+    def update_user(self, user_id, args: dict):
+        url_suffix = f"/wp-json/wp/v2/users/{user_id}"
+        response = self._http_request('POST', url_suffix=url_suffix, json_data=args)
+        return response
+
+    def delete_user(self, user_id, args):
+        url_suffix = f"/wp-json/wp/v2/users/{user_id}"
+        response = self._http_request('DELETE', url_suffix=url_suffix, params=args)
+        return response
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -130,30 +178,6 @@ class Client(BaseClient):
 def test_module(client: Client) -> str:
     client.list_posts()
     return ('ok')
-
-
-def list_posts_command(client: Client, args: dict = {}):
-    response = client.list_posts(args)
-    command_results = CommandResults(
-        outputs_prefix='Wordpress.Posts',
-        outputs_key_field='id',
-        outputs=response,
-        readable_output=tableToMarkdown("Posts:", response)
-    )
-    return_results(command_results)
-
-
-def get_post_command(client: Client, args: dict = {}):
-    post_id = args.get('id')
-    params = {k: v for k, v in args.items() if k != "id"}
-    response = client.get_post(post_id, params=params)
-    command_results = CommandResults(
-        outputs_prefix='Wordpress.Posts',
-        outputs_key_field='id',
-        outputs=response,
-        readable_output=tableToMarkdown("Posts:", response)
-    )
-    return_results(command_results)
 
 
 def url_request_command(client: Client, args: dict = {}):
@@ -181,6 +205,30 @@ def url_request_command(client: Client, args: dict = {}):
         outputs_key_field=['url'],
         outputs=outputs,
         readable_output=tableToMarkdown(f"{url}:", response)
+    )
+    return_results(command_results)
+
+
+def list_posts_command(client: Client, args: dict = {}):
+    response = client.list_posts(args)
+    command_results = CommandResults(
+        outputs_prefix='Wordpress.Posts',
+        outputs_key_field='id',
+        outputs=response,
+        readable_output=tableToMarkdown("Posts:", response)
+    )
+    return_results(command_results)
+
+
+def get_post_command(client: Client, args: dict = {}):
+    post_id = args.get('id')
+    params = {k: v for k, v in args.items() if k != "id"}
+    response = client.get_post(post_id, params=params)
+    command_results = CommandResults(
+        outputs_prefix='Wordpress.Posts',
+        outputs_key_field='id',
+        outputs=response,
+        readable_output=tableToMarkdown("Posts:", response)
     )
     return_results(command_results)
 
@@ -360,6 +408,131 @@ def delete_tag_command(client: Client, args: dict):
     return_results(command_results)
 
 
+def list_comments_command(client: Client, args: dict):
+    response = client.list_comments()
+    command_results = CommandResults(
+        outputs_prefix='Wordpress.Comments',
+        outputs_key_field='id',
+        outputs=response,
+        readable_output=tableToMarkdown("Comments:", response)
+    )
+    return_results(command_results)
+
+
+def create_comment_command(client: Client, args: dict):
+    response = client.create_comment(args)
+    command_results = CommandResults(
+        outputs_prefix='Wordpress.Comments',
+        outputs_key_field='id',
+        outputs=response,
+        readable_output=tableToMarkdown(f"Created new comment:", response)
+    )
+    return_results(command_results)
+
+
+def get_comment_command(client: Client, args: dict):
+    comment_id = args.get('id')
+    params = {k: v for k, v in args.items() if k != 'id'}
+    response = client.get_comment(comment_id, params)
+    command_results = CommandResults(
+        outputs_prefix='Wordpress.Comments',
+        outputs_key_field='id',
+        outputs=response,
+        readable_output=tableToMarkdown(f"Comment {comment_id}:", response)
+    )
+    return_results(command_results)
+
+
+def update_comment_command(client: Client, args: dict):
+    comment_id = args.get('id')
+    args = {k: v for k, v in args.items() if k != "id"}
+    response = client.update_comment(comment_id, args)
+    command_results = CommandResults(
+        outputs_prefix='Wordpress.Comments',
+        outputs_key_field='id',
+        outputs=response,
+        readable_output=tableToMarkdown(f"Tag {comment_id} updated:", response)
+    )
+    return_results(command_results)
+
+
+def delete_comment_command(client: Client, args: dict):
+    comment_id = args.get('id')
+    force = argToBoolean(args.get('force'))
+    response = client.delete_comment(comment_id, force)
+    command_results = CommandResults()
+    if force:
+        command_results.readable_output = f"Comment {comment_id} permanently deleted."
+    else:
+        command_results.readable_output = tableToMarkdown(f"Comment {comment_id} moved to trash:", response)
+        command_results.outputs_prefix = 'Wordpress.Comments'
+        command_results.outputs_key_field='id'
+        command_results.outputs=response
+    return_results(command_results)
+
+
+def list_users_command(client: Client, args: dict = {}):
+    response = client.list_users(args)
+    command_results = CommandResults(
+        outputs_prefix='Wordpress.Users',
+        outputs_key_field='id',
+        outputs=response,
+        readable_output=tableToMarkdown("Users:", response)
+    )
+    return_results(command_results)
+
+
+def get_user_command(client: Client, args: dict = {}):
+    user_id = args.get('id')
+    params = {k: v for k, v in args.items() if k != "id"}
+    response = client.get_user(user_id, params=params)
+    command_results = CommandResults(
+        outputs_prefix='Wordpress.Users',
+        outputs_key_field='id',
+        outputs=response,
+        readable_output=tableToMarkdown("Users:", response)
+    )
+    return_results(command_results)
+
+
+def create_user_command(client: Client, args: dict):
+    response = client.create_user(args)
+    command_results = CommandResults(
+        outputs_prefix='Wordpress.Users',
+        outputs_key_field='id',
+        outputs=response,
+        readable_output=tableToMarkdown("User created:", response)
+    )
+    return_results(command_results)
+
+
+def update_user_command(client: Client, args: dict):
+    user_id = args.get('id')
+    args = {k: v for k, v in args.items() if k != "id"}
+    response = client.update_user(user_id, args)
+    command_results = CommandResults(
+        outputs_prefix='Wordpress.Users',
+        outputs_key_field='id',
+        outputs=response,
+        readable_output=tableToMarkdown(f"User {user_id} updated:", response)
+    )
+    return_results(command_results)
+
+
+def delete_user_command(client: Client, args: dict):
+    user_id = args.get('id')
+    reassign_id = args.get('reassign')
+    args = {
+        "force": True,
+        "reassign": reassign_id
+    }
+    client.delete_user(user_id, args)
+    command_results = CommandResults(
+        readable_output = f"User {user_id} permanently deleted.\n Reassigned posts to user ID {reassign_id}"
+    )
+    return_results(command_results)
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -392,7 +565,17 @@ def main() -> None:
             'wordpress-create-tag': create_tag_command,
             'wordpress-get-tag': get_tag_command,
             'wordpress-update-tag': update_tag_command,
-            'wordpress-delete-tag': delete_tag_command
+            'wordpress-delete-tag': delete_tag_command,
+            'wordpress-list-comments': list_comments_command,
+            'wordpress-create-comment': create_comment_command,
+            'wordpress-get-comment': get_comment_command,
+            'wordpress-update-comment': update_comment_command,
+            'wordpress-delete-comment': delete_comment_command,
+            'wordpress-list-users': list_users_command,
+            'wordpress-create-user': create_user_command,
+            'wordpress-get-user': get_user_command,
+            'wordpress-update-user': update_user_command,
+            'wordpress-delete-user': delete_user_command
         }
 
         headers: Dict = {}
