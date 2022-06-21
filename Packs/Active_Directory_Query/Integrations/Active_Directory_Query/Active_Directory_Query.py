@@ -1775,7 +1775,7 @@ def main():
 
         if command == 'ad-search':
             free_search(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE)
-            
+        
         if command == 'ad-modify-password-never-expire':
             set_password_not_expire(DEFAULT_BASE_DN)
 
