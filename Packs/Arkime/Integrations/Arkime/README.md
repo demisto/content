@@ -44,9 +44,6 @@ Gets a list of nodes and links and returns them to the client.
 | strictly | When set the entire session must be inside the date range to be observed, otherwise if it overlaps it is displayed. Overwrites the bounding parameter, sets bonding to ‘both’. | Optional | 
 | baseline_date | The baseline date range to compare connections against. Default is 0, disabled. Options include: 1x - 1 times query range. 2x - 2 times query range. 4x - 4 times query range. 6x - 6 times query range. 8x - 8 times query range. 10x - 10 times query range. 1 - 1 hour. 6 - 6 hours. 24 - 1 day. 48 - 2 days. 72 - 3 days. 168 - 1 week. 336 - 2 weeks. 720 - 1 month. 1440 - 2 months. 4380 - 6 months. 8760 - 1 year. | Optional | 
 | baseline_view | Which connections to display when a baseline date range is applied. Default is all. Options include: ‘all’ - All Nodes: all nodes are visible. ‘actual’ - Actual Nodes: nodes present in the “current” timeframe query results are visible. ‘actualold’ - Baseline Nodes: nodes present in the “baseline” timeframe query results are visible. ‘new’ - New Nodes Only: nodes present in the “current” but NOT the “baseline” timeframe are visible. ‘old’ - Baseline Nodes Only: nodes present in the “baseline” but NOT the “current” timeframe are visible. | Optional | 
-| limit | The number of items to return. Defaults to 100, Max is 2,000,000. | Optional | 
-| page_number | The page at which to start. The default is 0. | Optional | 
-| page_size | Page size. Minimum page size is 1, maximum is 100. | Optional | 
 
 
 #### Context Output
@@ -73,7 +70,7 @@ Gets a list of nodes and links and returns them to the client.
 | Arkime.Connection.recordsFiltered | Number | The number of history items returned in this result. | 
 
 #### Command example
-```!arkime-connection-list baseline_date=720 start_time=1648817940 stop_time=1649595540 limit=2```
+```!arkime-connection-list baseline_date=720 start_time=1648817940 stop_time=1649595540```
 #### Context Example
 ```json
 {
@@ -81,85 +78,33 @@ Gets a list of nodes and links and returns them to the client.
         "Connection": {
             "links": [
                 {
-                    "network.bytes": 47031,
-                    "network.packets": 395,
+                    "network.bytes": 96415,
+                    "network.packets": 806,
                     "node": [
                         "localhost"
                     ],
                     "source": 0,
                     "target": 1,
                     "totDataBytes": 0,
-                    "value": 1
+                    "value": 2
                 },
-                {
-                    "network.bytes": 74,
-                    "network.packets": 1,
-                    "node": [
-                        "localhost"
-                    ],
-                    "source": 2,
-                    "target": 3,
-                    "totDataBytes": 0,
-                    "value": 1
-                }
             ],
             "nodes": [
                 {
                     "cnt": 1,
                     "id": "1.1.1.1",
                     "inresult": 1,
-                    "network.bytes": 47031,
-                    "network.packets": 395,
+                    "network.bytes": 96415,
+                    "network.packets": 806,
                     "node": [
                         "localhost"
                     ],
                     "pos": 0,
-                    "sessions": 1,
+                    "sessions": 2,
                     "totDataBytes": 0,
                     "type": 1
                 },
-                {
-                    "cnt": 1,
-                    "id": "1.1.1.1",
-                    "inresult": 1,
-                    "network.bytes": 47031,
-                    "network.packets": 395,
-                    "node": [
-                        "localhost"
-                    ],
-                    "pos": 1,
-                    "sessions": 1,
-                    "totDataBytes": 0,
-                    "type": 2
-                },
-                {
-                    "cnt": 1,
-                    "id": "1.1.1.1",
-                    "inresult": 1,
-                    "network.bytes": 74,
-                    "network.packets": 1,
-                    "node": [
-                        "localhost"
-                    ],
-                    "pos": 2,
-                    "sessions": 1,
-                    "totDataBytes": 0,
-                    "type": 1
-                },
-                {
-                    "cnt": 1,
-                    "id": "1.1.1.1",
-                    "inresult": 1,
-                    "network.bytes": 74,
-                    "network.packets": 1,
-                    "node": [
-                        "localhost"
-                    ],
-                    "pos": 3,
-                    "sessions": 1,
-                    "totDataBytes": 0,
-                    "type": 2
-                }
+
             ],
             "recordsFiltered": 3527811
         }
@@ -169,11 +114,11 @@ Gets a list of nodes and links and returns them to the client.
 
 #### Human Readable Output
 
->Showing 4 results, limit=2
 >### Connection Results:
 >|Source IP|Count|Sessions|Node|
 >|---|---|---|---|
->| 1.1.1.1 | 1 | 1 | localhost |
+>| 1.1.1.1 | 1 | 2 | localhost |
+
 
 
 ### arkime-connection-csv-get
@@ -199,8 +144,6 @@ Gets a list of nodes and links in csv format and returns them to the client.
 | fields | Comma separated list of db field names to return. Default is ipProtocol, rootId, totDataBytes, srcDataBytes, dstDataBytes, firstPacket, lastPacket, srcIp, srcPort, dstIp, dstPort, totPackets, srcPackets, dstPackets, totBytes, srcBytes, dstBytes, node, http.uri, srcGEO, dstGEO, email.subject, email.src, email.dst, email.filename, dns.host, cert, irc.channel, http.xffGEO. | Optional | 
 | bounding | Query sessions based on different aspects of a session’s time. Options include: ‘first’ - First Packet: the timestamp of the first packet received for the session. ‘last’ - Last Packet: The timestamp of the last packet received for the session. ‘both’ - Bounded: Both the first and last packet timestamps for the session must be inside the time window. ‘either’ - Session Overlaps: The timestamp of the first packet must be before the end of the time window AND the timestamp of the last packet must be after the start of the time window. ‘database’ - Database: The timestamp the session was written to the database. This can be up to several minutes AFTER the last packet was received. | Optional | 
 | strictly | When set the entire session must be inside the date range to be observed, otherwise if it overlaps it is displayed. Overwrites the bounding parameter, sets bonding to ‘both’. | Optional | 
-| limit | The number of items to return. Defaults to 100, Max is 2,000,000. | Optional | 
-| offset | The entry to start at. Defaults to 0. Default is 0. | Optional | 
 
 
 #### Context Output
@@ -215,16 +158,16 @@ Gets a list of nodes and links in csv format and returns them to the client.
 | Arkime.Connection.InfoFile.Info | String | Basic information about the file. | 
 
 #### Command example
-```!arkime-connection-csv-get start_time=1648817940 stop_time=1649595540 limit=2```
+```!arkime-connection-csv-get start_time=1648817940 stop_time=1649595540```
 #### Context Example
 ```json
 {
     "InfoFile": {
-        "EntryID": "2231@4060e8c8-61bb-4131-8a47-32a7d97a9726",
+        "EntryID": "2505@4060e8c8-61bb-4131-8a47-32a7d97a9726",
         "Extension": "csv",
         "Info": "text/csv; charset=utf-8",
         "Name": "connections_list.csv",
-        "Size": 195,
+        "Size": 1892,
         "Type": "ASCII text, with CRLF line terminators"
     }
 }
@@ -269,7 +212,7 @@ Retrieve the raw session data in pcap format.
 ```json
 {
     "InfoFile": {
-        "EntryID": "2247@4060e8c8-61bb-4131-8a47-32a7d97a9726",
+        "EntryID": "2521@4060e8c8-61bb-4131-8a47-32a7d97a9726",
         "Extension": "pcap",
         "Info": "application/vnd.tcpdump.pcap",
         "Name": "raw_session_data.pcap",
@@ -325,7 +268,7 @@ Gets a list of sessions and returns them as CSV to the client.
 ```json
 {
     "InfoFile": {
-        "EntryID": "2243@4060e8c8-61bb-4131-8a47-32a7d97a9726",
+        "EntryID": "2517@4060e8c8-61bb-4131-8a47-32a7d97a9726",
         "Extension": "csv",
         "Info": "text/csv; charset=utf-8",
         "Name": "sessions_list.csv",
@@ -495,7 +438,7 @@ Gets a list of sessions and returns them to the client.
             },
             "map": {},
             "recordsFiltered": 516305,
-            "recordsTotal": 26625640
+            "recordsTotal": 28212381
         }
     }
 }
@@ -554,7 +497,10 @@ Gets a list of unique field values (with or without counts) and sends them to th
     "Arkime": {
         "UniqueField": [
             {
-                "Field": ""
+                "Field": "AS8075 MICROSOFT-CORP-MSN-AS-BLOCK"
+            },
+            {
+                "Field": "AS15169 GOOGLE"
             }
         ]
     }
@@ -563,11 +509,12 @@ Gets a list of unique field values (with or without counts) and sends them to th
 
 #### Human Readable Output
 
->Showing 1 results, limit=2
+>Showing 2 results, limit=2
 >### Unique Field Results:
 >|Field|Count|
 >|---|---|
->|  |  |
+>| AS8075 MICROSOFT-CORP-MSN-AS-BLOCK |  |
+>| AS15169 GOOGLE |  |
 
 
 #### Command example
@@ -578,7 +525,12 @@ Gets a list of unique field values (with or without counts) and sends them to th
     "Arkime": {
         "UniqueField": [
             {
-                "Field": ""
+                "Count": " 350",
+                "Field": "AS8075 MICROSOFT-CORP-MSN-AS-BLOCK"
+            },
+            {
+                "Count": " 294",
+                "Field": "AS15169 GOOGLE"
             }
         ]
     }
@@ -587,11 +539,12 @@ Gets a list of unique field values (with or without counts) and sends them to th
 
 #### Human Readable Output
 
->Showing 1 results, limit=2
+>Showing 2 results, limit=2
 >### Unique Field Results:
 >|Field|Count|
 >|---|---|
->|  |  |
+>| AS8075 MICROSOFT-CORP-MSN-AS-BLOCK |  350 |
+>| AS15169 GOOGLE |  294 |
 
 
 ### arkime-multi-unique-field-list
@@ -638,7 +591,12 @@ Gets an intersection of unique field values (with or without counts) and sends t
     "Arkime": {
         "UniqueField": [
             {
-                "Field": ""
+                "Count": " 14597",
+                "Field": "1.1.1.1"
+            },
+            {
+                "Count": " 3335",
+                "Field": "1.1.1.1"
             }
         ]
     }
@@ -647,11 +605,12 @@ Gets an intersection of unique field values (with or without counts) and sends t
 
 #### Human Readable Output
 
->Showing 1 results, limit=2
+>Showing 2 results, limit=2
 >### Unique Field Results:
->|Field|Count|
->|---|---|
->|  |  |
+>| Field        |Count|
+--------------|---|---|
+>| 1.1.1.1      |  14597 |
+>| 1.1.1.1 |  3335 |
 
 
 #### Command example
@@ -662,7 +621,10 @@ Gets an intersection of unique field values (with or without counts) and sends t
     "Arkime": {
         "UniqueField": [
             {
-                "Field": ""
+                "Field": "1.1.1.1"
+            },
+            {
+                "Field": "1.1.1.1"
             }
         ]
     }
@@ -671,11 +633,12 @@ Gets an intersection of unique field values (with or without counts) and sends t
 
 #### Human Readable Output
 
->Showing 1 results, limit=2
+>Showing 2 results, limit=2
 >### Unique Field Results:
 >|Field|Count|
 >|---|---|
->|  |  |
+>| 1.1.1.1 |  |
+>| 1.1.1.1 |  |
 
 
 ### arkime-field-list
@@ -718,16 +681,6 @@ Gets available database field objects pertaining to sessions.
                 "group": "general",
                 "help": "Search all ASN fields",
                 "regex": "(^asn\\.(?:(?!\\.cnt$).)*$|\\.asn$)",
-                "type": "termfield"
-            },
-            {
-                "dbField": "network.community_id",
-                "dbField2": "communityId",
-                "exp": "communityId",
-                "fieldECS": "network.community_id",
-                "friendlyName": "Community Id",
-                "group": "general",
-                "help": "Community id flow hash",
                 "type": "termfield"
             }
         ]
@@ -874,8 +827,8 @@ Gets available database field objects pertaining to sessions.
 >| Auth Type Cnt | integer | http | Unique number of HTTP Auth Type | http.authTypeCnt |
 >| Body Magic | termfield | http | The content type of body determined by libfile/magic | http.bodyMagic |
 >| Body Magic Cnt | integer | http | Unique number of The content type of body determined by libfile/magic | http.bodyMagicCnt |
->| http.content-type | termfield | http | Request header content-type | http.request-content-type |
->| http.content-type Cnt | integer | http | Unique number of Response header content-type | http.response-content-typeCnt |
+>| http.content-type | termfield | http | Response header content-type | http.response-content-type |
+>| http.content-type Cnt | integer | http | Unique number of Request header content-type | http.request-content-typeCnt |
 >| Cookie Keys | termfield | http | The keys to cookies sent up in requests | http.cookieKey |
 >| Cookie Keys Cnt | integer | http | Unique number of The keys to cookies sent up in requests | http.cookieKeyCnt |
 >| Cookie Values | termfield | http | The values to cookies sent up in requests | http.cookieValue |
@@ -1169,12 +1122,12 @@ Gets a list of values for a field with counts and graph data and returns them to
 ```json
 {
     "InfoFile": {
-        "EntryID": "2251@4060e8c8-61bb-4131-8a47-32a7d97a9726",
+        "EntryID": "2525@4060e8c8-61bb-4131-8a47-32a7d97a9726",
         "Extension": "json",
         "Info": "application/json",
         "Name": "spi_graph.json",
-        "Size": 241,
-        "Type": "ASCII text, with no line terminators"
+        "Size": 514,
+        "Type": "ASCII text, with very long lines (514), with no line terminators"
     }
 }
 ```
@@ -1224,11 +1177,11 @@ Gets a list of field values with counts and returns them to the client.
 ```json
 {
     "InfoFile": {
-        "EntryID": "2255@4060e8c8-61bb-4131-8a47-32a7d97a9726",
+        "EntryID": "2529@4060e8c8-61bb-4131-8a47-32a7d97a9726",
         "Extension": "json",
         "Info": "application/json",
         "Name": "spi_view.json",
-        "Size": 184,
+        "Size": 188,
         "Type": "ASCII text, with no line terminators"
     }
 }
@@ -1278,8 +1231,8 @@ Add tag(s) to individual session(s) by id or by query.
 {
     "Arkime": {
         "Tag": {
-            "success": false,
-            "text": "No sessions to add tags to"
+            "success": true,
+            "text": "Tags added successfully"
         }
     }
 }
@@ -1290,7 +1243,7 @@ Add tag(s) to individual session(s) by id or by query.
 >### Session Tag Results:
 >|Success|Text|
 >|---|---|
->| false | No sessions to add tags to |
+>| true | Tags added successfully |
 
 
 ### arkime-session-tag-remove
@@ -1333,8 +1286,8 @@ Removes tag(s) from individual session(s) by id or by query.
 {
     "Arkime": {
         "Tag": {
-            "success": false,
-            "text": "No sessions to remove tags from"
+            "success": true,
+            "text": "Tags removed successfully"
         }
     }
 }
@@ -1345,7 +1298,7 @@ Removes tag(s) from individual session(s) by id or by query.
 >### Session Tag Results:
 >|Success|Text|
 >|---|---|
->| false | No sessions to remove tags from |
+>| true | Tags removed successfully |
 
 
 ### arkime-pcap-file-list
@@ -1412,8 +1365,8 @@ Gets a list of PCAP files that Arkime knows about.
                     "packetPosEncoding": "gap0"
                 }
             ],
-            "recordsFiltered": 4,
-            "recordsTotal": 4
+            "recordsFiltered": 28,
+            "recordsTotal": 28
         }
     }
 }
