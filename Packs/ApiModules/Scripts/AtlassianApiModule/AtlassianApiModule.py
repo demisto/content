@@ -116,18 +116,18 @@ class AtlassianClient(BaseClient):
         set_integration_context(integration_context)
         return access_token
 
-    def http_request(self, headers=None, *args, **kwargs):
+    def http_request(self, method: str, full_url: str, headers=None, **kwargs):
         if headers:
             headers.update(self.headers)
         else:
             headers = self.headers
 
         if self.auth:  # basic auth or Oauth 1.0
-            return requests.request(auth=self.auth, headers=headers, *args, **kwargs)
+            return requests.request(method=method, url=full_url, auth=self.auth, headers=headers, **kwargs)
         else:  # auth code
             access_token = self.access_token or self.get_access_token()
             headers.update({"Authorization": f"Bearer {access_token}", "Accept": "application/json"})
-            return requests.request(headers=headers, *args, **kwargs)
+            return requests.request(method=method, url=full_url, headers=headers, **kwargs)
 
     def get_token(self, refresh_token: str = ''):
         data = assign_params(
