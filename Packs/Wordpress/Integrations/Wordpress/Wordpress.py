@@ -1,13 +1,10 @@
-from http import client
-
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
 import requests
-from requests.auth import HTTPBasicAuth
 import traceback
-from typing import Dict, Any
+from typing import Dict
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
@@ -20,7 +17,7 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 
 class Client(BaseClient):
-    
+
     def url_request(self, method, url, body: dict = None, params: dict = None):
         response = self._http_request(
             method,
@@ -29,7 +26,7 @@ class Client(BaseClient):
             params=params
         )
         return response
-        
+
     def list_posts(self, args: dict = {}):
         url_suffix = '/wp-json/wp/v2/posts'
         response = self._http_request('GET', url_suffix, params=args)
@@ -182,7 +179,7 @@ def test_module(client: Client) -> str:
 
 def url_request_command(client: Client, args: dict = {}):
     url = args.get('url')
-    method = args.get('method').lower()
+    method = str(args.get('method')).lower()
     body = args.get('body')
     if body:
         try:
@@ -238,13 +235,13 @@ def create_post_command(client: Client, args: dict):
         args['sticky'] = argToBoolean(args.get('sticky'))
     if args.get('meta'):
         try:
-            args['meta'] = json.loads(args.get('meta'))
+            args['meta'] = json.loads(str(args.get('meta')))
         except Exception as err:
             return_error(f"Error converting meta: {err}")
     if args.get('categories'):
-        args['categories'] = [arg_to_number(x) for x in args.get('categories').split(",")]
+        args['categories'] = [arg_to_number(x) for x in argToList(args.get('categories'))]
     if args.get('tags'):
-        args['tags'] = [arg_to_number(x) for x in args.get('tags').split(",")]
+        args['tags'] = [arg_to_number(x) for x in argToList(args.get('tags'))]
     response = client.create_post(args)
     command_results = CommandResults(
         outputs_prefix='Wordpress.Posts',
@@ -261,13 +258,13 @@ def update_post_command(client: Client, args: dict):
         args['sticky'] = argToBoolean(args.get('sticky'))
     if args.get('meta'):
         try:
-            args['meta'] = json.loads(args.get('meta'))
+            args['meta'] = json.loads(str(args.get('meta')))
         except Exception as err:
             return_error(f"Error converting meta: {err}")
     if args.get('categories'):
-        args['categories'] = [arg_to_number(x) for x in args.get('categories').split(",")]
+        args['categories'] = [arg_to_number(x) for x in argToList(args.get('categories'))]
     if args.get('tags'):
-        args['tags'] = [arg_to_number(x) for x in args.get('tags').split(",")]
+        args['tags'] = [arg_to_number(x) for x in argToList(args.get('tags'))]
     args = {k: v for k, v in args.items() if k != "id"}
     response = client.update_post(post_id, args)
     command_results = CommandResults(
@@ -289,8 +286,8 @@ def delete_post_command(client: Client, args: dict):
     else:
         command_results.readable_output = tableToMarkdown(f"Post {post_id} moved to trash:", response)
         command_results.outputs_prefix = 'Wordpress.Posts'
-        command_results.outputs_key_field='id'
-        command_results.outputs=response
+        command_results.outputs_key_field = 'id'
+        command_results.outputs = response
     return_results(command_results)
 
 
@@ -311,7 +308,7 @@ def create_category_command(client: Client, args: dict):
         outputs_prefix='Wordpress.Categories',
         outputs_key_field='id',
         outputs=response,
-        readable_output=tableToMarkdown(f"Created new category:", response)
+        readable_output=tableToMarkdown("Created new category:", response)
     )
     return_results(command_results)
 
@@ -368,7 +365,7 @@ def create_tag_command(client: Client, args: dict):
         outputs_prefix='Wordpress.Tags',
         outputs_key_field='id',
         outputs=response,
-        readable_output=tableToMarkdown(f"Created new tag:", response)
+        readable_output=tableToMarkdown("Created new tag:", response)
     )
     return_results(command_results)
 
@@ -425,7 +422,7 @@ def create_comment_command(client: Client, args: dict):
         outputs_prefix='Wordpress.Comments',
         outputs_key_field='id',
         outputs=response,
-        readable_output=tableToMarkdown(f"Created new comment:", response)
+        readable_output=tableToMarkdown("Created new comment:", response)
     )
     return_results(command_results)
 
@@ -466,8 +463,8 @@ def delete_comment_command(client: Client, args: dict):
     else:
         command_results.readable_output = tableToMarkdown(f"Comment {comment_id} moved to trash:", response)
         command_results.outputs_prefix = 'Wordpress.Comments'
-        command_results.outputs_key_field='id'
-        command_results.outputs=response
+        command_results.outputs_key_field = 'id'
+        command_results.outputs = response
     return_results(command_results)
 
 
@@ -528,7 +525,7 @@ def delete_user_command(client: Client, args: dict):
     }
     client.delete_user(user_id, args)
     command_results = CommandResults(
-        readable_output = f"User {user_id} permanently deleted.\n Reassigned posts to user ID {reassign_id}"
+        readable_output=f"User {user_id} permanently deleted.\n Reassigned posts to user ID {reassign_id}"
     )
     return_results(command_results)
 
