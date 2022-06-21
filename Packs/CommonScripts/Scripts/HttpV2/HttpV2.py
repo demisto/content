@@ -155,6 +155,12 @@ def main():
         parse_response_as = args.get('parse_response_as', RAW_RESPONSE)
         params = args.get('params', {})
         headers = args.get('headers', {})
+        if isinstance(headers, str):
+            if not headers.startswith('{'):
+                headers = '{' + headers + '}'
+            if not headers.endswith('}'):
+                headers = headers + '}'
+            headers = json.loads(headers)
         headers = create_headers(headers, request_content_type, response_content_type)
         auth = tuple(argToList(args.get('auth_credentials', None)))
         save_as_file = args.get('save_as_file', 'no')
