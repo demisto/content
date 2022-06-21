@@ -228,6 +228,18 @@ script:
       name: file_name
       required: false
       secret: false
+    - default: false
+      description: Rasterize mode to use (WebDriver or Headless CLI). Optional. If not specified, will use according to the integration instance settings.
+      isArray: false
+      name: mode
+      required: false
+      secret: false
+      auto: PREDEFINED
+      predefined:
+      - WebDriver - Preferred
+      - WebDriver - Only
+      - Headless CLI - Preferred
+      - Headless CLI - Only
     - auto: PREDEFINED
       defaultValue: 'False'
       description: Get the full page. The actual page width and height will be auto calculated up to a max value of 8000px. (Marking full_screen as true means that the values for width and height arguments might not be respected).
