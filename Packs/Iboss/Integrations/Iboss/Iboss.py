@@ -542,8 +542,7 @@ def test_module(client: Client) -> str:
     try:
         return client.auth()
     except Exception as e:
-        if any(x in str(e) for x in ["401", "Forbidden", "Authorization"]) or getattr(e.res, "status_code",
-                                                                                      0) == 401:
+        if any(x in str(e) for x in ["401", "Forbidden", "Authorization"]):
             return 'Authorization Error: make sure username and password are correctly set'
         else:
             raise (e)
@@ -683,7 +682,7 @@ def test_module(client: Client) -> str:
             prefix="iboss", output_type=int),
     ]
 )
-def ip_lookup(client: Client, args: Dict[str, Any]) -> [CommandResults]:
+def ip_lookup(client: Client, args: Dict[str, Any]) -> list[CommandResults]:
     """Looks up reputation data for IP addresses"""
     # TODO use get_ip
     ips = _get_validate_argument("ip", args, validator=lambda x: x and len(x) > 0, message="value is not specified")
@@ -841,7 +840,7 @@ def ip_lookup(client: Client, args: Dict[str, Any]) -> [CommandResults]:
             prefix="iboss", output_type=int),
     ]
 )
-def domain_lookup(client: Client, args: Dict[str, Any]) -> [CommandResults]:
+def domain_lookup(client: Client, args: Dict[str, Any]) -> list[CommandResults]:
     """Looks up reputation data for domain"""
 
     domains = _get_validate_argument(
@@ -993,7 +992,7 @@ def domain_lookup(client: Client, args: Dict[str, Any]) -> [CommandResults]:
             prefix="iboss", output_type=int),
     ]
 )
-def url_lookup(client: Client, args: Dict[str, Any]) -> [CommandResults]:
+def url_lookup(client: Client, args: Dict[str, Any]) -> list[CommandResults]:
     urls = _get_validate_argument("url", args, validator=lambda x: x and len(x) > 0, message="value is not specified")
 
     command_results = []

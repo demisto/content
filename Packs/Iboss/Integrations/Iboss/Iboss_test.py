@@ -258,6 +258,6 @@ def test_domain_lookup(requests_mock, mocker):
 
     results = domain_lookup(client, {"domain": "myetherevvalliet.com"})
 
-    assert results[0].outputs['DBotScore']['Score'] == 3
+    assert results[0].outputs['DBotScore']['score'] == 3
     assert results[0].outputs['Domain']['Malicious']['Description'] == "Status: Suspicious Url. Please see below; Unreachable - HTTP Error Code: 503; Heuristic Engine Detection"
     assert results[0].outputs['iboss']['reputationDatabaseMalwareDetection'] == 1
