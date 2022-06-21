@@ -406,7 +406,6 @@ class Client(BaseClient):
             json_data=data
         )
         return result
-    # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
 
 
 ''' HELPER FUNCTIONS '''
