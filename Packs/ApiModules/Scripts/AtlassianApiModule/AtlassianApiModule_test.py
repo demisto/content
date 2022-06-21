@@ -11,14 +11,16 @@ OAUTH1 = {
 PAT = {'url': 'example.com', 'username': '', 'accessToken': 'example_token'}
 
 BASIC = {'url': 'example.com', 'username': 'example_user', 'APItoken': 'example_token'}
+OAUTH2 = {'url': 'example.com', 'client_id': 'id', "client_secret": 'secret', 'auth_code': 'code', 'redirect_uri': 'uri'}
 AUTH_CASES = [
     (OAUTH1, {}, {'Content-Type': 'application/json', 'X-Atlassian-Token': 'nocheck'}),
     (OAUTH1, {'X-Atlassian-Token': 'nocheck'}, {'Content-Type': 'application/json', 'X-Atlassian-Token': 'nocheck'}),
-    (PAT, {}, {'Content-Type': 'application/json', 'Authorization': 'Bearer example_token'}),
+    (PAT, {}, {'Content-Type': 'application/json', 'Authorization': 'Bearer example_token', "Accept": "application/json"}),
     (PAT, {'X-Atlassian-Token': 'nocheck'}, {'Content-Type': 'application/json', 'X-Atlassian-Token': 'nocheck',
-                                             'Authorization': 'Bearer example_token'}),
+                                             'Authorization': 'Bearer example_token', "Accept": "application/json"}),
     (BASIC, {}, {'Content-Type': 'application/json'}),
     (BASIC, {'X-Atlassian-Token': 'nocheck'}, {'Content-Type': 'application/json', 'X-Atlassian-Token': 'nocheck'}),
+    (OAUTH2, {}, {'Content-Type': 'application/json', 'Authorization': 'Bearer example_token', "Accept": "application/json"}),
 ]
 
 
@@ -49,14 +51,14 @@ def test_http_request(mocker, params, custom_headers, expected_headers):
                                                 api_token=params.get('APItoken'), username=params.get('username'),
                                                 password=params.get('password'), consumer_key=params.get('consumerKey'),
                                                 private_key=params.get('privateKey'),
-                                                headers={'Content-Type': 'application/json'})
+                                                headers={'Content-Type': 'application/json'},
+                                                client_id=params.get('client_id'),
+                                                client_secret=params.get('client_secret'),
+                                                auth_code=params.get('auth_code'),
+                                                redirect_uri=params.get('redirect_uri'))
+
     req_mock = mocker.patch.object(requests, 'request', return_value=ResponseDummy())
-    # requests_mock.register_uri(requests_mock.ANY, 'example.com', text='resp')
-    # JiraV2.USERNAME = params.get('username')
-    # JiraV2.HEADERS = {'Content-Type': 'application/json'}
-    # mocker.patch.object(demisto, "params", return_value=params)
+
+    mocker.patch.object(client, 'get_access_token', return_value='example_token')
     client.http_request(method='get', headers=custom_headers, full_url=params.get('url'))
-    # JiraV2.jira_req(method='get',
-    #                 resource_url=params.get('url'),
-    #                 headers=custom_headers)
     assert expected_headers == req_mock.call_args[1]['headers']
