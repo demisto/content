@@ -3,6 +3,19 @@ commonfields:
   id: GreyNoise Community
   version: -1
 configuration:
+- display: Integration Reliability
+  name: integrationReliability
+  defaultvalue: B - Usually reliable
+  type: 15
+  required: false
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  additionalinfo: Reliability of the source providing the intelligence data
 - display: API Key
   name: api_key
   required: true
@@ -81,7 +94,7 @@ script:
     - contextPath: IP.Address
       description: IP address.
       type: String
-  dockerimage: demisto/greynoise:1.0.0.25543
+  dockerimage: demisto/greynoise:1.0.0.30638
   feed: false
   isfetch: false
   longRunning: false

@@ -73,14 +73,15 @@ def test_ip_reputation_command(
     dummy_response = DummyResponse(
         {"Content-Type": "application/json"}, json.dumps(api_response), status_code
     )
+    reliability = "B - Usually reliable"
     if test_scenario == "positive":
         mocker.patch("requests.Session.get", return_value=dummy_response)
-        response = GreyNoise_Community.ip_reputation_command(client, args)
+        response = GreyNoise_Community.ip_reputation_command(client, args, reliability)
         assert response[0].outputs == expected_output
     else:
         mocker.patch("requests.Session.get", return_value=dummy_response)
         with pytest.raises(Exception) as err:
-            _ = GreyNoise_Community.ip_reputation_command(client, args)
+            _ = GreyNoise_Community.ip_reputation_command(client, args, reliability)
         assert str(err.value) == expected_output
 
 
