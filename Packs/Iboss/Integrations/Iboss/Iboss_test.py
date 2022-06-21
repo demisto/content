@@ -400,7 +400,7 @@ def test_reputation_get_headers():
 
     results = reputation_get_headers(REPUTATION_RESPONSE_UNREACHABLE_MALICIOUS_DOMAIN)
     expected = [
-        'categories', 'isSafeUrl', 'message', 'malwareEngineAnalysisSuccess', 'malwareEngineAnalysisDescription',
+        'message', 'categories', 'isSafeUrl', 'malwareEngineAnalysisSuccess', 'malwareEngineAnalysisDescription',
         'reputationDatabaseLookupSuccess', 'reputationDatabaseMalwareDetection', 'reputationDatabaseBotnetDetection',
         'webRequestHeuristicSuccess', 'webRequestHeuristicProtectionLevel', 'webRequestHeuristicDescription',
         'googleSafeBrowsingSuccess', 'googleSafeBrowsingIsSafeUrl', 'googleSafeBrowsingDescription',
