@@ -2,7 +2,57 @@
 Unit Tests module for the iboss integration.
 """
 import datetime
+import copy
 
+REPUTATION_RESPONSE_UNREACHABLE_MALICIOUS_DOMAIN = {
+        "activeMalwareSubscription": 1,
+        "categories": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        "00000000000000",
+        "categorized": "true", "googleSafeBrowsingDescription": "", "googleSafeBrowsingEnabled": 1,
+        "googleSafeBrowsingIsSafeUrl": 1, "googleSafeBrowsingSuccess": 1, "googleSafeBrowsingSupport": 1,
+        "isSafeUrl": 0, "malwareEngineAnalysisDescription": "Unreachable - HTTP Error Code: 503",
+        "malwareEngineAnalysisEnabled": 1, "malwareEngineAnalysisSuccess": 1, "malwareEngineIsSafeUrl": 1,
+        "malwareEngineResultCode": 2, "message": "Status: Suspicious Url. Please see below.",
+        "realtimeCloudLookupDomainIsGrey": 0, "realtimeCloudLookupEnabled": 1,
+        "realtimeCloudLookupIsSafeUrl": 1, "realtimeCloudLookupRiskDescription": "",
+        "realtimeCloudLookupSuccess": 1, "reputationDatabaseBotnetDetection": 0,
+        "reputationDatabaseEnabled": 1, "reputationDatabaseIsSafeUrl": 0, "reputationDatabaseLookupSuccess": 1,
+        "reputationDatabaseMalwareDetection": 1, "url": "unreachable.com",
+        "webRequestHeuristicBlockUnreachableSites": "1",
+        "webRequestHeuristicDescription": "Heuristic Engine Detection", "webRequestHeuristicIsSafeUrl": 0,
+        "webRequestHeuristicLevelHighScore": "79", "webRequestHeuristicLevelLowScore": "10",
+        "webRequestHeuristicLevelMediumScore": "60", "webRequestHeuristicLevelNoneScore": "0",
+        "webRequestHeuristicProtectionActionHigh": "0", "webRequestHeuristicProtectionActionLow": "0",
+        "webRequestHeuristicProtectionActionMedium": "0", "webRequestHeuristicProtectionLevel": "1",
+        "webRequestHeuristicSuccess": 1, "webRequestHeuristicSupport": 1}
+
+REPUTATION_RESPONSE_UNREACHABLE_SUSPICIOUS_DOMAIN = {
+        "activeMalwareSubscription": 1,
+        "categories": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        "00000000000000",
+        "categorized": "true", "googleSafeBrowsingDescription": "", "googleSafeBrowsingEnabled": 1,
+        "googleSafeBrowsingIsSafeUrl": 1, "googleSafeBrowsingSuccess": 1, "googleSafeBrowsingSupport": 1,
+        "isSafeUrl": 0, "malwareEngineAnalysisDescription": "Unreachable - HTTP Error Code: 503",
+        "malwareEngineAnalysisEnabled": 1, "malwareEngineAnalysisSuccess": 1, "malwareEngineIsSafeUrl": 1,
+        "malwareEngineResultCode": 2, "message": "Status: Suspicious Url. Please see below.",
+        "realtimeCloudLookupDomainIsGrey": 0, "realtimeCloudLookupEnabled": 1,
+        "realtimeCloudLookupIsSafeUrl": 1, "realtimeCloudLookupRiskDescription": "",
+        "realtimeCloudLookupSuccess": 1, "reputationDatabaseBotnetDetection": 0,
+        "reputationDatabaseEnabled": 1, "reputationDatabaseIsSafeUrl": 1, "reputationDatabaseLookupSuccess": 1,
+        "reputationDatabaseMalwareDetection": 1, "url": "unreachable.com",
+        "webRequestHeuristicBlockUnreachableSites": "1",
+        "webRequestHeuristicDescription": "Heuristic Engine Detection", "webRequestHeuristicIsSafeUrl": 0,
+        "webRequestHeuristicLevelHighScore": "79", "webRequestHeuristicLevelLowScore": "10",
+        "webRequestHeuristicLevelMediumScore": "60", "webRequestHeuristicLevelNoneScore": "0",
+        "webRequestHeuristicProtectionActionHigh": "0", "webRequestHeuristicProtectionActionLow": "0",
+        "webRequestHeuristicProtectionActionMedium": "0", "webRequestHeuristicProtectionLevel": "1",
+        "webRequestHeuristicSuccess": 1, "webRequestHeuristicSupport": 1}
 
 def get_mock_client(mocker):
     from Iboss import Client
@@ -274,44 +324,114 @@ def test_domain_lookup(requests_mock, mocker):
     assert results[0].outputs['Domain']['Malicious']['Description'] == expected
     assert results[0].outputs['iboss']['reputationDatabaseMalwareDetection'] == 1
 
-
-def test__iboss_entity_lookup_response_to_message():
+def test_reputation_calculate_dbot_score_malicious():
     """
-       Scenario: Derive message from iboss domain lookup response
+       Scenario: Derive dbot score from iboss domain lookup response
        Given:
-        - User has received valid iboss response from URL/IP/domain lookup via client
+        - User has received valid iboss response when looking up an unreachable, malicious domain
        When:
         - A domain lookup is performed
        Then:
         - Ensure message is correct
    """
-    from Iboss import _iboss_entity_lookup_response_to_message
+    from Iboss import reputation_calculate_dbot_score
 
-    http_data = {
-        "activeMalwareSubscription": 1,
-        "categories": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
-        "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
-        "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
-        "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
-        "00000000000000",
-        "categorized": "true", "googleSafeBrowsingDescription": "", "googleSafeBrowsingEnabled": 1,
-        "googleSafeBrowsingIsSafeUrl": 1, "googleSafeBrowsingSuccess": 1, "googleSafeBrowsingSupport": 1,
-        "isSafeUrl": 0, "malwareEngineAnalysisDescription": "Unreachable - HTTP Error Code: 503",
-        "malwareEngineAnalysisEnabled": 1, "malwareEngineAnalysisSuccess": 1, "malwareEngineIsSafeUrl": 1,
-        "malwareEngineResultCode": 2, "message": "Status: Suspicious Url. Please see below.",
-        "realtimeCloudLookupDomainIsGrey": 0, "realtimeCloudLookupEnabled": 1,
-        "realtimeCloudLookupIsSafeUrl": 1, "realtimeCloudLookupRiskDescription": "",
-        "realtimeCloudLookupSuccess": 1, "reputationDatabaseBotnetDetection": 0,
-        "reputationDatabaseEnabled": 1, "reputationDatabaseIsSafeUrl": 0, "reputationDatabaseLookupSuccess": 1,
-        "reputationDatabaseMalwareDetection": 1, "url": "myetherevvalliet.com",
-        "webRequestHeuristicBlockUnreachableSites": "1",
-        "webRequestHeuristicDescription": "Heuristic Engine Detection", "webRequestHeuristicIsSafeUrl": 0,
-        "webRequestHeuristicLevelHighScore": "79", "webRequestHeuristicLevelLowScore": "10",
-        "webRequestHeuristicLevelMediumScore": "60", "webRequestHeuristicLevelNoneScore": "0",
-        "webRequestHeuristicProtectionActionHigh": "0", "webRequestHeuristicProtectionActionLow": "0",
-        "webRequestHeuristicProtectionActionMedium": "0", "webRequestHeuristicProtectionLevel": "1",
-        "webRequestHeuristicSuccess": 1, "webRequestHeuristicSupport": 1}
+    results = reputation_calculate_dbot_score(REPUTATION_RESPONSE_UNREACHABLE_MALICIOUS_DOMAIN)
+    expected = 3
+    assert results == expected
 
-    results = _iboss_entity_lookup_response_to_message(http_data)
+def test_reputation_calculate_dbot_score_suspicious():
+    """
+       Scenario: Derive dbot score from iboss domain lookup response
+       Given:
+        - User has received valid iboss response when looking up an unreachable, suspicious domain
+       When:
+        - A domain lookup is performed
+       Then:
+        - Ensure message is correct
+   """
+    from Iboss import reputation_calculate_dbot_score
+
+    results = reputation_calculate_dbot_score(REPUTATION_RESPONSE_UNREACHABLE_SUSPICIOUS_DOMAIN)
+    expected = 2
+    assert results == expected
+
+
+def test_reputation_get_malicious_message_suspicious():
+    """
+       Scenario: Derive message from iboss domain lookup response
+       Given:
+        - User has received valid iboss response when looking up an unreachable domain with a suspicious score.
+       When:
+        - A domain lookup is performed
+       Then:
+        - Ensure message is correct
+   """
+    from Iboss import reputation_get_malicious_message
+
+    results = reputation_get_malicious_message(REPUTATION_RESPONSE_UNREACHABLE_SUSPICIOUS_DOMAIN, 2)
+    expected = ''
+    assert results == expected
+
+def test_reputation_get_malicious_message_malicious():
+    """
+       Scenario: Derive message from iboss domain lookup response
+       Given:
+        - User has received valid iboss response when looking up an unreachable domain with a malicious score.
+       When:
+        - A domain lookup is performed
+       Then:
+        - Ensure message is correct
+   """
+    from Iboss import reputation_get_malicious_message
+
+    results = reputation_get_malicious_message(REPUTATION_RESPONSE_UNREACHABLE_MALICIOUS_DOMAIN, 3)
     expected = 'Status: Suspicious Url. Please see below; Unreachable - HTTP Error Code: 503; Heuristic Engine Detection'
+    assert results == expected
+
+def test_reputation_get_headers():
+    """
+       Scenario: Derive headers from iboss domain lookup response
+       Given:
+        - User has received valid iboss response when looking up an unreachable, malicious domain
+       When:
+        - A domain lookup is performed
+       Then:
+        - Ensure message is correct
+   """
+    from Iboss import reputation_get_headers
+
+    results = reputation_get_headers(REPUTATION_RESPONSE_UNREACHABLE_MALICIOUS_DOMAIN)
+    expected = [
+        'categories', 'isSafeUrl', 'message', 'malwareEngineAnalysisSuccess', 'malwareEngineAnalysisDescription',
+        'reputationDatabaseLookupSuccess', 'reputationDatabaseMalwareDetection', 'reputationDatabaseBotnetDetection',
+        'webRequestHeuristicSuccess', 'webRequestHeuristicProtectionLevel', 'webRequestHeuristicDescription',
+        'googleSafeBrowsingSuccess', 'googleSafeBrowsingIsSafeUrl', 'googleSafeBrowsingDescription',
+        'realtimeCloudLookupSuccess', 'realtimeCloudLookupDomainIsGrey', 'realtimeCloudLookupRiskDescription'
+    ]
+    assert results == expected
+
+def test_reputation_get_headers_malware_disabled():
+    """
+       Scenario: Derive headers from iboss domain lookup response (malware engine analysis disabled)
+       Given:
+        - User has received valid iboss response when looking up an unreachable, malicious domain
+       When:
+        - A domain lookup is performed
+       Then:
+        - Ensure message is correct
+   """
+    from Iboss import reputation_get_headers
+
+    response = copy.deepcopy(REPUTATION_RESPONSE_UNREACHABLE_MALICIOUS_DOMAIN)
+    response['malwareEngineAnalysisEnabled'] = 0
+
+    results = reputation_get_headers(response)
+    expected = [
+        'categories', 'isSafeUrl', 'message',
+        'reputationDatabaseLookupSuccess', 'reputationDatabaseMalwareDetection', 'reputationDatabaseBotnetDetection',
+        'webRequestHeuristicSuccess', 'webRequestHeuristicProtectionLevel', 'webRequestHeuristicDescription',
+        'googleSafeBrowsingSuccess', 'googleSafeBrowsingIsSafeUrl', 'googleSafeBrowsingDescription',
+        'realtimeCloudLookupSuccess', 'realtimeCloudLookupDomainIsGrey', 'realtimeCloudLookupRiskDescription'
+    ]
     assert results == expected

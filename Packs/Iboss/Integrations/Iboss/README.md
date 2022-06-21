@@ -1,5 +1,5 @@
 Manage block lists, manage allow lists, and perform domain, IP, and/or URL reputation and categorization lookups.
-This integration was integrated and tested with iboss Zero Trust Secure Service Edge  9.8.38.245.
+This integration was integrated and tested with iboss Zero Trust Secure Service Edge 9.8.38.245.
 
 ## Configure iboss on Cortex XSOAR
 

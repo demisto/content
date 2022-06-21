@@ -10,6 +10,10 @@ import re
 from typing import Dict, Any
 from functools import wraps
 
+COMMAND_PREFIX = 'iboss'
+VENDOR_NAME = 'iboss Zero Trust Secure Service Edge'
+CONTEXT_PREFIX = 'iboss'
+
 CLOUD_TOKEN_URL = 'https://accounts.iboss.com/ibossauth/web/tokens'
 CLOUD_ACCOUNT_SETTINGS_URL = 'https://cloud.iboss.com/ibcloud/web/users/mySettings'
 CLOUD_CLUSTERS_URL = 'https://cloud.iboss.com/ibcloud/web/account/clusters'
@@ -112,9 +116,27 @@ REPUTATION_MESSAGE_FIELDS = [
     'webRequestHeuristicDescription'
 ]
 
-REPUTATION_MALICIOUS_FIELDS = ['googleSafeBrowsingISSafeUrl', 'malwareEngineIsSafeUrl', 'reputationDatabaseIsSafeUrl']
-REPUTATION_SUSPICIOUS_FIELDS = ['webRequestHeuristicIsSafeUrl', 'realtimeCloudLookupIsSafeUrl']
+REPUTATION_MALICIOUS_FIELDS = ['googleSafeBrowsingIsSafeUrl', 'malwareEngineIsSafeUrl', 'reputationDatabaseIsSafeUrl',
+                               'realtimeCloudLookupIsSafeUrl']
+REPUTATION_SUSPICIOUS_FIELDS = ['webRequestHeuristicIsSafeUrl']
 REPUTATION_SAFE_FIELDS = ['isSafeUrl']
+
+REPUTATION_HEADERS_COMMON = ['message', 'categories', 'isSafeUrl']
+REPUTATION_HEADERS_MALWARE_ENGINE_ANALYSIS_HEADERS = [
+    'malwareEngineAnalysisSuccess', 'malwareEngineAnalysisDescription'
+]
+REPUTATION_HEADERS_REPUTATION_DATABASE = [
+    'reputationDatabaseLookupSuccess', 'reputationDatabaseMalwareDetection', 'reputationDatabaseBotnetDetection'
+]
+REPUTATION_HEADERS_WEB_REQUEST_HEURISTIC_PROTECTION = [
+    'webRequestHeuristicSuccess', 'webRequestHeuristicProtectionLevel', 'webRequestHeuristicDescription'
+]
+REPUTATION_HEADERS_GOOGLE_SAFE_BROWSING = [
+    'googleSafeBrowsingSuccess', 'googleSafeBrowsingIsSafeUrl', 'googleSafeBrowsingDescription'
+]
+REPUTATION_HEADERS_REALTIME_CLOUD = [
+    'realtimeCloudLookupSuccess', 'realtimeCloudLookupDomainIsGrey', 'realtimeCloudLookupRiskDescription'
+]
 
 # Starting with init of metadata_collector
 metadata_collector = YMLMetadataCollector(
@@ -435,67 +457,49 @@ def _iboss_entity_lookup(client, entity):
     return response
 
 
-def _iboss_entity_lookup_response_to_dbot_score(entity, lookup_response, dbot_score_type):
-    if any(lookup_response.get(field, -1) == 0 for field in REPUTATION_MALICIOUS_FIELDS):
-        dbot_score_value = Common.DBotScore.BAD
-    elif any(lookup_response.get(field, -1) == 0 for field in REPUTATION_SUSPICIOUS_FIELDS):
-        dbot_score_value = Common.DBotScore.SUSPICIOUS
-    elif any(lookup_response.get(field, -1) == 0 for field in REPUTATION_SAFE_FIELDS):
-        dbot_score_value = Common.DBotScore.GOOD
+def reputation_calculate_dbot_score(reputation_data) -> int:
+    if any(reputation_data.get(field, -1) == 1 for field in REPUTATION_SAFE_FIELDS):
+        return Common.DBotScore.GOOD
+    elif any(reputation_data.get(field, -1) == 0 for field in REPUTATION_MALICIOUS_FIELDS):
+        return Common.DBotScore.BAD
+    elif any(reputation_data.get(field, -1) == 0 for field in REPUTATION_SUSPICIOUS_FIELDS):
+        return Common.DBotScore.SUSPICIOUS
     else:
-        dbot_score_value = Common.DBotScore.NONE
-
-    message = _iboss_entity_lookup_response_to_message(lookup_response)
-    dbot_score = Common.DBotScore(
-        indicator=entity, indicator_type=dbot_score_type, score=dbot_score_value, message=message)
-
-    if dbot_score_value == Common.DBotScore.BAD:
-        dbot_score.malicious_description = message
-    return dbot_score
+        return Common.DBotScore.NONE
 
 
-def _iboss_entity_lookup_response_to_indicator(entity, lookup_response, context_type, indicator_type):
-    malicious_message = _iboss_entity_lookup_response_to_message(lookup_response)
-    indicator = {
-        context_type: {
-            indicator_type: entity, 'Malicious': {'Vendor': 'iboss', 'Description': malicious_message}
-        }
-    }
-    return indicator
+def reputation_get_malicious_message(reputation_data, score) -> str:
+    if score == Common.DBotScore.BAD:
+        messages = [reputation_data.get(x).strip(".") for x in REPUTATION_MESSAGE_FIELDS if reputation_data.get(x)]
+        return '; '.join(messages)
+    return ''
 
 
-def _iboss_ip_reputation(client, ip):
-    response = _iboss_entity_lookup(client, ip)
-    dbot_score = _iboss_entity_lookup_response_to_dbot_score(ip, response, DBotScoreType.IP)
-    result = {"DBotScore": dbot_score.__dict__, "iboss": response}
-
-    if dbot_score.score == dbot_score.BAD:
-        result.update(_iboss_entity_lookup_response_to_indicator(ip, response, 'IP', 'Address'))
-    return result
-
-
-def _iboss_url_reputation(client, url):
-    response = _iboss_entity_lookup(client, url)
-    dbot_score = _iboss_entity_lookup_response_to_dbot_score(url, response, DBotScoreType.URL)
-    result = {"DBotScore": dbot_score.__dict__, "iboss": response}
-
-    if dbot_score.score == dbot_score.BAD:
-        result.update(_iboss_entity_lookup_response_to_indicator(url, response, 'URL', 'Data'))
-    return result
+def reputation_calculate_engines(reputation_data: dict) -> tuple[int, int]:
+    num_engines = 0
+    num_positive_engines = 0
+    for key, value in reputation_data.items():
+        if key != "isSafeUrl" and key.endswith("IsSafeUrl"):
+            num_engines += 1
+            if value and value == 1:
+                num_positive_engines += 1
+    return num_engines, num_positive_engines
 
 
-def _iboss_domain_reputation(client, domain):
-    response = _iboss_entity_lookup(client, domain)
-    dbot_score = _iboss_entity_lookup_response_to_dbot_score(domain, response, DBotScoreType.DOMAIN)
-    result = {"DBotScore": dbot_score.__dict__, "iboss": response}
+def reputation_get_headers(reputation_data: dict) -> list[str]:
+    headers = REPUTATION_HEADERS_COMMON[:]
 
-    if dbot_score.score == dbot_score.BAD:
-        result.update(_iboss_entity_lookup_response_to_indicator(domain, response, 'Domain', 'Name'))
-    return result
+    if reputation_data.get('malwareEngineAnalysisEnabled', -1) == 1:
+        headers.extend(REPUTATION_HEADERS_MALWARE_ENGINE_ANALYSIS_HEADERS)
+    if reputation_data.get('reputationDatabaseEnabled', -1) == 1:
+        headers.extend(REPUTATION_HEADERS_REPUTATION_DATABASE)
+    headers.extend(REPUTATION_HEADERS_WEB_REQUEST_HEURISTIC_PROTECTION)
+    if reputation_data.get('googleSafeBrowsingEnabled', -1) == 1:
+        headers.extend(REPUTATION_HEADERS_GOOGLE_SAFE_BROWSING)
+    if reputation_data.get('realtimeCloudLookupEnabled', -1) == 1:
+        headers.extend(REPUTATION_HEADERS_REALTIME_CLOUD)
 
-
-def _iboss_entity_lookup_response_to_message(lookup_response):
-    return '; '.join([lookup_response.get(x).strip(".") for x in REPUTATION_MESSAGE_FIELDS if lookup_response.get(x)])
+    return headers
 
 
 def _get_validate_argument(name, args, default=None, validator=None, message="invalid argument", return_type=None):
@@ -683,28 +687,65 @@ def test_module(client: Client) -> str:
             prefix="iboss", output_type=int),
     ]
 )
-def ip_lookup(client: Client, args: Dict[str, Any]) -> list[CommandResults]:
-    """Looks up reputation data for IP addresses"""
-    # TODO use get_ip
-    ips = _get_validate_argument("ip", args, validator=lambda x: x and len(x) > 0, message="value is not specified")
-
-    ips = argToList(ips)
+def ip_lookup(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+    """
+    Returns IP's reputation
+    """
+    ips = argToList(args.get('ip'))
+    results: List[CommandResults] = list()
     for ip in ips:
-        if not is_ip_valid(ip):
-            raise ValueError(f"ip ({ip}) - Is not valid IP")
+        if not is_ip_valid(ip, accept_v6_ips=True):  # check IP's validity
+            raise ValueError(f'IP "{ip}" is not valid')
+        try:
+            raw_response = _iboss_entity_lookup(client, ip)
+        except Exception as exception:
+            # If anything happens, handle like there are no results
+            err_msg = f'Could not process IP: "{ip}"\n {str(exception)}'
+            demisto.debug(err_msg)
+            raw_response = {}
+        if data := raw_response:
+            score = reputation_calculate_dbot_score(reputation_data=data)
+            num_engines, num_positive_engines = reputation_calculate_engines(reputation_data=data)
 
-    command_results = []
-    for ip in ips:
-        result = _iboss_ip_reputation(client, ip)
+            malicious_description = reputation_get_malicious_message(reputation_data=data, score=score)
+            dbot_score = Common.DBotScore(
+                indicator=ip,
+                indicator_type=DBotScoreType.IP,
+                integration_name=VENDOR_NAME,
+                score=score,
+                malicious_description=malicious_description
+            )
 
-        command_result = CommandResults(
-            readable_output=tableToMarkdown("Result", result, removeNull=True),
-            outputs_key_field='message',
-            outputs=result,
+            headers = reputation_get_headers(reputation_data=data)
+            readable_output = tableToMarkdown(f'{CONTEXT_PREFIX} Result for IP {ip}', data, headers=headers)
+            ip_indicator = Common.IP(
+                ip=ip,
+                dbot_score=dbot_score,
+                detection_engines=num_engines,
+                positive_engines=num_positive_engines
+            )
+        else:  # no data
+            dbot_score = Common.DBotScore(
+                indicator=ip,
+                indicator_type=DBotScoreType.IP,
+                integration_name=VENDOR_NAME,
+                score=Common.DBotScore.NONE,
+            )
+            readable_output = f'{CONTEXT_PREFIX} does not have details about IP: {ip} \n'
+            ip_indicator = Common.IP(
+                ip=ip,
+                dbot_score=dbot_score,
+            )
+        result = CommandResults(
+            outputs_prefix=f'{CONTEXT_PREFIX}.IP',
+            outputs_key_field='url',
+            outputs=data,
+            indicator=ip_indicator,
+            readable_output=readable_output,
+            raw_response=raw_response
         )
-        command_results.append(command_result)
-
-    return command_results
+        results.append(result)
+    return results
 
 
 @metadata_collector.command(
@@ -841,22 +882,60 @@ def ip_lookup(client: Client, args: Dict[str, Any]) -> list[CommandResults]:
             prefix="iboss", output_type=int),
     ]
 )
-def domain_lookup(client: Client, args: Dict[str, Any]) -> list[CommandResults]:
-    """Looks up reputation data for domain"""
+def domain_lookup(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+    domains = argToList(args.get('domain'))
+    results: List[CommandResults] = list()
+    for domain in domains:
+        try:
+            raw_response = _iboss_entity_lookup(client, domain)
+        except Exception as exception:
+            # If anything happens, handle like there are no results
+            err_msg = f'Could not process domain: "{domain}"\n {str(exception)}'
+            demisto.debug(err_msg)
+            raw_response = {}
+        if data := raw_response:
+            score = reputation_calculate_dbot_score(reputation_data=data)
+            num_engines, num_positive_engines = reputation_calculate_engines(reputation_data=data)
 
-    domains = _get_validate_argument(
-        "domain", args, validator=lambda x: x and len(x) > 0, message="value is not specified")
+            malicious_description = reputation_get_malicious_message(reputation_data=data, score=score)
+            dbot_score = Common.DBotScore(
+                indicator=domain,
+                indicator_type=DBotScoreType.DOMAIN,
+                integration_name=VENDOR_NAME,
+                score=score,
+                malicious_description=malicious_description
+            )
 
-    command_results = []
-    for domain in argToList(domains):
-        result = _iboss_domain_reputation(client, domain)
-        command_result = CommandResults(
-            readable_output=tableToMarkdown("Result", result, removeNull=True),
-            outputs_key_field='message',
-            outputs=result,
+            headers = reputation_get_headers(reputation_data=data)
+            readable_output = tableToMarkdown(f'{CONTEXT_PREFIX} Result for domain {domain}', data, headers=headers)
+            domain_indicator = Common.Domain(
+                domain=domain,
+                dbot_score=dbot_score,
+                detection_engines=num_engines,
+                positive_detections=num_positive_engines
+            )
+        else:  # no data
+            dbot_score = Common.DBotScore(
+                indicator=domain,
+                indicator_type=DBotScoreType.DOMAIN,
+                integration_name=VENDOR_NAME,
+                score=Common.DBotScore.NONE,
+            )
+            readable_output = f'{CONTEXT_PREFIX} does not have details about domain: {domain} \n'
+            domain_indicator = Common.Domain(
+                domain=domain,
+                dbot_score=dbot_score,
+            )
+        result = CommandResults(
+            outputs_prefix=f'{CONTEXT_PREFIX}.Domain',
+            outputs_key_field='url',
+            outputs=data,
+            indicator=domain_indicator,
+            readable_output=readable_output,
+            raw_response=raw_response
         )
-        command_results.append(command_result)
-    return command_results
+        results.append(result)
+    return results
 
 
 @metadata_collector.command(
@@ -993,20 +1072,60 @@ def domain_lookup(client: Client, args: Dict[str, Any]) -> list[CommandResults]:
             prefix="iboss", output_type=int),
     ]
 )
-def url_lookup(client: Client, args: Dict[str, Any]) -> list[CommandResults]:
-    urls = _get_validate_argument("url", args, validator=lambda x: x and len(x) > 0, message="value is not specified")
+def url_lookup(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+    urls = argToList(args.get('url'))
+    results: List[CommandResults] = list()
+    for url in urls:
+        try:
+            raw_response = _iboss_entity_lookup(client, url)
+        except Exception as exception:
+            # If anything happens, handle like there are no results
+            err_msg = f'Could not process url: "{url}"\n {str(exception)}'
+            demisto.debug(err_msg)
+            raw_response = {}
+        if data := raw_response:
+            score = reputation_calculate_dbot_score(reputation_data=data)
+            num_engines, num_positive_engines = reputation_calculate_engines(reputation_data=data)
 
-    command_results = []
-    for url in argToList(urls):
-        result = _iboss_url_reputation(client, url)
-        command_result = CommandResults(
-            readable_output=tableToMarkdown("Result", result, removeNull=True),
-            outputs_key_field='message',
-            outputs=result,
+            malicious_description = reputation_get_malicious_message(reputation_data=data, score=score)
+            dbot_score = Common.DBotScore(
+                indicator=url,
+                indicator_type=DBotScoreType.URL,
+                integration_name=VENDOR_NAME,
+                score=score,
+                malicious_description=malicious_description
+            )
+
+            headers = reputation_get_headers(reputation_data=data)
+            readable_output = tableToMarkdown(f'{CONTEXT_PREFIX} Result for URL {url}', data, headers=headers)
+            url_indicator = Common.URL(
+                url=url,
+                dbot_score=dbot_score,
+                detection_engines=num_engines,
+                positive_detections=num_positive_engines
+            )
+        else:  # no data
+            dbot_score = Common.DBotScore(
+                indicator=url,
+                indicator_type=DBotScoreType.URL,
+                integration_name=VENDOR_NAME,
+                score=Common.DBotScore.NONE,
+            )
+            readable_output = f'{CONTEXT_PREFIX} does not have details about URL: {url} \n'
+            url_indicator = Common.URL(
+                url=url,
+                dbot_score=dbot_score,
+            )
+        result = CommandResults(
+            outputs_prefix=f'{CONTEXT_PREFIX}.URL',
+            outputs_key_field='url',
+            outputs=data,
+            indicator=url_indicator,
+            readable_output=readable_output,
+            raw_response=raw_response
         )
-        command_results.append(command_result)
-
-    return command_results
+        results.append(result)
+    return results
 
 
 @metadata_collector.command(
