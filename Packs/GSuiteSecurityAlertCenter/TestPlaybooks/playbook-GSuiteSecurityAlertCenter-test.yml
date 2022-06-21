@@ -108,11 +108,6 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GSuiteSecurityAlert.Alert.endTime
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
               simple: GSuiteSecurityAlert.Alert.type
             iscontext: true
       - - operator: isNotEmpty
