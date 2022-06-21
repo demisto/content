@@ -1,13 +1,6 @@
 """
 Unit Tests module for the iboss integration.
 """
-
-# import demistomock as demisto
-# import CommonServerPython
-# from CommonServerPython import urljoin
-# import pytest
-# import json
-# import requests_mock
 import datetime
 
 def get_mock_client(mocker):
