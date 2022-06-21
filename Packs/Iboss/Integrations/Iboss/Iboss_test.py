@@ -3,6 +3,7 @@ Unit Tests module for the iboss integration.
 """
 import datetime
 
+
 def get_mock_client(mocker):
     from Iboss import Client
     client = Client(username="user", password="123", account_settings_id="123", verify=False, proxy=False)
@@ -29,7 +30,7 @@ def test_add_entity_to_block_list(requests_mock, mocker):
     client = get_mock_client(mocker)
 
     requests_mock.put(
-        f'https://pswg.com/json/controls/blockList?currentPolicyBeingEdited=1',
+        'https://pswg.com/json/controls/blockList?currentPolicyBeingEdited=1',
         json={'message': 'URL added successfully.'})
 
     args = {
@@ -67,7 +68,7 @@ def test_add_entity_to_allow_list(requests_mock, mocker):
 
     client = get_mock_client(mocker)
     requests_mock.put(
-        f'https://pswg.com/json/controls/allowList?currentPolicyBeingEdited=1',
+        'https://pswg.com/json/controls/allowList?currentPolicyBeingEdited=1',
         json={'message': 'URL added successfully.'})
 
     args = {
@@ -95,7 +96,8 @@ def test_remove_entity_from_allow_list_no_exist(requests_mock, mocker):
            Given:
             - User has provided valid credentials and arguments.
            When:
-            - A remove_entity_from_allow_list command is called and but entry is not removed because it is not present on list
+            - A remove_entity_from_allow_list command is called and but entry is not removed because
+                it is not present on list
            Then:
             - Ensure number of items is correct.
             - Ensure a sample value from the API matches what is generated in the context.
@@ -104,7 +106,7 @@ def test_remove_entity_from_allow_list_no_exist(requests_mock, mocker):
 
     client = get_mock_client(mocker)
     requests_mock.delete(
-        f'https://pswg.com/json/controls/allowList?currentPolicyBeingEdited=1',
+        'https://pswg.com/json/controls/allowList?currentPolicyBeingEdited=1',
         json={'message': 'URL not found in list.'})
 
     args = {
@@ -141,7 +143,7 @@ def test_remove_entity_from_block_list(requests_mock, mocker):
 
     client = get_mock_client(mocker)
     requests_mock.delete(
-        f'https://pswg.com/json/controls/blockList?currentPolicyBeingEdited=1',
+        'https://pswg.com/json/controls/blockList?currentPolicyBeingEdited=1',
         json={'message': 'URL removed successfully.'})
 
     args = {
@@ -182,25 +184,30 @@ def test_ip_lookup(requests_mock, mocker):
 
     client = get_mock_client(mocker)
 
-    http_data = {'activeMalwareSubscription': 1,
-                 'categories': '0000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
-                 'categorized': 'true', 'googleSafeBrowsingDescription': '', 'googleSafeBrowsingEnabled': 1,
-                 'googleSafeBrowsingIsSafeUrl': 1, 'googleSafeBrowsingSuccess': 1, 'googleSafeBrowsingSupport': 1,
-                 'isSafeUrl': 0, 'malwareEngineAnalysisDescription': 'Redirect - Redirects to: https://1.1.1.1/',
-                 'malwareEngineAnalysisEnabled': 1, 'malwareEngineAnalysisSuccess': 1, 'malwareEngineIsSafeUrl': 1,
-                 'malwareEngineResultCode': 3, 'message': 'Status: Url Known. Please see categories below.',
-                 'realtimeCloudLookupDomainIsGrey': 0, 'realtimeCloudLookupEnabled': 1,
-                 'realtimeCloudLookupIsSafeUrl': 1, 'realtimeCloudLookupRiskDescription': '',
-                 'realtimeCloudLookupSuccess': 1, 'reputationDatabaseBotnetDetection': 0,
-                 'reputationDatabaseEnabled': 1, 'reputationDatabaseIsSafeUrl': 1, 'reputationDatabaseLookupSuccess': 1,
-                 'reputationDatabaseMalwareDetection': 0, 'url': '1.1.1.1',
-                 'webRequestHeuristicBlockUnreachableSites': '1',
-                 'webRequestHeuristicDescription': 'Heuristic Engine Detection', 'webRequestHeuristicIsSafeUrl': 0,
-                 'webRequestHeuristicLevelHighScore': '79', 'webRequestHeuristicLevelLowScore': '10',
-                 'webRequestHeuristicLevelMediumScore': '60', 'webRequestHeuristicLevelNoneScore': '0',
-                 'webRequestHeuristicProtectionActionHigh': '0', 'webRequestHeuristicProtectionActionLow': '0',
-                 'webRequestHeuristicProtectionActionMedium': '0', 'webRequestHeuristicProtectionLevel': '1',
-                 'webRequestHeuristicSuccess': 1, 'webRequestHeuristicSupport': 1}
+    http_data = {
+        'activeMalwareSubscription': 1,
+        'categories': '0000000000000000000000000000000000000001000000000000000000000000000000000000000'
+        '0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'
+        '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'
+        '000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'
+        '000000000000000000000000000000000000',
+        'categorized': 'true', 'googleSafeBrowsingDescription': '', 'googleSafeBrowsingEnabled': 1,
+        'googleSafeBrowsingIsSafeUrl': 1, 'googleSafeBrowsingSuccess': 1, 'googleSafeBrowsingSupport': 1,
+        'isSafeUrl': 0, 'malwareEngineAnalysisDescription': 'Redirect - Redirects to: https://1.1.1.1/',
+        'malwareEngineAnalysisEnabled': 1, 'malwareEngineAnalysisSuccess': 1, 'malwareEngineIsSafeUrl': 1,
+        'malwareEngineResultCode': 3, 'message': 'Status: Url Known. Please see categories below.',
+        'realtimeCloudLookupDomainIsGrey': 0, 'realtimeCloudLookupEnabled': 1,
+        'realtimeCloudLookupIsSafeUrl': 1, 'realtimeCloudLookupRiskDescription': '',
+        'realtimeCloudLookupSuccess': 1, 'reputationDatabaseBotnetDetection': 0,
+        'reputationDatabaseEnabled': 1, 'reputationDatabaseIsSafeUrl': 1, 'reputationDatabaseLookupSuccess': 1,
+        'reputationDatabaseMalwareDetection': 0, 'url': '1.1.1.1',
+        'webRequestHeuristicBlockUnreachableSites': '1',
+        'webRequestHeuristicDescription': 'Heuristic Engine Detection', 'webRequestHeuristicIsSafeUrl': 0,
+        'webRequestHeuristicLevelHighScore': '79', 'webRequestHeuristicLevelLowScore': '10',
+        'webRequestHeuristicLevelMediumScore': '60', 'webRequestHeuristicLevelNoneScore': '0',
+        'webRequestHeuristicProtectionActionHigh': '0', 'webRequestHeuristicProtectionActionLow': '0',
+        'webRequestHeuristicProtectionActionMedium': '0', 'webRequestHeuristicProtectionLevel': '1',
+        'webRequestHeuristicSuccess': 1, 'webRequestHeuristicSupport': 1}
 
     requests_mock.post(
         f'https://pswg.com/json/controls/urlLookup',
@@ -233,7 +240,11 @@ def test_domain_lookup(requests_mock, mocker):
     client = get_mock_client(mocker)
 
     http_data = {"activeMalwareSubscription": 1,
-                 "categories": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+                 "categories": "000000000000000000000000000000000000000000000000000000000000000000000000000000"
+                 "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+                 "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+                 "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+                 "00000000000000000000000000000000000000000",
                  "categorized": "true", "googleSafeBrowsingDescription": "", "googleSafeBrowsingEnabled": 1,
                  "googleSafeBrowsingIsSafeUrl": 1, "googleSafeBrowsingSuccess": 1, "googleSafeBrowsingSupport": 1,
                  "isSafeUrl": 0, "malwareEngineAnalysisDescription": "Unreachable - HTTP Error Code: 503",
@@ -260,16 +271,30 @@ def test_domain_lookup(requests_mock, mocker):
 
     assert results[0].outputs['DBotScore']['score'] == 3
     assert results[0].outputs['Domain']['Malicious'][
-               'Description'] == "Status: Suspicious Url. Please see below; Unreachable - HTTP Error Code: 503; Heuristic Engine Detection"
+               'Description'] == "Status: Suspicious Url. Please see below; Unreachable - HTTP Error Code: 503; " \
+                                 "Heuristic Engine Detection"
     assert results[0].outputs['iboss']['reputationDatabaseMalwareDetection'] == 1
 
 
-def test__iboss_entity_lookup_response_to_message(requests_mock, mocker):
+def test__iboss_entity_lookup_response_to_message():
+    """
+       Scenario: Derive message from iboss domain lookup response
+       Given:
+        - User has received valid iboss response from URL/IP/domain lookup via client
+       When:
+        - A domain lookup is performed
+       Then:
+        - Ensure message is correct
+   """
     from Iboss import _iboss_entity_lookup_response_to_message
 
     http_data = {
         "activeMalwareSubscription": 1,
-        "categories": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "categories": "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+        "00000000000000",
         "categorized": "true", "googleSafeBrowsingDescription": "", "googleSafeBrowsingEnabled": 1,
         "googleSafeBrowsingIsSafeUrl": 1, "googleSafeBrowsingSuccess": 1, "googleSafeBrowsingSupport": 1,
         "isSafeUrl": 0, "malwareEngineAnalysisDescription": "Unreachable - HTTP Error Code: 503",
@@ -289,4 +314,5 @@ def test__iboss_entity_lookup_response_to_message(requests_mock, mocker):
         "webRequestHeuristicSuccess": 1, "webRequestHeuristicSupport": 1}
 
     results = _iboss_entity_lookup_response_to_message(http_data)
-    assert results == 'Status: Suspicious Url. Please see below; Unreachable - HTTP Error Code: 503; Heuristic Engine Detection'
+    assert results == 'Status: Suspicious Url. Please see below; Unreachable - HTTP Error Code: 503; ' \
+            'Heuristic Engine Detection'
