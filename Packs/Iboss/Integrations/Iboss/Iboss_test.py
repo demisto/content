@@ -4,6 +4,31 @@ Unit Tests module for the iboss integration.
 import datetime
 import copy
 
+REPUTATION_RESPONSE_UNREACHABLE_BENIGN_IP = http_data = {
+    'activeMalwareSubscription': 1,
+    'categories': '0000000000000000000000000000000000000001000000000000000000000000000000000000000'
+                  '0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'
+                  '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'
+                  '000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'
+                  '000000000000000000000000000000000000',
+    'categorized': 'true', 'googleSafeBrowsingDescription': '', 'googleSafeBrowsingEnabled': 1,
+    'googleSafeBrowsingIsSafeUrl': 1, 'googleSafeBrowsingSuccess': 1, 'googleSafeBrowsingSupport': 1,
+    'isSafeUrl': 1, 'malwareEngineAnalysisDescription': 'Redirect - Redirects to: https://1.1.1.1/',
+    'malwareEngineAnalysisEnabled': 1, 'malwareEngineAnalysisSuccess': 1, 'malwareEngineIsSafeUrl': 1,
+    'malwareEngineResultCode': 3, 'message': 'Status: Url Known. Please see categories below.',
+    'realtimeCloudLookupDomainIsGrey': 0, 'realtimeCloudLookupEnabled': 1,
+    'realtimeCloudLookupIsSafeUrl': 1, 'realtimeCloudLookupRiskDescription': '',
+    'realtimeCloudLookupSuccess': 1, 'reputationDatabaseBotnetDetection': 0,
+    'reputationDatabaseEnabled': 1, 'reputationDatabaseIsSafeUrl': 1, 'reputationDatabaseLookupSuccess': 1,
+    'reputationDatabaseMalwareDetection': 0, 'url': '1.1.1.1',
+    'webRequestHeuristicBlockUnreachableSites': '1',
+    'webRequestHeuristicDescription': 'Heuristic Engine Detection', 'webRequestHeuristicIsSafeUrl': 0,
+    'webRequestHeuristicLevelHighScore': '79', 'webRequestHeuristicLevelLowScore': '10',
+    'webRequestHeuristicLevelMediumScore': '60', 'webRequestHeuristicLevelNoneScore': '0',
+    'webRequestHeuristicProtectionActionHigh': '0', 'webRequestHeuristicProtectionActionLow': '0',
+    'webRequestHeuristicProtectionActionMedium': '0', 'webRequestHeuristicProtectionLevel': '1',
+    'webRequestHeuristicSuccess': 1, 'webRequestHeuristicSupport': 1}
+
 REPUTATION_RESPONSE_UNREACHABLE_MALICIOUS_DOMAIN = {
     "activeMalwareSubscription": 1,
     "categories": '0000000000000000000000000000000000000001000000000000000000000000000000000000000'
@@ -235,41 +260,17 @@ def test_ip_lookup(requests_mock, mocker):
 
     client = get_mock_client(mocker)
 
-    http_data = {
-        'activeMalwareSubscription': 1,
-        'categories': '0000000000000000000000000000000000000001000000000000000000000000000000000000000'
-                      '0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'
-                      '00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'
-                      '000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'
-                      '000000000000000000000000000000000000',
-        'categorized': 'true', 'googleSafeBrowsingDescription': '', 'googleSafeBrowsingEnabled': 1,
-        'googleSafeBrowsingIsSafeUrl': 1, 'googleSafeBrowsingSuccess': 1, 'googleSafeBrowsingSupport': 1,
-        'isSafeUrl': 0, 'malwareEngineAnalysisDescription': 'Redirect - Redirects to: https://1.1.1.1/',
-        'malwareEngineAnalysisEnabled': 1, 'malwareEngineAnalysisSuccess': 1, 'malwareEngineIsSafeUrl': 1,
-        'malwareEngineResultCode': 3, 'message': 'Status: Url Known. Please see categories below.',
-        'realtimeCloudLookupDomainIsGrey': 0, 'realtimeCloudLookupEnabled': 1,
-        'realtimeCloudLookupIsSafeUrl': 1, 'realtimeCloudLookupRiskDescription': '',
-        'realtimeCloudLookupSuccess': 1, 'reputationDatabaseBotnetDetection': 0,
-        'reputationDatabaseEnabled': 1, 'reputationDatabaseIsSafeUrl': 1, 'reputationDatabaseLookupSuccess': 1,
-        'reputationDatabaseMalwareDetection': 0, 'url': '1.1.1.1',
-        'webRequestHeuristicBlockUnreachableSites': '1',
-        'webRequestHeuristicDescription': 'Heuristic Engine Detection', 'webRequestHeuristicIsSafeUrl': 0,
-        'webRequestHeuristicLevelHighScore': '79', 'webRequestHeuristicLevelLowScore': '10',
-        'webRequestHeuristicLevelMediumScore': '60', 'webRequestHeuristicLevelNoneScore': '0',
-        'webRequestHeuristicProtectionActionHigh': '0', 'webRequestHeuristicProtectionActionLow': '0',
-        'webRequestHeuristicProtectionActionMedium': '0', 'webRequestHeuristicProtectionLevel': '1',
-        'webRequestHeuristicSuccess': 1, 'webRequestHeuristicSupport': 1}
-
     requests_mock.post(
         'https://pswg.com/json/controls/urlLookup',
-        json=http_data)
+        json=REPUTATION_RESPONSE_UNREACHABLE_BENIGN_IP)
 
     results = ip_lookup(client, {"ip": "1.1.1.1"})
 
-    assert results[0].outputs['DBotScore']['score'] == 2
-    expected = "Redirect - Redirects to: https://1.1.1.1/"
-    assert results[0].outputs['iboss']['malwareEngineAnalysisDescription'] == expected
-    assert results[0].outputs['iboss']['webRequestHeuristicBlockUnreachableSites'] == "1"
+    assert len(results) == 1
+    assert results[0].indicator.dbot_score.score == 1
+    assert results[0].outputs['categories'][0] == 'Technology'
+    expected = ""
+    assert results[0].indicator.dbot_score.malicious_description == expected
 
 
 def test_domain_lookup_malicious(requests_mock, mocker):
