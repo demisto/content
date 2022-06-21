@@ -362,8 +362,8 @@ jobs:
           when: always
           command: |
             ./Tests/scripts/is_file_up_to_date.sh .circleci/config.yml $CIRCLE_BRANCH
-            ./Tests/scripts/is_file_up_to_date.sh dev-requirements-py2.txt $CIRCLE_BRANCH
-            ./Tests/scripts/is_file_up_to_date.sh dev-requirements-py3.txt $CIRCLE_BRANCH
+            ./Tests/scripts/is_file_up_to_date.sh poetry.lock $CIRCLE_BRANCH
+            ./Tests/scripts/is_file_up_to_date.sh pyproject.toml $CIRCLE_BRANCH
       - *restore_cache
       - *add_ssh_keys
       - *prepare_environment
