@@ -457,28 +457,7 @@ Removes entities from a block list
 
 >URL removed successfully.
 
-### test-module
-***
-Tests API connectivity and authentication
 
-
-#### Base Command
-
-`test-module`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
-
-#### Context Output
-
-There is no context output for this command.
-#### Command example
-```!test-module```
-#### Human Readable Output
-
->ok
 
 ### url
 ***

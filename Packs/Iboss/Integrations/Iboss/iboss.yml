@@ -545,11 +545,6 @@ script:
       description: Operation result.
       type: String
   - deprecated: false
-    description: Tests API connectivity and authentication
-    name: test-module
-    arguments: []
-    outputs: []
-  - deprecated: false
     description: Lookup reputation data for URLs.
     name: url
     arguments:
