@@ -1,0 +1,1368 @@
+id: Ransomware Response
+version: -1
+name: Ransomware Response
+description: "This playbook handles ransomware alerts based on the Cortex XDR Traps\
+  \ module signature 'Suspicious File Modification'\n\n**Attacker’s Goals:**\n\nAn\
+  \ attacker is attempting to encrypt the victim files for either extortion or destruction\
+  \ purposes.\n\n**Investigative Actions:**\n\nInvestigate the executed process image\
+  \ and verify if it is malicious using:\n\nXDR trusted signers\n\nVT trusted signers\n\
+  \nVT detection rate\n\nNSRL DB\n\n**Response Actions:**\n\nThe playbook’s first\
+  \ response action is a remediation plan which includes two sub-playbooks, **Containment\
+  \ Plan** and **Eradication Plan**, which is based on the initial data provided within\
+  \ the alert. In that phase, the playbooks will execute:\n\nAuto endpoint isolation\n\
+  \nAuto block indicators\n\nAuto file quarantine\n\nAuto user disable\n\nAuto process\
+  \ termination\n\nNext, the playbook executes an enrichment and response phase\
+  \ which includes two sub-playbooks, **Ransomware Enrich and Contain** & **Account\
+  \ Enrichment - Generic v2.1**.\nThe Ransomware Enrich and Contain playbook does\
+  \ the following:\n\n1.Checks if the initiator is a remote attacker and allows\
+  \ isolating the remote host, if possible. \n\n2.Retrieves the WildFire sandbox report\
+  \ and extracts the indicators within it. * The playbook tries to retrieve the report,\
+  \ but if there is no report available, the playbook tries to fetch the ransomware\
+  \ file for detonation. \n\n3.Hunts for the ransomware alert indicators from the alert\
+  \ table, searches for endpoints that have been seen with them, and allows containing\
+  \ the identified endpoints.\n\nNext, an advanced analysis playbook, which is currently\
+  \ done mostly manually, will be executed. This sub-playbook, **Ransomware Advanced\
+  \ Analysis** allows the analyst to upload the ransomware note and for the ransomware\
+  \ identification. Using the **ID-Ransomware** service, the analyst will be able\
+  \ to get the ransomware type and the decryptor if available.\n\nWhen the playbook\
+  \ executes, it checks for additional activity using the Endpoint Investigation Plan\
+  \ playbook, and another phase, which includes the Containment Plan sub-playbook,\
+  \ is executed.\n\n**This phase will execute the following containment actions:**\n\
+  \nManual block indicators\n\nManual file quarantine\n\nAuto endpoint isolation\n\
+  \nFinally, the recovery phase is executed. If the analysts decides to continue with\
+  \ the investigation rather than recover and close the alert, a manual task with\
+  \ **CISA** official ransomware investigation checklist is provided for further investigation.\n\
+  \n**External resources:**\n\n[MITRE Technique T1486](https://attack.mitre.org/techniques/T1486/)\n\
+  \n[CISA Ransomware Guide](https://www.cisa.gov/stopransomware/ransomware-guide)"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 6298549f-49f4-40d2-8191-7569bc462e87
+    type: start
+    task:
+      id: 6298549f-49f4-40d2-8191-7569bc462e87
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "133"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 2350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: aab72395-ab25-404f-8ed3-0bb11e2f0f54
+    type: title
+    task:
+      id: aab72395-ab25-404f-8ed3-0bb11e2f0f54
+      version: -1
+      name: Pre-Analysis Containment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 2915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: a370e139-e6b7-4ae8-869a-a17c21f0deb9
+    type: condition
+    task:
+      id: a370e139-e6b7-4ae8-869a-a17c21f0deb9
+      version: -1
+      name: Should execute early remediation?
+      description: Whether to execute an early remediation.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "103"
+      - "136"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.earlyRemediation
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 3050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: fcd06da8-42be-451f-8732-578fa30d464f
+    type: title
+    task:
+      id: fcd06da8-42be-451f-8732-578fa30d464f
+      version: -1
+      name: Identify and Respond
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "120"
+      - "137"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 3390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: fe283460-c0d2-4830-8560-1b8dd76d2e06
+    type: title
+    task:
+      id: fe283460-c0d2-4830-8560-1b8dd76d2e06
+      version: -1
+      name: Advanced Analysis
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "121"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 3720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: fd0440b6-35fb-43d2-83fe-7f92f493282e
+    type: title
+    task:
+      id: fd0440b6-35fb-43d2-83fe-7f92f493282e
+      version: -1
+      name: Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "135"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 4320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "81":
+    id: "81"
+    taskid: 449cb9c3-df2f-4302-88c0-038c41c0c705
+    type: title
+    task:
+      id: 449cb9c3-df2f-4302-88c0-038c41c0c705
+      version: -1
+      name: Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "106"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 4780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "95":
+    id: "95"
+    taskid: 090eb73d-6b18-4d1f-8c19-f2da08a8ddf7
+    type: title
+    task:
+      id: 090eb73d-6b18-4d1f-8c19-f2da08a8ddf7
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -260,
+          "y": 5940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "103":
+    id: "103"
+    taskid: d399b4d5-b204-4739-897b-929ad87cc3bc
+    type: playbook
+    task:
+      id: d399b4d5-b204-4739-897b-929ad87cc3bc
+      version: -1
+      name: Containment Plan
+      description: |-
+        This playbook handles all the containment actions available with Cortex XSIAM.
+        The playbook allows you to contain the alert with one of the following tasks:
+        * Isolate endpoint
+        * Disable account
+        * Quarantine file
+        * Block indicators
+        * Clear user session (currently, the playbook supports only Okta)
+
+        The playbook inputs allows you to manipulate the execution flow. Review the inputs description.
+      playbookName: Containment Plan
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      AutoContainment:
+        complex:
+          root: inputs.AutoContainment
+      BlockIndicators:
+        simple: "True"
+      ClearUserSessions:
+        simple: "false"
+      EndpointID:
+        complex:
+          root: alert
+          accessor: agentid
+      FileContainment:
+        simple: "True"
+      FileHash:
+        complex:
+          root: alert
+          accessor: initiatorsha256
+      FilePath:
+        complex:
+          root: alert
+          accessor: initiatorpath
+      FileRemediation:
+        simple: Quarantine
+      HostContainment:
+        simple: "True"
+      IAMUserDomain:
+        simple: '@demisto.com'
+      UserContainment:
+        simple: "True"
+      Username:
+        complex:
+          root: alert.username
+          filters:
+          - - operator: notIn
+              left:
+                value:
+                  simple: alert.username
+                iscontext: true
+              right:
+                value:
+                  simple: administrator,system
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 3220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "106":
+    id: "106"
+    taskid: 8418ec9c-2074-4d98-8192-07db5af2ac8b
+    type: playbook
+    task:
+      id: 8418ec9c-2074-4d98-8192-07db5af2ac8b
+      version: -1
+      name: Containment Plan
+      description: |-
+        This playbook handles all the containment actions available with Cortex XSIAM.
+        The playbook allows you to contain the alert with one of the following tasks:
+        * Isolate endpoint
+        * Disable account
+        * Quarantine file
+        * Block indicators
+        * Clear user session (currently, the playbook supports only Okta)
+
+        The playbook inputs allows you to manipulate the execution flow. Review the inputs description.
+      playbookName: Containment Plan
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "129"
+    scriptarguments:
+      AutoContainment:
+        simple: "False"
+      BlockIndicators:
+        simple: "True"
+      ClearUserSessions:
+        simple: "False"
+      EndpointID:
+        complex:
+          root: foundIncidents.CustomFields
+          accessor: agentid
+      FileContainment:
+        simple: "True"
+      FileHash:
+        complex:
+          root: foundIncidents.CustomFields
+          accessor: initiatorsha256
+      FilePath:
+        complex:
+          root: foundIncidents.CustomFields
+          accessor: initiatorpath
+      FileRemediation:
+        simple: Delete
+      HostContainment:
+        simple: "True"
+      IAMUserDomain:
+        simple: '@demisto.com'
+      UserContainment:
+        simple: "True"
+      Username:
+        complex:
+          root: foundIncidents.CustomFields.username
+          filters:
+          - - operator: notContainsGeneral
+              left:
+                value:
+                  simple: foundIncidents.CustomFields.username
+                iscontext: true
+              right:
+                value:
+                  simple: administrator
+              ignorecase: true
+            - operator: notContainsGeneral
+              left:
+                value:
+                  simple: foundIncidents.CustomFields.username
+                iscontext: true
+              right:
+                value:
+                  simple: system
+              ignorecase: true
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 4780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "120":
+    id: "120"
+    taskid: 4fff2e3f-c54e-4917-849b-b4e1caf8a688
+    type: playbook
+    task:
+      id: 4fff2e3f-c54e-4917-849b-b4e1caf8a688
+      version: -1
+      name: Ransomware Enrich and Contain
+      description: |-
+        This playbook is responsible for alert data enrichment and response.
+        The playbook executes the following:
+
+        1.Checks if the initiator is a remote attacker and allows isolating the remote host, if possible.
+
+        2.Retrieves the WildFire sandbox report and extract the indicators within it.
+            * The playbook tries to retrieve the report, but if there is no report available, the playbook tries to fetch the ransomware file for detonation.
+
+        3.Hunts for the ransomware alert indicators from the alert table, searches for endpoints that have been seen with them, and allows containing the identified endpoints.
+      playbookName: Ransomware Enrich and Contain
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      FileSHA256:
+        complex:
+          root: alert
+          accessor: initiatorsha256
+      isolateRemoteAttacker:
+        complex:
+          root: inputs.isolateRemoteAttacker
+      isolateSimilarEndpoints:
+        complex:
+          root: inputs.isolateSimilarEndpoints
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 3540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "121":
+    id: "121"
+    taskid: 91d3b754-2bf2-470f-8b6e-f8868e846b10
+    type: condition
+    task:
+      id: 91d3b754-2bf2-470f-8b6e-f8868e846b10
+      version: -1
+      name: Should run advanced analysis?
+      description: Whether to execute advanced analysis.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - '63'
+      yes:
+      - '138'
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.RunAdvancedAnalysis
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 3850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "122":
+    id: "122"
+    taskid: 47278d70-0f8a-4ed3-83b1-de3f461f030f
+    type: playbook
+    task:
+      id: 47278d70-0f8a-4ed3-83b1-de3f461f030f
+      version: -1
+      name: Handle False Positive Alerts
+      description: |
+        This playbook handles false positive alerts.
+      playbookName: Handle False Positive Alerts
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "95"
+    scriptarguments:
+      FileSHA256:
+        complex:
+          root: alert
+          accessor: initiatorsha256
+      ShouldCloseAutomatically:
+        complex:
+          root: inputs.ShouldCloseAutomatically
+      alertName:
+        complex:
+          root: alert
+          accessor: name
+      sourceIP:
+        complex:
+          root: alert
+          accessor: hostip
+      username:
+        complex:
+          root: alert
+          accessor: username
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -260,
+          "y": 3050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "124":
+    id: "124"
+    taskid: 3e89a364-3a58-436e-83d7-01a23bae2a4f
+    type: regular
+    task:
+      id: 3e89a364-3a58-436e-83d7-01a23bae2a4f
+      version: -1
+      name: Close alert
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "95"
+    scriptarguments:
+      closeReason:
+        simple: Resolved - True Positive
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 5770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "125":
+    id: "125"
+    taskid: 3f443fba-f5ef-4af5-81d4-938e01501ac5
+    type: condition
+    task:
+      id: 3f443fba-f5ef-4af5-81d4-938e01501ac5
+      version: -1
+      name: Should restore affected endpoint?
+      description: Whether to restore the isolated endpoints.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "126"
+      "yes":
+      - "128"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 5075
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "126":
+    id: "126"
+    taskid: ad58dec4-ad0e-4942-8aa5-37d5b8895d7c
+    type: condition
+    task:
+      id: ad58dec4-ad0e-4942-8aa5-37d5b8895d7c
+      version: -1
+      name: Should close alert automatically?
+      description: Whether to close the alert automatically.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "127"
+      "yes":
+      - "124"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.ShouldCloseAutomatically
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 5430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "127":
+    id: "127"
+    taskid: 48d129cf-955d-49c1-8227-b754d5f8f2af
+    type: regular
+    task:
+      id: 48d129cf-955d-49c1-8227-b754d5f8f2af
+      version: -1
+      name: Ransomware investigation steps
+      description: Follow the [CISA ransomware investigation checklist](https://www.cisa.gov/stopransomware/ransomware-guide).
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "124"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 5600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "128":
+    id: "128"
+    taskid: 7dda58d5-d915-4d0b-82db-edca50ea1890
+    type: playbook
+    task:
+      id: 7dda58d5-d915-4d0b-82db-edca50ea1890
+      version: -1
+      name: Recovery Plan
+      description: |-
+        This playbook handles all the recovery actions available with Cortex XSIAM.
+        The playbook allows you, from the incident, to recover one of the following tasks:
+        * Unisolate endpoint
+        * Restore quarantined file
+
+        The playbook inputs allow you to manipulate the execution flow. Review the inputs description.
+      playbookName: Recovery Plan
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "126"
+    scriptarguments:
+      endpointID:
+        complex:
+          root: alert
+          accessor: agentsid
+      releaseFile:
+        simple: "False"
+      unIsolateEndpoint:
+        simple: "True"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 5250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "129":
+    id: "129"
+    taskid: 1b78ec0a-fb85-452c-82f1-7687ecc2cee2
+    type: title
+    task:
+      id: 1b78ec0a-fb85-452c-82f1-7687ecc2cee2
+      version: -1
+      name: Recovery
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "125"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 4950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "130":
+    id: "130"
+    taskid: a30248bf-e7f2-40b4-8e3b-05537a5b6af3
+    type: title
+    task:
+      id: a30248bf-e7f2-40b4-8e3b-05537a5b6af3
+      version: -1
+      name: Handle False Positive
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "122"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -260,
+          "y": 2915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '132':
+    id: '132'
+    taskid: 4dbf4631-7419-4a88-83c2-c9d2a0761149
+    type: condition
+    task:
+      id: 4dbf4631-7419-4a88-83c2-c9d2a0761149
+      version: -1
+      name: Found relevant information?
+      description: Checks if relevant alerts were found in the previous query.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "129"
+      "yes":
+      - "81"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: foundIncidents
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 4475
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "133":
+    id: "133"
+    taskid: c4da120b-58c7-4521-8180-954cbb09f227
+    type: playbook
+    task:
+      id: c4da120b-58c7-4521-8180-954cbb09f227
+      version: -1
+      name: Enrichment for Verdict
+      playbookName: Enrichment for Verdict
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "134"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 2490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "134":
+    id: "134"
+    taskid: 4a1fda2c-53f2-4931-835f-693ca1e803dc
+    type: condition
+    task:
+      id: 4a1fda2c-53f2-4931-835f-693ca1e803dc
+      version: -1
+      name: Got possible verdict?
+      description: Checks the verdict received from the Enrichment for Verdict sub-playbook.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      False Positive:
+      - "130"
+      True Positive:
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: True Positive
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: VTFileVerdict
+            iscontext: true
+          right:
+            value:
+              simple: malicious
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: FileVerdict
+            iscontext: true
+          right:
+            value:
+              simple: suspicious
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: VTFileSigners
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: XDRFileSigners
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: unTrusted
+    - label: False Positive
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: VTFileVerdict
+            iscontext: true
+          right:
+            value:
+              simple: benign
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: NSRLFileVerdict
+            iscontext: true
+          right:
+            value:
+              simple: isNSRL
+          ignorecase: true
+        - operator: notContainsGeneral
+          left:
+            value:
+              complex:
+                root: VTFileSigners
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: XDRFileSigners
+                      iscontext: true
+                - operator: uniq
+            iscontext: true
+          right:
+            value:
+              simple: unTrusted
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 2650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "135":
+    id: "135"
+    taskid: b41f8a42-a2e9-49ec-80d0-f7efc093e38d
+    type: playbook
+    task:
+      id: b41f8a42-a2e9-49ec-80d0-f7efc093e38d
+      version: -1
+      name: Endpoint Investigation Plan
+      description: |-
+        This playbook handles all the endpoint investigation actions available with Cortex XSIAM.
+        The playbook allows you to investigate and hunt for more information using one of the following tasks:
+        * Pre-defined MITRE Tactics
+        * Host fields (Host ID)
+        * Attacker fields (Attacker IP, External host)
+        * MITRE techniques
+        * File hash (currently, the playbook supports only SHA256)
+
+        The playbook inputs allow you to manipulate the execution flow. Review the inputs description.
+      playbookName: Endpoint Investigation Plan
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "132"
+    scriptarguments:
+      FileSHA256:
+        complex:
+          root: alert
+          accessor: initiatorsha256
+      HuntByFile:
+        simple: "True"
+      HuntCnCTechniques:
+        simple: "True"
+      HuntCollectionTechniques:
+        simple: "True"
+      HuntDefenseEvasionTechniques:
+        simple: "True"
+      HuntDiscoveryTechniques:
+        simple: "True"
+      HuntExecutionTechniques:
+        simple: "True"
+      HuntImpactTechniques:
+        simple: "True"
+      HuntInitialAccessTechniques:
+        simple: "True"
+      HuntLateralMovementTechniques:
+        simple: "True"
+      HuntPersistenceTechniques:
+        simple: "True"
+      HuntPrivilegeEscalationTechniques:
+        simple: "True"
+      HuntReconnaissanceTechniques:
+        simple: "True"
+      agentID:
+        complex:
+          root: alert
+          accessor: agentid
+      timeRange:
+        simple: 2 hours ago
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 4320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "136":
+    id: "136"
+    taskid: a4bb8e27-30f5-4ca1-8fd9-aca658aefad0
+    type: playbook
+    task:
+      id: a4bb8e27-30f5-4ca1-8fd9-aca658aefad0
+      version: -1
+      name: Eradication Plan
+      description: |-
+        This playbook handles all the eradication actions available with Cortex XSIAM.
+        The playbook allows you to eradicate the alert with one of the following tasks:
+        * Reset user password
+        * Delete file
+        * Kill process (currently, the playbook supports terminating a process by name)
+
+        The playbook inputs allows you to manipulate the execution flow. Review the inputs description.
+      playbookName: Eradication Plan
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      AutoEradicate:
+        complex:
+          root: inputs.AutoEradication
+      EndpointID:
+        complex:
+          root: alert
+          accessor: agentid
+      FilePath:
+        complex:
+          root: alert
+          accessor: initiatorpath
+      FileRemediation:
+        simple: Quarantine
+      Username:
+        complex:
+          root: foundIncidents.CustomFields
+          accessor: username
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1140,
+          "y": 3220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "137":
+    id: "137"
+    taskid: fac17c32-a38d-4dd7-8f4e-3b6e8337928c
+    type: playbook
+    task:
+      id: fac17c32-a38d-4dd7-8f4e-3b6e8337928c
+      version: -1
+      name: Account Enrichment - Generic v2.1
+      description: |-
+        Enrich accounts using one or more integrations.
+        Supported integrations:
+        - Active Directory
+      playbookName: Account Enrichment - Generic v2.1
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      Username:
+        complex:
+          root: alert
+          accessor: username
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1140,
+          "y": 3540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "138":
+    id: "138"
+    taskid: 5b75d413-1efc-4a67-8d38-b54073d7d67e
+    type: playbook
+    task:
+      id: 5b75d413-1efc-4a67-8d38-b54073d7d67e
+      version: -1
+      name: Ransomware Advanced Analysis
+      description: |-
+        This playbook is responsible for detecting the ransomware type and searching for available decryptors.
+
+        The playbook uses the ID-Ransomware service, which allows detecting the ransomware using multiple methods.
+      playbookName: Ransomware Advanced Analysis
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "63"
+    separatecontext: false
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 4020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "121_63_#default#": 0.31,
+      "125_126_#default#": 0.51,
+      "126_124_yes": 0.53,
+      "134_130_False Positive": 0.8,
+      "134_3_True Positive": 0.68,
+      "5_103_yes": 0.54,
+      "5_136_yes": 0.78,
+      "5_14_#default#": 0.54
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3655,
+        "width": 1780,
+        "x": -260,
+        "y": 2350
+      }
+    }
+  }
+inputs:
+- key: earlyRemediation
+  value:
+    simple: "True"
+  required: false
+  description: Whether to execute the early remediation phase.
+  playbookInputQuery:
+- key: AutoContainment
+  value:
+    simple: "True"
+  required: false
+  description: Whether to execute the containment actions automatically.
+  playbookInputQuery:
+- key: AutoEradication
+  value:
+    simple: "True"
+  required: false
+  description: Whether to execute the eradication actions automatically.
+  playbookInputQuery:
+- key: isolateRemoteAttacker
+  value:
+    simple: "True"
+  required: false
+  description: Whether to isolate the remote endpoint if the attack has been triggered
+    remotely.
+  playbookInputQuery:
+- key: isolateSimilarEndpoints
+  value:
+    simple: "True"
+  required: false
+  description: Whether to isolate the endpoints identified with similar IoCs to the
+    ransomware alert.
+  playbookInputQuery:
+- key: RunAdvancedAnalysis
+  value:
+    simple: "True"
+  required: false
+  description: Whether to execute the Ransomware Advanced Analysis playbook.  Note that advanced analysis contains manual tasks which will stop the playbook's flow until the analysts's response.
+  playbookInputQuery:
+- key: ShouldCloseAutomatically
+  value:
+    simple: "False"
+  required: false
+  description: Whether to close the alert automatically.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+marketplaces: ["marketplacev2"]
+fromversion: 6.6.0
+
+
