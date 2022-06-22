@@ -180,14 +180,14 @@ six = "*"
 
 [[package]]
 name = "boto3"
-version = "1.24.13"
+version = "1.24.14"
 description = "The AWS SDK for Python"
 category = "main"
 optional = false
 python-versions = ">= 3.7"
 
 [package.dependencies]
-botocore = ">=1.27.13,<1.28.0"
+botocore = ">=1.27.14,<1.28.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.6.0,<0.7.0"
 
@@ -196,7 +196,7 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.27.13"
+version = "1.27.14"
 description = "Low-level, data-driven core of boto 3."
 category = "main"
 optional = false
@@ -2204,7 +2204,7 @@ build = ["google-cloud-bigquery"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "a08736825a908270d3f390d1b472a86e1b7e3ef9b61fb558498bdc9fe1b5e849"
+content-hash = "10eb20db510b3708739cc17e59572092645e059714ed78af97a90072b57ea5a2"
 
 [metadata.files]
 aiohttp = [
@@ -2358,12 +2358,12 @@ blessings = [
     {file = "blessings-1.7.tar.gz", hash = "sha256:98e5854d805f50a5b58ac2333411b0482516a8210f23f43308baeb58d77c157d"},
 ]
 boto3 = [
-    {file = "boto3-1.24.13-py3-none-any.whl", hash = "sha256:13efff22f1cb6d25ec7027edaccdfdd515ba593e093173beb09094cff898a8cc"},
-    {file = "boto3-1.24.13.tar.gz", hash = "sha256:945d49941541a3cbb02710361be64b22f98e68c2e447229f0d51f7c215009e28"},
+    {file = "boto3-1.24.14-py3-none-any.whl", hash = "sha256:490f5e88f5551b33ae3019a37412158b76426d63d1fb910968ade9b6a024e5fe"},
+    {file = "boto3-1.24.14.tar.gz", hash = "sha256:e284705da36faa668c715ae1f74ebbff4320dbfbe3a733df3a8ab076d1ed1226"},
 ]
 botocore = [
-    {file = "botocore-1.27.13-py3-none-any.whl", hash = "sha256:fbc09558c02d415e8646520f95db7e8d313460938780fa6040b00865f098fd55"},
-    {file = "botocore-1.27.13.tar.gz", hash = "sha256:df75e53576b061818bbce4bd70221749e40cc91d16a2b6c03fbeec8023665734"},
+    {file = "botocore-1.27.14-py3-none-any.whl", hash = "sha256:df1e9b208ff93daac7c645b0b04fb6dccd7f20262eae24d87941727025cbeece"},
+    {file = "botocore-1.27.14.tar.gz", hash = "sha256:bb56fa77b8fa1ec367c2e16dee62d60000451aac5140dcce3ebddc167fd5c593"},
 ]
 bracex = [
     {file = "bracex-2.3.post1-py3-none-any.whl", hash = "sha256:351b7f20d56fb9ea91f9b9e9e7664db466eb234188c175fd943f8f755c807e73"},
