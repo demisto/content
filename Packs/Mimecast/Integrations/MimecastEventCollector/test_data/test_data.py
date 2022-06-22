@@ -73,49 +73,14 @@ EMPTY_EVENTS_LIST = {
 
 FILTER_SAME_TIME_EVEMTS = {
     'audit_response': {
-            "meta": {
-                "status": 200,
-                "pagination": {
-                    "pageSize": 230,
-                    "next": "eNotj8sKgkAUQP_lbhUyUyqhhWVFSDbRG9r4uNqYOjbjTFL070W1PHAW5zyhDjMU9IE0Acc2DB0ExpJ_Eaz8lhZtq8WIm2WktHPHwnPnuCnnVebb3qBuJ9nicunPiK_Z01OeLnaHNJLKH64CNyCmme93XdEkMZrKGFd37TT0_PvW69ulOWVNOehZ9WPd9ogyiDsC_RsTyDJCDs4nhQrCUVEmBThpWAj8GVt2xQqcShaFDgq5oOyDXR04xownogl58995vQHKLUrC"
-                }
-            },
-            "data": [
-                {
-                    "id": "eNoVzt0KgjAAQOF32a1B23SpQRemZrEoKy2EbkrnT6ULndOK3j17gI9zPqBhcVuzIgFToPEAEk_a6xotozs5j_eQMvEqvSqjxDGevZ2t8lxf-FQhbnRLV-EpvbaSmtuNtfExvh1D1IgkZljCedUpkenQLnB0UmKXi9JQted716u-hL41AyNwaZNCPHj2jyNdM5BhIm0E4rYRvGR1zBM2XNnhwUIQW1idDEayuil4NYDvD0ccOyU",
-                    "auditType": "User Logged On",
-                    "user": "outbound-auth@journal.paloaltonetworks.mime.integration.com",
-                    "eventTime": "2022-05-31T12:50:33+0000",
-                    "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-31, Time: 08:50:33 GMT-04:00, IP: 54.243.138.179, Application: SMTP-MTA2, Method: Cloud",
-                    "category": "authentication_logs"
-                },
-                {
-                    "id": "eNoVzkkOgjAAQNG7dIsLWkCKiQsmCWKwKkhYIpQpQAmUIRrvLh7g5f8PGGk6DbTKwAH0pE4aJViwYfEIXfD93CyO2Tpd4SkW7lezcMtSPRFPUOy4zt0wyl_T7GlXX_cJQvUzhCPPUopm0egWIdYsbwksVWmRzXiLJbl_31aJzCLRj2AHkimreMOKfxuqMoZYg9IOpNPIWUuHlGV0mzLDhw5FpCNpv5mZDmPFug18f0rLOy0",
-                    "auditType": "User Logged On",
-                    "user": "outbound-auth@journal.paloaltonetworks.mime.integration.com",
-                    "eventTime": "2022-05-31T12:50:33+0000",
-                    "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-31, Time: 08:50:33 GMT-04:00, IP: 54.243.138.179, Application: SMTP-MTA2, Method: Cloud",
-                    "category": "authentication_logs"
-                },
-                {
-                    "id": "eNoVzkkOgjAAQNG7dCsLWmYTFwUca7AEkbDEtiDGUsNoNN5dPMDL_x_QCTa0ouZgCQ6Gj6-ZWcRyYjtYUH7EEUnktqmIFbrPV1DtbzdnQ8nCWuf3cp9m5XUYiXeKcEQRul9S2PWcCTTqfjMtci8k0zl0LInWqpeuYT7f8cugo07xCmigGHjdP1T1b0PHdKFnQ0cDbOh6JUXLFBfzVJAmGOoII8OezSjarlbNDL4_Ets63Q",
-                    "auditType": "User Logged On",
-                    "user": "outbound-auth@journal.paloaltonetworks.mime.integration.com",
-                    "eventTime": "2022-05-31T11:35:31+0000",
-                    "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-31, Time: 09:35:31 GMT-04:00, IP: 54.243.138.179, Application: SMTP-MTA2, Method: Cloud",
-                    "category": "authentication_logs"
-                },
-                {
-                    "id": "eNoVzkkOgjAAQNG7dIsLWmYTF5WiQSJiFAlLKWVSKAIFovHu4gFe_v-AnlHRsTIFa5AcuYviB3Qw0cmBvqJJ8Mau903uacRsZzt3i8LYBZ6kOXGVuWGUJWL0rJOP_QCh6hbCfkgpQ6O8bSYptog3XYmh1cjhQ20qavs-z0owygHegBW4i7Qcnjz_t6GhmtCCqrECVPQDr1lHecqWKTu8YCgjjBR9MSPr-pI3C_j-AFEpO0E",
-                    "auditType": "User Logged On",
-                    "user": "outbound-auth@journal.paloaltonetworks.mime.integration.com",
-                    "eventTime": "2022-05-31T9:05:31+0000",
-                    "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-31, Time: 09:05:31 GMT-04:00, IP: 54.243.138.179, Application: SMTP-MTA2, Method: Cloud",
-                    "category": "authentication_logs"
-                },
-            ]
+        "meta": {
+            "status": 200,
+            "pagination": {
+                "pageSize": 230,
+                "next": "eNotj8sKgkAUQP_lbhUyUyqhhWVFSDbRG9r4uNqYOjbjTFL070W1PHAW5zyhDjMU9IE0Acc2DB0ExpJ_Eaz8lhZtq8WIm2WktHPHwnPnuCnnVebb3qBuJ9nicunPiK_Z01OeLnaHNJLKH64CNyCmme93XdEkMZrKGFd37TT0_PvW69ulOWVNOehZ9WPd9ogyiDsC_RsTyDJCDs4nhQrCUVEmBThpWAj8GVt2xQqcShaFDgq5oOyDXR04xownogl58995vQHKLUrC"
+            }
         },
-    'res': [
+        "data": [
             {
                 "id": "eNoVzt0KgjAAQOF32a1B23SpQRemZrEoKy2EbkrnT6ULndOK3j17gI9zPqBhcVuzIgFToPEAEk_a6xotozs5j_eQMvEqvSqjxDGevZ2t8lxf-FQhbnRLV-EpvbaSmtuNtfExvh1D1IgkZljCedUpkenQLnB0UmKXi9JQted716u-hL41AyNwaZNCPHj2jyNdM5BhIm0E4rYRvGR1zBM2XNnhwUIQW1idDEayuil4NYDvD0ccOyU",
                 "auditType": "User Logged On",
@@ -131,8 +96,43 @@ FILTER_SAME_TIME_EVEMTS = {
                 "eventTime": "2022-05-31T12:50:33+0000",
                 "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-31, Time: 08:50:33 GMT-04:00, IP: 54.243.138.179, Application: SMTP-MTA2, Method: Cloud",
                 "category": "authentication_logs"
-            }
+            },
+            {
+                "id": "eNoVzkkOgjAAQNG7dCsLWmYTFwUca7AEkbDEtiDGUsNoNN5dPMDL_x_QCTa0ouZgCQ6Gj6-ZWcRyYjtYUH7EEUnktqmIFbrPV1DtbzdnQ8nCWuf3cp9m5XUYiXeKcEQRul9S2PWcCTTqfjMtci8k0zl0LInWqpeuYT7f8cugo07xCmigGHjdP1T1b0PHdKFnQ0cDbOh6JUXLFBfzVJAmGOoII8OezSjarlbNDL4_Ets63Q",
+                "auditType": "User Logged On",
+                "user": "outbound-auth@journal.paloaltonetworks.mime.integration.com",
+                "eventTime": "2022-05-31T11:35:31+0000",
+                "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-31, Time: 09:35:31 GMT-04:00, IP: 54.243.138.179, Application: SMTP-MTA2, Method: Cloud",
+                "category": "authentication_logs"
+            },
+            {
+                "id": "eNoVzkkOgjAAQNG7dIsLWmYTF5WiQSJiFAlLKWVSKAIFovHu4gFe_v-AnlHRsTIFa5AcuYviB3Qw0cmBvqJJ8Mau903uacRsZzt3i8LYBZ6kOXGVuWGUJWL0rJOP_QCh6hbCfkgpQ6O8bSYptog3XYmh1cjhQ20qavs-z0owygHegBW4i7Qcnjz_t6GhmtCCqrECVPQDr1lHecqWKTu8YCgjjBR9MSPr-pI3C_j-AFEpO0E",
+                "auditType": "User Logged On",
+                "user": "outbound-auth@journal.paloaltonetworks.mime.integration.com",
+                "eventTime": "2022-05-31T9:05:31+0000",
+                "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-31, Time: 09:05:31 GMT-04:00, IP: 54.243.138.179, Application: SMTP-MTA2, Method: Cloud",
+                "category": "authentication_logs"
+            },
         ]
+    },
+    'res': [
+        {
+            "id": "eNoVzt0KgjAAQOF32a1B23SpQRemZrEoKy2EbkrnT6ULndOK3j17gI9zPqBhcVuzIgFToPEAEk_a6xotozs5j_eQMvEqvSqjxDGevZ2t8lxf-FQhbnRLV-EpvbaSmtuNtfExvh1D1IgkZljCedUpkenQLnB0UmKXi9JQted716u-hL41AyNwaZNCPHj2jyNdM5BhIm0E4rYRvGR1zBM2XNnhwUIQW1idDEayuil4NYDvD0ccOyU",
+            "auditType": "User Logged On",
+            "user": "outbound-auth@journal.paloaltonetworks.mime.integration.com",
+            "eventTime": "2022-05-31T12:50:33+0000",
+            "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-31, Time: 08:50:33 GMT-04:00, IP: 54.243.138.179, Application: SMTP-MTA2, Method: Cloud",
+            "category": "authentication_logs"
+        },
+        {
+            "id": "eNoVzkkOgjAAQNG7dIsLWkCKiQsmCWKwKkhYIpQpQAmUIRrvLh7g5f8PGGk6DbTKwAH0pE4aJViwYfEIXfD93CyO2Tpd4SkW7lezcMtSPRFPUOy4zt0wyl_T7GlXX_cJQvUzhCPPUopm0egWIdYsbwksVWmRzXiLJbl_31aJzCLRj2AHkimreMOKfxuqMoZYg9IOpNPIWUuHlGV0mzLDhw5FpCNpv5mZDmPFug18f0rLOy0",
+            "auditType": "User Logged On",
+            "user": "outbound-auth@journal.paloaltonetworks.mime.integration.com",
+            "eventTime": "2022-05-31T12:50:33+0000",
+            "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-31, Time: 08:50:33 GMT-04:00, IP: 54.243.138.179, Application: SMTP-MTA2, Method: Cloud",
+            "category": "authentication_logs"
+        }
+    ]
 }
 
 AUDIT_LOG_RESPONSE = {
@@ -257,5 +257,134 @@ SIEM_LOG_PROCESS_EVENT = [
             "type": "MTA",
             "xsiem_classifier": "siem_log"
         }]
+    }
+]
+
+SIEM_RESPONSE_MULTIPLE_EVENTS = {
+    "type": "MTA",
+    "data": [
+        {
+            "acc": "CUSA102A236",
+            "SpamLimit": 28,
+            "IP": "54.243.138.179",
+            "Dir": "Outbound",
+            "Subject": "Re",
+            "MsgId": "<4bf108530de00f37-111331@nodered-mimecast-55569955-kthgt.hamilton321.net>",
+            "headerFrom": "mark.guzman@paloaltonetworks.mime.integration.com",
+            "Sender": "mark.guzman@paloaltonetworks.mime.integration.com",
+            "datetime": "2022-05-23T12:20:44-0400",
+            "Rcpt": "chartman@pilot-meadow.b41.one",
+            "SpamInfo": "[]",
+            "Act": "Acc",
+            "TlsVer": "TLSv1.2",
+            "Cphr": "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+            "aCode": "l1b4x0uvOs2sRFzGsHoYzQ",
+            "SpamScore": 0
+        },
+        {
+            "acc": "CUSA102A236",
+            "SpamLimit": 28,
+            "IP": "54.243.138.179",
+            "Dir": "Outbound",
+            "Subject": "Re",
+            "MsgId": "<c096a6439eae1c9c-57128@nodered-mimecast-55569955-kthgt.hamilton321.net>",
+            "headerFrom": "jeff.dasovich@paloaltonetworks.mime.integration.com",
+            "Sender": "jeff.dasovich@paloaltonetworks.mime.integration.com",
+            "datetime": "2022-05-23T12:20:48-0400",
+            "Rcpt": "jito@demo-visionary.b41.one",
+            "SpamInfo": "[]",
+            "Act": "Acc",
+            "TlsVer": "TLSv1.2",
+            "Cphr": "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+            "aCode": "-dogI8BBMquuevdHEC83Lw",
+            "SpamScore": 0
+        },
+        {
+            "acc": "CUSA102A236",
+            "SpamLimit": 28,
+            "IP": "54.243.138.179",
+            "Dir": "Outbound",
+            "Subject": "Re",
+            "MsgId": "<c096a6439eae1c9c-57128@nodered-mimecast-55569955-kthgt.hamilton321.net>",
+            "headerFrom": "jeff.dasovich@paloaltonetworks.mime.integration.com",
+            "Sender": "jeff.dasovich@paloaltonetworks.mime.integration.com",
+            "datetime": "2022-05-23T12:20:48-0400",
+            "Rcpt": "dimeff@demo-visionary.b41.one",
+            "SpamInfo": "[]",
+            "Act": "Acc",
+            "TlsVer": "TLSv1.2",
+            "Cphr": "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+            "aCode": "-dogI8BBMquuevdHEC83Lw",
+            "SpamScore": 0
+        }
+    ]
+}
+
+SIEM_RESULT_MULTIPLE_EVENTS_PROCESS = [
+    {
+        "acc": "CUSA102A236",
+        "SpamLimit": 28,
+        "IP": [
+            "54.243.138.179"
+        ],
+        "Dir": "Outbound",
+        "Subject": "Re",
+        "MsgId": "<4bf108530de00f37-111331@nodered-mimecast-55569955-kthgt.hamilton321.net>",
+        "headerFrom": "mark.guzman@paloaltonetworks.mime.integration.com",
+        "Sender": "mark.guzman@paloaltonetworks.mime.integration.com",
+        "datetime": "2022-05-23T12:20:44-0400",
+        "Rcpt": ["chartman@pilot-meadow.b41.one"],
+        "SpamInfo": "[]",
+        "Act": "Acc",
+        "TlsVer": "TLSv1.2",
+        "Cphr": "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+        "aCode": "l1b4x0uvOs2sRFzGsHoYzQ",
+        "SpamScore": 0,
+        "type": "MTA",
+        "xsiem_classifier": "siem_log"
+    },
+    {
+        "acc": "CUSA102A236",
+        "SpamLimit": 28,
+        "IP": [
+            "54.243.138.179"
+        ],
+        "Dir": "Outbound",
+        "Subject": "Re",
+        "MsgId": "<c096a6439eae1c9c-57128@nodered-mimecast-55569955-kthgt.hamilton321.net>",
+        "headerFrom": "jeff.dasovich@paloaltonetworks.mime.integration.com",
+        "Sender": "jeff.dasovich@paloaltonetworks.mime.integration.com",
+        "datetime": "2022-05-23T12:20:48-0400",
+        "Rcpt": ["jito@demo-visionary.b41.one"],
+        "SpamInfo": "[]",
+        "Act": "Acc",
+        "TlsVer": "TLSv1.2",
+        "Cphr": "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+        "aCode": "-dogI8BBMquuevdHEC83Lw",
+        "SpamScore": 0,
+        "type": "MTA",
+        "xsiem_classifier": "siem_log"
+    },
+    {
+        "acc": "CUSA102A236",
+        "SpamLimit": 28,
+        "IP": [
+            "54.243.138.179"
+        ],
+        "Dir": "Outbound",
+        "Subject": "Re",
+        "MsgId": "<c096a6439eae1c9c-57128@nodered-mimecast-55569955-kthgt.hamilton321.net>",
+        "headerFrom": "jeff.dasovich@paloaltonetworks.mime.integration.com",
+        "Sender": "jeff.dasovich@paloaltonetworks.mime.integration.com",
+        "datetime": "2022-05-23T12:20:48-0400",
+        "Rcpt": ["dimeff@demo-visionary.b41.one"],
+        "SpamInfo": "[]",
+        "Act": "Acc",
+        "TlsVer": "TLSv1.2",
+        "Cphr": "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+        "aCode": "-dogI8BBMquuevdHEC83Lw",
+        "SpamScore": 0,
+        "type": "MTA",
+        "xsiem_classifier": "siem_log"
     }
 ]

@@ -4,7 +4,8 @@ from SiemApiModule import *  # noqa # pylint: disable=unused-wildcard-import
 
 from MimecastEventCollector import *
 from test_data.test_data import WITH_OUT_DUP_TEST, WITH_DUP_TEST, EMPTY_EVENTS_LIST, FILTER_SAME_TIME_EVEMTS, \
-    AUDIT_LOG_RESPONSE, AUDIT_LOG_AFTER_PROCESS, SIEM_LOG_PROCESS_EVENT
+    AUDIT_LOG_RESPONSE, AUDIT_LOG_AFTER_PROCESS, SIEM_LOG_PROCESS_EVENT, SIEM_RESULT_MULTIPLE_EVENTS_PROCESS, \
+    SIEM_RESPONSE_MULTIPLE_EVENTS
 
 mimecast_options = MimecastOptions(**{
     'app_id': "XXX",
@@ -78,6 +79,16 @@ def test_dedup_audit_events(audit_events, last_run_potential_dup, res):
     (['t'], [], ['t'])
 ])
 def test_gather_events(lst1, lst2, res):
+    """
+    Given:
+        - 2 lists
+
+    When:
+        - Before merging the audit events and siem logs
+
+    Then:
+        - Merge the 2 lists together to send to xsiem
+    """
     from MimecastEventCollector import gather_events
     assert gather_events(lst1, lst2) == res
 
@@ -107,21 +118,32 @@ def test_handle_last_run_entrance_with_prev_run(mocker):
 @pytest.mark.parametrize('time_to_convert, res', [('2011-12-03T10:15:30+00:00', '2011-12-03T10:15:30+0000'),
                                                   ('2011-12-03T10:15:30+03:00', '2011-12-03T10:15:30+0300')])
 def test_to_audit_time_format(time_to_convert, res):
+    """
+    Given:
+        - An iso 8601 time format
+
+    When:
+        - Before Sending the request to the audit events end point
+
+    Then:
+        - Convert the time format to fit the mimecast API format
+    """
     assert audit_event_handler.to_audit_time_format(time_to_convert) == res
 
 
 def test_process_siem_data():
     """
     Given:
-        - The Siem response
-    """
-    with open('test_data/siem_response_multiple_events.json') as f:
-        siem_response = json.load(f)
-    with open('test_data/siem_result_multiple_events_process.json') as f:
-        res = json.load(f)
+        - The Siem response after calling the mimecast api
 
-    after_process = siem_event_handler.process_siem_events(siem_response)
-    assert after_process == res
+    When:
+        - We process the response
+
+    Then:
+        - Return a flattened event list with some additional info data
+    """
+    after_process = siem_event_handler.process_siem_events(SIEM_RESPONSE_MULTIPLE_EVENTS)
+    assert after_process == SIEM_RESULT_MULTIPLE_EVENTS_PROCESS
 
 
 @pytest.mark.parametrize('event, res',

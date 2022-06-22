@@ -23,16 +23,6 @@ configuration:
   name: secret_key
   required: true
   type: 0
-- display: The product name corresponding to the integration that originated the events
-  name: product
-  required: false
-  defaultvalue: mimecast
-  type: 0
-- display: The vendor name corresponding to the integration that originated the events
-  name: vendor
-  required: false
-  defaultvalue: mimecast
-  type: 0
 - display: First fetch timestamp (<number> <time unit>, for example, 12 hours, 7 days,
     3 months, 1 year)
   name: after
