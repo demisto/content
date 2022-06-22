@@ -1,6 +1,6 @@
 {
     "name": "MITRE ATT&CK (Deprecated)",
-    "description": "Fetches indicators from MITRE ATT&CK.",
+    "description": "Deprecated. Use FeedMitreAttack v2 instead.",
     "support": "xsoar",
     "currentVersion": "1.2.1",
     "author": "Cortex XSOAR",
