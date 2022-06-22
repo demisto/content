@@ -270,7 +270,6 @@ PACK_FOLDERS_TO_ID_SET_KEYS = {
     PackFolders.INDICATOR_TYPES.value: "IndicatorTypes",
     PackFolders.LISTS.value: "Lists",
     PackFolders.JOBS.value: "Jobs",
-    PackFolders.LAYOUTS.value: "Layouts",
     PackFolders.GENERIC_TYPES.value: "GenericTypes",
     PackFolders.GENERIC_FIELDS.value: "GenericFields",
     PackFolders.GENERIC_MODULES.value: "GenericModules",
