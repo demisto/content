@@ -146,7 +146,7 @@ tasks:
             args:
               index:
                 value:
-                  simple: "0"
+                  simple: "2"
       substring:
         simple: 'Xsoar@Xsoar.com'
     separatecontext: false
