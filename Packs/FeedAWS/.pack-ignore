@@ -6,3 +6,6 @@ ignore=PB115
 
 [file:classifier-mapper-incoming-FeedAWS.json]
 ignore=BA101
+
+[file:classifier-FeedAWS.json]
+ignore=BA101
