@@ -1,6 +1,6 @@
 {
     "name": "Export Indicators (Deprecated)",
-    "description": "Deprecated. Use Generic Export Indicators Service. Use the Use the Export Indicators Service integration to provide an endpoint with a list of indicators as a service for the system indicators.",
+    "description": "Deprecated. Use Generic Export Indicators Service instead.",
     "support": "xsoar",
     "currentVersion": "1.0.16",
     "author": "Cortex XSOAR",
