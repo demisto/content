@@ -1097,9 +1097,6 @@ class Pack(object):
                 modified_files_data[pack_folder] = modified_entities
 
         if not self._modified_files or modified_files_data:
-            # no files were modified - keep going in the outer for loop
-            # relevant files were modified - keep going in the outer for loop
-
             task_status = True
 
         return task_status, modified_files_data
@@ -3697,35 +3694,13 @@ def get_last_commit_from_index(service_account):
     return index_json.get('commit')
 
 
-def get_id_set_entity_by_path(entity_path: Path, entity_type: str, id_set: dict):
-    """
-    Get the full entity dict from the id set of the entity given as a path, if it does not exist in the id set
-    return None.
-    Args:
-        entity_path: path to entity (content item)
-        entity_type: containing folder of that item
-        id_set: id set dict
-
-    Returns:
-        id set dict entity if exists, otherwise {}
-    """
-    for id_set_entity in id_set[PACK_FOLDERS_TO_ID_SET_KEYS[entity_type]]:
-        if len(entity_path.parts) == 5:  # Content items that have a sub folder (integrations, scripts, etc)
-            if Path(list(id_set_entity.values())[0]['file_path']).parent == entity_path.parent:
-                return id_set_entity
-        else:  # Other content items
-            if Path(list(id_set_entity.values())[0]['file_path']) == entity_path:
-                return id_set_entity
-    return {}
-
-
 def get_id_set_entity_by_path(entity_path: Path, pack_folder: str, id_set: dict):
     """
     Get the full entity dict from the id set of the entity given as a path, if it does not exist in the id set
     return None.
     Args:
         entity_path: path to entity (content item)
-        entity_type: containing folder of that item
+        pack_folder: containing folder of that item
         id_set: id set dict
 
     Returns:
