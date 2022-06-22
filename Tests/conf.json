@@ -3,6 +3,9 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "IndicatorFormatterFilterTest"
+        },
+        {
             "integrations": "RSANetWitnessv115",
             "playbookID": "RSANetWitnessv115-Test"
         },
@@ -5168,7 +5171,14 @@
                 "Github Event Collector"
             ],
             "playbookID": "Github Event Collector-test",
-            "fromversion": "6.6.0"
+            "fromversion": "6.8.0"
+        },
+        {
+            "integrations": [
+                "Microsoft Defender for Cloud Apps Event Collector"
+            ],
+            "playbookID": "Microsoft Defender for Cloud Apps Event Collector-test",
+            "fromversion": "6.8.0"
         }
     ],
     "skipped_tests": {
@@ -5304,7 +5314,8 @@
         "RedLockTest": "Issue 24600",
         "SymantecEndpointProtection_Test": "Issue 30157",
         "RSANetWitnessv115-Test": "Issue XDRSUP-12553",
-        "TestCloudflareWAFPlaybook": "No instance"
+        "TestCloudflareWAFPlaybook": "No instance",
+        "DBot Build Phishing Classifier Test - Multiple Algorithms": "Issue 48350"
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
@@ -5426,7 +5437,8 @@
         "LogRhythm": "The integration is deprecated",
         "Alibaba Action Trail Event Collector": "XSIAM integration",
         "Salesforce Event Collector": "XSIAM integration",
-        "Github Event Collector" : "XSIAM integration"
+        "Github Event Collector" : "XSIAM integration",
+        "Microsoft Defender for Cloud Apps Event Collector": "XSIAM integration"
     },
     "nightly_integrations": [
         "Laline v2",
