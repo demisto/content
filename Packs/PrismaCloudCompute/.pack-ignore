@@ -20,3 +20,6 @@ ignore=IF100
 
 [file:pack_metadata.json]
 ignore=PA129
+
+[file:classifier-PrismaCloudCompute.json]
+ignore=BA101
