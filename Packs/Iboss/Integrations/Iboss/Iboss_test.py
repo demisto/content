@@ -305,6 +305,37 @@ def test_domain_lookup_malicious(requests_mock, mocker):
     assert results[0].indicator.dbot_score.malicious_description == expected
 
 
+def test_url_lookup(requests_mock, mocker):
+    """
+       Scenario: Attempt to lookup url reputation (benign due to reputation)
+       Given:
+        - User has provided valid credentials and arguments.
+       When:
+        - A url command is called
+       Then:
+        - Ensure number of items is correct.
+        - Ensure a sample value from the API matches what is generated in the context.
+        - Ensure DBotScore is malicious
+        - Ensure Malicious context message exists
+        - Ensure reputationDatabaseMalwareDetection == 1
+   """
+    from Iboss import url_lookup
+
+    client = get_mock_client(mocker)
+
+    requests_mock.post(
+        'https://pswg.com/json/controls/urlLookup',
+        json=REPUTATION_RESPONSE_UNREACHABLE_BENIGN_IP)
+
+    results = url_lookup(client, {"url": "1.1.1.1"})
+
+    assert len(results) == 1
+    assert results[0].indicator.dbot_score.score == 1
+    assert results[0].outputs['categories'][0] == 'Technology'
+    expected = ""
+    assert results[0].indicator.dbot_score.malicious_description == expected
+
+
 def test_domain_lookup_suspicious(requests_mock, mocker):
     """
        Scenario: Attempt to lookup domain reputation (suspicious due to reputation)
