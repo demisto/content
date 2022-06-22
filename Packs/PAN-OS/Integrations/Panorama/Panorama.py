@@ -5469,11 +5469,14 @@ def panorama_content_update_download_status_command(args: dict):
     content_download_status = {
         'JobID': result['response']['result']['job']['id']
     }
-    if result['response']['result']['job']['status'] == 'FIN':
-        if result['response']['result']['job']['result'] == 'OK':
+    if result['response']['result']['job']['status'] in ['FIN', 'ACT', 'FAIL']:
+        status_res = result['response']['result']['job']['result']
+        if status_res == 'OK':
             content_download_status['Status'] = 'Completed'
-        else:
+        elif status_res == 'FAIL':
             content_download_status['Status'] = 'Failed'
+        elif status_res == 'PEND':
+            content_download_status['Status'] = 'Pending'
         content_download_status['Details'] = result['response']['result']['job']
 
     if result['response']['result']['job']['status'] == 'PEND':
@@ -5567,12 +5570,15 @@ def panorama_content_update_install_status_command(args: dict):
     content_install_status = {
         'JobID': result['response']['result']['job']['id']
     }
-    if result['response']['result']['job']['status'] == 'FIN':
-        if result['response']['result']['job']['result'] == 'OK':
+
+    if result['response']['result']['job']['status'] in ['FIN', 'ACT', 'FAIL']:
+        status_res = result['response']['result']['job']['result']
+        if status_res == 'OK':
             content_install_status['Status'] = 'Completed'
-        else:
-            # result['response']['job']['result'] == 'FAIL'
+        elif status_res == 'FAIL':
             content_install_status['Status'] = 'Failed'
+        elif status_res == 'PEND':
+            content_install_status['Status'] = 'Pending'
         content_install_status['Details'] = result['response']['result']['job']
 
     if result['response']['result']['job']['status'] == 'PEND':
@@ -5689,12 +5695,14 @@ def panorama_download_panos_status_command(args: dict):
     panos_download_status = {
         'JobID': result['response']['result']['job']['id']
     }
-    if result['response']['result']['job']['status'] == 'FIN':
-        if result['response']['result']['job']['result'] == 'OK':
+    if result['response']['result']['job']['status'] in ['FIN', 'ACT', 'FAIL']:
+        status_res = result['response']['result']['job']['result']
+        if status_res == 'OK':
             panos_download_status['Status'] = 'Completed'
-        else:
-            # result['response']['job']['result'] == 'FAIL'
+        elif status_res == 'FAIL':
             panos_download_status['Status'] = 'Failed'
+        elif status_res == 'PEND':
+            panos_download_status['Status'] = 'Pending'
         panos_download_status['Details'] = result['response']['result']['job']
 
     if result['response']['result']['job']['status'] == 'PEND':
@@ -11125,7 +11133,7 @@ def main():
         # Firewall Upgrade
         # Check device software version
         elif command == 'panorama-show-device-version' or command == 'pan-os-show-device-version':
-            panorama_show_device_version_command(args)
+            panorama_show_device_version_command(args.get('target'))
 
         # Download the latest content update
         elif command == 'panorama-download-latest-content-update' or command == 'pan-os-download-latest-content-update':
@@ -11137,7 +11145,7 @@ def main():
 
         # Install the latest content update
         elif command == 'panorama-install-latest-content-update' or command == 'pan-os-install-latest-content-update':
-            panorama_install_latest_content_update_command(args)
+            panorama_install_latest_content_update_command(args.get('target'))
 
         # Content update install status
         elif command == 'panorama-content-update-install-status' or command == 'pan-os-content-update-install-status':
