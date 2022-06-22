@@ -126,34 +126,34 @@ script:
     outputs:
     - contextPath: PANSecurityAdvisory.Advisory.data_type
       description: The type of advisory this is
-      type: Unknown
+      type: String
     - contextPath: PANSecurityAdvisory.Advisory.data_format
       description: The format of the advisory, such as MITRE
-      type: Unknown
+      type: String
     - contextPath: PANSecurityAdvisory.Advisory.cve_id
       description: The ID of the CVE described by this advisory
-      type: Unknown
+      type: String
     - contextPath: PANSecurityAdvisory.Advisory.cve_date_public
       description: The date this CVE was released
-      type: Unknown
+      type: String
     - contextPath: PANSecurityAdvisory.Advisory.cve_title
       description: The name of this CVE
-      type: Unknown
+      type: String
     - contextPath: PANSecurityAdvisory.Advisory.description
       description: Human readable description of Advisory
-      type: Unknown
+      type: String
     - contextPath: PANSecurityAdvisory.Advisory.cvss_score
       description: The CVSS Score
-      type: Unknown
+      type: String
     - contextPath: PANSecurityAdvisory.Advisory.cvss_severity
       description: The CVSS Severity
-      type: Unknown
+      type: String
     - contextPath: PANSecurityAdvisory.Advisory.cvss_vector_string
       description: The CVSS Vector string
-      type: Unknown
+      type: String
     - contextPath: PANSecurityAdvisory.Advisory.affected_version_list
       description: List of affected versions strings
-      type: Unknown
+      type: String
   dockerimage: demisto/python3:3.10.4.30607
   feed: true
   isfetch: false
