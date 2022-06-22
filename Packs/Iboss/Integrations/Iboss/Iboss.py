@@ -481,7 +481,7 @@ def reputation_calculate_engines(reputation_data: dict) -> tuple[int, int]:
     for key, value in reputation_data.items():
         if key != "isSafeUrl" and key.endswith("IsSafeUrl"):
             num_engines += 1
-            if value and value == 1:
+            if value is not None and value == 0:
                 num_positive_engines += 1
     return num_engines, num_positive_engines
 

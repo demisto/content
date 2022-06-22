@@ -404,6 +404,40 @@ def test_reputation_get_malicious_message_malicious():
     assert results == expected
 
 
+def test_reputation_get_engines_suspicious():
+    """
+       Scenario: Derive message from iboss domain lookup response
+       Given:
+        - User has received valid iboss response when looking up an unreachable domain with a malicious score.
+       When:
+        - A domain lookup is performed
+       Then:
+        - Ensure message is correct
+   """
+    from Iboss import reputation_calculate_engines
+
+    results = reputation_calculate_engines(REPUTATION_RESPONSE_UNREACHABLE_SUSPICIOUS_DOMAIN)
+    expected = 5, 1
+    assert results == expected
+
+
+def test_reputation_get_engines_malicious():
+    """
+       Scenario: Derive message from iboss domain lookup response
+       Given:
+        - User has received valid iboss response when looking up an unreachable domain with a malicious score.
+       When:
+        - A domain lookup is performed
+       Then:
+        - Ensure message is correct
+   """
+    from Iboss import reputation_calculate_engines
+
+    results = reputation_calculate_engines(REPUTATION_RESPONSE_UNREACHABLE_MALICIOUS_DOMAIN)
+    expected = 5, 2
+    assert results == expected
+
+
 def test_reputation_get_headers():
     """
        Scenario: Derive headers from iboss domain lookup response
