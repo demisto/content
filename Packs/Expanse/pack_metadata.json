@@ -1,6 +1,6 @@
 {
     "name": "Expanse (Deprecated)",
-    "description": "Deprecated - Use the Expanse v2 integration instead. The Expanse App for Demisto leverages the Expander API to retrieve network exposures and create incidents in Demisto.",
+    "description": "Deprecated. Use the Expanse V2 pack instead.",
     "support": "partner",
     "hidden": true,
     "currentVersion": "1.2.4",
