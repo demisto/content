@@ -164,7 +164,6 @@ def get_events_command(
     should_push_events = argToBoolean(args.get('should_push_events'))
 
     if events := fetch_events_from_saas_security(client=client, max_fetch=max_fetch):
-        demisto.info(f'token: {demisto.getLicenseCustomField("Http_Connector.token")}')
         if should_push_events:
             send_events_to_xsiam(events=events, vendor=vendor, product=product)
         return CommandResults(
