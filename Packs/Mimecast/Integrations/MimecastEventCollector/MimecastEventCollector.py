@@ -523,6 +523,7 @@ def main():
     # Args is always stronger. Get last run even stronger
     demisto.info('\n started running main\n')
     demisto_params = demisto.params() | demisto.args()
+    demisto_params['secret_key'] = demisto_params.get('secret_key', {}).get('password')
     should_push_events = argToBoolean(demisto_params.get('should_push_events', 'false'))
     options = MimecastOptions(**demisto_params)
     empty_first_request = IntegrationHTTPRequest(method=Method.GET, url='http://bla.com', headers={})
@@ -530,7 +531,7 @@ def main():
     siem_event_handler = MimecastGetSiemEvents(client, options)
     audit_event_handler = MimecastGetAuditEvents(client, options)
     command = demisto.command()
-    handle_last_run_entrance(demisto.params().get('after'), audit_event_handler, siem_event_handler)
+    handle_last_run_entrance(demisto_params.get('after'), audit_event_handler, siem_event_handler)
     try:
 
         events_audit = audit_event_handler.run()
@@ -567,7 +568,7 @@ def main():
                     events = gather_events(events_siem, events_audit)
                     send_events_to_xsiam(events, demisto_params.get('vendor', 'mimecast'),
                                          demisto_params.get('product', 'mimecast'))
-                    handle_last_run_exit(siem_event_handler, events_audit)
+
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
 

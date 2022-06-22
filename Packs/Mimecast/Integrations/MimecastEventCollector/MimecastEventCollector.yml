@@ -15,17 +15,20 @@ configuration:
   name: app_key
   required: true
   type: 0
+- display: ""
+  displaypassword: Secret Key
+  name: secret_key
+  type: 9
+  required: true
+  hiddenusername: true
 - display: Access Key
   name: access_key
-  required: true
-  type: 0
-- display: Secret Key
-  name: secret_key
   required: true
   type: 0
 - display: First fetch timestamp (<number> <time unit>, for example, 12 hours, 7 days,
     3 months, 1 year)
   name: after
+  additionalinfo: This parameter is used only for the Audit logs configuration. Siem logs always set to "7 days ago". for additional information please review the pack README.
   type: 0
   required: true
   defaultvalue: 7 days
