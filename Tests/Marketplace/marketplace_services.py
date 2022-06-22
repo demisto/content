@@ -1083,15 +1083,12 @@ class Pack(object):
 
         task_status = False
         modified_files_data = {}
-        logging.debug(f"NOY: self._modified_files = {self._modified_files}")
 
         for pack_folder, modified_file_paths in self._modified_files.items():
             modified_entities = []
             for path in modified_file_paths:
                 if id_set_entity := get_id_set_entity_by_path(Path(path), pack_folder, id_set):
                     modified_entities.append(id_set_entity)
-
-            logging.debug(f"NOY: modified_entities = {modified_entities}")
 
             if modified_entities:
                 modified_files_data[pack_folder] = modified_entities
