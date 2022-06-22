@@ -1641,7 +1641,7 @@ def set_password_not_expire(default_base_dn):
     args = demisto.args()
     sam_account_name = args.get('username')
     pwd_n_exp = argToBoolean(args.get('value'))
-    
+
     # query by sAMAccountName
     if sam_account_name:
         sam_account_name = escape_filter_chars(sam_account_name)
@@ -1670,7 +1670,7 @@ def set_password_not_expire(default_base_dn):
             attribute_value = user_account_control
             dn = user_dn(sam_account_name, default_base_dn)
             modification = {attribute_name: [('MODIFY_REPLACE', attribute_value)]}
-            
+
             # modify user
             modify_object(dn, modification)
             demisto_entry = {
@@ -1775,7 +1775,7 @@ def main():
 
         if command == 'ad-search':
             free_search(DEFAULT_BASE_DN, DEFAULT_PAGE_SIZE)
-            
+
         if command == 'ad-modify-password-never-expire':
             set_password_not_expire(DEFAULT_BASE_DN)
 
