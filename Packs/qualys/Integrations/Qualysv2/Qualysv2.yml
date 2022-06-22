@@ -1838,7 +1838,7 @@ script:
     - description: A comma-separated list of valid detection record QIDs. A range is specified with a dash (for example, 68518-68522).
       isArray: true
       name: qids
-    - description: A comma-separated list of severity levels. A range is specified with a dash (for example, 1-3).
+    - description: A comma-separated list of severity levels. A range is specified with a dash (for example, 1-5 where 1 is low and 5 is high)..
       isArray: true
       name: severities
     - name: use_tags
@@ -2442,7 +2442,7 @@ script:
       type: String
     description: Gets a list of the supported time zone codes.
     execution: true
-  dockerimage: demisto/python3:3.10.1.27636
+  dockerimage: demisto/python3:3.10.4.29342
   runonce: false
   script: ''
   subtype: python3

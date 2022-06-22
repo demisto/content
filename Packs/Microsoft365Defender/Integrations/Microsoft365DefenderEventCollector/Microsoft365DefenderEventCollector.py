@@ -1,0 +1,384 @@
+
+# pylint: disable=no-name-in-module
+# pylint: disable=no-self-argument
+
+import demistomock as demisto
+from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+from CommonServerUserPython import *  # noqa
+
+from abc import ABC
+from typing import Any, Callable, Optional
+
+from enum import Enum
+from pydantic import BaseConfig, BaseModel, AnyUrl, validator  # type: ignore[E0611, E0611, E0611]
+from requests.auth import HTTPBasicAuth
+import requests
+
+from MicrosoftApiModule import *
+# Disable insecure warnings
+requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+
+
+''' CONSTANTS '''
+MAX_ALERTS_PAGE_SIZE = 1000
+ALERT_CREATION_TIME = 'alertCreationTime'
+DEFNDER_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+SECURITY_SCOPE = 'https://securitycenter.onmicrosoft.com/windowsatpservice/.default'
+AUTH_ERROR_MSG = 'Authorization Error: make sure tenant id, client id and client secret is correctly set'
+
+''' HELPER CLASSES '''
+
+# COPY OF SiemApiModule
+
+
+class Method(str, Enum):
+    GET = 'GET'
+    POST = 'POST'
+    PUT = 'PUT'
+    HEAD = 'HEAD'
+    PATCH = 'PATCH'
+    DELETE = 'DELETE'
+
+
+def load_json(v: Any) -> dict:
+    if not isinstance(v, (dict, str)):
+        raise ValueError('headers are not dict or a valid json')
+    if isinstance(v, str):
+        try:
+            v = json.loads(v)
+            if not isinstance(v, dict):
+                raise ValueError('headers are not from dict type')
+        except json.decoder.JSONDecodeError as exc:
+            raise ValueError('headers are not valid Json object') from exc
+    if isinstance(v, dict):
+        return v
+
+
+class IntegrationHTTPRequest(BaseModel):
+    method: Method
+    url: AnyUrl
+    verify: bool = True
+    headers: dict = dict()  # type: ignore[type-arg]
+    auth: Optional[HTTPBasicAuth]
+    data: Any = None
+
+    class Config(BaseConfig):
+        arbitrary_types_allowed = True
+
+    _normalize_headers = validator('headers', pre=True, allow_reuse=True)(
+        load_json
+    )
+
+
+class Credentials(BaseModel):
+    identifier: Optional[str]
+    password: str
+
+
+def set_authorization(request: IntegrationHTTPRequest, auth_credendtials):
+    """Automatic authorization.
+    Supports {Authorization: Bearer __token__}
+    or Basic Auth.
+    """
+    creds = Credentials.parse_obj(auth_credendtials)
+    if creds.password and creds.identifier:
+        request.auth = HTTPBasicAuth(creds.identifier, creds.password)
+    auth = {'Authorization': f'Bearer {creds.password}'}
+    if request.headers:
+        request.headers |= auth  # type: ignore[assignment, operator]
+    else:
+        request.headers = auth  # type: ignore[assignment]
+
+
+class IntegrationOptions(BaseModel):
+    """Add here any option you need to add to the logic"""
+
+    proxy: bool = False
+    limit: int = 1000
+
+
+class IntegrationEventsClient(ABC):
+    def __init__(
+        self,
+        request: IntegrationHTTPRequest,
+        options: IntegrationOptions,
+        session=requests.Session(),
+    ):
+        self.request = request
+        self.options = options
+        self.session = session
+        self._set_proxy()
+        self._skip_cert_verification()
+
+    @abstractmethod
+    def set_request_filter(self, after: Any):
+        """TODO: set the next request's filter.
+        Example:
+        """
+        self.request.headers['after'] = after
+
+    def __del__(self):
+        try:
+            self.session.close()
+        except AttributeError as err:
+            demisto.debug(
+                f'ignore exceptions raised due to session not used by the client. {err=}'
+            )
+
+    def call(self, request: IntegrationHTTPRequest) -> requests.Response:
+        try:
+            response = self.session.request(**request.dict())
+            response.raise_for_status()
+            return response
+        except Exception as exc:
+            msg = f'something went wrong with the http call {exc}'
+            LOG(msg)
+            raise DemistoException(msg) from exc
+
+    def _skip_cert_verification(
+        self, skip_cert_verification: Callable = skip_cert_verification
+    ):
+        if not self.request.verify:
+            skip_cert_verification()
+
+    def _set_proxy(self):
+        if self.options.proxy:
+            ensure_proxy_has_http_prefix()
+        else:
+            skip_proxy()
+
+
+class IntegrationGetEvents(ABC):
+    def __init__(
+        self, client: IntegrationEventsClient, options: IntegrationOptions
+    ) -> None:
+        self.client = client
+        self.options = options
+
+    def run(self):
+        stored = []
+        for logs in self._iter_events():
+            stored.extend(logs)
+            if len(stored) >= self.options.limit:
+                return stored[:self.options.limit]
+        return stored
+
+    def call(self) -> requests.Response:
+        return self.client.call(self.client.request)
+
+    @staticmethod
+    @abstractmethod
+    def get_last_run(events: list) -> dict:
+        """Logic to get the last run from the events
+        Example:
+        """
+        return {'after': events[-1]['created']}
+
+    @abstractmethod
+    def _iter_events(self):
+        """Create iterators with Yield"""
+        pass
+
+# END COPY OF SiemApiModule
+
+
+class DefenderIntegrationOptions(IntegrationOptions):
+    first_fetch: str
+
+
+class DefenderAuthenticator(BaseModel):
+    verify: bool
+    url: str
+    tenant_id: str
+    client_id: str
+    credentials: dict
+    ms_client: Any = None
+
+    def set_authorization(self, request: IntegrationHTTPRequest):
+        try:
+            if not self.ms_client:
+                demisto.debug('try init the ms client for the first time')
+                self.ms_client = MicrosoftClient(
+                    base_url=self.url,
+                    tenant_id=self.tenant_id,
+                    auth_id=self.client_id,
+                    enc_key=self.credentials.get('password'),
+                    scope=SECURITY_SCOPE,
+                    verify=self.verify,
+                    self_deployed=True
+                )
+
+            token = self.ms_client.get_access_token()
+            auth = {'Authorization': f'Bearer {token}'}
+            if request.headers:
+                request.headers |= auth  # type: ignore[assignment, operator]
+            else:
+                request.headers = auth  # type: ignore[assignment]
+
+            demisto.debug('getting access token for Defender Authenticator - succeeded')
+
+        except BaseException as e:
+            # catch BaseException to catch also sys.exit via return_error
+            demisto.error(f'Fail to authenticate with Microsoft services: {str(e)}')
+
+            err_msg = 'Fail to authenticate with Microsoft services, see the error details in the log'
+            raise DemistoException(err_msg)
+
+
+class DefenderHTTPRequest(IntegrationHTTPRequest):
+    params: dict = dict()
+    method: Method = Method.GET
+
+    _normalize_url = validator('url', pre=True, allow_reuse=True)(
+        lambda base_url: base_url + '/api/alerts'
+    )
+
+
+class DefenderClient(IntegrationEventsClient):
+
+    authenticator: DefenderAuthenticator
+    request: DefenderHTTPRequest
+    options: DefenderIntegrationOptions
+
+    def __init__(self, request: DefenderHTTPRequest, options: IntegrationOptions, authenticator: DefenderAuthenticator):
+        self.authenticator = authenticator
+        super().__init__(request, options)
+
+    def set_request_filter(self, after: Any):
+        limit = min(self.options.limit, MAX_ALERTS_PAGE_SIZE)
+        if not after:
+            demisto.debug(f'lastRunObj is empty, calculate the first fetch time according {self.options.first_fetch=}')
+            first_fetch_date = dateparser.parse(self.options.first_fetch, settings={'TIMEZONE': 'UTC'})
+            after = datetime.strftime(first_fetch_date, DEFNDER_DATE_FORMAT)  # type: ignore[arg-type]
+        self.request.params = {
+            '$filter': f'{ALERT_CREATION_TIME}+gt+{after}',
+            '$orderby': f'{ALERT_CREATION_TIME}+asc',
+            '$top': limit,
+            '$expand': 'evidence',
+
+        }
+        demisto.debug(f'setting the request filter to be: {self.request.params}')
+
+    def authenticate(self):
+        self.authenticator.set_authorization(self.request)
+
+
+class DefenderGetEvents(IntegrationGetEvents):
+    client: DefenderClient
+
+    def _split_evidence(self, org_alerts):
+        """
+        Extract evidence and create new alert entry that will contain the alert & evidence, for each evidence.
+        """
+        res: List[Dict] = []
+        if not org_alerts:
+            return res
+
+        for alert in org_alerts:
+            evidences = alert.pop('evidence', [])
+            if evidences:
+                for evidence in evidences:
+                    updated_alert = alert.copy()
+                    updated_alert['evidence'] = evidence
+                    res.append(updated_alert)
+            else:
+                alert['evidence'] = {}
+                res.append(alert)
+
+        return res
+
+    def _iter_events(self):
+
+        self.client.authenticate()
+        self.client.set_request_filter(demisto.getLastRun() and demisto.getLastRun().get('after'))
+
+        response = self.client.call(self.client.request)
+        value = response.json().get('value', [])
+        value = self._split_evidence(value)
+
+        demisto.debug(f'getting {len(value)} alerts from Defender Api')
+        return [value]
+
+    @staticmethod
+    def get_last_run(events: list) -> dict:
+        """Logic to get the last run from the events
+        """
+        return events and len(events) > 0 and {'after': events[-1]['alertCreationTime']} or demisto.getLastRun()
+
+
+''' HELPER FUNCTIONS '''
+
+
+''' COMMAND FUNCTIONS '''
+
+
+def test_module(get_events: DefenderGetEvents) -> str:
+    """Tests API connectivity and authentication'
+
+    Returning 'ok' indicates that the integration works like it is supposed to.
+    Connection to the service is successful.
+    Raises exceptions if something goes wrong.
+
+    :type get_events: ``DefenderGetEvents``
+    :param get_events: the get_events instance
+
+    :return: 'ok' if test passed, anything else will fail the test.
+    :rtype: ``str``
+    """
+
+    message: str = ''
+    try:
+        get_events.client.request.params = {'limit': 1}
+        get_events.run()
+        message = 'ok'
+    except DemistoException as e:
+        if 'Forbidden' in str(e) or 'authenticate' in str(e):
+            message = AUTH_ERROR_MSG
+        else:
+            raise
+    return message
+
+
+def main(command: str, demisto_params: dict):
+
+    demisto.debug(f'Command being called is {command}')
+    try:
+
+        options = DefenderIntegrationOptions.parse_obj(demisto_params)
+        request = DefenderHTTPRequest.parse_obj(demisto_params)
+        authenticator = DefenderAuthenticator.parse_obj(demisto_params)
+
+        clinet = DefenderClient(request=request, options=options, authenticator=authenticator)
+        get_events = DefenderGetEvents(client=clinet, options=options)
+
+        if command == 'test-module':
+            return_results(test_module(get_events=get_events))
+
+        elif command in ('fetch-events', 'microsoft-365-defender-get-events'):
+            events = get_events.run()
+            if command == 'microsoft-365-defender-get-events':
+                demisto.debug(f'{command=}, publishing events to the context')
+                human_readable = tableToMarkdown(name="Alerts:", t=events)
+                return_results(CommandResults('Microsoft365Defender.alerts', 'id', events, readable_output=human_readable))
+            elif events:
+                demisto.setLastRun(get_events.get_last_run(events))
+                demisto.debug(f'Last run set to {demisto.getLastRun()}')
+
+            if command == 'fetch-events' or argToBoolean(demisto_params.get('push_to_xsiam', False)):
+                # publishing events to XSIAM
+                vendor = demisto_params.get('vendor')
+                product = demisto_params.get('product')
+
+                demisto.debug(f'{command=}, publishing events to XSIAM')
+                send_events_to_xsiam(events, vendor=vendor, product=product)
+
+    # Log exceptions and return errors
+    except Exception as e:
+        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+
+
+''' ENTRY POINT '''
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    # Args is always stronger. Get getIntegrationContext even stronger
+    demisto_params = demisto.params() | demisto.args() | demisto.getLastRun()
+    main(demisto.command(), demisto_params)
