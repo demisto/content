@@ -2549,3 +2549,47 @@ class TestObjectFunctions:
                 mock_single_device_topology, "AddressObject", object_name="test-address-(\d+", use_regex="true"
             )
             assert not result
+
+def test_pan_os_get_running_config(mocker):
+    """ 
+    Given -
+        A target serial number
+    When - 
+        Returning the running config
+    Then - 
+        File returned should be called 'running_config'
+        The contents should be XML and not JSON
+    """
+    from Panorama import pan_os_get_running_config
+    import Panorama
+    
+    results_mocker = mocker.patch.object(demisto, "results")
+    mock_file = mocker.patch.object(Panorama, "fileResult") 
+    mocker.patch("Panorama.http_request", return_value="<response status='error' code='13'><msg><line>SOME_SERIAL_NUMBER not connected</line></msg></response>") 
+    pan_os_get_running_config({"target": "SOME_SERIAL_NUMBER"})
+    assert mock_file.call_args.args[0] == "running_config"
+
+    with pytest.raises(ValueError):
+        json.loads(mock_file.call_args.args[1])
+
+def test_pan_os_get_merged_config(mocker):
+    """ 
+    Given -
+        A target serial number
+    When - 
+        Returning the merged config
+    Then - 
+        File returned should be called 'merged_config'
+        The contents should be XML and not JSON
+    """
+    from Panorama import pan_os_get_merged_config
+    import Panorama
+    
+    results_mocker = mocker.patch.object(demisto, "results")
+    mock_file = mocker.patch.object(Panorama, "fileResult") 
+    mocker.patch("Panorama.http_request", return_value="<response status='error' code='13'><msg><line>SOME_SERIAL_NUMBER not connected</line></msg></response>") 
+    pan_os_get_merged_config({"target": "SOME_SERIAL_NUMBER"})
+    assert mock_file.call_args.args[0] == "merged_config"
+
+    with pytest.raises(ValueError):
+        json.loads(mock_file.call_args.args[1])
