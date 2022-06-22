@@ -885,6 +885,10 @@ script:
       name: owner
     - description: The fetched incidents filtered by incident name.
       name: incidentName
+    - description: The page to take the results from.
+      name: page
+    - description: The maximum number of results that can be returned. The default is 500.
+      name: limit
     description: Fetches incidents from ThreatConnect.
     name: tc-fetch-incidents
     outputs:
@@ -1611,8 +1615,49 @@ script:
       - signatures
       - threats
       required: true
+    deprecated: true
     description: Returns all groups, filtered by the group type.
     name: tc-get-groups
+    outputs:
+    - contextPath: TC.Group.DateAdded
+      description: The date on which the group was added.
+      type: Date
+    - contextPath: TC.Group.EventDate
+      description: The date on which the event occurred.
+      type: Date
+    - contextPath: TC.Group.Name
+      description: The name of the group.
+      type: String
+    - contextPath: TC.Group.OwnerName
+      description: The name of the owner of the group.
+      type: String
+    - contextPath: TC.Group.Status
+      description: The status of the group.
+      type: String
+    - contextPath: TC.Group.ID
+      description: The ID of the group.
+      type: Number
+  - arguments:
+    - auto: PREDEFINED
+      description: The type of the group. Can be "adversaries", "campaigns", "documents",
+          "emails", "events", "incidents", "intrusionSets", "reports", "signatures",
+          or "threats".
+      name: group_type
+      predefined:
+      - adversaries
+      - campaigns
+      - documents
+      - emails
+      - events
+      - incidents
+      - intrusionSets
+      - reports
+      - signatures
+      - threats
+      required: true
+    deprecated: true
+    description: Returns all groups, filtered by the group type.
+    name: tc-list-groups
     outputs:
     - contextPath: TC.Group.DateAdded
       description: The date on which the group was added.
@@ -2053,16 +2098,17 @@ script:
         or "threats".
       name: group_type
       predefined:
-      - adversaries
-      - campaigns
-      - documents
-      - emails
-      - events
-      - incidents
-      - intrusionSets
-      - reports
-      - signatures
-      - threats
+      - Adversary
+      - Campaign
+      - Document
+      - Email
+      - Event
+      - Incident
+      - IntrusionSet
+      - Report
+      - Signature
+      - Threat
+      - Malware
       required: true
     - description: The ID of the group. To get the ID, run the tc-get-groups command.
       name: group_id

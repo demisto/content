@@ -2,6 +2,7 @@ import base64
 import copy
 import hashlib
 import hmac
+import json
 import time
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -38,7 +39,6 @@ class Client:
         url = urljoin(self.base_url, url_suffix)
         response = requests.request(method=method, url=url, headers=headers, data=payload, params=params,
                                     verify=self.verify)
-        demisto.log(f'The response from the API: \n{response.text}')
         return json.loads(response.text), response.status_code
 
     def create_header(self, url_suffix: str, method: Method) -> dict:
@@ -252,8 +252,10 @@ def get_indicators(client: Client, args_type: str, type_name: str) -> list:
     })
 
 
-def create_or_query(delimitered_str: str, param_name: str) -> str:
-    arr = delimitered_str.split(',')
+def create_or_query(delimiter_str: str, param_name: str) -> str:
+    if not delimiter_str:
+        return ''
+    arr = delimiter_str.split(',')
     query = ''
     for item in arr:
         query += f'{param_name}="{item}" OR '
@@ -365,8 +367,121 @@ def tc_get_indicator_owners(client: Client) -> Any:
     })
 
 
+def get_group_associated(client: Client) -> Any:
+    group_type = demisto.args().get('group_type')
+    try:
+        group_id = int(demisto.args().get('group_id'))
+    except TypeError as t:
+        return_error('group_id must be a number', t)
+    tql = f'id EQ {group_id} AND typeName EQ "{group_type}"'
+    tql = urllib.parse.quote(tql.encode('utf8'))
+    # url = f'/api/v3/groups?tql={tql}&fields=associatedIndicators'
+    url = f'/api/v3/groups?tql={tql}&fields=associatedGroups'
+    headers = ['GroupID', 'Name', 'Type', 'OwnerName', 'DateAdded']
+    response, status_code = client.make_request(Method.GET, url)
+    if status_code != 200:
+        return_error(response.text)
+    data = response.get('data', [])
+    contents = []
+    if response.get('status') == 'Success':
+        # We get the group by a unique id, so we'll always get one result
+        for group in data[0].get('associatedGroups').get('data', []):
+            contents.append({
+                'GroupID': group.get('id'),
+                'Name': group.get('name'),
+                'Type': group.get('type'),
+                'DateAdded': group.get('dateAdded'),
+                'OwnerName': group.get('ownerName')
+            })
+
+    else:
+        return_error(response.get('message'))
+
+    context = {
+        'TC.Group.AssociatedGroup(val.GroupID && val.GroupID === obj.GroupID)': contents
+    }
+
+    return_outputs(
+        tableToMarkdown('ThreatConnect Associated Groups', contents, headers, removeNull=True),
+        context,
+        response
+    )
+
+
+def test_integration(client: Client) -> None:
+    url = '/api/v3/groups?Limit=1'
+    demisto.results('ok')
+    response, status_code = client.make_request(Method.GET, url)
+    if status_code == 200:
+        demisto.results('ok')
+    else:
+        return_error(response.message)
+
+
+def tc_fetch_incidents_command(client: Client) -> None:
+    args = demisto.args()
+    owner = args.get('owner', '')
+    group_id = args.get('incidentId', '')
+    limit = args.get('limit', '500')
+    page = args.get('page', '0')
+    # group_name = create_or_query(args.get('incidentName'), 'id')
+    if owner:
+        owner = f' AND ownerName EQ "{owner}" '
+    if group_id:
+        group_id = f' AND id EQ {group_id} '
+
+    tql = f'typeName EQ "Incident"{group_id}{owner}'
+    tql = urllib.parse.quote(tql.encode('utf8'))
+    url = f'/api/v3/groups?tql={tql}&fields=tags&fields=attributes&resultStart={page}&resultLimit={limit}'
+
+    response, status_code = client.make_request(Method.GET, url)
+    if status_code != 200:
+        return_error(response.text)
+    groups = (response.get('data'))
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'Contents': groups,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('Incidents:', groups, headerTransform=pascalToSpace),
+        'EntryContext': {
+            'TC.Incident(val.ID && val.ID === obj.ID)': createContext(groups, removeNull=True),
+            'ThreatConnect.incidents': groups  # backward compatible
+        }
+    })
+
+
+def tc_get_incident_associate_indicators_command(client: Client) -> None:
+    args = demisto.args()
+    owner = args.get('owner', '')
+    group_id = args.get('incidentId')
+    if owner:
+        owner = f' AND ownerName EQ "{owner}" '
+    group_id = f' AND id EQ {group_id} '
+
+    tql = f'typeName EQ "Incident"{group_id}{owner}'
+    tql = urllib.parse.quote(tql.encode('utf8'))
+    url = f'/api/v3/groups?tql={tql}&fields=associatedIndicators'
+
+    response, status_code = client.make_request(Method.GET, url)
+    if status_code != 200:
+        return_error(response.text)
+    groups = (response.get('data'))
+
+    ec, indicators = create_context(groups[0].get('associatedIndicators', {}).get('data', []),
+                                      include_dbot_score=True)
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': json.dumps(groups),
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('Incident Associated Indicators:', indicators, headerTransform=pascalToSpace),
+        'EntryContext': ec
+    })
+
+
 COMMANDS = {
-    #     'test-module': test_integration,
+    'test-module': test_integration,
     'ip': get_ip_indicators,
     'url': get_url_indicators,
     'file': get_file_indicators,
@@ -381,8 +496,8 @@ COMMANDS = {
     #     'tc-add-indicator': tc_add_indicator_command,
     #
     #     'tc-create-incident': tc_create_incident_command,
-    #     'tc-fetch-incidents': tc_fetch_incidents_command,
-    #     'tc-get-incident-associate-indicators': tc_get_incident_associate_indicators_command,
+    'tc-fetch-incidents': tc_fetch_incidents_command,
+    'tc-get-incident-associate-indicators': tc_get_incident_associate_indicators_command,
     #     'tc-incident-associate-indicator': tc_incident_associate_indicator_command,
     #     'tc-update-indicator': tc_update_indicator_command,
     #     'tc-delete-indicator': tc_delete_indicator_command,
@@ -405,7 +520,7 @@ COMMANDS = {
     #     'tc-get-group-tags': get_group_tags,
     #     'tc-download-document': download_document,
     #     'tc-get-group-indicators': get_group_indicator,
-    #     'tc-get-associated-groups': get_group_associated,
+    'tc-get-associated-groups': get_group_associated,
     #     'tc-associate-group-to-group': associate_group_to_group,
     'tc-get-indicator-owners': tc_get_indicator_owners,
     #     'tc-download-report': tc_download_report,
@@ -417,13 +532,11 @@ def main(params):
         insecure = not params.get('insecure')
         client = Client(params.get('accessId'), params.get('secretKey'), params.get('baseUrl'), insecure)
         command = demisto.command()
-        demisto.log('command is %s' % (demisto.command(),))
         if command in COMMANDS.keys():
             COMMANDS[command](client)
 
     except Exception as e:
         raise e
-        print(f'error has occurred: {str(e)}')
         # return_error(f'error has occurred: {str(e)}', error=e)
 
 
