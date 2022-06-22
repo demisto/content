@@ -1006,7 +1006,7 @@ def get_contributing_event_command(client: Client, args: Dict) -> CommandResults
                 limit = max(int(args.get('limit', 0)), 0) or offset + page_size
 
                 alert_with_events = {
-                    'alertID': alert_id,
+                    'alertID': str(alert_id),
                     'events': alert.get('events', [])[offset:limit],
                 }
                 alerts.append(alert_with_events)
