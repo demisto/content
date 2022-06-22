@@ -548,7 +548,7 @@ tasks:
           transformers:
           - operator: uniq
     separatecontext: false
-    skipunavailable: false
+    skipunavailable: true
     task:
       brand: ''
       description: Checks the reputation of an IP address.
@@ -784,7 +784,7 @@ tasks:
     skipunavailable: false
     task:
       brand: Builtin
-      description: commands.local.cmd.set.incident
+      description: Update Tag - 'Malicious IP'
       id: 45fbb52f-3162-4e81-867e-3d068d699699
       iscommand: true
       name: Update Tag - 'Malicious IP'
@@ -1066,7 +1066,7 @@ tasks:
     skipunavailable: false
     task:
       brand: Builtin
-      description: commands.local.cmd.set.incident
+      description: Update tag - 'Malicious DNS'
       id: ef4e75f0-6641-41ea-8eb0-f4223d04e894
       iscommand: true
       name: Update tag - 'Malicious DNS'
@@ -1162,7 +1162,7 @@ tasks:
     skipunavailable: false
     task:
       brand: Builtin
-      description: commands.local.cmd.set.incident
+      description: Update tag - "Remote Connections"
       id: 1d78848b-ed8c-42ac-83b8-d7382117e0c3
       iscommand: true
       name: Update tag - "Remote Connections"
@@ -1198,10 +1198,10 @@ tasks:
     skipunavailable: false
     task:
       brand: Builtin
-      description: commands.local.cmd.set.incident
+      description: Update Tag - 'Local FW Rules Change'
       id: 125cb1d6-a660-4b72-8fe8-8b51281776b2
       iscommand: true
-      name: Update Tag - ' Local FW Rules Change '
+      name: Update Tag - 'Local FW Rules Change'
       script: Builtin|||setIncident
       type: regular
       version: -1
@@ -1354,10 +1354,10 @@ tasks:
     skipunavailable: false
     task:
       brand: Builtin
-      description: commands.local.cmd.set.incident
+      description: Update tag - 'DNS Requests'
       id: 1a3c62d2-0ba2-4dd6-8232-62631dc158d1
       iscommand: true
-      name: Update tag - "DNS Requests"
+      name: Update tag - 'DNS Requests'
       script: Builtin|||setIncident
       type: regular
       version: -1
@@ -1437,10 +1437,10 @@ tasks:
     skipunavailable: false
     task:
       brand: Builtin
-      description: commands.local.cmd.set.incident
+      description: Update Tag - 'Enumeration of Network Shares'
       id: ec33ebd7-c5c3-48d9-8b78-7d0792e442e1
       iscommand: true
-      name: Update Tag - ' Enumeration of Network Shares '
+      name: Update Tag - 'Enumeration of Network Shares'
       script: Builtin|||setIncident
       type: regular
       version: -1
@@ -1473,10 +1473,10 @@ tasks:
     skipunavailable: false
     task:
       brand: Builtin
-      description: commands.local.cmd.set.incident
+      description: Update Tag - 'Hosts File Modification'
       id: 6a6d65c3-0267-42da-85a1-11a725bc4755
       iscommand: true
-      name: Update Tag - ' hosts File Modification'
+      name: Update Tag - 'Hosts File Modification'
       script: Builtin|||setIncident
       type: regular
       version: -1
@@ -1509,7 +1509,7 @@ tasks:
     skipunavailable: false
     task:
       brand: Builtin
-      description: commands.local.cmd.set.incident
+      description: Update Tag - 'File External Connections'
       id: 10abd8ab-14e5-4a89-85ff-352b2529d4bf
       iscommand: true
       name: Update Tag - 'File External Connections'
