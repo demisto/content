@@ -1354,8 +1354,8 @@ def main():
             return commands[command](client, demisto.args())
         else:
             return_error('Command not found.')
-    except Exception as e:
-        return_error(f'Unexpected error: {str(e)}, traceback: {traceback.format_exc()}')
+    except Exception as exc:
+        return_error(f'Unexpected error: {str(exc)}', error=exc)
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):
