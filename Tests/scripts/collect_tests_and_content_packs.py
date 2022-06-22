@@ -15,7 +15,7 @@ import os
 import sys
 
 import demisto_sdk.commands.common.tools as tools
-
+import Tests.scripts.awsinstancetool.aws_functions as aws_functions
 from Tests.Marketplace.marketplace_services import get_last_commit_from_index
 from Tests.scripts.utils import collect_helpers
 from Tests.scripts.utils.collect_helpers import LANDING_PAGE_SECTIONS_JSON_PATH
@@ -1568,7 +1568,7 @@ if __name__ == "__main__":
     parser.add_argument('-mp', '--marketplace', help='marketplace version.', default='xsoar')
     parser.add_argument('--service_account', help="Path to gcloud service account")
     options = parser.parse_args()
-
+    logging.debug(f'regions for test {aws_functions.get_regions()}')
     # Create test file based only on committed files
     create_test_file(options.nightly, options.skip_save, options.changed_pack_path, options.marketplace,
                      options.service_account)
