@@ -176,7 +176,7 @@ def mocked_gdetect_get_token():
 def mocked_gdetect_get_errors():
     base = mocked_gdetect_get_base()
     base["errors"] = {
-            "Extract": "The number of retries has passed the limit."
+        "Extract": "The number of retries has passed the limit."
     }
     base["error"] = "an error occurred with 1 services",
     return base
@@ -208,21 +208,21 @@ def mocked_gdetect_get_files_av_results():
             "ssdeep": "6153:KyJE1yd7WHJmcyfjtPWna8DQFu/U3buRKlemZ9DnGAevIhdi++:KU/d7WsvBPWa9DQFu/U3buRKlemZ9DnG",
             "magic": "PE32 executable (GUI) Intel 80386, for MS Windows",
             "av_results": [
-                    {
-                        "av": "SignatureOyster",
-                        "result": "Win.Ransomware.Buhtrap-9865977-0",
-                        "score": 1000
-                    },
                 {
-                        "av": "SignatureUmbrella",
-                        "result": "TR/Redcap.ltkcp",
-                        "score": 1000
-                    },
+                    "av": "SignatureOyster",
+                    "result": "Win.Ransomware.Buhtrap-9865977-0",
+                    "score": 1000
+                },
                 {
-                        "av": "SignatureSophos",
-                        "result": "Mal/Behav-010",
-                        "score": 1000
-                    }
+                    "av": "SignatureUmbrella",
+                    "result": "TR/Redcap.ltkcp",
+                    "score": 1000
+                },
+                {
+                    "av": "SignatureSophos",
+                    "result": "Mal/Behav-010",
+                    "score": 1000
+                }
             ],
             "size": 219648,
             "is_malware": True
@@ -247,47 +247,47 @@ def mocked_gdetect_get_files_av_results():
         }
     ]
     return base
- 
+
 
 def mocked_gdetect_get_threats():
     base = mocked_gdetect_get_base()
     base['threats'] = {
-            "005b00d41749f7b0336d4d5fe0402dcfc95ae0df44a2231a89a59919eeb30b31": {
-                "filenames": [
-                    "23465d22-3464-39ce-b8b3-bc2ee7d6eecf"
-                ],
-                "tags": [
-                    {
-                        "name": "av.virus_name",
-                        "value": "Mal/Behav-010"
-                    },
-                    {
-                        "name": "attribution.family",
-                        "value": "win_vegalocker_auto"
-                    },
-                    {
-                        "name": "av.virus_name",
-                        "value": "win_vegalocker_auto"
-                    },
-                    {
-                        "name": "av.virus_name",
-                        "value": "Win.Ransomware.Buhtrap-9865977-0"
-                    },
-                    {
-                        "name": "av.virus_name",
-                        "value": "TR/Redcap.ltkcp"
-                    }
-                ],
-                "score": 4000,
-                "magic": "PE32 executable (GUI) Intel 80386, for MS Windows",
-                "sha256": "005b00d41749f7b0336d4d5fe0402dcfc95ae0df44a2231a89a59919eeb30b31",
-                "sha1": "2159b8d8b985f32641314220bb24126747b71d13",
-                "md5": "c24d410c7e7d4b6066e09ceee057fbf9",
-                "ssdeep": "6153:KyJE1yd7WHJmcyfjtPWna8DQFu/U3buRKlemZ9DnGAevIhdi++:KU/d7WsvBPWa9DQFu/U3buRKlemZ9DnG",
-                "file_size": 219648,
-                "mime": "application/x-dosexec"
-            }
+        "005b00d41749f7b0336d4d5fe0402dcfc95ae0df44a2231a89a59919eeb30b31": {
+            "filenames": [
+                "23465d22-3464-39ce-b8b3-bc2ee7d6eecf"
+            ],
+            "tags": [
+                {
+                    "name": "av.virus_name",
+                    "value": "Mal/Behav-010"
+                },
+                {
+                    "name": "attribution.family",
+                    "value": "win_vegalocker_auto"
+                },
+                {
+                    "name": "av.virus_name",
+                    "value": "win_vegalocker_auto"
+                },
+                {
+                    "name": "av.virus_name",
+                    "value": "Win.Ransomware.Buhtrap-9865977-0"
+                },
+                {
+                    "name": "av.virus_name",
+                    "value": "TR/Redcap.ltkcp"
+                }
+            ],
+            "score": 4000,
+            "magic": "PE32 executable (GUI) Intel 80386, for MS Windows",
+            "sha256": "005b00d41749f7b0336d4d5fe0402dcfc95ae0df44a2231a89a59919eeb30b31",
+            "sha1": "2159b8d8b985f32641314220bb24126747b71d13",
+            "md5": "c24d410c7e7d4b6066e09ceee057fbf9",
+            "ssdeep": "6153:KyJE1yd7WHJmcyfjtPWna8DQFu/U3buRKlemZ9DnGAevIhdi++:KU/d7WsvBPWa9DQFu/U3buRKlemZ9DnG",
+            "file_size": 219648,
+            "mime": "application/x-dosexec"
         }
+    }
     return base
 
 
@@ -301,6 +301,7 @@ def mocked_gdetect_get_threats_with_sid():
     base = mocked_gdetect_get_threats()
     mock = mock_add_sid(base)
     return mock
+
 
 def test_gdetect_send(mocker):
     mocker.patch('GLIMPSDetect.gClient.push', return_value='23465d22-3464-39ce-b8b3-bc2ee7d6eecf')
