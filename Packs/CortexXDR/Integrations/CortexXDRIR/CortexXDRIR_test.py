@@ -743,7 +743,7 @@ def test_get_contributing_event_command(requests_mock):
 
     response = get_contributing_event_command(client, args)
 
-    assert response.outputs[0].get('alertID') == args.get('alert_ids').replace('[', '').replace(']', '')
+    assert response.outputs[0].get('alertID') == args.get('alert_ids').strip('[]')
     assert len(response.outputs[0].get('events')) == 1
 
 

@@ -4,6 +4,7 @@ import string
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
+from itertools import zip_longest
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -1026,41 +1027,24 @@ def get_contributing_event_command(client: Client, args: Dict) -> CommandResults
 def replace_featured_field_command(client: Client, args: Dict) -> CommandResults:
     field_type = args.get('field_type')
     values = argToList(args.get('values'))
-    comments = argToList(args.get('comments'))
-    ad_type = argToList(args.get('ad_type', 'group'))
-
     len_values = len(values)
-    len_comments = len(comments)
-    len_ad_type = len(ad_type)
-
-    if len_values > len_comments:
-        # If the comments list is shorter we add empty comments to the end of the comment list.
-        empty_comments = [""] * (len_values - len_comments)
-        comments.extend(empty_comments)
-    elif len_values < len_comments:
-        # If the comments list is longer we cut the comment list to be the same length as the values list.
-        comments = comments[:len_values]
+    comments = argToList(args.get('comments'))[:len_values]
+    ad_type = argToList(args.get('ad_type', 'group'))[:len_values]
 
     if field_type == 'ad_groups':
-        if len_values > len_ad_type:
-            # If the ad_type list is shorter we add empty strings to the end of the ad_type list.
-            empty_ad_types = [""] * (len_values - len_ad_type)
-            ad_type.extend(empty_ad_types)
-        elif len_values < len_ad_type:
-            # If the ad_type list is longer we cut the ad_type list to be the same length as the values list.
-            ad_type = ad_type[:len_values]
-
         fields = [
-            {'value': field[0], 'comment': field[1], 'type': field[2]} for field in zip(values, comments, ad_type)
+            {
+                'value': field[0], 'comment': field[1], 'type': field[2]
+            } for field in zip_longest(values, comments, ad_type, fillvalue='')
         ]
     else:
         fields = [
-            {'value': field[0], 'comment': field[1]} for field in zip(values, comments)
+            {'value': field[0], 'comment': field[1]} for field in zip_longest(values, comments, fillvalue='')
         ]
 
     reply = client.replace_featured_field(str(field_type), fields)
 
-    # The reply could be either a boolean (true) if success
+    # The reply can be either a boolean (true) on success
     # or a dict in this format: {"err_code": STATUS_CODE, "err_msg": GENERAL_MESSAGE, "err_extra": EXTRA_DATA}
     # For more information refer to:
     # https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-apis/incident-management/replace-featured-hosts
@@ -1078,11 +1062,7 @@ def replace_featured_field_command(client: Client, args: Dict) -> CommandResults
             outputs=result,
             raw_response=result
         )
-
-    else:
-        return CommandResults(
-            readable_output=json.dumps(reply)
-        )
+    raise reply
 
 
 def main():  # pragma: no cover
