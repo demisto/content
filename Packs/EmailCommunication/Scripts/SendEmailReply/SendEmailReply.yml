@@ -11,6 +11,14 @@ args:
   description: The mailbox from which emails are sent from the 3rd party integration.
   name: service_mail
   required: false
+- defaultValue:
+  description: test.
+  name: sign_only
+  required: false
+- defaultValue:
+  description: test.
+  name: sign_and_decrypt
+  required: false
 - name: mail_sender_instance
   required: false
   description: Name of the mail sender instance name for transmitting emails
