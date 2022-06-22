@@ -1,21 +1,32 @@
 from CommonServerPython import *
 
-CONTEXT_PATH_TO_READ_PROCESS_FILE_NAME_FROM = "CrowdStrike.Command"
 COMMAND_NAME = 'ps'
 
 
-def get_file_name_from_context() -> str:
-    file_name = ""
-    all_command_files = demisto.get(demisto.context(), CONTEXT_PATH_TO_READ_PROCESS_FILE_NAME_FROM)
-    if all_command_files and isinstance(all_command_files, dict):
-        ps_files = all_command_files.get(COMMAND_NAME, [])
+def get_ps_file_name(command_files):
+    if command_files and isinstance(command_files, dict):
+        ps_files = command_files.get(COMMAND_NAME, [])
         if ps_files:
             if isinstance(ps_files, list):
                 # we want to get the last file name
-                file_name = ps_files[len(ps_files) - 1].get('Filename')
+                return ps_files[len(ps_files) - 1].get('Filename')
             elif isinstance(ps_files, dict):
-                file_name = ps_files.get('Filename')  # type:ignore
-    return file_name
+                return ps_files.get('Filename')  # type:ignore
+
+
+def get_file_name_from_context() -> str:
+    crowdstrike_context = demisto.context().get('CrowdStrike', {})
+    all_command_files = []
+    if isinstance(crowdstrike_context, list):
+        for ctx in crowdstrike_context:
+            if cmd_ctx := ctx.get('Command'):
+                all_command_files.append(cmd_ctx)
+    elif isinstance(crowdstrike_context, dict) and (cmd_ctx := crowdstrike_context.get('Command')):
+        all_command_files.append(cmd_ctx)
+    for command_file in all_command_files[::-1]:  # get last file in context
+        if file_name := get_ps_file_name(command_file):
+            return file_name
+    return ""
 
 
 def get_file_entry_id(file_name):

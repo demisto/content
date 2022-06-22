@@ -1,0 +1,21 @@
+{
+    "name": "MarkdownToHTML",
+    "description": "Converts Markdown to HTML.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Winultimatum",
+    "url": "",
+    "email": "",
+    "created": "2022-05-18T12:45:15Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "Winultimatum"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

@@ -54,7 +54,8 @@ tags:
 - server
 - endpoint
 - carbon-black
-comment: Search for a binary on an endpoint using Carbon Black
+comment: Deprecated. No available replacement. Search for a binary on an endpoint using Carbon Black
+deprecated: true
 system: true
 scripttarget: 0
 dependson:

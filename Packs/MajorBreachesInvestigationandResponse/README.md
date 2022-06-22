@@ -11,7 +11,7 @@ This pack contains the response playbooks for the following breaches:
 - [NOBELIUM - wide scale APT29 spear-phishing](https://xsoar.pan.dev/docs/reference/playbooks/NOBELIUM---wide-scale-APT29-spear-phishing)
 - [CVE-2021-34527 | CVE-2021-1675 - PrintNightmare](https://xsoar.pan.dev/docs/reference/playbooks/cve-2021-1675---print-nightmare)
 - [Kaseya VSA 0-day - REvil Ransomware Supply Chain Attack](https://xsoar.pan.dev/docs/reference/playbooks/kaseya-vsa--0-day---r-evil-ransomware-supply-chain-attack)
-
+- [CVE-2022-30190 - MSDT RCE](https://xsoar.pan.dev/docs/reference/playbooks/cve-2022-30190---msdt-rce)
 ##### How to enable it?
 
 - Install the pack.
