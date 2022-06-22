@@ -280,19 +280,6 @@ def rasterize_webdriver(path: str, width: int, height: int, r_type: RasterizeTyp
         else:
             output = get_image(driver, width, height, full_screen)
         return output
-
-    except (InvalidArgumentException, NoSuchElementException) as ex:
-        if 'invalid argument' in str(ex):
-            err_msg = URL_ERROR_MSG + str(ex)
-            return_err_or_warn(err_msg)
-        else:
-            return_err_or_warn(f'Invalid exception: {ex}\nTrace:{traceback.format_exc()}')
-    except TimeoutException as ex:
-        return_err_or_warn(f'Timeout exception with max load time of: {page_load_time} seconds. {ex}')
-    except Exception as ex:
-        err_str = f'General error: {ex}\nTrace:{traceback.format_exc()}'
-        demisto.error(err_str)
-        return_err_or_warn(err_str)
     finally:
         quit_driver_and_reap_children(driver)
 
