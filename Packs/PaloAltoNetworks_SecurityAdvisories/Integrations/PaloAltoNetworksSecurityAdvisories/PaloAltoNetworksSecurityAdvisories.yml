@@ -1,6 +1,6 @@
 category: Vulnerability Management
 commonfields:
-  id: Palo_Alto_Networks_Security_Advisories
+  id: Palo Alto Networks Security Advisories
   version: -1
 configuration:
 - defaultvalue: https://security.paloaltonetworks.com/api/v1
@@ -80,9 +80,9 @@ configuration:
   type: 15
   additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
 description: Queries the public repository of PAN-OS CVEs.
-display: Palo_Alto_Networks_Security_Advisories (Beta)
+display: Palo Alto Networks Security Advisories (Beta)
 beta: true
-name: Palo_Alto_Networks_Security_Advisories
+name: Palo Alto Networks Security Advisories
 script:
   commands:
   - arguments:
