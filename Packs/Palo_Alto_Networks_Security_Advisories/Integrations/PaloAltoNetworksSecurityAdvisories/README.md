@@ -1,5 +1,5 @@
 Queries the public repository of PAN-OS CVEs.
-This integration was integrated and tested with version 1 of the Palo Alto Networks Security Advisories API 
+This integration was integrated and tested with the [beta](https://security.paloaltonetworks.com/api) version 1 of the Palo Alto Networks Security Advisories API.
 
 The Palo Alto Networks Security Advisories API is a representation of the GUI; https://security.paloaltonetworks.com/
 

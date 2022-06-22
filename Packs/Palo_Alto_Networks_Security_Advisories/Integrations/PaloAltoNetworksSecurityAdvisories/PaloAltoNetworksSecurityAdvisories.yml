@@ -85,7 +85,8 @@ configuration:
   additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
     fetched from the feed
 description: Queries the public repository of PAN-OS CVEs.
-display: Palo Alto Networks Security Advisories
+display: Palo Alto Networks Security Advisories (Beta)
+beta: true
 name: Palo_Alto_Networks_Security_Advisories
 script:
   commands:
@@ -170,6 +171,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-fromversion: 5.5.0
+fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
