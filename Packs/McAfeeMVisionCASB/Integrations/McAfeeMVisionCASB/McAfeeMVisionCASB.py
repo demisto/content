@@ -19,10 +19,11 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 class Client(BaseClient):
     def test(self):
-        return
+        self.incident_query(1)
 
-    def incident_query(self, limit: Optional[int], start_time: str, end_time: str, actor_ids: list[str],
-                       service_names: list[str], incident_types: list[str], categories: list[str]) -> Dict[str, str]:
+    def incident_query(self, limit: int, start_time: str = '', end_time: str = '', actor_ids: list[str] = None,
+                       service_names: list[str] = None, incident_types: list[str] = None,
+                       categories: list[str] = None) -> Dict[str, str]:
         url_suffix = '/external/api/v1/queryIncidents'
         params = {'limit': limit or 500}
         data = assign_params(
