@@ -7,10 +7,14 @@ def main():
     unit42_api_endpoint = "/unit42intel/indicator/import-and-enrich"
 
     try:
-        if isinstance(ind_value, dict):
+	if isinstance(ind_value, dict):
             indicator = ind_value
         else:
-            indicator = demisto.executeCommand("findIndicators", {'value': ind_value})[0].get('Contents')[0]
+            foundindicator = demisto.executeCommand("findIndicators", {'value': ind_value})[0].get('Contents')
+            if foundindicator:
+                indicator = foundindicator[0]
+            else:
+                return_error(f"Indicator {ind_value} does not exist.")
 
         indicator_value = indicator.get('value')
         indicator_type = indicator.get('indicator_type')
