@@ -372,15 +372,17 @@ class Client(CoreClient):
                 'fields': fields
             }
         }
-
-        reply = self._http_request(
-            method='POST',
-            url_suffix=f'/featured_fields/replace_{field_type}',
-            json_data=request_data,
-            timeout=self.timeout,
-        )
-
-        return reply.get('reply')
+        try:
+            reply = self._http_request(
+                method='POST',
+                url_suffix=f'/featured_fields/replace_{field_type}',
+                json_data=request_data,
+                timeout=self.timeout,
+                raise_on_status=True
+            )
+            return reply.get('reply')
+        except DemistoException as e:
+            raise str(e)
 
 
 def get_incidents_command(client, args):
@@ -1004,7 +1006,7 @@ def get_contributing_event_command(client: Client, args: Dict) -> CommandResults
                 limit = max(int(args.get('limit', 0)), 0) or offset + page_size
 
                 alert_with_events = {
-                    'alertID': str(alert_id),
+                    'alertID': alert_id,
                     'events': alert.get('events', [])[offset:limit],
                 }
                 alerts.append(alert_with_events)
@@ -1025,7 +1027,7 @@ def get_contributing_event_command(client: Client, args: Dict) -> CommandResults
 
 
 def replace_featured_field_command(client: Client, args: Dict) -> CommandResults:
-    field_type = args.get('field_type')
+    field_type = args.get('field_type', '')
     values = argToList(args.get('values'))
     len_values = len(values)
     comments = argToList(args.get('comments'))[:len_values]
@@ -1042,7 +1044,7 @@ def replace_featured_field_command(client: Client, args: Dict) -> CommandResults
             {'value': field[0], 'comment': field[1]} for field in zip_longest(values, comments, fillvalue='')
         ]
 
-    reply = client.replace_featured_field(str(field_type), fields)
+    reply = client.replace_featured_field(field_type, fields)
 
     # The reply can be either a boolean (true) on success
     # or a dict in this format: {"err_code": STATUS_CODE, "err_msg": GENERAL_MESSAGE, "err_extra": EXTRA_DATA}
@@ -1062,7 +1064,6 @@ def replace_featured_field_command(client: Client, args: Dict) -> CommandResults
             outputs=result,
             raw_response=result
         )
-    raise reply
 
 
 def main():  # pragma: no cover

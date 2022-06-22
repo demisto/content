@@ -5,7 +5,7 @@ import pytest
 from freezegun import freeze_time
 
 import demistomock as demisto
-from CommonServerPython import Common
+from CommonServerPython import Common, argToList
 
 XDR_URL = 'https://api.xdrurl.com'
 
@@ -743,7 +743,7 @@ def test_get_contributing_event_command(requests_mock):
 
     response = get_contributing_event_command(client, args)
 
-    assert response.outputs[0].get('alertID') == args.get('alert_ids').strip('[]')
+    assert response.outputs[0].get('alertID') == argToList(args.get('alert_ids'))[0]
     assert len(response.outputs[0].get('events')) == 1
 
 
