@@ -84,5 +84,5 @@ filter _raw_log contains "tomcat" or _raw_log contains "HTTP"
 | alter XDM.Network.Destination.port=to_number(destination_port)
 | alter XDM.Network.http.response_code= http_respone_code
 | alter XDM.Network.Source.bytes= to_number(bytes_size)
-| alter XDM.Audit.event_timestamp =parse_timestamp("%Y-%m-%d %H:%M:%E3C",TimeStamp)
+| alter XDM.Network.event_timestamp =parse_timestamp("%Y-%m-%d %H:%M:%E3C",TimeStamp)
 | alter XDM.Network.http.url =request;
