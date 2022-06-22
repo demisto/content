@@ -47,7 +47,11 @@ class MimecastClient(IntegrationEventsClient):
 
     def prepare_headers(self, uri: str):
         """
-        Args -
+        Args:
+            uri (str): The uri of the end point
+
+        Returns:
+            The headers part of the request to send to mimecast
         """
         # Create variables required for request headers
         request_id = str(uuid.uuid4())
@@ -94,6 +98,12 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
         pass
 
     def run(self):
+        """
+        Always takes SIEM_LOG_LIMIT amount of events.
+        If the limit is reached the extra events will be saved in the self.events_from_prev_run.
+        Returns:
+             - stored (list): A list of this run siem events.
+        """
         self.options.limit = 1 if demisto.command() == 'test-module' else SIEM_LOG_LIMIT
         stored = []
         if self.events_from_prev_run and self.options.limit:
@@ -128,7 +138,6 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
         self.client.request = IntegrationHTTPRequest(**(self.get_req_object_siem()))
         response = self.call()
         events = self.process_siem_response(response)
-        # TODO: handle later error handeling
         if not events:
             return []
 
@@ -143,6 +152,13 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
                 break
 
     def process_siem_response(self, response):  # ignore: type
+        """
+        Args:
+            response (Request.Response) - The response from the mimecast API
+
+        Returns:
+            The events after process and modification.
+        """
         resp_body = response.content
         resp_headers = response.headers
         content_type = resp_headers['Content-Type']
@@ -151,6 +167,7 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
         if content_type == 'application/json':
             decoded_response = resp_body.decode('utf8')
             json_response = json.loads(decoded_response)
+
             if fail_reason := json_response.get('fail', []):
                 return_error(f'There was an error with siem events call {fail_reason}')
             demisto.info('No more logs available')
@@ -168,6 +185,7 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
 
             # return true to continue loop
             return events
+
         else:
             # Handle errors
             demisto.info('Unexpected response from siem logs')
@@ -193,6 +211,7 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
             event['xsiem_classifier'] = 'siem_log'
             self.convert_field_to_xdm_type(event)
             events.append(event)
+
         return events
 
     @staticmethod
@@ -210,6 +229,9 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
                 event[key] = [event[key]]
 
     def get_req_object_siem(self):
+        """
+        Returns all data needed for the siem http request.
+        """
         req_obj = {
             'headers': self.client.prepare_headers(self.uri),   # type: ignore
             'data': self.prepare_siem_log_data(),
@@ -220,6 +242,9 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
         return req_obj
 
     def prepare_siem_log_data(self):
+        """
+        Return the data parameter for the http siem request
+        """
         # Build post body for request
         post_body: dict = dict()
         post_body['data'] = [{}]
@@ -228,9 +253,18 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
         post_body['data'][0]['fileFormat'] = 'json'
         if self.token:
             post_body['data'][0]['token'] = self.token
+
         return json.dumps(post_body)
 
-    def write_file(self, file_name: str, data_to_write):
+    def write_file(self, file_name: str, data_to_write: bytes):
+        """
+        Args:
+            - file_name (str): The name of the file returned form the api response header
+            - data_to_write (bytes): The byte's representation of the zip file.
+
+        Returns:
+             The events that were stored in the zip-file files.
+        """
         if '.zip' in file_name:
             try:
                 with tempfile.TemporaryDirectory() as tmpdir:
@@ -241,7 +275,9 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
                     for file in os.listdir(tmpdir):
                         with open(os.path.join(tmpdir, file)) as json_res:
                             extracted_logs_list.extend(self.process_siem_events(json.load(json_res)))
+
                     return extracted_logs_list
+
             except Exception as e:
                 return_error('Error writing file ' + file_name + '. Cannot continue. Exception: ' + str(e))
 
@@ -293,6 +329,7 @@ class MimecastGetAuditEvents(IntegrationGetEvents):
         """
         if res.get('fail', []):
             return_error(f'There was an error with audit events call {res.get("fail")}')
+
         data = res.get('data', [])
         pagination = res.get('meta', {}).get('pagination', {})
         event_list = []
@@ -310,6 +347,9 @@ class MimecastGetAuditEvents(IntegrationGetEvents):
         return event_list
 
     def get_req_object_audit(self):
+        """
+        Returns all the parameters needed for the audit API call
+        """
         return {
             'headers': self.client.prepare_headers(self.uri),   # type: ignore
             'data': self.prepare_audit_events_data(),
@@ -454,6 +494,7 @@ def prepare_potential_audit_duplicates_for_next_run(audit_events: list, next_run
     """
     if not audit_events or not next_run_time:
         return []
+
     same_time_events = []
     for event in audit_events:
         if event.get('eventTime', '') == next_run_time:
