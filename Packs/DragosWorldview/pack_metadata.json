@@ -14,5 +14,5 @@
     "githubUser": [
         "crineacc"
     ],
-    "marketplace": ['xsoar', 'marketplacev2']
+    "marketplaces": ["xsoar", "marketplacev2"]
 }
