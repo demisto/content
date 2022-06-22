@@ -5315,7 +5315,7 @@
         "SymantecEndpointProtection_Test": "Issue 30157",
         "RSANetWitnessv115-Test": "Issue XDRSUP-12553",
         "TestCloudflareWAFPlaybook": "No instance",
-        "RasterizeImageTest": "GenerateImageFileEntry script is missing"
+        "DBot Build Phishing Classifier Test - Multiple Algorithms": "Issue 48350"
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
