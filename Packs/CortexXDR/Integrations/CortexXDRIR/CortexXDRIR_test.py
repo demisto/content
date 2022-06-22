@@ -5,7 +5,7 @@ import pytest
 from freezegun import freeze_time
 
 import demistomock as demisto
-from CommonServerPython import Common, argToList
+from CommonServerPython import Common
 
 XDR_URL = 'https://api.xdrurl.com'
 
