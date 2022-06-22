@@ -11,8 +11,7 @@ args:
   name: advisories
   required: true
   secret: false
-comment: Checks if the given PAN-OS version number is affected by the given list of
-  vulnerabilties from the pan-advisories-get-advisories command.
+comment: Checks if the given PAN-OS version number is affected by the given list of vulnerabilties from the pan-advisories-get-advisories command.
 commonfields:
   id: CheckPanosVersionAffected
   version: -1
@@ -51,7 +50,7 @@ subtype: python3
 system: false
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.4.28442
+dockerimage: demisto/python3:3.10.4.30607
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)

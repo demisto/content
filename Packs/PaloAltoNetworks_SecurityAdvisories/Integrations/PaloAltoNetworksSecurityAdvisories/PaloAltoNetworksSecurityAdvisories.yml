@@ -8,8 +8,7 @@ configuration:
   name: url
   required: false
   type: 0
-- additionalinfo: The Palo Alto Networks product name to fetch indicators for, such
-    as "PAN-OS"
+- additionalinfo: The Palo Alto Networks product name to fetch indicators for, such as "PAN-OS"
   defaultvalue: PAN-OS
   display: Fetch indicator product name
   hidden: false
@@ -30,8 +29,7 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+  additionalinfo: Indicators from this integration instance will be marked with this reputation
 - name: feedReliability
   display: Source Reliability
   type: 15
@@ -65,9 +63,7 @@ configuration:
   display: Bypass exclusion list
   type: 8
   required: false
-  additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
+  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
 - name: feedTags
   display: Tags
   required: false
@@ -82,10 +78,9 @@ configuration:
   - WHITE
   required: false
   type: 15
-  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed
+  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
 description: Queries the public repository of PAN-OS CVEs.
-display: Palo Alto Networks Security Advisories (Beta)
+display: Palo_Alto_Networks_Security_Advisories (Beta)
 beta: true
 name: Palo_Alto_Networks_Security_Advisories
 script:
@@ -93,16 +88,14 @@ script:
   - arguments:
     - default: true
       defaultValue: PAN-OS
-      description: Product name to search for advisories; valid values for this item
-        can be found in the sidebar at https://security.paloaltonetworks.com/
+      description: Product name to search for advisories; valid values for this item can be found in the sidebar at https://security.paloaltonetworks.com/
       isArray: false
       name: product
       required: false
       secret: false
     - default: false
       defaultValue: -date
-      description: Sort returned advisories by this value, can be date, cvss, etc.
-        Leading hyphpen (-) indicates reverse search.
+      description: Sort returned advisories by this value, can be date, cvss, etc. Leading hyphpen (-) indicates reverse search.
       isArray: false
       name: sort
       required: false
@@ -121,8 +114,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Text search query - supports same search syntax as the GUI filter
-        field
+      description: Text search query - supports same search syntax as the GUI filter field
       isArray: false
       name: q
       required: false
@@ -162,7 +154,7 @@ script:
     - contextPath: PANSecurityAdvisory.Advisory.affected_version_list
       description: List of affected versions strings
       type: Unknown
-  dockerimage: demisto/python3:3.10.4.28442
+  dockerimage: demisto/python3:3.10.4.30607
   feed: true
   isfetch: false
   longRunning: false
