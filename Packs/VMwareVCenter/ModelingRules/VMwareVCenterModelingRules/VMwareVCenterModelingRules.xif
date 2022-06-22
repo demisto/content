@@ -45,7 +45,7 @@ filter _raw_log contains "vpxd" or _raw_log contains "[vmafdd]" or _raw_log cont
 | alter XDM.Auth.threat.description = Message
 , XDM.Auth.threat.name  = eventName_vmafdd
 , XDM.Auth.Client.user.username  = user
-| alter XDM.Audit.event_timestamp =parse_timestamp("%Y-%m-%d %H:%M:%E3S",TimeStamp);
+| alter XDM.Auth.event_timestamp =parse_timestamp("%Y-%m-%d %H:%M:%E3S",TimeStamp);
 
 [MODEL: dataset ="VMware_vCenter_raw", model=Network] 
 filter _raw_log contains "tomcat" or _raw_log contains "HTTP" 
