@@ -3,8 +3,6 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 import re
 
-import traceback
-
 
 # --------------------------------------------------- Helper functions---------------------------------------------
 
@@ -61,7 +59,7 @@ def handle_stix_types(entities_types: str) -> str:
 def search_relationships_fromversion_6_6_0(args: dict) -> List[dict]:
     for list_arg in ['entities', 'entityTypes', 'relationshipNames']:
         args[list_arg] = argToList(args[list_arg]) if args[list_arg] else None
-    res = demisto.searchRelationships({'filter': args})
+    res = demisto.searchRelationships(args)
     return res.get('data', [])
 
 
@@ -117,7 +115,6 @@ def main():  # pragma: no cover
             CommandResults(readable_output=hr, outputs_prefix='Relationships', outputs=context, outputs_key_field='ID'))
 
     except Exception as e:
-        demisto.error(traceback.format_exc())
         return_error(f'Failed to execute SearchIndicatorRelationships automation. Error: {str(e)}')
 
 

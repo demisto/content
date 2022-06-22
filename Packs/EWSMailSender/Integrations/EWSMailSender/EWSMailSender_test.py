@@ -91,3 +91,24 @@ def test_send_mail(mocker):
     assert result.get('Contents') == {
         'from': 'test@gmail.com', 'to': ['test@gmail.com'], 'subject': 'test', 'attachments': []
     }
+
+
+def test_send_mail_with_trailing_comma(mocker):
+    """
+    Given -
+        a 'subject' which is 'test' and 'to' which is 'test@gmail.com,' (ending with a comma),
+
+    When -
+        trying to send an email
+
+    Then -
+        verify that the 'to' field was extracted correctly and that the trailing comma was handled.
+    """
+    from EWSMailSender import send_email
+    mocker.patch.object(EWSMailSender, 'Account', return_value=MockAccount(primary_smtp_address="test@gmail.com"))
+    send_email_mocker = mocker.patch.object(EWSMailSender, 'send_email_to_mailbox')
+    result = send_email(to="test@gmail.com,", subject="test")
+    assert send_email_mocker.call_args.kwargs.get('to') == ['test@gmail.com']
+    assert result.get('Contents') == {
+        'from': 'test@gmail.com', 'to': ['test@gmail.com'], 'subject': 'test', 'attachments': []
+    }
