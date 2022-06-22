@@ -5314,7 +5314,8 @@
         "RedLockTest": "Issue 24600",
         "SymantecEndpointProtection_Test": "Issue 30157",
         "RSANetWitnessv115-Test": "Issue XDRSUP-12553",
-        "TestCloudflareWAFPlaybook": "No instance"
+        "TestCloudflareWAFPlaybook": "No instance",
+        "DBot Build Phishing Classifier Test - Multiple Algorithms": "Issue 48350"
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
