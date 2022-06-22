@@ -1,3 +1,4 @@
+import datetime
 import json
 
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
@@ -13,6 +14,17 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+CategoryToIncidentType = {
+    'Access': 'Alert',
+    'Admin': 'Alert',
+    'Audit': 'Alert',
+    'Data': 'Alert',
+    'Policy': 'Alert',
+    'Vulnerability': 'Alert',
+    'CompromisedAccount': 'Threat',
+    'InsiderThreat': 'Threat',
+    'PrivilegeAccess': 'Threat',
+}
 
 ''' CLIENT CLASS '''
 
@@ -22,18 +34,16 @@ class Client(BaseClient):
         self.incident_query(1)
 
     def incident_query(self, limit: int, start_time: str = '', end_time: str = '', actor_ids: list[str] = None,
-                       service_names: list[str] = None, incident_types: list[str] = None,
-                       categories: list[str] = None) -> Dict[str, str]:
+                       service_names: list[str] = None, categories: list[str] = None) -> Dict[str, Any]:
         url_suffix = '/external/api/v1/queryIncidents'
-        params = {'limit': limit or 500}
+        params = {'limit': limit}
         data = assign_params(
-            start_time=start_time,
-            end_time=end_time,
-            actor_ids=actor_ids,
-            service_names=service_names,
+            startTime=start_time,
+            endTime=end_time,
+            actorIds=actor_ids,
+            serviceNames=service_names,
             incidentCriteria=assign_params(
-                incident_types=incident_types,
-                categories=categories,
+                categories=categories
             ),
         )
         return self._http_request('POST', url_suffix, params=params, json_data=data).json()
@@ -66,7 +76,16 @@ class Client(BaseClient):
 
 ''' HELPER FUNCTIONS '''
 
-# TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
+
+def calculate_offset_and_limit(**kwargs) -> [int, int]:
+    if limit := arg_to_number(kwargs.get('limit')):  # 'limit' is stronger than pagination ('page', and 'page_size').
+        return 0, limit
+    if arg_to_number(kwargs.get('page')) and arg_to_number(kwargs.get('page_size')):
+        page = kwargs.get('page') - 1  # First page means list in index zero.
+        page_size = kwargs.get('page_size')
+        return page * page_size, page * page_size + page_size
+    return 0, 50
+
 
 ''' COMMAND FUNCTIONS '''
 
@@ -97,40 +116,46 @@ def test_module(client: Client) -> str:
 
 
 def incident_query_command(client: Client, args: Dict) -> CommandResults:
-    if limit := arg_to_number(args.get('limit')):
-        pass
-    else:
-        page = arg_to_number(args.get('page', 1)) - 1
-        page_size = arg_to_number(args.get('page_size', 50))
-    start_time = args.get('start_time')
+    offset, limit = calculate_offset_and_limit(**args)
+    start_time = args.get('start_time') or (datetime.now() - datetime.timedelta(days=3)).strftime(DATE_FORMAT)
     end_time = args.get('end_time')
-    actor_ids = args.get('actor_ids')
-    service_names = args.get('service_names')
-    incident_types = args.get('incident_types')
-    categories = args.get('categories')
+    actor_ids = argToList(args.get('actor_ids'))
+    service_names = argToList(args.get('service_names'))
+    if categories := argToList(args.get('categories')):
+        categories = [
+            {"incidentType": CategoryToIncidentType.get(category), "category": category} for category in categories
+        ]
+    elif incident_types := argToList(args.get('incident_types')):
+        categories = [{"incidentType": incident_type} for incident_type in incident_types]
 
-    result = client.incident_query(limit, start_time, end_time, actor_ids, service_names, incident_types, categories)
-    readable_dict = {
-        'IncidentID': result.get('incidentId'),
-        'Time(UTC)': result.get('timeCreated'),
-        'Status': result.get('status'),
-        'Alert Action': result.get('remediationResponse'),
-        'Service Name': result.get('serviceNames'),
-        'Alert Severity': result.get('Incident risk severity'),
-        'Policy Name': result.get('policyName'),
-        'User Name': result.get('actorID'),
-    }
-    readable_output = tableToMarkdown(
-        'MVISION CASB Incidents', readable_dict, headerTransform=pascalToSpace, removeNull=True
-    )
+    result = client.incident_query(limit, start_time, end_time, actor_ids, service_names, categories)
 
-    return CommandResults(
-        outputs=result,
-        outputs_prefix='MVisionCASB.Incident',
-        outputs_key_field='incidentId',
-        readable_output=readable_output,
-        raw_response=result,
-    )
+    if incidents := result.get('incidents'):
+        readable_dict = {
+            'IncidentID': incidents.get('incidentId'),
+            'Time(UTC)': incidents.get('timeCreated'),
+            'Status': incidents.get('status'),
+            'Alert Action': incidents.get('remediationResponse'),
+            'Service Name': incidents.get('serviceNames'),
+            'Alert Severity': incidents.get('Incident risk severity'),
+            'Policy Name': incidents.get('policyName'),
+            'User Name': incidents.get('actorID'),
+        }
+        readable_output = tableToMarkdown(
+            'MVISION CASB Incidents', readable_dict, headerTransform=pascalToSpace, removeNull=True
+        )
+
+        return CommandResults(
+            outputs=incidents,
+            outputs_prefix='MVisionCASB.Incident',
+            outputs_key_field='incidentId',
+            readable_output=readable_output,
+            raw_response=incidents,
+        )
+    else:
+        return CommandResults(
+            readable_output='No Incidents were found with the requested filters.',
+        )
 
 
 def status_update_command(client: Client, args: Dict) -> CommandResults:
@@ -151,19 +176,14 @@ def anomaly_activity_list_command(client: Client, args: Dict) -> CommandResults:
 
 
 def policy_dictionary_list_command(client: Client, args: Dict) -> CommandResults:
-    if limit := arg_to_number(args.get('limit')):
-        offset = 0
-    else:
-        page = arg_to_number(args.get('page', 1)) - 1
-        page_size = arg_to_number(args.get('page_size', 50))
-        offset = page * page_size
+    offset, limit = calculate_offset_and_limit(**args)
 
     result = client.policy_dictionary_list()
-    if name := args.get('name'):
-        readable_list = [item for item in result if item.get('name') in name][offset:limit]
-    else:
-        readable_list = result[offset:limit]
-    readable_output = tableToMarkdown('', readable_list, headerTransform=pascalToSpace, removeNull=True)
+    list_of_policies = result[offset:limit]
+
+    if name := argToList(args.get('name')):
+        list_of_policies[:] = [policy for policy in list_of_policies if policy.get('name') in name]
+    readable_output = tableToMarkdown('', list_of_policies, headerTransform=pascalToSpace, removeNull=True)
 
     return CommandResults(
         outputs=None,
@@ -175,6 +195,7 @@ def policy_dictionary_list_command(client: Client, args: Dict) -> CommandResults
 
 
 def policy_dictionary_update_command(client: Client, args: Dict) -> CommandResults:
+
     return CommandResults()
 
 

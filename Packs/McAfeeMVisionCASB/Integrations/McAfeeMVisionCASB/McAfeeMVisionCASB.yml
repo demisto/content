@@ -80,13 +80,13 @@ script:
       name: incident_types
       predefined:
       - Alert
-      - Event
       - Threat
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The categories of the incidents to retrieve.
+      description: The categories of the incidents to retrieve. When defining the
+        categories argument the incident_types argument does not affect.
       isArray: true
       name: categories
       predefined:
