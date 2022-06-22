@@ -381,8 +381,8 @@ class Client(CoreClient):
                 raise_on_status=True
             )
             return reply.get('reply')
-        except DemistoException as e:
-            raise str(e)
+        except Exception as err:
+            raise DemistoException(err)
 
 
 def get_incidents_command(client, args):
@@ -1044,26 +1044,21 @@ def replace_featured_field_command(client: Client, args: Dict) -> CommandResults
             {'value': field[0], 'comment': field[1]} for field in zip_longest(values, comments, fillvalue='')
         ]
 
-    reply = client.replace_featured_field(field_type, fields)
+    client.replace_featured_field(field_type, fields)
 
-    # The reply can be either a boolean (true) on success
-    # or a dict in this format: {"err_code": STATUS_CODE, "err_msg": GENERAL_MESSAGE, "err_extra": EXTRA_DATA}
-    # For more information refer to:
-    # https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-api/cortex-xdr-apis/incident-management/replace-featured-hosts
-    if not isinstance(reply, dict):
-        result = {'fieldType': field_type, 'fields': fields}
+    result = {'fieldType': field_type, 'fields': fields}
 
-        readable_output = tableToMarkdown(
-            f'Replaced featured: {result.get("fieldType")}', result.get('fields'), headerTransform=pascalToSpace
-        )
+    readable_output = tableToMarkdown(
+        f'Replaced featured: {result.get("fieldType")}', result.get('fields'), headerTransform=pascalToSpace
+    )
 
-        return CommandResults(
-            readable_output=readable_output,
-            outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.FeaturedField',
-            outputs_key_field='fieldType',
-            outputs=result,
-            raw_response=result
-        )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.FeaturedField',
+        outputs_key_field='fieldType',
+        outputs=result,
+        raw_response=result
+    )
 
 
 def main():  # pragma: no cover
