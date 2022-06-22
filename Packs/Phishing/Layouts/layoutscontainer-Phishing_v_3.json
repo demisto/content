@@ -346,7 +346,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "deleteemailfrombrand",
+                                "fieldId": "emaildeletefrombrand",
                                 "height": 22,
                                 "id": "51e6d7d0-af45-11ec-99c4-cfc9ad59fcf6",
                                 "index": 3,

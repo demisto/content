@@ -1728,7 +1728,7 @@ def build_multiple_values_parsed_output(**kwargs) -> Tuple[List[Any], str]:
 
 
 @logger
-def build_host_list_detection_outputs(kwargs) -> Tuple[List[Any], str]:
+def build_host_list_detection_outputs(**kwargs) -> Tuple[List[Any], str]:
     """
     Builds the outputs and readable output for host list detection.
     Args:
@@ -1745,26 +1745,30 @@ def build_host_list_detection_outputs(kwargs) -> Tuple[List[Any], str]:
         asset_collection = handled_result
     original_amount = None
     limit_msg = ''
-    parsed_output: List[Any] = generate_list_dicts(asset_collection)
-
+    parsed_output = generate_list_dicts(asset_collection)
+    parsed_output = parsed_output if isinstance(parsed_output, List) else [parsed_output]
     if 'limit' in inner_args_values and inner_args_values['limit'] and isinstance(parsed_output, list):
         original_amount = len(parsed_output)
         parsed_output = limit_result(parsed_output, inner_args_values['limit'])
 
     if original_amount and original_amount > int(inner_args_values['limit']):
         limit_msg = f"Currently displaying {inner_args_values['limit']} out of {original_amount} results."
-    readable_outputs = []
+    readable = ''
     for output in parsed_output:
+        headers = ['ID', 'IP', 'DNS_DATA']
+        ip = output.get('IP')
         readable_output = {
             'ID': output.get('ID'),
-            'IP': output.get('IP'),
+            'IP': ip,
             'DNS_DATA': {k: v for k, v in output.get('DNS_DATA', {}).items() if v is not None}
         }
         if detections := output.get('DETECTION_LIST', {}).get('DETECTION', []):
-            readable_output['DETECTIONS'] = [{'QID': detection.get('QID'), 'RESULTS': detection.get('RESULTS')} for
-                                             detection in detections]
-        readable_outputs.append(readable_output)
-    readable = tableToMarkdown(f'Host Detection List\n{limit_msg}', readable_outputs, removeNull=True)
+            detections = detections if isinstance(detections, List) else [detections]
+            for detection in detections:
+                qid = 'QID: ' + detection.get('QID')
+                headers.append(qid)
+                readable_output[qid] = detection.get('RESULTS')
+        readable += tableToMarkdown(f'Host Detection List - {ip}\n{limit_msg}', readable_output, removeNull=True, headers=headers)
     return parsed_output, readable
 
 

@@ -1,0 +1,30 @@
+{
+    "id": "incident_netskopebreachsource",
+    "version": -1,
+    "modified": "2022-03-23T14:37:42.439717141+02:00",
+    "name": "Netskope Breach Source",
+    "ownerOnly": false,
+    "cliName": "netskopebreachsource",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Netskope Compromised Credentials"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.2.0"
+}

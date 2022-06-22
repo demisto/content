@@ -117,14 +117,14 @@ args:
   - variant-of
 - default: false
   defaultValue: '20'
-  description: 'The number of results to return. Default is 20.'
+  description: The number of results to return. Default is 20.
   isArray: false
   name: limit
   required: false
   secret: false
 - default: false
   defaultValue: 'false'
-  description: 'Whether all of the relationships attributes will be returned or just the basic attributes. Default is false and the returned values will be name, entity A value, entity A type, entity B value, entity B type, relationships type. If true, all attributes will be returned.'
+  description: Whether all of the relationships attributes will be returned or just the basic attributes. Default is false and the returned values will be name, entity A value, entity A type, entity B value, entity B type, relationships type. If true, all attributes will be returned.
   isArray: false
   name: verbose
   required: false
@@ -135,7 +135,7 @@ args:
   - 'false'
 - default: false
   defaultValue: 'false'
-  description: 'The status of the relationships to return. Default is false.'
+  description: The status of the relationships to return. Default is false.
   isArray: false
   name: revoked
   required: false
@@ -144,8 +144,7 @@ args:
   predefined:
   - 'true'
   - 'false'
-comment: 'This automation outputs the indicator relationships to context according to the provided query, using the entities, entityTypes, and relationships arguments. All arguments will use the AND operator. For example, using the following arguments entities=8.8.8.8
-          entities_types=Domain will provide only relationships that the 8.8.8.8 indicator has with indicators of type domain.'
+comment: This automation outputs the indicator relationships to context according to the provided query, using the entities, entityTypes, and relationships arguments. All arguments will use the AND operator. For example, using the following arguments entities=8.8.8.8 entities_types=Domain will provide only relationships that the 8.8.8.8 indicator has with indicators of type domain.
 commonfields:
   id: SearchIndicatorRelationships
   version: -1
@@ -201,7 +200,7 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.10.4.27798
+dockerimage: demisto/python3:3.10.4.30607
 fromversion: 6.2.0
 tests:
 - Relationships scripts - Test

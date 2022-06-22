@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE HOST_LIST_OUTPUT SYSTEM "https://qualysapi.qg2.apps.qualys.com/api/2.0/fo/asset/host/dtd/list/output.dtd">
+<!-- This report was generated with an evaluation version of Qualys //-->
+<HOST_LIST_OUTPUT>
+  <RESPONSE>
+    <DATETIME>2022-05-11T15:09:22Z</DATETIME>
+    <HOST_LIST>
+      <HOST>
+        <ID>69291564</ID>
+        <IP>172.31.11.229</IP>
+        <TRACKING_METHOD>EC2</TRACKING_METHOD>
+        <DNS><![CDATA[i-055ef1b4734491575]]></DNS>
+        <DNS_DATA>
+          <HOSTNAME><![CDATA[i-055ef1b4734491575]]></HOSTNAME>
+          <DOMAIN />
+          <FQDN />
+        </DNS_DATA>
+        <CLOUD_PROVIDER><![CDATA[AWS]]></CLOUD_PROVIDER>
+        <CLOUD_SERVICE><![CDATA[EC2]]></CLOUD_SERVICE>
+        <CLOUD_RESOURCE_ID><![CDATA[i-055ef1b4734491575]]></CLOUD_RESOURCE_ID>
+        <!-- <EC2_INSTANCE_ID> tag has been deprecated. Please refer to <CLOUD_RESOURCE_ID> tag for the same information //-->
+        <EC2_INSTANCE_ID><![CDATA[i-055ef1b4734491575]]></EC2_INSTANCE_ID>
+        <NETBIOS><![CDATA[AMAZON-544DB96A]]></NETBIOS>
+        <OS><![CDATA[Windows 2003 R2 Service Pack 2]]></OS>
+        <QG_HOSTID><![CDATA[8725d236-7f5b-41e1-b795-fa67e3adc108]]></QG_HOSTID>
+      </HOST>
+    </HOST_LIST>
+  </RESPONSE>
+</HOST_LIST_OUTPUT>
+<!-- This report was generated with an evaluation version of Qualys //-->
+<!-- CONFIDENTIAL AND PROPRIETARY INFORMATION. Qualys provides the QualysGuard Service "As Is," without any warranty of any kind. Qualys makes no warranty that the information contained in this report is complete or error-free. Copyright 2022, Qualys, Inc. //-->

@@ -1,0 +1,426 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+description: This playbook handles incident ingestion from a SIEM. The user provides the incident fields containing the alert ID. This playbook also enables changing the severity according to a user-defined scale to override the default assigned severity.
+id: MDE SIEM ingestion - Get Incident Data
+inputs:
+- description: The name of the incident field that contains the detection ID or incident ID.
+  key: SIEMincidentFieldForID
+  playbookInputQuery:
+  required: false
+  value:
+    simple: ${incident.externalsystemid}
+- description: |-
+    The severity scale as represented in the EDR. 
+    For example, in Microsoft Defender for Endpoint the severity scale is Informational, Low, Medium, High.
+  key: ScaleToSetSeverity
+  playbookInputQuery:
+  required: false
+  value:
+    simple: Informational,Low,Medium,High
+- description: |-
+    "The mapping to Cortex XSOAR severity from the severity scale in the EDR (the ScaleToSetSeverity inputs).
+    For example
+    0.5, 1, 2, 3,4
+    Possible values to use are 0,0.5, 1, 2, 3,4
+    Which represent Unknown, Informational, Low, Medium, High, Critical
+  key: SeverityValuesMapping
+  playbookInputQuery:
+  required: false
+  value:
+    simple: 0.5, 1, 2, 3
+- description: "Whether to set the severity according to the ScaleToSetSeverity and SeverityValuesMapping settings (True) or keep the original severity as mapped by the SIEM (False)."
+  key: OverrideSIEMSeverity
+  playbookInputQuery:
+  required: false
+  value:
+    simple: 'False'
+name: MDE SIEM ingestion - Get Incident Data
+outputs:
+- contextPath: CrowdStrike.Detection.Behavior.FileName
+  description: The file name of the behavior.
+  type: string
+- contextPath: CrowdStrike.Detection.Behavior.Scenario
+  description: The scenario name of the behavior.
+  type: string
+- contextPath: CrowdStrike.Detection.Behavior.MD5
+  description: The MD5 hash of the IOC of the behavior.
+  type: string
+- contextPath: CrowdStrike.Detection.Behavior.SHA256
+  description: The SHA256 hash of the IOC of the behavior.
+  type: string
+- contextPath: CrowdStrike.Detection.Behavior.IOCType
+  description: The type of the IOC.
+  type: string
+- contextPath: CrowdStrike.Detection.Behavior.IOCValue
+  description: The value of the IOC.
+  type: string
+- contextPath: CrowdStrike.Detection.Behavior.CommandLine
+  description: The command line executed in the behavior.
+  type: string
+- contextPath: CrowdStrike.Detection.Behavior.UserName
+  description: The user name related to the behavior.
+  type: string
+- contextPath: CrowdStrike.Detection.Behavior.SensorID
+  description: The sensor ID related to the behavior.
+  type: string
+- contextPath: CrowdStrike.Detection.Behavior.ParentProcessID
+  description: The ID of the parent process.
+  type: string
+- contextPath: CrowdStrike.Detection.Behavior.ProcessID
+  description: The process ID of the behavior.
+  type: string
+- contextPath: CrowdStrike.Detection.Behavior.ID
+  description: The ID of the behavior.
+  type: string
+- contextPath: CrowdStrike.Detection.System
+  description: The system name of the detection.
+  type: string
+- contextPath: CrowdStrike.Detection.CustomerID
+  description: The ID of the customer (CID).
+  type: string
+- contextPath: CrowdStrike.Detection.MachineDomain
+  description: The name of the domain of the detection machine.
+  type: string
+- contextPath: CrowdStrike.Detection.ID
+  description: The detection ID.
+  type: string
+- contextPath: CrowdStrike.Detection.ProcessStartTime
+  description: The start time of the process that generated the detection.
+  type: string
+- contextPath: Endpoint
+  description: The details of the endpoint.
+  type: string
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '20'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 52e83efb-9923-48db-8890-154683292a27
+      iscommand: false
+      name: ''
+      version: -1
+      description: ''
+    taskid: 52e83efb-9923-48db-8890-154683292a27
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 80
+        }
+      }
+  '5':
+    id: '5'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '12'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      severity:
+        complex:
+          accessor: Severity
+          root: MicrosoftATP.Alert
+          transformers:
+          - args:
+              input_values:
+                iscontext: true
+                value:
+                  simple: inputs.ScaleToSetSeverity
+              mapped_values:
+                iscontext: true
+                value:
+                  simple: inputs.SeverityValuesMapping
+            operator: MapValuesTransformer
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 6074fc34-ef92-4422-8d60-4bbc7be3ae77
+      iscommand: true
+      name: Set Severity
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 6074fc34-ef92-4422-8d60-4bbc7be3ae77
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 710
+        }
+      }
+  '12':
+    id: '12'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: abfe1ac1-44d2-462b-8a34-4990fae8643d
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: abfe1ac1-44d2-462b-8a34-4990fae8643d
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 880
+        }
+      }
+  '20':
+    fieldMapping:
+    - incidentfield: URLs
+      output:
+        simple: ${MicrosoftATP.Alert.Evidence.url}
+    - incidentfield: Users
+      output:
+        simple: ${MicrosoftATP.Alert.Evidence.accountName}
+    - incidentfield: User SID
+      output:
+        simple: ${MicrosoftATP.Alert.Evidence.userSid}
+    - incidentfield: CMD line
+      output:
+        simple: ${MicrosoftATP.Alert.Evidence.processCommandLine}
+    - incidentfield: Detected IPs
+      output:
+        simple: ${MicrosoftATP.Alert.Evidence.ipAddress}
+    - incidentfield: Domain Name
+      output:
+        simple: ${MicrosoftATP.Alert.Evidence.domainName}
+    - incidentfield: File Names
+      output:
+        simple: ${MicrosoftATP.Alert.Evidence.fileName}
+    - incidentfield: File Paths
+      output:
+        simple: ${MicrosoftATP.Alert.Evidence.filePath}
+    - incidentfield: File SHA1
+      output:
+        simple: ${MicrosoftATP.Alert.Evidence.sha1}
+    - incidentfield: File SHA256
+      output:
+        simple: ${MicrosoftATP.Alert.Evidence.sha256}
+    - incidentfield: Microsoft Defender for Endpoint Evidence Type
+      output:
+        simple: ${MicrosoftATP.Alert.Evidence.entityType}
+    - incidentfield: Parent Process
+      output:
+        simple: ${MicrosoftATP.Alert.Evidence.parentProcessFileName}
+    - incidentfield: Parent Process File Path
+      output:
+        simple: ${MicrosoftATP.Alert.Evidence.parentProcessFileName}
+    - incidentfield: Parent Process ID
+      output:
+        simple: ${MicrosoftATP.Alert.Evidence.parentProcessId}
+    - incidentfield: Process ID
+      output:
+        simple: ${MicrosoftATP.Alert.Evidence.processId}
+    - incidentfield: Registry Key
+      output:
+        simple: ${MicrosoftATP.Alert.Evidence.registryKey}
+    - incidentfield: Registry Value
+      output:
+        simple: ${MicrosoftATP.Alert.Evidence.registryValue}
+    - incidentfield: Registry Value Type
+      output:
+        simple: ${MicrosoftATP.Alert.Evidence.registryValueType}
+    - incidentfield: Investigation Stage
+      output:
+        simple: ${MicrosoftATP.Alert.InvestigationState}
+    - incidentfield: Agents ID
+      output:
+        simple: ${MicrosoftATP.Alert.MachineID}
+    - incidentfield: MITRE Technique ID
+      output:
+        simple: ${MicrosoftATP.Alert.MitreTechniques}
+    - incidentfield: Process CMD
+      output:
+        simple: ${MicrosoftATP.Alert.Evidence.processCommandLine}
+    - incidentfield: Process SHA256
+      output:
+        simple: ${MicrosoftATP.Alert.Evidence.sha256}
+    - incidentfield: External Severity
+      output:
+        simple: ${MicrosoftATP.Alert.Severity}
+    - incidentfield: External End Time
+      output:
+        simple: ${MicrosoftATP.Alert.LastUpdateTime}
+    - incidentfield: External Start Time
+      output:
+        simple: ${MicrosoftATP.Alert.FirstEventTime}
+    - incidentfield: External Status
+      output:
+        simple: ${MicrosoftATP.Alert.Status}
+    - incidentfield: Hostnames
+      output:
+        simple: ${MicrosoftATP.Alert.ComputerDNSName}
+    - incidentfield: External Category Name
+      output:
+        simple: ${MicrosoftATP.Alert.Category}
+    - incidentfield: Description
+      output:
+        simple: ${MicrosoftATP.Alert.Description}
+    id: '20'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '23'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      alert_ids:
+        simple: ${incident.externalsystemid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Retrieves an alert by alert ID. Note - If the specific alert ID is not part of the results, it was not found.
+      id: 415bbef6-e4c5-4d7c-8774-916f395d7ba9
+      iscommand: true
+      name: Get full alert details
+      script: '|||microsoft-atp-get-alert-by-id'
+      type: regular
+      version: -1
+    taskid: 415bbef6-e4c5-4d7c-8774-916f395d7ba9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 230
+        }
+      }
+  '22':
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: inputs.OverrideSIEMSeverity
+          operator: isEqualString
+          right:
+            value:
+              simple: 'true'
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.ScaleToSetSeverity
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.SeverityValuesMapping
+          operator: isNotEmpty
+      label: Override
+    id: '22'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '12'
+      Override:
+      - '5'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: e5e4cdd0-04b3-49e8-8278-95600c0dc574
+      iscommand: false
+      name: Is override SIEM severity enabled?
+      description: Is override SIEM severity enabled?
+      type: condition
+      version: -1
+    taskid: e5e4cdd0-04b3-49e8-8278-95600c0dc574
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 540
+        }
+      }
+  '23':
+    id: '23'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '22'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: a83d69bf-8a57-42b1-84eb-6c310a20cb15
+      iscommand: false
+      name: Override Severity
+      type: title
+      version: -1
+      description: ''
+    taskid: a83d69bf-8a57-42b1-84eb-6c310a20cb15
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 410
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "22_12_#default#": 0.55
+    },
+    "paper": {
+      "dimensions": {
+        "height": 865,
+        "width": 630,
+        "x": 230,
+        "y": 80
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
