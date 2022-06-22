@@ -511,8 +511,8 @@ script:
       description: The OData query.
       type: String
   - arguments:
-    - description: Keyword to search for sites across a SharePoint tenant (if keyword
-        not provided, then returns all sites)
+    - description: Keyword used to search for sites across a SharePoint tenant. If a keyword
+        is not provided, it returns all sites)
       name: keyword
     description: Returns a list of the tenant sites.
     name: msgraph-list-sharepoint-sites
