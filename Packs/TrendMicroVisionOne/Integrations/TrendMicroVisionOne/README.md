@@ -376,4 +376,37 @@ Note: The URL received from the 'trendmicro-visionone-download-information-for-c
 | VisionOne.Endpoint_Info.osDescription | String | Description of the Operating System. |
 | VisionOne.Endpoint_Info.productCode | String | Product code of the Trend Micro product running on the endpoint. |
 ---
+
+19. `trendmicro-visionone-add-note`
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| workbench_id | The ID of the workbench alert that you would like to add the note to. | Required | 
+| content | The note content that you would like to add. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| VisionOne.Add_Note.Workbench_Id | String | Workbench ID that the action was executed on. |
+| VisionOne.Add_Note.noteId | String | Note ID. |
+| VisionOne.Add_Note.response_code | String | Response code for the request. |
+| VisionOne.Add_Note.response_msg | String | Response message for the request. |
+---
+
+20. `trendmicro-visionone-update-status`
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| workbench_id | The ID of the workbench alert that you would like to update the status for. | Required | 
+| status | The status to assign to the workbench alert: new, in_progress, resolved_false_positive, resolved_true_positive | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| VisionOne.Update_Status.Workbench_Id | String | Workbench ID that the action was executed on. |
+| VisionOne.Update_Status.response_code | String | Response code for the request. |
+| VisionOne.Update_Status.response_msg | String | Response message for the request. |
+---
 [View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/trend-micro-vision-one)

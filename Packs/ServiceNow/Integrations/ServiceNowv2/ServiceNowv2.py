@@ -2315,7 +2315,8 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
             entries.append({
                 'Type': note.get('type'),
                 'Category': note.get('category'),
-                'Contents': f"Type: {note.get('element')}\n\n{note.get('value')}",
+                'Contents': f"Type: {note.get('element')}\nCreated By: {note.get('sys_created_by')}\n"
+                            f"Created On: {note.get('sys_created_on')}\n{note.get('value')}",
                 'ContentsFormat': note.get('format'),
                 'Tags': note.get('tags'),
                 'Note': True,
@@ -2385,7 +2386,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
         for entry in entries:
             demisto.debug(f'Sending entry {entry.get("id")}, type: {entry.get("type")}')
             # Mirroring files as entries
-            if entry.get('type') == 3:
+            if is_entry_type_mirror_supported(entry.get('type')):
                 path_res = demisto.getFilePath(entry.get('id'))
                 full_file_name = path_res.get('name')
                 file_name, file_extension = os.path.splitext(full_file_name)
@@ -2407,6 +2408,18 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
                 client.add_comment(ticket_id, ticket_type, key, text)
 
     return ticket_id
+
+
+def is_entry_type_mirror_supported(entry_type):
+    """
+        Args:
+            entry_type (int)
+        Return:
+            True if the entry type supports mirroring otherwise False
+    """
+    supported_mirror_entries = [EntryType.FILE, EntryType.ENTRY_INFO_FILE, EntryType.IMAGE,
+                                EntryType.VIDEO_FILE, EntryType.STATIC_VIDEO_FILE]
+    return entry_type in supported_mirror_entries
 
 
 def get_mapping_fields_command(client: Client) -> GetMappingFieldsResponse:

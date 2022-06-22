@@ -215,7 +215,10 @@ class Client(BaseClient):
             'https://www.virustotal.com/api/v3/',
             verify=not params.get('insecure'),
             proxy=params.get('proxy'),
-            headers={'x-apikey': self.api_key}
+            headers={
+                'x-apikey': self.api_key,
+                'x-tool': 'CortexVirusTotalV3Premium'
+            }
         )
 
     def download_file(self, file: str) -> requests.Response:

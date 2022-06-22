@@ -1,5 +1,6 @@
 from collections import defaultdict
 from dataclasses import dataclass, fields
+import enum
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -8,9 +9,14 @@ import panos.errors
 
 from panos.base import PanDevice, VersionedPanObject, Root, ENTRY, VersionedParamPath  # type: ignore
 from panos.panorama import Panorama, DeviceGroup, Template, PanoramaCommitAll
-from panos.objects import LogForwardingProfile, LogForwardingProfileMatchList
+from panos.policies import Rulebase, PreRulebase, PostRulebase, SecurityRule, NatRule
+from panos.objects import (
+    LogForwardingProfile, LogForwardingProfileMatchList, AddressObject, AddressGroup, ServiceObject, ServiceGroup,
+    ApplicationObject, ApplicationGroup, SecurityProfileGroup
+)
 from panos.firewall import Firewall
 from panos.device import Vsys
+from panos.network import Zone
 from urllib.error import HTTPError
 
 import shutil
@@ -696,6 +702,71 @@ def panorama_push_to_device_group(args: dict):
     return result
 
 
+@logger
+def panorama_push_to_template(args: dict):
+    """
+    Push a single template.
+    """
+    command: str = ''
+    command += f'<name>{TEMPLATE}</name>'
+
+    if serial_number := args.get('serial_number'):
+        command = f'<name>{TEMPLATE}</name><device><member>{serial_number}</member></device>'
+
+    if argToBoolean(args.get('validate-only', 'false')):
+        command += '<validate-only>yes</validate-only>'
+    if description := args.get('description'):
+        command += f'<description>{description}</description>'
+
+    params = {
+        'type': 'commit',
+        'action': 'all',
+        'cmd': f'<commit-all><template>{command}</template></commit-all>',
+        'key': API_KEY
+    }
+
+    result = http_request(
+        URL,
+        'POST',
+        body=params
+    )
+
+    return result
+
+
+@logger
+def panorama_push_to_template_stack(args: dict):
+    """
+    Push a single template-stack
+    """
+    template_stack = args.get("template-stack")
+    command: str = ''
+    command += f'<name>{template_stack}</name>'
+
+    if serial_number := args.get('serial_number'):
+        command = f'<name>{template_stack}</name><device><member>{serial_number}</member></device>'
+
+    if argToBoolean(args.get('validate-only', 'false')):
+        command += '<validate-only>yes</validate-only>'
+    if description := args.get('description'):
+        command += f'<description>{description}</description>'
+
+    params = {
+        'type': 'commit',
+        'action': 'all',
+        'cmd': f'<commit-all><template-stack>{command}</template-stack></commit-all>',
+        'key': API_KEY
+    }
+
+    result = http_request(
+        URL,
+        'POST',
+        body=params
+    )
+
+    return result
+
+
 def panorama_push_to_device_group_command(args: dict):
     """
     Push Panorama configuration and show message in warroom
@@ -727,6 +798,66 @@ def panorama_push_to_device_group_command(args: dict):
         # no changes to commit
         return_results(result['response']['msg']['line'])
 
+
+def panorama_push_to_template_command(args: dict):
+    """
+    Push Panorama Template to it's associated firewalls
+    """
+
+    if not TEMPLATE:
+        raise Exception("The 'panorama-push-to-template' command is relevant for a Palo Alto Panorama instance.")
+
+    result = panorama_push_to_template(args)
+    if 'result' in result['response']:
+        # commit has been given a jobid
+        push_output = {
+            'Template': TEMPLATE,
+            'JobID': result['response']['result']['job'],
+            'Status': 'Pending'
+        }
+        return_results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Push to Template:', push_output, ['JobID', 'Status'],
+                                             removeNull=True),
+            'EntryContext': {
+                "Panorama.Push(val.JobID == obj.JobID)": push_output
+            }
+        })
+    else:
+        # no changes to commit
+        return_results(result['response']['msg']['line'])
+
+
+def panorama_push_to_template_stack_command(args: dict):
+    """
+    Push Panorama Template to it's associated firewalls
+    """
+    template_stack = args.get("template-stack")
+    result = panorama_push_to_template_stack(args)
+    if 'result' in result['response']:
+        # commit has been given a jobid
+        push_output = {
+            'TemplateStack': template_stack,
+            'JobID': result['response']['result']['job'],
+            'Status': 'Pending'
+        }
+        return_results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown('Push to Template:', push_output, ['JobID', 'Status'],
+                                             removeNull=True),
+            'EntryContext': {
+                "Panorama.Push(val.JobID == obj.JobID)": push_output
+            }
+        })
+    else:
+        # no changes to commit
+        return_results(result['response']['msg']['line'])
 
 @logger
 def panorama_push_status(job_id: str):
@@ -3275,6 +3406,9 @@ def panorama_list_pcaps_command(args: dict):
         return_results(f'PAN-OS has no Pcaps of type: {pcap_type}.')
     else:
         pcaps = dir_listing['file']
+        if isinstance(pcaps, str):
+            # means we have only 1 pcap in the firewall, the api returns string if only 1 pcap is available
+            pcaps = [pcaps]
         pcap_list = [pcap[1:] for pcap in pcaps]
         return_results({
             'Type': entryTypes['note'],
@@ -7341,7 +7475,7 @@ class OpCommandError(Exception):
 
 # Best practices
 class BestPractices:
-    SPYWARE_ALERT_THRESHOLD = ["medium, low"]
+    SPYWARE_ALERT_THRESHOLD = ["medium", "low"]
     SPYWARE_BLOCK_SEVERITIES = ["critical", "high"]
     VULNERABILITY_ALERT_THRESHOLD = ["medium", "low"]
     VULNERABILITY_BLOCK_SEVERITIES = ["critical", "high"]
@@ -7872,7 +8006,8 @@ class Topology:
         return PanDevice.create_from_device(
             hostname=ip_address,
             api_username=self.username,
-            api_password=self.password
+            api_password=self.password,
+            api_key=self.api_key
         )
 
     def get_all_object_containers(
@@ -8677,6 +8812,8 @@ def resolve_container_name(container: Union[Panorama, Firewall, DeviceGroup, Tem
 
     return container.name
 
+
+
 @dataclass
 class ConfigurationHygieneIssue(ResultData):
     """
@@ -8710,8 +8847,8 @@ class ConfigurationHygieneCheck:
 
 @dataclass
 class ConfigurationHygieneCheckResult:
-    summary_data: list[ConfigurationHygieneCheck]
-    result_data: list[ConfigurationHygieneIssue]
+    summary_data: List[ConfigurationHygieneCheck]
+    result_data: List[ConfigurationHygieneIssue]
 
     _output_prefix = OUTPUT_PREFIX + "ConfigurationHygiene"
     _title = "PAN-OS Configuration Hygiene Check"
@@ -8719,6 +8856,268 @@ class ConfigurationHygieneCheckResult:
     _summary_cls = ConfigurationHygieneCheck
     _result_cls = ConfigurationHygieneIssue
     _outputs_key_field = "issue_code"
+
+
+@dataclass
+class ConfigurationHygieneFix(ResultData):
+    """
+    :param container_name: What parent container (DG, Template, VSYS) this object belongs to.
+    :param issue_code: The shorthand code for the issue
+    :param description: Human readable description of issue
+    :param name: The affected object name
+    """
+    container_name: str
+    issue_code: str
+    description: str
+    name: str
+
+    _output_prefix = OUTPUT_PREFIX + "ConfigurationHygieneFix"
+    _title = "PAN-OS Fixed Configuration Hygiene Issues"
+
+
+class HygieneRemediation:
+    """Functions that remediate problems generated by HygieneLookups"""
+
+    @staticmethod
+    def fix_log_forwarding_profile_enhanced_logging(topology: Topology,
+                                                    issues: List[ConfigurationHygieneIssue]) -> List[ConfigurationHygieneFix]:
+        """
+        Given a list of hygiene issues, sourced by `pan-os-hygiene-check-log-forwarding`, enables enhanced application logging to
+        fix that issue.
+        :param issues: List of log forwarding issues due to no enhanced application logging.
+        """
+        result = []
+        for issue in issues:
+            for device, container in topology.get_all_object_containers(
+                    issue.hostid,
+                    container_name=issue.container_name
+            ):
+                log_forwarding_profiles: List[LogForwardingProfile] = LogForwardingProfile.refreshall(
+                    container)
+                for log_forwarding_profile in log_forwarding_profiles:
+                    if log_forwarding_profile.name == issue.name:
+                        log_forwarding_profile.enhanced_logging = True
+                        log_forwarding_profile.apply()
+                        result.append(ConfigurationHygieneFix(
+                            hostid=resolve_host_id(device),
+                            container_name=resolve_container_name(container),
+                            description="Enabled Enhanced Application Logging.",
+                            name=log_forwarding_profile.name,
+                            issue_code=issue.issue_code
+                        ))
+
+        return result
+
+    @staticmethod
+    def fix_security_zone_no_log_setting(
+            topology: Topology,
+            issues: List[ConfigurationHygieneIssue],
+            log_forwarding_profile: str
+    ) -> List[ConfigurationHygieneFix]:
+        """
+        Given a list of Configuration Hygiene Issues, referencing security zones that do not have any log forwarding settings,
+        sets the provided log forwarding profile, thus fixing them.
+        :param issues: List of security zone issues due to no log forwarding setting
+        :param log_forwarding_profile: The log forwarding profile to set.
+        """
+        result = []
+        for issue in issues:
+            for device, container in topology.get_all_object_containers(
+                    issue.hostid,
+                    container_name=issue.container_name,
+            ):
+                security_zones: List[Zone] = Zone.refreshall(container)
+                for security_zone in security_zones:
+                    if security_zone.name == issue.name:
+                        security_zone.log_setting = log_forwarding_profile
+                        security_zone.apply()
+                        result.append(ConfigurationHygieneFix(
+                            hostid=resolve_host_id(device),
+                            container_name=resolve_container_name(container),
+                            description=f"Set log forwarding profile {log_forwarding_profile}",
+                            name=security_zone.name,
+                            issue_code=issue.issue_code
+                        ))
+
+        return result
+
+    @staticmethod
+    def get_all_rules_in_container(container: Union[Panorama, Firewall, DeviceGroup, Template, Vsys],
+                                   object_class: Union[SecurityRule, NatRule]):
+        """
+        Given a container (DG/template) and the class representing a type of rule object in pan-os-python, gets all the
+        associated objects.
+        :param container: Device group or template
+        :param object_class: The pan-os-python class of objects to retrieve
+        """
+        if object_class not in [SecurityRule, NatRule]:
+            raise ValueError(f"Given class {object_class} cannot be retrieved by this function.")
+
+        firewall_rulebase = Rulebase()
+        pre_rulebase = PreRulebase()
+        post_rulebase = PostRulebase()
+        container.add(pre_rulebase)
+        container.add(post_rulebase)
+        container.add(firewall_rulebase)
+        objects = object_class.refreshall(firewall_rulebase)
+        objects += object_class.refreshall(pre_rulebase)
+        objects += object_class.refreshall(post_rulebase)
+
+        return objects
+
+    @staticmethod
+    def get_all_security_rules_in_container(container: Union[Panorama, Firewall, DeviceGroup, Template, Vsys]
+                                            ) -> List[SecurityRule]:
+        """
+        Gets all the security rule objects from the given VSYS or device group and return them.
+        :param container: The object to search for the rules in, as passed to pan-os-python
+        """
+        return HygieneRemediation.get_all_rules_in_container(container, SecurityRule)
+
+    @staticmethod
+    def fix_secuity_rule_log_settings(topology: Topology,
+                                      issues: List[ConfigurationHygieneIssue],
+                                      log_forwarding_profile_name: str) -> List[ConfigurationHygieneFix]:
+        """
+        Given a list of Configuration Hygiene Issues, referencing security rules that have no log settings, sets the provided
+        log forwarding profile.
+        :param issues: List of security zone issues due to no log forwarding setting
+        :param log_forwarding_profile_name: The log forwarding profile to set.
+        """
+        result = []
+        for issue in issues:
+            for device, container in topology.get_all_object_containers(
+                    issue.hostid,
+                    container_name=issue.container_name
+            ):
+                security_rules = HygieneRemediation.get_all_security_rules_in_container(container)
+                for security_rule in security_rules:
+                    if security_rule.name == issue.name:
+                        security_rule.log_end = True
+                        security_rule.log_setting = log_forwarding_profile_name
+                        security_rule.apply()
+                        result.append(ConfigurationHygieneFix(
+                            hostid=resolve_host_id(device),
+                            container_name=resolve_container_name(container),
+                            description=f"Set log forwarding profile to {log_forwarding_profile_name} and"
+                                        f"enabled log at session end.",
+                            name=security_rule.name,
+                            issue_code=issue.issue_code
+                        ))
+        return result
+
+    @staticmethod
+    def fix_security_rule_security_profile_group(topology: Topology,
+                                                 issues: List[ConfigurationHygieneIssue],
+                                                 security_profile_group_name: str,
+                                                 ) -> List[ConfigurationHygieneFix]:
+        """
+        Given a list of Configuration Hygiene Issues, referencing security rules that have no threat settings, sets the provided
+        security profile group.
+        :param issues: List of security rule issues that have no threat settings.
+        :param security_profile_group_name: The security porfile group to set.
+        """
+        result = []
+        for issue in issues:
+            for device, container in topology.get_all_object_containers(
+                    issue.hostid,
+                    container_name=issue.container_name
+            ):
+                security_rules = HygieneRemediation.get_all_security_rules_in_container(container)
+                for security_rule in security_rules:
+                    if security_rule.name == issue.name:
+                        security_rule.group = security_profile_group_name
+                        security_rule.apply()
+                        result.append(ConfigurationHygieneFix(
+                            hostid=resolve_host_id(device),
+                            container_name=resolve_container_name(container),
+                            description=f"Set security profile group {security_profile_group_name}",
+                            name=security_rule.name,
+                            issue_code=issue.issue_code
+                        ))
+
+        return result
+
+
+class ObjectGetter:
+    """Retrieves objects from the PAN-OS configuration"""
+
+    SUPPORTED_OBJECT_TYPES = {
+        "AddressObject": AddressObject,
+        "AddressGroup": AddressGroup,
+        "ServiceObject": ServiceObject,
+        "ServiceGroup": ServiceGroup,
+        "ApplicationObject": ApplicationObject,
+        "ApplicationGroup": ApplicationGroup,
+        "SecurityProfileGroup": SecurityProfileGroup,
+        "SecurityRule": SecurityRule,
+        "NatRule": NatRule,
+    }
+
+    @staticmethod
+    def get_object_reference(
+            topology: Topology,
+            object_type: str,
+            device_filter_string: Optional[str] = None,
+            container_filter: Optional[str] = None,
+            object_name: Optional[str] = None,
+            use_regex: Optional[str] = None
+    ) -> List[PanosObjectReference]:
+        """
+        Given a string object type, returns all the matching objects by reference. The object type matches a pan-os-python
+        object exactly. Note this ONLY returns the "pointer" to the objects, that is, it's location in the config, not all the
+        object attributes.
+
+        :param topology: `Topology` instance
+        :param device_filter_string: String to filter the devices we search for objects within.
+        :param object_type: String object type to look for, this matches exactly with Pan-os-python supported objects
+        :param container_filter: Container we look for objects in, such as a device group or template-stack
+        :param object_name: The name of the object to find; can be regex if use_regex is set
+        :param use_regex: Whether we should use regex matching for the object_name
+        """
+
+        object_class = ObjectGetter.SUPPORTED_OBJECT_TYPES.get(object_type)
+        if not object_class:
+            raise DemistoException(f"Object type {object_type} is not gettable with this integration.")
+
+        object_references = []
+        for device, container in topology.get_all_object_containers(
+                device_filter_string,
+                container_name=container_filter
+        ):
+            unfiltered_objects = []
+            # If the object class is a security rule we need to handle it specially
+            if object_class in [SecurityRule, NatRule]:
+                unfiltered_objects = HygieneRemediation.get_all_rules_in_container(container, object_class)
+            else:
+                unfiltered_objects = object_class.refreshall(container)
+
+            for panos_object in unfiltered_objects:
+                if panos_object.name == object_name or not object_name:
+                    object_references.append(
+                        PanosObjectReference(
+                            object_type=object_type,
+                            container_name=resolve_container_name(container),
+                            name=panos_object.name,
+                            hostid=resolve_host_id(device)
+                        )
+                    )
+                elif use_regex:
+                    try:
+                        if re.match(object_name, panos_object.name):
+                            object_references.append(
+                                PanosObjectReference(
+                                    object_type=object_type,
+                                    container_name=resolve_container_name(container),
+                                    name=panos_object.name,
+                                    hostid=resolve_host_id(device)
+                                )
+                            )
+                    # Regex compilation errors should raise if the regex flag is chosen
+                    except re.error:
+                        raise DemistoException(f"Invalid regex; {object_name}")
+
+        return object_references
 
 
 class HygieneCheckRegister:
@@ -8778,7 +9177,7 @@ class HygieneCheckRegister:
             "BP-V-6": ConfigurationHygieneCheck(
                 issue_code="BP-V-6",
                 result=UNICODE_PASS,
-                description="Fails if no spyware profile is configured for url-filtering",
+                description="Fails if no URL Filtering profile is configured with recommended category settings.",
             ),
             "BP-V-7": ConfigurationHygieneCheck(
                 issue_code="BP-V-7",
@@ -8820,14 +9219,14 @@ class HygieneLookups:
         :param device_filter_str: Filter checks to a specific device or devices
         """
         issues = []
-        lf_profile_list: list[LogForwardingProfile] = []
+        lf_profile_list: List[LogForwardingProfile] = []
         check_register = HygieneCheckRegister.get_hygiene_check_register([
             "BP-V-1",
             "BP-V-2",
             "BP-V-3"
         ])
         for device, container in topology.get_all_object_containers(device_filter_str):
-            log_forwarding_profiles: list[LogForwardingProfile] = LogForwardingProfile.refreshall(container)
+            log_forwarding_profiles: List[LogForwardingProfile] = LogForwardingProfile.refreshall(container)
             lf_profile_list = lf_profile_list + log_forwarding_profiles
             for log_forwarding_profile in log_forwarding_profiles:
                 # Enhanced app logging - BP-V-2
@@ -8916,7 +9315,6 @@ class HygieneLookups:
                 is_blocked = any(block_actions)
                 is_alert = any(alert_actions)
                 for rule_severity in rule.severity:
-
                     # If the block severities are blocked
                     if is_blocked and rule_severity in block_severities:
                         block_severities.remove(rule_severity)
@@ -8967,7 +9365,7 @@ class HygieneLookups:
 
         # BP-V-4 - Check at least one vulnerability profile exists with the correct settings.
         for device, container in topology.get_all_object_containers(device_filter_str):
-            vulnerability_profiles: list[VulnerabilityProfile] = VulnerabilityProfile.refreshall(container)
+            vulnerability_profiles: List[VulnerabilityProfile] = VulnerabilityProfile.refreshall(container)
             conforming_profiles = conforming_profiles + HygieneLookups.get_conforming_threat_profiles(
                 vulnerability_profiles,
                 minimum_block_severities=minimum_block_severities,
@@ -8985,6 +9383,309 @@ class HygieneLookups:
             check = check_register.get("BP-V-4")
             check.result = UNICODE_FAIL
             check.issue_count += 1
+
+        return ConfigurationHygieneCheckResult(
+            summary_data=[item for item in check_register.values()],
+            result_data=issues
+        )
+
+    @staticmethod
+    def check_spyware_profiles(
+            topology: Topology,
+            device_filter_str: Optional[str] = None,
+            minimum_block_severities: Optional[List[str]] = None,
+            minimum_alert_severities: Optional[List[str]] = None
+    ) -> ConfigurationHygieneCheckResult:
+        """
+        Checks the environment to ensure at least one Spyware profile is configured according to visibility best practices.
+        The minimum severities can be tweaked to customize what "best practices" is.
+
+        :param topology: `Topology` instance
+        :param device_filter_str: Filter checks to a specific device or devices
+        :param minimum_alert_severities: A string list of severities that MUST be in a alert mode
+        :param minimum_block_severities: A string list of severities that MUST be in block mode
+        """
+        if not minimum_block_severities:
+            minimum_block_severities = BestPractices.SPYWARE_BLOCK_SEVERITIES
+        if not minimum_alert_severities:
+            minimum_alert_severities = BestPractices.SPYWARE_ALERT_THRESHOLD
+
+        conforming_profiles: Union[List[VulnerabilityProfile], List[AntiSpywareProfile]] = []
+        issues = []
+        check_register = HygieneCheckRegister.get_hygiene_check_register([
+            "BP-V-5"
+        ])
+        # BP-V-5 - Check at least one AS profile exists with the correct settings.
+        for device, container in topology.get_all_object_containers(device_filter_str):
+            spyware_profiles: List[AntiSpywareProfile] = AntiSpywareProfile.refreshall(container)
+            conforming_profiles = conforming_profiles + HygieneLookups.get_conforming_threat_profiles(
+                spyware_profiles,
+                minimum_block_severities=minimum_block_severities,
+                minimum_alert_severities=minimum_alert_severities
+            )
+
+        if len(conforming_profiles) == 0:
+            issues.append(ConfigurationHygieneIssue(
+                hostid="GLOBAL",
+                container_name="",
+                description="No conforming anti-spyware profiles.",
+                name="",
+                issue_code="BP-V-5"
+            ))
+            check = check_register.get("BP-V-5")
+            check.result = UNICODE_FAIL
+            check.issue_count += 1
+
+        return ConfigurationHygieneCheckResult(
+            summary_data=[item for item in check_register.values()],
+            result_data=issues
+        )
+
+    @staticmethod
+    def get_conforming_url_filtering_profiles(profiles: List[URLFilteringProfile]) -> List[URLFilteringProfile]:
+        """
+        Returns the url filtering profiles, if any, that meet current recommended best practices for Visibility.
+        :param profiles: List of `URLFilteringProfile` objects.
+        """
+        conforming_profiles = []
+        for profile in profiles:
+            if profile.block:
+                block_result = all(elem in profile.block for elem in BestPractices.URL_BLOCK_CATEGORIES)
+                if block_result:
+                    conforming_profiles.append(profile)
+
+        return conforming_profiles
+
+    @staticmethod
+    def get_all_conforming_url_filtering_profiles(
+            topology: Topology, device_filter_str: Optional[str] = None) -> List[PanosObjectReference]:
+        """
+        Retrieves all the conforming URL filtering profiles from the topology, if any.
+        :param topology: `Topology` instance
+        :param device_filter_str: Filter checks to a specific device or devices
+        """
+        result = []
+        for device, container in topology.get_all_object_containers(device_filter_str):
+            url_filtering_profiles: List[URLFilteringProfile] = URLFilteringProfile.refreshall(container)
+
+            conforming_profiles = HygieneLookups.get_conforming_url_filtering_profiles(
+                url_filtering_profiles)
+
+            for profile in conforming_profiles:
+                result.append(PanosObjectReference(
+                    hostid=resolve_host_id(device),
+                    container_name=resolve_container_name(container),
+                    name=profile.name,
+                    object_type="URLFilteringProfile"
+                ))
+
+        return result
+
+    @staticmethod
+    def get_all_conforming_spyware_profiles(
+            topology: Topology,
+            minimum_block_severities: List[str],
+            minimum_alert_severities: List[str],
+            device_filter_str: Optional[str] = None,
+    ) -> List[PanosObjectReference]:
+        """
+        Searches the configuration for all spyware profiles that conform to best practices using the given minimum severities.
+
+        :param topology: `Topology` Instance
+        :param device_filter_str: Filter checks to a specific device or devices
+        :param minimum_alert_severities: A string list of severities that MUST be in a alert mode
+        :param minimum_block_severities: A string list of severities that MUST be in block mode
+        """
+        result = []
+        for device, container in topology.get_all_object_containers(device_filter_str):
+            spyware_profiles: List[AntiSpywareProfile] = AntiSpywareProfile.refreshall(container)
+            conforming_profiles = HygieneLookups.get_conforming_threat_profiles(
+                spyware_profiles,
+                minimum_block_severities=minimum_block_severities,
+                minimum_alert_severities=minimum_alert_severities
+            )
+
+            for profile in conforming_profiles:
+                result.append(PanosObjectReference(
+                    hostid=resolve_host_id(device),
+                    container_name=resolve_container_name(container),
+                    name=profile.name,
+                    object_type="AntiSpywareProfile"
+                ))
+
+        return result
+
+    @staticmethod
+    def get_all_conforming_vulnerability_profiles(
+            topology: Topology,
+            minimum_block_severities: List[str],
+            minimum_alert_severities: List[str],
+            device_filter_str: Optional[str] = None,
+    ) -> List[PanosObjectReference]:
+        """
+        Searches the configuration for all vulnerability profiles that conform to PAN best practices using the given minimum
+        severities.
+
+        :param topology: `Topology` Instance
+        :param device_filter_str: Filter checks to a specific device or devices
+        :param minimum_alert_severities: A string list of severities that MUST be in a alert mode
+        :param minimum_block_severities: A string list of severities that MUST be in block mode
+        """
+        result = []
+        for device, container in topology.get_all_object_containers(device_filter_str):
+            spyware_profiles: List[VulnerabilityProfile] = VulnerabilityProfile.refreshall(container)
+            conforming_profiles = HygieneLookups.get_conforming_threat_profiles(
+                spyware_profiles,
+                minimum_block_severities=minimum_block_severities,
+                minimum_alert_severities=minimum_alert_severities
+            )
+
+            for profile in conforming_profiles:
+                result.append(PanosObjectReference(
+                    hostid=resolve_host_id(device),
+                    container_name=resolve_container_name(container),
+                    name=profile.name,
+                    object_type="VulnerabilityProfile"
+                ))
+
+        return result
+
+    @staticmethod
+    def check_url_filtering_profiles(topology: Topology, device_filter_str: Optional[str] = None):
+        """
+        Checks the configured URL filtering profiles to make sure at least one is configured according to PAN best practices
+        for visibility.
+
+        :param topology: `Topology` Instance
+        :param device_filter_str: Filter checks to a specific device or devices
+        """
+        issues: List[ConfigurationHygieneIssue] = []
+        conforming_profiles: List[URLFilteringProfile] = []
+        check_register = HygieneCheckRegister.get_hygiene_check_register([
+            "BP-V-6"
+        ])
+        # BP-V-6 - Check at least one URL Filtering profile exists with the correct settings.
+        for device, container in topology.get_all_object_containers(device_filter_str):
+            url_filtering_profiles: List[URLFilteringProfile] = URLFilteringProfile.refreshall(container)
+            conforming_profiles = conforming_profiles + HygieneLookups.get_conforming_url_filtering_profiles(
+                url_filtering_profiles)
+
+        if len(conforming_profiles) == 0:
+            issues.append(ConfigurationHygieneIssue(
+                hostid="GLOBAL",
+                container_name="",
+                description="No conforming url-filtering profiles.",
+                name="",
+                issue_code="BP-V-6"
+            ))
+            check = check_register.get("BP-V-6")
+            check.result = UNICODE_FAIL
+            check.issue_count += 1
+
+        return ConfigurationHygieneCheckResult(
+            summary_data=[item for item in check_register.values()],
+            result_data=issues
+        )
+
+    @staticmethod
+    def check_security_zones(topology: Topology, device_filter_str: Optional[str] = None) -> ConfigurationHygieneCheckResult:
+        """
+        Check all security zones are configured with Log Forwarding profiles.
+        :param device_filter_str: Filter checks to a specific device or devices
+        """
+        issues = []
+        check_register = HygieneCheckRegister.get_hygiene_check_register([
+            "BP-V-7"
+        ])
+        # This is temporary only look at panorama because PAN-OS-PYTHON doesn't let us tell if a config
+        # is template pushed yet
+        for device, container in topology.get_all_object_containers(
+                device_filter_str,
+                top_level_devices_only=True
+        ):
+            security_zones: List[Zone] = Zone.refreshall(container)
+            for security_zone in security_zones:
+                if not security_zone.log_setting:
+                    issues.append(ConfigurationHygieneIssue(
+                        hostid=resolve_host_id(device),
+                        container_name=resolve_container_name(container),
+                        description="Security zone has no log forwarding setting.",
+                        name=security_zone.name,
+                        issue_code="BP-V-7"
+                    ))
+                    check = check_register.get("BP-V-7")
+                    check.result = UNICODE_FAIL
+                    check.issue_count += 1
+
+        return ConfigurationHygieneCheckResult(
+            summary_data=[item for item in check_register.values()],
+            result_data=issues
+        )
+
+    @staticmethod
+    def check_security_rules(topology: Topology, device_filter_str: Optional[str] = None) -> ConfigurationHygieneCheckResult:
+        """
+        Check all security rules, in all rulebases, are configured with Log Forwarding and threat profiles.
+        :param device_filter_str: Filter checks to a specific device or devices
+        """
+        issues = []
+
+        check_register = HygieneCheckRegister.get_hygiene_check_register([
+            "BP-V-8",
+            "BP-V-9",
+            "BP-V-10",
+        ])
+        for device, container in topology.get_all_object_containers(device_filter_str):
+            # Because we check all the rulebases, we need to refresh the rules from all rulebases.
+            security_rules = HygieneRemediation.get_all_security_rules_in_container(container)
+            for security_rule in security_rules:
+                # Check for "log at session end" enabled
+                if not security_rule.log_end:
+                    issues.append(ConfigurationHygieneIssue(
+                        hostid=resolve_host_id(device),
+                        container_name=resolve_container_name(container),
+                        description="Security rule is not configured to log at session end.",
+                        name=security_rule.name,
+                        issue_code="BP-V-8"
+                    ))
+                    check = check_register.get("BP-V-8")
+                    check.result = UNICODE_FAIL
+                    check.issue_count += 1
+                # Check a log forwarding profile is set
+                if not security_rule.log_setting:
+                    issues.append(ConfigurationHygieneIssue(
+                        hostid=resolve_host_id(device),
+                        container_name=resolve_container_name(container),
+                        description="Security rule has no log forwarding profile.",
+                        name=security_rule.name,
+                        issue_code="BP-V-9"
+                    ))
+                    check = check_register.get("BP-V-9")
+                    check.result = UNICODE_FAIL
+                    check.issue_count += 1
+
+                # BP-V-10 - Check either a group or profile is configured. If a specific profile is set, we assume it's OK.
+                if not any([
+                    security_rule.group,
+                    all(
+                        [
+                            security_rule.virus,
+                            security_rule.spyware,
+                            security_rule.vulnerability,
+                            security_rule.url_filtering,
+                        ]
+                    )]
+                ):
+                    issues.append(ConfigurationHygieneIssue(
+                        hostid=resolve_host_id(device),
+                        container_name=resolve_container_name(container),
+                        description="Security rule has no profile group or configured threat profiles.",
+                        name=security_rule.name,
+                        issue_code="BP-V-10"
+                    ))
+                    check = check_register.get("BP-V-10")
+                    check.result = UNICODE_FAIL
+                    check.issue_count += 1
 
         return ConfigurationHygieneCheckResult(
             summary_data=[item for item in check_register.values()],
@@ -9049,109 +9750,44 @@ class PanoramaCommand:
         return result
 
     @staticmethod
-    def push_all(
-        topology: Topology,
-        device_filter_str: str = None,
-        device_group_filter: Optional[List[str]] = None,
-        template_stack_filter: Optional[List[str]] = None
-    ) -> List[PushStatus]:
+    def push_style(topology: Topology, device: Union[Firewall, Panorama], style: str, filter: Optional[List[str]] = None):
         """
-        Pushes the pending configuration from Panorama to the firewalls. This is an async function,
-        and will only push if there is config pending.
-        :param topology: `Topology` instance.
-        :param device_filter_str: If provided, filters this command to only the devices specified.
-        :param device_group_filter: If provided, only the given named device groups will be pushed to devices
-        :param template_stack_filter: If provided, only the given named template-stacks will be pushed to devices
+        Given a pan-os-python push style, a device and the topology object, work out what DGs and templates we need to push,
+        then push them.
+        :param topology: `Topology` instance
+        :param device: The device to push to - will always be a Panorama instance
+        :param style: The pan-os-python commit style; can be 'device group' or 'template stack'
+        :param filter: Optionally only push the following named device-groups or template stacks.
         """
         result = []
+        if style == "device group":
+            commit_groups: Union[List[DeviceGroupInformation], List[TemplateStackInformation]] = \
+                PanoramaCommand.get_device_groups(topology, resolve_host_id(device))
+            commit_group_names = set([x.name for x in commit_groups])
+        elif style == "template stack":
+            commit_groups = PanoramaCommand.get_template_stacks(topology, resolve_host_id(device))
+            commit_group_names = set([x.name for x in commit_groups])
+        else:
+            raise DemistoException(f"Provided push style {style} is invalid. Please specify `device group` or `template stack`")
 
-        for device in topology.active_top_level_devices(device_filter_str):
-            # Get the relevent DGs and Templates to push.
-            device_groups = PanoramaCommand.get_device_groups(topology, resolve_host_id(device))
-            device_group_names = set([x.name for x in device_groups])
-            template_stacks = PanoramaCommand.get_template_stacks(topology, resolve_host_id(device))
-            template_stack_names = set([x.name for x in template_stacks])
+        if filter:
+            commit_group_names = set([x for x in commit_group_names if x in filter])
 
-            if device_group_filter:
-                device_group_names = set([x for x in device_group_names if x in device_group_filter])
-
-            if template_stack_filter:
-                template_stack_names = set([x for x in template_stack_names if x in template_stack_filter])
-
-            for dg_name in device_group_names:
-                device_group_commit = PanoramaCommitAll(
-                    style="device group",
-                    name=dg_name
-                )
-                result_job_id = device.commit(cmd=device_group_commit)
-                result.append(PushStatus(
-                    hostid=resolve_host_id(device),
-                    commit_type="devicegroup",
-                    name=dg_name,
-                    job_id=result_job_id,
-                    commit_all_status="Initiated",
-                    device_status="",
-                    device=""
-                ))
-
-            for template_name in template_stack_names:
-                template_stack_commit = PanoramaCommitAll(
-                    style="template stack",
-                    name=template_name
-                )
-                result_job_id = device.commit(cmd=template_stack_commit)
-                result.append(PushStatus(
-                    hostid=resolve_host_id(device),
-                    commit_type="template-stack",
-                    name=template_name,
-                    job_id=result_job_id,
-                    commit_all_status="Initiated",
-                    device_status="",
-                    device=""
-                ))
-
-        return result
-
-    @staticmethod
-    def get_push_status(topology: Topology, match_job_ids: Optional[List[str]] = None) -> List[PushStatus]:
-        """
-        Retrieves the status of a Panorama Push, using the given job ids.
-        :param topology: `Topology` instance.
-        :param match_job_ids: If provided, only returns the jobs with the given ID.
-        """
-        result: List[PushStatus] = []
-        for device in topology.active_top_level_devices():
-            response = run_op_command(device, UniversalCommand.SHOW_JOBS_COMMAND)
-            for job in response.findall("./result/job"):
-                commit_type = find_text_in_element(job, "./type")
-                if commit_type in ["CommitAll"]:
-                    commit_all_status = find_text_in_element(job, "./status")
-                    job_id = find_text_in_element(job, "./id")
-                    commit_type = find_text_in_element(job, "./type")
-                    dg_name_xml = job.find("./dgname")
-                    tpl_name_xml = job.find("./tplname")
-                    name = ""
-                    if hasattr(dg_name_xml, "text") and dg_name_xml:
-                        name = dg_name_xml.text  # type: ignore
-
-                    if hasattr(tpl_name_xml, "text") and tpl_name_xml:
-                        name = tpl_name_xml.text  # type: ignore
-
-                    for device_xml in job.findall("./devices/entry"):
-                        serial = find_text_in_element(device_xml, "./serial-no")
-                        device_status = find_text_in_element(device_xml, "./result")
-                        result.append(PushStatus(
-                            hostid=resolve_host_id(device),
-                            job_id=job_id,
-                            commit_type=commit_type,
-                            commit_all_status=commit_all_status,
-                            device_status=device_status,
-                            name=name,
-                            device=serial
-                        ))
-
-        if match_job_ids:
-            return [x for x in result if x.job_id in match_job_ids]
+        for commit_group_name in commit_group_names:
+            commit_command = PanoramaCommitAll(
+                style=style,
+                name=commit_group_name
+            )
+            result_job_id = device.commit(cmd=commit_command)
+            result.append(PushStatus(
+                hostid=resolve_host_id(device),
+                commit_type=style.replace(" ", ""),
+                name=commit_group_name,
+                job_id=result_job_id,
+                commit_all_status="Initiated",
+                device_status="",
+                device=""
+            ))
 
         return result
 
@@ -9270,66 +9906,6 @@ class UniversalCommand:
         ))
 
         return RestartSystemCommandResult(summary_data=result)
-
-    @staticmethod
-    def commit(topology: Topology, device_filter_string: Optional[str] = None) -> List[CommitStatus]:
-        """
-        Commits the configuration
-
-        :param topology: `Topology` instance.
-        :param device_filter_string: If provided, filters this command to only the devices specified.
-        """
-        result = []
-        for device in topology.active_devices(device_filter_string):
-            job_id = device.commit()
-            if isinstance(device, Panorama):
-                device_type = "Panorama"
-            else:
-                device_type = "Firewall"
-
-            result.append(CommitStatus(
-                hostid=resolve_host_id(device),
-                job_id=job_id,
-                commit_type="Commit",
-                status="started",
-                device_type=device_type
-            ))
-
-        return result
-
-    @staticmethod
-    def get_commit_job_status(topology: Topology, match_job_ids: Optional[List[str]] = None) -> List[CommitStatus]:
-        """
-        Gets the status of all the commit jobs on the device.
-
-        :param topology: `Topology` instance.
-        :param match_job_ids: List of IDs to return
-        """
-        result: List[CommitStatus] = []
-        for device in topology.active_devices():
-            response = run_op_command(device, UniversalCommand.SHOW_JOBS_COMMAND)
-            for job in response.findall("./result/job"):
-                commit_type = find_text_in_element(job, "./type")
-                if commit_type in ["Commit", "CommitAll"]:
-                    status = find_text_in_element(job, "./status")
-                    job_id = find_text_in_element(job, "./id")
-                    commit_type = find_text_in_element(job, "./type")
-                    if isinstance(device, Panorama):
-                        device_type = "Panorama"
-                    else:
-                        device_type = "Firewall"
-                    result.append(CommitStatus(
-                        hostid=resolve_host_id(device),
-                        job_id=job_id,
-                        commit_type=commit_type,
-                        status=status,
-                        device_type=device_type
-                    ))
-
-        if match_job_ids:
-            return [job for job in result if job.job_id in match_job_ids]
-
-        return result
 
     @staticmethod
     def check_system_availability(topology: Topology, hostid: str) -> CheckSystemStatus:
@@ -9502,15 +10078,17 @@ class FirewallCommand:
         )
 
     @staticmethod
-    def get_device_state(topology: Topology, device_filter_str: str):
+    def get_device_state(topology: Topology, target: str):
         """
-        Returns an exported device state, as binary data
+        Returns an exported device state, as binary data. Note that this will attempt to connect directly to the target
+        firewall, as it cannot be exported via the Panorama proxy. If there are network issues that prevent that, this command
+        will time out.
         :param topology: `Topology` instance.
-        :param device_filter_str: If provided, filters this command to only the devices specified.
+        :param target: The target serial number to retrieve the device state from.
         """
-        for firewall in topology.firewalls(filter_string=device_filter_str):
+        for firewall in topology.firewalls(target=target):
             # Connect directly to the firewall
-            direct_firewall_connection: Firewall = topology.get_direct_device(firewall)
+            direct_firewall_connection = topology.get_direct_device(firewall)
             direct_firewall_connection.xapi.export(category="device-state")
             return direct_firewall_connection.xapi.export_result.get("content")
 
@@ -9897,6 +10475,271 @@ def check_vulnerability_profiles(
     )
 
 
+def check_spyware_profiles(
+        topology: Topology,
+        device_filter_string: Optional[str] = None,
+        minimum_block_severities: str = "critical,high",
+        minimum_alert_severities: str = "medium,low"
+) -> ConfigurationHygieneCheckResult:
+    """
+    Checks the configured Anti-spyware profiles to ensure at least one meets best practices.
+
+    :param topology: `Topology` instance !no-auto-argument
+    :param device_filter_string: String to filter to only check given device
+    :param minimum_block_severities: csv list of severities that must be in drop/reset/block-ip mode.
+    :param minimum_alert_severities: csv list of severities that must be in alert/default or higher mode.
+    """
+    return HygieneLookups.check_spyware_profiles(
+        topology,
+        device_filter_str=device_filter_string,
+        minimum_block_severities=argToList(minimum_block_severities),
+        minimum_alert_severities=argToList(minimum_alert_severities)
+    )
+
+
+def check_url_filtering_profiles(
+        topology: Topology,
+        device_filter_string: Optional[str] = None
+) -> ConfigurationHygieneCheckResult:
+    """
+    Checks the configured URL Filtering profiles to ensure at least one meets best practices.
+
+    :param topology: `Topology` instance !no-auto-argument
+    :param device_filter_string: String to filter to only check given device
+    """
+    return HygieneLookups.check_url_filtering_profiles(
+        topology,
+        device_filter_str=device_filter_string,
+    )
+
+
+def get_conforming_url_filtering_profiles(
+        topology: Topology,
+        device_filter_string: Optional[str] = None
+) -> List[PanosObjectReference]:
+    """
+    Returns a list of existing PANOS URL filtering objects that conform to best practices.
+
+    :param topology: `Topology` instance !no-auto-argument
+    :param device_filter_string: String to filter to only check given device
+    """
+    return HygieneLookups.get_all_conforming_url_filtering_profiles(
+        topology,
+        device_filter_str=device_filter_string,
+    )
+
+
+def get_conforming_spyware_profiles(
+        topology: Topology,
+        device_filter_string: Optional[str] = None,
+        minimum_block_severities: str = "critical,high",
+        minimum_alert_severities: str = "medium,low"
+) -> List[PanosObjectReference]:
+    """
+    Returns all Anti-spyware profiles that conform to best practices.
+
+    :param topology: `Topology` instance !no-auto-argument
+    :param device_filter_string: String to filter to only check given device
+    :param minimum_block_severities: csv list of severities that must be in drop/reset/block-ip mode.
+    :param minimum_alert_severities: csv list of severities that must be in alert/default or higher mode.
+    """
+    return HygieneLookups.get_all_conforming_spyware_profiles(
+        topology,
+        device_filter_str=device_filter_string,
+        minimum_block_severities=argToList(minimum_block_severities),
+        minimum_alert_severities=argToList(minimum_alert_severities)
+    )
+
+
+def get_conforming_vulnerability_profiles(
+        topology: Topology,
+        device_filter_string: Optional[str] = None,
+        minimum_block_severities: str = "critical,high",
+        minimum_alert_severities: str = "medium,low"
+) -> List[PanosObjectReference]:
+    """
+    Returns all Vulnerability profiles that conform to best practices.
+
+    :param topology: `Topology` instance !no-auto-argument
+    :param device_filter_string: String to filter to only check given device
+    :param minimum_block_severities: csv list of severities that must be in drop/reset/block-ip mode.
+    :param minimum_alert_severities: csv list of severities that must be in alert/default or higher mode.
+    """
+    return HygieneLookups.get_all_conforming_vulnerability_profiles(
+        topology,
+        device_filter_str=device_filter_string,
+        minimum_block_severities=argToList(minimum_block_severities),
+        minimum_alert_severities=argToList(minimum_alert_severities)
+    )
+
+
+def check_security_zones(topology: Topology, device_filter_string: Optional[str] = None) -> ConfigurationHygieneCheckResult:
+    """
+    Check configured security zones have correct settings.
+
+    :param topology: `Topology` instance !no-auto-argument
+    :param device_filter_string: String to filter to only check given device
+    """
+    return HygieneLookups.check_security_zones(topology, device_filter_str=device_filter_string)
+
+
+def check_security_rules(topology: Topology, device_filter_string: Optional[str] = None) -> ConfigurationHygieneCheckResult:
+    """
+    Check security rules are configured correctly.
+
+    :param topology: `Topology` instance !no-auto-argument
+    :param device_filter_string: String to filter to only check given device
+    """
+    return HygieneLookups.check_security_rules(topology, device_filter_str=device_filter_string)
+
+
+def hygiene_issue_dict_to_object(issue_dicts: Union[List[dict], dict]) -> List[ConfigurationHygieneIssue]:
+    """
+    Converts the given list of hygiene issues, which is a list of dictionaries, into the dataclass objects.
+    This simplifies the handling of the issues within the fix functions.
+
+    :param issue_dicts: List of dictionaries which represent instances of `ConfigurationHygieneIssue`
+    """
+    if isinstance(issue_dicts, dict):
+        issue_dicts = [issue_dicts]
+
+    issues: List[ConfigurationHygieneIssue] = []
+    for issue_dict in issue_dicts:
+        container_name = issue_dict.get("containername") or issue_dict.get("container_name")
+        issue_code = issue_dict.get("issuecode") or issue_dict.get("issue_code")
+        issue_dict["container_name"] = container_name
+        issue_dict["issue_code"] = issue_code
+        if issue_dict.get("containername"):
+            del (issue_dict["containername"])
+
+        if issue_dict.get("issuecode"):
+            del (issue_dict["issuecode"])
+
+        issues.append(
+            ConfigurationHygieneIssue(**issue_dict)
+        )
+    return issues
+
+
+def fix_log_forwarding(topology: Topology, issue: List) -> List[ConfigurationHygieneFix]:
+    """
+    :param topology: `Topology` instance !no-auto-argument
+    :param issue: Dictionary of Hygiene issue, from a hygiene check command. Can be a list.
+    """
+    return HygieneRemediation.fix_log_forwarding_profile_enhanced_logging(topology, issues=hygiene_issue_dict_to_object(issue))
+
+
+def fix_security_zone_log_setting(
+        topology: Topology,
+        issue: List,
+        log_forwarding_profile_name: str
+) -> List[ConfigurationHygieneFix]:
+    """
+    Fixes security zones that are configured without a valid log forwarding profile.
+    :param topology: `Topology` instance !no-auto-argument
+    :param issue: Dictionary of Hygiene issue, from a hygiene check command. Can be a list.
+    :param log_forwarding_profile_name: Name of log forwarding profile to set.
+    """
+    return HygieneRemediation.fix_security_zone_no_log_setting(
+        topology,
+        log_forwarding_profile=log_forwarding_profile_name,
+        issues=hygiene_issue_dict_to_object(issue)
+    )
+
+
+def fix_security_rule_log_setting(
+        topology: Topology,
+        issue: List,
+        log_forwarding_profile_name: str
+) -> List[ConfigurationHygieneFix]:
+    """
+    Fixed security rules that have incorrect log settings by adding a log forwarding profile and setting
+    log at session end.
+    :param topology: `Topology` instance !no-auto-argument
+    :param issue: Dictionary of Hygiene issue, from a hygiene check command. Can be list.
+    :param log_forwarding_profile_name: Name of log forwarding profile to use as log setting.
+    """
+    return HygieneRemediation.fix_secuity_rule_log_settings(
+        topology,
+        log_forwarding_profile_name=log_forwarding_profile_name,
+        issues=hygiene_issue_dict_to_object(issue)
+    )
+
+
+def fix_security_rule_security_profile_group(
+        topology: Topology,
+        issue: List,
+        security_profile_group_name: str
+) -> List[ConfigurationHygieneFix]:
+    """
+    Fixed security rules that have no configured SPG by setting one.
+
+    :param topology: `Topology` instance !no-auto-argument
+    :param issue: Dictionary of Hygiene issue, from a hygiene check command
+    :param security_profile_group_name: Name of Security profile group to use as log setting.
+    """
+    return HygieneRemediation.fix_security_rule_security_profile_group(
+        topology,
+        security_profile_group_name=security_profile_group_name,
+        issues=hygiene_issue_dict_to_object(issue)
+    )
+
+
+class ObjectTypeEnum(enum.Enum):
+    ADDRESS = "AddressObject"
+    ADDRESS_GROUP = "AddressGroup"
+    SERVICE_GROUP = "ServiceGroup"
+    SERVICE = "ServiceObject"
+    APPLICATION = "ApplicationObject"
+    APPLICATION_GROUP = "ApplicationGroup"
+    LOG_FORWARDING_PROFILE = "LogForwardingProfile"
+    SECURITY_PROFILE_GROUP = "SecurityProfileGroup"
+
+
+def get_object(
+        topology: Topology,
+        object_type: ObjectTypeEnum,
+        device_filter_string: Optional[str] = None,
+        object_name: Optional[str] = None,
+        parent: Optional[str] = None,
+        use_regex: Optional[str] = None
+) -> List[PanosObjectReference]:
+    """Searches and returns a reference for the given object type and name. If no name is provided, all
+    objects of the given type are returned. Note this only returns a reference, and not the complete object
+    information.
+    :param topology: `Topology` instance !no-auto-argument
+    :param object_name: The name of the object refernce to return if looking for a specific object. Supports regex if "use_regex" is set.
+    :param object_type: The type of object to search; see https://pandevice.readthedocs.io/en/latest/module-objects.html
+    :param device_filter_string: If provided, only objects from the given device are returned.
+    :param parent: The parent vsys or device group to search. if not provided, all will be returned.
+    :param use_regex: Enables regex matching on object name.
+    """
+    return ObjectGetter.get_object_reference(
+        topology=topology,
+        device_filter_string=device_filter_string,
+        object_name=object_name,
+        # Fixing the ignore below would rfequire adding union handling to code generation script.
+        object_type=object_type,  # type: ignore
+        container_filter=parent,
+        use_regex=use_regex
+    )
+
+
+def get_device_state(topology: Topology, target: str) -> dict:
+    """
+    Get the device state from the provided device target (serial number). Note that this will attempt to connect directly to the
+    firewall as there is no way to get the device state for a firewall via Panorama.
+
+    :param topology: `Topology` instance !no-auto-argument
+    :param target: String to filter to only show specific hostnames or serial numbers.
+    """
+    return fileResult(
+        filename=f"{target}_device_state.tar.gz",
+        data=FirewallCommand.get_device_state(topology, target),
+        file_type=EntryType.ENTRY_INFO_FILE
+    )
+
+
 def get_topology() -> Topology:
     """
     Builds and returns the Topology instance
@@ -9918,11 +10761,19 @@ def get_topology() -> Topology:
     )
 
 
-def dataclasses_to_command_results(result: Any, empty_result_message: str = "No results."):
+def dataclasses_to_command_results(
+        result: Any,
+        empty_result_message: str = "No results.",
+        override_table_name: Optional[str] = "",
+        override_table_headers: Optional[List[str]] = None
+):
     """
-    Given a dataclass or list of dataclasses,
-    convert it into a tabular format and finally return CommandResults to demisto.
-    :param empty_result_message: If the result data is non
+    Given a dataclass or list of dataclasses, convert it into a tabular format and finally return CommandResults to demisto.
+    :param result: Dataclass or list of dataclasses
+    :param empty_result_message: If the result data is none, return this message
+    :param override_table_name: If given, the name of the table is set to this value specifically instead of the name in the
+        dataclass.
+    :param override_table_headers: If given, the markdown table will show these headers instead in the order provided.
     """
     if not result:
         return CommandResults(
@@ -9964,7 +10815,12 @@ def dataclasses_to_command_results(result: Any, empty_result_message: str = "No 
     if hasattr(result, "_outputs_key_field"):
         extra_args["outputs_key_field"] = getattr(result, "_outputs_key_field")
 
-    readable_output = tableToMarkdown(title, summary_list, removeNull=True)
+    readable_output = tableToMarkdown(
+        override_table_name or title,
+        summary_list,
+        removeNull=True,
+        headers=override_table_headers
+    )
     command_result = CommandResults(
         outputs_prefix=output_prefix,
         outputs=outputs,
@@ -10001,7 +10857,10 @@ def main():
 
         elif command == 'panorama-push-to-device-group' or command == 'pan-os-push-to-device-group':
             panorama_push_to_device_group_command(args)
-
+        elif command == 'pan-os-push-to-template':
+            panorama_push_to_template_command(args)
+        elif command == 'pan-os-push-to-template-stack':
+            panorama_push_to_template_stack_command(args)
         elif command == 'panorama-push-status' or command == 'pan-os-push-status':
             panorama_push_status_command(**args)
 
@@ -10493,6 +11352,112 @@ def main():
                     empty_result_message="At least one vulnerability profile is configured according to best practices."
                 )
             )
+        elif command == 'pan-os-hygiene-conforming-vulnerability-profiles':
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    get_conforming_vulnerability_profiles(topology, **demisto.args()),
+                    empty_result_message="No Conforming Vulnerability Profiles.",
+                    override_table_headers=["hostid", "name", "object_type", "container_name"],
+                    override_table_name="Best Practices conforming Vulnerability profiles"
+                )
+            )
+        elif command == 'pan-os-hygiene-check-spyware-profiles':
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    check_spyware_profiles(topology, **demisto.args()),
+                    empty_result_message="At least one Spyware profile is configured according to best practices."
+                )
+            )
+        elif command == 'pan-os-hygiene-check-url-filtering-profiles':
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    check_url_filtering_profiles(topology, **demisto.args()),
+                    empty_result_message="At least one Spyware profile is configured according to best practices."
+                )
+            )
+        elif command == 'pan-os-hygiene-conforming-url-filtering-profiles':
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    get_conforming_url_filtering_profiles(topology, **demisto.args()),
+                    empty_result_message="No conforming URL filtering profiles.",
+                    override_table_headers=["hostid", "name", "object_type", "container_name"],
+                    override_table_name="Best Practices conforming URL Filtering profiles"
+                )
+            )
+        elif command == 'pan-os-hygiene-conforming-spyware-profiles':
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    get_conforming_spyware_profiles(topology, **demisto.args()),
+                    empty_result_message="No conforming Spyware profiles.",
+                    override_table_headers=["hostid", "name", "object_type", "container_name"],
+                    override_table_name="Best Practices conforming Anti-spyware profiles"
+                )
+            )
+        elif command == 'pan-os-hygiene-check-security-zones':
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    check_security_zones(topology, **demisto.args()),
+                    empty_result_message="All security zones are configured correctly."
+                )
+            )
+        elif command == 'pan-os-hygiene-check-security-rules':
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    check_security_rules(topology, **demisto.args()),
+                    empty_result_message="All security rules are configured correctly."
+                )
+            )
+        elif command == 'pan-os-hygiene-fix-log-forwarding':
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    fix_log_forwarding(topology, **demisto.args()),
+                    empty_result_message="Nothing to fix."
+                )
+            )
+        elif command == 'pan-os-hygiene-fix-security-zone-log-settings':
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    fix_security_zone_log_setting(topology, **demisto.args()),
+                    empty_result_message="Nothing to fix."
+                )
+            )
+        elif command == 'pan-os-hygiene-fix-security-rule-log-settings':
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    fix_security_rule_log_setting(topology, **demisto.args()),
+                    empty_result_message="Nothing to fix."
+                )
+            )
+        elif command == 'pan-os-hygiene-fix-security-rule-profile-settings':
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    fix_security_rule_security_profile_group(topology, **demisto.args()),
+                    empty_result_message="Nothing to fix."
+                )
+            )
+        elif command == 'pan-os-config-get-object':
+            topology = get_topology()
+            return_results(
+                dataclasses_to_command_results(
+                    get_object(topology, **demisto.args()),
+                    empty_result_message="No objects found."
+                )
+            )
+        elif command == 'pan-os-platform-get-device-state':
+            topology = get_topology()
+            # This just returns a fileResult object directly.
+            return_results(get_device_state(topology, **demisto.args()))
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
     except Exception as err:

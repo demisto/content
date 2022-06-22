@@ -84,6 +84,8 @@ def get_pack_names(pack_display_names: list, id_set_json: dict) -> dict:
         d_names_id_set[pack_value['name']] = pack_name
 
     # create result given display name id_set.json
+    if pack_display_names == ['']:
+        return d_names_id_set
     for d_name in pack_display_names:
         if d_name not in d_names_id_set:
             print(f"Couldn't find pack {d_name}. Skipping pack.")
@@ -149,7 +151,7 @@ def options_handler():
                         help="A list of pack names as they appear in https://xsoar.pan.dev/marketplaceEither provided "
                              "via a path to a file that contains the packs list (separated by new lines) or "
                              "a string of comma separated packs (e.g. Base,AutoFocus)",
-                        required=True)
+                        required=False)
     parser.add_argument('-o', '--output_path',
                         help="The path where the files will be saved to.",
                         required=False, default=".")
@@ -169,7 +171,7 @@ def options_handler():
 def main():
     options = options_handler()
     output_path = options.output_path
-    packs = options.packs
+    packs = options.packs or ''
     if os.path.isfile(packs):
         pack_display_names = []
         with open(packs) as file:
@@ -192,7 +194,7 @@ def main():
         else:
             print('Skipping dockers.zip creation')
     else:
-        print('Skpping docker images collection since no packs were found')
+        print('Skipping docker images collection since no packs were found')
 
 
 if __name__ == '__main__':
