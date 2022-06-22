@@ -1207,7 +1207,7 @@ def main():  # pragma: no cover
                                                          "PENDING_ABORT"])
             raw = polling.raw_response
             # raw is the response returned by the get-action-status
-            status = raw[0].get('status')
+            status = raw[0].get('status')  # type: ignore
             if polling.scheduled_command:
                 return_results(polling)
             elif status == 'COMPLETED_SUCCESSFULLY':
