@@ -1,7 +1,6 @@
 commonfields:
-  id: 40b261b7-ad22-48de-8634-a4f1ced06e73
-  version: 7
-vcShouldKeepItemLegacyProdMachine: false
+  id: Unit42Enrichment
+  version: -1
 name: Unit42Enrichment
 script: ''
 type: python
@@ -17,8 +16,9 @@ subtype: python3
 dependson:
   must:
   - Demisto REST API|||demisto-api-post
-pswd: ''
 runonce: false
-dockerimage: demisto/python3:3.10.4.28442
+dockerimage: demisto/python3:3.10.4.30607
 runas: DBotWeakRole
-engineinfo: {}
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)
