@@ -97,7 +97,7 @@ Displays the available feeds from the MITRE taxii service.
 
 ##### Base Command
 
-`mitre-showfeeds`
+`mitre-show-feeds`
 ##### Input
 
 There are no inputs  
