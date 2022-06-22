@@ -1140,6 +1140,12 @@ script:
       name: sharing_group_id
       required: false
       secret: false
+    - default: false
+      description: Set the creation date for the event in the format YYYY-MM-DD.
+      isArray: false
+      name: creation_date
+      required: false
+      secret: false
     deprecated: false
     description: Creates a new MISP event.
     execution: false
@@ -2901,7 +2907,7 @@ script:
     - contextPath: MISP.Warninglist.Lists
       description: Name of warninglists where the value was found.
       type: string
-  dockerimage: demisto/pymisp2:1.0.0.27777
+  dockerimage: demisto/pymisp2:1.0.0.30164
   feed: false
   isfetch: false
   longRunning: false

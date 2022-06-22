@@ -18,15 +18,16 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v3
         with:
-          python-version: '3.8'
+          python-version: '3.9'
+      - name: Setup Poetry
+        uses: Gr1N/setup-poetry@v7
       - name: Install Python Dependencies
-        run: python -m pip install --upgrade pip
-      - name: Install Demisto SDK
-        run: pip install demisto-sdk
+        run: |
+          poetry install
       - name: Review Release Notes
         run: |
           changed_files="${{ steps.changed-files.outputs.all_changed_files }}"
           delim=';'
           echo "Starting docs review"
-          python Utils/github_workflow_scripts/run_docs_review.py --changed_files "$changed_files" --delimiter $delim
+          poetry run python Utils/github_workflow_scripts/run_docs_review.py --changed_files "$changed_files" --delimiter $delim
           echo "Finished docs review successfully"

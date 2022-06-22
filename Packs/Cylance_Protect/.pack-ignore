@@ -13,3 +13,7 @@ ignore=RM104
 
 [file:Cylance_Protect_v2_image.png]
 ignore=IM111
+
+[known_words]
+Cylance
+instaquery
