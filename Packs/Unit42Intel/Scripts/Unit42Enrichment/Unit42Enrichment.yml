@@ -1,0 +1,24 @@
+commonfields:
+  id: 40b261b7-ad22-48de-8634-a4f1ced06e73
+  version: 7
+vcShouldKeepItemLegacyProdMachine: false
+name: Unit42Enrichment
+script: ''
+type: python
+tags:
+- indicator-action-button
+comment: Enrich indicators using Unit42
+enabled: true
+args:
+- name: indicator
+  description: Indicator Value
+scripttarget: 0
+subtype: python3
+dependson:
+  must:
+  - Demisto REST API|||demisto-api-post
+pswd: ''
+runonce: false
+dockerimage: demisto/python3:3.10.4.28442
+runas: DBotWeakRole
+engineinfo: {}
