@@ -24,7 +24,7 @@ from Tests.scripts.utils.content_packs_util import should_test_content_pack, sho
 from Tests.scripts.utils.get_modified_files_for_testing import get_modified_files_for_testing, \
     filter_modified_files_for_specific_marketplace_version
 from Tests.scripts.utils.log_util import install_logging
-from Tests.scripts.utils import logging_wrapper as logging
+import logging
 from demisto_sdk.commands.common import constants
 
 SANITY_TESTS = {
