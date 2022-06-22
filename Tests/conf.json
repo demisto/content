@@ -3148,6 +3148,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "CyCognito",
+            "playbookID": "CyCognito-Test",
+            "fromversion": "6.0.0"
+        },
+        {
             "integrations": "Google Chronicle Backstory",
             "playbookID": "Google Chronicle Backstory Asset - Test",
             "fromversion": "5.0.0"

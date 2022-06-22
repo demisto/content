@@ -1,0 +1,36 @@
+{
+  "name": "CyCognito",
+  "description": "Fetches the issues associated with a particular asset from the CyCognito platform.",
+  "support": "partner",
+  "currentVersion": "1.0.0",
+  "author": "CyCognito",
+  "url": "",
+  "email": "support@cycognito.com",
+  "categories": [
+    "Vulnerability Management"
+  ],
+  "tags": [
+    "Best Practices",
+    "Courses of Action",
+    "Incident Mirroring",
+    "Security"
+  ],
+  "useCases": [
+    "Health Check",
+    "Vulnerability Management"
+  ],
+  "keywords": [
+    "CyCognito",
+    "Issue",
+    "Asset",
+    "Vulnerability",
+    "Attack Surface"
+  ],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2"
+  ],
+  "githubUser": [
+    "crestdatasystems"
+  ]
+}
