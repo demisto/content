@@ -2,7 +2,7 @@ id: Traps Retrieve And Download Files
 version: -1
 name: Traps Retrieve And Download Files
 hidden: true
-deprecated: true
+deprecated: false
 description: Deprecated. Use CortexXDR instead.
 fromversion: "5.0.0"
 starttaskid: "0"

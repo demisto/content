@@ -3,7 +3,7 @@ version: -1
 fromversion: 5.0.0
 name: Traps Quarantine Event
 hidden: true
-deprecated: true
+deprecated: false
 description: Deprecated. Use CortexXDR instead.
 starttaskid: "0"
 tasks:

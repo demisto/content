@@ -2,7 +2,7 @@ id: Traps Blacklist File
 version: -1
 name: Traps Blacklist File
 hidden: true
-deprecated: true
+deprecated: false
 fromversion: 5.0.0
 description: Deprecated. Use CortexXDR instead.
 starttaskid: "0"
