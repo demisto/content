@@ -1,6 +1,6 @@
 {
     "name": "Unit42 Feed (Deprecated)",
-    "description": "Unit42 feed of published IOCs which contains malicious indicators.",
+    "description": "Deprecated. Use Unit 42 ATOMs Feed instead.",
     "support": "xsoar",
     "serverMinVersion": "5.5.0",
     "currentVersion": "1.2.0",
