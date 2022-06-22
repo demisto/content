@@ -1622,7 +1622,9 @@ def main():
     if build.is_nightly:
         build.install_nightly_pack()
     else:
+        logging.info(f"Packs to install: {build.pack_ids_to_install}")
         pack_ids = get_non_added_packs_ids(build)
+        logging.info(f"Packs to install without added packs: {pack_ids}")
         build.install_packs(pack_ids=pack_ids)
 
         new_integrations, modified_integrations = build.get_changed_integrations()
