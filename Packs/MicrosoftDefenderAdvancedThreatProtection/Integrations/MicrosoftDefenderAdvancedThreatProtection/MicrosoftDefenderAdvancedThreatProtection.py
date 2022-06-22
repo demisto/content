@@ -2700,9 +2700,20 @@ def get_machine_action_by_id_command(client: MsClient, args: dict):
     return human_readable, entry_context, response
 
 
+def get_machine_investigation_package(client: MsClient, args: dict):
+
+    machine_id = args.get('machine_id')
+    comment = args.get('comment')
+    res = client.get_investigation_package(machine_id, comment)
+    human_readable = tableToMarkdown('Processing action. This may take a few minutes.', res['id'], headers=['id'])
+
+    return CommandResults(outputs_prefix='MicrosoftATP.MachineAction',
+                          readable_output=human_readable, outputs={'action_id': res['id']})
+
+
 def request_download_investigation_package_command(client: MsClient, args: dict):
     return run_polling_command(client, args, 'microsoft-atp-request-and-download-investigation-package',
-                               get_machine_investigation_package_command,
+                               get_machine_investigation_package,
                                get_machine_action_command, download_file_after_successful_status)
 
 
@@ -2776,7 +2787,7 @@ def get_machine_investigation_package_command(client: MsClient, args: dict):
     entry_context = {
         'MicrosoftATP.MachineAction(val.ID === obj.ID)': action_data
     }
-    return CommandResults(readable_output=human_readable, outputs=entry_context, raw_response=machine_action_response)
+    return human_readable, entry_context, machine_action_response
 
 
 def get_investigation_package_sas_uri_command(client: MsClient, args: dict):
@@ -4470,9 +4481,10 @@ def run_polling_command(client: MsClient, args: dict, cmd: str, action_func: Cal
     is_first_run = 'machine_action_id' not in args
     if is_first_run:
         command_results = action_func(client, args)
+        outputs = command_results.outputs
         # schedule next poll
         polling_args = {
-            'machine_action_id': command_results.raw_response.get("id"),
+            'machine_action_id': outputs.get('action_id'),
             'interval_in_seconds': interval_in_secs,
             'polling': True,
             **args,
@@ -4838,7 +4850,7 @@ def main():  # pragma: no cover
             return_outputs(*get_machine_action_by_id_command(client, args))
 
         elif command == 'microsoft-atp-collect-investigation-package':
-            return_results(get_machine_investigation_package_command(client, args))
+            return_outputs(*get_machine_investigation_package_command(client, args))
 
         elif command == 'microsoft-atp-get-investigation-package-sas-uri':
             return_outputs(*get_investigation_package_sas_uri_command(client, args))
