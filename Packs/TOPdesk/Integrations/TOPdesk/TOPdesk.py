@@ -1296,7 +1296,7 @@ def fetch_incidents(client: Client,
             incident = {
                 'name': f"{topdesk_incident['briefDescription']}",
                 'labels': labels,
-                'details': f"{topdesk_incident['request']}",
+                'details': json.dumps(topdesk_incident),
                 'occurred': incident_created_time.strftime(DATE_FORMAT),
                 'rawJSON': json.dumps(topdesk_incident)}
 

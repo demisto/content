@@ -948,7 +948,7 @@ def test_fetch_incidents(client, requests_mock, topdesk_incidents_override, last
         if incident_override['will_be_fetched']:
             expected_incidents.append({
                 'name': f"{incident_override['briefDescription']}",
-                'details': f"{response_incident['request']}",
+                'details': json.dumps(response_incident),
                 'occurred': incident_override['occurred'],
                 'rawJSON': json.dumps(response_incident),
             })
