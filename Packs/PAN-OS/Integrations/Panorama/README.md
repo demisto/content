@@ -274,14 +274,13 @@ Commits a configuration to Palo Alto Firewall or Panorama, but does not validate
 `pan-os-commit`
 #### Input
 
-| **Argument Name**                    | **Description**                                                                               | **Required** |
-|--------------------------------------|-----------------------------------------------------------------------------------------------| --- |
-| description                          | Commit description.                                                                           | Optional |
-| admin_name                           | To commit admin-level changes on a firewall, include the administrator name in the request.   | Optional |
-| force_commit                         | Force Commit.                                                                                 | Optional |
-| exclude_device_network_configuration | Partial commit while excluding device and network configuration.                              | Optional | 
-| exclude_shared_objects               | Partial commit while excluding shared objects.                                                | Optional |
-| target                               | Serial number of the firewall on which to run the command. Use only for a Panorama instance.  | Optional |
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| description | Commit description. | Optional |
+| admin_name | To commit admin-level changes on a firewall, include the administrator name in the request. | Optional |
+| force_commit | Force Commit. | Optional |
+| exclude_device_network_configuration | Partial commit while excluding device and network configuration. | Optional | 
+| exclude_shared_objects | Partial commit while excluding shared objects.| Optional |
 
 #### Context Output
 
@@ -1420,9 +1419,9 @@ Gets a URL category from URL Filtering. This command is only available on Firewa
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-|-------------------| --- | --- |
-| url               | URL to check. | Optional | 
-| target            | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
+| --- | --- | --- |
+| url | URL to check. | Optional | 
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance | Optional |
 
 
 #### Context Output
@@ -2373,9 +2372,8 @@ Returns commit status for a configuration.
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-|-------------------| --- | --- |
-| job_id            | Job ID to check. | Required | 
-| target            | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional |
+| --- | --- | --- |
+| job_id | Job ID to check. | Required | 
 
 
 #### Context Output
@@ -2411,7 +2409,6 @@ Returns the push status for a configuration.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | job_id | Job ID to check. | Required | 
-| target            | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional |
 
 
 #### Context Output
@@ -2755,7 +2752,7 @@ Returns a list of predefined Security Rules.
 | pre_post | Rules location. Can be 'pre-rulebase' or 'post-rulebase'. Mandatory for Panorama instances. | Optional | 
 | device-group | The device group for which to return addresses (Panorama instances). | Optional | 
 | tag | Tag for which to filter the rules. | Optional | 
-| target            | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional |
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance | Optional |
 
 
 #### Context Output
