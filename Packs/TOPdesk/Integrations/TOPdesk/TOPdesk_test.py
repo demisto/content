@@ -931,6 +931,11 @@ def test_fetch_incidents(client, requests_mock, topdesk_incidents_override, last
     """
     mock_topdesk_incident = util_load_json('test_data/topdesk_incident.json')
     mock_topdesk_response = []
+    mock_actions = util_load_json('test_data/topdesk_actions.json')
+    requests_mock.get(
+        'https://test.com/api/incidents/id/some-test-id-1/actions',
+        json=mock_actions)
+
     expected_incidents = []
     for incident_override in topdesk_incidents_override:
         response_incident = mock_topdesk_incident.copy()
@@ -943,7 +948,7 @@ def test_fetch_incidents(client, requests_mock, topdesk_incidents_override, last
         if incident_override['will_be_fetched']:
             expected_incidents.append({
                 'name': f"{incident_override['briefDescription']}",
-                'details': json.dumps(response_incident),
+                'details': f"{response_incident['request']}",
                 'occurred': incident_override['occurred'],
                 'rawJSON': json.dumps(response_incident),
             })

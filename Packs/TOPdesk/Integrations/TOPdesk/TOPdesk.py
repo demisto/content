@@ -1277,10 +1277,26 @@ def fetch_incidents(client: Client,
         ]
         topdesk_incident['mirror_instance'] = demisto.integrationInstance()
         if float(last_fetch_datetime.timestamp()) < float(incident_created_time.timestamp()):
+            labels = []
+            actions = client.list_actions(incident_id=topdesk_incident['id'], incident_number=None)
+            for action in actions:
+                entry_date = dateparser.parse(action["entryDate"], settings={'TIMEZONE': 'UTC'})  # type: ignore
+                if action["operator"]:
+                    name = action["operator"]["name"]
+                elif action["person"]:
+                    name = action["person"]["name"]
+                else:
+                    name = "Unknown"
+                if entry_date:
+                    date_time = entry_date.strftime(DATE_FORMAT)
+                else:
+                    date_time = incident_created_time.strftime(DATE_FORMAT)
+                labels.append({'type': 'comments', 'value': f'[{date_time}] {name}:<br><br>{action["memoText"]}'})
 
             incident = {
                 'name': f"{topdesk_incident['briefDescription']}",
-                'details': json.dumps(topdesk_incident),
+                'labels': labels,
+                'details': f"{topdesk_incident['request']}",
                 'occurred': incident_created_time.strftime(DATE_FORMAT),
                 'rawJSON': json.dumps(topdesk_incident)}
 
