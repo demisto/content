@@ -84,7 +84,6 @@ def gdetect_send_command(client, args):  # TO TEST
     """
     entry_id = args.get('entryID')
     res = demisto.getFilePath(entry_id)
-    demisto.log(f'File: {str(res)}')
     if not res:
         return f'File entry: {entry_id} not found'
     filepath = res.get('path')
@@ -127,6 +126,19 @@ def gdetect_get_all_command(client, args):  # TO TEST
     uuid = args.get('uuid')
     response = client.gdetect_get(uuid)
     url = client._base_url.strip('/')
+    if 'error' in response:
+        readable_buffer = tableToMarkdown('Error', response, ['status', 'error'])
+        if 'errors' in response:
+            errors = response.get('errors')
+            readable_buffer += tableToMarkdown('Errors', errors, errors.keys())
+        results = CommandResults(
+            outputs_prefix='GLIMPS.GDetect.All',
+            outputs=response,
+            raw_response=response,
+            readable_output=readable_buffer
+        )
+        return results
+
     if 'token' in response:
         response.pop('sid')
         response['link'] = f"{url}/expert/en/analysis-redirect/{response.get('token')}"
@@ -140,15 +152,11 @@ def gdetect_get_all_command(client, args):  # TO TEST
     readable_output = ''
     readable_buffer = ''
 
-    if 'errors' in response:
-        errors = response.get('errors')
-        readable_buffer += tableToMarkdown('Errors', errors, errors.keys())
-
     if 'files' in response:
         files = response.get('files')
         for file in files:
             av_results_buffer = ''
-            if file.get('av_results'):
+            if 'av_results' in file:
                 av_results = file.get('av_results')
                 av_results_buffer = tableToMarkdown(f"AV Result for {file.get('sha256')}", av_results, ['av', 'result', 'score'])
             readable_buffer += tableToMarkdown('File', file, ['sha256', 'sha1', 'md5', 'ssdeep', 'magic', 'size', 'is_malware'])
@@ -256,7 +264,7 @@ def main():
     """
     params = demisto.params()
     command = demisto.command()
-    demisto.debug(f'Command being called is {command}')
+    error = None
     try:
         client = Client(params.get('url'), params.get('api_token'), params.get('insecure'), params.get('proxy'))
         if command == 'test-module':
@@ -290,7 +298,7 @@ def main():
             error = f'GDetectError: {str(e)}'
     except Exception as e:
         error = f'Failed to execute {command} command. Error: {str(e)}'
-    if error is None:
+    if error is not None:
         return_error(error)
 
 
