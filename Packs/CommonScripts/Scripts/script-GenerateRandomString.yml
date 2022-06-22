@@ -46,6 +46,9 @@ script: >
 
   characters = ""
 
+  if length > 10000:
+      length = 10000
+
   if length > 0:
       if uppercase == "True" or lowercase == "True" or digits == "True" or punctuation == "True":
 
@@ -65,7 +68,7 @@ script: >
           demisto.results(create_error_entry("Punctuation,Digits,Uppercase or Lowercase must be True."))
           sys.exit(0)
   else:
-      demisto.results(create_error_entry("Length must be grather than 0."))
+      demisto.results(create_error_entry("Length must be greater than 0. Maximum value is 10,000."))
       sys.exit(0)
 
   password = ""
@@ -87,7 +90,7 @@ enabled: true
 args:
 - name: Length
   required: true
-  description: Length of the string
+  description: Length of the string. Maximum is 10,000.
 - name: Punctuation
   required: true
   auto: PREDEFINED
