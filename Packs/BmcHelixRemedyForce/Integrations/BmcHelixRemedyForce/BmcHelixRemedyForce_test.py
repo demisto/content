@@ -10,15 +10,15 @@ import requests
 from requests import Response
 from requests.exceptions import MissingSchema, InvalidSchema
 
-from BMCHelixRemedyforce import Client, MESSAGES, date_to_timestamp, HR_MESSAGES, get_request_params, \
+from BmcHelixRemedyForce import Client, MESSAGES, date_to_timestamp, HR_MESSAGES, get_request_params, \
     bmc_remedy_create_service_request_command, remove_prefix, update_incident, OUTPUT_PREFIX, DISPLAY_DATE_FORMAT
-from BMCHelixRemedyforce import bmc_remedy_impact_details_get_command, bmc_remedy_service_offering_details_get_command, \
+from BmcHelixRemedyForce import bmc_remedy_impact_details_get_command, bmc_remedy_service_offering_details_get_command, \
     bmc_remedy_category_details_get_command, INCIDENT_CATEGORY_OBJECT, SERVICE_REQUEST_CATEGORY_OBJECT, \
     POSSIBLE_CATEGORY_TYPES, bmc_remedy_broadcast_details_get_command, URL_SUFFIX
-from BMCHelixRemedyforce import bmc_remedy_template_details_get_command, bmc_remedy_asset_details_get_command, \
+from BmcHelixRemedyForce import bmc_remedy_template_details_get_command, bmc_remedy_asset_details_get_command, \
     bmc_remedy_account_details_get_command, bmc_remedy_urgency_details_get_command, get_service_request_details
 
-from BMCHelixRemedyforce import get_valid_arguments, bmc_remedy_update_service_request_command, DemistoException, \
+from BmcHelixRemedyForce import get_valid_arguments, bmc_remedy_update_service_request_command, DemistoException, \
     prepare_outputs_for_get_service_request, bmc_remedy_service_request_get_command
 
 INCIDENT_TEST_DATA_FILE = './TestData/incident_data.json'
