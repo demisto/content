@@ -80,7 +80,8 @@ def install_logging(log_file_name: str, include_process_name=False, logger=loggi
     logging_format = LOGGING_FORMAT
     if include_process_name:
         logging_format = '[%(asctime)s] - [%(processName)s] - [%(threadName)s] - [%(levelname)s] - %(message)s'
-    formatter = coloredlogs.ColoredFormatter(fmt=logging_format)
+    formatter = coloredlogs.ColoredFormatter(fmt=logging_format,
+                                             level_styles=LEVEL_STYLES)
     ch = logger.StreamHandler(sys.stdout)
     ch.setFormatter(formatter)
     log_file_path = os.path.join(ARTIFACTS_PATH, 'logs', log_file_name) if os.path.exists(
