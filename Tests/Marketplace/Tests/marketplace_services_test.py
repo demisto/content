@@ -78,17 +78,17 @@ def dummy_pack_metadata():
     return pack_metadata
 
 
-# class GitMock:
-#     def log(self, file_name):
-#         match file_name.rpartition('/')[-1]:
-#             case '1_0_1.md':
-#                 return '(#11) (#111) 1111'
-#             case '1_0_2.md':
-#                 return '(#22)'
-#             case '1_0_3.md':
-#                 return '(#33)'
-#             case _:
-#                 return 'no number'
+class GitMock:
+    def log(self, file_name):
+        match file_name.rpartition('/')[-1]:
+            case '1_0_1.md':
+                return '(#11) (#111) 1111'
+            case '1_0_2.md':
+                return '(#22)'
+            case '1_0_3.md':
+                return '(#33)'
+            case _:
+                return 'no number'
 
 
 class TestMetadataParsing:
