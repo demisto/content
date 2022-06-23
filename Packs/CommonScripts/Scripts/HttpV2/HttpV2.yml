@@ -23,7 +23,7 @@ args:
   description: |-
     Specify a hash of headers to send with the request.
     Headers can be of string type but need to be formatted in the following ways:
-    `{"key": "value"}` or `"key": "value"`
+    `{"key1": "value1", "key2": "value2"}` or `"key1": "value1", "key2": "value2"`
   isArray: false
   name: headers
   required: false

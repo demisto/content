@@ -16,7 +16,7 @@ Sends a HTTP request with advanced capabilities
 | --- | --- |
 | url | Specify where the request should be sent. Include the URI scheme \('http' or 'https'\). |
 | method | Specify the HTTP method to use. |
-| headers | Specify a hash of headers to send with the request.<br/>Headers can be of string type but need to be formatted in the following ways:<br/>\`\{"key": "value"\}\` or \`"key": "value"\` |
+| headers | Specify a hash of headers to send with the request.<br/>Headers can be of string type but need to be formatted in the following ways:<br/>\`\{"key1": "value1", "key2": "value2"\}\` or \`"key1": "value1", "key2": "value2"\` |
 | body | Specify the body of the request. |
 | request_content_type | Specify the Content-Type header for the request.<br/>Shorthands are provided for the following common content types:<br/>json \(application/json\)<br/>xml \(text/xml\)<br/>form \(application/x-www-form-urlencoded\)<br/>data \(multipart/form-data\)<br/>If you choose to define a different type, please include the full type name, e.g: application/pdf |
 | response_content_type | Specify the Accept header for the request - the response content type.<br/>Shorthands are provided for the following common content types:<br/>json \(application/json\)<br/>xml \(text/xml\)<br/>form \(application/x-www-form-urlencoded\)<br/>data \(multipart/form-data\)<br/>If you choose to define a different type, please include the full type name, e.g: application/pdf |
