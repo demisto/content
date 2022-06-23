@@ -8,6 +8,9 @@ from datetime import datetime as dt
 ERROR_TEMPLATE = 'ERROR: SendEmailReply - {function_name}: {reason}'
 
 
+# TODO add docstring to args and description in yml
+
+
 def get_utc_now():
     """ A wrapper function for datetime.utcnow
     Helps handle tests
@@ -617,7 +620,8 @@ def format_body(new_email_body):
 
 
 def single_thread_reply(email_code, incident_id, email_cc, add_cc, notes, attachments, files, email_subject,
-                        email_to_str, service_mail, email_latest_message, mail_sender_instance):
+                        email_to_str, service_mail, email_latest_message, mail_sender_instance,
+                        sign_only, sign_and_decrypt):
     """
         Retrieve all entries in the EmailThreads context key
     Args:
@@ -633,6 +637,8 @@ def single_thread_reply(email_code, incident_id, email_cc, add_cc, notes, attach
         service_mail: The service mail (mail listener).
         email_latest_message: The latest message ID in the email thread to reply to.
         mail_sender_instance: The name of the mail sender integration instance
+        sign_only:
+        sign_and_decrypt:
     Returns:
         String containing result message from send_reply function
     """
@@ -646,6 +652,15 @@ def single_thread_reply(email_code, incident_id, email_cc, add_cc, notes, attach
     try:
         final_email_cc = get_email_cc(email_cc, add_cc)
         reply_body, reply_html_body = get_reply_body(notes, incident_id, attachments)
+        try:
+            if sign_only:
+                res = demisto.executeCommand('smime-sign-email', {'message_body': reply_body})
+                message = res[0].get('HumanReadable')
+            elif sign_and_decrypt:
+                demisto.executeCommand('smime-sign-and-encrypt', {'message': reply_body})
+        except Exception as e:
+            print(e)
+            return
         entry_id_list = get_entry_id_list(incident_id, attachments, [], files)
         result = validate_email_sent(incident_id, email_subject, email_to_str, reply_body, service_mail,
                                      final_email_cc, '', reply_html_body, entry_id_list, email_latest_message,
@@ -658,7 +673,7 @@ def single_thread_reply(email_code, incident_id, email_cc, add_cc, notes, attach
 
 def multi_thread_new(new_email_subject, new_email_recipients, new_email_body, incident_id, email_codes,
                      new_email_attachments, files, service_mail, add_cc, add_bcc, mail_sender_instance,
-                     new_attachment_names):
+                     new_attachment_names, sign_only, sign_and_decrypt):
     """Validates that all necessary fields are set to send a new email, gets a unique code to associate replies
     to the current incident, prepares the final HTML email message body, then sends the email.
     Args:
@@ -674,6 +689,8 @@ def multi_thread_new(new_email_subject, new_email_recipients, new_email_body, in
         new_email_attachments: Files to attach to the new email message
         mail_sender_instance: The name of the mail sender integration instance
         new_attachment_names: File names of attachments being sent on the email
+        sign_only:
+        sign_and_decrypt:
     Returns:
         String containing result message from send_new_email function
         """
@@ -797,7 +814,8 @@ def collect_thread_details(incident_email_threads, email_selected_thread):
 
 
 def multi_thread_reply(new_email_body, incident_id, email_selected_thread, new_email_attachments, files, add_cc,
-                       add_bcc, service_mail, mail_sender_instance, new_attachment_names):
+                       add_bcc, service_mail, mail_sender_instance, new_attachment_names, sign_only, sign_and_decrypt):
+
     """Validates that all necessary fields are set to send a reply email, retrieves details about the thread from
     incident context (subject, list of recipients, etc).  In the event this reply is for an email thread that has no
      inbound messages from end users this function will re-use details from the previous outbound first-contact email
@@ -813,6 +831,8 @@ def multi_thread_reply(new_email_body, incident_id, email_selected_thread, new_e
         new_email_attachments: Files to attach to the new email message
         mail_sender_instance: The name of the mail sender integration instance
         new_attachment_names: File names of attachments being sent on the email
+        sign_only:
+        sign_and_decrypt:
     Returns:
         String containing result message from resend_first_contact function or the send_reply function, whichever
         is required by the applicable case
@@ -938,7 +958,7 @@ def main():
     email_codes = custom_fields.get('emailgeneratedcodes')  # multi-code field for other incident types
     email_to_str = get_email_recipients(email_to, email_from, service_mail, mailbox)
     files = args.get('files', {})
-    sign_only = args.get('sign_only', False)
+    sign_only = args.get('sign_only', True)
     sign_and_decrypt = args.get('sign_and_decrypt', False)
     attachments = argToList(args.get('attachment', []))
     new_email_attachments = custom_fields.get('emailnewattachment', {})
@@ -958,18 +978,20 @@ def main():
     if new_thread == 'n/a':
         # This case is run when replying to an email from the 'Email Communication' layout
         single_thread_reply(email_code, incident_id, email_cc, add_cc, notes, attachments, files, email_subject,
-                            email_to_str, service_mail, email_latest_message, mail_sender_instance)
+                            email_to_str, service_mail, email_latest_message, mail_sender_instance,
+                            sign_only, sign_and_decrypt)
 
     elif new_thread == 'true':
         # This case is run when using the 'Email Threads' layout to send a new first-contact email message
         multi_thread_new(new_email_subject, new_email_recipients, new_email_body, incident_id, email_codes,
                          new_email_attachments, files, service_mail, add_cc, add_bcc, mail_sender_instance,
-                         new_attachment_names)
+                         new_attachment_names, sign_only, sign_and_decrypt)
 
     elif new_thread == 'false':
         # This case is run when using the 'Email Threads' layout to reply to an existing email thread
         multi_thread_reply(new_email_body, incident_id, email_selected_thread, new_email_attachments, files, add_cc,
-                           add_bcc, service_mail, mail_sender_instance, new_attachment_names)
+                           add_bcc, service_mail, mail_sender_instance, new_attachment_names,
+                           sign_only, sign_and_decrypt)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
