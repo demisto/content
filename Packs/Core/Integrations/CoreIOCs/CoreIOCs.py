@@ -34,7 +34,6 @@ class Client:
     query: str = 'reputation:Bad and (type:File or type:Domain or type:IP)'
     tag = 'Cortex Core'
     tlp_color = None
-    base_url_suffix = '/public_api/v1/indicators/'
     error_codes: Dict[int, str] = {
         500: 'XDR internal server error.',
         401: 'Unauthorized access. An issue occurred during authentication. This can indicate an '    # noqa: W504
@@ -49,7 +48,7 @@ class Client:
         url = params.get('url')
         if not url:
             url = "http://" + demisto.getLicenseCustomField("Core.ApiHost") + "/api/webapp/"
-        self._base_url: str = urljoin(url, self.base_url_suffix)
+        self._base_url: str = urljoin(url, '/public_api/v1/indicators/')
         self._verify_cert: bool = not params.get('insecure', False)
         self._params = params
         handle_proxy()
@@ -157,24 +156,6 @@ def get_iocs(page=0, size=200, query=None) -> List:
     query = f'expirationStatus:active AND ({query})'
     return search_indicators.search_indicators_by_version(query=query, size=size)\
         .get('iocs', [])
-
-
-def handle_prevalence_command(client: Client, command: str, args: dict):
-    arg_list = []
-    for key, value in args.items():
-        values = argToList(value)
-        args[key] = values
-        for val in values:
-            arg_list.append({key: val})
-
-    request_body = {
-        'api_id': command,
-        'args': arg_list
-    }
-    request_kwargs = get_requests_kwargs(request_body)
-    res = client.http_request('analytics_apis/', requests_kwargs=request_kwargs).get('results', [])
-    return_warning({'domain_name': item.get('args', {}).get('domain_name'), 'value': item.get('value')} for item in res)
-    return res.get('results', []).get('value')
 
 
 def demisto_expiration_to_core(expiration) -> int:
@@ -447,44 +428,26 @@ def main():
     # Executes an integration command
     # """
     params = demisto.params()
-    args = demisto.args()
-    command = demisto.command()
-
+    Client.severity = params.get('severity', '').upper()
+    Client.query = params.get('query', Client.query)
+    Client.tlp_color = params.get('tlp_color')
+    client = Client(params)
     commands = {
         'test-module': module_test,
         'core-iocs-enable': iocs_command,
         'core-iocs-disable': iocs_command,
         'core-iocs-push': tim_insert_jsons,
     }
-
-    prevalence_commands = {
-        'core-get-hash-analytics-prevalence',
-        'core-get-IP-analytics-prevalence',
-        'core-get-domain-analytics-prevalence',
-        'core-get-process-analytics-prevalence',
-        'core-get-registry-analytics-prevalence',
-        'core-get-cmd-analytics-prevalence',
-    }
-
-    if command in prevalence_commands:
-        Client.base_url_suffix = 'xsiam/'
-
-    Client.severity = params.get('severity', '').upper()
-    Client.query = params.get('query', Client.query)
-    Client.tlp_color = params.get('tlp_color')
-    client = Client(params)
-
+    command = demisto.command()
     try:
         if command == 'core-iocs-set-sync-time':
-            set_sync_time(args['time'])
+            set_sync_time(demisto.args()['time'])
         elif command == 'core-iocs-create-sync-file':
             get_sync_file()
         elif command in commands:
             commands[command](client)
         elif command == 'core-iocs-sync':
-            core_iocs_sync_command(client, args.get('firstTime') == 'true')
-        elif command in prevalence_commands:
-            handle_prevalence_command(client, command, args)
+            core_iocs_sync_command(client, demisto.args().get('firstTime') == 'true')
         else:
             raise NotImplementedError(command)
     except Exception as error:
