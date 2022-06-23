@@ -1075,7 +1075,7 @@ def main():
         index_folder_path, private_bucket_name, extract_destination_path, storage_client, pack_names, storage_base_path
     )
 
-    if not option.override_all_packs:
+    if not override_all_packs:
         check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, previous_commit_hash,
                                   storage_bucket, is_private_content_updated)
 

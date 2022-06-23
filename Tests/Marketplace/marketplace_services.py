@@ -1081,6 +1081,8 @@ class Pack(object):
             dict: data from id set for the modified files.
         """
 
+        logging.debug(f"Starting to filter modified files of pack {self._pack_name} by the id set")
+
         task_status = False
         modified_files_data = {}
 
@@ -1088,6 +1090,7 @@ class Pack(object):
             modified_entities = []
             for path in modified_file_paths:
                 if id_set_entity := get_id_set_entity_by_path(Path(path), pack_folder, id_set):
+                    logging.debug(f"The entity with the path {path} is present in the id set")
                     modified_entities.append(id_set_entity)
 
             if modified_entities:
@@ -1662,7 +1665,7 @@ class Pack(object):
         1. Filter the entry by marketplace intended tags.
         2. Filter by the entity display name if it doesn't exist in id-set.
 
-        If there are not entries after filtering then the pack will be skipped and not be uploaded.
+        If there are no entries after filtering then the pack will be skipped and not be uploaded.
 
         Args:
             changelog_entry: The version changelog object.
@@ -1675,6 +1678,9 @@ class Pack(object):
             (bool) Whether the pack is not updated because the entries are not relevant to the current marketplace.
         """
 
+        logging.debug(f"Starting to filter changelog entries by the entities that are given from id-set for pack "
+                      f"{self._pack_name}")
+
         release_notes = self.filter_release_notes_by_tags(changelog_entry.get(Changelog.RELEASE_NOTES), marketplace)
 
         # Convert the RN entries to a Dict
@@ -1682,6 +1688,7 @@ class Pack(object):
 
         if self.release_notes_dont_contain_entities_sections(release_notes_str=release_notes,
                                                              release_notes_dict=release_notes_dict):
+            logging.debug(f"The pack {self._pack_name} release notes does not contain any entities")
             return changelog_entry, False
 
         filtered_release_notes_from_tags = self.filter_headers_without_entries(release_notes_dict)  # type: ignore[arg-type]
@@ -1689,6 +1696,8 @@ class Pack(object):
                                                                                     modified_files_data)
 
         if modified_files_data and not filtered_release_notes:
+            logging.debug(f"The pack {self._pack_name} does not have any release notes that are relevant to this "
+                          f"marketplace")
             return {}, True
 
         # Convert the RN dict to string
@@ -1814,11 +1823,11 @@ class Pack(object):
 
             start_tag, end_tag = TAGS_BY_MP[marketplace]
             if start_tag in release_notes and end_tag in release_notes and marketplace != upload_marketplace:
-                logging.info(f"Filtering irrelevant release notes by tags {start_tag}-{end_tag} of marketplace {marketplace} "
+                logging.debug(f"Filtering irrelevant release notes by tags {start_tag}-{end_tag} of marketplace {marketplace} "
                              f"for pack {self._pack_name} when uploading to marketplace {upload_marketplace}.")
                 return re.sub(fr'{start_tag}{TAGS_SECTION_PATTERN}{end_tag}[\n]*', '', release_notes)
             else:
-                logging.info(f"Removing only the tags {start_tag}-{end_tag} since the RN entry is relevant to "
+                logging.debug(f"Removing only the tags {start_tag}-{end_tag} since the RN entry is relevant to "
                              f"marketplace {upload_marketplace}")
                 return release_notes.replace(f"{start_tag}", '').replace(f"{end_tag}", '')
 
@@ -1827,7 +1836,7 @@ class Pack(object):
 
         # Filters out for XSOAR tags
         release_notes = remove_tags_section_from_rn(release_notes, XSOAR_MP, upload_marketplace)
-        logging.info(f"RN result after filteing for pack {self._pack_name} in marketplace {upload_marketplace}\n"
+        logging.debug(f"RN result after filteing for pack {self._pack_name} in marketplace {upload_marketplace}\n"
                      f"- {release_notes}")
 
         return release_notes
@@ -3710,6 +3719,7 @@ def get_id_set_entity_by_path(entity_path: Path, pack_folder: str, id_set: dict)
     Returns:
         id set dict entity if exists, otherwise {}
     """
+    logging.debug(f"Checking if the entity with the path {entity_path} is present in the id set")
 
     for id_set_entity in id_set[PACK_FOLDERS_TO_ID_SET_KEYS[pack_folder]]:
 
