@@ -111,6 +111,15 @@ Modifies the AD account attribute "Password never expire".
 
 There is no context output for this command.
 
+##### Command Example
+```
+!ad-modify-password-never-expire username=jack value=true
+```
+##### Human Readable Output
+```
+AD account jack has set "password never expire" attribute. Value is set to True
+```
+
 ### 3. Create an AD user
 
 Creates a user in Active Directory.

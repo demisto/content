@@ -1651,9 +1651,8 @@ def set_password_not_expire(default_base_dn):
     entries = search_with_paging(query, default_base_dn, attributes='userAccountControl')
 
     if not check_if_user_exists_by_attribute(default_base_dn, "sAMAccountName", sam_account_name):
-        raise Exception(f"sAMAccountName {sam_account_name} was not found.")
+        return_error(f"sAMAccountName {sam_account_name} was not found.")
 
-    # TODO: make sure that if exist - its a list with at least one element and user_account_control always exist.
     if user := entries.get('flat'):
         user = user[0]
         if user_account_control := user.get('userAccountControl'):
