@@ -12,7 +12,7 @@ coloredlogs = "^15.0.1"
 demisto_py = "^3.1.6"
 demisto_sdk = {git = "https://github.com/demisto/demisto-sdk.git", rev = "23a8b4bea77bd09519b65bb28bd9df0090814813"}
 freezegun = "^1.1.0"
-pandas = "^1.3.3"
+pandas = "^1.4.3"
 prettytable = "^3.2.0"
 pyspellchecker = "^0.6.2"
 sendgrid = "^6.6.0"
