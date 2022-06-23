@@ -1,4 +1,3 @@
-beta: false
 category: Data Enrichment & Threat Intelligence
 commonfields:
   id: Cortex Core - IOC
@@ -108,86 +107,6 @@ script:
     description: Disables IOCs in the Cortex server.
     execution: false
     name: core-iocs-disable
-  - arguments:
-    - default: false
-      description: The sha256 of a file.
-      isArray: true
-      name: sha256
-      required: true
-      secret: false
-    deprecated: false
-    description: Get the prevalence of a file, identified by sha256.
-    execution: false
-    hidden: false
-    name: core-get-hash-analytics-prevalence
-  - arguments:
-    - default: false
-      description: The IP address.
-      isArray: true
-      name: ip_address
-      predefined:
-      - ''
-      required: true
-      secret: false
-    deprecated: false
-    description: Get the prevalence of an ip, identified by ip_address.
-    execution: false
-    hidden: false
-    name: core-get-IP-analytics-prevalence
-  - arguments:
-    - default: false
-      description: The domain name.
-      isArray: true
-      name: domain_name
-      required: true
-      secret: false
-    deprecated: false
-    description: Get the prevalence of a domain, identified by domain_name.
-    execution: false
-    hidden: false
-    name: core-get-domain-analytics-prevalence
-  - arguments:
-    - default: false
-      description: The process name.
-      isArray: true
-      name: process_name
-      required: true
-      secret: false
-    deprecated: false
-    description: Get the prevalence of a process, identified by process_name.
-    execution: false
-    hidden: false
-    name: core-get-process-analytics-prevalence
-  - arguments:
-    - default: false
-      description: The key name of a registry path.
-      isArray: true
-      name: key_name
-      required: true
-      secret: false
-    - default: false
-      description: The value name of a registry path.
-      isArray: true
-      name: value_name
-      required: true
-      secret: false
-    deprecated: false
-    description: Get the prevalence of a registry_path, identified by key_name, value_name.
-    execution: false
-    hidden: false
-    name: core-get-registry-analytics-prevalence
-  - arguments:
-    - default: false
-      description: The process command line.
-      isArray: true
-      name: process_command_line
-      required: true
-      secret: false
-    deprecated: false
-    description: Get the prevalence of a process_command_line, identified by process_command_line.
-    execution: false
-    hidden: false
-    name: core-get-process-cmd-prevalence
   dockerimage: demisto/python3:3.10.1.26972
   feed: false
   isfetch: false
