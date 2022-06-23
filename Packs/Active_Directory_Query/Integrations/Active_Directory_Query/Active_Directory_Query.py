@@ -409,7 +409,7 @@ def search_with_paging(search_filter, search_base, attributes=None, page_size=10
     Args:
         search_base: the location in the DIT where the search will start
         search_filter: LDAP query string
-        attributes: the attributes to specify for each entrxy found in the DIT
+        attributes: the attributes to specify for each entry found in the DIT
 
     """
     assert conn is not None
@@ -1642,45 +1642,51 @@ def set_password_not_expire(default_base_dn):
     sam_account_name = args.get('username')
     pwd_n_exp = argToBoolean(args.get('value'))
 
-    # query by sAMAccountName
-    if sam_account_name:
-        sam_account_name = escape_filter_chars(sam_account_name)
+    if not sam_account_name:
+        raise Exception("Missing argument - You must specify a username (sAMAccountName)")
+
+    # Query by sAMAccountName
+    sam_account_name = escape_filter_chars(sam_account_name)
     query = "(&(objectClass=User)(objectCategory=person)(sAMAccountName={}))".format(sam_account_name)
-    entries = search_with_paging(query, default_base_dn, attributes='userAccountControl', size_limit=0, time_limit=0)
+    entries = search_with_paging(query, default_base_dn, attributes='userAccountControl')
+
     if not check_if_user_exists_by_attribute(default_base_dn, "sAMAccountName", sam_account_name):
-        return_error(f"sAMAccountName {sam_account_name} was not found.")
-    else:
-        if entries.get('flat'):
-            user = entries.get('flat')[0]
-            user_account_control = user.get('userAccountControl')[0]
+        raise Exception(f"sAMAccountName {sam_account_name} was not found.")
 
-            # Check if UAC flag for "Password Never Expire" (0x10000) is set to True or False:
-            if pwd_n_exp:
-                # Sets the bit 16 to 1
-                user_account_control |= 1 << 16
-                content_output = f"AD account {sam_account_name} has set \"password never expire\" attribute. \
-                Value is set to True"
-            else:
-                # Clears the bit 16 to 0
-                user_account_control &= ~(1 << 16)
-                content_output = f"AD account {sam_account_name} has cleared \"password never expire\" attribute. \
-                Value is set to False"
+    # TODO: make sure that if exist - its a list with at least one element and user_account_control always exist.
+    if user := entries.get('flat'):
+        user = user[0]
+        if user_account_control := user.get('userAccountControl'):
+            user_account_control = user_account_control[0]
 
-            attribute_name = 'userAccountControl'
-            attribute_value = user_account_control
-            dn = user_dn(sam_account_name, default_base_dn)
-            modification = {attribute_name: [('MODIFY_REPLACE', attribute_value)]}
-
-            # modify user
-            modify_object(dn, modification)
-            demisto_entry = {
-                'ContentsFormat': formats['text'],
-                'Type': entryTypes['note'],
-                'Contents': content_output
-            }
-            demisto.results(demisto_entry)
+        # Check if UAC flag for "Password Never Expire" (0x10000) is set to True or False:
+        if pwd_n_exp:
+            # Sets the bit 16 to 1
+            user_account_control |= 1 << 16
+            content_output = (f"AD account {sam_account_name} has set \"password never expire\" attribute. "
+                              f"Value is set to True")
         else:
-            raise DemistoException(f"Unable to fetch attribute 'userAccountControl' for user {sam_account_name}.")
+            # Clears the bit 16 to 0
+            user_account_control &= ~(1 << 16)
+            content_output = (f"AD account {sam_account_name} has cleared \"password never expire\" attribute. "
+                              f"Value is set to False")
+
+        attribute_name = 'userAccountControl'
+        attribute_value = user_account_control
+        dn = user_dn(sam_account_name, default_base_dn)
+        modification = {attribute_name: [('MODIFY_REPLACE', attribute_value)]}
+
+        # Modify user
+        modify_object(dn, modification)
+        demisto_entry = {
+            'ContentsFormat': formats['text'],
+            'Type': entryTypes['note'],
+            'Contents': content_output
+        }
+        demisto.results(demisto_entry)
+
+    else:
+        raise DemistoException(f"Unable to fetch attribute 'userAccountControl' for user {sam_account_name}.")
 
 
 def main():
