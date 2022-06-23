@@ -3694,7 +3694,9 @@ def get_last_commit_from_index(service_account):
 def get_id_set_entity_by_path(entity_path: Path, pack_folder: str, id_set: dict):
     """
     Get the full entity dict from the id set of the entity given as a path, if it does not exist in the id set
-    return None.
+    return None. The item's path in the id set is of the yml/json file, so for integrations, scripts and playbooks this
+    function checks if there is an item in the id set that the containing folder of it's yml file is the same as the
+    containing folder of the entity path given. For all other content items, we check if the path's are identical.
     Args:
         entity_path: path to entity (content item)
         pack_folder: containing folder of that item
