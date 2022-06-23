@@ -152,7 +152,7 @@ def main():  # pragma: no cover
             demisto.getLicenseCustomField("Core.ApiHeader"): demisto.getLicenseCustomField("Core.ApiKey"),
             "Content-Type": "application/json"
         }
-        url = "http://" + demisto.getLicenseCustomField("Core.ApiHost") + '/api/webapp/'
+        url = "http://" + demisto.getLicenseCustomField("Core.ApiHost") + "/api/webapp/"
         add_sensitive_log_strs(demisto.getLicenseCustomField("Core.ApiKey"))
     else:
         headers = {
