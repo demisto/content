@@ -18,7 +18,7 @@ def test_report_incorrect_wildfire_command(mocker):
         - returns markdown, context data and raw response.
     """
     from CortexCoreIR import report_incorrect_wildfire_command, Client
-    wildfire_response = load_test_datload_test_dataa('./test_data/wildfire_response.json')
+    wildfire_response = load_test_data('./test_data/wildfire_response.json')
     mock_client = Client(base_url=f'{Core_URL}/public_api/v1', headers={})
     mocker.patch.object(mock_client, 'report_incorrect_wildfire', return_value=wildfire_response)
     file_hash = "11d69fb388ff59e5ba6ca217ca04ecde6a38fa8fb306aa5f1b72e22bb7c3a252"
