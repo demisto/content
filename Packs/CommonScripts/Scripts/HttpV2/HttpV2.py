@@ -151,10 +151,10 @@ def parse_headers(headers: str) -> Dict:
     if not headers.startswith('{') and not headers.endswith('}'):
         headers = '{' + headers + '}'
     try:
-        headers = json.loads(headers)
+        headers_dict = json.loads(headers)
     except json.decoder.JSONDecodeError:
         raise DemistoException("Make sure the headers are in one of the allowed formats.")
-    return headers
+    return headers_dict
 
 
 ''' MAIN FUNCTION '''
