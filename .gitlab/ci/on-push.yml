@@ -115,6 +115,7 @@ create-instances_test:
   needs: []
   stage: create-instances
   script:
+    - TXT_RED="\e[31m" && TXT_CLEAR="\e[0m"
     - echo -e "${TXT_RED}This text is red,${TXT_CLEAR} but this part isn't${TXT_RED} however this part is again."
     - !reference [.create-release-notes-and-common-docs]
 
