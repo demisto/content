@@ -60,7 +60,7 @@ else:
 
 password = ""
 for x in range(0, length):
-    password += random.SystemRandom(random.seed(time.time())).choice(characters)
+    password += random.SystemRandom(random.seed(time.time())).choice(characters)  # type: ignore
 
 ec = {'RandomString': password}
 raw = json.loads(json.dumps(ec))
