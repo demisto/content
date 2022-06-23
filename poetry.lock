@@ -424,7 +424,8 @@ version = "1.6.8"
 description = "\"A Python library for the Demisto SDK\""
 category = "main"
 optional = false
-python-versions = ">=3.8,<4.0"
+python-versions = "^3.8"
+develop = false
 
 [package.dependencies]
 autopep8 = ">=1.6.0,<2.0.0"
@@ -503,6 +504,12 @@ yamlordereddictloader = ">=0.4.0,<0.5.0"
 
 [package.extras]
 build = ["gsutil (==5.8)"]
+
+[package.source]
+type = "git"
+url = "https://github.com/demisto/demisto-sdk.git"
+reference = "1109875ab929f744d3070709cc8c7a88bc871a17"
+resolved_reference = "1109875ab929f744d3070709cc8c7a88bc871a17"
 
 [[package]]
 name = "deprecated"
@@ -2536,10 +2543,7 @@ demisto-py = [
     {file = "demisto-py-3.1.7.tar.gz", hash = "sha256:43b1263effa3e2dc8cff0d32007a65c20a32614eb53fb2d4283e58c0df607563"},
     {file = "demisto_py-3.1.7-py3-none-any.whl", hash = "sha256:edb5e5ef9bb3a687002169bd1109e694d432f9e0eda578753fba7a9244566547"},
 ]
-demisto-sdk = [
-    {file = "demisto-sdk-1.6.8.tar.gz", hash = "sha256:4dad4b14b0e0e1ff581954411faa9387d93ef645440501dc602163b62566dece"},
-    {file = "demisto_sdk-1.6.8-py3-none-any.whl", hash = "sha256:7b5c572487f88697add33e1a5c0da3143181df76b7bd2ca1828f25fd4bda63fc"},
-]
+demisto-sdk = []
 deprecated = [
     {file = "Deprecated-1.2.13-py2.py3-none-any.whl", hash = "sha256:64756e3e14c8c5eea9795d93c524551432a0be75629f8f29e67ab8caf076c76d"},
     {file = "Deprecated-1.2.13.tar.gz", hash = "sha256:43ac5335da90c31c24ba028af536a91d41d53f9e6901ddb021bcc572ce44e38d"},
