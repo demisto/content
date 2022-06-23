@@ -43,7 +43,7 @@ filter _raw_log contains "vpxd" or _raw_log contains "[vmafdd]" or _raw_log cont
 | alter Message = coalesce(Message_vpxd ,Message_vmdrid ,Message_vmafdd )
 | alter user = coalesce(user0_vpxd , user1_vpxd )
 | alter XDM.Auth.original_event_description = Message
-, ,XDM.Auth.original_event_description= Message
+, XDM.Auth.original_event_description= Message
 | alter XDM.Audit.audited_resource.id  = eventName_vmafdd
 , XDM.Auth.Client.user.username  = user
 | alter XDM.Auth.event_timestamp =parse_timestamp("%Y-%m-%d %H:%M:%E3S",TimeStamp);
