@@ -14,11 +14,12 @@ INTEGRATION_NAME = 'Azure Active Directory Identity and Access'
 
 OUTPUTS_PREFIX = "AADIdentityProtection"
 BASE_URL = 'https://graph.microsoft.com/beta'
-REQUIRED_PERMISSIONS = (
+DEVICE_CODE_SCOPE = ' '.join((
     'offline_access',  # allows device-flow login
     'IdentityRiskEvent.Read.All',
-    'IdentityRiskyUser.ReadWrite.All'
-)
+    'IdentityRiskyUser.ReadWrite.All',
+))
+CLIENT_CREDENTIALS_SCOPE = 'https://graph.microsoft.com/.default'
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
 
@@ -77,31 +78,32 @@ def parse_list(raw_response: dict, human_readable_title: str, context_path: str)
 class AADClient(MicrosoftClient):
     def __init__(self, app_id: str, subscription_id: str, verify: bool, proxy: bool, azure_ad_endpoint: str,
                  tenant_id: str = None, enc_key: str = None, client_credentials: bool = False):
+        self.client_credentials = client_credentials
+        self.subscription_id = subscription_id
+
         if '@' in app_id:  # for use in test-playbook
             app_id, refresh_token = app_id.split('@')
             integration_context = get_integration_context()
             integration_context.update(current_refresh_token=refresh_token)
             set_integration_context(integration_context)
 
-        self.client_credentials = client_credentials
         args = {
-            "azure_ad_endpoint": azure_ad_endpoint,
-            "self_deployed": True,
-            "auth_id": app_id,
-            "grant_type": CLIENT_CREDENTIALS if client_credentials else DEVICE_CODE,
-            "base_url": BASE_URL,
-            "verify": verify,
-            "proxy": proxy,
-            "tenant_id": tenant_id,
-            "enc_key": enc_key
+            'azure_ad_endpoint': azure_ad_endpoint,
+            'self_deployed': True,
+            'auth_id': app_id,
+            'grant_type': CLIENT_CREDENTIALS if self.client_credentials else DEVICE_CODE,
+            'base_url': BASE_URL,
+            'verify': verify,
+            'proxy': proxy,
+            'tenant_id': tenant_id,
+            'enc_key': enc_key,
+            'scope': CLIENT_CREDENTIALS_SCOPE if self.client_credentials else DEVICE_CODE_SCOPE,
         }
-        if not client_credentials:
-            args["scope"] = ' '.join(REQUIRED_PERMISSIONS)
+
+        if not self.client_credentials:
             args["token_retrieval_url"] = 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token'
 
         super().__init__(**args)  # type: ignore
-
-        self.subscription_id = subscription_id
 
     def http_request(self, **kwargs):
         return super().http_request(**kwargs)
