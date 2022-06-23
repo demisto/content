@@ -3,3 +3,7 @@ ignore=IN126,IN145
 
 [file:README.md]
 ignore=RM104
+
+[known_words]
+Proofpoint
+tr

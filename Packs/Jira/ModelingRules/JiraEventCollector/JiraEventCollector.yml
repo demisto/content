@@ -4,7 +4,7 @@ fromversion: 3.3.0
 rules: ''
 schema: |-
   {
-    "jira_jira_raw": {
+    "atlassian_jira_raw": {
       "summary": {
         "type": "string",
         "is_array": false
