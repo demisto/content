@@ -290,17 +290,17 @@ Run any command supported in the API.
 | --- | --- | --- |
 | action | Action to be taken, such as show, get, set, edit, delete, rename, clone, move, override, multi-move, multi-clone, or complete. Documentation - https://docs.paloaltonetworks.com/pan-os/9-1/pan-os-panorama-api/pan-os-xml-api-request-types/configuration-api | Optional | 
 | category | Category parameter. For example, when exporting a configuration file, use "category=configuration". | Optional | 
-| cmd | Specifies the xml structure that defines the command. Used for operation commands (op type command). Can be retrieved from the debugging PAN-OS web UI | Optional | 
+| cmd | Specifies the xml structure that defines the command. Used for operation commands (op type command). Can be retrieved from the debugging PAN-OS web UI. | Optional | 
 | command | Run a command. For example, command =&lt;show&gt;&lt;arp&gt;&lt;entry name='all'/&gt;&lt;/arp&gt;&lt;/show&gt; | Optional | 
 | dst | Specifies a destination. | Optional | 
-| element | Used to define a new value for an object. | Optional | 
+| element | Used to define a new value for an object. Should be an XML object, for example, <static><member>test</member></static>. | Optional | 
 | to | End time (used only when cloning an object). | Optional | 
 | from | Start time (used only when cloning an object). | Optional | 
 | key | Sets a key value. | Optional | 
 | log-type | Retrieves log types. For example, log-type=threat for threat logs. | Optional | 
 | where | Specifies the type of a move operation (for example, where=after, where=before, where=top, where=bottom). | Optional | 
 | period | Time period. For example, period=last-24-hrs | Optional | 
-| xpath | xpath location. xpath defines the location of the object. For example, xpath=/config/predefined/application/entry[@name='hotmail']. Documentation - https://docs.paloaltonetworks.com/pan-os/9-1/pan-os-panorama-api/about-the-pan-os-xml-api/structure-of-a-pan-os-xml-api-request/xml-and-xpath | Optional | 
+| xpath | xpath location. xpath defines the location of the object. For example, xpath=/config/predefined/application/entry[@name='hotmail']. Documentation - https://docs.paloaltonetworks.com/pan-os/9-1/pan-os-panorama-api/about-the-pan-os-xml-api/structure-of-a-pan-os-xml-api-request/xml-and-xpath. | Optional | 
 | pcap-id | PCAP ID included in the threat log. | Optional | 
 | serialno | Specifies the device serial number. | Optional | 
 | reporttype | Chooses the report type, such as dynamic, predefined or custom. | Optional | 
