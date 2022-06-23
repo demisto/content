@@ -377,8 +377,7 @@ class Code42Client(BaseClient):
         return matter_id
 
     def _get_legal_hold_matter_membership_id(self, user_id, matter_id):
-        member_pages = self.sdk.legalhold.get_all_matter_custodians(legal_hold_uid=matter_id,
-                                                                           user_uid=user_id)
+        member_pages = self.sdk.legalhold.get_all_matter_custodians(legal_hold_uid=matter_id, user_uid=user_id)
         for member_page in member_pages:
             members = member_page["legalHoldMemberships"]
             for member in members:
@@ -408,7 +407,10 @@ class Code42OrgNotFoundError(Exception):
 
 class Code42InvalidWatchlistTypeError(Exception):
     def __init__(self, watchlist):
-        super().__init__("Invalid Watchlist type: {0}, run !code42-watchlists-list to get a list of available Watchlists.".format(watchlist))
+        msg = "Invalid Watchlist type: {0}, run !code42-watchlists-list to get a list of available Watchlists.".format(
+            watchlist
+        )
+        super().__init__(msg)
 
 
 class Code42UnsupportedHashError(Exception):
@@ -596,7 +598,6 @@ def map_to_file_context(obj):
 @logger
 def _map_obj_to_context(obj, context_mapper):
     return {v: obj.get(k) for k, v in context_mapper.items() if obj.get(k)}
-
 
 
 """Commands"""
@@ -1090,7 +1091,9 @@ def list_watchlists_included_users(client, args):
     included_users_context = []
     for page in client.sdk.watchlists.get_all_included_users(watchlist_id):
         for user in page["includedUsers"]:
-            included_users_context.append({"Username": user["username"], "AddedTime": user["addedTime"], "WatchlistID": watchlist_id})
+            included_users_context.append(
+                {"Username": user["username"], "AddedTime": user["addedTime"], "WatchlistID": watchlist_id}
+            )
     readable_outputs = tableToMarkdown("Watchlists", included_users_context)
     return CommandResults(
         outputs_prefix="Code42.WatchlistUsers",
@@ -1136,7 +1139,9 @@ def remove_user_from_watchlist_command(client, args):
         outputs={"Watchlist": watchlist, "Username": username, "Success": resp.status_code == 200},
     )
 
+
 """Fetching"""
+
 
 def _process_event_from_observation(event):
     # We need to convert certain fields to a stringified list else React.JS will throw an error
