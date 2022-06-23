@@ -84,7 +84,6 @@ def install_logging(log_file_name: str, include_process_name=False, logger=loggi
                                              level_styles=LEVEL_STYLES)
     ch = logger.StreamHandler(sys.stdout)
     ch.setFormatter(formatter)
-    logging.warning("This is Arad's test")
     log_file_path = os.path.join(ARTIFACTS_PATH, 'logs', log_file_name) if os.path.exists(
         os.path.join(ARTIFACTS_PATH, 'logs')) else os.path.join(ARTIFACTS_PATH, log_file_name)
     fh = logger.FileHandler(log_file_path)
@@ -92,6 +91,7 @@ def install_logging(log_file_name: str, include_process_name=False, logger=loggi
     ch.setLevel(logger.INFO)
     fh.setLevel(logger.DEBUG)
     configure_root_logger(ch, fh, logger)
+    logging.warning("This is Arad's test")
     return log_file_path
 
 
