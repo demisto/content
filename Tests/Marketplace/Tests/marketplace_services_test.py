@@ -2945,14 +2945,14 @@ class TestCheckChangesRelevanceForMarketplace:
                 {
                     "name": "Dummy name 1",
                     "display_name": "Dummy display name 1",
-                    "file_path": "path/to/integration1"
+                    "file_path": "Packs/pack_name/Integrations/integration_name/file"
                 }}
             ],
             "XSIAMDashboards": [{'xsiam_dash_id_1':
                 {
                     "name": "Dummy xdash name",
                     "display_name": "Dummy xdash display name",
-                    "file_path": "path/to/xsiamdashboard"
+                    "file_path": "Packs/pack_name/Dashboards/dash_name/file"
                 }}
             ]
         }
@@ -2975,7 +2975,7 @@ class TestCheckChangesRelevanceForMarketplace:
         id_set_copy = self.ID_SET_MP_V2.copy()
         dummy_pack._modified_files = {
             'Dashboards': [
-                'path/to/dashboard'
+                'Packs/pack_name/Dashboards/dash_name2/file'
             ]
         }
 
@@ -2995,9 +2995,13 @@ class TestCheckChangesRelevanceForMarketplace:
                - Ensure the mapper exist in the modified files data under Classifiers.
         """
         id_set_copy = self.ID_SET_MP_V2.copy()
-        dummy_pack._modified_files["Classifiers"] = ["Packs/pack_name/Classifiers/file"]
-        id_set_copy["Mappers"] = [{"mapper_id":
-                                       {"name": "mapper name", "file_path": "Packs/pack_name/Classifiers/file"}}]
+        dummy_pack._modified_files = {"Classifiers": ["Packs/pack_name/Classifiers/file"]}
+        id_set_copy["Mappers"] = [
+            {"mapper_id":
+                 {"name": "mapper name",
+                  "file_path": "Packs/pack_name/Classifiers/file"}
+             }
+        ]
         id_set_copy["Classifiers"] = []
         expected_modified_files_data = {
             "Classifiers": [{"mapper_id":
