@@ -1,6 +1,6 @@
 {
     "name": "SNDBOX (Deprecated)",
-    "description": "SNDBOX as a service",
+    "description": "Deprecated. No available replacement.",
     "support": "xsoar",
     "currentVersion": "1.0.7",
     "author": "Cortex XSOAR",
