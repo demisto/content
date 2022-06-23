@@ -2,11 +2,13 @@ import json
 import logging
 import time
 
+import demistomock as demisto  # noqa: F401
 import requests
-
-import demistomock as demisto
 import resilient
-from CommonServerPython import *
+from CommonServerPython import *  # noqa: F401
+
+register_module_line('IBM Resilient Systems', 'start', __line__())
+
 
 ''' IMPORTS '''
 logging.basicConfig()
@@ -78,43 +80,6 @@ NIST_DICT = {
     'Web': 3
 }
 
-NIST_ID_DICT = {
-    2: 'Attrition',
-    4: 'E-mail',
-    1: 'External/RemovableMedia',
-    5: 'Impersonation',
-    6: 'ImproperUsage',
-    7: 'Loss/TheftOfEquipment',
-    8: 'Other',
-    3: 'Web'
-}
-
-SEVERITY_CODE_DICT = {
-    4: 'Low',
-    5: 'Medium',
-    6: 'High'
-}
-
-RESOLUTION_DICT = {
-    7: 'Unresolved',
-    8: 'Duplicate',
-    9: 'Not an Issue',
-    10: 'Resolved'
-}
-
-RESOLUTION_TO_ID_DICT = {
-    'Unresolved': 7,
-    'Duplicate': 8,
-    'Not an Issue': 9,
-    'Resolved': 10
-}
-
-EXP_TYPE_ID_DICT = {
-    1: 'Unknown',
-    2: 'ExternalParty',
-    3: 'Individual'
-}
-
 ''' HELPER FUNCTIONS '''
 
 
@@ -129,7 +94,8 @@ def prettify_incidents(client, incidents):
     for incident in incidents:
         incident['id'] = str(incident['id'])
         if isinstance(incident['description'], unicode):
-            incident['description'] = incident['description'].replace('<div>', '').replace('</div>', '')
+            incident['description'] = incident['description'].replace('<div>', '').replace('</div>',
+                                                                                           '')
         incident['discovered_date'] = normalize_timestamp(incident['discovered_date'])
         incident['created_date'] = normalize_timestamp(incident['create_date'])
         incident.pop('create_date', None)
@@ -146,7 +112,7 @@ def prettify_incidents(client, incidents):
                 incident.pop('phase_id', None)
                 break
         if incident['severity_code']:
-            incident['severity'] = SEVERITY_CODE_DICT[incident['severity_code']]
+            incident['severity'] = incident.get('severity_code')
             incident.pop('severity_code', None)
         start_date = incident.get('start_date')
         if start_date:
@@ -161,13 +127,13 @@ def prettify_incidents(client, incidents):
             incident.pop('negative_pr_likely', None)
         exposure_type_id = incident.get('exposure_type_id')
         if exposure_type_id:
-            incident['exposure_type'] = EXP_TYPE_ID_DICT[exposure_type_id]
+            incident['exposure_type'] = exposure_type_id
             incident.pop('exposure_type_id', None)
         nist_attack_vectors = incident.get('nist_attack_vectors')
         if nist_attack_vectors:
             translated_nist = []
             for vector in nist_attack_vectors:
-                translated_nist.append(NIST_ID_DICT[vector])
+                translated_nist.append(incident.get('nist_attack_vectors'))
             incident['nist_attack_vectors'] = translated_nist
     return incidents
 
@@ -203,20 +169,11 @@ def search_incidents_command(client, args):
 def search_incidents(client, args):
     conditions = []  # type: Any
     if 'severity' in args:
-        value = []
         severity = args['severity'].split(',')
-        if 'Low' in severity:
-            value.append(50)
-        if 'Medium' in severity:
-            value.append(51)
-        if 'High' in severity:
-            value.append(52)
-        if not value:
-            raise Exception('Severity should be given in capital case and comma separated, e.g. Low,Medium,High')
         conditions.append({
             'field_name': 'severity_code',
             'method': 'in',
-            'value': value
+            'value': severity
         })
     if 'date-created-before' in args:
         value = date_to_timestamp(args['date-created-before'], date_format='%Y-%m-%dT%H:%M:%SZ')
@@ -293,11 +250,10 @@ def search_incidents(client, args):
                 'value': from_time * 1000
             }))
     if 'incident-type' in args:
-        type_id = INCIDENT_TYPE_DICT[args['incident-type']]
         conditions.append({
             'field_name': 'incident_type_ids',
             'method': 'contains',
-            'value': [type_id]
+            'value': [args['incident-type']]
         })
     if 'nist' in args:
         nist = NIST_DICT[args['nist']]
@@ -341,19 +297,21 @@ def search_incidents(client, args):
             'conditions': conditions
         }]
     }
-    response = client.post('/incidents/query', data)
+    response = client.post('/incidents/query?handle_format=names', data)
     return response
 
 
-def extract_data_form_other_fields_argument(other_fields, incident, changes):
+def extract_data_form_other_fields_argument(other_fields, patch):
     """Extracts the values from other-field argument and build a json object in ibm format to update an incident.
 
     Args:
         other_fields (str): Contains the field that should be changed and the new value ({"name": {"text": "The new name"}}).
         incident (dict): Contains the old value of the field that should be changed ({"name": "The old name"}).
-        changes (list): Contains the fields that should be changed with the old and new values in IBM format
-            ([{'field': {'name': 'confirmed'}, 'old_value': {'boolean': 'false'}, 'new_value': {'boolean': 'true'},
-            {'field': {'name': 'name'}, 'old_value': {'text': 'The old name'}, 'new_value': {'text': 'The new name'}}]).
+        patch (Resilient.Patch): Instance a Resilient.Patch variable (e.g. 'patch') then call patch.add_valu(name,value)
+                                with name being string name of the field being changed and value being the value
+                                this replaces the previous 'change' requiring old and new value, i.e. patch does this
+                                and does not require IDs, which are tenant specific, you simply use the name,
+                                for example, patch.add_value('resolution_id', args['resolution'])
 
     """
 
@@ -363,41 +321,22 @@ def extract_data_form_other_fields_argument(other_fields, incident, changes):
         raise Exception('The other_fields argument is not a valid json. ' + str(e))
 
     for field_name, field_value in other_fields_json.items():
-        changes.append(
-            {
-                'field': {'name': field_name},
-                # The format should be {type: value}.
-                # Because the type is not returned from the API we take the type from the new value.
-                'old_value': {list(field_value.keys())[0]: incident[field_name]},
-                'new_value': field_value
-            }
-        )
+        patch.add_value(field_name, field_value)
+
+    return patch
 
 
 def update_incident_command(client, args):
     if len(args.keys()) == 1:
         raise Exception('No fields to update were given')
     incident_id = args['incident-id']
-    incident = get_incident(client, incident_id, True)
-    changes = []
+    incident = get_incident(client, incident_id)
+
+    patch = resilient.Patch(incident)
     if 'severity' in args:
-        old_value = incident['severity_code']
         severity = args['severity']
-        if severity == 'Low':
-            new_value = 4
-        elif severity == 'Medium':
-            new_value = 5
-        elif severity == 'High':
-            new_value = 6
-        changes.append({
-            'field': 'severity_code',
-            'old_value': {
-                'id': old_value
-            },
-            'new_value': {
-                'id': new_value
-            }
-        })
+        patch.add_value('severity_code', severity)
+
     if 'owner' in args:
         users = get_users(client)
         old_value = incident['owner_id']
@@ -410,121 +349,68 @@ def update_incident_command(client, args):
                 break
         if new_value == -1:
             raise Exception('User was not found')
-        changes.append({
-            'field': 'owner_id',
-            'old_value': {
-                'id': old_value
-            },
-            'new_value': {
-                'id': new_value
-            }
-        })
+        patch.add_value('owner_id', new_value)
+
     if 'incident-type' in args:
         old_value = incident['incident_type_ids']
-        type_id = INCIDENT_TYPE_DICT[args['incident-type']]
+        type_id = args['incident-type']
         new_value_list = old_value[:]
         new_value_list.append(type_id)
-        changes.append({
-            'field': 'incident_type_ids',
-            'old_value': {
-                'ids': old_value
-            },
-            'new_value': {
-                'ids': new_value_list
-            }
-        })
+        patch.add_value('incident_type_ids', new_value_list)
+
     if 'nist' in args:
         old_value = incident['nist_attack_vectors']
-        nist_id = NIST_DICT[args['nist']]
+        nist_id = args['nist']
         new_value_list = old_value[:]
         new_value_list.append(nist_id)
-        changes.append({
-            'field': 'nist_attack_vectors',
-            'old_value': {
-                'ids': old_value
-            },
-            'new_value': {
-                'ids': new_value_list
-            }
-        })
+        patch.add_value('nist_attack_vectors', new_value_list)
+
     if 'resolution' in args:
-        old_value = incident['resolution_id']
-        new_value = RESOLUTION_TO_ID_DICT[args['resolution']]
-        changes.append({
-            'field': 'resolution_id',
-            'old_value': {
-                'id': old_value
-            },
-            'new_value': {
-                'id': new_value
-            }
-        })
+        patch.add_value('resolution_id', args['resolution'])
+
     if 'resolution-summary' in args:
-        old_summary = incident['resolution_summary']
-        new_summary = args['resolution-summary']
-        changes.append({
-            'field': 'resolution_summary',
-            'old_value': {
-                'textarea': old_summary
-            },
-            'new_value': {
-                'textarea': {
-                    'format': 'html',
-                    'content': new_summary
-                }
-            }
-        })
+        patch.add_value('resolution_summary', args['resolution-summary'])
+
     if 'description' in args:
-        old_description = incident['description']
-        new_description = args['description']
-        changes.append({
-            'field': 'description',
-            'old_value': {
-                'textarea': old_description
-            },
-            'new_value': {
-                'textarea': {
-                    'format': 'html',
-                    'content': new_description
-                }
-            }
-        })
+        patch.add_value('description', args['description'])
+
     if 'name' in args:
-        old_name = incident['name']
-        new_name = args['name']
-        changes.append({
-            'field': 'name',
-            'old_value': {
-                'text': old_name
-            },
-            'new_value': {
-                'text': new_name
-            }
-        })
+        patch.add_value('name', args['name'])
+
     if args.get('other-fields'):
-        extract_data_form_other_fields_argument(args.get('other-fields'), incident, changes)
-    data = {
-        'changes': changes
-    }
-    response = update_incident(client, incident_id, data)
+        patch = extract_data_form_other_fields_argument(args.get('other-fields'), patch)
+
+    response = update_incident(client, incident_id, patch)
     if response.status_code == 200:
         return 'Incident ' + str(args['incident-id']) + ' was updated successfully.'
 
 
-def update_incident(client, incident_id, data):
-    response = client.patch('/incidents/' + str(incident_id), data)
+def update_incident(client, incident_id, patch):
+    response = client.patch('/incidents/' + str(incident_id), patch)
     return response
 
 
-def get_incident_command(client, incident_id):
+def get_incident_command(client, args):
+    incident_id = args['incident-id']
     incident = get_incident(client, incident_id)
+
     wanted_keys = ['create_date', 'discovered_date', 'description', 'due_date', 'id', 'name', 'owner_id',
                    'phase_id', 'severity_code', 'confirmed', 'employee_involved', 'negative_pr_likely',
                    'confirmed', 'start_date', 'due_date', 'negative_pr_likely', 'reporter', 'exposure_type_id',
                    'nist_attack_vectors']
+
+    if 'other_fields' in args.keys():
+        other_keys = args['other_fields']
+        other_keys = args['other_fields'].replace('[', '').replace(']', '').replace('"', '').replace("'", '')
+        other_keys = other_keys.split(',')
+        wanted_keys += other_keys
+
     pretty_incident = dict((k, incident[k]) for k in wanted_keys if k in incident)
+    pretty_properties_incident = dict((k, incident["properties"][k]) for k in wanted_keys if k in incident["properties"])
+    pretty_incident.update(pretty_properties_incident)
+
     if incident['resolution_id']:
-        pretty_incident['resolution'] = RESOLUTION_DICT[incident['resolution_id']]
+        pretty_incident['resolution'] = incident['resolution_id']
     if incident['resolution_summary']:
         pretty_incident['resolution_summary'] = incident['resolution_summary'].replace('<div>', '').replace('</div>',
                                                                                                             '')
@@ -559,7 +445,27 @@ def get_incident_command(client, incident_id):
 def get_incident(client, incident_id, content_format=False):
     url = '/incidents/' + str(incident_id)
     if content_format:
-        url += '?text_content_output_format=objects_convert_html'
+        # url += '?text_content_output_format=objects_convert_html'
+        url += '?handle_format=names'
+
+        # enhancement (#13657) commit 7521e4f411de7eeebbdcfeae015cad44512cd528
+        # is invalid and creates a fault with
+        # all fields with enums (i.e. dropdown lists):
+        #       will return numbers not the text
+        # e.g. custom field with YES/NO should return new_field:Yes
+        # but when add objects_convert_html it will return new_field:1188
+        # you need to add handle_format=names to url
+
+        # in addition, you can combine, e.g.
+        # url += '?text_content_output_format=objects_convert_html&handle_format=names'
+
+        # however Resilient text fields do not support html so the above will return
+        # all text fields with DIV blocks, which is probably not desired
+        # so I would let Resilient return just the text and let caller add HTML
+        # or make it a new flag to enable/disable this feature #13657
+        # which was probably requested by somebody without thinking the consequences
+        # Obviously, remove these comments, this was the best place to show reasoning :)
+
     response = client.get(url)
     return response
 
@@ -590,7 +496,7 @@ def get_members_command(client, incident_id):
             'Members': members
         }
     }
-    title = 'Members of incident ' + incident_id
+    title = 'Members of incident ' + str(incident_id)
     entry = {
         'Type': entryTypes['note'],
         'Contents': members,
@@ -603,7 +509,7 @@ def get_members_command(client, incident_id):
 
 
 def get_members(client, incident_id):
-    response = client.get('/incidents/' + incident_id + '/members')
+    response = client.get('/incidents/' + str(incident_id) + '/members')
     return response
 
 
@@ -668,7 +574,7 @@ def get_tasks_command(client, incident_id):
                 'Tasks': tasks
             }
         }
-        title = 'Incident ' + incident_id + ' tasks'
+        title = 'Incident ' + str(incident_id) + ' tasks'
         entry = {
             'Type': entryTypes['note'],
             'Contents': response,
@@ -685,7 +591,7 @@ def get_tasks_command(client, incident_id):
 
 
 def get_tasks(client, incident_id):
-    response = client.get('/incidents/' + incident_id + '/tasks')
+    response = client.get('/incidents/' + str(incident_id) + '/tasks')
     return response
 
 
@@ -723,7 +629,7 @@ def set_member_command(client, incident_id, members):
                 'Members': response
             }
         }
-        title = 'Members of incident ' + incident_id
+        title = 'Members of incident ' + str(incident_id)
         entry = {
             'Type': entryTypes['note'],
             'Contents': response,
@@ -736,17 +642,18 @@ def set_member_command(client, incident_id, members):
 
 
 def set_member(client, incident_id, data):
-    response = client.put('/incidents/' + incident_id + '/members', data)
+    response = client.put('/incidents/' + str(incident_id) + '/members', data)
     return response
 
 
 def close_incident_command(client, incident_id):
     incident = get_incident(client, incident_id)
-    if not incident['resolution_id'] or not incident['resolution_summary']:
-        return 'Resolution and resolution summary of the incident should be updated before closing an incident.'
+    # resolution not a mandatory requirement
+    # if not incident['resolution_id'] or not incident['resolution_summary']:
+    #    return 'Resolution and resolution summary of the incident should be updated before closing an incident.'
     response = close_incident(client, incident_id, incident)
     if response.status_code == 200:
-        return 'Incident ' + incident_id + ' was closed.'
+        return 'Incident ' + str(incident_id) + ' was closed.'
 
 
 def close_incident(client, incident_id, incident):
@@ -846,7 +753,7 @@ def incident_artifacts_command(client, incident_id):
                 'Artifacts': ec_artifacts
             }
         }
-        title = 'Incident ' + incident_id + ' artifacts'
+        title = 'Incident ' + str(incident_id) + ' artifacts'
         entry = {
             'Type': entryTypes['note'],
             'Contents': response,
@@ -862,7 +769,7 @@ def incident_artifacts_command(client, incident_id):
 
 
 def incident_artifacts(client, incident_id):
-    response = client.get('/incidents/' + incident_id + '/artifacts')
+    response = client.get('/incidents/' + str(incident_id) + '/artifacts')
     return response
 
 
@@ -899,7 +806,7 @@ def incident_attachments_command(client, incident_id):
                 'Attachments': attachments
             }
         }
-        title = 'Incident ' + incident_id + ' attachments'
+        title = 'Incident ' + str(incident_id) + ' attachments'
         entry = {
             'Type': entryTypes['note'],
             'Contents': response,
@@ -914,7 +821,7 @@ def incident_attachments_command(client, incident_id):
 
 
 def incident_attachments(client, incident_id):
-    response = client.get('/incidents/' + incident_id + '/attachments')
+    response = client.get('/incidents/' + str(incident_id) + '/attachments')
     return response
 
 
@@ -957,7 +864,7 @@ def related_incidents_command(client, incident_id):
                 'Related': ec_incidents
             }
         }
-        title = 'Incident ' + incident_id + ' related incidents'
+        title = 'Incident ' + str(incident_id) + ' related incidents'
         entry = {
             'Type': entryTypes['note'],
             'Contents': response,
@@ -972,7 +879,7 @@ def related_incidents_command(client, incident_id):
 
 
 def related_incidents(client, incident_id):
-    response = client.get('/incidents/' + incident_id + '/related_ex?want_artifacts=true')
+    response = client.get('/incidents/' + str(incident_id) + '/related_ex?want_artifacts=true')
     return response
 
 
@@ -1071,6 +978,84 @@ def fetch_incidents(client):
     demisto.incidents(incidents)
 
 
+def get_table_command(client, args):
+    incident_id = args['incident_id']
+    table_name = args['table_name']
+    table = get_table(client, incident_id, table_name)
+    row_data = table["rows"]
+    rows = []
+    for row in row_data:
+        row_values = {}
+        for cell in row['cells']:
+            row_values[cell] = row['cells'][cell]['value']
+        rows.append(row_values)
+    # rows is stored in the form [{row1}, {row2}]. Need to figure out the form XSOAR wants and hour the entry works
+
+    # raise ValueError(rows)
+    if len(rows) > 0:
+        column_headers = list(rows[0].keys())
+    else:
+        column_headers = []
+    ec = {
+        'Resilient.Incidents(val.Id && val.Id === obj.Id)': rows
+    }
+    title = 'IBM Resilient Systems ' + str(incident_id) + ' Table'
+    entry = {
+        'Type': entryTypes['note'],
+        'Contents': rows,
+        'ContentsFormat': formats['json'],
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown(title, rows, headers=column_headers),
+        'EntryContext': ec
+    }
+    return entry
+
+
+def get_table(client, incident_id, table_name):
+    response = client.get('/incidents/' + str(incident_id) + '/table_data/' + table_name + '?handle_format=names')
+    return response
+
+
+def update_table_command(client, args):
+    incident_id = args["incident_id"]
+    table_name = args["table_name"]
+
+    # if list then presume list of dictionaries, list of strings should not be here, and ok
+    # if dictionary then turn into a list
+    # if string then presume dictionary string and load it then wrap
+    if isinstance(args['row'], list):
+        new_rows = args['row']
+
+    elif isinstance(args['row'], dict):
+        new_rows = [args['row']]
+
+    elif isinstance(args['row'], str):
+        if not args['row'].startswith("["):
+            args['row'] = "[" + args['row'] + "]"
+        try:
+            new_rows = json.loads(args['row'])
+        except Exception as e:
+            raise ValueError("The row which has been provided is not a list or dict and failed converting " + args + str(e))
+    else:
+        raise ValueError("The row which has been provided is not a list, dict or string: " + str(type(args['row'])))
+
+    for row in new_rows:
+        if "cells" in row.keys():
+            new_row = row
+        else:
+            raise ValueError("The data provided is incorrect")
+
+        update_table(client, incident_id, table_name, new_row)
+        # Add an if to check the status
+
+    return 'Table ' + table_name + ' in incident ' + str(incident_id) + ' was updated successfully.'
+
+
+def update_table(client, incident_id, table_name, row):
+    response = client.post('/incidents/' + str(incident_id) + '/table_data/' + table_name + '/row_data?handle_format=names', row)
+    return response
+
+
 def test():
     """Verify that the first_fetch parameter is according to the standards, if exists.
 
@@ -1137,7 +1122,7 @@ def main():
         elif demisto.command() == 'rs-incidents-get-members':
             demisto.results(get_members_command(client, args['incident-id']))
         elif demisto.command() == 'rs-get-incident':
-            demisto.results(get_incident_command(client, args['incident-id']))
+            demisto.results(get_incident_command(client, args))
         elif demisto.command() == 'rs-incidents-update-member':
             demisto.results(set_member_command(client, args['incident-id'], args['members']))
         elif demisto.command() == 'rs-incidents-get-tasks':
@@ -1159,6 +1144,11 @@ def main():
         elif demisto.command() == 'rs-add-artifact':
             demisto.results(add_artifact_command(client, args['incident-id'], args['artifact-type'],
                                                  args['artifact-value'], args.get('artifact-description')))
+        elif demisto.command() == 'rs-get-table':
+            demisto.results(get_table_command(client, args))
+        elif demisto.command() == 'rs-update-table':
+            demisto.results(update_table_command(client, args))
+
     except Exception as e:
         LOG(e.message)
         LOG.print_log()
@@ -1167,3 +1157,5 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
+
+register_module_line('IBM Resilient Systems', 'end', __line__())
