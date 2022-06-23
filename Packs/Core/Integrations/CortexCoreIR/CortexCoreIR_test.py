@@ -87,4 +87,3 @@ class TestPrevalenceCommands:
                                         {'key_name': 'some key', 'value_name': 'some value'})
         assert res.outputs[0].get('value') is True
         assert res.outputs[0].get('args', {}).get('key_name') == 'some key'
-

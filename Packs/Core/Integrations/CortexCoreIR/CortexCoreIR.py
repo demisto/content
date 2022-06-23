@@ -10,7 +10,6 @@ TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 INTEGRATION_CONTEXT_BRAND = 'Core'
 INTEGRATION_NAME = 'Cortex Core - IR'
 
-
 XSOAR_RESOLVED_STATUS_TO_Core = {
     'Other': 'resolved_other',
     'Duplicate': 'resolved_duplicate',
@@ -123,9 +122,12 @@ def handle_prevalence_command(client: Client, command: str, args: dict):
     command_type = PREVALENCE_COMMANDS[command]
     return CommandResults(
         readable_output=tableToMarkdown(string_to_table_header(f'{command_type} Prevalence'),
-        [{key_names_in_response[command_type]: item.get('args', {}).get(key_names_in_response[command_type]),
-          'Prevalence': item.get('value')} for item in res],
-        headerTransform=string_to_table_header),
+                                        [{
+                                            key_names_in_response[command_type]: item.get('args', {}).get(
+                                                key_names_in_response[command_type]),
+                                            'Prevalence': item.get('value')
+                                        } for item in res],
+                                        headerTransform=string_to_table_header),
         outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.AnalyticsPrevalence.{command_type.title()}',
         outputs=res,
         raw_response=res,
