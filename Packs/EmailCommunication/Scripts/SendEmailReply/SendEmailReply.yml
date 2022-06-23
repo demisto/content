@@ -25,7 +25,7 @@ args:
   predefined:
   - 'true'
   - 'false'
-  name: sign_and_decrypt
+  name: sign_and_encrypt
   required: false
 - name: mail_sender_instance
   required: false
