@@ -1,6 +1,6 @@
 {
     "name": "Microsoft Policy And Compliance (Deprecated)",
-    "description": "An integration for Microsoft's management using PowerShell\",",
+    "description": "Deprecated. Use Office 365 and Azure Configuration Analysis instead.",
     "support": "xsoar",
     "currentVersion": "1.0.2",
     "author": "Cortex XSOAR",
