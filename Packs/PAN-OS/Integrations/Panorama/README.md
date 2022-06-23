@@ -221,11 +221,11 @@ Run any command supported in the API.
 | job-id | Job ID. | Optional | 
 | query | Query string. | Optional | 
 | vsys | The name of the virtual system to be configured. If no vsys is mentioned, this command will not use the vsys parameter. | Optional | 
-
+| update-context | Set to true if you want to store the command output in the context. | Optional | 
 
 #### Context Output
 
-There is no context output for this command.
+There is no context output for this command if you set "update-context" to false.
 
 
 ### pan-os-get-predefined-threats-list

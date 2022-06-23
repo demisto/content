@@ -3656,6 +3656,12 @@ script:
     - description: The name of the virtual system to be configured. If no vsys is
         mentioned, this command will not use the vsys parameter.
       name: vsys
+    - description: Set to true if you want to store the command output in the context.
+      name: update-context
+      auto: PREDEFINED
+      predefined:
+        - true
+        - false
     description: Runs any command supported in the API.
     name: pan-os
   - arguments:

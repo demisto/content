@@ -514,24 +514,37 @@ def panorama_command(args: dict):
     """
     Executes a command
     """
-    params = {}
+    params = {'key': API_KEY}
     for arg in args.keys():
         params[arg] = args[arg]
-    params['key'] = API_KEY
-
-    result = http_request(
-        URL,
-        'POST',
-        body=params
-    )
-
-    return_results({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': result,
-        'ReadableContentsFormat': formats['text'],
-        'HumanReadable': 'Command was executed successfully.',
-    })
+    if args.get('update-context') == 'true':
+        params.pop('update-context')
+        result = http_request(
+            URL,
+            'POST',
+            body=params
+        )
+        return_results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['text'],
+            'HumanReadable': 'Command was executed successfully.',
+            'EntryContext': {"Panorama.Command": result}
+        })
+    else:
+        result = http_request(
+            URL,
+            'POST',
+            body=params
+        )
+        return_results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['json'],
+            'Contents': result,
+            'ReadableContentsFormat': formats['text'],
+            'HumanReadable': 'Command was executed successfully.',
+        })
 
 
 @logger
