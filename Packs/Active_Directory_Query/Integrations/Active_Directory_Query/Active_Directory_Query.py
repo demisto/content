@@ -1643,7 +1643,7 @@ def set_password_not_expire(default_base_dn):
     pwd_n_exp = argToBoolean(args.get('value'))
 
     if not sam_account_name:
-        raise Exception("Missing argument - You must specify a username (sAMAccountName)")
+        raise Exception("Missing argument - You must specify a username (sAMAccountName).")
 
     # Query by sAMAccountName
     sam_account_name = escape_filter_chars(sam_account_name)
