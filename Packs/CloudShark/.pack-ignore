@@ -6,6 +6,3 @@ ignore=IN145
 
 [file:CloudShark_image.png]
 ignore=IM111
-
-[file:Packs/CloudShark/README.md]
-ignore=RM112
