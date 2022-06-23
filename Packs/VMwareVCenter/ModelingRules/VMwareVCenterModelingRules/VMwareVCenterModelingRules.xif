@@ -43,7 +43,7 @@ filter _raw_log contains "vpxd" or _raw_log contains "[vmafdd]" or _raw_log cont
 | alter Message = coalesce(Message_vpxd ,Message_vmdrid ,Message_vmafdd )
 | alter user = coalesce(user0_vpxd , user1_vpxd )
 | alter XDM.Auth.original_event_description = Message
-, XDM.Auth.original_event_description= Message
+, XDM.Auth.original_event_description= Message  
 | alter XDM.Auth.Client.user.identifier  = eventName_vmafdd
 , XDM.Auth.Client.user.username  = user
 | alter XDM.Auth.event_timestamp =parse_timestamp("%Y-%m-%d %H:%M:%E3S",TimeStamp);
@@ -78,7 +78,7 @@ filter _raw_log contains "tomcat" or _raw_log contains "HTTP"
 | alter bytes_size = coalesce(Bytes_size2 ,Bytes_size1 )
 | alter request= arrayindex(regextract(_raw_log ,"\s\"?([A-Z]+?\s[^\"?\s]+)") ,0)
 | alter User_agent= arrayindex(regextract(_raw_log ,"\d+\s\(([^\)]+)") ,0)
-| alter XDM.Network.event_description= message
+| alter XDM.Network.original_event_description = message
 | alter XDM.Network.http.method=http_method
 | alter XDM.Network.Source.ipv4 =source_ip
 | alter XDM.Network.Source.port=to_number(source_port)
