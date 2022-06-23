@@ -1,11 +1,16 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+from datetime import date, datetime
+
 import boto3
+import demistomock as demisto  # noqa: F401
+import urllib3.util
 from botocore.config import Config
 from botocore.parsers import ResponseParserError
-import urllib3.util
-from datetime import datetime, date
+from CommonServerPython import *  # noqa: F401
+from dateparser import parse
+from pytz import utc
+
+register_module_line('AWS - CloudTrail', 'start', __line__())
+
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -412,10 +417,77 @@ def test_function():
         demisto.results('ok')
 
 
+def calculate_fetch_start_time(last_fetch, first_fetch):
+    # if last_fetch is None:
+    if not last_fetch:
+        if not first_fetch:
+            first_fetch = '5 days'
+        first_fetch_dt = parse(first_fetch).replace(tzinfo=utc)
+        first_fetch_time = first_fetch_dt.timestamp()
+        return first_fetch_time
+    else:
+        return float(last_fetch)
+
+
+def fetch_incidents(args):
+    client = aws_session(
+        region=args.get('region'),
+        roleArn=args.get('roleArn'),
+        roleSessionName=args.get('roleSessionName'),
+        roleSessionDuration=args.get('roleSessionDuration'),
+    )
+
+    last_fetch = demisto.getLastRun()
+    first_fetch = demisto.params().get('first_fetch')
+    attribute_key = demisto.params().get('AttributeKey')
+    if not attribute_key:
+        attribute_key = 'EventName'
+    attribute_value = demisto.params().get('AttributeValue')
+
+    fetch_start_time = calculate_fetch_start_time(last_fetch, first_fetch)
+
+    incidents = []
+    incident_created_time = fetch_start_time
+    kwargs = {
+        'LookupAttributes': [{
+            'AttributeKey': attribute_key,
+            'AttributeValue': attribute_value
+        }]
+    }
+
+    kwargs.update({'StartTime': fetch_start_time})
+
+    client.lookup_events(**kwargs)
+    paginator = client.get_paginator('lookup_events')
+    for response in paginator.paginate(**kwargs):
+        for i, event in enumerate(response['Events']):
+            incident = {
+                'EventId': event.get('EventId'),
+                'Name': event.get('EventName'),
+                'EventTime': handle_returning_date_to_string(event.get('EventTime', '01-01-01T00:00:00')),
+                'EventSource': event.get('EventSource'),
+                'ResourceName': event.get('Resources')[0].get('ResourceName') if event.get('Resources') else None,
+                'ResourceType': event.get('Resources')[0].get('ResourceType') if event.get('Resources') else None,
+                'CloudTrailEvent': event.get('CloudTrailEvent'),
+                'Username': event.get('Username'),
+                'rawJSON': json.dumps(event, indent=4, sort_keys=True, default=str)
+            }
+            incidents.append(incident)
+            incident_created_time = (event.get('EventTime', '01-01-01T00:00:00') + timedelta(seconds=1)).timestamp()
+
+    if incident_created_time > fetch_start_time:
+        last_fetch = str(incident_created_time)
+        demisto.setLastRun(last_fetch)
+
+    demisto.incidents(incidents)
+
+
 '''EXECUTION BLOCK'''
 try:
     if demisto.command() == 'test-module':
         test_function()
+    if demisto.command() == 'fetch-incidents':
+        fetch_incidents(demisto.args())
     if demisto.command() == 'aws-cloudtrail-create-trail':
         create_trail(demisto.args())
     if demisto.command() == 'aws-cloudtrail-delete-trail':
@@ -438,3 +510,5 @@ except ResponseParserError as e:
 except Exception as e:
     return_error('Error has occurred in the AWS CloudTrail Integration: {code}\n {message}'.format(
         code=type(e), message=str(e)))
+
+register_module_line('AWS - CloudTrail', 'end', __line__())
