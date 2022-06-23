@@ -18,7 +18,7 @@ def test_report_incorrect_wildfire_command(mocker):
         - returns markdown, context data and raw response.
     """
     from CortexCoreIR import report_incorrect_wildfire_command, Client
-    wildfire_response = load_test_data('./test_data/wildfire_response.json')
+    wildfire_response = load_test_datload_test_dataa('./test_data/wildfire_response.json')
     mock_client = Client(base_url=f'{Core_URL}/public_api/v1', headers={})
     mocker.patch.object(mock_client, 'report_incorrect_wildfire', return_value=wildfire_response)
     file_hash = "11d69fb388ff59e5ba6ca217ca04ecde6a38fa8fb306aa5f1b72e22bb7c3a252"
@@ -43,11 +43,14 @@ class TestPrevalenceCommands:
             Then:
                 - Verify response is as expected.
         """
-        api_res = self.api_responses['domain']
-        mocker.patch.object(Client, 'http_request', return_value=api_res)
-        res = handle_prevalence_command(self.prevalence_client, 'core-get-domain-analytics-prevalence',
-                                        {'domain': 'some-web.com'})
-        x = 5
+        from CortexCoreIR import handle_prevalence_command, Client
+        mock_client = Client(base_url=f'{Core_URL}/xsiam/', headers={})
+        mock_res = load_test_data('./test_data/prevalence_response.json')
+        mocker.patch.object(mock_client, 'get_prevalence', return_value=mock_res.get('domain'))
+        res = handle_prevalence_command(mock_client, 'core-get-domain-analytics-prevalence',
+                                        {'domain': 'some_name'})
+        assert res.outputs[0].get('value') is True
+        assert res.outputs[0].get('args', {}).get('domain_name') == 'some_name'
 
     def test_get_ip_analytics(self, mocker):
         """
@@ -58,26 +61,14 @@ class TestPrevalenceCommands:
             Then:
                 - Verify response is as expected.
         """
-
-    def test_get_hash_analytics(self, mocker):
-        """
-            Given:
-                - A sha256 address.
-            When:
-                - Calling handle_prevalence_command as part of core-get-sha-analytics-prevalence command.
-            Then:
-                - Verify response is as expected.
-        """
-
-    def test_get_process_analytics(self, mocker):
-        """
-            Given:
-                - A process name.
-            When:
-                - Calling handle_prevalence_command as part of core-get-process-analytics-prevalence command.
-            Then:
-                - Verify response is as expected.
-        """
+        from CortexCoreIR import handle_prevalence_command, Client
+        mock_client = Client(base_url=f'{Core_URL}/xsiam/', headers={})
+        mock_res = load_test_data('./test_data/prevalence_response.json')
+        mocker.patch.object(mock_client, 'get_prevalence', return_value=mock_res.get('ip'))
+        res = handle_prevalence_command(mock_client, 'core-get-IP-analytics-prevalence',
+                                        {'ip': 'some ip'})
+        assert res.outputs[0].get('value') is True
+        assert res.outputs[0].get('args', {}).get('ip_address') == 'some_ip'
 
     def test_get_registry_analytics(self, mocker):
         """
@@ -88,14 +79,12 @@ class TestPrevalenceCommands:
             Then:
                 - Verify response is as expected.
         """
-
-    def test_get_cmd_analytics(self, mocker):
-        """
-            Given:
-                - A process command line.
-            When:
-                - Calling handle_prevalence_command as part of core-get-cmd-analytics-prevalence command.
-            Then:
-                - Verify response is as expected.
-        """
+        from CortexCoreIR import handle_prevalence_command, Client
+        mock_client = Client(base_url=f'{Core_URL}/xsiam/', headers={})
+        mock_res = load_test_data('./test_data/prevalence_response.json')
+        mocker.patch.object(mock_client, 'get_prevalence', return_value=mock_res.get('registry'))
+        res = handle_prevalence_command(mock_client, 'core-get-registry-analytics-prevalence',
+                                        {'key_name': 'some key', 'value_name': 'some value'})
+        assert res.outputs[0].get('value') is True
+        assert res.outputs[0].get('args', {}).get('key_name') == 'some key'
 

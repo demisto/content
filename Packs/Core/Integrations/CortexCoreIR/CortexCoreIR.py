@@ -91,8 +91,8 @@ def handle_prevalence_command(client: Client, command: str, args: dict):
         'hash': 'sha256',
         'registry': 'key_name'
     }
-    args.pop('integration_context_brand')
-    args.pop('integration_name')
+    args.pop('integration_context_brand', None)
+    args.pop('integration_name', None)
     if command == 'core-get-registry-analytics-prevalence':
         # arg list should in the following structure:
         #   args: [
