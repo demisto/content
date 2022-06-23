@@ -51,7 +51,29 @@ Make sure you use the right account for your needs and that the account used has
 #### Troubleshooting
 Make sure the application password is not expired by logging in TOPdesk and viewing it as described in step 3 of the **Setup TOPdesk's application password** procedure. 
 
-### FIQL query
+### Incident Mirroring
+
+You can enable incident mirroring between Cortex XSOAR incidents and TOPdesk incidents.
+
+To setup the mirroring follow these instructions:
+1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
+2. Search for **TOPdesk** and select your integration instance.
+3. Enable **Fetches incidents**.
+4. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
+    - Incoming - Any changes in TOPdesk incidents (`processingStatus`, `priority`, `urgency`, `impact`) will be reflected in XSOAR incidents.
+    - Outgoing - Any changes in XSOAR incidents will be reflected in TOPdesk incidents (`processingStatus`, `priority`, `urgency`, `impact`).
+    - Incoming And Outgoing - Changes in XSOAR incidents and TOPdesk incidents will be reflected in both directions.
+    - None - Turns off incident mirroring.
+5. The *Comment Entry Tag*, *Work Note Entry Tag* and *File Entry Tag* integration parameters can be used to specify which comments and attachments should be mirrored to TOPdesk. When the tag *Comment Entry Tag* is used, the comment is visible to the operator and the person. If the tag *Work Note Entry Tag* is used, the comment is only visible to the operator and the tag *File Entry Tag* is used to mirror files from XSOAR to TOPdesk.
+6. Optional: Check the *Close Mirrored XSOAR Incident* integration parameter to close the Cortex XSOAR incident when the corresponding incident is closed in TOPdesk.
+7. Optional: Check the *Close Mirrored TOPdesk Incident* integration parameter to close the TOPdesk incident when the corresponding Cortex XSOAR incident is closed.
+
+Newly fetched incidents will be mirrored in the chosen direction.  However, this selection does not affect existing incidents.
+
+**Important Notes**
+ - To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in XSOAR and TOPdesk.
+ 
+ ### FIQL query
 A few implemented commands can get a query as a parameter. A partial list of these commands: 
 - `topdesk-incidents-list`
 - `topdesk-branches-list` 
@@ -63,7 +85,7 @@ Specifically there are 2 versions being used:
 #### [TOPdeskRestAPI](https://developers.topdesk.com/documentation/index.html) 
 Implements: `topdesk-incidents-list`
 
-Supports FIQL query version `3.4.0` and higher.
+Supports FIQL query version `3.3.0` and higher.
 
 Conveniently, TOPdeskRestAPI also provides an endpoint revealing the API version. 
 Therefore, once the integration is configured, it automatically translates FIQL query to 
@@ -1739,6 +1761,39 @@ Get list of incidents.
 >|---|---|---|---|---|
 >| some-id | XSOAR-1337 | firstLine | some-caller | Logged |
 
+
+### topdesk-incident-actions
+***
+List all actions for specific incident
+
+#### Permissions:
+**Operator**: With read permission on 1st/2nd line incident; Category/Branch/Operator filters apply
+
+**Persons**: Accessible; Person visibility settings apply
+
+#### Base Command
+
+`topdesk-incident-actions-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | The incident id. An id or a number must be set. If both are set, the id will be used | Optional |
+| incident_number | The incident number. An id or a number must be set. If both are set, the id will be used | Optional |
+| limit | The limit for the amount of actions. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| TOPdesk.Action.EntryDate | Date | Date of entry of the action |
+| TOPdesk.Action.Flag | Unknown | Unknown |
+| TOPdesk.Action.Operator.Id | String | Id of operator who created the action |
+| TOPdesk.Action.Operator.Name | String | Name of operator who created the action |
+| TOPdesk.Action.InvisibleForCaller | Bool | If action is visible for person |
+| TOPdesk.Action.Person | String | Person who creted the action, not operator |
+| TOPdesk.Action.Id | String | Id of the action |
+| TOPdesk.Action.Memotext | String | Content of the action |
 
 ### topdesk-incident-create
 ***

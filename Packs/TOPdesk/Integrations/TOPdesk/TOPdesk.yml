@@ -21,15 +21,11 @@ configuration:
   required: false
   type: 0
 - defaultvalue: 3 days
-  display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months,
-    1 year)
+  display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: first_fetch
   required: false
   type: 0
-- additionalinfo: Getting incidents with new style FIQL query is available only from
-    TOPdeskRestAPI version 3.4.0. For earlier versions this field will be used as
-    additional inline params as supported. More information is available in the TOPdesk
-    integration documentation.
+- additionalinfo: Getting incidents with new style FIQL query is available only from TOPdeskRestAPI version 3.4.0. For earlier versions this field will be used as additional inline params as supported. More information is available in the TOPdesk integration documentation.
   display: The query to use when fetching incidents
   name: fetch_query
   required: false
@@ -38,6 +34,53 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- display: Incident Mirroring Direction
+  name: mirror_direction
+  required: false
+  type: 15
+  additionalinfo: 'Choose the direction to mirror the incident: Incoming (from TOPdesk to XSOAR), Outgoing (from XSOAR to TOPdesk), or Incoming and Outgoing (from/to XSOAR and TOPdesk).'
+  defaultvalue: None
+  hidden: false
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+- display: Comment Entry Tag
+  name: comment_tag
+  required: false
+  type: 0
+  additionalinfo: Choose the tag to add to an entry to mirror it as a visibile comment in TOPdesk for the persons.
+  defaultvalue: comments
+  hidden: false
+- defaultvalue: work_notes
+  display: Work Note Entry Tag
+  name: work_notes_tag
+  required: false
+  type: 0
+  additionalinfo: Choose the tag to add to an entry to mirror it as a hidden comment in TOPdesk for the persons.
+  hidden: false
+- additionalinfo: Choose the tag to add to an entry to mirror it as a file in TOPdesk.
+  defaultvalue: ForTOPdesk
+  display: File Entry Tag
+  hidden: false
+  name: file_tag
+  required: false
+  type: 0
+- additionalinfo: When selected, closing the TOPdesk ticket is mirrored in Cortex XSOAR.
+  defaultvalue: 'false'
+  display: Close Mirrored XSOAR Incident
+  hidden: false
+  name: close_incident
+  required: false
+  type: 8
+- additionalinfo: When selected, closing the XSOAR incident is mirrored in TOPdesk.
+  defaultvalue: 'false'
+  display: Close Mirrored TOPdesk Ticket
+  hidden: false
+  name: close_ticket
+  required: false
+  type: 8
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -51,15 +94,13 @@ configuration:
   name: incidentFetchInterval
   required: false
   type: 19
-description: TOPdesk’s Enterprise Service Management software (ESM) lets your service
-  teams join forces and process requests from a single platform.
+description: TOPdesk’s Enterprise Service Management software (ESM) lets your service teams join forces and process requests from a single platform.
 display: TOPdesk
 name: TOPdesk
 script:
   commands:
   - arguments:
-    - description: The limit for the amount of subcategories to store in the Context
-        Data. To store all provide the value -1. Default value is 100.
+    - description: The limit for the amount of subcategories to store in the Context Data. To store all provide the value -1. Default value is 100.
       name: limit
     description: Get list of subcategories.
     name: topdesk-subcategories-list
@@ -77,8 +118,7 @@ script:
       description: Category name of the subcategory.
       type: String
   - arguments:
-    - description: The limit for the amount of categories to store in the Context
-        Data. To store all provide the value -1. Default value is 100.
+    - description: The limit for the amount of categories to store in the Context Data. To store all provide the value -1. Default value is 100.
       name: limit
     description: Get list of categories.
     name: topdesk-categories-list
@@ -90,8 +130,7 @@ script:
       description: Category name.
       type: String
   - arguments:
-    - description: The limit for the amount of entry types to store in the Context
-        Data. To store all provide the value -1. Default value is 100.
+    - description: The limit for the amount of entry types to store in the Context Data. To store all provide the value -1. Default value is 100.
       name: limit
     description: Get list of entry types.
     name: topdesk-entry-types-list
@@ -103,8 +142,7 @@ script:
       description: EntryType name.
       type: String
   - arguments:
-    - description: The limit for the amount of call types to store in the Context
-        Data. To store all provide the value -1. Default value is 100.
+    - description: The limit for the amount of call types to store in the Context Data. To store all provide the value -1. Default value is 100.
       name: limit
     description: Get list of call types.
     name: topdesk-call-types-list
@@ -116,8 +154,7 @@ script:
       description: CallType name.
       type: String
   - arguments:
-    - description: The limit for the amount of deescalation reasons to store in the
-        Context Data. To store all provide the value -1. Default value is 100.
+    - description: The limit for the amount of deescalation reasons to store in the Context Data. To store all provide the value -1. Default value is 100.
       name: limit
     description: Get list of deescalation reasons.
     name: topdesk-deescalation-reasons-list
@@ -129,8 +166,7 @@ script:
       description: Deescalation reason name.
       type: String
   - arguments:
-    - description: The limit for the amount of escalation reasons to store in the
-        Context Data. To store all provide the value -1. Default value is 100.
+    - description: The limit for the amount of escalation reasons to store in the Context Data. To store all provide the value -1. Default value is 100.
       name: limit
     description: Get list of escalation reasons.
     name: topdesk-escalation-reasons-list
@@ -142,8 +178,7 @@ script:
       description: Escalation reason name.
       type: String
   - arguments:
-    - description: The limit for the amount of archiving reasons to store in the Context
-        Data. To store all provide the value -1. Default value is 100.
+    - description: The limit for the amount of archiving reasons to store in the Context Data. To store all provide the value -1. Default value is 100.
       name: limit
     description: Get list of archiving reasons.
     name: topdesk-archiving-reasons-list
@@ -155,14 +190,11 @@ script:
       description: Archiving reason name.
       type: String
   - arguments:
-    - description: The limit for the amount of attachments to store in the Context
-        Data. To store all provide the value -1. Default value is 100.
+    - description: The limit for the amount of attachments to store in the Context Data. To store all provide the value -1. Default value is 100.
       name: limit
-    - description: The incident id. An id or a number must be set. If both are set,
-        the id will be used.
+    - description: The incident id. An id or a number must be set. If both are set, the id will be used.
       name: incident_id
-    - description: The incident number. An id or a number must be set. If both are
-        set, the id will be used.
+    - description: The incident number. An id or a number must be set. If both are set, the id will be used.
       name: incident_number
     description: Get list of attachments of a certain TOPdesk incident.
     name: topdesk-incident-attachments-list
@@ -198,24 +230,19 @@ script:
       description: Attachment's person
       type: Unknown
   - arguments:
-    - description: The offset at which to start listing the persons at. Must be greater
-        or equal to 0, default is 0.
+    - description: The offset at which to start listing the persons at. Must be greater or equal to 0, default is 0.
       name: start
-    - description: The amount of persons to be returned per request. Must be between
-        1 and 100, default is 10.
+    - description: The amount of persons to be returned per request. Must be between 1 and 100, default is 10.
       name: page_size
-    - description: A FIQL search expression to filter the result. (e.g. manager.name==Alice)
-        Available from Supporting-Files-API version 1.38.0. The FIQL query syntax
-        is documented in the TOPdesk tutorial.
+    - description: A FIQL search expression to filter the result. (e.g. manager.name==Alice) Available from Supporting-Files-API version 1.38.0. The FIQL query syntax is documented in the TOPdesk tutorial.
       name: query
     - name: fields
-      description: Only include these specific fields in the response. (default =
-        all)
+      description: Only include these specific fields in the response. (default = all)
       required: false
       isArray: false
-      defaultValue: ""
+      defaultValue: ''
       predefined:
-      - ""
+      - ''
     description: Get list of persons.
     name: topdesk-persons-list
     outputs:
@@ -577,15 +604,11 @@ script:
       description: Person's location
       type: Unknown
   - arguments:
-    - description: The offset at which to start listing the operators at. Must be
-        greater or equal to 0, default is 0.
+    - description: The offset at which to start listing the operators at. Must be greater or equal to 0, default is 0.
       name: start
-    - description: The amount of operators to be returned per request. Must be between
-        1 and 100, default is 10.
+    - description: The amount of operators to be returned per request. Must be between 1 and 100, default is 10.
       name: page_size
-    - description: A FIQL search expression to filter the result. (e.g. manager.name==Alice)
-        Available from Supporting-Files-API version 1.38.0. The FIQL query syntax
-        is documented in the TOPdesk tutorial.
+    - description: A FIQL search expression to filter the result. (e.g. manager.name==Alice) Available from Supporting-Files-API version 1.38.0. The FIQL query syntax is documented in the TOPdesk tutorial.
       name: query
     description: Get list of operators.
     name: topdesk-operators-list
@@ -975,24 +998,19 @@ script:
       description: Operator's optional fields2 searchlist5
       type: Unknown
   - arguments:
-    - description: The offset at which to start listing the persons at. Must be greater
-        or equal to 0, default is 0.
+    - description: The offset at which to start listing the persons at. Must be greater or equal to 0, default is 0.
       name: start
-    - description: The amount of persons to be returned per request. Must be between
-        1 and 100, default is 10.
+    - description: The amount of persons to be returned per request. Must be between 1 and 100, default is 10.
       name: page_size
-    - description: A FIQL search expression to filter the result. (e.g. address.country.name=NL)
-        Available from Supporting-Files-API version 1.38.0. The FIQL query syntax
-        is documented in the TOPdesk tutorial.
+    - description: A FIQL search expression to filter the result. (e.g. address.country.name=NL) Available from Supporting-Files-API version 1.38.0. The FIQL query syntax is documented in the TOPdesk tutorial.
       name: query
     - name: fields
-      description: Only include these specific fields in the response. (default =
-        id, name)
+      description: Only include these specific fields in the response. (default = id, name)
       required: false
       isArray: false
-      defaultValue: ""
+      defaultValue: ''
       predefined:
-      - ""
+      - ''
     description: Get list of branches.
     name: topdesk-branches-list
     outputs:
@@ -1486,22 +1504,15 @@ script:
       description: Branch's has attention
       type: Boolean
   - arguments:
-    - description: The offset at which to start listing the operators at. Must be
-        greater or equal to 0, default is 0.
+    - description: The offset at which to start listing the operators at. Must be greater or equal to 0, default is 0.
       name: start
-    - description: The amount of operators to be returned per request. Must be between
-        1 and 100, default is 10.
+    - description: The amount of operators to be returned per request. Must be between 1 and 100, default is 10.
       name: page_size
-    - description: A search expression to filter the result. The FIQL query syntax
-        will be used if 'Use new query option' in the settings is checked, otherwise
-        old style query will be used. The FIQL query syntax is documented in the in
-        the TOPdesk tutorial. TOPdesk tutorial. (e.g. (FIQL) status==firsLine) (e.g.
-        (old style) status=firsLine).
+    - description: A search expression to filter the result. The FIQL query syntax will be used if 'Use new query option' in the settings is checked, otherwise old style query will be used. The FIQL query syntax is documented in the in the TOPdesk tutorial. TOPdesk tutorial. (e.g. (FIQL) status==firsLine) (e.g. (old style) status=firsLine).
       name: query
     - description: The id of the incident to retrieve, overrides any other arguments.
       name: incident_id
-    - description: The number of the incident to retrieve, overrides any other argument
-        but incidnet_id.
+    - description: The number of the incident to retrieve, overrides any other argument but incidnet_id.
       name: incident_number
     - auto: PREDEFINED
       description: Retrive only the incidents of the given status. firstLine/secondLine/partial
@@ -1514,26 +1525,21 @@ script:
       name: caller_id
     - description: Retrive only the incidents of the given branch id.
       name: branch_id
-    - description: Retrive only the incidents of the given category. Supported only
-        with new FIQL type queries.
+    - description: Retrive only the incidents of the given category. Supported only with new FIQL type queries.
       name: category
-    - description: Retrive only the incidents of the given subcategory. Supported
-        only with new FIQL type queries.
+    - description: Retrive only the incidents of the given subcategory. Supported only with new FIQL type queries.
       name: subcategory
-    - description: Retrive only the incidents of the given call type. Supported only
-        with new FIQL type queries.
+    - description: Retrive only the incidents of the given call type. Supported only with new FIQL type queries.
       name: call_type
-    - description: Retrive only the incidents of the given entry type. Supported only
-        with new FIQL type queries.
+    - description: Retrive only the incidents of the given entry type. Supported only with new FIQL type queries.
       name: entry_type
     - name: fields
-      description: Only include these specific fields in the response. (default =
-        all)
+      description: Only include these specific fields in the response. (default = all)
       required: false
       isArray: false
-      defaultValue: ""
+      defaultValue: ''
       predefined:
-      - ""
+      - ''
     description: Get list of incidents.
     name: topdesk-incidents-list
     outputs:
@@ -2120,9 +2126,7 @@ script:
       description: TOPdesk Incident's external links date
       type: Date
   - arguments:
-    - description: The caller id for this incident. For an unregistered caller provide
-        a name. For a list of registered persons or operator ids run !topdesk-persons-list
-        or !topdesk-operators-list.
+    - description: The caller id for this incident. For an unregistered caller provide a name. For a list of registered persons or operator ids run !topdesk-persons-list or !topdesk-operators-list.
       name: caller
       required: true
     - auto: PREDEFINED
@@ -2139,28 +2143,22 @@ script:
     - description: Initial action. Can be set by operators and persons.
       name: action
     - auto: PREDEFINED
-      description: Whether the initial action is invisible for persons. Can only be
-        set by operators. Default value is false.
+      description: Whether the initial action is invisible for persons. Can only be set by operators. Default value is false.
       name: action_invisible_for_caller
       predefined:
       - 'true'
       - 'false'
-    - description: Entry type by name. Can only be set by operators. XSOAR is set
-        by default for mirroring. For a list of available entry types run !topdesk-entry-types-list.
+    - description: Entry type by name. Can only be set by operators. XSOAR is set by default for mirroring. For a list of available entry types run !topdesk-entry-types-list.
       name: entry_type
-    - description: Category by name. Can be set by operators. It is an error to provide
-        both an id and a name. For a list of available categories run !topdesk-categories-list.
+    - description: Category by name. Can be set by operators. It is an error to provide both an id and a name. For a list of available categories run !topdesk-categories-list.
       name: category
-    - description: Subcategory by name. Can be set by operators. It is an error to
-        provide both an id and a name. For a list of available subcategories run !topdesk-subcategories-list.
+    - description: Subcategory by name. Can be set by operators. It is an error to provide both an id and a name. For a list of available subcategories run !topdesk-subcategories-list.
       name: subcategory
     - description: External number. Can only be set by operators. Max 60 characters.
       name: external_number
-    - description: Main incident id or number, required for creating a partial incident.
-        Can only be set by operators.
+    - description: Main incident id or number, required for creating a partial incident. Can only be set by operators.
       name: main_incident
-    - description: Additional parameters to pass when creating an incident. (e.g.
-        {"optionalFields1":{"text1":"test"}})
+    - description: Additional parameters to pass when creating an incident. (e.g. {"optionalFields1":{"text1":"test"}})
       name: additional_params
     description: Create an incident in TOPdesk.
     name: topdesk-incident-create
@@ -2748,11 +2746,9 @@ script:
       description: TOPdesk Incident's external links date
       type: Date
   - arguments:
-    - description: The incident id. An id or a number must be set. If both are set
-        incident with relevant id will be updated.
+    - description: The incident id. An id or a number must be set. If both are set incident with relevant id will be updated.
       name: id
-    - description: The incident number. An id or a number must be set. If both are
-        set incident with relevant id will be updated.
+    - description: The incident number. An id or a number must be set. If both are set incident with relevant id will be updated.
       name: number
     - auto: PREDEFINED
       description: Status of the incident. Can only be set by operators.
@@ -2767,33 +2763,25 @@ script:
       name: request
     - description: Initial action. Can be set by operators and persons.
       name: action
-    - description: The caller id for this incident. For an unregistered caller provide
-        a name. For a list of registered persons or operator ids run !topdesk-persons-list
-        or !topdesk-operators-list.
+    - description: The caller id for this incident. For an unregistered caller provide a name. For a list of registered persons or operator ids run !topdesk-persons-list or !topdesk-operators-list.
       name: caller
     - auto: PREDEFINED
-      description: Whether the initial action is invisible for persons. Can only be
-        set by operators. Default value is false.
+      description: Whether the initial action is invisible for persons. Can only be set by operators. Default value is false.
       name: action_invisible_for_caller
       predefined:
       - 'true'
       - 'false'
-    - description: Entry type by name. Can only be set by operators. For a list of
-        available entry types run !topdesk-entry-types-list.
+    - description: Entry type by name. Can only be set by operators. For a list of available entry types run !topdesk-entry-types-list.
       name: entry_type
-    - description: Category by name. Can be set by operators. For a list of available
-        categories run !topdesk-categories-list.
+    - description: Category by name. Can be set by operators. For a list of available categories run !topdesk-categories-list.
       name: category
-    - description: Subcategory by name. Can be set by operators. For a list of available
-        subcategories run !topdesk-subcategories-list.
+    - description: Subcategory by name. Can be set by operators. For a list of available subcategories run !topdesk-subcategories-list.
       name: subcategory
     - description: External number. Can only be set by operators. Max 60 characters.
       name: external_number
-    - description: Main incident id or number, required for creating a partial incident.
-        Can only be set by operators.
+    - description: Main incident id or number, required for creating a partial incident. Can only be set by operators.
       name: main_incident
-    - description: Additional parameters to pass when updating an incident. (e.g.
-        {"optionalFields1":{"text1":"test"}})
+    - description: Additional parameters to pass when updating an incident. (e.g. {"optionalFields1":{"text1":"test"}})
       name: additional_params
     description: Update an incident in TOPdesk.
     name: topdesk-incident-update
@@ -3381,11 +3369,9 @@ script:
       description: TOPdesk Incident's external links date
       type: Date
   - arguments:
-    - description: The incident id. An id or a number must be set. If both are set
-        incident with relevant id will be updated.
+    - description: The incident id. An id or a number must be set. If both are set incident with relevant id will be updated.
       name: id
-    - description: The incident number. An id or a number must be set. If both are
-        set incident with relevant id will be updated.
+    - description: The incident number. An id or a number must be set. If both are set incident with relevant id will be updated.
       name: number
     - description: The escalation reason id.
       name: escalate_reason_id
@@ -3976,11 +3962,9 @@ script:
       description: TOPdesk Incident's external links date
       type: Date
   - arguments:
-    - description: The incident id. An id or a number must be set. If both are set
-        incident with relevant id will be updated.
+    - description: The incident id. An id or a number must be set. If both are set incident with relevant id will be updated.
       name: id
-    - description: The incident number. An id or a number must be set. If both are
-        set incident with relevant id will be updated.
+    - description: The incident number. An id or a number must be set. If both are set incident with relevant id will be updated.
       name: number
     - description: The deescalation reason id.
       name: deescalate_reason_id
@@ -4571,11 +4555,9 @@ script:
       description: TOPdesk Incident's external links date
       type: Date
   - arguments:
-    - description: The incident id. An id or a number must be set. If both are set
-        incident with relevant id will be updated.
+    - description: The incident id. An id or a number must be set. If both are set incident with relevant id will be updated.
       name: id
-    - description: The incident number. An id or a number must be set. If both are
-        set incident with relevant id will be updated.
+    - description: The incident number. An id or a number must be set. If both are set incident with relevant id will be updated.
       name: number
     - description: The archiving reason id.
       name: archive_reason_id
@@ -5166,11 +5148,9 @@ script:
       description: TOPdesk Incident's external links date
       type: Date
   - arguments:
-    - description: The incident id. An id or a number must be set. If both are set
-        incident with relevant id will be updated.
+    - description: The incident id. An id or a number must be set. If both are set incident with relevant id will be updated.
       name: id
-    - description: The incident number. An id or a number must be set. If both are
-        set incident with relevant id will be updated.
+    - description: The incident number. An id or a number must be set. If both are set incident with relevant id will be updated.
       name: number
     description: Unarchive an incident in TOPdesk.
     name: topdesk-incident-unarchive
@@ -5758,18 +5738,14 @@ script:
       description: TOPdesk Incident's external links date
       type: Date
   - arguments:
-    - description: The incident id. An id or a number must be set. If both are set
-        incident with relevant id will be updated.
+    - description: The incident id. An id or a number must be set. If both are set incident with relevant id will be updated.
       name: id
-    - description: The incident number. An id or a number must be set. If both are
-        set incident with relevant id will be updated.
+    - description: The incident number. An id or a number must be set. If both are set incident with relevant id will be updated.
       name: number
     - description: Entry id of the file to upload.
       name: file
       required: true
-    - description: In case specified entry containes more than one file, the given
-        file name will be used. If not specified the first file in the entry will
-        be used.
+    - description: In case specified entry containes more than one file, the given file name will be used. If not specified the first file in the entry will be used.
       name: file_name
     - auto: PREDEFINED
       description: Whether the uploaded file is invisible for the caller of the incident
@@ -5813,14 +5789,11 @@ script:
       description: Attachment's person
       type: Unknown
   - arguments:
-    - description: The limit for the amount of actions to store in the Context Data.
-        To store all provide the value -1. Default value is 100.
+    - description: The limit for the amount of actions to store in the Context Data. To store all provide the value -1. Default value is 100.
       name: limit
-    - description: The incident id. An id or a number must be set. If both are set,
-        the id will be used.
+    - description: The incident id. An id or a number must be set. If both are set, the id will be used.
       name: incident_id
-    - description: The incident number. An id or a number must be set. If both are
-        set, the id will be used.
+    - description: The incident number. An id or a number must be set. If both are set, the id will be used.
       name: incident_number
     description: Get list of actions of a certain TOPdesk incident.
     name: topdesk-incident-actions-list
@@ -5835,8 +5808,7 @@ script:
       description: Action's Flag
       type: unknown
     - contextPath: TOPdesk.Action.InvisibleForCaller
-      description: Action is visible for caller (= boolean). Standard value is set
-        to False.
+      description: Action is visible for caller (= boolean). Standard value is set to False.
       type: boolean
     - contextPath: TOPdesk.Action.EntryDate
       description: Action's entry date
@@ -5850,12 +5822,62 @@ script:
     - contextPath: TOPdesk.Action.Person
       description: Action's person
       type: string
-  dockerimage: demisto/python3:3.9.9.25564
+  - name: get-mapping-fields
+    description: Returns the list of fields to map in outgoing mirroring.
+    deprecated: false
+    arguments: []
+    outputs: []
+  - arguments:
+    - default: false
+      description: The remote incident ID.
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: The UTC timestamp in seconds of the last update. The incident is only updated if it was
+        modified after the last update time.
+      isArray: false
+      name: lastUpdate
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets remote data from a remote incident. This method does not update
+     the current incident and should be used for debugging purposes only.
+    execution: false
+    name: get-remote-data
+  - arguments:
+    - default: false
+      description: Date string representing the local time. The incident is only returned
+        if it was modified after the last update time.
+      isArray: false
+      name: lastUpdate
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets the list of incidents that were modified since the last update time.
+      This method is used for debugging purposes. The get-modified-remote-data command
+      is used as part of the Mirroring feature that was introduced in Cortex XSOAR version 6.1.
+    execution: false
+    name: get-modified-remote-data
+  - deprecated: false
+    description: Updates the remote incident with local incident changes. This method
+      is only used for debugging purposes and will not update the current incident.
+    execution: false
+    name: update-remote-system
+  dockerimage: demisto/python3:3.10.4.30607
   isfetch: true
   runonce: false
   script: ''
   subtype: python3
   type: python
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
 fromversion: 5.0.0
+defaultclassifier: TOPdesk incident
+defaultmapperin: TOPdesk-incoming-mapper
+defaultmapperout: TOPdesk Outgoing Mapper
 tests:
 - No tests (auto formatted)
