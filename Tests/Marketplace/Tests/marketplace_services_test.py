@@ -78,17 +78,17 @@ def dummy_pack_metadata():
     return pack_metadata
 
 
-class GitMock:
-    def log(self, file_name):
-        match file_name.rpartition('/')[-1]:
-            case '1_0_1.md':
-                return '(#11) (#111) 1111'
-            case '1_0_2.md':
-                return '(#22)'
-            case '1_0_3.md':
-                return '(#33)'
-            case _:
-                return 'no number'
+# class GitMock:
+#     def log(self, file_name):
+#         match file_name.rpartition('/')[-1]:
+#             case '1_0_1.md':
+#                 return '(#11) (#111) 1111'
+#             case '1_0_2.md':
+#                 return '(#22)'
+#             case '1_0_3.md':
+#                 return '(#33)'
+#             case _:
+#                 return 'no number'
 
 
 class TestMetadataParsing:
@@ -993,11 +993,13 @@ This is visible
         build_number = "5555"
         modified_data = {
             "Integrations": [
+                {'integration_id':
                 {
                     "file_path": "some/path",
                     "display_name": "Integration Display Name"
                 }
-            ]
+                }]
+
         }
         dummy_pack._is_modified = True
         version_changelog, _ = dummy_pack._create_changelog_entry(release_notes=release_notes,
@@ -1026,11 +1028,11 @@ This is visible
         version_display_name = "1.2.3"
         build_number = "5555"
         modified_data = {
-            "Integrations": [
+            "Integrations": [{'id':
                 {
                     "file_path": "some/path",
                     "display_name": "Integration 2 Display Name"
-                }
+                }}
             ]
         }
         dummy_pack._is_modified = True
@@ -1058,11 +1060,11 @@ This is visible
         version_display_name = "1.2.3"
         build_number = "5555"
         modified_data = {
-            "Integrations": [
+            "Integrations": [{'id':
                 {
                     "file_path": "some/path",
                     "display_name": "Other Integration Display Name"
-                }
+                }}
             ]
         }
         dummy_pack._is_modified = True
@@ -1206,20 +1208,20 @@ This is visible
         version_display_name = "1.2.3"
         build_number = "5555"
         modified_data = {
-            "Integrations": [
+            "Integrations": [ {'id':
                 {
                     "file_path": "some/path",
                     "display_name": "Integration Display Name"
-                }
+                }}
             ],
-            "Scripts": [
+            "Scripts": [{'id':
                 {
                     "file_path": "some/path",
                     "display_name": "Script Name"
-                }
+                }}
             ],
-            "IncidentFields": [
-                {"display_name": "Field Name 1"}
+            "IncidentFields": [{'id':
+                {"display_name": "Field Name 1"}}
             ]
         }
         # dummy_pack._marketplaces = [upload_marketplace]
