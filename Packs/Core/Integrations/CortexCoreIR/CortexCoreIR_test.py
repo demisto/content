@@ -31,10 +31,8 @@ def test_report_incorrect_wildfire_command(mocker):
     res = report_incorrect_wildfire_command(client=mock_client, args=args)
     assert res.readable_output == f'Reported incorrect WildFire on {file_hash}'
 
+
 class TestPrevalenceCommands:
-    Client.base_url_suffix = 'xsiam/'
-    prevalence_client = Client({'url': 'https://example.com'})
-    api_responses = util_load_json(f'test_data/prevalence_response.json')
 
     def test_get_domain_analytics(self, mocker):
         """
