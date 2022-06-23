@@ -479,7 +479,6 @@ def create_content_descriptor(release_notes, version, asset_id, github_token):
 
 
 def main():
-    logging.warning("This is Arad's test")
     install_logging('Build_Content_Descriptor.log')
     arg_parser = argparse.ArgumentParser()
     arg_parser.add_argument('version', help='Release version')
