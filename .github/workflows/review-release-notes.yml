@@ -21,9 +21,12 @@ jobs:
           python-version: '3.9'
       - name: Setup Poetry
         uses: Gr1N/setup-poetry@v7
-      - name: Install Python Dependencies
+      - name: Setup Node
+        uses: actions/setup-node@v3
+      - name: Install Dependencies
         run: |
           poetry install
+          npm install -g markdownlint-cli
       - name: Review Release Notes
         run: |
           changed_files="${{ steps.changed-files.outputs.all_changed_files }}"
