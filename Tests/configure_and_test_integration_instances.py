@@ -32,6 +32,7 @@ from ruamel import yaml
 
 from Tests.Marketplace.search_and_install_packs import search_and_install_packs_and_their_dependencies, \
     upload_zipped_packs, install_all_content_packs_for_nightly
+from Tests.Marketplace.marketplace_constants import Metadata
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 from Tests.test_content import get_server_numeric_version
@@ -1688,7 +1689,24 @@ def get_packs_not_to_install(modified_packs_names: Set[str], build: Build) -> Se
     Returns:
         (Set[str]): The set of the packs names that supposed to be not installed in the pre-update.
     """
-    return get_turned_non_hidden_packs(modified_packs_names, build)
+    non_hidden_packs = get_turned_non_hidden_packs(modified_packs_names, build)
+    packs_with_lesser_min_version = get_packs_with_lesser_min_version(modified_packs_names - non_hidden_packs, build)
+    return packs_with_lesser_min_version + non_hidden_packs, non_hidden_packs
+
+
+def get_packs_with_lesser_min_version(packs_names: Set[str], build: Build) -> Set[str]:
+
+    packs_with_lesser_version = set()
+    for pack_name in packs_names:
+
+        pack_metadata = get_json_file(f"{build.content_path}/Packs/{pack_name}/Pack_metadata.json")
+        server_min_version = pack_metadata.get(Metadata.SERVER_MIN_VERSION, Metadata.SERVER_DEFAULT_MIN_VERSION)
+        server_version = build.server_numeric_version
+
+        if 'Master' not in server_version and Version(server_version) < Version(server_min_version):
+            packs_with_lesser_version.add(pack_name)
+
+    return packs_with_lesser_version
 
 
 def main():
@@ -1727,10 +1745,10 @@ def main():
         build.install_nightly_pack()
     else:
         modified_packs_names = get_non_added_packs_ids(build)
-        packs_not_to_install = get_packs_not_to_install(modified_packs_names, build)
+        packs_not_to_install, non_hidden_packs = get_packs_not_to_install(modified_packs_names, build)
         packs_to_install = modified_packs_names - packs_not_to_install
         build.install_packs(pack_ids=packs_to_install)
-        new_integrations_names, modified_integrations_names = build.get_changed_integrations(packs_not_to_install)
+        new_integrations_names, modified_integrations_names = build.get_changed_integrations(non_hidden_packs)
         pre_update_configuration_results = build.configure_and_test_integrations_pre_update(new_integrations_names,
                                                                                             modified_integrations_names)
         modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre = pre_update_configuration_results
