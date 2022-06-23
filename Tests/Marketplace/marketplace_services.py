@@ -1695,19 +1695,19 @@ class Pack(object):
         changelog_entry[Changelog.RELEASE_NOTES] = construct_entities_block(filtered_release_notes).strip()
         return changelog_entry, False
 
-    def filter_release_notes_by_entities_display_name(self, release_notes, modified_files):
+    def filter_release_notes_by_entities_display_name(self, release_notes, modified_files_data):
         """
         Filters the RN entries by the modified files display names given from id-set.
 
         Args:
             release_notes (dict): The release notes in a dict object.
-            modified_files (dict): The modified files data that are given from id-set.
+            modified_files_data (dict): The modified files data that are given from id-set.
 
         Return:
             (dict) The filtered release notes.
         """
         filtered_release_notes: dict = {}
-        for pack_folder, entities_data in modified_files.items():
+        for pack_folder, entities_data in modified_files_data.items():
 
             rn_header = RN_HEADER_BY_PACK_FOLDER[pack_folder]
 
@@ -1716,7 +1716,7 @@ class Pack(object):
                 continue
 
             # Filters the RN entries by the entity display name
-            display_names = [entity['display_name'] for entity in entities_data]
+            display_names = [list(entity.values())[0]['display_name'] for entity in entities_data]
             filtered_release_notes_entries = self.filter_entries_by_display_name(release_notes, display_names, rn_header)
 
             if filtered_release_notes_entries:
