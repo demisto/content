@@ -952,18 +952,21 @@ def upload_packs_with_dependencies_zip(storage_bucket, storage_base_path, signat
                         task_status = sign_and_zip_pack(current_pack, signature_key)
                         if not task_status:
                             # modify the pack's status to indicate the failure was in the dependencies zip step
-                            current_pack.status = PackStatus.FAILED_CREATING_DEPENDENCIES_ZIP_SIGNING.name
+                            pack.status = PackStatus.FAILED_CREATING_DEPENDENCIES_ZIP_SIGNING.name
                             logging.debug(f"Skipping uploading {pack.name} since failed zipping {current_pack.name}.")
-                            continue
+                            break
                     shutil.copy(current_pack.zip_path, os.path.join(pack_with_dep_path, current_pack.name + ".zip"))
-                logging.info(f"Zipping {pack_name} with its dependencies")
-                Pack.zip_folder_items(pack_with_dep_path, pack_with_dep_path, zip_with_deps_path)
-                shutil.rmtree(pack_with_dep_path)
-                logging.info(f"Uploading {pack_name} with its dependencies")
-                task_status, _, _ = pack.upload_to_storage(zip_with_deps_path, '', storage_bucket, True,
-                                                           storage_base_path, overridden_upload_path=upload_path)
-                logging.info(f"{pack_name} with dependencies was{' not' if not task_status else ''} "
-                             f"uploaded successfully")
+                if pack.status == PackStatus.FAILED_CREATING_DEPENDENCIES_ZIP_SIGNING.name:
+                    break
+                else:
+                    logging.info(f"Zipping {pack_name} with its dependencies")
+                    Pack.zip_folder_items(pack_with_dep_path, pack_with_dep_path, zip_with_deps_path)
+                    shutil.rmtree(pack_with_dep_path)
+                    logging.info(f"Uploading {pack_name} with its dependencies")
+                    task_status, _, _ = pack.upload_to_storage(zip_with_deps_path, '', storage_bucket, True,
+                                                               storage_base_path, overridden_upload_path=upload_path)
+                    logging.info(f"{pack_name} with dependencies was{' not' if not task_status else ''} "
+                                 f"uploaded successfully")
                 if not task_status:
                     pack.status = PackStatus.FAILED_CREATING_DEPENDENCIES_ZIP_UPLOADING.name
                     pack.cleanup()
@@ -1158,6 +1161,7 @@ def main():
         task_status, not_updated_build = pack.prepare_release_notes(index_folder_path, build_number,
                                                                     modified_rn_files_paths,
                                                                     modified_files_data, marketplace)
+        # TODO: fix override failing
         if not task_status:
             pack.status = PackStatus.FAILED_RELEASE_NOTES.name
             pack.cleanup()

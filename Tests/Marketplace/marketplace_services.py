@@ -1101,7 +1101,7 @@ class Pack(object):
     def upload_to_storage(self, zip_pack_path, latest_version, storage_bucket, override_pack, storage_base_path,
                           private_content=False, pack_artifacts_path=None, overridden_upload_path=None):
         """ Manages the upload of pack zip artifact to correct path in cloud storage.
-        The zip pack will be uploaded by defaualt to following path: /content/packs/pack_name/pack_latest_version.
+        The zip pack will be uploaded by default to following path: /content/packs/pack_name/pack_latest_version.
         In case that zip pack artifact already exist at constructed path, the upload will be skipped.
         If flag override_pack is set to True, pack will forced for upload.
         If item_upload_path is provided it will override said path, and will save the item to that destination.
@@ -1170,7 +1170,7 @@ class Pack(object):
                 with open(secondary_encryption_key_artifacts_path, "rb") as pack_zip:
                     blob.upload_from_file(pack_zip)
 
-                print(
+                logging.info(
                     f"Copying {secondary_encryption_key_artifacts_path} to {_pack_artifacts_path}/"
                     f"packs/{self._pack_name}.zip")
                 shutil.copy(secondary_encryption_key_artifacts_path,
@@ -1715,9 +1715,14 @@ class Pack(object):
             if rn_header not in release_notes:
                 continue
 
-            # Filters the RN entries by the entity display name
-            display_names = [list(entity.values())[0]['display_name'] for entity in entities_data]
-            filtered_release_notes_entries = self.filter_entries_by_display_name(release_notes, display_names, rn_header)
+            # Filters the RN entries by the entity display name or name
+            display_names_and_names = []
+            for entity in entities_data:
+                # Since some RN's have the name and not the display name, we check both
+                display_names_and_names.extend([list(entity.values())[0]['display_name'],
+                                                list(entity.values())[0]['name']])
+            filtered_release_notes_entries = self.filter_entries_by_display_name(release_notes, display_names_and_names,
+                                                                                 rn_header)
 
             if filtered_release_notes_entries:
                 filtered_release_notes[rn_header] = filtered_release_notes_entries
