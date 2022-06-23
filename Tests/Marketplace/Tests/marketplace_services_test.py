@@ -78,17 +78,17 @@ def dummy_pack_metadata():
     return pack_metadata
 
 
-class GitMock:
-    def log(self, file_name):
-        match file_name.rpartition('/')[-1]:
-            case '1_0_1.md':
-                return '(#11) (#111) 1111'
-            case '1_0_2.md':
-                return '(#22)'
-            case '1_0_3.md':
-                return '(#33)'
-            case _:
-                return 'no number'
+# class GitMock:
+#     def log(self, file_name):
+#         match file_name.rpartition('/')[-1]:
+#             case '1_0_1.md':
+#                 return '(#11) (#111) 1111'
+#             case '1_0_2.md':
+#                 return '(#22)'
+#             case '1_0_3.md':
+#                 return '(#33)'
+#             case _:
+#                 return 'no number'
 
 
 class TestMetadataParsing:
@@ -2883,14 +2883,14 @@ class TestCheckChangesRelevanceForMarketplace:
                 "int_id_1": {
                     "name": "Dummy name 1",
                     "display_name": "Dummy display name 1",
-                    "file_path": "path/to/integration1"
+                    "file_path": "Packs/pack_name/Integrations/integration_name/file"
                 }
             },
             {
                 "int_id_2": {
                     "name": "Dummy name 2",
                     "display_name": "Dummy display name 2",
-                    "file_path": "path/to/integration2"
+                    "file_path": "Packs/pack_name/Integrations/integration_name2/file"
                 }
             }
         ],
@@ -2899,7 +2899,7 @@ class TestCheckChangesRelevanceForMarketplace:
                 "xsiam_dash_id_1": {
                     "name": "Dummy xdash name",
                     "display_name": "Dummy xdash display name",
-                    "file_path": "path/to/xsiamdashboard"
+                    "file_path": "Packs/pack_name/Dashboards/dash_name/file"
                 }
             }
         ],
@@ -2917,14 +2917,14 @@ class TestCheckChangesRelevanceForMarketplace:
         sample_pack._marketplaces = ['marketplacev2']
         sample_pack._modified_files = {
             'Integrations': [
-                'path/to/integration1',
-                'path/to/integration3'
+                'Packs/pack_name/Integrations/integration_name/file',
+                'Packs/pack_name/Integrations/integration_name3/file'
             ],
             'Dashboards': [
-                'path/to/dashboard'
+                "Packs/pack_name/Dashboards/dash_name2/file"
             ],
             'XSIAMDashboards': [
-                'path/to/xsiamdashboard'
+                "Packs/pack_name/Dashboards/dash_name/file"
             ]
         }
         return sample_pack
@@ -2941,19 +2941,19 @@ class TestCheckChangesRelevanceForMarketplace:
         """
         id_set_copy = self.ID_SET_MP_V2.copy()
         expected_modified_files_data = {
-            "Integrations": [
+            "Integrations": [{'int_id_1':
                 {
                     "name": "Dummy name 1",
                     "display_name": "Dummy display name 1",
                     "file_path": "path/to/integration1"
-                }
+                }}
             ],
-            "XSIAMDashboards": [
+            "XSIAMDashboards": [{'xsiam_dash_id_1':
                 {
                     "name": "Dummy xdash name",
                     "display_name": "Dummy xdash display name",
                     "file_path": "path/to/xsiamdashboard"
-                }
+                }}
             ]
         }
 
@@ -2995,15 +2995,16 @@ class TestCheckChangesRelevanceForMarketplace:
                - Ensure the mapper exist in the modified files data under Classifiers.
         """
         id_set_copy = self.ID_SET_MP_V2.copy()
-        dummy_pack._modified_files["Classifiers"] = ["path/to/mapper"]
-        id_set_copy["Mappers"] = [{"mapper_id": {"name": "mapper name", "file_path": "path/to/mapper"}}]
+        dummy_pack._modified_files["Classifiers"] = ["Packs/pack_name/Classifiers/file"]
+        id_set_copy["Mappers"] = [{"mapper_id":
+                                       {"name": "mapper name", "file_path": "Packs/pack_name/Classifiers/file"}}]
         id_set_copy["Classifiers"] = []
         expected_modified_files_data = {
-            "Classifiers": [
+            "Classifiers": [{"mapper_id":
                 {
                     "name": "mapper name",
-                    "file_path": "path/to/mapper"
-                }
+                    "file_path": "Packs/pack_name/Classifiers/file"
+                }}
             ]
         }
 
