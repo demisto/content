@@ -20,7 +20,10 @@ args:
   required: true
   secret: false
 - default: false
-  description: Specify a hash of headers to send with the request.
+  description: |-
+    Specify a hash of headers to send with the request.
+    Headers can be of string type but need to be formatted in the following ways:
+    `{"key": "value"}` or `"key": "value"`
   isArray: false
   name: headers
   required: false
