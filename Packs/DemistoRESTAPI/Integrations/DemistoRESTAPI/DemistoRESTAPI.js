@@ -15,13 +15,16 @@ sendMultipart = function (uri, entryID, body) {
         // do nothing, use the body as is in the request.
         logDebug('could not parse body as a JSON object, passing as is. body: ' + JSON.stringify(body));
     }
-
+    var key = [params.apikey? params.apikey : (params.creds_apikey? params.creds_apikey.password : '')];
+    if (key == ''){
+        throw 'API Key must be provided.';
+    }
     var res = httpMultipart(
         requestUrl,
         entryID,
         {
             Headers: {
-                'Authorization': [params.apikey],
+                'Authorization': key,
                 'Content-Type': ['multipart/form-data'],
                 'Accept': ['application/json']
             },
@@ -55,7 +58,10 @@ var sendRequest = function(method, uri, body, raw) {
         requestUrl += '/';
     }
     requestUrl += uri;
-
+    var key = [params.apikey? params.apikey : (params.creds_apikey? params.creds_apikey.password : '')];
+    if (key == ''){
+        throw 'API Key must be provided.';
+    }
     var res = http(
         requestUrl,
         {
@@ -63,7 +69,7 @@ var sendRequest = function(method, uri, body, raw) {
             Headers: {
                 'Accept': ['application/json'],
                 'content-type': ['application/json'],
-                'authorization': [params.apikey]
+                'authorization': key
             },
             Body: body,
             SaveToFile: raw
@@ -92,7 +98,35 @@ var sendRequest = function(method, uri, body, raw) {
     }
 };
 
-var deleteIncidents = function(ids_to_delete) {
+function reduce_one_entry(data, keep_fields) {
+    var new_d = {};
+    for (var field_index = 0; field_index < keep_fields.length; field_index += 1) {
+        var field = keep_fields[field_index];
+        if (data[field]) {
+            new_d[field] = data[field];
+        }
+    }
+    return new_d;
+}
+
+function reduce_data(data, fields_to_keep) {
+    if (data instanceof Array) {
+        var new_data = [];
+        for (var data_index = 0; data_index < data.length; data_index += 1) {
+            var d = data[data_index];
+            new_data.push(reduce_one_entry(d, fields_to_keep));
+        }
+        return new_data;
+    }
+    else {
+        if (data.constructor == Object) {
+            return [reduce_one_entry(data, fields_to_keep)];
+        } 
+    }
+    return data;
+}
+
+var deleteIncidents = function(ids_to_delete, fields_to_keep) {
     var body = {
         ids: ids_to_delete,
         all: false,
@@ -104,7 +138,10 @@ var deleteIncidents = function(ids_to_delete) {
         throw res[0].Contents;
     }
 
-    var response = res['response']
+    var response = res['response'];
+    if (fields_to_keep && (fields_to_keep != "all")) {
+        response['data'] = reduce_data(response['data'], fields_to_keep);
+    }
     var md = tableToMarkdown('Demisto delete incidents', response, ['data', 'total', "notUpdated"]);
 
     return {
@@ -150,7 +187,8 @@ switch (command) {
         return ({Type: entryTypes.file, FileID: res.Path, File: filename, Contents: desc});
     case 'demisto-delete-incidents':
         var ids = argToList(args.ids);
-        return deleteIncidents(ids);
+        var fields = argToList(args.fields);
+        return deleteIncidents(ids, fields);
     default:
         throw 'Demisto REST APIs - unknown command';
 }

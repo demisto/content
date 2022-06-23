@@ -1,2 +1,5 @@
 [file:ScreenshotMachine.yml]
 ignore=IN145
+
+[file:ScreenshotMachine_image.png]
+ignore=IM111

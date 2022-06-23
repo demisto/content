@@ -68,7 +68,10 @@ def mock_client():
         resource_group_name='resourceGroupName',
         workspace_name='workspaceName',
         verify=False,
-        proxy=False
+        proxy=False,
+        certificate_thumbprint=None,
+        private_key=None,
+        client_credentials=False,
     )
     return client
 

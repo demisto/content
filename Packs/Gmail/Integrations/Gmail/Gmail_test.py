@@ -176,3 +176,59 @@ def test_dict_keys_snake_to_camelcase():
         'user_id': '2'
     }
     assert dict_keys_snake_to_camelcase(dictionary) == {'userName': 'user1', 'userId': '2'}
+
+
+def test_labels_to_entry():
+    """
+    Given:
+        gmail label api response
+
+    When:
+        executing labels_to_entry function.
+
+    Then:
+        the context and human readable are valid
+    """
+    from Gmail import labels_to_entry
+    labels = [
+        {
+            "id": "CHAT",
+            "labelListVisibility": "labelHide",
+            "messageListVisibility": "hide",
+            "name": "CHAT",
+            "type": "system"
+        },
+        {
+            "id": "SENT",
+            "labelListVisibility": "labelHide",
+            "messageListVisibility": "hide",
+            "name": "SENT",
+            "type": "system"
+        }
+    ]
+    expected_human_readable = '### test\n|Name|ID|Type|MessageListVisibility|LabelListVisibility|' \
+                              '\n|---|---|---|---|---|\n| CHAT | CHAT | system | hide | labelHide ' \
+                              '|\n| SENT | SENT | system | hide | labelHide |\n'
+    expected_context_output = [
+        {
+            "ID": "CHAT",
+            "LabelListVisibility": "labelHide",
+            "MessageListVisibility": "hide",
+            "Name": "CHAT",
+            "Type": "system",
+            "UserID": "me"
+        },
+        {
+            "ID": "SENT",
+            "LabelListVisibility": "labelHide",
+            "MessageListVisibility": "hide",
+            "Name": "SENT",
+            "Type": "system",
+            "UserID": "me"
+        }
+    ]
+
+    context_key = 'GmailLabel(val.ID == obj.ID && val.Name == obj.Name && val.UserID == obj.UserID)'
+    result = labels_to_entry("test", labels, "me")
+    assert result.get('EntryContext').get(context_key) == expected_context_output
+    assert result.get('HumanReadable') == expected_human_readable

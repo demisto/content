@@ -1,2 +1,5 @@
 [file:HostIo.yml]
 ignore=IN145
+
+[file:HostIo_image.png]
+ignore=IM111

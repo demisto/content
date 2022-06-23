@@ -1,0 +1,18 @@
+commonfields:
+  id: FormatACTIURL
+  version: -1
+name: FormatACTIURL
+script: ''
+type: python
+tags:
+- indicator-format
+comment: Helps to fetch ACTI Intelligence Report/Alert URL and converts it to uuid.
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.10.1.27636
+runas: DBotWeakRole
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

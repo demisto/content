@@ -422,6 +422,7 @@ Requires `Read userAccountControl` and `write userAccountControl` permissions.
 | --- | --- | --- |
 | username | The username of the account to enable (sAMAccountName). | Required |
 | base-dn | Root (e.g., DC=domain,DC=com). By default, the Base DN configured for the instance will be used. | Optional |
+| restore_user | If true, the command will enable the user with his restored options.| Optional |
 
 ##### Context Output
 
@@ -924,3 +925,63 @@ Additional Information
 
 * LDAP attributes: <https://msdn.microsoft.com/en-us/library/ms675090(v=vs.85).aspx>
 * Distinguished Names explanation and examples: <https://ldap.com/ldap-dns-and-rdns/>
+### ad-create-group
+***
+Creates a new security or distribution Active Directory group.
+
+
+#### Base Command
+
+`ad-create-group`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The Active Directory name of the group. | Required | 
+| group-type | The type of group. Can be: "security", or "distribution". Possible values are: security, distribution. | Required | 
+| dn | The Full Distinguished Name (DN) of the group. Use double quotes ("") rather than single quotes ('') when initializing this command. | Required | 
+| members | The Full DN Of users or groups that will be members of the newly created group. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+### ad-delete-group
+***
+Deletes an existing Active Directory security or distribution group.
+
+
+#### Base Command
+
+`ad-delete-group`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| dn | The Active Directory Distinguished Name (DN) of the group. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+### ad-update-group
+***
+Updates attributes of an existing Active Directory group.
+
+
+#### Base Command
+
+`ad-update-group`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| groupname | The group name of the group to update (sAMAccountName). | Optional | 
+| attributename | The name of the attribute to modify. For example, Description and displayName. | Required | 
+| attributevalue | The value of the attribute to change. | Required | 
+| basedn | Root. For example, DC=domain,DC=com. By default, the Base DN configured for the instance is used. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.

@@ -84,7 +84,7 @@ if (shouldDeleteAll) {
     if (isNaN(index)) {
         return errorEntry("Invalid index " + args.index)
     }
-    var contextVal = invContext[args.key];
+    var contextVal = dq(invContext, args.key);
     if (!contextVal) {
         return "Key [" + args.key + "] was not found.";
     }

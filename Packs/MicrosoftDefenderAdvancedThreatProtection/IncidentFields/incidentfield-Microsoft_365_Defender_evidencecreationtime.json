@@ -1,0 +1,31 @@
+{
+  "id": "incident_microsoftdefenderforendpointevidencecreationtime",
+  "version": -1,
+  "modified": "2022-02-20T21:24:27.553777+02:00",
+  "name": "Microsoft Defender for Endpoint Evidence Creation Time",
+  "ownerOnly": false,
+  "cliName": "microsoftdefenderforendpointevidencecreationtime",
+  "type": "multiSelect",
+  "closeForm": false,
+  "editForm": true,
+  "required": false,
+  "neverSetAsRequired": false,
+  "isReadOnly": false,
+  "useAsKpi": false,
+  "locked": false,
+  "system": false,
+  "content": true,
+  "group": 0,
+  "hidden": false,
+  "openEnded": true,
+  "associatedTypes": [
+    "Microsoft Defender For Endpoint"
+  ],
+  "associatedToAll": false,
+  "unmapped": false,
+  "unsearchable": true,
+  "caseInsensitive": true,
+  "sla": 0,
+  "threshold": 72,
+  "fromVersion": "5.5.0"
+}

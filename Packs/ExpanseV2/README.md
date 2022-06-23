@@ -36,4 +36,4 @@ Through a powerful set of playbooks, analysts can correlate the discovered infor
 
 ##### Video
 
-[![Expanse and Cortex XSOAR](https://img.youtube.com/vi/I3Vj-f5VGMk/0.jpg)](https://www.youtube.com/watch?v=I3Vj-f5VGMk "Expanse and Cortex XSOAR")
+[![Expanse and Cortex XSOAR](https://img.youtube.com/vi/I3Vj-f5VGMk/0.jpg)](https://www.youtube.com/watch?v=I3Vj-f5VGMk)

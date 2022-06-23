@@ -10,6 +10,13 @@ args:
   secret: false
 - auto: PREDEFINED
   default: false
+  description: The header that holds the original Authentication-Results header value. This can be used when an intermediate server changes the original email and holds the original header value in a different header. Note - Use this only if you trust the server creating this header.
+  isArray: false
+  name: original_authentication_header
+  required: false
+  secret: false
+- auto: PREDEFINED
+  default: false
   description: Override value for SPF=None.
   isArray: false
   name: SPF_override_none

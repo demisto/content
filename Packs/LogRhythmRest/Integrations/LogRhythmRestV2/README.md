@@ -341,6 +341,7 @@ Gets the alarm history details by ID and filter criteria.
 ### lr-alarm-events-list
 ***
 Gets a list of events for the specified alarm ID.
+Note: Currently, this command does not work as expected on LogRhythm's side. It always returns a list of one item, even if the given alarm ID is associated with more than one event.
 
 
 #### Base Command

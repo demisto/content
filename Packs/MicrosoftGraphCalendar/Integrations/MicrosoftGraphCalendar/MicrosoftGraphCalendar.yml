@@ -19,8 +19,18 @@ configuration:
   type: 4
 - display: Key (received from the admin consent - see Detailed Instructions (?)
   name: enc_key
-  required: true
+  required: false
   type: 4
+- additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+  display: Certificate Thumbprint
+  name: certificate_thumbprint
+  required: false
+  type: 4
+- additionalinfo: Used for certificate authentication. The private key of the registered certificate.
+  display: Private Key
+  name: private_key
+  required: false
+  type: 14
 - display: Default user
   name: default_user
   required: false
@@ -800,7 +810,7 @@ script:
       description: "A URL for an online meeting, used only when an organizer specifies\
         \ an event as an online meeting, such as a Skype meeting. Read-only."
       type: Unknown
-  dockerimage: demisto/crypto:1.0.0.24380
+  dockerimage: demisto/crypto:1.0.0.30286
   isfetch: false
   longRunning: false
   longRunningPort: false

@@ -1,2 +1,2 @@
 [file:Microsoft365Defender.yml]
-ignore=IN145
+ignore=IN145,IN124

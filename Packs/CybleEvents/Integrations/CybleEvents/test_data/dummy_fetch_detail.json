@@ -1,0 +1,38 @@
+{
+  "success": true,
+  "events": [
+    {
+      "id": 1,
+      "eventtitle": "some_event_title_1",
+      "createdat": "2020-06-15T07:34:20.062000",
+      "modified": "Mar 01 2022",
+      "type": "some_type_1",
+      "indicator": "some_indicator_1",
+      "references": "",
+      "lastseenon": "2022-03-02"
+    },
+    {
+      "id": 2,
+      "eventtitle": "some_event_title_2",
+      "createdat": "2020-06-15T07:34:20.062000",
+      "modified": "Mar 01 2022",
+      "type": "some_type_2",
+      "indicator": "some_indicator_2",
+      "references": "",
+      "lastseenon": "2022-03-02"
+    },
+    {
+      "id": 3,
+      "eventtitle": "some_event_title_3",
+      "createdat": "2020-06-15T07:34:20.062000",
+      "modified": "Mar 01 2022",
+      "type": "some_type_3",
+      "indicator": "some_indicator_3",
+      "references": "",
+      "lastseenon": "2022-03-02"
+    }
+  ],
+  "total_count": 3,
+  "total_pages": 1,
+  "tag_name": "dummy.com"
+}

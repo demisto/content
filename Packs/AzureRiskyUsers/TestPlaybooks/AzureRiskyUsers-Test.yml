@@ -1,0 +1,666 @@
+id: AzureRiskyUsers
+version: 0
+vcShouldKeepItemLegacyProdMachine: false
+name: AzureRiskyUsers
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2a2712af-77e8-4dfd-88ad-39489ae2f68c
+    type: start
+    task:
+      id: 2a2712af-77e8-4dfd-88ad-39489ae2f68c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 780e309e-066f-4aca-8fe6-c385aaff35ce
+    type: regular
+    task:
+      id: 780e309e-066f-4aca-8fe6-c385aaff35ce
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 673c14f0-de7f-4599-896c-4317f4b99ce0
+    type: regular
+    task:
+      id: 673c14f0-de7f-4599-896c-4317f4b99ce0
+      version: -1
+      name: azure-risky-users-list
+      description: Returns a comma separated list of all risky users and their properties.
+      script: AzureRiskyUsers|||azure-risky-users-list
+      type: regular
+      iscommand: true
+      brand: AzureRiskyUsers
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 53063de9-c7ba-4f16-8e5a-a2935d74ae18
+    type: condition
+    task:
+      id: 53063de9-c7ba-4f16-8e5a-a2935d74ae18
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskyUser.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskyUser.userDisplayName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskyUser.userPrincipalName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskyUser.riskLevel
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskyUser.riskState
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskyUser.riskLastUpdatedDateTime
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskyUser.isDeleted
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskyUser.isProcessing
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskyUser.riskDetail
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 4c4e90da-2dae-4865-853e-0914b1697728
+    type: regular
+    task:
+      id: 4c4e90da-2dae-4865-853e-0914b1697728
+      version: -1
+      name: azure-risky-user-get
+      description: Retrieves properties and relationships of a Risky User.
+      script: AzureRiskyUsers|||azure-risky-user-get
+      type: regular
+      iscommand: true
+      brand: AzureRiskyUsers
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      id:
+        complex:
+          root: AzureRiskyUsers.RiskyUser
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 067d6d73-e1be-4569-8f31-33abdc38c284
+    type: condition
+    task:
+      id: 067d6d73-e1be-4569-8f31-33abdc38c284
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskyUser.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskyUser.userDisplayName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskyUser.userPrincipalName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskyUser.riskLevel
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskyUser.riskState
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskyUser.riskLastUpdatedDateTime
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskyUser.isDeleted
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskyUser.isProcessing
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskyUser.riskDetail
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: d774e4da-b30e-4bbb-8d9a-1d6213650012
+    type: regular
+    task:
+      id: d774e4da-b30e-4bbb-8d9a-1d6213650012
+      version: -1
+      name: azure-risky-users-risk-detections-list
+      description: Returns a comma separated list of the Risk Detection objects and
+        their properties.
+      script: AzureRiskyUsers|||azure-risky-users-risk-detections-list
+      type: regular
+      iscommand: true
+      brand: AzureRiskyUsers
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 888333f1-d60a-4c78-8a04-c2d159b0c17f
+    type: condition
+    task:
+      id: 888333f1-d60a-4c78-8a04-c2d159b0c17f
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskDetection.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskDetection.userId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskDetection.userDisplayName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskDetection.userPrincipalName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskDetection.riskDetail
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskDetection.riskEventType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskDetection.riskLevel
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskDetection.riskState
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskDetection.ipAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskDetection.source
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskDetection.detectionTimingType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskDetection.lastUpdatedDateTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskDetection.location
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskDetection.activity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskDetection.activityDateTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskDetection.additionalInfo
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskDetection.correlationId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskDetection.detectedDateTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskDetection.requestId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskDetection.tokenIssuerType
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: b0e60ac1-8595-48b2-8b36-a5d3a48262c7
+    type: regular
+    task:
+      id: b0e60ac1-8595-48b2-8b36-a5d3a48262c7
+      version: -1
+      name: azure-risky-users-risk-detection-get
+      description: Reads the properties and relationships of a riskDetection object.
+      script: AzureRiskyUsers|||azure-risky-users-risk-detection-get
+      type: regular
+      iscommand: true
+      brand: AzureRiskyUsers
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      id:
+        complex:
+          root: AzureRiskyUsers.RiskDetection
+          accessor: id
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: a8358a26-a04f-4e9d-8f12-7ccc66cd178c
+    type: condition
+    task:
+      id: a8358a26-a04f-4e9d-8f12-7ccc66cd178c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskDetection.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskDetection.userId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskDetection.userDisplayName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskDetection.userPrincipalName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskDetection.riskDetail
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskDetection.riskEventType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskDetection.riskLevel
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskDetection.riskState
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskDetection.ipAddress
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskDetection.source
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskDetection.detectionTimingType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskDetection.lastUpdatedDateTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskDetection.location
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskDetection.activity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskDetection.activityDateTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskDetection.additionalInfo
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskDetection.correlationId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskDetection.detectedDateTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskDetection.requestId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureRiskyUsers.RiskDetection.tokenIssuerType
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 77074911-65ad-4420-8436-53c03134d327
+    type: title
+    task:
+      id: 77074911-65ad-4420-8436-53c03134d327
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2045,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.0.0
+description: ''

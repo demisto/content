@@ -156,9 +156,13 @@ def get_event_args(args):
     event_id = args.get('event_id')
 
     if isinstance(since, str):
-        since = dateparser.parse(since, settings={'TIMEZONE': 'UTC'}).timestamp()
+        since_date = dateparser.parse(since, settings={'TIMEZONE': 'UTC'})
+        assert since_date is not None, f'failed parsing {since}'
+        since = since_date.timestamp()
     if isinstance(until, str):
-        until = dateparser.parse(until, settings={'TIMEZONE': 'UTC'}).timestamp()
+        until_date = dateparser.parse(until, settings={'TIMEZONE': 'UTC'})
+        assert until_date is not None, f'failed parsing {until}'
+        until = until_date.timestamp()
 
     return protocol, since, until, limit, tags, event_id
 
@@ -330,8 +334,9 @@ def main():
         'x-api-key': api_key,
     }
 
-    first_fetch = dateparser.parse(params.get('first_fetch', '5 minutes'),
-                                   settings={'TIMEZONE': 'UTC'}).timestamp()
+    first_fetch_date = dateparser.parse(params.get('first_fetch', '5 minutes'), settings={'TIMEZONE': 'UTC'})
+    assert first_fetch_date is not None
+    first_fetch = first_fetch_date.timestamp()
 
     try:
         handle_proxy()

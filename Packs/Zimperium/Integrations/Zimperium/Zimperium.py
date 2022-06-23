@@ -650,6 +650,7 @@ def fetch_incidents(client: Client, last_run: dict, fetch_query: str, first_fetc
 
             if event_id not in last_event_ids:  # check that event was not fetched in the last fetch
                 last_event_created_time = parse(event_data.get('persistedTime'))
+                assert last_event_created_time is not None
                 incident = {
                     'name': event_data.get('incidentSummary'),
                     'occurred': last_event_created_time.strftime(timestamp_format),

@@ -6,6 +6,7 @@ import traceback
 import requests
 import zipfile
 import io
+import re
 from datetime import datetime as dt
 
 # Disable insecure warnings
@@ -332,35 +333,6 @@ def build_context_url_ok_status(url_information: dict, uri: str, params: dict) -
         relationships=relationships)
 
 
-def build_context_url_no_results_status(url_information: dict, uri: str, params: dict) -> CommandResults:
-    """
-         Build the output context if the status is no_results.
-
-         Args:
-            url_information (dict): The data retrieved from URLHaus db.
-            uri (str): The queried URL.
-            params (dict): The integration params.
-
-         Returns:
-             result (CommandResults): The CommandResults object representing the url command results.
-    """
-    dbot_score = Common.DBotScore(
-        indicator=uri,
-        integration_name='URLhaus',
-        indicator_type=DBotScoreType.URL,
-        reliability=params.get('reliability'),
-        score=Common.DBotScore.NONE
-    )
-    url_indicator = Common.URL(url=uri, dbot_score=dbot_score)
-    human_readable = f'## URLhaus reputation for {uri}\n' \
-                     f'No results!'
-    return CommandResults(
-        readable_output=human_readable,
-        raw_response=url_information,
-        indicator=url_indicator
-    )
-
-
 def process_query_info(url_information: dict, uri: str, params: dict) -> CommandResults:
     """
          Process the response.
@@ -376,10 +348,12 @@ def process_query_info(url_information: dict, uri: str, params: dict) -> Command
     if url_information['query_status'] == 'ok':
         return build_context_url_ok_status(url_information, uri, params)
 
-    elif url_information['query_status'] == 'no_results':
-        return build_context_url_no_results_status(url_information, uri, params)
+    elif url_information['query_status'] == 'no_results' or url_information['query_status'] == 'invalid_url':
 
-    elif url_information['query_status'] == 'invalid_url':
+        if re.match(urlRegex, uri):
+            return create_indicator_result_with_dbotscore_unknown(indicator=uri,
+                                                                  indicator_type=DBotScoreType.URL,
+                                                                  reliability=params.get('reliability'))
         human_readable = f'## URLhaus reputation for {uri}\n' \
                          f'Invalid URL!'
         return CommandResults(
@@ -526,20 +500,10 @@ def run_domain_command(domain: str, params: dict) -> CommandResults:
             indicator=domain_indicator,
             relationships=relationships)
     elif domain_information['query_status'] == 'no_results':
-        dbot_score = Common.DBotScore(
-            indicator=domain,
-            integration_name='URLhaus',
-            indicator_type=DBotScoreType.URL,
-            reliability=params.get('reliability'),
-            score=Common.DBotScore.NONE
-        )
-        domain_indicator = Common.Domain(domain=domain, dbot_score=dbot_score)
-        human_readable = f'## URLhaus reputation for {domain}\n' \
-                         f'No results!'
-        return CommandResults(
-            readable_output=human_readable,
-            indicator=domain_indicator,
-            raw_response=domain_information)
+        return create_indicator_result_with_dbotscore_unknown(indicator=domain,
+                                                              indicator_type=DBotScoreType.DOMAIN,
+                                                              reliability=params.get('reliability'))
+
     elif domain_information['query_status'] == 'invalid_host':
         human_readable = f'## URLhaus reputation for {domain}\n' \
                          f'Invalid domain!'
@@ -680,12 +644,9 @@ def run_file_command(hash: str, params: dict) -> CommandResults:
 
     elif (file_information['query_status'] == 'ok' and not file_information['md5_hash']) or \
             file_information['query_status'] == 'no_results':
-        human_readable = f'## URLhaus reputation for {hash_type.upper()} : {hash}\n' \
-                         f'No results!'
-
-        return CommandResults(
-            readable_output=human_readable,
-            raw_response=file_information)
+        return create_indicator_result_with_dbotscore_unknown(indicator=hash,
+                                                              indicator_type=DBotScoreType.FILE,
+                                                              reliability=params.get('reliability'))
 
     elif file_information['query_status'] in ['invalid_md5', 'invalid_sha256']:
         human_readable = f'## URLhaus reputation for {hash_type.upper()} : {hash}\n' \

@@ -33,6 +33,13 @@ configuration:
   name: threshold_url
   required: true
   type: 0
+- additionalinfo: Set this to determine the RST Threat Feed score that will determine
+    if a hash is malicious (0-100)
+  defaultvalue: '10'
+  display: Score threshold for hash reputation command
+  name: threshold_hash
+  required: false
+  type: 0
 - additionalinfo: Mark IP indicators older than indicator_expiration_ip value in days
     as Suspicious ignoring the last available score
   defaultvalue: '7'
@@ -53,6 +60,13 @@ configuration:
   display: URL Indicator Expiration (days)
   name: indicator_expiration_url
   required: true
+  type: 0
+- additionalinfo: Mark File indicators older than indicator_expiration_hash value
+    in days as Suspicious ignoring the last available score
+  defaultvalue: '365'
+  display: File Hash Indicator Expiration (days)
+  name: indicator_expiration_hash
+  required: false
   type: 0
 - display: Use system proxy settings
   name: proxy
@@ -176,6 +190,15 @@ script:
     - contextPath: RST.IP.FalsePositiveDesc
       description: Description why we think it may be a False Positive
       type: String
+    - contextPath: RST.IP.CVE
+      description: Related CVE (vulnerabilities)
+      type: String
+    - contextPath: RST.IP.Industry
+      description: Related Industry
+      type: String
+    - contextPath: RST.IP.Report
+      description: Collected from
+      type: String
   - arguments:
     - default: true
       description: List of Domains.
@@ -275,6 +298,15 @@ script:
     - contextPath: RST.Domain.FalsePositiveDesc
       description: Description why we think it may be a False Positive
       type: String
+    - contextPath: RST.Domain.CVE
+      description: Related CVE (vulnerabilities)
+      type: String
+    - contextPath: RST.Domain.Industry
+      description: Related Industry
+      type: String
+    - contextPath: RST.Domain.Report
+      description: Collected from
+      type: String
   - arguments:
     - default: true
       description: List of URLs
@@ -362,6 +394,111 @@ script:
     - contextPath: RST.URL.CVE
       description: Related CVE (vulnerabilities)
       type: String
+    - contextPath: RST.URL.Industry
+      description: Related Industry
+      type: String
+    - contextPath: RST.URL.Report
+      description: Collected from
+      type: String
+  - arguments:
+    - default: true
+      required: true
+      description: List of File Hashes
+      isArray: true
+      name: file
+    - default: false
+      defaultValue: "10"
+      description: If the Hash has reputation above the threshold then the domain
+        defined as malicious. If threshold not set, then threshold from instance configuration
+        is used
+      name: threshold
+    name: file
+    description: Returns File information and reputation.
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score
+      type: String
+    - contextPath: File.Tags
+      description: The associated tags
+      type: String
+    - contextPath: File.Malicious.Vendor
+      description: The vendor reporting the File as malicious
+      type: String
+    - contextPath: File.Malicious.Description
+      description: A description explaining why the File was reported as malicious
+      type: String
+    - contextPath: File.Malicious.Score
+      description: The score calculated for the File indicator by the vendor
+      type: String
+    - contextPath: File.Name
+      description: The file name
+      type: string
+    - contextPath: File.MD5
+      description: MD5 hash of the file
+      type: string
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file
+      type: string
+    - contextPath: RST.File.Name
+      description: The file name
+      type: string
+    - contextPath: RST.File.MD5
+      description: MD5 hash of the file
+      type: string
+    - contextPath: RST.File.SHA1
+      description: SHA1 hash of the file
+      type: string
+    - contextPath: RST.File.SHA256
+      description: SHA256 hash of the file
+      type: string
+    - contextPath: RST.File.FirstSeen
+      description: First Seen
+      type: Date
+    - contextPath: RST.File.LastSeen
+      description: Last Seen
+      type: Date
+    - contextPath: RST.File.Tags
+      description: The associated tags
+      type: String
+    - contextPath: RST.File.Threat
+      description: The associated Malware Family or threat name
+      type: String
+    - contextPath: RST.File.Score
+      description: The total score
+      type: Number
+    - contextPath: RST.File.UUID
+      description: The unique ID for the indicator
+      type: String
+    - contextPath: RST.File.Description
+      description: The associated Description provided by the vendor
+      type: String
+    - contextPath: RST.File.FalsePositive
+      description: true if it is likely a False Positive
+      type: String
+    - contextPath: RST.File.FalsePositiveDesc
+      description: Description why we think it may be a False Positive
+      type: String
+    - contextPath: RST.File.CVE
+      description: Related CVE (vulnerabilities)
+      type: String
+    - contextPath: RST.File.Industry
+      description: Related Industry
+      type: String
+    - contextPath: RST.File.Report
+      description: Collected from
+      type: String
   - arguments:
     - default: true
       description: List of IOCs (URLs, domains or IPs)
@@ -396,7 +533,7 @@ script:
     description: Submits a potential False Positive to RST Threat Feed.
     execution: false
     name: rst-submit-fp
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.4.29342
   feed: false
   isfetch: false
   longRunning: false

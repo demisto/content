@@ -1,0 +1,20 @@
+[
+  {
+    "historyId": "72259829",
+    "id": "message_id",
+    "internalDate": "1647263006000",
+    "labelIds": [
+      "UNREAD",
+      "CATEGORY_PERSONAL",
+      "INBOX"
+    ],
+    "payload": {
+      "body": {
+        "size": 0
+      },
+    "sizeEstimate": 7502,
+    "snippet": "",
+    "threadId": "17f8886f87a78d38"
+  }
+  }
+]

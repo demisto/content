@@ -32,26 +32,25 @@ script:
   commands:
   - arguments:
     - default: false
-      description: 'The path of json file containing incidents. Can contain one incident
-        or a list of incidents. For example: Packs/somePack/TestPlaybooks/examples.json'
+      description: |-
+        The path of json file containing incidents. Can contain one incident
+        or a list of incidents. For example: Packs/somePack/TestPlaybooks/examples.json'. 
+        Incidents without name will be named Mocked Incident
       isArray: false
       name: incidents_path
       required: true
       secret: false
     - default: false
-      description: 'The paths of the files to be added to incidents as attachment. Would
-        be added to all incidents provided in the incident_path file. For example:
-        Packs/somePack/TestPlaybooks/attach.eml'
+      description: 'The paths of the files to be added to incidents as attachment. Would be added to all incidents provided in the incident_path file. For example: Packs/somePack/TestPlaybooks/attach.eml'
       isArray: false
       name: attachment_paths
       required: false
       secret: false
     deprecated: false
-    description: Creates incidents from json files provided, and stores it in the
-      instance context.
+    description: Creates incidents from json files provided, and stores it in the instance context.
     execution: false
     name: create-test-incident-from-file
-  dockerimage: demisto/python3:3.10.1.25933
+  dockerimage: demisto/python3:3.10.4.30607
   feed: false
   isfetch: true
   longRunning: false

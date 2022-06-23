@@ -36,11 +36,6 @@
             "name": "Source Hostname"
         },
         {
-            "cliName": "hostname",
-            "type": "shortText",
-            "name": "Host Name"
-        },
-        {
             "cliName": "illusivenetworkshostname",
             "type": "shortText",
             "name": "Illusive Networks Host Name"

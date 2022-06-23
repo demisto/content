@@ -30,7 +30,7 @@ PRIVATE_REPO_WORKFLOW_ID_FILE = 'PRIVATE_REPO_WORKFLOW_ID.txt'
 
 GET_WORKFLOWS_MAX_RETRIES = 5
 
-GET_WORKFLOWS_TIMEOUT_THRESHOLD = 3600  # one hour
+GET_WORKFLOWS_TIMEOUT_THRESHOLD = int(60 * 60 * 1.5)  # 1h 30m
 
 
 def get_modified_files(branch_name: str = None) -> List[str]:

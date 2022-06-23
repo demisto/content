@@ -2,7 +2,6 @@ import demistomock as demisto  # noqa
 from CommonServerPython import *  # noqa
 
 import json
-import traceback
 from typing import Dict, Any, Tuple, List, Optional
 
 
@@ -24,15 +23,15 @@ def value_to_markdown(v: Any) -> Optional[str]:
 
 def ds_to_field_list(name: str, d: Dict[str, Any], dict_stack: List[Tuple[str, Dict[str, Any]]]) -> List[str]:
     if isinstance(d, dict):
-        fields = d.items()
+        fields = d.items()  # type: ignore
     elif isinstance(d, list):
         if len(d) == 0:
-            fields = []
-        elif isinstance(d[0], dict) and 'name' in d[0] and len(d[0]) == 2:
-            second_key = next((k for k in list(d[0].keys()) if k != 'name'))
-            fields = [(e.pop('name'), e[second_key]) for e in d]
+            fields = []  # type: ignore
+        elif isinstance(d[0], dict) and 'name' in d[0] and len(d[0]) == 2:  # type: ignore
+            second_key = next((k for k in list(d[0].keys()) if k != 'name'))  # type: ignore
+            fields = [(e.pop('name'), e[second_key]) for e in d]  # type: ignore
         else:
-            fields = [(idx, v) for idx, v in enumerate(d)]
+            fields = [(idx, v) for idx, v in enumerate(d)]  # type: ignore
 
     else:
         return [
@@ -107,7 +106,6 @@ def main():
         result = evidence_dynamic_section(demisto.args())
         return_results(result)
     except Exception as ex:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute ExpanseEvidenceDynamicSection. Error: {str(ex)}')
 
 

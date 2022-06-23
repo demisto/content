@@ -128,7 +128,7 @@ def parse_indicators(indicator_objects: list, feed_tags: Optional[list] = None, 
             for key in UNIT42_TYPES_TO_DEMISTO_TYPES.keys():
                 if pattern.startswith(f'[{key}'):  # retrieve only Demisto indicator types
                     indicator_obj = {
-                        "value": indicator_object.get('name'),
+                        "value": indicator_object.get('name', ''),
                         "type": UNIT42_TYPES_TO_DEMISTO_TYPES.get(key),
                         "score": ThreatIntel.ObjectsScore.MALWARE,  # default verdict of fetched indicators is malicious
                         "rawJSON": indicator_object,
@@ -722,7 +722,6 @@ def main():
             return_results(get_indicators_command(client, args, feed_tags, tlp_color))
 
     except Exception as err:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(str(err))
 
 

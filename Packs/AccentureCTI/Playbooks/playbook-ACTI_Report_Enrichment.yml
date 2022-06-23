@@ -1,0 +1,166 @@
+id: ACTI Report Enrichment
+version: -1
+name: ACTI Report Enrichment
+description: Deprecated. No available replacement.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 15045e39-cece-441f-8b1b-d2c9ca710aa8
+    type: start
+    task:
+      id: 15045e39-cece-441f-8b1b-d2c9ca710aa8
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
+    taskid: 35d4b2b8-1508-46c5-8ce2-107812720700
+    type: regular
+    task:
+      id: 35d4b2b8-1508-46c5-8ce2-107812720700
+      version: -1
+      name: acti-getThreatIntelReport
+      description: Fetches Intelligence Alerts & Intelligence Reports.
+      script: ACTI Indicator Query|||acti-getThreatIntelReport
+      type: regular
+      iscommand: true
+      brand: ACTI Indicator Query
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      uuid:
+        simple: ${inputs.ia_uuid}${inputs.ir_uuid}
+    reputationcalc: 1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '2':
+    id: '2'
+    taskid: 58a45298-169b-4170-8eaf-34ee5a720429
+    type: title
+    task:
+      id: 58a45298-169b-4170-8eaf-34ee5a720429
+      version: -1
+      name: END
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 515,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: ia_uuid
+  value:
+    complex:
+      root: ${intelligence_alerts}
+      transformers:
+      - operator: uniq
+  required: false
+  description: ''
+  playbookInputQuery:
+- key: ir_uuid
+  value:
+    complex:
+      root: ${intelligence_reports}
+      transformers:
+      - operator: uniq
+  required: false
+  description: ''
+  playbookInputQuery:
+- key: Domain
+  value:
+    simple: ${Domain}
+  required: false
+  description: ''
+  playbookInputQuery:
+- key: IP
+  value:
+    simple: ${IP}
+  required: false
+  description: ''
+  playbookInputQuery:
+- key: URL
+  value:
+    simple: ${URL}
+  required: false
+  description: ''
+  playbookInputQuery:
+outputs:
+- contextPath: IAIR
+  type: unknown
+  description: ''
+- contextPath: DBotScore
+  type: unknown
+  description: ''
+- contextPath: Domain
+  type: unknown
+  description: ''
+- contextPath: IP
+  type: unknown
+  description: ''
+- contextPath: URL
+  type: unknown
+  description: ''
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
+deprecated: true

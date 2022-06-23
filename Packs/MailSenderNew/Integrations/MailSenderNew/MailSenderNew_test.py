@@ -68,3 +68,34 @@ def test_hmac(mocker):
     user, password = MailSenderNew.get_user_pass()
     res = user + hmac.HMAC(password, 'test').hexdigest()
     assert len(res) > 0
+
+
+@pytest.mark.parametrize(
+    'template_params_arg',
+    [
+        ('{"name": {"value": "hello3"}}'),
+        ({"name": {"value": "hello3"}}),
+        ({"name": {"key": "key_from_context"}})
+    ]
+)
+def test_template_params(mocker, template_params_arg):
+    """
+    Given:
+        A templateParams argument
+            Case A: As a string type.
+            Case B: As a dict type.
+    When:
+        Calling template_params().
+    Then:
+        - Make sure providing both JSON and JSON string objects for the argument is supported.
+        - Make sure that for "key" field the method takes the value from the context.
+        - Make sure that for "value" field the method takes the provided value.
+    """
+    mocker.patch.object(demisto, 'getArg', return_value=template_params_arg)
+    mocker.patch.object(demisto, 'context', return_value={'key_from_context': 'value_from_context'})
+    mocker.patch.object(demisto, 'dt', side_effect=lambda context, k: context.get(k))
+    actual_params = MailSenderNew.template_params()
+    if 'key' in str(template_params_arg):
+        assert actual_params == {'name': 'value_from_context'}
+    else:
+        assert actual_params == {'name': 'hello3'}

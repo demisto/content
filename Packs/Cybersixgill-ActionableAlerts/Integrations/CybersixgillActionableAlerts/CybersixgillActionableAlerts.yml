@@ -11,8 +11,8 @@ configuration:
   name: client_secret
   required: true
   type: 4
-- defaultvalue: '50'
-  display: Maximum number of incidents to fetch - maximum is 100
+- defaultvalue: '25'
+  display: Maximum number of incidents to fetch - maximum is 25
   name: max_fetch
   required: false
   type: 0
@@ -56,13 +56,13 @@ configuration:
 - defaultvalue: 'true'
   display: Fetch incidents
   name: isFetch
-  type: 8
   required: false
-- display: Incident type
+  type: 8
+- defaultvalue: Cybersixgill Actionable Alerts
+  display: Incident type
   name: incidentType
   required: false
   type: 13
-  defaultvalue: 'Cybersixgill Actionable Alerts'
 - defaultvalue: '5'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
@@ -76,15 +76,30 @@ description: Cybersixgill automatically collects intelligence in real-time on al
 display: Cybersixgill Actionable Alerts
 name: Cybersixgill_Actionable_Alerts
 script:
-  dockerimage: demisto/sixgill:1.0.0.24417
+  commands:
+  - deprecated: false
+    description: updates the existing actionable alert status
+    execution: false
+    name: cybersixgill-update-alert-status
+    arguments:
+    - required: true
+      description: The alert id to update.
+      name: alert_id
+    - required: true
+      description: The new status.
+      name: alert_status
+    - required: false
+      description: The aggregate alert id.
+      name: aggregate_alert_id
+  dockerimage: demisto/sixgill:1.0.0.28665
   feed: false
   isfetch: true
   longRunning: false
   longRunningPort: false
   runonce: false
+  script: '-'
   subtype: python3
   type: python
-  script: '-'
 tests:
 - No tests
 fromversion: 5.0.0

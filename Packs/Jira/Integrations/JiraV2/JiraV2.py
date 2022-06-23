@@ -317,18 +317,29 @@ def get_account_id_from_attribute(
         override user identifier for Jira v2 API
         https://docs.atlassian.com/software/jira/docs/api/REST/8.13.15/#user-findUsers
         """
-        users = search_user(attribute, max_results, is_jirav2api=True)
+        users = list(search_user(attribute, max_results, is_jirav2api=True))
         account_ids = {
             user.get('name') for user in users if (attribute.lower() in [user.get('displayName', '').lower(),
                                                                          user.get('emailAddress', '').lower()])}
     else:
-        users = search_user(attribute, max_results)
+        users = list(search_user(attribute, max_results))
         account_ids = {
             user.get('accountId') for user in users if (attribute.lower() in [user.get('displayName', '').lower(),
                                                                               user.get('emailAddress', '').lower()])}
 
     if not account_ids:
-        return f'No Account ID was found for attribute: {attribute}.'
+        # The email address is a private account field and sometimes is blank. If there is only one result,
+        # then it is the one. If there are more results for the query, the user should try "DisplayName" attribute.
+        if not users:
+            return f'No Account ID was found for attribute: {attribute}.'
+        if len(users) == 1:
+            account_ids = {users[0].get('name')} if is_jirav2api == 'true' else {users[0].get('accountId')}
+        else:
+            demisto.debug(f'Multiple account IDs found, but it was not possible to resolve which one of them is most '
+                          f'relevant to attribute \"{attribute}\". Account ids: {account_ids}')
+            return f'Multiple account IDs found, but it was not possible to resolve which one of them is most ' \
+                   f'relevant to attribute \"{attribute}\".Please try to provide the "DisplayName" attribute.'
+
     if len(account_ids) > 1:
         return f'Multiple account IDs were found for attribute: {attribute}.\n' \
                f'Please try to provide the other attribute available - Email or DisplayName.'
@@ -671,11 +682,8 @@ def get_issue(issue_id, headers=None, expand_links=False, is_update=False, get_a
         get_attachments = False
 
     if get_attachments and attachments:
-        attachment_urls = [attachment['content'] for attachment in attachments]
-        for attachment_url in attachment_urls:
-            attachment = f"secure{attachment_url.split('/secure')[-1]}"
-            filename = attachment.split("/")[-1]
-            attachments_zip = jira_req(method='GET', resource_url=attachment).content
+        for attachment in attachments:
+            filename, attachments_zip = get_attachment_data(attachment)
             demisto.results(fileResult(filename=filename, data=attachments_zip))
 
     md_and_context = generate_md_context_get_issue(j_res)
@@ -986,6 +994,7 @@ def fetch_incidents(query, id_offset, should_get_attachments, should_get_comment
     incidents, max_results = [], 50
     if fetch_by_created and last_created_time:
         last_issue_time = parse(last_created_time)
+        assert last_issue_time is not None, f'could not parse {last_created_time}'
         minute_to_fetch = last_issue_time - timedelta(minutes=2)
         formatted_minute_to_fetch = minute_to_fetch.strftime('%Y-%m-%d %H:%M')
         query = f'{query} AND created>=\"{formatted_minute_to_fetch}\"'
@@ -1020,9 +1029,10 @@ def get_attachment_data(attachment):
     :param attachment: attachment metadata
     :return: attachment name and content
     """
-    attachment_url = f"secure{attachment['content'].split('/secure')[-1]}"
-    filename = attachment_url.split("/")[-1]
-    attachments_zip = jira_req(method='GET', resource_url=attachment_url).content
+    attachment_url = attachment.get('content')
+    filename = attachment.get('filename')
+    attachments_zip = jira_req(method='GET', resource_url=attachment_url, link=True).content
+
     return filename, attachments_zip
 
 
@@ -1043,7 +1053,8 @@ def get_attachments(attachments, incident_modified_date, only_new=True):
                 file_results.append(fileResult(filename=filename, data=attachments_zip))
         else:
             for attachment in attachments:
-                attachment_modified_date: datetime = parse(dict_safe_get(attachment, ['created'], "", str))
+                attachment_modified_date: datetime = \
+                    parse(dict_safe_get(attachment, ['created'], "", str))  # type: ignore
                 if incident_modified_date < attachment_modified_date:
                     filename, attachments_zip = get_attachment_data(attachment)
                     file_results.append(fileResult(filename=filename, data=attachments_zip))
@@ -1063,7 +1074,7 @@ def get_comments(comments, incident_modified_date, only_new=True):
     else:
         returned_comments = []
         for comment in comments:
-            comment_modified_date: datetime = parse(dict_safe_get(comment, ['updated'], "", str))
+            comment_modified_date: datetime = parse(dict_safe_get(comment, ['updated'], "", str))  # type: ignore
             if incident_modified_date < comment_modified_date:
                 returned_comments.append(comment)
         return returned_comments
@@ -1215,7 +1226,9 @@ def get_modified_remote_data_command(args):
             if not timezone_name:
                 demisto.error(f'Could not get Jira\'s time zone for get-modified-remote-data.Got unexpected reason:'
                               f' {res.json()}')
-            last_update: datetime = parse(remote_args.last_update, settings={'TIMEZONE': timezone_name})\
+            last_update_date = parse(remote_args.last_update, settings={'TIMEZONE': timezone_name})
+            assert last_update_date is not None, f'could not parse {remote_args.last_update}'
+            last_update: str = last_update_date \
                 .strftime('%Y-%m-%d %H:%M')
             demisto.debug(f'Performing get-modified-remote-data command. Last update is: {last_update}')
             _, _, context = issue_query_command(f'updated > "{last_update}"', max_results=100)
@@ -1253,9 +1266,10 @@ def get_remote_data_command(args) -> GetRemoteDataResponse:
         _, _, issue_raw_response = get_issue(issue_id=parsed_args.remote_incident_id)
         demisto.info('get remote data')
         # Timestamp - Issue last modified in jira server side
-        jira_modified_date: datetime = parse(dict_safe_get(issue_raw_response, ['fields', 'updated'], "", str))
+        jira_modified_date: datetime = \
+            parse(dict_safe_get(issue_raw_response, ['fields', 'updated'], "", str))  # type: ignore
         # Timestamp - Issue last sync in demisto server side
-        incident_modified_date: datetime = parse(parsed_args.last_update)
+        incident_modified_date: datetime = parse(parsed_args.last_update)  # type: ignore
         # Update incident only if issue modified in Jira server-side after the last sync
         demisto.info(f"jira_modified_date{jira_modified_date}")
         demisto.info(f"incident_modified_date{incident_modified_date}")

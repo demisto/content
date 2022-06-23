@@ -1,0 +1,38 @@
+[
+          {
+            "properties": {
+              "sheetId": 0,
+              "title": "Sheet0",
+              "index": 0,
+              "sheetType": "GRID",
+              "gridProperties": {
+                "rowCount": 1000,
+                "columnCount": 26
+              }
+            }
+          },
+           {
+            "properties": {
+              "sheetId": 1,
+              "title": "Sheet1",
+              "index": 0,
+              "sheetType": "GRID",
+              "gridProperties": {
+                "rowCount": 1000,
+                "columnCount": 26
+              }
+            }
+          },
+           {
+            "properties": {
+              "sheetId": 2,
+              "title": "Sheet2",
+              "index": 0,
+              "sheetType": "GRID",
+              "gridProperties": {
+                "rowCount": 1000,
+                "columnCount": 26
+              }
+            }
+          }
+]

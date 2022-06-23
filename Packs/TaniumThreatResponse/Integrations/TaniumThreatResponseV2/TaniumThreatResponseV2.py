@@ -1123,7 +1123,7 @@ def get_connections(client, command_args) -> Tuple[str, dict, Union[list, dict]]
     platforms = argToList(arg=command_args.get('platform'))
 
     raw_response = client.do_request(method='GET', url_suffix='/plugin/products/threat-response/api/v1/conns')
-
+    assert offset is not None
     from_idx = min(offset, len(raw_response))
     to_idx = min(offset + limit, len(raw_response))  # type: ignore
 
@@ -1285,7 +1285,7 @@ def get_labels(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     limit = arg_to_number(data_args.get('limit'))
     offset = arg_to_number(data_args.get('offset'))
     raw_response = client.do_request('GET', '/plugin/products/detect3/api/v1/labels/')
-
+    assert offset is not None
     from_idx = min(offset, len(raw_response))
     to_idx = min(offset + limit, len(raw_response))  # type: ignore
 
@@ -1761,7 +1761,7 @@ def list_evidence(client, commands_args) -> Tuple[str, dict, Union[list, dict]]:
     raw_response = client.do_request('GET', '/plugin/products/threat-response/api/v1/evidence', params=params)
 
     filter_arguments = [(hostnames, 'hostname')]
-
+    assert offset is not None
     from_idx = min(offset, len(raw_response))
     to_idx = min(offset + limit, len(raw_response))  # type: ignore
 
@@ -1965,7 +1965,7 @@ def get_system_status(client, command_args) -> Tuple[str, dict, Union[list, dict
     raw_response = client.do_request('GET', '/api/v2/system_status')
     data = raw_response.get('data', [{}])
     active_computers = []
-
+    assert offset is not None
     from_idx = min(offset, len(data))
     to_idx = min(offset + limit, len(data))  # type: ignore
 

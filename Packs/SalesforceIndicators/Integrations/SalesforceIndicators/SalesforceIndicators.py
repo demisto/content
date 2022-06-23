@@ -76,13 +76,15 @@ class Client(BaseClient):
         if raw_query:
             res = self._http_request(
                 'GET',
-                f'{query}'
+                f'{query}',
+                timeout=600
             )
         else:
             res = self._http_request(
                 'GET',
                 'query',
-                params=params
+                params=params,
+                timeout=600
             )
         return res
 
@@ -91,35 +93,45 @@ class Client(BaseClient):
         return res
 
 
-def fetch_indicators_command(client, params, manual_run=False):
+def fetch_indicators_command(client, manual_run=False):
 
-    indicators_unparsed = list()
+    indicators_unparsed: List[Dict] = list()
     indicators = list()
     now = datetime.utcnow()
-    date_filter = dateparser.parse(f"{client.history} days ago", settings={
-                                   'RELATIVE_BASE': now}).strftime("%Y-%m-%dT%H:%M:%S.000+0000")
-    integration_context = get_integration_context()
-    if integration_context:
-        last_run = integration_context.get('lastRun')
-    else:
-        last_run = None
+    history_date = dateparser.parse(f"{client.history} days ago", settings={'RELATIVE_BASE': now})
+    assert history_date is not None, f'could not parse {client.history} days ago'
+    date_filter = history_date.strftime("%Y-%m-%dT%H:%M:%S.000+0000")
+    latest_mod_date = None
+    last_run = demisto.getLastRun().get('lastRun')
     object_fields = None
+
     if client.fields:
         object_fields = client.fields.split(",")
     else:
         object_fields = sorted([x['name'] for x in client.get_object_description()['fields']])
+
     if "id" not in object_fields and "Id" not in object_fields:
         object_fields.append("id")
+    if "CreatedDate" not in object_fields and "CreatedDate" not in object_fields:
+        object_fields.append("CreatedDate")
+    if "LastModifiedDate" not in object_fields and "LastModifiedDate" not in object_fields:
+        object_fields.append("LastModifiedDate")
 
+    # Define whether to use a user provided query
     if client.query_filter:
         search_criteria = f"{client.query_filter}"
-        if last_run:
-            search_criteria = f"{search_criteria} AND LastModifiedDate >= {last_run}"
+
+        # If there is a last run date, use it if there is not already one specified
+        if last_run and "LastModifiedDate" not in client.query_filter:
+            search_criteria = f"LastModifiedDate >= {last_run} AND {client.query_filter}"
+
     else:
+        # Define which date range to use if there is no user criteria
         if last_run:
             search_criteria = f"LastModifiedDate >= {last_run}"
         else:
-            search_criteria = f"LastModifiedDate > {date_filter}"
+            search_criteria = f"CreatedDate >= {date_filter}"
+
     indicators_raw = client.query_object(object_fields, client.object_name, search_criteria)
     if indicators_raw.get('totalSize', 0) > 0:
         for indicator in indicators_raw.get('records', []):
@@ -133,7 +145,9 @@ def fetch_indicators_command(client, params, manual_run=False):
                 indicators_unparsed.append({k: v for k, v in indicator.items() if k != 'attributes'})
 
             more_records = True if indicators_raw.get('nextRecordsUrl', None) else False
-
+    if indicators_unparsed and len(indicators_unparsed) > 0:
+        mod_date = sorted([x.get('LastModifiedDate')for x in indicators_unparsed], reverse=True)[0]  # type: ignore
+        latest_mod_date = dateparser.parse(mod_date)  # type: ignore
     for item in indicators_unparsed:
         try:
             value = item[client.key_field] if client.key_field in item else None
@@ -151,9 +165,10 @@ def fetch_indicators_command(client, params, manual_run=False):
 
     if not manual_run:
 
-        # Update the last run time
-        last_run = now.strftime("%Y-%m-%dT%H:%M:00Z")
-        set_integration_context({"lastRun": last_run})
+        # Update the last run time if there was a LastModifiedDate found
+        if latest_mod_date:
+            last_run = latest_mod_date.strftime("%Y-%m-%dT%H:%M:00Z")
+            demisto.setLastRun({"lastRun": last_run})
 
         # We submit indicators in batches
         for b in batch(indicators, batch_size=2000):
@@ -196,10 +211,10 @@ def main():
         test_module(client)
 
     elif command == 'fetch-indicators':
-        fetch_indicators_command(client, params)
+        fetch_indicators_command(client)
 
     elif command == 'salesforce-get-indicators':
-        fetch_indicators_command(client, params, manual_run=True)
+        fetch_indicators_command(client, manual_run=True)
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:

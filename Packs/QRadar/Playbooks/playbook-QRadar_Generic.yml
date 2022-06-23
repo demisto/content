@@ -885,7 +885,6 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "23"
       - "15"
       - "52"
     separatecontext: false

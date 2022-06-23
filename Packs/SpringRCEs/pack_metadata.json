@@ -1,0 +1,63 @@
+{
+    "name": "Spring Core and Cloud Function SpEL RCEs",
+    "description": "This pack handles Spring Core and Cloud Function SpEL RCEs, a 0-days exploits in the popular Spring Framework.",
+    "support": "xsoar",
+    "currentVersion": "1.0.2",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [],
+    "tags": [
+        "Incident Response"
+    ],
+    "useCases": [
+        "Hunting",
+        "Incident Response",
+        "Rapid Breach Response"
+    ],
+    "keywords": [
+        "zero-day",
+        "0-day",
+        "zero day",
+        "CVE-2022-22963",
+        "CVE-2022-22965",
+        "CVE-2022-22947",
+        "Spring",
+        "Spring4Shell",
+        "CVE",
+        "22963",
+        "22965",
+        "22947",
+        "RCE",
+        "Spring Core",
+        "Spring Cloud Function"
+    ],
+    "dependencies": {
+        "PAN-OS": {
+            "mandatory": false,
+            "display_name": "PAN-OS"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "MajorBreachesInvestigationandResponse": {
+            "mandatory": true,
+            "display_name": "Rapid Breach Response"
+        },
+        "CommonPlaybooks": {
+            "mandatory": false,
+            "display_name": "Common Playbooks"
+        }
+    },
+    "displayedImages": [
+        "PAN-OS",
+        "CommonScripts",
+        "CommonPlaybooks",
+        "MajorBreachesInvestigationandResponse"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

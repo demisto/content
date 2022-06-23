@@ -201,7 +201,7 @@
                         "maxH": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 2,
+                        "minW": 3,
                         "moved": false,
                         "name": "Indicators",
                         "query": "",
@@ -326,7 +326,7 @@
                         "maxH": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
+                        "minW": 3,
                         "moved": false,
                         "name": "Bad or Suspicious Indicators",
                         "query": "reputation:Bad or reputation:Suspicious",
@@ -341,6 +341,7 @@
                         "h": 2,
                         "i": "caseinfoid-09c215c0-af49-11eb-8305-a1842c711395",
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -413,6 +414,7 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "minW": 1,
@@ -435,7 +437,7 @@
                         "displayType": "ROW",
                         "h": 1,
                         "hideName": false,
-                        "i": "yuellml8sw-957f94f0-af46-11eb-851b-8514fa32e54c",
+                        "i": "caseinfoid-yuellml8sw-957f94f0-af46-11eb-851b-8514fa32e54c",
                         "items": [
                             {
                                 "dropEffect": "move",
@@ -443,7 +445,7 @@
                                 "fieldId": "ztapsourceorganization",
                                 "height": 22,
                                 "id": "bdcd54f0-b28f-11eb-b204-eb248eb7997b",
-                                "index": 0,
+                                "index": 1,
                                 "listId": "yuellml8sw-957f94f0-af46-11eb-851b-8514fa32e54c",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -453,27 +455,27 @@
                                 "fieldId": "ztappriority",
                                 "height": 22,
                                 "id": "a2574820-b429-11eb-a54e-33f5471dcd52",
-                                "index": 1,
+                                "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 4,
-                                "fieldId": "ztapescalateorganization",
-                                "height": 22,
-                                "id": "ba39a6e0-b28f-11eb-b204-eb248eb7997b",
-                                "index": 0,
-                                "listId": "yuellml8sw-957f94f0-af46-11eb-851b-8514fa32e54c",
-                                "sectionItemType": "field",
-                                "startCol": 2
                             },
                             {
                                 "endCol": 4,
                                 "fieldId": "ztapproductstatus",
                                 "height": 22,
                                 "id": "a3421d50-b429-11eb-a54e-33f5471dcd52",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "ztaptriggercount",
+                                "height": 22,
+                                "id": "c94bd0e0-b429-11eb-a54e-33f5471dcd52",
                                 "index": 1,
+                                "listId": "caseinfoid-yuellml8sw-957f94f0-af46-11eb-851b-8514fa32e54c",
                                 "sectionItemType": "field",
                                 "startCol": 2
                             },
@@ -489,11 +491,13 @@
                                 "startCol": 4
                             },
                             {
+                                "dropEffect": "move",
                                 "endCol": 6,
-                                "fieldId": "ztaptriggercount",
+                                "fieldId": "ztapalertlink",
                                 "height": 22,
-                                "id": "c94bd0e0-b429-11eb-a54e-33f5471dcd52",
+                                "id": "c14c8940-a927-11ec-b65e-176ad396fec3",
                                 "index": 1,
+                                "listId": "caseinfoid-yuellml8sw-957f94f0-af46-11eb-851b-8514fa32e54c",
                                 "sectionItemType": "field",
                                 "startCol": 4
                             }
@@ -511,11 +515,12 @@
                     },
                     {
                         "h": 3,
-                        "i": "yuellml8sw-9f1011b0-b28f-11eb-b204-eb248eb7997b",
+                        "i": "caseinfoid-yuellml8sw-9f1011b0-b28f-11eb-b204-eb248eb7997b",
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
+                        "minW": 3,
                         "moved": false,
                         "name": "ZTAP Trigger Events",
                         "query": "ZTAPParseFields",
@@ -529,11 +534,12 @@
                     {
                         "description": "",
                         "h": 1,
-                        "i": "yuellml8sw-df75bd40-da7b-11eb-875a-e32fac7215d1",
+                        "i": "caseinfoid-yuellml8sw-df75bd40-da7b-11eb-875a-e32fac7215d1",
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
+                        "minW": 3,
                         "moved": false,
                         "name": "ZTAP Links",
                         "query": "ZTAPParseLinks",

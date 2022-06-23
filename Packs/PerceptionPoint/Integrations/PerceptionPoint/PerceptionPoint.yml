@@ -22,17 +22,14 @@ configuration:
   required: false
 - display: Fetch blocked incidents
   name: fetch_blocked
-  defaultvalue: ""
   type: 8
   required: false
 - display: Fetch spam incidents
   name: fetch_spam
-  defaultvalue: ""
   type: 8
   required: false
 - display: Fetch malicious incidents
   name: fetch_malicious
-  defaultvalue: ""
   type: 8
   required: false
 - display: Incident type
@@ -45,7 +42,6 @@ configuration:
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
   type: 8
   required: false
 script:

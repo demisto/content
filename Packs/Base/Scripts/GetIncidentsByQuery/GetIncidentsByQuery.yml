@@ -28,8 +28,8 @@ args:
   required: false
   secret: false
 - default: false
-  defaultValue: '3000'
-  description: The maximum number of incidents to fetch. The default value is 3000.
+  defaultValue: '500'
+  description: The maximum number of incidents to fetch.
   isArray: false
   name: limit
   required: false
@@ -84,7 +84,7 @@ args:
   required: false
   secret: false
 - default: false
-  defaultValue: '500'
+  defaultValue: '100'
   description: Incidents query batch size
   isArray: false
   name: pageSize
@@ -116,8 +116,7 @@ tags:
 - ml
 timeout: 60µs
 type: python
-dockerimage: demisto/python3:3.10.1.25933
+dockerimage: demisto/python3:3.10.4.30607
 tests:
 - Create Phishing Classifier V2 ML Test
-- DBot Build Phishing Classifier Test - Multiple Algorithms
 fromversion: 5.0.0

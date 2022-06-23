@@ -35,7 +35,7 @@ HTTP_ERRORS = {
     500: "Internal server error: Please try again after some time."
 }
 
-INTEGRATION_VERSION = "v1.0.0"
+INTEGRATION_VERSION = "v1.0.3"
 INTEGRATION_PLATFORM = "XSOAR Cortex"
 
 FILE_TYPES = ['sha1', 'sha256', 'sha512', 'md5']
@@ -58,7 +58,7 @@ flashpoint_field_mapping = {
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API"""
+    """Client class to interact with the service API."""
 
     def http_request(self, url_suffix, method="GET", params=None) -> Any:
         """
@@ -83,7 +83,7 @@ class Client(BaseClient):
 
     def check_indicator_type(self, indicator_value: str, default_map: bool) -> str:
         """
-        Function to set the type of the indicator.
+        Set the type of the indicator.
 
         :param indicator_value: Value of the indicator.
         :param default_map: To enable the default mapper setting for the indicator.
@@ -142,7 +142,7 @@ class Client(BaseClient):
 
     def map_indicator_fields(self, resp: dict, indicator_obj: dict) -> None:
         """
-        Function to map indicators fields from the response
+        Map fields of indicators from the response.
 
         :param resp: raw response of indicator
         :param indicator_obj: created indicator object
@@ -151,16 +151,16 @@ class Client(BaseClient):
         """
         for key, value in flashpoint_field_mapping.items():
             if key == "tags":
-                new_tags = indicator_obj['fields']['tags']
-                event_tags = resp.get('Event', {}).get('Tag')
+                new_tags = indicator_obj.get('fields', {}).get('tags')
+                event_tags = resp.get('Event', {}).get('Tag', '')
                 true_value = new_tags + [tag.get('name') for tag in event_tags]
 
             elif key == "flashpointfeedeventhref":
-                uuid = resp.get('Event', {}).get('uuid')
+                uuid = resp.get('Event', {}).get('uuid', '')
                 true_value = "https://fp.tools/home/technical_data/iocs/items/" + uuid
 
             else:
-                path = value['path']
+                path = value.get('path', '')
                 paths = path.split('.')
                 true_value = resp
 
@@ -174,7 +174,7 @@ class Client(BaseClient):
 
     def create_indicators_from_response(self, response: Any, last_fetch: str, params: dict, is_get: bool) -> List:
         """
-        Function to create indicators from the response
+        Create indicators from the response.
 
         :param response: response received from the API.
         :param last_fetch: Last fetched time stamp
@@ -206,7 +206,7 @@ class Client(BaseClient):
                 indicator_obj['fields']['trafficlightprotocol'] = tlp_color
 
             if relationship:
-                event_tags = resp.get('Event').get('Tag')
+                event_tags = resp.get('Event', {}).get('Tag', '')
                 indicator_obj['relationships'] = self.create_relationship(indicator_value, indicator_type,
                                                                           event_tags)  # type: ignore
 
@@ -229,7 +229,7 @@ class Client(BaseClient):
 
     def fetch_indicators(self, params: dict) -> Any:
         """
-        Function to fetch the list of indicators based on specified arguments
+        Fetch the list of indicators based on specified arguments.
 
         :param params: Parameters to be sent with API call
 
@@ -244,9 +244,7 @@ class Client(BaseClient):
 
     @staticmethod
     def handle_errors(resp) -> None:
-        """
-        Handling http errors
-        """
+        """Handle http errors."""
         status = resp.status_code
         if status in HTTP_ERRORS:
             raise DemistoException(HTTP_ERRORS[status])
@@ -259,7 +257,7 @@ class Client(BaseClient):
 
 def prepare_hr_for_indicators(indicators: list) -> str:
     """
-    Makes human readable format
+    Prepare human readable response.
 
     :param indicators: List of indicators
 
@@ -313,7 +311,7 @@ def prepare_hr_for_indicators(indicators: list) -> str:
 
 def validate_get_indicators_args(args: dict) -> dict:
     """
-    Function to validate the argument list for get indicators
+    Validate the argument list for get indicators.
 
     :param args: Dictionary of arguments
 
@@ -340,7 +338,7 @@ def validate_get_indicators_args(args: dict) -> dict:
 
 def validate_fetch_indicators_params(params: dict) -> dict:
     """
-    Function to validate the parameter list for fetch indicators
+    Validate the parameter list for fetch indicators.
 
     :param params: Dictionary of parameters
 
@@ -363,6 +361,7 @@ def validate_fetch_indicators_params(params: dict) -> dict:
 
 def test_module(client: Client, params: dict) -> str:
     """Tests the indicators from the feed.
+
     Args:
         client: Client object.
     Returns:
@@ -374,7 +373,7 @@ def test_module(client: Client, params: dict) -> str:
 
 def fetch_indicators_command(client: Client, params: dict, args: dict, is_get: bool) -> List:
     """
-    Function to fetch the indicators
+    Fetch the indicators.
 
     :param client: Client object
     :param params: Dictionary of parameters
@@ -399,7 +398,7 @@ def fetch_indicators_command(client: Client, params: dict, args: dict, is_get: b
 
 def get_indicators_command(client: Client, params: dict, args: dict) -> CommandResults:
     """
-    Function to get limited number of indicators
+    Get limited number of indicators.
 
     :param client: Client object
     :param params: Dictionary of parameters
@@ -422,8 +421,7 @@ def get_indicators_command(client: Client, params: dict, args: dict) -> CommandR
 
 
 def main():
-    """Main function, parses params and runs command functions
-    """
+    """Parse params and runs command functions."""
     params = demisto.params()
     args = demisto.args()
 

@@ -72,9 +72,9 @@ tasks:
     task:
       id: 0aa77ad6-c7bc-4f8b-84cf-3b8c9a901a7f
       version: -1
-      name: panorama-get-predefined-threats-list
+      name: pan-os-get-predefined-threats-list
       description: Gets the predefined threats list from Firewall or Panorama.
-      script: '|||panorama-get-predefined-threats-list'
+      script: '|||pan-os-get-predefined-threats-list'
       type: regular
       iscommand: true
       brand: ""

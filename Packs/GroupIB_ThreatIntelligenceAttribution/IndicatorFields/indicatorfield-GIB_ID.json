@@ -1,13 +1,16 @@
 {
-    "associatedToAll": false,
     "associatedTypes": [
-        "GIB victim IP",
-        "GIB compromised IMEI",
-        "GIB compromised mule",
-        "GIB Compromised IMEI",
+        "CVE",
+        "IP",
+        "File",
+        "URL",
+        "Email",
+        "Domain",
         "GIB Compromised Mule",
+        "GIB Compromised IMEI",
         "GIB Victim IP"
     ],
+    "associatedToAll": false,
     "caseInsensitive": false,
     "cliName": "gibid",
     "closeForm": false,

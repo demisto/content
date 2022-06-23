@@ -1,0 +1,33 @@
+{
+    "id": "incident_sdlpincidenttype",
+    "version": -1,
+    "modified": "2022-03-06T11:50:24.206033533Z",
+    "name": "SDLP Incident Type",
+    "ownerOnly": false,
+    "cliName": "sdlpincidenttype",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Symantec DLP Discover Incident",
+        "Symantec DLP Endpoint Incident",
+        "Symantec DLP Network Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}
