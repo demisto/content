@@ -1,3 +1,9 @@
+register_module_line('urlscan.io', 'start', __line__())
+
+
+'''IMPORTS'''
+
+
 import collections
 import json as JSON
 import time
@@ -7,11 +13,6 @@ import requests
 from CommonServerPython import *  # noqa: F401
 from requests.utils import quote  # type: ignore
 from urlparse import urlparse
-
-register_module_line('urlscan.io', 'start', __line__())
-
-
-'''IMPORTS'''
 
 
 """ POLLING FUNCTIONS"""
