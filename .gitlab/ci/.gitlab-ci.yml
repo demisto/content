@@ -8,6 +8,7 @@ default:
     when: always
 
 stages:
+  - create-test-branch
   - unittests-and-validations
   - create-instances
   - run-instances
@@ -38,7 +39,7 @@ variables:
   DEMISTO_CONNECTION_POOL_MAXSIZE: "180" # see this issue for more info https://github.com/demisto/etc/issues/36886
   SDK_REF: "master" # The default sdk branch to use
   OVERRIDE_ALL_PACKS: "false"
-
+  SSH_PUSH_KEY: "4-1aEfJ_bymqxyTSx4P-"
 
 include:
   - local: .gitlab/ci/global.yml

@@ -1,11 +1,16 @@
 .bucket-upload-rule:
   rules:
+    - if: '$TEST_BRANCH == "true"'
+      when: never
     - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
       when: never
     - if: '$BUCKET_UPLOAD == "true"'
 
+
 .bucket-upload-rule-always:
   rules:
+    - if: '$TEST_BRANCH == "true"'
+      when: never
     - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
       when: never
     - if: '$BUCKET_UPLOAD == "true"'
@@ -49,10 +54,13 @@ create-instances-upload-flow:
     IFRA_ENV_TYPE: "Bucket-Upload"
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
   rules:
+    - if: '$TEST_BRANCH == "true"'
+      when: never
     - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
       when: never
     - if: '$BUCKET_UPLOAD == "true"'
     - if: '$FORCE_BUCKET_UPLOAD == "true"'
+
 
 prepare-testing-bucket-mpv2-upload-flow:
  extends:
@@ -61,11 +69,14 @@ prepare-testing-bucket-mpv2-upload-flow:
    IFRA_ENV_TYPE: "Bucket-Upload"
    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
  rules:
+   - if: '$TEST_BRANCH == "true"'
+     when: never
    - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
      when: never
    - if: '$BUCKET_UPLOAD == "true"'
    - if: '$FORCE_BUCKET_UPLOAD == "true"'
-
+   - if: '$TEST_BRANCH == "true"'
+     when: never
 
 .install_packs_in_xsoar_server:
   tags:
@@ -375,3 +386,16 @@ slack-notify-bucket-upload:
   extends:
     - .trigger-slack-notification
     - .bucket-upload-rule-always
+
+bucket-upload-test-branch:
+  rules:
+    - if: '$TEST_BRANCH == "true"'
+      when: always
+  stage: create-test-branch
+  script:
+    - echo "Creating new branch"
+    - git checkout -b "this_is_a_test_branch"
+    - touch test.txt
+    - git add *
+    - git commit -m "new file"
+    - git push
