@@ -1,0 +1,17 @@
+{
+    "name": "Emergency loop call",
+    "description": "This contribution contains a playbook that implements an emergeny loop of calls using Twilio integration. Requires a list in the form of <number>|<CortexXSOARuser> and will end if a user replyes and takes charge of the emergency. Twilio integration will send an email with specific details, that will be handled by specific playbook (incident assigner) that will assign the user to the original emergency incident.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Lucio Virz\u00ec and Gabriele Aloise",
+    "url": "",
+    "email": "",
+    "created": "2022-06-24T14:19:33Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "LucioVirzi"
+    ]
+}

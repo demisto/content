@@ -1,0 +1,156 @@
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 4e0b289e-9da0-430f-85d5-b154936948fe
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: e2b091bc-1a3c-4653-8e03-1bd047b03740
+inputs: []
+name: Incident Assigner
+outputs: []
+starttaskid: "0"
+tags:
+- emergency loop
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d0260426-da3e-4f85-87fc-dc7888c5925b
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: d0260426-da3e-4f85-87fc-dc7888c5925b
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 70
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      id:
+        simple: ${incident.emergencyid}
+      owner:
+        simple: ${incident.emergencyassignee}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 6c133d8d-6788-403a-80f8-2c8987203675
+      iscommand: true
+      name: Assign User to Incident
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 6c133d8d-6788-403a-80f8-2c8987203675
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      closeNotes:
+        simple: ${inputs.assignee} has been assigned to incident ${inputs.incidentID}
+      closeReason:
+        simple: Completed
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 2dfbe8f5-d448-4234-8141-85b19f924112
+      iscommand: true
+      name: Close Investigation
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 2dfbe8f5-d448-4234-8141-85b19f924112
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 420
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1f2363e4-087b-4e5d-873c-44c81a00889f
+      iscommand: false
+      name: Close
+      type: title
+      version: -1
+    taskid: 1f2363e4-087b-4e5d-873c-44c81a00889f
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 610
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 605,
+        "width": 380,
+        "x": 450,
+        "y": 70
+      }
+    }
+  }

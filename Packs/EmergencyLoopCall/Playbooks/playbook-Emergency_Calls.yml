@@ -1,0 +1,99 @@
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 4e0b289e-9da0-430f-85d5-b154936948fe
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: 8e4de2bb-bb62-426d-8687-54baa6cb335b
+inputs:
+- description: ""
+  key: emergencyList
+  playbookInputQuery: null
+  required: false
+  value: {}
+name: Emergency Calls
+outputs: []
+starttaskid: "0"
+tags:
+- emergency loop
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: decbb6c8-7f28-4b16-8548-c1be8cc3028a
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: decbb6c8-7f28-4b16-8548-c1be8cc3028a
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      forEach: true
+      iscommand: false
+      max: 3
+      wait: 1
+    note: false
+    quietmode: 0
+    scriptarguments:
+      phoneData:
+        simple: ${inputs.emergencyList}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: cf2607a2-c94f-4c69-8069-c1a051fcf2c6
+      iscommand: false
+      name: Emergency Call
+      playbookId: 9d0c6fc5-1eb2-4881-898a-841b8b1db9ea
+      type: playbook
+      version: -1
+    taskid: cf2607a2-c94f-4c69-8069-c1a051fcf2c6
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 275,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }

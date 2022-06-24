@@ -1,0 +1,235 @@
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 4e0b289e-9da0-430f-85d5-b154936948fe
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: 9d0c6fc5-1eb2-4881-898a-841b8b1db9ea
+inputs:
+- description: ""
+  key: phoneData
+  playbookInputQuery: null
+  required: true
+  value: {}
+name: Emergency Call
+outputs: []
+starttaskid: "0"
+tags:
+- emergency loop
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5b6c6dd8-3589-48e0-8b87-7febaa942fcb
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 5b6c6dd8-3589-48e0-8b87-7febaa942fcb
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      assegnee:
+        simple: ${inputs.phoneAssignee}
+      assignee:
+        complex:
+          root: inputs.phoneData
+          transformers:
+          - args:
+              delimiter:
+                value:
+                  simple: '|'
+            operator: split
+          - args:
+              index:
+                value:
+                  simple: "1"
+            operator: atIndex
+      incident_id:
+        simple: ${incident.id}
+      to:
+        complex:
+          root: inputs.phoneData
+          transformers:
+          - args:
+              delimiter:
+                value:
+                  simple: '|'
+            operator: split
+          - args:
+              index:
+                value:
+                  simple: "0"
+            operator: atIndex
+      ttsMessage:
+        simple: Questa è una chiamata generata dal SOC BNL, riguarda l'incident {0}
+          con oggetto {1}, premi un numero qualsiasi per prendere in carico la chiamata,
+          altrimenti premi cancelletto
+      ttsMessageArgs:
+        simple: ${incident.id},${incident.labels.Email/subject}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Starts an emergency call for the specified destination number
+      id: d9cb972d-21f1-4e5c-8cca-4ee24e218b8a
+      iscommand: true
+      name: Make call
+      script: '|||emergency-call'
+      type: regular
+      version: -1
+    taskid: d9cb972d-21f1-4e5c-8cca-4ee24e218b8a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      context_key:
+        simple: incident.owner
+      iterations:
+        simple: "120"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: 'A simple loop to inspect the context for a specific key. If the
+        key is not found after "iterations" loops, the script exits with a message. '
+      id: 9dd787c4-e3c3-4a24-8888-ca97663509c0
+      iscommand: false
+      name: Wait for owner
+      scriptName: WaitForKey
+      type: regular
+      version: -1
+    taskid: 9dd787c4-e3c3-4a24-8888-ca97663509c0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 530
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.owner
+          operator: isNotEmpty
+      label: "yes"
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "1"
+      "yes":
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 10069e9b-d745-44f5-81dd-7e1582c56a4d
+      iscommand: false
+      name: Is Incident Assigned
+      type: condition
+      version: -1
+    taskid: 10069e9b-d745-44f5-81dd-7e1582c56a4d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 56cacaa5-811e-4368-86de-6b4f69c72cd2
+      iscommand: false
+      name: Finish Iteration
+      type: title
+      version: -1
+    taskid: 56cacaa5-811e-4368-86de-6b4f69c72cd2
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 850
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 865,
+        "width": 600,
+        "x": 230,
+        "y": 50
+      }
+    }
+  }

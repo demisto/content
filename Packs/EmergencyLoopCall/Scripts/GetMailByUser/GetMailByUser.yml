@@ -1,0 +1,28 @@
+args:
+- description: User to match email
+  name: username
+commonfields:
+  id: 75f25e27-d8af-4ac4-8c43-7ef3d5d7d66e
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 4e0b289e-9da0-430f-85d5-b154936948fe
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dockerimage: demisto/python3:3.10.4.30607
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: getMailByUser
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python

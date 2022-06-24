@@ -1,0 +1,72 @@
+category: Messaging
+commonfields:
+  id: Twilio Emergency Calls Flow
+  version: -1
+configuration:
+- defaultvalue: https://studio.twilio.com/v2/Flows/
+  display: Server URL (e.g. https://studio.twilio.com/v2/Flows/)
+  name: server
+  required: false
+  type: 0
+- display: Account SID
+  name: sid
+  required: true
+  type: 0
+- display: Auth token
+  name: token
+  required: true
+  type: 4
+- display: Call Flow ID
+  name: flow_id
+  required: true
+  type: 0
+- display: Default sending number (e.g. +123456789101)
+  name: from
+  required: true
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 4e0b289e-9da0-430f-85d5-b154936948fe
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: Call a Twilio Flow to start an Emergency Call
+display: Twilio Emergency Calls Flow
+name: Twilio Emergency Calls Flow
+script:
+  commands:
+  - arguments:
+    - description: Phone number of Call receiver (e.g. +123456789101)
+      name: to
+      required: true
+    - description: Incident to inform the called number about
+      name: incident_id
+      required: true
+    - description: The Cortex XSOAR to assign the incident to
+      name: assignee
+      required: true
+    - description: Phone number of Call starter (e.g. +123456789101)
+      name: from
+    - defaultValue: Questa è una chiamata generata dal SOC BNL, riguarda l'incident
+        {0},  premi un numero qualsiasi per prendere in carico la chiamata, altrimenti
+        premi cancelletto
+      description: The text message to be used in TTS
+      name: ttsMessage
+    - description: Args to format the ttsMessage with
+      name: ttsMessageArgs
+    description: Starts an emergency call for the specified destination number
+    name: emergency-call
+  runonce: false
+  script: ''
+  type: javascript

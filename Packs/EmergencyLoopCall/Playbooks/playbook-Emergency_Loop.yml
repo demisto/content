@@ -1,0 +1,689 @@
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 4e0b289e-9da0-430f-85d5-b154936948fe
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: This playbook implements an emergeny loop of calls using Twilio integration.
+  Requires a list in the form of <number>|<CortexXSOARuser> and will end if a user
+  replyes and takes charge of the emergency. Twilio integration will send an email
+  with specific details, that will be handled by specific playbook (incident assigner)
+  that will assign the user to the original emergency incident.
+id: a3bad2da-dec3-468b-877a-7509a5ce9a8a
+inputs: []
+name: Emergency Loop
+outputs: []
+starttaskid: "0"
+tags:
+- emergency loop
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 71a86ba7-22b7-4b5b-87ad-c21815a7afe3
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 71a86ba7-22b7-4b5b-87ad-c21815a7afe3
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        Retrieves the current date and time.
+      id: 6ac0a41d-09ad-4f75-851c-0f28b5602755
+      iscommand: false
+      name: Get_time_and_date
+      scriptName: GetTime
+      type: regular
+      version: -1
+    taskid: 6ac0a41d-09ad-4f75-851c-0f28b5602755
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+  "2":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: TimeNow
+          operator: containsString
+          right:
+            value:
+              simple: Sat
+        - left:
+            iscontext: true
+            value:
+              simple: TimeNow
+          operator: containsString
+          right:
+            value:
+              simple: Sun
+        - left:
+            iscontext: true
+            value:
+              complex:
+                root: TimeNow
+                transformers:
+                - args:
+                    delimiter:
+                      value:
+                        simple: ' '
+                  operator: split
+                - args:
+                    index:
+                      value:
+                        simple: "4"
+                  operator: atIndex
+                - args:
+                    delimiter:
+                      value:
+                        simple: ':'
+                  operator: split
+                - args:
+                    index:
+                      value:
+                        simple: "0"
+                  operator: atIndex
+                - operator: toUpperCase
+          operator: greaterThanOrEqual
+          right:
+            value:
+              simple: "18"
+        - left:
+            iscontext: true
+            value:
+              complex:
+                root: TimeNow
+                transformers:
+                - args:
+                    delimiter:
+                      value:
+                        simple: ' '
+                  operator: split
+                - args:
+                    index:
+                      value:
+                        simple: "4"
+                  operator: atIndex
+                - args:
+                    delimiter:
+                      value:
+                        simple: ':'
+                  operator: split
+                - args:
+                    index:
+                      value:
+                        simple: "0"
+                  operator: atIndex
+          operator: lessThanOrEqual
+          right:
+            value:
+              simple: "7"
+      label: Inizio analisi
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "3"
+      Inizio analisi:
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: bdb79379-dbff-4f6e-8f7c-0511cb00ede6
+      iscommand: false
+      name: Check_time_and_date
+      type: condition
+      version: -1
+    taskid: bdb79379-dbff-4f6e-8f7c-0511cb00ede6
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 620,
+          "y": 380
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 7f5296fb-6a36-4169-8a7f-53f957f62c33
+      iscommand: true
+      name: Closing
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 7f5296fb-6a36-4169-8a7f-53f957f62c33
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 620,
+          "y": 1480
+        }
+      }
+  "5":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Email/subject}
+                root: ${incident.labels
+                transformers:
+                - operator: toLowerCase
+          operator: containsString
+          right:
+            value:
+              simple: emergency
+        - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Email/subject}
+                root: ${incident.labels
+                transformers:
+                - operator: toLowerCase
+          operator: containsString
+          right:
+            value:
+              simple: critical
+        - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Email/subject}
+                root: ${incident.labels
+                transformers:
+                - operator: toLowerCase
+          operator: containsString
+          right:
+            value:
+              simple: action required
+        - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Email/subject}
+                root: ${incident.labels
+                transformers:
+                - operator: toLowerCase
+          operator: containsString
+          right:
+            value:
+              simple: 'TLP:'
+        - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Email/subject}
+                root: ${incident.labels
+                transformers:
+                - operator: toLowerCase
+          operator: containsString
+          right:
+            value:
+              simple: '[TI]'
+        - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Email/subject}
+                root: ${incident.labels
+                transformers:
+                - operator: toLowerCase
+          operator: containsString
+          right:
+            value:
+              simple: threat
+        - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Email/subject}
+                root: ${incident.labels
+                transformers:
+                - operator: toLowerCase
+          operator: containsString
+          right:
+            value:
+              simple: '[ACTION REQUEST]'
+        - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Email/subject}
+                root: ${incident.labels
+                transformers:
+                - operator: toLowerCase
+          operator: containsString
+          right:
+            value:
+              simple: alert
+        - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Email/subject}
+                root: ${incident.labels
+                transformers:
+                - operator: toLowerCase
+          operator: containsString
+          right:
+            value:
+              simple: minaccia
+        - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Email/subject}
+                root: ${incident.labels
+                transformers:
+                - operator: toLowerCase
+          operator: containsString
+          right:
+            value:
+              simple: destructive
+        - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Email/subject}
+                root: ${incident.labels
+                transformers:
+                - operator: toLowerCase
+          operator: containsString
+          right:
+            value:
+              simple: urgente
+        - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Email/subject}
+                root: ${incident.labels
+                transformers:
+                - operator: toLowerCase
+          operator: containsString
+          right:
+            value:
+              simple: emergenza
+        - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Email/subject}
+                root: ${incident.labels
+                transformers:
+                - operator: toLowerCase
+          operator: containsString
+          right:
+            value:
+              simple: azione richiesta
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: details}
+                root: ${incident
+                transformers:
+                - operator: toLowerCase
+          operator: containsString
+          right:
+            value:
+              simple: cyber attack
+        - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: details}
+                root: ${incident
+                transformers:
+                - operator: toLowerCase
+          operator: containsString
+          right:
+            value:
+              simple: threat
+        - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: details}
+                root: ${incident
+                transformers:
+                - operator: toLowerCase
+          operator: containsString
+          right:
+            value:
+              simple: incident
+        - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: details}
+                root: ${incident
+                transformers:
+                - operator: toLowerCase
+          operator: containsString
+          right:
+            value:
+              simple: alert
+        - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: details}
+                root: ${incident
+                transformers:
+                - operator: toLowerCase
+          operator: containsString
+          right:
+            value:
+              simple: minaccia
+        - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: details}
+                root: ${incident
+                transformers:
+                - operator: toLowerCase
+          operator: containsString
+          right:
+            value:
+              simple: distruttivo
+      label: Inoltro
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "3"
+      Inoltro:
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a37b8ba9-24f9-4133-81a2-ef927795fdd2
+      iscommand: false
+      name: Check_content
+      type: condition
+      version: -1
+    taskid: a37b8ba9-24f9-4133-81a2-ef927795fdd2
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 80,
+          "y": 520
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      builtincondition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.owner
+          operator: isNotEmpty
+      exitCondition: ""
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      emergencyList:
+        simple: ${Emergency.emergencyList}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0fd13011-f0d2-4330-8e14-14663e47bec3
+      iscommand: false
+      name: Emergency Calls
+      playbookId: 8e4de2bb-bb62-426d-8687-54baa6cb335b
+      type: playbook
+      version: -1
+    taskid: 0fd13011-f0d2-4330-8e14-14663e47bec3
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 990
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: Emergency.emergencyList
+      value:
+        complex:
+          accessor: EmergencyList
+          root: lists
+          transformers:
+          - args:
+              delimiter:
+                value:
+                  simple: ','
+            operator: split
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 263c8500-1854-4da7-8165-b3a24bf7a301
+      iscommand: false
+      name: Load Emergency List
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 263c8500-1854-4da7-8165-b3a24bf7a301
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 810
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      body:
+        simple: ${incident.labels.Email/text}
+      subject:
+        simple: ${incident.labels.Email/subject}
+      to:
+        simple: ${GetMailByUser.mail}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sends an email using EWS.
+      id: d9b89fc2-ee26-434c-86d1-48b687e6c0a7
+      iscommand: true
+      name: Send Incident Details
+      script: '|||send-mail'
+      type: regular
+      version: -1
+    taskid: d9b89fc2-ee26-434c-86d1-48b687e6c0a7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1310
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      username:
+        simple: ${incident.owner}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 992bdfb3-81e1-4ce5-8725-3dd74e016c25
+      iscommand: false
+      name: Get Owner Mail
+      scriptName: getMailByUser
+      type: regular
+      version: -1
+    taskid: 992bdfb3-81e1-4ce5-8725-3dd74e016c25
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1150
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b3835be2-c898-453e-86c6-a4d44831d594
+      iscommand: false
+      name: RecipientRandomizer
+      scriptName: ListRandomizer
+      type: regular
+      version: -1
+    taskid: b3835be2-c898-453e-86c6-a4d44831d594
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -580,
+          "y": 810
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_3_#default#": 0.12,
+      "2_5_Inizio analisi": 0.41,
+      "5_3_#default#": 0.33
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1525,
+        "width": 1580,
+        "x": -580,
+        "y": 50
+      }
+    }
+  }

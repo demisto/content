@@ -1,0 +1,27 @@
+args:
+- name: list
+commonfields:
+  id: 613573b8-de1d-4e27-8d70-5a364d503492
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 4e0b289e-9da0-430f-85d5-b154936948fe
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dockerimage: demisto/python3:3.10.4.30607
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: ListRandomizer
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
