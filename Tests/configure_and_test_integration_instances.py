@@ -309,6 +309,7 @@ class Build:
             installed_content_packs_successfully: Whether packs installed successfully
         """
         pack_ids = self.pack_ids_to_install if pack_ids is None else pack_ids
+        logging.info(f"Pack ids: {pack_ids}")
         installed_content_packs_successfully = True
         for server in self.servers:
             try:
@@ -1690,13 +1691,13 @@ def get_packs_not_to_install(modified_packs_names: Set[str], build: Build) -> Se
         (Set[str]): The set of the packs names that supposed to be not installed in the pre-update.
     """
     non_hidden_packs = get_turned_non_hidden_packs(modified_packs_names, build)
-    packs_with_lesser_min_version = get_packs_with_lesser_min_version(modified_packs_names - non_hidden_packs, build)
-    return packs_with_lesser_min_version.union(non_hidden_packs), non_hidden_packs
+    packs_with_higher_min_version = get_packs_with_higher_min_version(modified_packs_names - non_hidden_packs, build)
+    return packs_with_higher_min_version.union(non_hidden_packs), non_hidden_packs
 
 
-def get_packs_with_lesser_min_version(packs_names: Set[str], build: Build) -> Set[str]:
+def get_packs_with_higher_min_version(packs_names: Set[str], build: Build) -> Set[str]:
 
-    packs_with_lesser_version = set()
+    packs_with_higher_version = set()
     for pack_name in packs_names:
 
         pack_metadata = get_json_file(f"{build.content_path}/Packs/{pack_name}/pack_metadata.json")
@@ -1704,10 +1705,10 @@ def get_packs_with_lesser_min_version(packs_names: Set[str], build: Build) -> Se
         server_version = build.server_numeric_version
 
         if 'Master' not in server_version and Version(server_version) < Version(server_min_version):
-            packs_with_lesser_version.add(pack_name)
-            logging.info(f"Found pack with min version {server_min_version} that is lesser than server version {server_version}")
+            packs_with_higher_version.add(pack_name)
+            logging.info(f"Found pack with min version {server_min_version} that is higher than server version {server_version}")
 
-    return packs_with_lesser_version
+    return packs_with_higher_version
 
 
 def main():
@@ -1749,6 +1750,7 @@ def main():
         packs_not_to_install, non_hidden_packs = get_packs_not_to_install(modified_packs_names, build)
         logging.info(f"Packs that are not to install: {packs_not_to_install}")
         packs_to_install = modified_packs_names - packs_not_to_install
+        logging.info(f"Packs to install: {packs_to_install}")
         build.install_packs(pack_ids=packs_to_install)
         new_integrations_names, modified_integrations_names = build.get_changed_integrations(non_hidden_packs)
         pre_update_configuration_results = build.configure_and_test_integrations_pre_update(new_integrations_names,
