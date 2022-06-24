@@ -6,7 +6,7 @@
 			"IMAGENAME": "devdemisto/content-env:1.0.0.31164",
 		}
 	},
-	"initializeCommand": "cp ${localEnv:NODE_EXTRA_CA_CERTS} ${localWorkspaceFolder}/.devcontainer/certs.crt || :",
+	"initializeCommand": "cp ${localEnv:NODE_EXTRA_CA_CERTS} ${localWorkspaceFolder}/.devcontainer/certs.crt || sh -x create_certs.sh ${localWorkspaceFolder}/.devcontainer/certs.crt || :",
 	"containerUser": "root",
 	"settings": {
 		"terminal.integrated.defaultProfile.linux": "zsh",
