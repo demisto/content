@@ -1699,7 +1699,7 @@ def get_packs_with_lesser_min_version(packs_names: Set[str], build: Build) -> Se
     packs_with_lesser_version = set()
     for pack_name in packs_names:
 
-        pack_metadata = get_json_file(f"{build.content_path}/Packs/{pack_name}/Pack_metadata.json")
+        pack_metadata = get_json_file(f"{build.content_path}/Packs/{pack_name}/pack_metadata.json")
         server_min_version = pack_metadata.get(Metadata.SERVER_MIN_VERSION, Metadata.SERVER_DEFAULT_MIN_VERSION)
         server_version = build.server_numeric_version
 
