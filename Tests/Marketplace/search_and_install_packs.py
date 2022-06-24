@@ -397,6 +397,7 @@ def search_pack_and_its_dependencies(client: demisto_client,
         lock (Lock): A lock object.
     """
     pack_data = {}
+    logging.info(f"search_pack_and_its_dependencies Pack id: {pack_id}, packs_to_install: {packs_to_install}")
     if pack_id not in packs_to_install:
         pack_display_name = get_pack_display_name(pack_id)
         if pack_display_name:
