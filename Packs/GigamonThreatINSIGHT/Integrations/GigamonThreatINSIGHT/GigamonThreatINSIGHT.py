@@ -1,24 +1,32 @@
 """    Gigamon ThreatINSIGHT Integration for Cortex XSOAR (aka Demisto)
-        
-       This integration allows fetching detections, entities, events and 
-       saved searches from Gigamon ThreatINSIGHT APIs, also allows for 
-       some management operations like creating scheduled pcap tasks, 
+
+       This integration allows fetching detections, entities, events and
+       saved searches from Gigamon ThreatINSIGHT APIs, also allows for
+       some management operations like creating scheduled pcap tasks,
        updating detection rules and resolving detections.
 """
-''' IMPORTS '''
+import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
 
 import requests
 import json
 import re
+from datetime import datetime, timedelta
 
 # Global for setting up headers
-HEADERS = {}
+HEADERS: Dict[str, str] = {}
 TRAINING_ACC = 'f6f6f836-8bcd-4f5d-bd61-68d303c4f634'
 MAX_DETECTIONS = 100
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+
 
 ''' HELPER FUNCTIONS '''
 
+
 def sendRequest(method, api, endpoint=None, data=None, args=None):
+    """ Client method for figuring out the right endpoint and running the requests"""
+
     # dump data if supplied
     if data:
         data = json.dumps(data)
@@ -159,25 +167,31 @@ def flattenDict(dt):
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
-def fetchIncidents(account_uuid):
-    last_run = demisto.getLastRun()
 
-    if last_run and 'last_run_time' in last_run:
-        last_fetch = last_run.get('last_run_time')
+def fetchIncidents(account_uuid, max_results, last_run, first_fetch_time):
+    demisto.debug(f'last_run retrieved: {last_run}')
+    last_fetch = last_run.get('last_fetch')
+
+    if last_fetch is None:
+        last_fetch = first_fetch_time
     else:
-        last_fetch = '2022-01-01T00:00:00.000Z'
+        last_fetch = datetime.strptime(last_fetch, DATE_FORMAT)
 
-    args = {'created_or_shared_start_date': last_fetch, 'include': 'rules', 'limit': '100'}
+    if not max_results or max_results > MAX_DETECTIONS:
+        max_results = MAX_DETECTIONS
+
+    args = {'created_or_shared_start_date': last_fetch.strftime(DATE_FORMAT),
+            'include': 'rules',
+            'sort_by': 'first_seen',
+            'sort_order': 'asc',
+            'limit': max_results}
 
     if account_uuid:
         args['account_uuid'] = account_uuid
 
     response = sendRequest('GET', 'Detections', 'detections', None, encodeArgsToURL(args))
-    if response['total_count'] > MAX_DETECTIONS:
-        # pull the remaining detections incrementally
-        response = getDetectionsInc(response, args)
-        response = addDetectionRules(response)
-
+    response = addDetectionRules(response)
+    last_incident_time = last_fetch
     detections = []
     for detection in response['detections']:
         # filter out training detections
@@ -189,7 +203,6 @@ def fetchIncidents(account_uuid):
                     detection['rule_severity'] = str(rule['severity'])
                     detection['rule_category'] = str(rule['category'])
                     detection['rule_confidence'] = str(rule['confidence'])
-                    # detection['rule_signature'] = str(rule['signature'])
 
                     if rule['severity'] == 'high':
                         severity = 3
@@ -203,14 +216,24 @@ def fetchIncidents(account_uuid):
             this_detection = {
                 'occurred': detection['first_seen'],
                 'name': detection['rule_name'],
+                'dbotMirrorId': detection['uuid'],
                 'severity': severity,
-                'details': detection['rule_description'].encode("utf-8"),
+                'details': detection['rule_description'],
                 'rawJSON': json.dumps(detection),
             }
-            detections.append(this_detection)
+            incident_time = datetime.strptime(detection['first_seen'], DATE_FORMAT)
 
-    demisto.setLastRun({'last_run_time': str(datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ"))})
-    demisto.incidents(detections)
+            # To workaround the issue with multiple detections at same timestamp
+            if last_fetch < incident_time:
+                detections.append(this_detection)
+
+            if last_incident_time < incident_time:
+                last_incident_time = incident_time
+
+    demisto.debug(f'Last incident time: {last_incident_time.strftime(DATE_FORMAT)}')
+    next_run = {'last_fetch': last_incident_time.strftime(DATE_FORMAT)}
+    demisto.debug(f'fetched {len(detections)} incidents')
+    return next_run, detections
 
 
 def getDetectionsInc(r_json, args):
@@ -305,7 +328,7 @@ def main():
     # get command and args
     command = demisto.command()
     args = getArgs()
-    
+
     # initialize common args
     api_key = demisto.params().get('api_key')
     account_uuid = demisto.params().get('account_uuid')
@@ -321,7 +344,23 @@ def main():
             response = sendRequest('GET', 'Sensors', 'sensors')
             demisto.results('ok')
         if command == 'fetch-incidents':
-            fetchIncidents(account_uuid)
+            # default first fetch to -7days
+            first_fetch_time = datetime.now() - timedelta(days=7)
+            max_results = arg_to_number(
+                arg=demisto.params().get('max_fetch'),
+                arg_name='max_fetch',
+                required=False
+            )
+
+            next_run, incidents = fetchIncidents(
+                account_uuid=account_uuid,
+                max_results=max_results,
+                last_run=demisto.getLastRun(),
+                first_fetch_time=first_fetch_time
+            )
+
+            demisto.setLastRun(next_run)
+            demisto.incidents(incidents)
         elif command == 'insight-get-events':
             if args['response_type'] == "metadata":
                 response_type = "metadata"
