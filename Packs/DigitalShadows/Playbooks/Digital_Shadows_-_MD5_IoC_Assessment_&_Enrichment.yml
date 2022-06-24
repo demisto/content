@@ -114,7 +114,7 @@ tasks:
       description: ''
     nexttasks:
       no:
-      - '46'
+      - '56'
       yes:
       - '13'
     separatecontext: false
@@ -138,81 +138,6 @@ tasks:
         "position": {
           "x": 265,
           "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  '46':
-    id: '46'
-    taskid: 60d4d621-e7a8-4f9f-8d52-aa439986f2c6
-    type: regular
-    task:
-      id: 60d4d621-e7a8-4f9f-8d52-aa439986f2c6
-      version: -1
-      name: createNewIndicator
-      description: Change the properties of an indicator
-      script: Builtin|||createNewIndicator
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - '47'
-    scriptarguments:
-      value:
-        simple: ${MD5 Associated Indicators}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  '47':
-    id: '47'
-    taskid: 762f82a5-b55b-4079-8f01-d325dfb9e548
-    type: regular
-    task:
-      id: 762f82a5-b55b-4079-8f01-d325dfb9e548
-      version: -1
-      name: associateIndicatorsToIncident
-      description: Associate one or more indicators to incident. You can specify the indicators by either indicator ID or the value of the indicator
-      script: Builtin|||associateIndicatorsToIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
-    scriptarguments:
-      incidentId:
-        simple: ${incident.id}
-      indicatorsValues:
-        complex:
-          root: CreatedIndicator
-          transformers:
-          - operator: getField
-            args:
-              field:
-                value:
-                  simple: Value
-          - operator: uniq
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1420
         }
       }
     note: false
@@ -522,12 +447,43 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  '56':
+    id: '56'
+    taskid: 5abbee56-ba8b-439a-84e4-5609d9967d51
+    type: regular
+    task:
+      id: 5abbee56-ba8b-439a-84e4-5609d9967d51
+      version: -1
+      name: Print Associated Indicators
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ''
+    scriptarguments:
+      value:
+        simple: ${MD5 Associated Indicators}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1465,
+        "height": 1290,
         "width": 1670,
         "x": 50,
         "y": 50

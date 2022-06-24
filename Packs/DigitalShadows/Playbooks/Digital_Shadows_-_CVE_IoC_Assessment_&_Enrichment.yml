@@ -414,7 +414,7 @@ tasks:
       description: ''
     nexttasks:
       no:
-      - '28'
+      - '30'
       yes:
       - '13'
     separatecontext: false
@@ -447,22 +447,19 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '28':
-    id: '28'
-    taskid: d31234b3-6698-4e20-8707-db33382df46f
+  '30':
+    id: '30'
+    taskid: 7da0fb45-51bc-456a-8e4c-8228d0b9d3a4
     type: regular
     task:
-      id: d31234b3-6698-4e20-8707-db33382df46f
+      id: 7da0fb45-51bc-456a-8e4c-8228d0b9d3a4
       version: -1
-      name: createNewIndicator
-      description: Change the properties of an indicator
-      script: Builtin|||createNewIndicator
+      name: Print Associated Indicators
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
       type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - '29'
+      iscommand: false
+      brand: ''
     scriptarguments:
       value:
         simple: ${CVE Associated Indicators}
@@ -481,53 +478,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '29':
-    id: '29'
-    taskid: 5a086221-a2cd-4f2a-81d2-ed4a836b8135
-    type: regular
-    task:
-      id: 5a086221-a2cd-4f2a-81d2-ed4a836b8135
-      version: -1
-      name: associateIndicatorsToIncident
-      description: Associate one or more indicators to incident. You can specify the indicators by either indicator ID or the value of the indicator
-      script: Builtin|||associateIndicatorsToIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
-    scriptarguments:
-      incidentId:
-        simple: ${incident.id}
-      indicatorsValues:
-        complex:
-          root: CreatedIndicator
-          transformers:
-          - operator: getField
-            args:
-              field:
-                value:
-                  simple: Value
-          - operator: uniq
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1465,
+        "height": 1290,
         "width": 1670,
         "x": 50,
         "y": 50

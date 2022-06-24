@@ -6,10 +6,10 @@ starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: 66cb5b54-67a7-4f3c-8930-98bddd0063f1
+    taskid: e6b786dd-ea95-4297-8fe3-1f812d7f17d4
     type: start
     task:
-      id: 66cb5b54-67a7-4f3c-8930-98bddd0063f1
+      id: e6b786dd-ea95-4297-8fe3-1f812d7f17d4
       version: -1
       name: ''
       iscommand: false
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '1':
     id: '1'
-    taskid: bd554a97-05b4-4b65-88cc-16af2659ba88
+    taskid: ee9ec975-4d9a-4c4d-8b21-76c1c518bb4c
     type: regular
     task:
-      id: bd554a97-05b4-4b65-88cc-16af2659ba88
+      id: ee9ec975-4d9a-4c4d-8b21-76c1c518bb4c
       version: -1
       name: ds-search - PROFILE INTELLIGENCE
       description: Perform a textual search against the available record types
@@ -76,10 +76,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '2':
     id: '2'
-    taskid: 0bb48c79-cc53-4601-88d6-9d400e9c399e
+    taskid: 0b694f85-90c4-499c-8abe-bfdc78c9e423
     type: regular
     task:
-      id: 0bb48c79-cc53-4601-88d6-9d400e9c399e
+      id: 0b694f85-90c4-499c-8abe-bfdc78c9e423
       version: -1
       name: ds-search - MITRE TECHNIQUES
       description: Perform a textual search against the available record types
@@ -117,10 +117,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '3':
     id: '3'
-    taskid: 9a577058-4416-461e-87ca-e94ca3e6be4f
+    taskid: 1bb0e60a-3ce9-4e1b-8c28-7e859c0831a7
     type: regular
     task:
-      id: 9a577058-4416-461e-87ca-e94ca3e6be4f
+      id: 1bb0e60a-3ce9-4e1b-8c28-7e859c0831a7
       version: -1
       name: ds-search - THREAT FEEDS
       description: Perform a textual search against the available record types
@@ -157,10 +157,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '4':
     id: '4'
-    taskid: d262e83f-11a5-4cb5-8c91-5c9feecbcc0f
+    taskid: c4c40dd0-af6e-4cee-8b0d-bf077a2ff286
     type: regular
     task:
-      id: d262e83f-11a5-4cb5-8c91-5c9feecbcc0f
+      id: c4c40dd0-af6e-4cee-8b0d-bf077a2ff286
       version: -1
       name: ds-search - CONFIRMED ACTIVITY
       description: Perform a textual search against the available record types
@@ -198,10 +198,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '7':
     id: '7'
-    taskid: 62f1532d-223d-472b-8056-1370045bd673
+    taskid: 99c30d0e-c19e-45d0-856f-e63dedc6f16a
     type: regular
     task:
-      id: 62f1532d-223d-472b-8056-1370045bd673
+      id: 99c30d0e-c19e-45d0-856f-e63dedc6f16a
       version: -1
       name: ds-search - INTEL UPDATES
       description: Perform a textual search against the available record types
@@ -239,10 +239,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '8':
     id: '8'
-    taskid: 92aa615e-54a9-4bf4-860b-d7296a183770
+    taskid: fef4b210-0b39-4d2c-8f8c-ad99f6eccff3
     type: condition
     task:
-      id: 92aa615e-54a9-4bf4-860b-d7296a183770
+      id: fef4b210-0b39-4d2c-8f8c-ad99f6eccff3
       version: -1
       name: is Associated Indicators blank?
       type: condition
@@ -251,7 +251,7 @@ tasks:
       description: ''
     nexttasks:
       no:
-      - '14'
+      - '16'
       yes:
       - '13'
     separatecontext: false
@@ -286,10 +286,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '9':
     id: '9'
-    taskid: 5fe34dbe-cd8f-4508-86ba-24c3de5b05d1
+    taskid: 211651a2-36a9-4ee2-8f16-c681b63e5ae8
     type: regular
     task:
-      id: 5fe34dbe-cd8f-4508-86ba-24c3de5b05d1
+      id: 211651a2-36a9-4ee2-8f16-c681b63e5ae8
       version: -1
       name: AddEvidence - INTEL UPDATES
       description: |
@@ -320,10 +320,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '10':
     id: '10'
-    taskid: 5492e8c4-be89-48ca-83f9-17d7dc29fd7b
+    taskid: 8abd417f-3a2e-4dd9-8544-38063e65dffe
     type: regular
     task:
-      id: 5492e8c4-be89-48ca-83f9-17d7dc29fd7b
+      id: 8abd417f-3a2e-4dd9-8544-38063e65dffe
       version: -1
       name: AddEvidence - INTEL PROFILES
       description: |
@@ -354,10 +354,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '11':
     id: '11'
-    taskid: ee76be9a-b30f-498c-87fe-c38a41c2a57f
+    taskid: 06a27aa3-bfaa-4801-8e5e-5aa7b6a0f4ba
     type: regular
     task:
-      id: ee76be9a-b30f-498c-87fe-c38a41c2a57f
+      id: 06a27aa3-bfaa-4801-8e5e-5aa7b6a0f4ba
       version: -1
       name: AddEvidence - MITRE TECHNIQUES
       description: |
@@ -388,10 +388,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '12':
     id: '12'
-    taskid: 278f1e9b-9978-4ce8-8b55-b162b3e54142
+    taskid: 9e3d3f19-c5f5-414c-8314-1cfc1b624fd2
     type: regular
     task:
-      id: 278f1e9b-9978-4ce8-8b55-b162b3e54142
+      id: 9e3d3f19-c5f5-414c-8314-1cfc1b624fd2
       version: -1
       name: AddEvidence - CONFIRMED ACTIVITY
       description: |
@@ -422,10 +422,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '13':
     id: '13'
-    taskid: 36f61c1a-41be-49ab-8abd-737d274e026d
+    taskid: 244d7e17-80cb-4466-89ed-fb71a6cca9ef
     type: title
     task:
-      id: 36f61c1a-41be-49ab-8abd-737d274e026d
+      id: 244d7e17-80cb-4466-89ed-fb71a6cca9ef
       version: -1
       name: End
       type: title
@@ -447,22 +447,19 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '14':
-    id: '14'
-    taskid: 34ce433a-8314-4ad0-88f8-95442f83a56c
+  '16':
+    id: '16'
+    taskid: 97e25be5-a4a1-4ac2-8536-7fcc674190a4
     type: regular
     task:
-      id: 34ce433a-8314-4ad0-88f8-95442f83a56c
+      id: 97e25be5-a4a1-4ac2-8536-7fcc674190a4
       version: -1
-      name: createNewIndicator
-      description: Change the properties of an indicator
-      script: Builtin|||createNewIndicator
+      name: Print Associated Indicators
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
       type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - '15'
+      iscommand: false
+      brand: ''
     scriptarguments:
       value:
         simple: ${IP Associated Indicators}
@@ -481,53 +478,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '15':
-    id: '15'
-    taskid: e16dcef3-b469-49fb-8c8c-dcda0fa0a974
-    type: regular
-    task:
-      id: e16dcef3-b469-49fb-8c8c-dcda0fa0a974
-      version: -1
-      name: associateIndicatorsToIncident
-      description: Associate one or more indicators to incident. You can specify the indicators by either indicator ID or the value of the indicator
-      script: Builtin|||associateIndicatorsToIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
-    scriptarguments:
-      incidentId:
-        simple: ${incident.id}
-      indicatorsValues:
-        complex:
-          root: CreatedIndicator
-          transformers:
-          - operator: getField
-            args:
-              field:
-                value:
-                  simple: Value
-          - operator: uniq
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 1420
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1465,
+        "height": 1290,
         "width": 1670,
         "x": 50,
         "y": 50
