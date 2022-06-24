@@ -51,4 +51,7 @@ Packs/**/report_pytest.json
 .coverage
 
 # devcontainer folders
-.devcontainer
+.devcontainer/certs.crt
+**/.devcontainer
+!/.devcontainer
+
