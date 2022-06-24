@@ -13,7 +13,7 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'  # ISO8601 format with UTC, default in XSOAR
 CategoryToIncidentType = {
     'Access': 'Alert',
     'Admin': 'Alert',
@@ -31,7 +31,7 @@ CategoryToIncidentType = {
 
 class Client(BaseClient):
     def test(self):
-        self.incident_query(1)
+        self.incident_query(1, arg_to_datetime('3 days').strftime(DATE_FORMAT))
 
     def incident_query(self, limit: int, start_time: str = '', end_time: str = '', actor_ids: list[str] = None,
                        service_names: list[str] = None, categories: list[str] = None) -> Dict[str, Any]:
@@ -46,23 +46,23 @@ class Client(BaseClient):
                 categories=categories
             ),
         )
-        return self._http_request('POST', url_suffix, params=params, json_data=data).json()
+        return self._http_request('POST', url_suffix, params=params, json_data=data)
 
-    def status_update(self, incident_ids: List[str], status: str) -> Dict[str, str]:
+    def status_update(self, incident_ids: List[int], status: str) -> Dict[str, str]:
         url_suffix = '/external/api/v1/modifyIncidents'
         data = [
             {'incidentId': incident_id, "changeRequests": {"WORKFLOW_STATUS": status}} for incident_id in incident_ids
         ]
-        return self._http_request('POST', url_suffix, json_data=data).json()
+        return self._http_request('POST', url_suffix, json_data=data, raise_on_status=True)
 
-    def anomaly_activity_list(self, incident_id: str) -> Dict[str, str]:
+    def anomaly_activity_list(self, incident_id: int) -> Dict[str, str]:
         url_suffix = '/external/api/v1/queryActivities'
         data = {"incident_id": incident_id}
         return self._http_request('POST', url_suffix, json_data=data).json()
 
-    def policy_dictionary_list(self) -> List[Dict[str, str]]:
+    def policy_dictionary_list(self) -> Dict[str, str]:
         url_suffix = '/dlp/dictionary'
-        return self._http_request('GET', url_suffix).json()
+        return self._http_request('GET', url_suffix, raise_on_status=True)
 
     def policy_dictionary_update(self, dict_id: int, name: str, content: List[str]) -> Dict[str, str]:
         url_suffix = '/dlp/dictionary'
@@ -71,7 +71,7 @@ class Client(BaseClient):
             "name": name,
             "content": content
         }
-        return self._http_request('PUT', url_suffix, json_data=data).json()
+        return self._http_request('PUT', url_suffix, json_data=data, raise_on_status=True)
 
 
 ''' HELPER FUNCTIONS '''
@@ -80,9 +80,8 @@ class Client(BaseClient):
 def calculate_offset_and_limit(**kwargs) -> [int, int]:
     if limit := arg_to_number(kwargs.get('limit')):  # 'limit' is stronger than pagination ('page', and 'page_size').
         return 0, limit
-    if arg_to_number(kwargs.get('page')) and arg_to_number(kwargs.get('page_size')):
-        page = kwargs.get('page') - 1  # First page means list in index zero.
-        page_size = kwargs.get('page_size')
+    if (page := arg_to_number(kwargs.get('page'))) and (page_size := arg_to_number(kwargs.get('page_size'))):
+        page -= 1  # First page means list in index zero.
         return page * page_size, page * page_size + page_size
     return 0, 50
 
@@ -115,10 +114,13 @@ def test_module(client: Client) -> str:
     return message
 
 
+def fetch_incidents():
+
+
 def incident_query_command(client: Client, args: Dict) -> CommandResults:
-    offset, limit = calculate_offset_and_limit(**args)
-    start_time = args.get('start_time') or (datetime.now() - datetime.timedelta(days=3)).strftime(DATE_FORMAT)
-    end_time = args.get('end_time')
+    limit = arg_to_number(args.get('limit', 50))
+    start_time = arg_to_datetime(args.get('start_time', '3 days')).strftime(DATE_FORMAT)
+    end_time = arg_to_datetime(args.get('end_time', 'now')).strftime(DATE_FORMAT)
     actor_ids = argToList(args.get('actor_ids'))
     service_names = argToList(args.get('service_names'))
     if categories := argToList(args.get('categories')):
@@ -128,19 +130,31 @@ def incident_query_command(client: Client, args: Dict) -> CommandResults:
     elif incident_types := argToList(args.get('incident_types')):
         categories = [{"incidentType": incident_type} for incident_type in incident_types]
 
-    result = client.incident_query(limit, start_time, end_time, actor_ids, service_names, categories)
+    if not (page_number := arg_to_number(args.get('page_number'))) or \
+            not (page_size := arg_to_number(args.get('page_size'))):
+        result = client.incident_query(limit, start_time, end_time, actor_ids, service_names, categories)
+    else:
+        result = {}
+        for _ in range(page_number):
+            result = client.incident_query(page_size, start_time, end_time, actor_ids, service_names, categories)
+            start_time = result.get('body', {}).get('responseInfo', {}).get('nextStartTime', {})
 
-    if incidents := result.get('incidents'):
-        readable_dict = {
-            'IncidentID': incidents.get('incidentId'),
-            'Time(UTC)': incidents.get('timeCreated'),
-            'Status': incidents.get('status'),
-            'Alert Action': incidents.get('remediationResponse'),
-            'Service Name': incidents.get('serviceNames'),
-            'Alert Severity': incidents.get('Incident risk severity'),
-            'Policy Name': incidents.get('policyName'),
-            'User Name': incidents.get('actorID'),
-        }
+    if incidents := result.get('body', {}).get('incidents'):
+        readable_dict = []
+
+        for incident in incidents:
+            readable_dict.append({
+                'IncidentID': incident.get('incidentId'),
+                'Time(UTC)': incident.get('timeCreated'),
+                'Status': incident.get('status'),
+                'Alert Action': incident.get('remediationResponse'),
+                'Service Name': incident.get('serviceNames'),
+                'Alert Severity': incident.get('incidentRiskSeverity'),
+                'User Name': incident.get('actorId'),
+                'Policy Name': incident.get('policyName'),
+            })
+
+        demisto.debug(f'This is the output: {readable_dict}')
         readable_output = tableToMarkdown(
             'MVISION CASB Incidents', readable_dict, headerTransform=pascalToSpace, removeNull=True
         )
@@ -172,31 +186,59 @@ def status_update_command(client: Client, args: Dict) -> CommandResults:
 
 
 def anomaly_activity_list_command(client: Client, args: Dict) -> CommandResults:
-    return CommandResults()
+    anomaly_id = arg_to_number(args.get('anomaly_id'))
+    result = client.anomaly_activity_list(anomaly_id)
+
+    return CommandResults(
+        outputs=result,
+        outputs_prefix='MVisionCASB.dictionaries',
+        outputs_key_field='ID',
+        readable_output=tableToMarkdown('', result),
+        raw_response=result
+    )
 
 
 def policy_dictionary_list_command(client: Client, args: Dict) -> CommandResults:
     offset, limit = calculate_offset_and_limit(**args)
-
+    names = argToList(args.get('name'))
     result = client.policy_dictionary_list()
-    list_of_policies = result[offset:limit]
+    policies = result[offset:limit]
 
-    if name := argToList(args.get('name')):
-        list_of_policies[:] = [policy for policy in list_of_policies if policy.get('name') in name]
-    readable_output = tableToMarkdown('', list_of_policies, headerTransform=pascalToSpace, removeNull=True)
+    filtered_policies = []
+    for policy in policies:
+        if names and policy.get('name') in names or not names:
+            filtered_policies.append(
+                {
+                    'ID': policy.get('id'),
+                    'Name': policy.get('name'),
+                    'LastModified': policy.get('last_modified_time'),
+                }
+            )
+
+    readable_output = tableToMarkdown(
+        'List of MVISION CASB Policies', filtered_policies, headerTransform=pascalToSpace, removeNull=True
+    )
 
     return CommandResults(
-        outputs=None,
-        outputs_prefix='',
-        outputs_key_field='',
+        outputs=filtered_policies,
+        outputs_prefix='MVisionCASB.dictionaries',
+        outputs_key_field='ID',
         readable_output=readable_output,
-        raw_response=result,
+        raw_response=filtered_policies,
     )
 
 
 def policy_dictionary_update_command(client: Client, args: Dict) -> CommandResults:
+    dict_id = arg_to_number(args.get('dictionary_id'))
+    name = args.get('name')
+    content = args.get('content')
 
-    return CommandResults()
+    result = client.policy_dictionary_update(dict_id, name, content)
+
+    return CommandResults(
+        readable_output=f'Dictionary id: {dict_id} was updated.',
+        raw_response=result
+    )
 
 
 ''' MAIN FUNCTION '''
@@ -210,11 +252,13 @@ def main() -> None:
     """
 
     base_url = urljoin(demisto.params()['url'].removesuffix('/'), '/shnapi/rest')
-    api_key = demisto.params().get('credentials', {}).get('password')
     verify_certificate = not demisto.params().get('insecure', False)
+    credentials = demisto.params().get('credentials', {})
     handle_proxy()
+    command = demisto.command()
 
-    demisto.debug(f'Command being called is {demisto.command()}')
+    demisto.debug(f'Command being called is {command}')
+
     try:
         commands: Dict = {
             'mvision-casb-incident-query': incident_query_command,
@@ -224,27 +268,23 @@ def main() -> None:
             'mvision-casb-policy-dictionary-update': policy_dictionary_update_command,
         }
 
-        headers: Dict = {"Authorization": api_key}
-
         client = Client(
             base_url=base_url,
-            headers=headers,
-            verify=verify_certificate
+            verify=verify_certificate,
+            auth=(credentials.get('identifier'), credentials.get('password'))
         )
 
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             result = test_module(client)
             return_results(result)
 
-        # TODO: REMOVE the following dummy command case:
-        elif demisto.command() == 'baseintegration-dummy':
-            return_results(baseintegration_dummy_command(client, demisto.args()))
-        # TODO: ADD command cases for the commands you will implement
+        elif command in commands:
+            return_results(commands[command](client, demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
 ''' ENTRY POINT '''

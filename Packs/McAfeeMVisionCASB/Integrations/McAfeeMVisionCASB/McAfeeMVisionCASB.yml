@@ -5,7 +5,7 @@ commonfields:
 configuration:
 - defaultvalue: https://www.myshn.net/
   display: Your server URL
-  name: URL
+  name: url
   required: true
   type: 0
 - additionalinfo: The UserName and Password to use for connection
@@ -30,8 +30,8 @@ script:
     - default: true
       defaultValue: '50'
       description: Maximum number of items that will be returned within a single response.
-        If value exceeds maximum 500 it will not be flagged as an error but will also
-        not increase results.
+        Default is 50 maximum is 500. If value exceeds maximum 500 it will not be
+        flagged as an error but will also not increase results.
       isArray: false
       name: limit
       required: false
@@ -43,7 +43,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: Pagination support for use with a big “limit” value.
+      description: Pagination support for use with a big “limit” value. The maximum
+        is 500.
       isArray: false
       name: page_size
       required: false
@@ -231,7 +232,6 @@ script:
       type: String
   - arguments:
     - default: false
-      defaultValue: '50'
       description: Maximum number of policies that will be returned within a single
         response. Default is 50.
       isArray: false
@@ -260,6 +260,17 @@ script:
     description: List existing Policy Dictionaries.
     execution: false
     name: mvision-casb-policy-dictionary-list
+    outputs:
+    - contextPath: MVisionCASB.dictionaries.ID
+      description: The dictionary ID. This is the unique identifier for the target
+        dictionary.
+      type: Number
+    - contextPath: MVisionCASB.dictionaries.LastModified
+      description: The dictionary last modified time
+      type: String
+    - contextPath: MVisionCASB.dictionaries.Name
+      description: The dictionary name
+      type: String
   - arguments:
     - default: false
       description: The dictionary where to set the policy.
@@ -274,8 +285,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: The value to be set in the dictionary for the given key-name.
-      isArray: true
+      description: The value to be set in the dictionary for the given key-name. Multiple
+        values can be separated by commas.
+      isArray: false
       name: content
       required: true
       secret: false
