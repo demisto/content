@@ -7,7 +7,7 @@ The Gigamon ThreatINSIGHT Demisto integration enables security teams to utilize 
 ## Integration Overview
 
 The Gigamon ThreatINSIGHT Cortex XSOAR integration enables security teams to utilize the features and functionality of the Insight solution with their existing Cortex XSOAR deployment. The integration leverages Insight’s fully RESTful APIs to interact with the Insight backend to introduce specific data sets into Cortex XSOAR. This document contains all the necessary information to configure, install, and use the integration.
-For more information about the Cortex XSOAR integration visit the Insight help documentation [here](https://insight.gigamon.com/help/api/apidocs-demisto)
+For more information about the Cortex XSOAR integration visit the Insight help documentation here: https://insight.gigamon.com/help/api/apidocs-demisto
 
 ## Configure Gigamon ThreatINSIGHT on Cortex XSOAR
 
