@@ -163,6 +163,7 @@ Example Command
 | requested_start_date* | The date the task will become active. (2019-01-30T00:00:00.000Z) | `2019-01-01T00:00:00.000Z` |
 | requested_end_date* | The date the task will become inactive. (2019-12-31T23:59:59.000Z) | `2019-01-31T23:59:59.999Z` |
 | sensor_ids* | Sensor IDs on which this task will run (separate multiple accounts by comma). | `abc1,abc2,abc3` |
+
 *Denotes a required argument
 
 ### Insight-get-detections
@@ -228,6 +229,7 @@ Example Command
 | detection_uuid* | Detection UUID to resolve | `8d7ryg9b-3fh2-2k10-11tn-32g502302r1d2` |
 | resolution* | Resolution state. Options: true_positive_mitigated, true_positive_no_action, false_positive, unknown | `true_positive` |
 | resolution_comment | Optional comment for the resolution. | `"detection has been mitigated"` |
+
 *Denotes a required argument
 
 ### Insight-get-detection-rule-events
@@ -243,6 +245,7 @@ Example Command
 | rule_uuid* | Rule UUID to get events for | `1a7rye9g-5f74-7c75-38ng-82z583782e1d7` |
 | offset | The number of records to skip past | `10` |
 | limit | The number of records to return, default: 100, max: 1000. | `100` |
+
 *Denotes a required argument
 
 ### Insight-create-detection-rule
@@ -264,6 +267,7 @@ Example Command
 | confidence* | The confidence of the rule. | `high` |
 | run_account_uuids* | Account UUIDs on which this rule will run. This will usually be just your own account UUID. (separate multiple accounts by comma) | `0a7dae9g-6f74-4c75-78ef-856483763e1d4` |
 | auto_resolution_minutes | The number of minutes after which detections will be auto-resolved. If 0 then detections have to be manually resolved. | `30240` |
+
 *Denotes a required argument
 
 ### Insight-get-entity-summary
@@ -277,6 +281,7 @@ Example Command
 | Name | Description | Example |
 | ---- | ----------- | ------- |
 | entity* | IP or domain to get entity data for. | `8.8.8.8` |
+
 *Denotes a required argument
 
 ### Insight-get-entity-pdns
@@ -290,6 +295,7 @@ Example Command
 | Name | Description | Example |
 | ---- | ----------- | ------- |
 | entity* | IP or domain to get passive DNS data for. | `google.com` |
+
 *Denotes a required argument
 
 ### Insight-get-entity-dhcp
@@ -303,6 +309,7 @@ Example Command
 | Name | Description | Example |
 | ---- | ----------- | ------- |
 | entity* | IP or domain to get DHCP data for. | `10.1.2.3` |
+
 *Denotes a required argument
 
 ### Insight-get-entity-file
@@ -316,4 +323,5 @@ Example Command
 | Name | Description | Example |
 | ---- | ----------- | ------- |
 | hash* | File hash. Can be an MD5, SHA1, or SHA256 hash of the file | `2b7a609371b2a844181c2f79f1b45cf7` |
+
 *Denotes a required argument
