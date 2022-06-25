@@ -9,7 +9,7 @@ class Client:
         if ca_cert:
             client_key_path = 'ca.cert'
             with open(ca_cert_path, 'wb') as file:
-                file.write(self._ca_cert.encode())
+                file.write(ca_cert.encode())
             self._verify = client_key_path
         else:
             self._verify = verify
