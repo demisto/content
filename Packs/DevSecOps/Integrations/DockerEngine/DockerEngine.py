@@ -7,10 +7,10 @@ class Client:
     def __init__(self, server_url, verify, proxy, headers, client_cert, client_key, ca_cert):
         ca_cert_path = ''
         if ca_cert:
-            client_key_path = 'ca.cert'
+            ca_cert_path = 'ca.cert'
             with open(ca_cert_path, 'wb') as file:
                 file.write(ca_cert.encode())
-            self._verify = client_key_path
+            self._verify = ca_cert_path
         else:
             self._verify = verify
         self._base_url = server_url
