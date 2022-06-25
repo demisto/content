@@ -11,6 +11,7 @@ This integration was integrated and tested with version 20.10.1 of Docker Engine
     | url | Server URL \(e.g. https://www.example.com:1000\) | True |
     | client_certificate | Docker Client Certificate | True |
     | client_key | Docker Client Private Key | True |
+    | ca_certificate | CA Certificate | True |
     | insecure | Trust any certificate \(not secure\) | False |
     | proxy | Use system proxy settings | False |
 

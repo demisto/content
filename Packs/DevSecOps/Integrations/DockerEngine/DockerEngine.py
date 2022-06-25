@@ -4,9 +4,16 @@ from CommonServerPython import *
 
 
 class Client:
-    def __init__(self, server_url, verify, proxy, headers, client_cert, client_key):
+    def __init__(self, server_url, verify, proxy, headers, client_cert, client_key, ca_cert):
+        ca_cert_path = ''
+        if ca_cert:
+            client_key_path = 'ca.cert'
+            with open(ca_cert_path, 'wb') as file:
+                file.write(self._ca_cert.encode())
+            self._verify = client_key_path
+        else:
+            self._verify = verify
         self._base_url = server_url
-        self._verify = verify
         self._proxy = proxy
         self._headers = headers
         self._client_cert = client_cert
@@ -25,6 +32,7 @@ class Client:
             client_key_path = 'client_key.key'
             with open(client_key_path, 'wb') as file:
                 file.write(self._client_key.encode())
+
         response = requests.session().request(
             method,
             address,
@@ -2867,6 +2875,7 @@ def main():
     url = params.get('url')
     client_cert = params.get('client_certificate')
     client_key = params.get('client_key')
+    ca_cert = params.get('ca_certificate')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
@@ -2876,7 +2885,7 @@ def main():
     try:
         urllib3.disable_warnings()
         client = Client(urljoin(url, "/v1.41"), verify_certificate, proxy, headers=None,
-                        client_cert=client_cert, client_key=client_key)
+                        client_cert=client_cert, client_key=client_key, ca_cert=ca_cert)
         commands = {
             'docker-build-prune': build_prune_command,
             'docker-config-create': config_create_command,
