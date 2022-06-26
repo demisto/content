@@ -92,6 +92,12 @@ create-instances:
   stage: create-instances
   script:
 
+    - !reference [.download-demisto-conf]
+
+    - section_start "Prepare Content Packs for Testing"
+    - ./Tests/scripts/prepare_content_packs_for_testing.sh "$GCS_MARKET_BUCKET" "$STORAGE_BASE_PATH"
+    - section_end "Prepare Content Packs for Testing"
+
     - section_start "Create Instances"
     - |
       [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
