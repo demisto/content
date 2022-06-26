@@ -15,7 +15,7 @@ requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 PRIVATE_BUILD_INFRA_SCRIPTS = ['Tests/scripts/validate_premium_packs.sh', 'Tests/scripts/validate_premium_packs.py',
                                'Tests/scripts/validate_index.py']
-PRIVATE_BUILD_INFRA_FOLDERS = ['Tests/private_build', 'Tests/Marketplace']
+PRIVATE_BUILD_INFRA_FOLDERS = ['Tests/private_build', 'Tests/Marketplace', 'Tests/configure_and_test_integration_instances.py']
 
 NON_PRIVATE_BUILD_FILES = ['Tests/Marketplace/landingPage_sections.json',
                            'Tests/Marketplace/validate_landing_page_sections.py',
