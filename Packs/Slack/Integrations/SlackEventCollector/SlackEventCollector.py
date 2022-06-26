@@ -50,7 +50,7 @@ class Client(BaseClient):
         If `first_id` exists in the lastRun obj, finds it in the response and
         returns only the subsequent events (that weren't collected yet).
         """
-        query_params['cursor'] = last_run.pop('cursor')
+        query_params['cursor'] = last_run.pop('cursor', None)
         _, events, cursor = self.get_logs(query_params)
         if last_run.get('first_id'):
             for idx, event in enumerate(events):

@@ -142,4 +142,4 @@ def test_test_module(mocker):
     from SlackEventCollector import test_module_command
 
     mocker.patch.object(Session, 'request', return_value=MockResponse([]))
-    assert test_module_command(Client(base_url='')) == 'ok'
+    assert test_module_command(Client(base_url=''), {}) == 'ok'
