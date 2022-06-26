@@ -1421,11 +1421,11 @@ class TestFilterChangelog:
         assert result == expected_result
 
     @pytest.mark.parametrize('files_data, expected_result', [
-        ({"Integrations": [{"display_name": "Display Name 2"}],
-          "IncidentFields": [{"display_name": "Field name 1"}, {"display_name": "Field name 3"}]},
+        ({"Integrations": [{'id': {"display_name": "Display Name 2"}}],
+          "IncidentFields": [{'id': {"display_name": "Field name 1"}}, {'id': {"display_name": "Field name 3"}}]},
          {"Integrations": {"Display Name 2": "- Some entry1."},
           "Incident Fields": {"[special_msg]": "- **Field name 1**\n\n- **Field name 3**"}}),
-        ({"IncidentFields": [{"display_name": "Field name 1"}, {"display_name": "Field name 2"}]},
+        ({"IncidentFields": [{'id': {"display_name": "Field name 1"}}, {'id': {"display_name": "Field name 2"}}]},
          {"Incident Fields": {"[special_msg]": "- **Field name 1**\n- **Field name 2**\n"}})
     ])
     def test_filter_by_display_name(self, dummy_pack: Pack, files_data, expected_result):
