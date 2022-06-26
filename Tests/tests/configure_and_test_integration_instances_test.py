@@ -1,9 +1,8 @@
 import pytest
 import os
 from unittest.mock import mock_open
-from mock_open import MockOpen
 
-from Tests.configure_and_test_integration_instances import XSOARBuild, create_build_object, \
+from Tests.configure_and_test_integration_instances import XSOARBuild, Build, create_build_object, \
     options_handler, XSIAMBuild, get_turned_non_hidden_packs, update_integration_lists, \
     get_packs_with_higher_min_version
 
@@ -184,8 +183,12 @@ def test_get_packs_with_higher_min_version(mocker):
         - Assert the returned packs are with higher min version than the server version.
     """
 
-    build = create_build_object_with_mock(mocker, 'XSOAR')
+    mocker.patch.object(XSOARBuild, '__init__', return_value=None)
+    mocker.patch.object(Build, '__init__', return_value=None)
+
+    build = XSOARBuild()
     build.content_path = 'content'
+    build.server_numeric_version = '6.5.0'
 
     mocker.patch("builtins.open", mock_open(read_data='{"serverMinVersion": "6.6.0"}'))
 
