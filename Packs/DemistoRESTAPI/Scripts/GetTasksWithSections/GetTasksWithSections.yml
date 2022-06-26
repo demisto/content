@@ -59,9 +59,6 @@ outputs:
 scripttarget: 0
 runonce: false
 sensitive: true
-dependson:
-  must:
-  - demisto-api-get
 tests:
 - GetTasksWithSections SetIRProcedures end to end test
 fromversion: 6.0.0
