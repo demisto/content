@@ -6,7 +6,6 @@
 			"IMAGENAME": "devdemisto/content-env:1.0.0.31164",
 		}
 	},
-	"initializeCommand": "cp ${localEnv:NODE_EXTRA_CA_CERTS} ${localWorkspaceFolder}/.devcontainer/certs.crt || sh -x create_certs.sh ${localWorkspaceFolder}/.devcontainer/certs.crt || :",
 	"containerUser": "root",
 	"settings": {
 		"terminal.integrated.defaultProfile.linux": "zsh",
@@ -51,7 +50,8 @@
 		"shd101wyy.markdown-preview-enhanced",
 		"KevinRose.vsc-python-indent",
 		"Gruntfuggly.todo-tree",
-		"redhat.vscode-yaml"
+		"redhat.vscode-yaml",
+		"GitHub.copilot"
 	],
 	"containerEnv": {
 		"LOCAL_WORKSPACE_PATH": "${localWorkspaceFolder}",
@@ -64,6 +64,7 @@
 		"DEMISTO_VERIFY_SSL": "false"
 	},
 	"features": {
+		"docker-in-docker": "latest",
 		"docker-from-docker": "latest",
 		"git": "os-provided",
 		"github-cli": "latest"

@@ -37,6 +37,7 @@ failed_unittests.txt
 Scripts/**/__init__.py
 Integrations/**/__init__.py
 Packs/**/__init__.py
+requirements.txt
 
 # Environment and reports
 .demisto-sdk-conf
