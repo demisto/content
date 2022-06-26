@@ -1000,7 +1000,7 @@ def fetch_incidents(query, id_offset, should_get_attachments, should_get_comment
         query = f'{query} AND created>=\"{formatted_minute_to_fetch}\"'
     else:
         if id_offset:
-            query = f'{query} AND id >= {id_offset}'
+            query = f'{query} AND id >= {id_offset} ORDER BY id ASC'
         if fetch_by_created:
             query = f'{query} AND created>-1m'
 
