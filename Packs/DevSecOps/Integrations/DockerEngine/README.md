@@ -3275,7 +3275,7 @@ Push an image to a registry. If you wish to push an image on to a private regist
 | Docker.ImagePush | String | Image Push Result | 
 
 #### Command example
-```!docker-image-push name="sergebakharev/alpine:test"```
+```!docker-image-push name="example/alpine:test"```
 #### Context Example
 ```json
 {
@@ -3572,7 +3572,7 @@ Tag an image so that it becomes part of a repository.
 | Docker.ImageTag.Status Code | String | Image Tag Result | 
 
 #### Command example
-```!docker-image-tag name="alpine:latest" repo="sergebakharev/alpine" tag="test"```
+```!docker-image-tag name="alpine:latest" repo="example/alpine" tag="test"```
 #### Context Example
 ```json
 {

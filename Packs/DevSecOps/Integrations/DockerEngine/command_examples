@@ -22,8 +22,8 @@
 !docker-image-inspect name="05bf9d904cd0953ee1ad647a61abfb0ab1470062f8baa70495b4b068e95a514e"
 !docker-image-prune
 !docker-image-search term="centos"
-!docker-image-tag name="alpine:latest" repo="sergebakharev/alpine" tag="test"
-!docker-image-push name="sergebakharev/alpine:test"
+!docker-image-tag name="alpine:latest" repo="example/alpine" tag="test"
+!docker-image-push name="example/alpine:test"
 !docker-image-delete name="alpine:latest"
 !docker-volume-list
 !docker-volume-prune
