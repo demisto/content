@@ -95,6 +95,7 @@ create-instances:
     - !reference [.download-demisto-conf]
     - python3 ./Tests/scripts/Test.py
     - !reference [ .create-id-set-xsoar ]
+    - python3 ./Tests/scripts/Test.py
     - !reference [ .create-release-notes-and-common-docs ]
     - python3 ./Tests/scripts/Test.py
     - section_start "Prepare Content Packs for Testing"
@@ -105,50 +106,6 @@ create-instances:
       [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
       python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile "$ARTIFACTS_FOLDER/env_results.json"
     - section_end "Create Instances"
-
-create-instances_test:
-  tags:
-    - gke
-  extends:
-    - .default-job-settings
-  rules:
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-    - if: '$NIGHTLY'
-    - if: '$INSTANCE_TESTS'
-  cache:
-    policy: pull-push
-  variables:
-    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
-    KUBERNETES_CPU_REQUEST: 1000m
-  needs: []
-  stage: create-instances
-  script:
-    - TXT_RED="\e[31m" && TXT_CLEAR="\e[0m"
-    - echo -e "${TXT_RED}This text is red,${TXT_CLEAR} but this part isn't${TXT_RED} however this part is again."
-    - !reference [.create-release-notes-and-common-docs]
-
-Test:
-  tags:
-    - gke
-  extends:
-    - .default-job-settings
-  rules:
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-    - if: '$NIGHTLY'
-    - if: '$INSTANCE_TESTS'
-  cache:
-    policy: pull-push
-  variables:
-    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
-    KUBERNETES_CPU_REQUEST: 1000m
-  needs: []
-  stage: create-instances
-  script:
-    - if [ -z "${TIME_TO_LIVE}" -a "$CI_PIPELINE_SOURCE" = "contrib" ]; then
-      TIME_TO_LIVE=300
-      fi
-      python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE"
-    - python3 ./Tests/scripts/Test.py
 
 prepare-testing-bucket-mpv2:
   tags:
