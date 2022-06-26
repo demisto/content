@@ -1,5 +1,4 @@
 import pytest
-import os
 from unittest.mock import mock_open
 
 from Tests.configure_and_test_integration_instances import XSOARBuild, Build, create_build_object, \
