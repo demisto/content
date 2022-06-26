@@ -2,7 +2,7 @@ import pytest
 from unittest.mock import patch
 from Silverfort import get_user_entity_risk_command, get_resource_entity_risk_command,\
     update_user_entity_risk_command, update_resource_entity_risk_command
-API_KEY = "APIKEY"
+API_KEY = "APP_USER_ID:APP_USER_SECRET"
 
 
 @pytest.fixture(autouse=True)
