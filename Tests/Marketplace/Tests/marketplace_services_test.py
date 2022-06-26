@@ -993,12 +993,14 @@ This is visible
         build_number = "5555"
         modified_data = {
             "Integrations": [
-                {'integration_id':
                 {
-                    "file_path": "some/path",
-                    "display_name": "Integration Display Name"
+                    'integration_id':
+                        {
+                            "file_path": "some/path",
+                            "display_name": "Integration Display Name"
+                        }
                 }
-                }]
+            ]
 
         }
         dummy_pack._is_modified = True
