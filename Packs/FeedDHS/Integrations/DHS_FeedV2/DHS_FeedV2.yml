@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: DHS Feed
+  id: DHS Feed v2
   version: -1
 configuration:
 - defaultvalue: 'true'
@@ -8,17 +8,18 @@ configuration:
   name: feed
   required: false
   type: 8
-- defaultvalue: 'https://taxii.dhs.gov:8443'
+- defaultvalue: https://ais2.cisa.dhs.gov
   display: Base URL
   name: base_url
   required: true
   type: 0
-- additionalinfo: 'For more information, visit https://us-cert.cisa.gov/ais.'
-  display: Key File as Text
+- displaypassword: Key File as Text
+  additionalinfo: For more information, visit https://us-cert.cisa.gov/ais.
   name: key
+  type: 9
   required: true
-  type: 4
-- additionalinfo: 'For more information, visit https://us-cert.cisa.gov/ais.'
+  hiddenusername: true
+- additionalinfo: For more information, visit https://us-cert.cisa.gov/ais.
   display: Certificate File as Text
   name: crt
   required: true
@@ -30,7 +31,7 @@ configuration:
   options:
   - AIS
   - CISCP
-- additionalinfo: The Traffic Light Protocol (TLP) fetch from feed.
+- additionalinfo: The Traffic Light Protocol (TLP) designation to fetch from the feed.
   display: Filter by Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -40,8 +41,7 @@ configuration:
   - WHITE
   required: false
   type: 15
-- additionalinfo: Indicators from this integration instance will be marked with this
-    reputation.
+- additionalinfo: Indicators from this integration instance will be marked with this reputation.
   defaultvalue: Bad
   display: Indicator Reputation
   name: feedReputation
@@ -98,9 +98,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-- additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
   required: false
@@ -111,11 +109,7 @@ configuration:
   name: feedTags
   required: false
   type: 0
-- additionalinfo: Incremental feeds pull only new or modified indicators that have
-    been sent from the integration. The determination if the indicator is new or
-    modified happens on the 3rd-party vendor's side, so only indicators that are
-    new or modified are sent to Cortex XSOAR. Therefore, all indicators coming from these feeds
-    are labeled new or modified.
+- additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. The determination if the indicator is new or modified happens on the 3rd-party vendor's side, so only indicators that are new or modified are sent to Cortex XSOAR. Therefore, all indicators coming from these feeds are labeled new or modified.
   defaultvalue: 'true'
   display: Incremental feed
   hidden: true
@@ -123,8 +117,8 @@ configuration:
   required: false
   type: 8
 description: The Cybersecurity and Infrastructure Security Agency’s (CISA’s) free Automated Indicator Sharing (AIS) capability enables the exchange of cyber threat indicators, at machine speed, to the Federal Government community.
-display: 'DHS Feed'
-name: 'DHS Feed'
+display: DHS Feed v2
+name: DHS Feed v2
 script:
   commands:
   - arguments:
@@ -161,7 +155,7 @@ script:
     - contextPath: DHS.tlp
       description: The traffic light protocol.
       type: string
-  dockerimage: demisto/xml-feed:1.0.0.15261
+  dockerimage: demisto/taxii2:1.0.0.23423
   feed: true
   isfetch: false
   longRunning: false
@@ -170,6 +164,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-fromversion: 5.5.0
+fromversion: 6.5.0
 tests:
 - No tests
