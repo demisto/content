@@ -1,0 +1,155 @@
+{
+    "headers": {},
+    "body": {
+        "responseInfo": {
+            "actualLimit": 3,
+            "apiElapsedMillis": 1835,
+            "error": null,
+            "nextOffset": null,
+            "nextStartTime": "2022-03-19T05:21:19.552Z",
+            "source": "https://www.example.com/"
+        },
+        "incidents": [
+            {
+                "activityNames": [],
+                "actorId": "NOT AVAILABLE",
+                "actorIdType": "USER",
+                "incidentGroup": "Alert.Policy.CloudAccess",
+                "incidentGroupId": null,
+                "incidentId": "CAP-1111",
+                "incidentRiskScore": 10.0,
+                "incidentRiskSeverity": "high",
+                "incidentRiskSeverityId": 2,
+                "information": {
+                    "contentItemCreatedOn": "2022-03-19T02:34:00.577Z",
+                    "contentItemId": "UNKNOWN",
+                    "contentItemName": "/css/webfonts/office365icons",
+                    "contentItemType": "REQUEST",
+                    "device": {
+                        "ip": "1.1.1.1",
+                        "device_type": "Desktop",
+                        "application": {
+                            "type": "application",
+                            "user_agent": "Chrome"
+                        },
+                        "os": {
+                            "type": "os",
+                            "platform": "Windows"
+                        }
+                    },
+                    "eventId": "1111",
+                    "lastExecutedResponseLabel": "Block Access",
+                    "policyId": 2222,
+                    "policyName": "Block downloads to unmanaged devices",
+                    "userAttributes": {}
+                },
+                "instanceId": 3333,
+                "instanceName": "zengel",
+                "responses": [
+                    "Block Access"
+                ],
+                "serviceNames": [
+                    "Microsoft Office 365 and OneDrive"
+                ],
+                "significantlyUpdatedAt": "2022-03-19T02:34:18.892Z",
+                "status": "new",
+                "timeCreated": "2022-03-19T02:34:00.577Z",
+                "timeModified": "2022-03-19T02:34:18.892Z"
+            },
+            {
+                "activityNames": [],
+                "actorId": "NOT AVAILABLE",
+                "actorIdType": "USER",
+                "incidentGroup": "Alert.Policy.CloudAccess",
+                "incidentGroupId": null,
+                "incidentId": "CAP-2222",
+                "incidentRiskScore": 10.0,
+                "incidentRiskSeverity": "high",
+                "incidentRiskSeverityId": 2,
+                "information": {
+                    "contentItemCreatedOn": "2022-03-19T03:13:02.851Z",
+                    "contentItemId": "UNKNOWN",
+                    "contentItemName": "/css/webfonts/office365icons",
+                    "contentItemType": "REQUEST",
+                    "device": {
+                        "ip": "2.2.2.2",
+                        "device_type": "Desktop",
+                        "application": {
+                            "type": "application",
+                            "user_agent": "Chrome"
+                        },
+                        "os": {
+                            "type": "os",
+                            "platform": "Windows"
+                        }
+                    },
+                    "eventId": "2222",
+                    "lastExecutedResponseLabel": "Block Access",
+                    "policyId": 2222,
+                    "policyName": "Block downloads to unmanaged devices",
+                    "userAttributes": {}
+                },
+                "instanceId": 3333,
+                "instanceName": "zengel",
+                "responses": [
+                    "Block Access"
+                ],
+                "serviceNames": [
+                    "Microsoft Office 365 and OneDrive"
+                ],
+                "significantlyUpdatedAt": "2022-03-19T03:14:03.797Z",
+                "status": "new",
+                "timeCreated": "2022-03-19T03:13:02.851Z",
+                "timeModified": "2022-03-19T03:14:03.797Z"
+            },
+            {
+                "activityNames": [],
+                "actorId": "NOT AVAILABLE",
+                "actorIdType": "USER",
+                "incidentGroup": "Alert.Policy.CloudAccess",
+                "incidentGroupId": null,
+                "incidentId": "CAP-3333",
+                "incidentRiskScore": 10.0,
+                "incidentRiskSeverity": "high",
+                "incidentRiskSeverityId": 2,
+                "information": {
+                    "contentItemCreatedOn": "2022-03-19T05:20:37.576Z",
+                    "contentItemId": "UNKNOWN",
+                    "contentItemName": "/css/webfonts/office365icons",
+                    "contentItemType": "REQUEST",
+                    "device": {
+                        "ip": "3.3.3.3",
+                        "device_type": "Desktop",
+                        "application": {
+                            "type": "application",
+                            "user_agent": "Chrome"
+                        },
+                        "os": {
+                            "type": "os",
+                            "platform": "Windows"
+                        }
+                    },
+                    "eventId": "3333",
+                    "lastExecutedResponseLabel": "Block Access",
+                    "policyId": 2222,
+                    "policyName": "Block downloads to unmanaged devices",
+                    "userAttributes": {}
+                },
+                "instanceId": 3333,
+                "instanceName": "zengel",
+                "responses": [
+                    "Block Access"
+                ],
+                "serviceNames": [
+                    "Microsoft Office 365 and OneDrive"
+                ],
+                "significantlyUpdatedAt": "2022-03-19T05:21:19.551Z",
+                "status": "new",
+                "timeCreated": "2022-03-19T05:20:37.576Z",
+                "timeModified": "2022-03-19T05:21:19.551Z"
+            }
+        ]
+    },
+    "statusCode": "OK",
+    "statusCodeValue": 200
+}

@@ -6,7 +6,7 @@ from CommonServerUserPython import *  # noqa
 
 import requests
 import traceback
-from typing import Dict, Any
+from typing import Dict, Any, Tuple
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
@@ -58,7 +58,7 @@ class Client(BaseClient):
     def anomaly_activity_list(self, incident_id: int) -> Dict[str, str]:
         url_suffix = '/external/api/v1/queryActivities'
         data = {"incident_id": incident_id}
-        return self._http_request('POST', url_suffix, json_data=data).json()
+        return self._http_request('POST', url_suffix, json_data=data)
 
     def policy_dictionary_list(self) -> Dict[str, str]:
         url_suffix = '/dlp/dictionary'
@@ -114,7 +114,41 @@ def test_module(client: Client) -> str:
     return message
 
 
-def fetch_incidents():
+def fetch_incidents(client: Client, params: dict) -> Tuple[dict, list]:
+    last_run = demisto.getLastRun()
+    xsoar_incidents = []
+
+    limit = arg_to_number(params.get('max_fetch', 50))
+    start_time = last_run.get('start_time') or arg_to_datetime(params.get('first_fetch', '3 days')).strftime(DATE_FORMAT)
+
+    result = client.incident_query(limit, start_time)
+
+    if incidents := result.get('body', {}).get('incidents', {}):
+        ids = last_run.get('ids', set())
+
+        for incident in incidents:
+            # Since the API returns the incidents in ascending time modified order.
+            # As mentioned here:
+            # https://success.myshn.net/Skyhigh_CASB/Skyhigh_CASB_APIs/Incidents_API/02_Incidents_API_Paths#_responses_3
+            # We need to verify no duplicates are pushed to xsoar.
+            if (incident_id := incident.get('incidentId')) not in ids:
+                xsoar_incidents.append(
+                    {
+                        'name': f"McAfee MVision CASB Incident {incident_id}",
+                        'occurred': incident.get('timeModified'),
+                        'raw_json': json.dumps(incident),
+                        'dbotMirrorId': incident_id,
+                    }
+                )
+
+                ids.add(incident_id)
+
+        last_run = {
+            'start_time': result.get('body', {}).get('responseInfo', {}).get('nextStartTime', {}),
+            'ids': ids
+        }
+
+    return last_run, xsoar_incidents
 
 
 def incident_query_command(client: Client, args: Dict) -> CommandResults:
@@ -201,6 +235,7 @@ def anomaly_activity_list_command(client: Client, args: Dict) -> CommandResults:
 def policy_dictionary_list_command(client: Client, args: Dict) -> CommandResults:
     offset, limit = calculate_offset_and_limit(**args)
     names = argToList(args.get('name'))
+
     result = client.policy_dictionary_list()
     policies = result[offset:limit]
 
@@ -277,6 +312,11 @@ def main() -> None:
         if command == 'test-module':
             result = test_module(client)
             return_results(result)
+
+        if command == 'fetch-incidents':
+            last_run, incidents = fetch_incidents(client, demisto.params())
+            demisto.setLastRun(last_run)
+            demisto.incidents(incidents)
 
         elif command in commands:
             return_results(commands[command](client, demisto.args()))
