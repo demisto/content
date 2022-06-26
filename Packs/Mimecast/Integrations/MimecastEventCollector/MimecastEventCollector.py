@@ -505,20 +505,6 @@ def prepare_potential_audit_duplicates_for_next_run(audit_events: list, next_run
     return same_time_events
 
 
-def gather_events(siem_events: list, audit_events: list) -> list:
-    """
-    Args:
-        siem_events (list): a list of siem events
-        audit_events (list): a list of audit_events
-    Returns:
-        list: unified event list of audit and siem events
-    """
-    events = []
-    events.extend(siem_events)
-    events.extend(audit_events)
-    return events
-
-
 def main():
     # Args is always stronger. Get last run even stronger
     demisto.info('\n started running main\n')
@@ -565,7 +551,7 @@ def main():
                 )
                 return_results([command_results_siem, command_results_audit])
                 if should_push_events:
-                    events = gather_events(events_siem, events_audit)
+                    events = events_siem + events_audit
                     send_events_to_xsiam(events, demisto_params.get('vendor', 'mimecast'),
                                          demisto_params.get('product', 'mimecast'))
 

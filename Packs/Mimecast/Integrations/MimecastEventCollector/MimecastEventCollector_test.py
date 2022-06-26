@@ -71,28 +71,6 @@ def test_dedup_audit_events(audit_events, last_run_potential_dup, res):
     assert dedup_audit_events(audit_events, last_run_potential_dup) == res
 
 
-@pytest.mark.parametrize('lst1, lst2 ,res', [
-    ([1, 2, 3], [4, 5, 6], [1, 2, 3, 4, 5, 6]),
-    ([1, 2, 3], ['a', 'b'], [1, 2, 3, 'a', 'b']),
-    ([], [], []),
-    ([{'g': 'g'}], [5], [{'g': 'g'}, 5]),
-    (['t'], [], ['t'])
-])
-def test_gather_events(lst1, lst2, res):
-    """
-    Given:
-        - 2 lists
-
-    When:
-        - Before merging the audit events and siem logs
-
-    Then:
-        - Merge the 2 lists together to send to xsiem
-    """
-    from MimecastEventCollector import gather_events
-    assert gather_events(lst1, lst2) == res
-
-
 def test_handle_last_run_entrance_with_prev_run(mocker):
     """
     Given:
