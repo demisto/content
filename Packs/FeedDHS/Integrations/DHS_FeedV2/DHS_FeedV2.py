@@ -188,7 +188,7 @@ def main():
                               collection_to_fetch=collection,
                               proxies=proxies,
                               verify=verify,
-                              objects_to_fetch=[],  # todo add
+                              objects_to_fetch=['indicator'],
                               # field_map=None,  # todo needed?
                               tags=tags,
                               certificate=crt,
