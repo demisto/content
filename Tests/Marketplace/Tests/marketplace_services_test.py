@@ -1004,7 +1004,8 @@ This is visible
         dummy_pack._is_modified = True
         version_changelog, _ = dummy_pack._create_changelog_entry(release_notes=release_notes,
                                                                   version_display_name=version_display_name,
-                                                                  build_number=build_number, modified_files_data=modified_data,
+                                                                  build_number=build_number,
+                                                                  modified_files_data=modified_data,
                                                                   new_version=False)
 
         assert version_changelog['releaseNotes'] == "#### Integrations\n##### Integration Display Name\n- Fixed an issue"
@@ -1038,10 +1039,12 @@ This is visible
         dummy_pack._is_modified = True
         version_changelog, _ = dummy_pack._create_changelog_entry(release_notes=release_notes,
                                                                   version_display_name=version_display_name,
-                                                                  build_number=build_number, modified_files_data=modified_data,
+                                                                  build_number=build_number,
+                                                                  modified_files_data=modified_data,
                                                                   new_version=False)
 
-        assert version_changelog['releaseNotes'] == "#### Integrations\n##### Integration 2 Display Name\n- Fixed another issue"
+        assert version_changelog['releaseNotes'] == \
+               "#### Integrations\n##### Integration 2 Display Name\n- Fixed another issue"
 
     def test_create_filtered_changelog_entry_no_related_modifications(self, dummy_pack: Pack):
         """
@@ -1070,7 +1073,8 @@ This is visible
         dummy_pack._is_modified = True
         version_changelog, _ = dummy_pack._create_changelog_entry(release_notes=release_notes,
                                                                   version_display_name=version_display_name,
-                                                                  build_number=build_number, modified_files_data=modified_data,
+                                                                  build_number=build_number,
+                                                                  modified_files_data=modified_data,
                                                                   new_version=False)
 
         assert not version_changelog
@@ -1182,7 +1186,8 @@ This is visible
 #### Scripts
 ##### New: Script Name
 - Fixed script''', 'xsoar',
-            "#### Integrations\n##### New: Integration Display Name\n- Fixed an issue\n\n#### Scripts\n##### New: Script Name\n\
+            "#### Integrations\n##### New: Integration Display Name\n- Fixed an issue\n\n#### Scripts\n##### New: "
+            "Script Name\n\
 - Fixed script")
     ])
     def test_create_filtered_changelog_entry_by_mp_tags(self, dummy_pack: Pack, release_notes, upload_marketplace,
@@ -1224,11 +1229,12 @@ This is visible
                 {"display_name": "Field Name 1"}}
             ]
         }
-        # dummy_pack._marketplaces = [upload_marketplace]
+        dummy_pack._marketplaces = [upload_marketplace]
         dummy_pack._is_modified = True
         version_changelog, _ = dummy_pack._create_changelog_entry(release_notes=release_notes,
                                                                   version_display_name=version_display_name,
-                                                                  build_number=build_number, modified_files_data=modified_data,
+                                                                  build_number=build_number,
+                                                                  modified_files_data=modified_data,
                                                                   new_version=False, marketplace=upload_marketplace)
 
         if not expected_result:
@@ -1415,7 +1421,8 @@ class TestFilterChangelog:
             Then:
                 - Ensure the filtered entries resulte is as expected.
         """
-        release_notes = self.RN_ENTRY_WITH_TAGS.format(mp=self.TAG_BY_MP[marketplace], mp2=self.TAG_BY_MP[upload_marketplace])
+        release_notes = self.RN_ENTRY_WITH_TAGS.format(mp=self.TAG_BY_MP[marketplace],
+                                                       mp2=self.TAG_BY_MP[upload_marketplace])
         result = dummy_pack.filter_release_notes_by_tags(release_notes, upload_marketplace)
 
         assert result == expected_result
@@ -1437,7 +1444,8 @@ class TestFilterChangelog:
             Then:
                 - Ensure the filtered entries resulte is as expected.
         """
-        assert dummy_pack.filter_release_notes_by_entities_display_name(self.RN_ENTRIES_DICTIONARY, files_data) == expected_result
+        assert dummy_pack.filter_release_notes_by_entities_display_name(self.RN_ENTRIES_DICTIONARY, files_data) == \
+               expected_result
 
 
 class TestImagesUpload:
@@ -2869,7 +2877,8 @@ class TestDetectModified:
         # open_mocker[os.path.join(dummy_pack.path, Pack.RELEASE_NOTES, '2_0_2.md')].read_data = 'wow'
         status, _ = dummy_pack.detect_modified(content_repo, dummy_path, 'current_hash', 'previous_hash')
 
-        assert dummy_pack._modified_files['Integrations'][0] == 'Packs/TestPack/Integrations/integration/integration.yml'
+        assert dummy_pack._modified_files['Integrations'][0] == \
+               'Packs/TestPack/Integrations/integration/integration.yml'
         assert dummy_pack._is_modified
         assert status is True
 
@@ -3016,3 +3025,4 @@ class TestCheckChangesRelevanceForMarketplace:
 
         assert status is True
         assert modified_files_data == expected_modified_files_data
+#
