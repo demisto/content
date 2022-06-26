@@ -382,7 +382,12 @@ b'a sign of our times'
     <tr>
       <td>encrypt_message</td>
       <td>The encrypted message with .p7 extension.</td>
-      <td>Required</td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>encrypt_message_text</td>
+      <td>The encrypted message text.</td>
+      <td> </td>
     </tr>
     <tr>
       <td>encoding</td>

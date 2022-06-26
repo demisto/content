@@ -166,10 +166,19 @@ def decrypt_email_body(client: Client, args: Dict, file_path=None):
         args: Dict
         file_path: relevant for the test module
     """
+    message_as_file = args.get('encrypt_message', '')
+    encrypt_message_text = args.get('encrypt_message_text', '')
+    if encrypt_message_text and message_as_file or not (encrypt_message_text or message_as_file):
+        raise DemistoException('Please provide exactly one of the arguments')
+
     if file_path:
         encrypt_message = file_path
     else:
-        encrypt_message = demisto.getFilePath(args.get('encrypt_message'))
+        if encrypt_message_text:
+            res = fileResult('email_body.txt', encrypt_message_text)
+            encrypt_message = res.get('FileID', '')
+        else:
+            encrypt_message = demisto.getFilePath(args.get('encrypt_message'))
 
     encoding = args.get('encoding', '')
     msg = ''
