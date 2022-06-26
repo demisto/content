@@ -246,10 +246,6 @@ def create_ps_documentation(path, origin, language):
 
 def main():
     install_logging('Common Server Documentation.log')
-    env_file = sys.argv[1]
-    with open(env_file, 'r') as json_file:
-        env_results = json.load(json_file)
-    logging.info(env_results)
     js_doc, is_error_js = create_js_documentation('./Documentation/commonServerJsDoc.json', 'CommonServerJs',
                                                   'javascript')
     py_doc, is_error_py = create_py_documentation('./Packs/Base/Scripts/CommonServerPython/CommonServerPython.py',

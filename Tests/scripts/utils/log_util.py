@@ -91,7 +91,6 @@ def install_logging(log_file_name: str, include_process_name=False, logger=loggi
     ch.setLevel(logger.INFO)
     fh.setLevel(logger.DEBUG)
     configure_root_logger(ch, fh, logger)
-    logging.warning("This is Arad's test")
     return log_file_path
 
 
