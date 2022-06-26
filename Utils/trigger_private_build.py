@@ -74,7 +74,7 @@ def branch_has_private_build_infra_change(branch_name: str = None) -> bool:
         for infra_code_dir_path in PRIVATE_BUILD_INFRA_FOLDERS:
             if path.startswith(infra_code_dir_path):
                 return True
-    return False
+    return True
 
 
 def get_dispatch_workflows_ids(github_token: str, branch: str) -> List[int]:
