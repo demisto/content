@@ -4,8 +4,6 @@ import os
 import subprocess
 import sys
 
-import Tests.scripts.awsinstancetool.aws_functions as aws_functions  # pylint: disable=E0611,E0401
-
 from Tests.scripts.utils.log_util import install_logging
 
 
@@ -54,9 +52,6 @@ def main():
                 os.path.isfile("./Tests/is_post_update_passed_{}.txt".format(env["Role"].replace(' ', ''))):
             logging.info(f'Destroying instance with role - {env.get("Role", "Unknown role")} and IP - '
                          f'{env["InstanceDNS"]}')
-            rminstance = aws_functions.destroy_instance(env["Region"], env["InstanceID"])
-            if aws_functions.isError(rminstance):
-                logging.error(rminstance['Message'])
         else:
             logging.warning(f'Tests for some integration failed on {env.get("Role", "Unknown role")}'
                             f', keeping instance alive')
