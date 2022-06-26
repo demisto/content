@@ -31,3 +31,6 @@ To authenticate with a token:
 
 ### Configuration params
 **NOTE**: If using 6.0.2 or lower version, put your API Key in the **Password** field, leave the **User** field empty.
+
+---
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/netscout-aed)
