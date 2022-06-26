@@ -3,7 +3,7 @@ from Tests.scripts.utils.log_util import install_logging
 
 
 def main():
-    install_logging('Destroy_instances.log')
+    install_logging('Test_instances.log')
     logging.info("Info")
     logging.warning("Warning")
     logging.error("Error")
