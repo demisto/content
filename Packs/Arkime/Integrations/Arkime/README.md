@@ -1,5 +1,5 @@
 Arkime (formerly Moloch) is a large scale, open source, indexed packet capture and search tool.
-This integration was integrated and tested with version 6.2.0 of Arkime
+This integration was integrated and tested with version xx of Arkime
 
 ## Configure Arkime on Cortex XSOAR
 
@@ -87,7 +87,7 @@ Gets a list of nodes and links and returns them to the client.
                     "target": 1,
                     "totDataBytes": 0,
                     "value": 2
-                },
+                }
             ],
             "nodes": [
                 {
@@ -104,7 +104,6 @@ Gets a list of nodes and links and returns them to the client.
                     "totDataBytes": 0,
                     "type": 1
                 },
-
             ],
             "recordsFiltered": 3527811
         }
@@ -163,7 +162,7 @@ Gets a list of nodes and links in csv format and returns them to the client.
 ```json
 {
     "InfoFile": {
-        "EntryID": "2505@4060e8c8-61bb-4131-8a47-32a7d97a9726",
+        "EntryID": "2681@4060e8c8-61bb-4131-8a47-32a7d97a9726",
         "Extension": "csv",
         "Info": "text/csv; charset=utf-8",
         "Name": "connections_list.csv",
@@ -212,7 +211,7 @@ Retrieve the raw session data in pcap format.
 ```json
 {
     "InfoFile": {
-        "EntryID": "2521@4060e8c8-61bb-4131-8a47-32a7d97a9726",
+        "EntryID": "2697@4060e8c8-61bb-4131-8a47-32a7d97a9726",
         "Extension": "pcap",
         "Info": "application/vnd.tcpdump.pcap",
         "Name": "raw_session_data.pcap",
@@ -268,7 +267,7 @@ Gets a list of sessions and returns them as CSV to the client.
 ```json
 {
     "InfoFile": {
-        "EntryID": "2517@4060e8c8-61bb-4131-8a47-32a7d97a9726",
+        "EntryID": "2693@4060e8c8-61bb-4131-8a47-32a7d97a9726",
         "Extension": "csv",
         "Info": "text/csv; charset=utf-8",
         "Name": "sessions_list.csv",
@@ -383,41 +382,6 @@ Gets a list of sessions and returns them to the client.
                         "port": 22
                     },
                     "totDataBytes": 0
-                },
-                {
-                    "client": {
-                        "bytes": 0
-                    },
-                    "destination": {
-                        "as": {},
-                        "bytes": 702918,
-                        "geo": {},
-                        "ip": "1.1.1.1",
-                        "packets": 5057,
-                        "port": 41096
-                    },
-                    "firstPacket": 1649921199252,
-                    "id": "3@220417-Yg5Kx3oHIahAPJJVD8QwphkQ",
-                    "ipProtocol": 6,
-                    "lastPacket": 1650190579920,
-                    "network": {
-                        "bytes": 1424580,
-                        "packets": 10000
-                    },
-                    "node": "localhost",
-                    "rootId": "220414-Yg445Ur1tpRKTKBpr8lhv37w",
-                    "server": {
-                        "bytes": 0
-                    },
-                    "source": {
-                        "as": {},
-                        "bytes": 721662,
-                        "geo": {},
-                        "ip": "1.1.1.1",
-                        "packets": 4943,
-                        "port": 22
-                    },
-                    "totDataBytes": 0
                 }
             ],
             "graph": {
@@ -438,7 +402,7 @@ Gets a list of sessions and returns them to the client.
             },
             "map": {},
             "recordsFiltered": 516305,
-            "recordsTotal": 28212381
+            "recordsTotal": 31698069
         }
     }
 }
@@ -525,11 +489,11 @@ Gets a list of unique field values (with or without counts) and sends them to th
     "Arkime": {
         "UniqueField": [
             {
-                "Count": " 350",
+                "Count": " 241",
                 "Field": "AS8075 MICROSOFT-CORP-MSN-AS-BLOCK"
             },
             {
-                "Count": " 294",
+                "Count": " 183",
                 "Field": "AS15169 GOOGLE"
             }
         ]
@@ -543,8 +507,8 @@ Gets a list of unique field values (with or without counts) and sends them to th
 >### Unique Field Results:
 >|Field|Count|
 >|---|---|
->| AS8075 MICROSOFT-CORP-MSN-AS-BLOCK |  350 |
->| AS15169 GOOGLE |  294 |
+>| AS8075 MICROSOFT-CORP-MSN-AS-BLOCK |  241 |
+>| AS15169 GOOGLE |  183 |
 
 
 ### arkime-multi-unique-field-list
@@ -591,11 +555,11 @@ Gets an intersection of unique field values (with or without counts) and sends t
     "Arkime": {
         "UniqueField": [
             {
-                "Count": " 14597",
+                "Count": " 10153",
                 "Field": "1.1.1.1"
             },
             {
-                "Count": " 3335",
+                "Count": " 1957",
                 "Field": "1.1.1.1"
             }
         ]
@@ -609,8 +573,8 @@ Gets an intersection of unique field values (with or without counts) and sends t
 >### Unique Field Results:
 >| Field        |Count|
 --------------|---|---|
->| 1.1.1.1      |  14597 |
->| 1.1.1.1 |  3335 |
+>| 1.1.1.1      |  10153 |
+>| 1.1.1.1 |  1957 |
 
 
 #### Command example
@@ -635,9 +599,9 @@ Gets an intersection of unique field values (with or without counts) and sends t
 
 >Showing 2 results, limit=2
 >### Unique Field Results:
->|Field|Count|
->|---|---|
->| 1.1.1.1 |  |
+>| Field        |Count|
+--------------|---|---|
+>| 1.1.1.1      |  |
 >| 1.1.1.1 |  |
 
 
@@ -1122,12 +1086,12 @@ Gets a list of values for a field with counts and graph data and returns them to
 ```json
 {
     "InfoFile": {
-        "EntryID": "2525@4060e8c8-61bb-4131-8a47-32a7d97a9726",
+        "EntryID": "2701@4060e8c8-61bb-4131-8a47-32a7d97a9726",
         "Extension": "json",
         "Info": "application/json",
         "Name": "spi_graph.json",
-        "Size": 514,
-        "Type": "ASCII text, with very long lines (514), with no line terminators"
+        "Size": 512,
+        "Type": "ASCII text, with very long lines (512), with no line terminators"
     }
 }
 ```
@@ -1177,7 +1141,7 @@ Gets a list of field values with counts and returns them to the client.
 ```json
 {
     "InfoFile": {
-        "EntryID": "2529@4060e8c8-61bb-4131-8a47-32a7d97a9726",
+        "EntryID": "2705@4060e8c8-61bb-4131-8a47-32a7d97a9726",
         "Extension": "json",
         "Info": "application/json",
         "Name": "spi_view.json",
@@ -1345,28 +1309,28 @@ Gets a list of PCAP files that Arkime knows about.
             "data": [
                 {
                     "compression": 0,
-                    "filesize": 2147483822,
-                    "first": 1655303488,
+                    "filesize": 1073744628,
+                    "first": 1655844995,
                     "locked": 0,
-                    "name": "/opt/arkime/raw/localhost-220615-00000349.pcap",
+                    "name": "/opt/arkime/raw/localhost-220621-00000384.pcap",
                     "node": "localhost",
-                    "num": 349,
+                    "num": 384,
                     "packetPosEncoding": "gap0",
-                    "packets": 7838194,
-                    "packetsSize": 2147483822
+                    "packets": 5069126,
+                    "packetsSize": 1073744628
                 },
                 {
                     "compression": 0,
-                    "first": 1655318428,
+                    "first": 1655854856,
                     "locked": 0,
-                    "name": "/opt/arkime/raw/localhost-220615-00000350.pcap",
+                    "name": "/opt/arkime/raw/localhost-220621-00000385.pcap",
                     "node": "localhost",
-                    "num": 350,
+                    "num": 385,
                     "packetPosEncoding": "gap0"
                 }
             ],
-            "recordsFiltered": 28,
-            "recordsTotal": 28
+            "recordsFiltered": 39,
+            "recordsTotal": 39
         }
     }
 }
@@ -1378,6 +1342,6 @@ Gets a list of PCAP files that Arkime knows about.
 >### Files List Result:
 >|Node|Name|Number|First|File Size|Packet Size|
 >|---|---|---|---|---|---|
->| localhost | /opt/arkime/raw/localhost-220615-00000349.pcap | 349 | 1970-01-20 03:48:23 | 2147483822 | 2147483822 |
->| localhost | /opt/arkime/raw/localhost-220615-00000350.pcap | 350 | 1970-01-20 03:48:38 |  |  |
+>| localhost | /opt/arkime/raw/localhost-220621-00000384.pcap | 384 | 1970-01-20 03:57:24 | 1073744628 | 1073744628 |
+>| localhost | /opt/arkime/raw/localhost-220621-00000385.pcap | 385 | 1970-01-20 03:57:34 |  |  |
 
