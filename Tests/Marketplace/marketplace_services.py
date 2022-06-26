@@ -3723,7 +3723,7 @@ def get_id_set_entity_by_path(entity_path: Path, pack_folder: str, id_set: dict)
                 return id_set_entity
 
         else:  # Other content items
-            if Path(list(id_set_entity.values())[0]['file_path']) == str(entity_path):
+            if list(id_set_entity.values())[0]['file_path'] == str(entity_path):
                 return id_set_entity
 
     if pack_folder == PackFolders.CLASSIFIERS.value:  # For Classifiers, check also in Mappers

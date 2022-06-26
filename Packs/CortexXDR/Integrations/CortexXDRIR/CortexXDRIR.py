@@ -5,8 +5,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
 
-# CHANGE IN PACK
-
 # Disable insecure warnings
 urllib3.disable_warnings()
 
