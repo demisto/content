@@ -3590,7 +3590,7 @@ script:
       type: string
   - arguments:
     - auto: PREDEFINED
-      description: Action to be taken, such as show, get, set, edit, delete, rename, clone, move, override, multi-move, multi-clone, or complete.
+      description: Action to be taken.
         Documentation - https://docs.paloaltonetworks.com/pan-os/9-1/pan-os-panorama-api/pan-os-xml-api-request-types/configuration-api.
       name: action
       predefined:
@@ -3609,7 +3609,7 @@ script:
     - description: The category parameter. For example, when exporting a configuration
         file, use "category=configuration".
       name: category
-    - description: Specifies the xml structure that defines the command. Used for operation commands (op type command). Can be retrieved from the debugging PAN-OS web UI.
+    - description: Specifies the XML structure that defines the command. Used for operation commands (op type command). Can be retrieved from the debugging PAN-OS web UI.
       name: cmd
     - description: The command to run. For example, command =<show><arp><entry name='all'/></arp></show>
       name: command
