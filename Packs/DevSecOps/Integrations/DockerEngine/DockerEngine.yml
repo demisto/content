@@ -1810,6 +1810,10 @@ script:
     deprecated: false
     description: Remove a container
     execution: false
+    outputs:
+    - contextPath: Docker.ContainerDelete.Status Code
+      description: Image Tag Result
+      type: String
     arguments:
     - default: false
       description: ID or name of the container

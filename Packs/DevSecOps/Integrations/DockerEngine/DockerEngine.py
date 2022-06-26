@@ -1258,7 +1258,7 @@ def container_delete_command(client, args):
 
     response = client.container_delete_request(id_, v, force, link)
     command_results = CommandResults(
-        outputs_prefix='Docker',
+        outputs_prefix='Docker.ContainerDelete',
         outputs_key_field='',
         outputs=response,
         raw_response=response
@@ -1822,7 +1822,7 @@ def image_create_command(client, args):
     response = client.image_create_request(from_image, from_src, repo, tag, message, platform)
     command_results = CommandResults(
         outputs_prefix='Docker.ImageCreate',
-        outputs_key_field='status',
+        outputs_key_field='Status',
         outputs=response,
         raw_response=response
     )
