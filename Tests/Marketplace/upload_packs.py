@@ -1169,7 +1169,6 @@ def main():
 
         if not_updated_build:
             pack.status = PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name
-            pack.cleanup()
             continue
 
         sign_and_zip_pack(pack, signature_key, remove_test_playbooks)

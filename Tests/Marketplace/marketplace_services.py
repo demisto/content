@@ -1724,14 +1724,9 @@ class Pack(object):
             if rn_header not in release_notes:
                 continue
 
-            # Filters the RN entries by the entity display name or name
-            display_names_and_names = []
-            for entity in entities_data:
-                # Since some RN's have the name and not the display name, we check both
-                display_names_and_names.extend([list(entity.values())[0]['display_name'],
-                                                list(entity.values())[0]['name']])
-            filtered_release_notes_entries = self.filter_entries_by_display_name(release_notes, display_names_and_names,
-                                                                                 rn_header)
+            # Filters the RN entries by the entity display name
+            display_names = [list(entity.values())[0]['display_name'] for entity in entities_data]
+            filtered_release_notes_entries = self.filter_entries_by_display_name(release_notes, display_names, rn_header)
 
             if filtered_release_notes_entries:
                 filtered_release_notes[rn_header] = filtered_release_notes_entries
