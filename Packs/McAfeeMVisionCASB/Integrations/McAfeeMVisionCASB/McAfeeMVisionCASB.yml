@@ -69,6 +69,8 @@ script:
       required: false
       secret: false
     - default: false
+      description: For time arguments use the ISO-8601 standard - '%Y-%m-%dT%H:%M:%SZ'
+        or relative time (last X days).
       isArray: false
       name: end_time
       required: false
@@ -164,82 +166,121 @@ script:
     name: mvision-casb-anomaly-activity-list
     outputs:
     - contextPath: MVisionCASB.AnomalyActivity.timeStamp
+      description: The timestamp
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.actionName
+      description: The action name
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.asnName
+      description:
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.city
+      description:
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.collabGroup
+      description:
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.count
+      description:
       type: Number
     - contextPath: MVisionCASB.AnomalyActivity.country
+      description:
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.deviceManaged
+      description:
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.directory
+      description:
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.downloadBytes
+      description:
       type: Number
     - contextPath: MVisionCASB.AnomalyActivity.eventCount
+      description:
       type: Number
     - contextPath: MVisionCASB.AnomalyActivity.fileFolderPath
+      description:
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.fileName
+      description:
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.fileSharingEnabled
+      description:
       type: Boolean
     - contextPath: MVisionCASB.AnomalyActivity.fileSize
+      description:
       type: Number
     - contextPath: MVisionCASB.AnomalyActivity.fileType
+      description:
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.geoOrgNameV1
+      description:
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.httpMethod
+      description:
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.instanceId
+      description:
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.isSourceTrusted
+      description:
       type: Boolean
     - contextPath: MVisionCASB.AnomalyActivity.networkType
+      description:
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.objectType
+      description:
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.operation
+      description:
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.proxyDescription
+      description:
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.proxyType
+      description:
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.region
+      description:
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.serviceName
+      description:
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.siteUrl
+      description:
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.sourceIP
+      description:
       type: IP
     - contextPath: MVisionCASB.AnomalyActivity.sourceIdentifier
+      description:
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.targetId
+      description:
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.targetType
+      description:
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.tenantId
+      description:
       type: Number
     - contextPath: MVisionCASB.AnomalyActivity.threatCategory
+      description:
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.trustEntity
+      description:
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.trustReason
+      description:
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.uploadBytes
+      description:
       type: Number
     - contextPath: MVisionCASB.AnomalyActivity.url
+      description:
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.user
+      description:
       type: String
   - arguments:
     - default: false

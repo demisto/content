@@ -1,6 +1,3 @@
-import datetime
-import json
-
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
@@ -31,12 +28,12 @@ CategoryToIncidentType = {
 
 class Client(BaseClient):
     def test(self):
-        self.incident_query(1, arg_to_datetime('3 days').strftime(DATE_FORMAT))
+        self.incident_query(1, (arg_to_datetime('3 days') or datetime.now() - timedelta(days=3)).strftime(DATE_FORMAT))
 
-    def incident_query(self, limit: int, start_time: str = '', end_time: str = '', actor_ids: list[str] = None,
+    def incident_query(self, limit: Optional[int], start_time: str = '', end_time: str = '', actor_ids: list[str] = None,
                        service_names: list[str] = None, categories: list[str] = None) -> Dict[str, Any]:
         url_suffix = '/external/api/v1/queryIncidents'
-        params = {'limit': limit}
+        params = {'limit': limit or 50}
         data = assign_params(
             startTime=start_time,
             endTime=end_time,
@@ -46,25 +43,25 @@ class Client(BaseClient):
                 categories=categories
             ),
         )
-        return self._http_request('POST', url_suffix, params=params, json_data=data)
+        return self._http_request('POST', url_suffix, params=params, json_data=data, raise_on_status=True)
 
-    def status_update(self, incident_ids: List[int], status: str) -> Dict[str, str]:
+    def status_update(self, incident_ids: List, status: str) -> Dict[str, str]:
         url_suffix = '/external/api/v1/modifyIncidents'
         data = [
             {'incidentId': incident_id, "changeRequests": {"WORKFLOW_STATUS": status}} for incident_id in incident_ids
         ]
         return self._http_request('POST', url_suffix, json_data=data, raise_on_status=True)
 
-    def anomaly_activity_list(self, incident_id: int) -> Dict[str, str]:
+    def anomaly_activity_list(self, incident_id: Optional[int]) -> Dict[str, str]:
         url_suffix = '/external/api/v1/queryActivities'
         data = {"incident_id": incident_id}
         return self._http_request('POST', url_suffix, json_data=data)
 
-    def policy_dictionary_list(self) -> Dict[str, str]:
+    def policy_dictionary_list(self) -> List[Dict]:
         url_suffix = '/dlp/dictionary'
         return self._http_request('GET', url_suffix, raise_on_status=True)
 
-    def policy_dictionary_update(self, dict_id: int, name: str, content: List[str]) -> Dict[str, str]:
+    def policy_dictionary_update(self, dict_id: Optional[int], name: str, content: List[str]) -> Dict[str, str]:
         url_suffix = '/dlp/dictionary'
         data = {
             "id": dict_id,
@@ -77,7 +74,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def calculate_offset_and_limit(**kwargs) -> [int, int]:
+def calculate_offset_and_limit(**kwargs) -> Tuple[int, int]:
     if limit := arg_to_number(kwargs.get('limit')):  # 'limit' is stronger than pagination ('page', and 'page_size').
         return 0, limit
     if (page := arg_to_number(kwargs.get('page'))) and (page_size := arg_to_number(kwargs.get('page_size'))):
@@ -119,7 +116,9 @@ def fetch_incidents(client: Client, params: dict) -> Tuple[dict, list]:
     xsoar_incidents = []
 
     limit = arg_to_number(params.get('max_fetch', 50))
-    start_time = last_run.get('start_time') or arg_to_datetime(params.get('first_fetch', '3 days')).strftime(DATE_FORMAT)
+    if not (start_time := last_run.get('start_time')):  # in the first interval.
+        default_first_time = datetime.now() - timedelta(days=3)
+        start_time = (arg_to_datetime(params.get('first_fetch')) or default_first_time).strftime(DATE_FORMAT)
 
     result = client.incident_query(limit, start_time)
 
@@ -153,8 +152,8 @@ def fetch_incidents(client: Client, params: dict) -> Tuple[dict, list]:
 
 def incident_query_command(client: Client, args: Dict) -> CommandResults:
     limit = arg_to_number(args.get('limit', 50))
-    start_time = arg_to_datetime(args.get('start_time', '3 days')).strftime(DATE_FORMAT)
-    end_time = arg_to_datetime(args.get('end_time', 'now')).strftime(DATE_FORMAT)
+    start_time = (arg_to_datetime(args.get('start_time')) or datetime.now() - timedelta(days=3)).strftime(DATE_FORMAT)
+    end_time = (arg_to_datetime(args.get('end_time')) or datetime.now()).strftime(DATE_FORMAT)
     actor_ids = argToList(args.get('actor_ids'))
     service_names = argToList(args.get('service_names'))
     if categories := argToList(args.get('categories')):
@@ -208,7 +207,7 @@ def incident_query_command(client: Client, args: Dict) -> CommandResults:
 
 def status_update_command(client: Client, args: Dict) -> CommandResults:
     incident_ids = argToList(args.get('incident_ids'))
-    status = args.get('status')
+    status = str(args.get('status'))
 
     result = client.status_update(incident_ids, status)
     readable_output = 'Status updated for user'
@@ -221,6 +220,7 @@ def status_update_command(client: Client, args: Dict) -> CommandResults:
 
 def anomaly_activity_list_command(client: Client, args: Dict) -> CommandResults:
     anomaly_id = arg_to_number(args.get('anomaly_id'))
+
     result = client.anomaly_activity_list(anomaly_id)
 
     return CommandResults(
@@ -265,8 +265,8 @@ def policy_dictionary_list_command(client: Client, args: Dict) -> CommandResults
 
 def policy_dictionary_update_command(client: Client, args: Dict) -> CommandResults:
     dict_id = arg_to_number(args.get('dictionary_id'))
-    name = args.get('name')
-    content = args.get('content')
+    name = str(args.get('name'))
+    content = argToList(args.get('content'))
 
     result = client.policy_dictionary_update(dict_id, name, content)
 
