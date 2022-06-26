@@ -33,59 +33,110 @@ def prepare_query_params(params: dict) -> dict:
 
 
 class Client(BaseClient):
-    def test(self) -> dict:
-        query_params = prepare_query_params({
-            'limit': '1',
-            'oldest': '3 days ago',
-            'latest': 'now',
-            'action': 'user_login',
-        })
-        return self.get_logs(query_params)
+    def test(self, params) -> dict:
+        query_params = prepare_query_params(params)
+        return self.get_logs(query_params)[0]
 
-    def get_logs(self, query_params: dict) -> dict:
-        return self._http_request(method='GET', url_suffix='logs', params=query_params)
+    def get_logs(self, query_params: dict) -> Tuple:
+        raw_response = self._http_request(method='GET', url_suffix='logs', params=query_params)
+        events = raw_response.get('entries', [])
+        cursor = raw_response.get('response_metadata', {}).get('next_cursor')
+
+        return raw_response, events, cursor
+
+    def handle_pagination_first_batch(self, query_params: dict, last_run: dict) -> Tuple:
+        """
+        Makes the first logs API call in the current fetch run.
+        If `first_id` exists in the lastRun obj, finds it in the response and
+        returns only the subsequent events (that weren't collected yet).
+        """
+        query_params['cursor'] = last_run.pop('cursor')
+        _, events, cursor = self.get_logs(query_params)
+        if last_run.get('first_id'):
+            for idx, event in enumerate(events):
+                if event.get('id') == last_run['first_id']:
+                    events = events[idx:]
+                    break
+            last_run.pop('first_id', None)  # removing to make sure it won't be used in future runs
+        return events, cursor
 
     def get_logs_with_pagination(self, query_params: dict, last_run: dict) -> List[dict]:
         """
-        Aggregates logs using cursor-based pagination, until encounters an event
-        that was already fetched in the previous run or reaches the end of the pagination.
+        Aggregates logs using cursor-based pagination, until one of the following occurs:
+        1. Encounters an event that was already fetched in a previous run / reaches the end of the pagination.
+           In both cases, clears the cursor from the lastRun obj and returns the aggragated logs.
 
-        If reaches rate limit, stores the last cursor used in the lastRun object,
-        and returns the events that have been accumulated so far.
+        2. Reaches the user-defined limit (parameter).
+           In this case, stores the last used cursor and the id of the next event to collect (`first_id`)
+           and returns the events that have been accumulated so far.
+
+        3. Reaches a rate limit.
+           In this case, stores the last cursor used in the lastRun obj
+           and returns the events that have been accumulated so far.
         """
         aggregated_logs: List[dict] = []
-        last_id = last_run.get('last_id')
+
+        user_defined_limit = query_params.pop('limit')
+        query_params['limit'] = 200  # recommended limit value by Slack
         try:
-            while raw_response := self.get_logs(query_params):
-                for event in raw_response.get('entries', []):
-                    if event.get('id') == last_id:
-                        return aggregated_logs
+            events, cursor = self.handle_pagination_first_batch(query_params, last_run)
+            while events:
+                for event in events:
+                    if event.get('id') == last_run.get('last_id'):
+                        cursor = None
+                        break
+
+                    if len(aggregated_logs) == user_defined_limit:
+                        last_run['first_id'] = event.get('id')
+                        cursor = query_params['cursor']
+                        break
+
                     aggregated_logs.append(event)
 
-                if not (cursor := raw_response.get('response_metadata', {}).get('next_cursor')):
-                    last_run['cursor'] = None
-                    return aggregated_logs
-                query_params['cursor'] = cursor
+                else:
+                    # finished iterating through all events in this batch
+                    if not cursor:
+                        break
+                    query_params['cursor'] = cursor
+                    _, events, cursor = self.get_logs(query_params)
 
         except DemistoException as e:
-            if e.res and e.res.status_code == 429:
-                last_run['cursor'] = query_params.get('cursor')
-                return aggregated_logs
-            raise e
+            if not e.res or e.res.status_code != 429:
+                raise e
+            demisto.debug('Reached API rate limit, storing last used cursor.')
+            cursor = query_params['cursor']
 
+        last_run['cursor'] = cursor
         return aggregated_logs
 
 
-def test_module_command(client: Client) -> str:
-    client.test()
+def test_module_command(client: Client, params: dict) -> str:
+    """
+    Tests connection to Slack.
+    Args:
+        clent (Client): the client implementing the API to Slack.
+        params (dict): the instance configuration.
+
+    Returns:
+        (str) 'ok' if success.
+    """
+    client.test(params)
     return 'ok'
 
 
 def get_events_command(client: Client, args: dict) -> Tuple[list, CommandResults]:
+    """
+    Gets log events from Slack.
+    Args:
+        clent (Client): the client implementing the API to Slack.
+        args (dict): the command arguments.
+
+    Returns:
+        (list) the events retrieved from the logs API call.
+        (CommandResults) the CommandResults object holding the collected logs information.
+    """
     query_params = prepare_query_params(args)
-    raw_response = client.get_logs(query_params)
-    events = raw_response.get('entries', [])
-    cursor = raw_response.get('response_metadata', {}).get('next_cursor')
+    raw_response, events, cursor = client.get_logs(query_params)
     results = CommandResults(
         raw_response=raw_response,
         readable_output=tableToMarkdown(
@@ -99,7 +150,17 @@ def get_events_command(client: Client, args: dict) -> Tuple[list, CommandResults
 
 
 def fetch_events_command(client: Client, params: dict, last_run: dict) -> Tuple[list, dict]:
-    params['cursor'] = last_run.get('cursor')
+    """
+    Collects log events from Slack using pagination.
+    Args:
+        clent (Client): the client implementing the API to Slack.
+        params (dict): the instance configuration.
+        last_run (dict): the lastRun object, holding information from the previous run.
+
+    Returns:
+        (list) the events retrieved from the logs API call.
+        (dict) the updated lastRun object.
+    """
     query_params = prepare_query_params(params)
     if events := client.get_logs_with_pagination(query_params, last_run):
         last_run['last_id'] = events[0].get('id')
@@ -127,7 +188,7 @@ def main() -> None:  # pragma: no cover
         )
 
         if command == 'test-module':
-            return_results(test_module_command(client))
+            return_results(test_module_command(client, params))
 
         else:
             if command == 'slack-get-events':
@@ -139,7 +200,7 @@ def main() -> None:  # pragma: no cover
                 events, last_run = fetch_events_command(client, params, last_run)
                 demisto.setLastRun(last_run)
 
-            if argToBoolean(params.get('should_push_events', 'true')):
+            if argToBoolean(args.get('should_push_events', 'true')):
                 send_events_to_xsiam(
                     events,
                     params.get('vendor', 'slack'),

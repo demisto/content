@@ -27,9 +27,9 @@ configuration:
 - display: The maximum number of audit logs to fetch
   name: limit
   type: 0
-  defaultvalue: 200
+  defaultvalue: 1000
   required: false
-  additionalinfo: Maximum is 1000. You may receive more than the passed `limit` results from a given request if there are multiple logs that were recorded at the exact same time.
+  additionalinfo: Maximum is 10000.
 - display: First fetch time interval
   name: oldest
   type: 0
@@ -62,7 +62,7 @@ script:
       - 'false'
       required: true
     - default: false
-      description: Number of results to return, maximum is 1000. You may receive more than the passed `limit` results from a given request if there are multiple logs that were recorded at the exact same time.
+      description: Number of results to return, maximum is 9999. You may receive more than the passed `limit` results from a given request if there are multiple logs that were recorded at the exact same time.
       isArray: false
       name: limit
       defaultValue: 10
