@@ -384,7 +384,6 @@ class Client(CoreClient):
         return reply.get('reply')
 
 
-
 def get_incidents_command(client, args):
     """
     Retrieve a list of incidents from XDR, filtered by some filters.
