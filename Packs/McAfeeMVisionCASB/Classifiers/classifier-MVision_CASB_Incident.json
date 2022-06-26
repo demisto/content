@@ -1,0 +1,61 @@
+{
+	"brands": null,
+	"cacheVersn": 0,
+	"defaultIncidentType": "",
+	"definitionId": "",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "5ec43e8f-c69b-4b0b-8bf1-1fbb8b44bc70",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {
+		"Alert": "MVision CASB Alert",
+		"Threat": "MVision CASB Threat"
+	},
+	"locked": false,
+	"logicalVersion": 1,
+	"mapping": null,
+	"name": "MVision CASB Incident",
+	"nameRaw": "MVision CASB Incident",
+	"packID": "",
+	"propagationLabels": [
+		"all"
+	],
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {
+		"complex": {
+			"filters": [],
+			"root": "incidentGroup",
+			"transformers": [
+				{
+					"args": {
+						"delimiter": {
+							"value": {
+								"simple": "."
+							}
+						}
+					},
+					"operator": "splitAndTrim"
+				},
+				{
+					"args": {
+						"index": {
+							"value": {
+								"simple": "0"
+							}
+						}
+					},
+					"operator": "atIndex"
+				}
+			]
+		}
+	},
+	"type": "classification",
+	"unclassifiedCases": null,
+	"version": -1
+}
