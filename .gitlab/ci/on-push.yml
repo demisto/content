@@ -119,6 +119,29 @@ create-instances_test:
     - echo -e "${TXT_RED}This text is red,${TXT_CLEAR} but this part isn't${TXT_RED} however this part is again."
     - !reference [.create-release-notes-and-common-docs]
 
+Test:
+  tags:
+    - gke
+  extends:
+    - .default-job-settings
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+    - if: '$NIGHTLY'
+    - if: '$INSTANCE_TESTS'
+  cache:
+    policy: pull-push
+  variables:
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
+    KUBERNETES_CPU_REQUEST: 1000m
+  needs: []
+  stage: create-instances
+  script:
+    - if [ -z "${TIME_TO_LIVE}" -a "$CI_PIPELINE_SOURCE" = "contrib" ]; then
+      TIME_TO_LIVE=300
+      fi
+      python3 ./Tests/scripts/destroy_instances.py $ARTIFACTS_FOLDER $ARTIFACTS_FOLDER/env_results.json "$INSTANCE_ROLE" "$TIME_TO_LIVE" || EXIT_CODE=$?
+    - python3 ./Tests/scripts/Test.py
+
 prepare-testing-bucket-mpv2:
   tags:
     - gke
