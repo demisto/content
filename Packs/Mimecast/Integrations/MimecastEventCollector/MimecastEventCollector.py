@@ -423,7 +423,6 @@ def dedup_audit_events(audit_events: list, last_run_potential_dup: list) -> list
     """
     if not last_run_potential_dup or not audit_events:
         return audit_events
-    else:
     return [event for event in audit_events if event.get('id') not in last_run_potential_dup]
 
 
@@ -502,7 +501,8 @@ def main():
     # Args is always stronger. Get last run even stronger
     demisto.info('\n started running main\n')
     demisto_params = demisto.params() | demisto.args()
-    demisto_params['secret_key'] = demisto_params.get('secret_key', {}).get('password')
+    demisto_params['secret_key'] = demisto_params.get('credentials', {}).get('password')
+    demisto_params['access_key'] = demisto_params.get('credentials', {}).get('identifier')
     should_push_events = argToBoolean(demisto_params.get('should_push_events', 'false'))
     options = MimecastOptions(**demisto_params)
     empty_first_request = IntegrationHTTPRequest(method=Method.GET, url='http://bla.com', headers={})
@@ -524,7 +524,7 @@ def main():
         elif command in ('mimecast-get-events', 'fetch-events'):
             if command == 'fetch-events':
                 handle_last_run_exit(siem_event_handler, events_audit)
-                events = gather_events(events_siem, events_audit)
+                events = events_siem + events_audit
                 send_events_to_xsiam(events, demisto_params.get('vendor', 'mimecast'),
                                      demisto_params.get('product', 'mimecast'))
 

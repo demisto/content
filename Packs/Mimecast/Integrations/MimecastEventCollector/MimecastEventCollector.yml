@@ -15,16 +15,11 @@ configuration:
   name: app_key
   required: true
   type: 0
-- display: ""
+- display: Access Key
   displaypassword: Secret Key
-  name: secret_key
+  name: credentials
   type: 9
   required: true
-  hiddenusername: true
-- display: Access Key
-  name: access_key
-  required: true
-  type: 0
 - display: First fetch timestamp (<number> <time unit>, for example, 12 hours, 7 days,
     3 months, 1 year)
   name: after
