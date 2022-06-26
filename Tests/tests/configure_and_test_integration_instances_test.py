@@ -192,5 +192,5 @@ def test_get_packs_with_higher_min_version(mocker):
     open_mocker[os.path.join('content/Packs/TestPack/pack_metadata.json')].read_data = '{"serverMinVersion": "6.6.0"}'
     open_mocker[os.path.join('content/Packs/TestPack1/pack_metadata.json')].read_data = '{"serverMinVersion": "6.5.0"}'
 
-    packs_with_higher_min_version = get_packs_with_higher_min_version({'TestPack1', 'TestPack'}, build)
+    packs_with_higher_min_version = get_packs_with_higher_min_version({'TestPack', 'TestPack1'}, build)
     assert packs_with_higher_min_version == {'TestPack'}
