@@ -372,17 +372,17 @@ class Client(CoreClient):
                 'fields': fields
             }
         }
-        try:
-            reply = self._http_request(
-                method='POST',
-                url_suffix=f'/featured_fields/replace_{field_type}',
-                json_data=request_data,
-                timeout=self.timeout,
-                raise_on_status=True
-            )
-            return reply.get('reply')
-        except Exception as err:
-            raise DemistoException(err)
+
+        reply = self._http_request(
+            method='POST',
+            url_suffix=f'/featured_fields/replace_{field_type}',
+            json_data=request_data,
+            timeout=self.timeout,
+            raise_on_status=True
+        )
+
+        return reply.get('reply')
+
 
 
 def get_incidents_command(client, args):
