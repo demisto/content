@@ -1818,12 +1818,13 @@ class Pack(object):
 
             start_tag, end_tag = TAGS_BY_MP[marketplace]
             if start_tag in release_notes and end_tag in release_notes and marketplace != upload_marketplace:
-                logging.debug(f"Filtering irrelevant release notes by tags {start_tag}-{end_tag} of marketplace {marketplace} "
-                             f"for pack {self._pack_name} when uploading to marketplace {upload_marketplace}.")
+                logging.debug(f"Filtering irrelevant release notes by tags {start_tag}-{end_tag} of marketplace "
+                              f"{marketplace} for pack {self._pack_name} when uploading to marketplace "
+                              f"{upload_marketplace}.")
                 return re.sub(fr'{start_tag}{TAGS_SECTION_PATTERN}{end_tag}[\n]*', '', release_notes)
             else:
-                logging.debug(f"Removing only the tags {start_tag}-{end_tag} since the RN entry is relevant to "
-                             f"marketplace {upload_marketplace}")
+                logging.debug(f"Removing only the tags {start_tag}-{end_tag} since the RN entry is relevant "
+                              f"to marketplace {upload_marketplace}")
                 return release_notes.replace(f"{start_tag}", '').replace(f"{end_tag}", '')
 
         # Filters out for XSIAM tags
@@ -1831,8 +1832,8 @@ class Pack(object):
 
         # Filters out for XSOAR tags
         release_notes = remove_tags_section_from_rn(release_notes, XSOAR_MP, upload_marketplace)
-        logging.debug(f"RN result after filteing for pack {self._pack_name} in marketplace {upload_marketplace}\n"
-                     f"- {release_notes}")
+        logging.debug(f"RN result after filteing for pack {self._pack_name} in marketplace "
+                      f"{upload_marketplace}\n - {release_notes}")
 
         return release_notes
 
