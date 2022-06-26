@@ -1,7 +1,11 @@
 import pytest
+import os
+from unittest.mock import mock_open
+from mock_open import MockOpen
 
 from Tests.configure_and_test_integration_instances import XSOARBuild, create_build_object, \
-    options_handler, XSIAMBuild, get_turned_non_hidden_packs, update_integration_lists
+    options_handler, XSIAMBuild, get_turned_non_hidden_packs, update_integration_lists, \
+    get_packs_with_higher_min_version
 
 XSIAM_SERVERS = {
     "qa2-test-111111": {
@@ -168,3 +172,25 @@ def test_update_integration_lists(mocker, new_integrations_names, turned_non_hid
                  return_value=turned_non_hidden_packs_id)
     returned_results = update_integration_lists(new_integrations_names, set(), modified_integrations_names)
     assert the_expected_result(returned_results[0], returned_results[1])
+
+
+def test_get_packs_with_higher_min_version(mocker):
+    """
+    Given:
+        - Pack names to install.
+    When:
+        - Running 'get_packs_with_higher_min_version' method.
+    Then:
+        - Assert the returned packs are with higher min version than the server version.
+    """
+
+    build = create_build_object_with_mock(mocker, 'XSOAR')
+    build.content_path = 'content'
+
+    open_mocker = MockOpen()
+    mocker.patch("builtins.open", open_mocker)
+    open_mocker[os.path.join('content/Packs/TestPack/pack_metadata.json')].read_data = '{"serverMinVersion": "6.6.0"}'
+    open_mocker[os.path.join('content/Packs/TestPack1/pack_metadata.json')].read_data = '{"serverMinVersion": "6.5.0"}'
+
+    packs_with_higher_min_version = get_packs_with_higher_min_version({'TestPack1', 'TestPack'}, build)
+    assert packs_with_higher_min_version == {'TestPack'}
