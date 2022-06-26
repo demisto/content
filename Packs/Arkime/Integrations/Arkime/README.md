@@ -1035,40 +1035,16 @@ Gets a list of values for a field with counts and graph data and returns them to
 | Arkime.SpiGraph.items.graph.xmin | Date | The graph xmin. | 
 | Arkime.SpiGraph.items.graph.xmax | Date | The graph xmax. | 
 | Arkime.SpiGraph.items.graph.interval | Number | The graph interval. | 
-| Arkime.SpiGraph.items.graph.sessionsHisto | Number | The graph sessionsHisto. | 
 | Arkime.SpiGraph.items.graph.sessionsTotal | Number | The sessions total. | 
-| Arkime.SpiGraph.items.graph.source.packetsHisto | Number | The source packets histo. | 
-| Arkime.SpiGraph.items.graph.destination.packetsHisto | Number | The destination packets histo. | 
 | Arkime.SpiGraph.items.graph.network.packetsTotal | Number | The network packets total. | 
-| Arkime.SpiGraph.items.graph.source.bytesHisto | Number | The source bytesHisto. | 
-| Arkime.SpiGraph.items.graph.destination.bytesHisto | Number | The destination bytesHisto. | 
 | Arkime.SpiGraph.items.graph.network.bytesTotal | Date | The network bytesTotal. | 
-| Arkime.SpiGraph.items.graph.client.bytesHisto | Number | The client bytesHisto. | 
-| Arkime.SpiGraph.items.graph.server.bytesHisto | Number | The server bytesHisto. | 
 | Arkime.SpiGraph.items.graph.totDataBytesTotal | Date | The graph totDataBytesTotal. | 
-| Arkime.SpiGraph.items.sessionsHisto | Number | The items sessionsHisto. | 
-| Arkime.SpiGraph.items.source.packetsHisto | Number | The source packetsHisto. | 
-| Arkime.SpiGraph.items.destination.packetsHisto | Number | The destination packetsHisto. | 
-| Arkime.SpiGraph.items.source.bytesHisto | Number | The source bytesHisto. | 
-| Arkime.SpiGraph.items.destination.bytesHisto | Date | The destination bytesHisto. | 
-| Arkime.SpiGraph.items.client.bytesHisto | Number | The client bytesHisto. | 
-| Arkime.SpiGraph.items.server.bytesHisto | Date | The server bytesHisto. | 
-| Arkime.SpiGraph.items.network.packetsHisto | Number | The network packetsHisto. | 
-| Arkime.SpiGraph.items.totDataBytesHisto | Date | The items totDataBytesHisto. | 
-| Arkime.SpiGraph.items.network.bytesHisto | Date | The network bytesHisto. | 
 | Arkime.SpiGraph.graph.xmin | Date | The graph xmin. | 
 | Arkime.SpiGraph.graph.xmax | Date | The graph xmax. | 
 | Arkime.SpiGraph.graph.interval | Number | The graph interval. | 
-| Arkime.SpiGraph.graph.sessionsHisto | Number | The graph sessionsHisto. | 
 | Arkime.SpiGraph.graph.sessionsTotal | Number | The graph sessionsTotal. | 
-| Arkime.SpiGraph.graph.source.packetsHisto | Number | The source packetsHisto. | 
-| Arkime.SpiGraph.graph.destination.packetsHisto | Number | The destination packetsHisto. | 
 | Arkime.SpiGraph.graph.network.packetsTotal | Number | The network packetsTotal. | 
-| Arkime.SpiGraph.graph.source.bytesHisto | Number | The source bytesHisto. | 
-| Arkime.SpiGraph.graph.destination.bytesHisto | Number | The destination bytesHisto. | 
 | Arkime.SpiGraph.graph.network.bytesTotal | Date | The network bytesTotal. | 
-| Arkime.SpiGraph.graph.client.bytesHisto | Number | The client bytesHisto. | 
-| Arkime.SpiGraph.graph.server.bytesHisto | Number | The server bytesHisto. | 
 | Arkime.SpiGraph.graph.totDataBytesTotal | Date | The graph totDataBytesTotal. | 
 | Arkime.SpiGraph.recordsTotal | Number | The total number of history results stored. | 
 | Arkime.SpiGraph.recordsFiltered | Number | The number of hunts returned in this result. | 
