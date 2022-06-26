@@ -3,6 +3,8 @@ from CommonServerPython import *  # noqa: F401
 
 ''' COMMAND FUNCTION '''
 
+# SOME CHANGE
+
 
 def mapper_command(args: Dict[str, Any]) -> CommandResults:
     format = str(args.get('format', '{1}-{2}'))
