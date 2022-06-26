@@ -1,5 +1,5 @@
 The Engine API is an HTTP API served by Docker Engine. It is the API the Docker client uses to communicate with the Engine, so everything the Docker client can do can be done with the API.
-This integration was integrated and tested with version 20.10.1 of Docker Engine API
+This integration was integrated and tested with version 20.10.17 ([API Version 1.41](https://docs.docker.com/engine/api/v1.41/)) of Docker Engine API
 ## Configure Docker Engine API on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -14,6 +14,10 @@ This integration was integrated and tested with version 20.10.1 of Docker Engine
     | ca_certificate | CA Certificate | True |
     | insecure | Trust any certificate \(not secure\) | False |
     | proxy | Use system proxy settings | False |
+    | identitytoken | Registry Identity Token | False |
+    | registry_username | Registry Username | False |
+    | registry_password | Registry Password | False |
+    | registry_serveraddress | Registry Server Address | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
