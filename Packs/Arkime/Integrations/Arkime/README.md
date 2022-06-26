@@ -1,5 +1,5 @@
 Arkime (formerly Moloch) is a large scale, open source, indexed packet capture and search tool.
-This integration was integrated and tested with version xx of Arkime
+This integration was integrated and tested with version 6.2.0 of Arkime
 
 ## Configure Arkime on Cortex XSOAR
 
@@ -385,17 +385,10 @@ Gets a list of sessions and returns them to the client.
                 }
             ],
             "graph": {
-                "client.bytesHisto": [],
-                "destination.bytesHisto": [],
-                "destination.packetsHisto": [],
                 "interval": 60,
                 "network.bytesTotal": 0,
                 "network.packetsTotal": 0,
-                "server.bytesHisto": [],
-                "sessionsHisto": [],
                 "sessionsTotal": 0,
-                "source.bytesHisto": [],
-                "source.packetsHisto": [],
                 "totDataBytesTotal": 0,
                 "xmax": 1650363038000,
                 "xmin": 1650190238000
