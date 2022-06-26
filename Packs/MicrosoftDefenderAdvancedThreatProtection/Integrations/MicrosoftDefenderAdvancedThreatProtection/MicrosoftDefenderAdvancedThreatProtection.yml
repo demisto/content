@@ -263,6 +263,21 @@ script:
       name: os_platform
       required: false
       secret: false
+    - default: false
+      description: Number of machines to return in a page - must be lower or equal to 10,000. (If given page_num must also be given)
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      description: The page number to retrieve. (If given page_size must also be given)
+      name: page_num
+      required: false
+      secret: false
+    - default: false
+      description: How many machines to return from the API call - must be lower or equal to 10,000.
+      name: limit
+      required: false
+      secret: false
     deprecated: false
     description: Retrieves a collection of machines that communicated with WDATP cloud in the last 30 days. Note - only IP or hostname can be a comma-separated list. If both are given as lists, an error will appear.
     execution: false

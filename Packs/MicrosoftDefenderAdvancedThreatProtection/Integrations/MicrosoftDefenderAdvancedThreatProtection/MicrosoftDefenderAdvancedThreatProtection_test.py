@@ -2315,3 +2315,27 @@ def test_get_machine_alerts_command(mocker):
     mocker.patch.object(client_mocker, 'get_machine_alerts', return_value=ALERTS_API_RESPONSE)
     results = get_machine_alerts_command(client_mocker, {'machine_id': "123abc"})
     assert results.outputs[0] == MACHINE_ALERTS_OUTPUT
+
+
+@pytest.mark.parametrize('page_num, page_size, limit, res',
+                         [('5', '5600', '100', {'$filter': 'filter', '$skip': '25000', '$top': '100'}),
+                             ('3', '50', '6', {'$filter': 'filter', '$skip': '150', '$top': '6'}),
+                          (None, None, '10', {'$filter': 'filter', '$top': '10'}),
+                          ('5', '20', None, {'$filter': 'filter', '$skip': '100'}),
+                          pytest.param(None, '4', '7', DemistoException, marks=pytest.mark.xfail),
+                          ]
+                         )
+def test_get_machines(mocker, page_num, page_size, limit, res):
+    """
+    Given:
+        - page_num, page_size, limit to the get_machines method
+
+    When:
+        - Before calling the API to get the machines
+
+    Then:
+        - verify that the page_num , page_size, limit are added to the params array correctly.
+    """
+    req = mocker.patch.object(client_mocker.ms_client, 'http_request', return_value='')
+    client_mocker.get_machines('filter', page_num=page_num, page_size=page_size, limit=limit)
+    assert res == req.call_args.kwargs.get('params')
