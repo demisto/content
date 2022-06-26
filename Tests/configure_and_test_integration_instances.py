@@ -1692,6 +1692,7 @@ def get_packs_not_to_install(modified_packs_names: Set[str], build: Build) -> Se
     """
     non_hidden_packs = get_turned_non_hidden_packs(modified_packs_names, build)
     packs_with_higher_min_version = get_packs_with_higher_min_version(modified_packs_names - non_hidden_packs, build)
+    build.pack_ids_to_install = list(set(build.pack_ids_to_install) - packs_with_higher_min_version)
     return packs_with_higher_min_version.union(non_hidden_packs), non_hidden_packs
 
 
