@@ -102,6 +102,7 @@ create-instances:
     - |
       [ -n "${TIME_TO_LIVE}" ] && TTL=${TIME_TO_LIVE} || TTL=300
       python3 ./Tests/scripts/awsinstancetool/aws_instance_tool.py -envType "$IFRA_ENV_TYPE" -timetolive $TTL -outfile "$ARTIFACTS_FOLDER/env_results.json"
+      python3 ./Tests/scripts/Test.py
     - section_end "Create Instances"
 
 create-instances_test:
