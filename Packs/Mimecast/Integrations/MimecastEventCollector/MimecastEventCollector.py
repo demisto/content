@@ -100,7 +100,7 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
     def run(self):
         """
         Always takes SIEM_LOG_LIMIT amount of events.
-        If the limit is reached the extra events will be saved in the self.events_from_prev_run.
+        If the limit is reached, the extra events will be saved in the self.events_from_prev_run.
         Returns:
              - stored (list): A list of this run siem events.
         """
@@ -424,14 +424,7 @@ def dedup_audit_events(audit_events: list, last_run_potential_dup: list) -> list
     if not last_run_potential_dup or not audit_events:
         return audit_events
     else:
-        i = len(audit_events) - 1
-        while i > -1:
-            if audit_events[i].get('id') in last_run_potential_dup:
-                del audit_events[i]
-                i -= 1
-            else:
-                break
-    return audit_events
+    return [event for event in audit_events if event.get('id') not in last_run_potential_dup]
 
 
 def set_audit_next_run(audit_events: list) -> str:
