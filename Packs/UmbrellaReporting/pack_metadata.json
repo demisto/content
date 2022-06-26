@@ -1,7 +1,7 @@
 {
     "name": "UmbrellaReporting",
     "description": "Cisco Umbrella Reporting v2 integration",
-    "support": "partner",
+    "support": "community",
     "currentVersion": "1.0.0",
     "author": "Wipro",
     "url": "https://www.wipro.com/cybersecurity/#contact-us",
