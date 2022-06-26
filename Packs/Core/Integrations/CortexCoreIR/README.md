@@ -2089,8 +2089,9 @@ Get the prevalence of a file, identified by sha256.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Core.AnalyticsPrevalence.Hash.value | Boolean | Whether the hash is prevalent or not. | 
-| Core.AnalyticsPrevalence.Hash.data.global_prevalence | Unknown | The global prevalence of the hash. | 
-| Core.AnalyticsPrevalence.Hash.data.local_prevalence | Unknown | The local prevalence of the hash. | 
+| Core.AnalyticsPrevalence.Hash.data.global_prevalence.value | Number | The global prevalence of the hash. | 
+| Core.AnalyticsPrevalence.Hash.data.local_prevalence.value | Number | The local prevalence of the hash. | 
+| Core.AnalyticsPrevalence.Hash.data.prevalence.value | Number | The prevalence of the hash. | 
 
 ### core-get-IP-analytics-prevalence
 ***
@@ -2104,7 +2105,7 @@ Get the prevalence of an ip, identified by ip_address.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip_address | The IP address. Possible values are: . | Required | 
+| ip_address | The IP address. | Required | 
 
 
 #### Context Output
@@ -2112,8 +2113,9 @@ Get the prevalence of an ip, identified by ip_address.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Core.AnalyticsPrevalence.Ip.value | Boolean | Whether the IP address is prevalent or not. | 
-| Core.AnalyticsPrevalence.Ip.data.global_prevalence | Unknown | The global prevalence of the IP. | 
-| Core.AnalyticsPrevalence.Ip.data.local_prevalence | Unknown | The local prevalence of the IP. | 
+| Core.AnalyticsPrevalence.Ip.data.global_prevalence.value | Number | The global prevalence of the IP. | 
+| Core.AnalyticsPrevalence.Ip.data.local_prevalence.value | Number | The local prevalence of the IP. | 
+| Core.AnalyticsPrevalence.Ip.data.prevalence.value | Number | The prevalence of the IP. | 
 
 ### core-get-domain-analytics-prevalence
 ***
@@ -2135,8 +2137,9 @@ Get the prevalence of a domain, identified by domain_name.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Core.AnalyticsPrevalence.Domain.value | Boolean | Whether the domain is prevalent or not. | 
-| Core.AnalyticsPrevalence.Domain.data.global_prevalence | Unknown | The global prevalence of the domain. | 
-| Core.AnalyticsPrevalence.Domain.data.local_prevalence | Unknown | The local prevalence of the domain. | 
+| Core.AnalyticsPrevalence.Domain.data.global_prevalence.value | Number | The global prevalence of the domain. | 
+| Core.AnalyticsPrevalence.Domain.data.local_prevalence.value | Number | The local prevalence of the domain. | 
+| Core.AnalyticsPrevalence.Domain.data.prevalence.value | Number | The prevalence of the domain. | 
 
 ### core-get-process-analytics-prevalence
 ***
@@ -2158,8 +2161,9 @@ Get the prevalence of a process, identified by process_name.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Core.AnalyticsPrevalence.Process.value | Boolean | Whether the process is prevalent or not. | 
-| Core.AnalyticsPrevalence.Process.data.global_prevalence | Unknown | The global prevalence of the process. | 
-| Core.AnalyticsPrevalence.Process.data.local_prevalence | Unknown | The local prevalence of the process. | 
+| Core.AnalyticsPrevalence.Process.data.global_prevalence.value | Number | The global prevalence of the process. | 
+| Core.AnalyticsPrevalence.Process.data.local_prevalence.value | Number | The local prevalence of the process. | 
+| Core.AnalyticsPrevalence.Process.data.prevalence.value | Number | The prevalence of the process. | 
 
 ### core-get-registry-analytics-prevalence
 ***
@@ -2182,8 +2186,9 @@ Get the prevalence of a registry_path, identified by key_name, value_name.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Core.AnalyticsPrevalence.Registry.value | Boolean | Whether the registry is prevalent or not. | 
-| Core.AnalyticsPrevalence.Registry.data.global_prevalence | Unknown | The global prevalence of the registry. | 
-| Core.AnalyticsPrevalence.Registry.data.local_prevalence | Unknown | The local prevalence of the registry. | 
+| Core.AnalyticsPrevalence.Registry.data.global_prevalence.value | Number | The global prevalence of the registry. | 
+| Core.AnalyticsPrevalence.Registry.data.local_prevalence.value | Number | The local prevalence of the registry. | 
+| Core.AnalyticsPrevalence.Registry.data.prevalence.value | Number | The prevalence of the registry. | 
 
 ### core-get-cmd-analytics-prevalence
 ***
@@ -2205,5 +2210,6 @@ Get the prevalence of a process_command_line, identified by process_command_line
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Core.AnalyticsPrevalence.Cmd.value | Boolean | Whether the CMD is prevalent or not. | 
-| Core.AnalyticsPrevalence.Cmd.data.global_prevalence | Unknown | The global prevalence of the CMD. | 
-| Core.AnalyticsPrevalence.Cmd.data.local_prevalence | Unknown | The local prevalence of the CDM. | 
+| Core.AnalyticsPrevalence.Cmd.data.global_prevalence.value | Number | The global prevalence of the CMD. | 
+| Core.AnalyticsPrevalence.Cmd.data.local_prevalence.value | Number | The local prevalence of the CDM. | 
+| Core.AnalyticsPrevalence.Cmd.data.prevalence.value | Number | The prevalence of the Cmd. | 

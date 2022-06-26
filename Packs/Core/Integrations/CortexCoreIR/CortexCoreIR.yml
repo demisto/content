@@ -3129,13 +3129,13 @@ script:
       - contextPath: Core.AnalyticsPrevalence.Ip.value
         description: Whether the IP address is prevalent or not.
         type: Boolean
-      - contextPath: Core.AnalyticsPrevalence.IP.data.global_prevalence.value
+      - contextPath: Core.AnalyticsPrevalence.Ip.data.global_prevalence.value
         description: The global prevalence of the IP.
         type: Number
-      - contextPath: Core.AnalyticsPrevalence.IP.data.local_prevalence.value
+      - contextPath: Core.AnalyticsPrevalence.Ip.data.local_prevalence.value
         description: The local prevalence of the IP.
         type: Number
-      - contextPath: Core.AnalyticsPrevalence.IP.data.prevalence.value
+      - contextPath: Core.AnalyticsPrevalence.Ip.data.prevalence.value
         description: The prevalence of the IP.
         type: Number
   - arguments:
