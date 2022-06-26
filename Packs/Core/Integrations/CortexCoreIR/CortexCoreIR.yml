@@ -3104,19 +3104,20 @@ script:
     - contextPath: Core.AnalyticsPrevalence.Hash.value
       description: Whether the hash is prevalent or not.
       type: Boolean
-    - contextPath: Core.AnalyticsPrevalence.Hash.data.global_prevalence
+    - contextPath: Core.AnalyticsPrevalence.Hash.data.global_prevalence.value
       description: The global prevalence of the hash.
-      type: Unknown
-    - contextPath: Core.AnalyticsPrevalence.Hash.data.local_prevalence
+      type: Number
+    - contextPath: Core.AnalyticsPrevalence.Hash.data.local_prevalence.value
       description: The local prevalence of the hash.
-      type: Unknown
+      type: Number
+    - contextPath: Core.AnalyticsPrevalence.Hash.data.prevalence.value
+      description: The prevalence of the hash.
+      type: Number
   - arguments:
     - default: false
       description: The IP address.
       isArray: true
       name: ip_address
-      predefined:
-      - ''
       required: true
       secret: false
     deprecated: false
@@ -3128,12 +3129,15 @@ script:
       - contextPath: Core.AnalyticsPrevalence.Ip.value
         description: Whether the IP address is prevalent or not.
         type: Boolean
-      - contextPath: Core.AnalyticsPrevalence.Ip.data.global_prevalence
+      - contextPath: Core.AnalyticsPrevalence.IP.data.global_prevalence.value
         description: The global prevalence of the IP.
-        type: Unknown
-      - contextPath: Core.AnalyticsPrevalence.Ip.data.local_prevalence
+        type: Number
+      - contextPath: Core.AnalyticsPrevalence.IP.data.local_prevalence.value
         description: The local prevalence of the IP.
-        type: Unknown
+        type: Number
+      - contextPath: Core.AnalyticsPrevalence.IP.data.prevalence.value
+        description: The prevalence of the IP.
+        type: Number
   - arguments:
     - default: false
       description: The domain name.
@@ -3150,12 +3154,15 @@ script:
       - contextPath: Core.AnalyticsPrevalence.Domain.value
         description: Whether the domain is prevalent or not.
         type: Boolean
-      - contextPath: Core.AnalyticsPrevalence.Domain.data.global_prevalence
+      - contextPath: Core.AnalyticsPrevalence.Domain.data.global_prevalence.value
         description: The global prevalence of the domain.
-        type: Unknown
-      - contextPath: Core.AnalyticsPrevalence.Domain.data.local_prevalence
+        type: Number
+      - contextPath: Core.AnalyticsPrevalence.Domain.data.local_prevalence.value
         description: The local prevalence of the domain.
-        type: Unknown
+        type: Number
+      - contextPath: Core.AnalyticsPrevalence.Domain.data.prevalence.value
+        description: The prevalence of the domain.
+        type: Number
   - arguments:
     - default: false
       description: The process name.
@@ -3172,12 +3179,15 @@ script:
       - contextPath: Core.AnalyticsPrevalence.Process.value
         description: Whether the process is prevalent or not.
         type: Boolean
-      - contextPath: Core.AnalyticsPrevalence.Process.data.global_prevalence
+      - contextPath: Core.AnalyticsPrevalence.Process.data.global_prevalence.value
         description: The global prevalence of the process.
-        type: Unknown
-      - contextPath: Core.AnalyticsPrevalence.Process.data.local_prevalence
+        type: Number
+      - contextPath: Core.AnalyticsPrevalence.Process.data.local_prevalence.value
         description: The local prevalence of the process.
-        type: Unknown
+        type: Number
+      - contextPath: Core.AnalyticsPrevalence.Process.data.prevalence.value
+        description: The prevalence of the process.
+        type: Number
   - arguments:
     - default: false
       description: The key name of a registry path.
@@ -3200,12 +3210,15 @@ script:
       - contextPath: Core.AnalyticsPrevalence.Registry.value
         description: Whether the registry is prevalent or not.
         type: Boolean
-      - contextPath: Core.AnalyticsPrevalence.Registry.data.global_prevalence
+      - contextPath: Core.AnalyticsPrevalence.Registry.data.global_prevalence.value
         description: The global prevalence of the registry.
-        type: Unknown
-      - contextPath: Core.AnalyticsPrevalence.Registry.data.local_prevalence
+        type: Number
+      - contextPath: Core.AnalyticsPrevalence.Registry.data.local_prevalence.value
         description: The local prevalence of the registry.
-        type: Unknown
+        type: Number
+      - contextPath: Core.AnalyticsPrevalence.Registry.data.prevalence.value
+        description: The prevalence of the registry.
+        type: Number
   - arguments:
     - default: false
       description: The process command line.
@@ -3222,12 +3235,15 @@ script:
       - contextPath: Core.AnalyticsPrevalence.Cmd.value
         description: Whether the CMD is prevalent or not.
         type: Boolean
-      - contextPath: Core.AnalyticsPrevalence.Cmd.data.global_prevalence
+      - contextPath: Core.AnalyticsPrevalence.Cmd.data.global_prevalence.value
         description: The global prevalence of the CMD.
-        type: Unknown
-      - contextPath: Core.AnalyticsPrevalence.Cmd.data.local_prevalence
+        type: Number
+      - contextPath: Core.AnalyticsPrevalence.Cmd.data.local_prevalence.value
         description: The local prevalence of the CDM.
-        type: Unknown
+        type: Number
+      - contextPath: Core.AnalyticsPrevalence.Cmd.data.prevalence.value
+        description: The prevalence of the Cmd.
+        type: Number
   feed: false
   isfetch: false
   longRunning: false
