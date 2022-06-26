@@ -662,10 +662,136 @@
                 "Users": {
                     "simple": "behaviors.user_name"
                 },
-                "severity": {
-                    "simple": "fine_score"
-                }
-            }
+				"name": {
+					"complex": {
+						"filters": [],
+						"root": "incident_type",
+						"transformers": [
+							{
+								"args": {
+									"item": {
+										"isContext": true,
+										"value": {
+											"simple": "incident_id"
+										}
+									}
+								},
+								"operator": "append"
+							},
+							{
+								"args": {
+									"item": {
+										"isContext": true,
+										"value": {
+											"simple": "detection_id"
+										}
+									}
+								},
+								"operator": "append"
+							},
+							{
+								"args": {
+									"item": {
+										"isContext": true,
+										"value": {
+											"simple": "device.hostname"
+										}
+									}
+								},
+								"operator": "append"
+							},
+							{
+								"args": {
+									"item": {
+										"isContext": true,
+										"value": {
+											"simple": "hosts.hostname"
+										}
+									}
+								},
+								"operator": "append"
+							},
+							{
+								"args": {
+									"item": {
+										"value": {
+											"simple": "Detected Techniques"
+										}
+									}
+								},
+								"operator": "append"
+							},
+							{
+								"args": {
+									"item": {
+										"isContext": true,
+										"value": {
+											"simple": "techniques"
+										}
+									}
+								},
+								"operator": "append"
+							},
+							{
+								"args": {
+									"item": {
+										"isContext": true,
+										"value": {
+											"simple": "behaviors.technique"
+										}
+									}
+								},
+								"operator": "append"
+							},
+							{
+								"args": {
+									"separator": {
+										"value": {
+											"simple": " - "
+										}
+									}
+								},
+								"operator": "join"
+							}
+						]
+					}
+				},
+				"severity": {
+					"complex": {
+						"filters": [],
+						"root": "fine_score",
+						"transformers": [
+							{
+								"args": {
+									"item": {
+										"isContext": true,
+										"value": {
+											"simple": "max_severity"
+										}
+									}
+								},
+								"operator": "append"
+							},
+							{
+								"args": {
+									"map_from": {
+										"value": {
+											"simple": "0-20,21-40,41-60,61-80,81-100"
+										}
+									},
+									"map_to": {
+										"value": {
+											"simple": "Informational,Low,Medium,High,Critical"
+										}
+									},
+									"sep": {}
+								},
+								"operator": "MapRangeValues"
+							}
+						]
+					}
+				}
+			}
         }
     },
     "name": "CrowdStrike Falcon Mapper",
