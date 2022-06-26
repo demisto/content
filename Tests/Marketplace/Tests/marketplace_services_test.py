@@ -1029,11 +1029,14 @@ This is visible
         version_display_name = "1.2.3"
         build_number = "5555"
         modified_data = {
-            "Integrations": [{'id':
+            "Integrations": [
                 {
-                    "file_path": "some/path",
-                    "display_name": "Integration 2 Display Name"
-                }}
+                    'id':
+                        {
+                            "file_path": "some/path",
+                            "display_name": "Integration 2 Display Name"
+                        }
+                }
             ]
         }
         dummy_pack._is_modified = True
@@ -1063,11 +1066,14 @@ This is visible
         version_display_name = "1.2.3"
         build_number = "5555"
         modified_data = {
-            "Integrations": [{'id':
+            "Integrations": [
                 {
-                    "file_path": "some/path",
-                    "display_name": "Other Integration Display Name"
-                }}
+                    'id':
+                        {
+                            "file_path": "some/path",
+                            "display_name": "Other Integration Display Name"
+                        }
+                }
             ]
         }
         dummy_pack._is_modified = True
@@ -1213,20 +1219,31 @@ This is visible
         version_display_name = "1.2.3"
         build_number = "5555"
         modified_data = {
-            "Integrations": [ {'id':
+            "Integrations": [
                 {
-                    "file_path": "some/path",
-                    "display_name": "Integration Display Name"
-                }}
+                    'id':
+                        {
+                            "file_path": "some/path",
+                            "display_name": "Integration Display Name"
+                        }
+                }
             ],
-            "Scripts": [{'id':
+            "Scripts": [
                 {
-                    "file_path": "some/path",
-                    "display_name": "Script Name"
-                }}
+                    'id':
+                        {
+                            "file_path": "some/path",
+                            "display_name": "Script Name"
+                        }
+                }
             ],
-            "IncidentFields": [{'id':
-                {"display_name": "Field Name 1"}}
+            "IncidentFields": [
+                {
+                    'id':
+                        {
+                            "display_name": "Field Name 1"
+                        }
+                }
             ]
         }
         dummy_pack._marketplaces = [upload_marketplace]
@@ -3035,7 +3052,7 @@ class TestCheckChangesRelevanceForMarketplace:
                                 "file_path": "Packs/pack_name/Classifiers/file"
                             }
                     }
-            ]
+                ]
         }
 
         status, modified_files_data = dummy_pack.filter_modified_files_by_id_set(id_set_copy)
