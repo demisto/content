@@ -48,6 +48,7 @@ This integration was integrated and tested with version 8.1.0 and 9.0.1 of Palo 
    * [pan-os-query-logs](#pan-os-query-logs)
    * [pan-os-check-logs-status](#pan-os-check-logs-status)
    * [pan-os-get-logs](#pan-os-get-logs)
+* The target argument works only on operational type commands. (not commit, logs, etc)
 
 ## Configure Panorama on Cortex XSOAR
 
@@ -3428,8 +3429,8 @@ Checks the download status of a content update.
 `pan-os-content-update-download-status`
 #### Input
 
-| **Argument Name** | **Description**                                                                              | **Required** |
-| --- |----------------------------------------------------------------------------------------------| --- |
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
 | target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
 | job_id | Job ID to check.                                                                             | Required | 
 
