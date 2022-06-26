@@ -28,7 +28,9 @@ trigger-private-build:
   - echo "Creating Release Notes and Content Descriptor"
   - python3 Utils/release_notes_generator.py $CONTENT_VERSION $GIT_SHA1 $CI_BUILD_ID --output $ARTIFACTS_FOLDER/packs-release-notes.md --github-token $GITHUB_TOKEN
   - cp content-descriptor.json $ARTIFACTS_FOLDER
-  - ./Documentation/commonServerDocs.sh
+  - python ./Documentation/extract_common_server_js.py $ARTIFACTS_FOLDER/env_results.json
+  - jsdoc2md --json ./Documentation/commonServerJsDoc.js > ./Documentation/commonServerJsDoc.json
+  - python3 ./Documentation/common_server_docs.py
   - section_end "Create Release Notes and Common Server Documentation"
 
 # runs in circle for the on-push flow (because we need to run it there for contributors anyways)
