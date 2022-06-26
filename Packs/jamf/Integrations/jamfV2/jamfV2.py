@@ -30,7 +30,7 @@ INTEGRATION_NAME = 'JAMF v2'
 
 class Client(BaseClient):
     def __init__(self, base_url: str, verify: bool, username: str = "", password: str = "", proxy: bool = False):
-        super().__init__(base_url=base_url, auth=(username, password), verify=verify, proxy=proxy, ok_codes=[200])
+        super().__init__(base_url=base_url, auth=(username, password), verify=verify, proxy=proxy, ok_codes=[200, 201, 202])
 
         """ due to deprecating the basic auth option from the classical API versions 10.35 and up
             the client will try to generate an auth token first, if it failed to do generate the token,
