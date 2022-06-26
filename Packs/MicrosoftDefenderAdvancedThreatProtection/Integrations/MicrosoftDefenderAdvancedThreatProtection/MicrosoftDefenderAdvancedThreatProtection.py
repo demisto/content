@@ -10,6 +10,8 @@ from requests import Response
 # Disable insecure warnings
 urllib3.disable_warnings()
 
+# SOME CHANGE
+
 ''' GLOBAL VARS '''
 APP_NAME = 'ms-defender-atp'
 TIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
