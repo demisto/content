@@ -429,7 +429,13 @@ script:
     - contextPath: TC.Indicator.WebLink
       description: The web link of the indicator.
       type: string
-  - arguments: []
+  - arguments:
+    - description: The page to take the results from.
+      name: page
+    - description: The maximum number of results that can be returned. The default is 500.
+      name: limit
+    - description: The name of the tag to get.
+      name: name
     description: Returns a list of all ThreatConnect tags.
     name: tc-get-tags
     outputs:
@@ -449,14 +455,14 @@ script:
     name: tc-tag-indicator
   - arguments:
     - default: true
-      description: The name of the indicator by which to search. The command retrieves
-        information from all owners. Can be an IP address, a URL, or a file hash.
-      name: indicator
+      description: The id of the indicator by which to search.
+      name: id
       required: true
     - description: Only for custom. Leave empty for standard ones
       name: indicator_type
     - description: Indicator Owner(s)
       name: owners
+      required: true
     - description: A list of results filtered by indicators whose threat rating is
         greater than the specified value. Can be "0" - "Unknown", "1" - "Suspicious",
         "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical".
@@ -473,7 +479,6 @@ script:
       predefined:
       - 'true'
       - 'false'
-      required: true
     - auto: PREDEFINED
       defaultValue: 'false'
       description: Retrieve Indicator Associations
@@ -629,6 +634,10 @@ script:
       required: true
     - description: A list of indicators filtered by the owner.
       name: owner
+    - description: The page to take the results from.
+      name: page
+    - description: The maximum number of results that can be returned. The default is 500.
+      name: limit
     description: Fetches all indicators that have a tag.
     name: tc-get-indicators-by-tag
     outputs:
@@ -880,11 +889,9 @@ script:
   - arguments:
     - default: true
       description: The fetched incidents filtered by ID.
-      name: incidentId
+      name: id
     - description: The fetched incidents filtered by owner.
       name: owner
-    - description: The fetched incidents filtered by incident name.
-      name: incidentName
     - description: The page to take the results from.
       name: page
     - description: The maximum number of results that can be returned. The default is 500.
@@ -1094,7 +1101,7 @@ script:
   - arguments:
     - default: true
       description: The ID of the incident.
-      name: incidentId
+      name: id
       required: true
     - description: A list of indicators filtered by the owner.
       name: owner
@@ -1417,8 +1424,8 @@ script:
       description: The web link of the indicator.
       type: string
   - arguments:
-    - description: The name of the indicator to delete.
-      name: indicator
+    - description: The id of the indicator to delete.
+      name: indicatorId
       required: true
     description: Deletes an indicator from ThreatConnect.
     name: tc-delete-indicator
@@ -1457,7 +1464,7 @@ script:
       type: string
     - contextPath: TC.Campaign.ID
       description: The ID of the campaign.
-      type: string
+      type: strin
   - arguments:
     - description: The name of the event group.
       name: name
@@ -1474,12 +1481,32 @@ script:
       - False Positive
       - No Further Action
       - Escalated
-    - description: The owner of the event.
-      name: owner
     - description: The description of the event.
       name: description
-    - description: The tag of the event.
+    - description: A comma-separated list of a The tags of the event.
       name: tag
+    - auto: PREDEFINED
+      description: The type of group.
+      name: group_type
+      predefined:
+      - Adversary
+      - Attack Pattern
+      - Campaign
+      - Course of Action
+      - Document
+      - E-mail
+      - Event
+      - Incident
+      - Intrusion Set
+      - Malware
+      - Report
+      - Signature
+      - Tactic
+      - Task
+      - Threat
+      - Tool
+      - Vulnerability
+      required: true
     description: Creates a group based on the "Event" type.
     name: tc-create-event
     outputs:
@@ -1500,6 +1527,9 @@ script:
       type: string
     - contextPath: TC.Event.ID
       description: The ID of the event.
+      type: string
+    - contextPath: TC.Event.Type
+      description: The type of the event.
       type: string
   - arguments:
     - description: The name of the threat group.
@@ -1578,7 +1608,25 @@ script:
     - contextPath: TC.Group.ID
       description: The group ID to which the attribute was added.
       type: Number
-  - arguments: []
+  - arguments:
+    - description: The Date to fetrieve groups from, should be in format yyyy-mm-dd, e.g. 1111-11-11.
+      name: fromDate
+      type: string
+    - description: The tag to fetrieve groups by.
+      name: tag
+      type: string
+    - description: The page to take the results from.
+      name: page
+      type: string
+    - description: The maximum number of results that can be returned. The default is 500.
+      name: limit
+      type: string
+    - description: A comma-separated list of IDs to filter the groups by.
+      name: id
+      type: string
+    - description: A free text tql filter(reffer to the readme for a basic tql guide).
+      name: filter
+      type: string
     description: Returns a list of events.
     name: tc-get-events
     outputs:
@@ -1596,6 +1644,15 @@ script:
       type: String
     - contextPath: TC.Event.Status
       description: The status of the event.
+      type: String
+    - contextPath: TC.Event.AssociatedGroups
+      description: The associated groups for the event.
+      type: String
+    - contextPath: TC.Event.AssociatedIndicators
+      description: The associated indicators for the event.
+      type: String
+    - contextPath: TC.Event.Tags
+      description: The tags of the event.
       type: String
   - arguments:
     - auto: PREDEFINED
@@ -1639,23 +1696,62 @@ script:
       type: Number
   - arguments:
     - auto: PREDEFINED
-      description: The type of the group. Can be "adversaries", "campaigns", "documents",
-          "emails", "events", "incidents", "intrusionSets", "reports", "signatures",
-          or "threats".
+      description: The type of the group.
       name: group_type
       predefined:
-      - adversaries
-      - campaigns
-      - documents
-      - emails
-      - events
-      - incidents
-      - intrusionSets
-      - reports
-      - signatures
-      - threats
-      required: true
-    deprecated: true
+      - Adversary
+      - Attack Pattern
+      - Campaign
+      - Course of Action
+      - Document
+      - E-mail
+      - Event
+      - Incident
+      - Intrusion Set
+      - Malware
+      - Report
+      - Signature
+      - Tactic
+      - Task
+      - Threat
+      - Tool
+      - Vulnerability
+    - description: The Date to fetrieve groups from, should be in format yyyy-mm-dd, e.g. 1111-11-11.
+      name: fromDate
+      type: string
+    - description: The tag to fetrieve groups by.
+      name: tag
+      type: string
+    - description: The page to take the results from.
+      name: page
+      type: string
+    - description: The maximum number of results that can be returned. The default is 500.
+      name: limit
+      type: string
+    - description: A comma-separated list of IDs to filter the groups by.
+      name: id
+      type: string
+    - description: A free text tql filter(reffer to the readme for a basic tql guide).
+      name: filter
+      type: string
+    - description: Add group tags metadata to the results.
+      name: includeTags
+      type: bool
+    - description: Add group security labels metadata to the results.
+      name: includeSecurityLabels
+      type: bool
+    - description: Add group attributes metadata to the results.
+      name: includeAttributes
+      type: bool
+    - description: Add group associated groups metadata to the results.
+      name: includeAssociatedGroups
+      type: bool
+    - description: Add group associated indicators metadata to the results.
+      name: includeAssociatedIndicators
+      type: bool
+    - description: Add all group metadata to the results.
+      name: includeAllMetaData
+      type: bool
     description: Returns all groups, filtered by the group type.
     name: tc-list-groups
     outputs:
@@ -1919,6 +2015,7 @@ script:
         ID, run the tc-get-groups command.
       name: group_id
       required: true
+    deprecated: true
     description: Retrieves the attribute of a group.
     name: tc-get-group-attributes
     outputs:
@@ -1962,6 +2059,7 @@ script:
         get the ID, run the tc-get-groups command.
       name: group_id
       required: true
+    deprecated: true
     description: Retrieves the security labels of a group.
     name: tc-get-group-security-labels
     outputs:
@@ -1996,6 +2094,7 @@ script:
         run the tc-get-groups command.
       name: group_id
       required: true
+    deprecated: true
     description: Retrieves the tags of a group.
     name: tc-get-group-tags
     outputs:
@@ -2061,6 +2160,7 @@ script:
         the ID, run the tc-get-groups command.
       name: group_id
       required: true
+    deprecated: true
     description: Returns indicators associated with a group.
     name: tc-get-group-indicators
     outputs:
@@ -2093,27 +2193,31 @@ script:
       type: Date
   - arguments:
     - auto: PREDEFINED
-      description: The type of group. Can be "adversaries", "campaigns", "documents",
-        "emails", "events", "incidents", "intrusionSets", "reports", "signatures",
-        or "threats".
+      description: The type of group.
       name: group_type
       predefined:
       - Adversary
+      - Attack Pattern
       - Campaign
+      - Course of Action
       - Document
-      - Email
+      - E-mail
       - Event
       - Incident
-      - IntrusionSet
+      - Intrusion Set
+      - Malware
       - Report
       - Signature
+      - Tactic
+      - Task
       - Threat
-      - Malware
+      - Tool
+      - Vulnerability
       required: true
-    - description: The ID of the group. To get the ID, run the tc-get-groups command.
-      name: group_id
+    - description: The ID of the group. To get the ID, run the tc-list-groups command.
+      name: id
       required: true
-    description: Returns indicators associated with a specified group.
+    description: Returns groups associated with a specified group.
     name: tc-get-associated-groups
     outputs:
     - contextPath: TC.Group.AssociatedGroup.DateAdded
