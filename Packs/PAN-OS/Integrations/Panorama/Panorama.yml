@@ -3590,7 +3590,7 @@ script:
       type: string
   - arguments:
     - auto: PREDEFINED
-      description: Action to be taken.
+      description: Action to be taken, such as show, get, set, edit, delete, rename, clone, move, override, multi-move, multi-clone, or complete.
         Documentation - https://docs.paloaltonetworks.com/pan-os/9-1/pan-os-panorama-api/pan-os-xml-api-request-types/configuration-api.
       name: action
       predefined:
