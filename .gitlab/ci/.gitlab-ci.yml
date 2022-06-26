@@ -20,7 +20,7 @@ variables:
   GCS_MARKET_BUCKET: "marketplace-dist"
   GCS_MARKET_V2_BUCKET: "marketplace-v2-dist"
   STORAGE_BASE_PATH: ""
-  SLACK_CHANNEL: "dmst-content-team"
+  SLACK_CHANNEL: "dmst-build"
   DEMISTO_README_VALIDATION: "true"
   ARTIFACTS_FOLDER: "/builds/xsoar/content/artifacts"
   ARTIFACTS_FOLDER_XSOAR: "/builds/xsoar/content/artifacts/xsoar"

@@ -1826,7 +1826,7 @@ class Pack(object):
 
         # Filters out for XSOAR tags
         release_notes = remove_tags_section_from_rn(release_notes, XSOAR_MP, upload_marketplace)
-        logging.info(f"RN result after filteing for pack {self._pack_name} in marketplace {upload_marketplace}\n"
+        logging.info(f"RN result after filtering for pack {self._pack_name} in marketplace {upload_marketplace}\n"
                      f"- {release_notes}")
 
         return release_notes

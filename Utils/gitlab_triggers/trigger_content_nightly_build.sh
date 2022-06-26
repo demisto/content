@@ -3,7 +3,7 @@
 
 # For this script to work you will need to use a trigger token (see here for more about that: https://code.pan.run/help/ci/triggers/README#trigger-token)  # disable-secrets-detection
 
-# This script requires the gitlab-ci trigger token. The branch to run against is an optional second parameter (the default is the current branch). The slack channel to send messages to is an optional third parameter (the default is the 'dmst-content-team')
+# This script requires the gitlab-ci trigger token. The branch to run against is an optional second parameter (the default is the current branch). The slack channel to send messages to is an optional third parameter (the default is the 'dmst-build')
 
 # Ways to run this script are:
 # 1. Utils/gitlab_triggers/trigger_content_nightly_build.sh -ct <trigger-token> -b <branch-name> -ch <slack-channel-name>
@@ -14,14 +14,14 @@ if [ "$#" -lt "1" ]; then
 
   -ct, --ci-token             The ci gitlab trigger token.
   [-b, --branch]              The branch name. Default is the current branch.
-  [-ch, --slack-channel]      A slack channel to send notifications to. Default is dmst-content-team.
+  [-ch, --slack-channel]      A slack channel to send notifications to. Default is dmst-build.
   "
   echo "Get the trigger token from here https://vault.paloaltonetworks.local/home#R2VuZXJpY1NlY3JldERldGFpbHM6RGF0YVZhdWx0OmIyMzJiNDU0LWEzOWMtNGY5YS1hMTY1LTQ4YjRlYzM1OTUxMzpSZWNvcmRJbmRleDowOklzVHJ1bmNhdGVk" # disable-secrets-detection
   exit 1
 fi
 
 _branch="$(git branch  --show-current)"
-_slack_channel="dmst-content-team"
+_slack_channel="dmst-build"
 
 # Parsing the user inputs.
 
