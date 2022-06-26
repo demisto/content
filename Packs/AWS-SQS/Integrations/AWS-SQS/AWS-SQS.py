@@ -155,11 +155,12 @@ def parse_incident_from_finding(message, parse_body_as_json=False):
 def fetch_incidents(aws_client, aws_queue_url, max_fetch, parse_body_as_json):
     try:
         client = aws_client.aws_session(service='sqs')
+        last_run = demisto.getLastRun().get('lastRun')
         incidents_created = 0  # type: int
         max_number_of_messages = min(max_fetch, 10)
+        receipt_handles = []  # type: list
+        incidents = []  # type: list
         while incidents_created < max_fetch:
-            receipt_handles = []  # type: list
-            incidents = []  # type: list
             messages = client.receive_message(
                 QueueUrl=aws_queue_url,
                 MaxNumberOfMessages=max_number_of_messages,
@@ -177,14 +178,18 @@ def fetch_incidents(aws_client, aws_queue_url, max_fetch, parse_body_as_json):
 
             for message in messages["Messages"]:
                 receipt_handles.append(message['ReceiptHandle'])
+                # Checking to avoid duplicates
+                if last_run and message['ReceiptHandle'] in last_run:
+                    continue
                 incidents.append(parse_incident_from_finding(message, parse_body_as_json))
                 incidents_created += 1
                 if incidents_created == max_fetch:
                     break
 
-            demisto.incidents(incidents)
-            for receipt_handle in receipt_handles:
-                client.delete_message(QueueUrl=aws_queue_url, ReceiptHandle=receipt_handle)
+        demisto.setLastRun({"lastRun": receipt_handles})
+        demisto.incidents(incidents)
+        for receipt_handle in receipt_handles:
+            client.delete_message(QueueUrl=aws_queue_url, ReceiptHandle=receipt_handle)
 
     except Exception as e:
         return raise_error(e)
@@ -214,7 +219,7 @@ def main():
     timeout = params.get('timeout')
     retries = params.get('retries') or 5
     aws_queue_url = params.get('queueUrl')
-    max_fetch = min(params.get('max_fetch', 10), 100)
+    max_fetch = min(arg_to_number(params.get('max_fetch', 10)), 100)
     parse_body_as_json = params.get('parse_body_as_json', False)
 
     commands = {
