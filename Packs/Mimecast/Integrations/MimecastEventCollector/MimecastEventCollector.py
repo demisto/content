@@ -100,7 +100,7 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
     def run(self):
         """
         Always takes SIEM_LOG_LIMIT amount of events.
-        If the limit is reached the extra events will be saved in the self.events_from_prev_run.
+        If the limit is reached, the extra events will be saved in the self.events_from_prev_run.
         Returns:
              - stored (list): A list of this run siem events.
         """
