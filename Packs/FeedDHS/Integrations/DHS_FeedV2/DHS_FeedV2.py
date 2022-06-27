@@ -151,8 +151,8 @@ def get_indicators_command(client: Taxii2FeedClient, limit: int = 20, added_afte
 
     # return get_indicators_results(indicators) # todo check if done in load_stix_objects_from_envelope
     return CommandResults(
-        readable_output=f"Found {len(indicators)} results:\n" +
-                        tableToMarkdown(name='DHS indicators', t=indicators, removeNull=True),
+        readable_output=f"Found {len(indicators)} results:\n" + tableToMarkdown(name='DHS indicators',
+                                                                                t=indicators, removeNull=True),
         outputs_prefix='DHS',
         outputs=indicators,
         raw_response=indicators

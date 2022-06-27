@@ -3,9 +3,6 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 from typing import Any, Tuple
 
-from Packs.ApiModules.Scripts.TAXII2ApiModule.TAXII2ApiModule import *
-from TAXII2ApiModule import *  # noqa: E402
-
 """ CONSTANT VARIABLES """
 
 
@@ -292,6 +289,8 @@ def main():
             )
         return_error(err_msg)
 
+
+from TAXII2ApiModule import *  # noqa: E402
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
