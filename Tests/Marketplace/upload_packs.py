@@ -1069,7 +1069,6 @@ def main():
 
     # taking care of private packs
     if marketplace == 'xsoar':
-        # taking care of private packs
         is_private_content_updated, private_packs, updated_private_packs_ids = handle_private_content(
             index_folder_path, private_bucket_name, extract_destination_path, storage_client, pack_names, storage_base_path
         )
