@@ -1,192 +1,119 @@
-contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
-description: This playbook uses the Microsoft Defender For Endpoint Advanced Hunting feature to hunt for host persistence evidence.
 id: MDE - Host Advanced Hunting For Persistence
-inputs:
-- description: A comma-separated list of file SHA256 hashes to hunt.
-  key: FileSha256
-  playbookInputQuery:
-  required: false
-  value:
-    complex:
-      accessor: filesha256
-      root: incident
-      transformers:
-      - operator: uniq
-- description: A comma-separated list of file SHA1 hashes to hunt.
-  key: FileSha1
-  playbookInputQuery:
-  required: false
-  value:
-    complex:
-      accessor: filesha1
-      root: incident
-      transformers:
-      - operator: uniq
-- description: A comma-separated list of file MD5 hashes to hunt.
-  key: FileMd5
-  playbookInputQuery:
-  required: false
-  value:
-    complex:
-      accessor: filemd5
-      root: incident
-      transformers:
-      - operator: uniq
-- description: A comma-separated list of IPs to hunt.
-  key: IP
-  playbookInputQuery:
-  required: false
-  value:
-    complex:
-      accessor: detectedips
-      root: incident
-      transformers:
-      - operator: uniq
-- description: A comma-separated list of host names to hunt.
-  key: DeviceName
-  playbookInputQuery:
-  required: false
-  value:
-    complex:
-      accessor: hostnames
-      root: incident
-      transformers:
-      - operator: uniq
-- description: A comma-separated list of file names to hunt.
-  key: FileName
-  playbookInputQuery:
-  required: false
-  value:
-    complex:
-      accessor: filenames
-      root: incident
-      transformers:
-      - operator: uniq
-- description: A comma-separated list of a device IDs to hunt.
-  key: DeviceID
-  playbookInputQuery:
-  required: false
-  value:
-    complex:
-      accessor: agentsid
-      root: incident
-      transformers:
-      - operator: uniq
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: MDE - Host Advanced Hunting For Persistence
-outputs: []
+description: This playbook uses the Microsoft Defender For Endpoint Advanced Hunting feature to hunt for host persistence evidence.
 starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
+    taskid: 24940e01-e9da-47ee-822a-5cd70d3072d3
+    type: start
+    task:
+      id: 24940e01-e9da-47ee-822a-5cd70d3072d3
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
       - '9'
       - '1'
       - '2'
       - '7'
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      id: 24940e01-e9da-47ee-822a-5cd70d3072d3
-      iscommand: false
-      name: ''
-      version: -1
-      description: ''
-    taskid: 24940e01-e9da-47ee-822a-5cd70d3072d3
-    timertriggers: []
-    type: start
     view: |-
       {
         "position": {
-          "x": -150,
-          "y": 410
+          "x": 837.5,
+          "y": 50
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '1':
     id: '1'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
+    taskid: d24e08b0-bd1d-4306-82e4-db6d1df8c714
+    type: title
+    task:
+      id: d24e08b0-bd1d-4306-82e4-db6d1df8c714
+      version: -1
+      name: Scheduled Tasks
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
       - '3'
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      id: d24e08b0-bd1d-4306-82e4-db6d1df8c714
-      iscommand: false
-      name: Scheduled Tasks
-      type: title
-      version: -1
-      description: ''
-    taskid: d24e08b0-bd1d-4306-82e4-db6d1df8c714
-    timertriggers: []
-    type: title
     view: |-
       {
         "position": {
-          "x": -1250,
-          "y": 560
+          "x": 500,
+          "y": 195
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '2':
     id: '2'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - '11'
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
+    taskid: 83a60811-47a6-4387-894a-4563b6f0c1a4
+    type: title
     task:
-      brand: ''
       id: 83a60811-47a6-4387-894a-4563b6f0c1a4
-      iscommand: false
+      version: -1
       name: Registry modification
       type: title
-      version: -1
+      iscommand: false
+      brand: ''
       description: ''
-    taskid: 83a60811-47a6-4387-894a-4563b6f0c1a4
-    timertriggers: []
-    type: title
+    nexttasks:
+      '#none#':
+      - '35'
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": -370,
-          "y": 560
+          "x": 1165,
+          "y": 195
         }
       }
-  '3':
-    evidencedata:
-      customfields: {}
-      description:
-        simple: Checking if there were any created scheduled tasks on the investigated device - Microsoft Defender For Endpoint
-      tags:
-        simple: Created Scheduled Tasks
-    id: '3'
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  '3':
+    id: '3'
+    taskid: e3374fdd-88b7-402c-8be2-73812e2b0178
+    type: regular
+    task:
+      id: e3374fdd-88b7-402c-8be2-73812e2b0178
+      version: -1
+      name: Is the file created any Scheduled Tasks?
+      description: Is there evidence of persistence? By selecting a “query_purpose” argument, a designated query template will be used.
+      script: '|||microsoft-atp-advanced-hunting-persistence-evidence'
+      type: regular
+      iscommand: true
+      brand: ''
     nexttasks:
       '#none#':
       - '32'
-    note: false
-    quietmode: 0
     scriptarguments:
       device_id:
         simple: ${inputs.DeviceID}
@@ -197,42 +124,42 @@ tasks:
       sha256:
         simple: ${inputs.FileSha256}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: Is there evidence of persistence? By selecting a “query_purpose” argument, a designated query template will be used.
-      id: e3374fdd-88b7-402c-8be2-73812e2b0178
-      iscommand: true
-      name: Is the file created any Scheduled Tasks?
-      script: '|||microsoft-atp-advanced-hunting-persistence-evidence'
-      type: regular
-      version: -1
-    taskid: e3374fdd-88b7-402c-8be2-73812e2b0178
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
-          "x": -1250,
-          "y": 705
+          "x": 500,
+          "y": 340
         }
       }
-  '4':
+    note: false
     evidencedata:
-      customfields: {}
       description:
-        simple: Results on Startup User Creation query in Advanced Hunting feature - Microsoft Defender For Endpoint
+        simple: Checking if there were any created scheduled tasks on the investigated device - Microsoft Defender For Endpoint
       tags:
-        simple: User Creation
-    id: '4'
+        simple: Created Scheduled Tasks
+      customfields: {}
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  '4':
+    id: '4'
+    taskid: bcc66ee2-d143-45af-8926-1d49b3de1ec7
+    type: regular
+    task:
+      id: bcc66ee2-d143-45af-8926-1d49b3de1ec7
+      version: -1
+      name: A new user was created on the system?
+      description: Is there evidence of persistence? By selecting a “query_purpose” argument, a designated query template will be used.
+      script: '|||microsoft-atp-advanced-hunting-persistence-evidence'
+      type: regular
+      iscommand: true
+      brand: ''
     nexttasks:
       '#none#':
       - '23'
-    note: false
-    quietmode: 0
     scriptarguments:
       device_id:
         simple: ${inputs.DeviceID}
@@ -241,42 +168,42 @@ tasks:
       query_purpose:
         simple: new_user
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: Is there evidence of persistence? By selecting a “query_purpose” argument, a designated query template will be used.
-      id: bcc66ee2-d143-45af-8926-1d49b3de1ec7
-      iscommand: true
-      name: A new user was created on the system?
-      script: '|||microsoft-atp-advanced-hunting-persistence-evidence'
-      type: regular
-      version: -1
-    taskid: bcc66ee2-d143-45af-8926-1d49b3de1ec7
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
-          "x": 510,
-          "y": 705
+          "x": 2617.5,
+          "y": 340
         }
       }
-  '5':
+    note: false
     evidencedata:
-      customfields: {}
       description:
-        simple: Results on User's Group Modification query in Advanced Hunting feature - Microsoft Defender For Endpoint
+        simple: Results on Startup User Creation query in Advanced Hunting feature - Microsoft Defender For Endpoint
       tags:
-        simple: User's Group Modification
-    id: '5'
+        simple: User Creation
+      customfields: {}
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  '5':
+    id: '5'
+    taskid: 47877086-f011-47bb-89c9-b383dd13552b
+    type: regular
+    task:
+      id: 47877086-f011-47bb-89c9-b383dd13552b
+      version: -1
+      name: Object (User or Group) Was Added To A Group?
+      description: Is there evidence of persistence? By selecting a “query_purpose” argument, a designated query template will be used.
+      script: '|||microsoft-atp-advanced-hunting-persistence-evidence'
+      type: regular
+      iscommand: true
+      brand: ''
     nexttasks:
       '#none#':
       - '12'
-    note: false
-    quietmode: 0
     scriptarguments:
       device_id:
         simple: ${inputs.DeviceID}
@@ -285,42 +212,42 @@ tasks:
       query_purpose:
         simple: group_user_change
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: Is there evidence of persistence? By selecting a “query_purpose” argument, a designated query template will be used.
-      id: 47877086-f011-47bb-89c9-b383dd13552b
-      iscommand: true
-      name: Object (User or Group) Was Added To A Group?
-      script: '|||microsoft-atp-advanced-hunting-persistence-evidence'
-      type: regular
-      version: -1
-    taskid: 47877086-f011-47bb-89c9-b383dd13552b
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
-          "x": 80,
-          "y": 705
+          "x": 1717.5,
+          "y": 340
         }
       }
-  '6':
+    note: false
     evidencedata:
-      customfields: {}
       description:
-        simple: Results on Local Group Creation query in Advanced Hunting feature - Microsoft Defender For Endpoint
+        simple: Results on User's Group Modification query in Advanced Hunting feature - Microsoft Defender For Endpoint
       tags:
-        simple: Local Group Creation
-    id: '6'
+        simple: User's Group Modification
+      customfields: {}
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
+    taskid: 480d3d03-048b-4d46-8981-f11ded805547
+    type: regular
+    task:
+      id: 480d3d03-048b-4d46-8981-f11ded805547
+      version: -1
+      name: Local Group Was Created?
+      description: Is there evidence of persistence? By selecting a “query_purpose” argument, a designated query template will be used.
+      script: '|||microsoft-atp-advanced-hunting-persistence-evidence'
+      type: regular
+      iscommand: true
+      brand: ''
     nexttasks:
       '#none#':
       - '20'
-    note: false
-    quietmode: 0
     scriptarguments:
       device_id:
         simple: ${inputs.DeviceID}
@@ -329,104 +256,104 @@ tasks:
       query_purpose:
         simple: new_group
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: Is there evidence of persistence? By selecting a “query_purpose” argument, a designated query template will be used.
-      id: 480d3d03-048b-4d46-8981-f11ded805547
-      iscommand: true
-      name: Local Group Was Created?
-      script: '|||microsoft-atp-advanced-hunting-persistence-evidence'
-      type: regular
-      version: -1
-    taskid: 480d3d03-048b-4d46-8981-f11ded805547
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
-          "x": 940,
-          "y": 705
+          "x": 2167.5,
+          "y": 340
         }
       }
+    note: false
+    evidencedata:
+      description:
+        simple: Results on Local Group Creation query in Advanced Hunting feature - Microsoft Defender For Endpoint
+      tags:
+        simple: Local Group Creation
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '7':
     id: '7'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
+    taskid: a41e366f-9ae5-46cb-89ae-c76c8ed01786
+    type: title
+    task:
+      id: a41e366f-9ae5-46cb-89ae-c76c8ed01786
+      version: -1
+      name: New/Exisiting Users
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
       - '5'
       - '6'
       - '4'
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      id: a41e366f-9ae5-46cb-89ae-c76c8ed01786
-      iscommand: false
-      name: New/Exisiting Users
-      type: title
-      version: -1
-      description: ''
-    taskid: a41e366f-9ae5-46cb-89ae-c76c8ed01786
-    timertriggers: []
-    type: title
     view: |-
       {
         "position": {
-          "x": 510,
-          "y": 560
+          "x": 2167.5,
+          "y": 195
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '9':
     id: '9'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
+    taskid: 864d7d3c-6440-4865-8796-b000321b3be2
+    type: title
+    task:
+      id: 864d7d3c-6440-4865-8796-b000321b3be2
+      version: -1
+      name: Startup Folder
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
       - '10'
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      id: 864d7d3c-6440-4865-8796-b000321b3be2
-      iscommand: false
-      name: Startup Folder
-      type: title
-      version: -1
-      description: ''
-    taskid: 864d7d3c-6440-4865-8796-b000321b3be2
-    timertriggers: []
-    type: title
     view: |-
       {
         "position": {
-          "x": -810,
-          "y": 560
+          "x": 50,
+          "y": 195
         }
       }
-  '10':
-    evidencedata:
-      customfields: {}
-      description:
-        simple: Results on Startup Folder Modification query in Advanced Hunting feature - Microsoft Defender For Endpoint
-      tags:
-        simple: Startup Folder Modification
-    id: '10'
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  '10':
+    id: '10'
+    taskid: 316e0b7f-9a15-41c6-8da9-e4ba6f269a9b
+    type: regular
+    task:
+      id: 316e0b7f-9a15-41c6-8da9-e4ba6f269a9b
+      version: -1
+      name: Startup Folder Modification
+      description: Is there evidence of persistence? By selecting a “query_purpose” argument, a designated query template will be used.
+      script: '|||microsoft-atp-advanced-hunting-persistence-evidence'
+      type: regular
+      iscommand: true
+      brand: ''
     nexttasks:
       '#none#':
       - '29'
-    note: false
-    quietmode: 0
     scriptarguments:
       device_id:
         simple: ${inputs.DeviceID}
@@ -437,42 +364,42 @@ tasks:
       sha256:
         simple: ${inputs.FileSha256}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: Is there evidence of persistence? By selecting a “query_purpose” argument, a designated query template will be used.
-      id: 316e0b7f-9a15-41c6-8da9-e4ba6f269a9b
-      iscommand: true
-      name: Startup Folder Modification
-      script: '|||microsoft-atp-advanced-hunting-persistence-evidence'
-      type: regular
-      version: -1
-    taskid: 316e0b7f-9a15-41c6-8da9-e4ba6f269a9b
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
-          "x": -810,
-          "y": 705
+          "x": 50,
+          "y": 340
         }
       }
-  '11':
+    note: false
     evidencedata:
-      customfields: {}
       description:
-        simple: Checking if there any registry modifications on the investigated device - Microsoft Defender For Endpoint
+        simple: Results on Startup Folder Modification query in Advanced Hunting feature - Microsoft Defender For Endpoint
       tags:
-        simple: Registry Modification
-    id: '11'
+        simple: Startup Folder Modification
+      customfields: {}
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  '11':
+    id: '11'
+    taskid: 3df4ea06-4253-4ff6-89f6-b8dbd2c3343a
+    type: regular
+    task:
+      id: 3df4ea06-4253-4ff6-89f6-b8dbd2c3343a
+      version: -1
+      name: 'Check If Any Registry Values Were Modified '
+      description: Is there evidence of persistence? By selecting a “query_purpose” argument, a designated query template will be used.
+      script: '|||microsoft-atp-advanced-hunting-persistence-evidence'
+      type: regular
+      iscommand: true
+      brand: ''
     nexttasks:
       '#none#':
       - '26'
-    note: false
-    quietmode: 0
     scriptarguments:
       device_id:
         simple: ${inputs.DeviceID}
@@ -485,78 +412,84 @@ tasks:
       sha256:
         simple: ${inputs.FileSha256}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: Is there evidence of persistence? By selecting a “query_purpose” argument, a designated query template will be used.
-      id: 3df4ea06-4253-4ff6-89f6-b8dbd2c3343a
-      iscommand: true
-      name: 'Check If Any Registry Values Were Modified '
-      script: '|||microsoft-atp-advanced-hunting-persistence-evidence'
-      type: regular
-      version: -1
-    taskid: 3df4ea06-4253-4ff6-89f6-b8dbd2c3343a
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
-          "x": -370,
-          "y": 705
+          "x": 1052.5,
+          "y": 515
         }
       }
-  '12':
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: MicrosoftATP.HuntPersistenceEvidence.Result
-          operator: isNotEmpty
-          right:
-            value: {}
-      label: yes
-    id: '12'
+    note: false
+    evidencedata:
+      description:
+        simple: Checking if there any registry modifications on the investigated device - Microsoft Defender For Endpoint
+      tags:
+        simple: Registry Modification
+      customfields: {}
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  '12':
+    id: '12'
+    taskid: eb473d36-4c0c-455e-86a1-c574554cfefa
+    type: condition
+    task:
+      id: eb473d36-4c0c-455e-86a1-c574554cfefa
+      version: -1
+      name: Any results?
+      description: Any results?
+      type: condition
+      iscommand: false
+      brand: ''
     nexttasks:
       '#default#':
       - '18'
       yes:
       - '13'
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: Any results?
-      id: eb473d36-4c0c-455e-86a1-c574554cfefa
-      iscommand: false
-      name: Any results?
-      type: condition
-      version: -1
-    taskid: eb473d36-4c0c-455e-86a1-c574554cfefa
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftATP.HuntPersistenceEvidence.Result
+            iscontext: true
+          right:
+            value: {}
     view: |-
       {
         "position": {
-          "x": 80,
-          "y": 870
+          "x": 1717.5,
+          "y": 515
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '13':
     id: '13'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
+    taskid: d1edae94-6a1d-494c-869a-42275e68ad4a
+    type: regular
+    task:
+      id: d1edae94-6a1d-494c-869a-42275e68ad4a
+      version: -1
+      name: Add 'User's Group Modification' Tag And Set Severity to High
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - '18'
-    note: false
-    quietmode: 0
     scriptarguments:
       appendTags:
         simple: 'true'
@@ -565,105 +498,105 @@ tasks:
       tags:
         simple: User's Group Modification
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Builtin
-      description: commands.local.cmd.set.incident
-      id: d1edae94-6a1d-494c-869a-42275e68ad4a
-      iscommand: true
-      name: Add 'User's Group Modification' Tag And Set Severity to High
-      script: Builtin|||setIncident
-      type: regular
-      version: -1
-    taskid: d1edae94-6a1d-494c-869a-42275e68ad4a
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
-          "x": 290,
-          "y": 1050
+          "x": 1830,
+          "y": 690
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '18':
     id: '18'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
+    taskid: b3a3d8fc-b4a7-4454-8d71-11949c98c554
+    type: title
     task:
-      brand: ''
       id: b3a3d8fc-b4a7-4454-8d71-11949c98c554
-      iscommand: false
+      version: -1
       name: Done
       type: title
-      version: -1
+      iscommand: false
+      brand: ''
       description: ''
-    taskid: b3a3d8fc-b4a7-4454-8d71-11949c98c554
-    timertriggers: []
-    type: title
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 80,
-          "y": 1240
+          "x": 1717.5,
+          "y": 880
         }
       }
-  '20':
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: MicrosoftATP.HuntPersistenceEvidence.Result
-          operator: isNotEmpty
-          right:
-            value: {}
-      label: yes
-    id: '20'
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  '20':
+    id: '20'
+    taskid: 6b2908e3-b71b-4149-8526-3aacc02e313a
+    type: condition
+    task:
+      id: 6b2908e3-b71b-4149-8526-3aacc02e313a
+      version: -1
+      name: Any results?
+      description: Any results?
+      type: condition
+      iscommand: false
+      brand: ''
     nexttasks:
       '#default#':
       - '22'
       yes:
       - '21'
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: Any results?
-      id: 6b2908e3-b71b-4149-8526-3aacc02e313a
-      iscommand: false
-      name: Any results?
-      type: condition
-      version: -1
-    taskid: 6b2908e3-b71b-4149-8526-3aacc02e313a
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftATP.HuntPersistenceEvidence.Result
+            iscontext: true
+          right:
+            value: {}
     view: |-
       {
         "position": {
-          "x": 940,
-          "y": 870
+          "x": 2167.5,
+          "y": 515
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '21':
     id: '21'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
+    taskid: 0a2941cf-dbaf-460a-83b3-dbb42cca5179
+    type: regular
+    task:
+      id: 0a2941cf-dbaf-460a-83b3-dbb42cca5179
+      version: -1
+      name: Add 'Local Group Creation' Tag And Set Severity to High
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - '22'
-    note: false
-    quietmode: 0
     scriptarguments:
       appendTags:
         simple: 'true'
@@ -672,105 +605,105 @@ tasks:
       tags:
         simple: Local Group Creation
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Builtin
-      description: commands.local.cmd.set.incident
-      id: 0a2941cf-dbaf-460a-83b3-dbb42cca5179
-      iscommand: true
-      name: Add 'Local Group Creation' Tag And Set Severity to High
-      script: Builtin|||setIncident
-      type: regular
-      version: -1
-    taskid: 0a2941cf-dbaf-460a-83b3-dbb42cca5179
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
-          "x": 1150,
-          "y": 1050
+          "x": 2280,
+          "y": 690
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '22':
     id: '22'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
+    taskid: cd98dfd1-bf9a-4b09-8365-1c3e81fc585b
+    type: title
     task:
-      brand: ''
       id: cd98dfd1-bf9a-4b09-8365-1c3e81fc585b
-      iscommand: false
+      version: -1
       name: Done
       type: title
-      version: -1
+      iscommand: false
+      brand: ''
       description: ''
-    taskid: cd98dfd1-bf9a-4b09-8365-1c3e81fc585b
-    timertriggers: []
-    type: title
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 940,
-          "y": 1240
+          "x": 2167.5,
+          "y": 880
         }
       }
-  '23':
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: MicrosoftATP.HuntPersistenceEvidence.Result
-          operator: isNotEmpty
-          right:
-            value: {}
-      label: yes
-    id: '23'
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  '23':
+    id: '23'
+    taskid: 06eee70f-4a15-4510-863a-8dc29613fe3d
+    type: condition
+    task:
+      id: 06eee70f-4a15-4510-863a-8dc29613fe3d
+      version: -1
+      name: Any results?
+      description: Any results?
+      type: condition
+      iscommand: false
+      brand: ''
     nexttasks:
       '#default#':
       - '25'
       yes:
       - '24'
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: Any results?
-      id: 06eee70f-4a15-4510-863a-8dc29613fe3d
-      iscommand: false
-      name: Any results?
-      type: condition
-      version: -1
-    taskid: 06eee70f-4a15-4510-863a-8dc29613fe3d
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftATP.HuntPersistenceEvidence.Result
+            iscontext: true
+          right:
+            value: {}
     view: |-
       {
         "position": {
-          "x": 510,
-          "y": 870
+          "x": 2617.5,
+          "y": 515
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '24':
     id: '24'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
+    taskid: ccc605cc-19c7-4b6b-8955-854fb89b619e
+    type: regular
+    task:
+      id: ccc605cc-19c7-4b6b-8955-854fb89b619e
+      version: -1
+      name: Add 'User Creation' Tag And Set Severity to High
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - '25'
-    note: false
-    quietmode: 0
     scriptarguments:
       appendTags:
         simple: 'true'
@@ -779,105 +712,105 @@ tasks:
       tags:
         simple: User Creation
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Builtin
-      description: commands.local.cmd.set.incident
-      id: ccc605cc-19c7-4b6b-8955-854fb89b619e
-      iscommand: true
-      name: Add 'User Creation' Tag And Set Severity to High
-      script: Builtin|||setIncident
-      type: regular
-      version: -1
-    taskid: ccc605cc-19c7-4b6b-8955-854fb89b619e
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
-          "x": 720,
-          "y": 1050
+          "x": 2730,
+          "y": 690
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '25':
     id: '25'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
+    taskid: a15f7a25-eb71-4521-89f2-ff0185283d85
+    type: title
     task:
-      brand: ''
       id: a15f7a25-eb71-4521-89f2-ff0185283d85
-      iscommand: false
+      version: -1
       name: Done
       type: title
-      version: -1
+      iscommand: false
+      brand: ''
       description: ''
-    taskid: a15f7a25-eb71-4521-89f2-ff0185283d85
-    timertriggers: []
-    type: title
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 510,
-          "y": 1240
+          "x": 2617.5,
+          "y": 880
         }
       }
-  '26':
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: MicrosoftATP.HuntPersistenceEvidence.Result
-          operator: isNotEmpty
-          right:
-            value: {}
-      label: yes
-    id: '26'
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  '26':
+    id: '26'
+    taskid: 80f5dab1-5c7b-45a1-8be6-7440d8ac0459
+    type: condition
+    task:
+      id: 80f5dab1-5c7b-45a1-8be6-7440d8ac0459
+      version: -1
+      name: Any results?
+      description: Any results?
+      type: condition
+      iscommand: false
+      brand: ''
     nexttasks:
       '#default#':
       - '28'
       yes:
       - '27'
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: Any results?
-      id: 80f5dab1-5c7b-45a1-8be6-7440d8ac0459
-      iscommand: false
-      name: Any results?
-      type: condition
-      version: -1
-    taskid: 80f5dab1-5c7b-45a1-8be6-7440d8ac0459
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftATP.HuntPersistenceEvidence.Result
+            iscontext: true
+          right:
+            value: {}
     view: |-
       {
         "position": {
-          "x": -370,
-          "y": 870
+          "x": 1052.5,
+          "y": 690
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '27':
     id: '27'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
+    taskid: 7a846c10-e815-41fe-8c96-9ed18e8ae64d
+    type: regular
+    task:
+      id: 7a846c10-e815-41fe-8c96-9ed18e8ae64d
+      version: -1
+      name: Add 'Registry Modification' Tag And Set Severity to High
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - '28'
-    note: false
-    quietmode: 0
     scriptarguments:
       appendTags:
         simple: 'true'
@@ -886,105 +819,105 @@ tasks:
       tags:
         simple: Registry Modification
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Builtin
-      description: commands.local.cmd.set.incident
-      id: 7a846c10-e815-41fe-8c96-9ed18e8ae64d
-      iscommand: true
-      name: Add 'Registry Modification' Tag And Set Severity to High
-      script: Builtin|||setIncident
-      type: regular
-      version: -1
-    taskid: 7a846c10-e815-41fe-8c96-9ed18e8ae64d
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
-          "x": -590,
-          "y": 1050
+          "x": 1165,
+          "y": 865
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '28':
     id: '28'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
+    taskid: de2ba71f-e4a7-434d-8de2-62299f069fb5
+    type: title
     task:
-      brand: ''
       id: de2ba71f-e4a7-434d-8de2-62299f069fb5
-      iscommand: false
+      version: -1
       name: Done
       type: title
-      version: -1
+      iscommand: false
+      brand: ''
       description: ''
-    taskid: de2ba71f-e4a7-434d-8de2-62299f069fb5
-    timertriggers: []
-    type: title
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": -370,
-          "y": 1240
+          "x": 1165,
+          "y": 1040
         }
       }
-  '29':
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: MicrosoftATP.HuntPersistenceEvidence.Result
-          operator: isNotEmpty
-          right:
-            value: {}
-      label: yes
-    id: '29'
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  '29':
+    id: '29'
+    taskid: ab08cf70-e437-4ef5-8f24-87956b96ef9e
+    type: condition
+    task:
+      id: ab08cf70-e437-4ef5-8f24-87956b96ef9e
+      version: -1
+      name: Any results?
+      description: Any results?
+      type: condition
+      iscommand: false
+      brand: ''
     nexttasks:
       '#default#':
       - '31'
       yes:
       - '30'
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: Any results?
-      id: ab08cf70-e437-4ef5-8f24-87956b96ef9e
-      iscommand: false
-      name: Any results?
-      type: condition
-      version: -1
-    taskid: ab08cf70-e437-4ef5-8f24-87956b96ef9e
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftATP.HuntPersistenceEvidence.Result
+            iscontext: true
+          right:
+            value: {}
     view: |-
       {
         "position": {
-          "x": -810,
-          "y": 870
+          "x": 50,
+          "y": 515
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '30':
     id: '30'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
+    taskid: a0439dcc-c0db-4002-882b-55591f836f82
+    type: regular
+    task:
+      id: a0439dcc-c0db-4002-882b-55591f836f82
+      version: -1
+      name: Add 'Startup Folder Modification' Tag And Set Severity to High
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - '31'
-    note: false
-    quietmode: 0
     scriptarguments:
       appendTags:
         simple: 'true'
@@ -993,105 +926,105 @@ tasks:
       tags:
         simple: Startup Folder Modification
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Builtin
-      description: commands.local.cmd.set.incident
-      id: a0439dcc-c0db-4002-882b-55591f836f82
-      iscommand: true
-      name: Add 'Startup Folder Modification' Tag And Set Severity to High
-      script: Builtin|||setIncident
-      type: regular
-      version: -1
-    taskid: a0439dcc-c0db-4002-882b-55591f836f82
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
-          "x": -1030,
-          "y": 1050
+          "x": 162.5,
+          "y": 690
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '31':
     id: '31'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
+    taskid: fa542469-cf3c-4d5d-81f7-60522c4b0e68
+    type: title
     task:
-      brand: ''
       id: fa542469-cf3c-4d5d-81f7-60522c4b0e68
-      iscommand: false
+      version: -1
       name: Done
       type: title
-      version: -1
+      iscommand: false
+      brand: ''
       description: ''
-    taskid: fa542469-cf3c-4d5d-81f7-60522c4b0e68
-    timertriggers: []
-    type: title
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": -810,
-          "y": 1240
+          "x": 50,
+          "y": 880
         }
       }
-  '32':
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: MicrosoftATP.HuntPersistenceEvidence.Result
-          operator: isNotEmpty
-          right:
-            value: {}
-      label: yes
-    id: '32'
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  '32':
+    id: '32'
+    taskid: 31d216f7-1d35-44e6-8150-a593001c76ee
+    type: condition
+    task:
+      id: 31d216f7-1d35-44e6-8150-a593001c76ee
+      version: -1
+      name: Any results?
+      description: Any results?
+      type: condition
+      iscommand: false
+      brand: ''
     nexttasks:
       '#default#':
       - '34'
       yes:
       - '33'
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: Any results?
-      id: 31d216f7-1d35-44e6-8150-a593001c76ee
-      iscommand: false
-      name: Any results?
-      type: condition
-      version: -1
-    taskid: 31d216f7-1d35-44e6-8150-a593001c76ee
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftATP.HuntPersistenceEvidence.Result
+            iscontext: true
+          right:
+            value: {}
     view: |-
       {
         "position": {
-          "x": -1250,
-          "y": 870
+          "x": 500,
+          "y": 515
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '33':
     id: '33'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
+    taskid: bf9ecc1a-6f23-4d08-8998-7f2a35c6817d
+    type: regular
+    task:
+      id: bf9ecc1a-6f23-4d08-8998-7f2a35c6817d
+      version: -1
+      name: Add 'Created Scheduled Tasks' Tag And Set Severity to High
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
       - '34'
-    note: false
-    quietmode: 0
     scriptarguments:
       appendTags:
         simple: 'true'
@@ -1100,66 +1033,172 @@ tasks:
       tags:
         simple: Created Scheduled Tasks
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Builtin
-      description: commands.local.cmd.set.incident
-      id: bf9ecc1a-6f23-4d08-8998-7f2a35c6817d
-      iscommand: true
-      name: Add 'Created Scheduled Tasks' Tag And Set Severity to High
-      script: Builtin|||setIncident
-      type: regular
-      version: -1
-    taskid: bf9ecc1a-6f23-4d08-8998-7f2a35c6817d
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
-          "x": -1470,
-          "y": 1050
+          "x": 612.5,
+          "y": 690
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '34':
     id: '34'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
+    taskid: 35bbe118-5033-432b-81e8-ae3127a0354f
+    type: title
     task:
-      brand: ''
       id: 35bbe118-5033-432b-81e8-ae3127a0354f
-      iscommand: false
+      version: -1
       name: Done
       type: title
-      version: -1
+      iscommand: false
+      brand: ''
       description: ''
-    taskid: 35bbe118-5033-432b-81e8-ae3127a0354f
-    timertriggers: []
-    type: title
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": -1250,
-          "y": 1240
+          "x": 500,
+          "y": 880
         }
       }
-version: -1
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '35':
+    id: '35'
+    taskid: 1ee92600-0266-4d43-8008-885b6415f2e7
+    type: condition
+    task:
+      id: 1ee92600-0266-4d43-8008-885b6415f2e7
+      version: -1
+      name: Is there a File?
+      type: condition
+      description: Checks if there is available file in the incident
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '28'
+      yes:
+      - '11'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${inputs.FileName}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1165,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 895,
-        "width": 3000,
-        "x": -1470,
-        "y": 410
+        "height": 1055,
+        "width": 3060,
+        "x": 50,
+        "y": 50
       }
     }
   }
+inputs:
+- key: FileSha256
+  value:
+    complex:
+      root: incident
+      accessor: filesha256
+      transformers:
+      - operator: uniq
+  required: false
+  description: A comma-separated list of file SHA256 hashes to hunt.
+  playbookInputQuery:
+- key: FileSha1
+  value:
+    complex:
+      root: incident
+      accessor: filesha1
+      transformers:
+      - operator: uniq
+  required: false
+  description: A comma-separated list of file SHA1 hashes to hunt.
+  playbookInputQuery:
+- key: FileMd5
+  value:
+    complex:
+      root: incident
+      accessor: filemd5
+      transformers:
+      - operator: uniq
+  required: false
+  description: A comma-separated list of file MD5 hashes to hunt.
+  playbookInputQuery:
+- key: IP
+  value:
+    complex:
+      root: incident
+      accessor: detectedips
+      transformers:
+      - operator: uniq
+  required: false
+  description: A comma-separated list of IPs to hunt.
+  playbookInputQuery:
+- key: DeviceName
+  value:
+    complex:
+      root: incident
+      accessor: hostnames
+      transformers:
+      - operator: uniq
+  required: false
+  description: A comma-separated list of host names to hunt.
+  playbookInputQuery:
+- key: FileName
+  value:
+    complex:
+      root: incident
+      accessor: filenames
+      transformers:
+      - operator: uniq
+  required: false
+  description: A comma-separated list of file names to hunt.
+  playbookInputQuery:
+- key: DeviceID
+  value:
+    complex:
+      root: incident
+      accessor: agentsid
+      transformers:
+      - operator: uniq
+  required: false
+  description: A comma-separated list of a device IDs to hunt.
+  playbookInputQuery:
+outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 6.5.0
+fromversion: 6.2.0
