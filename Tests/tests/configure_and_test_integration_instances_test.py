@@ -182,14 +182,7 @@ def test_get_packs_with_higher_min_version(mocker):
         - Assert the returned packs are with higher min version than the server version.
     """
 
-    mocker.patch.object(XSOARBuild, '__init__', return_value=None)
-    mocker.patch.object(Build, '__init__', return_value=None)
-
-    build = XSOARBuild()
-    build.content_path = 'content'
-    build.server_numeric_version = '6.5.0'
-
     mocker.patch("builtins.open", mock_open(read_data='{"serverMinVersion": "6.6.0"}'))
 
-    packs_with_higher_min_version = get_packs_with_higher_min_version({'TestPack'}, build)
+    packs_with_higher_min_version = get_packs_with_higher_min_version({'TestPack'}, 'content', '6.5.0')
     assert packs_with_higher_min_version == {'TestPack'}

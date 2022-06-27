@@ -1692,18 +1692,20 @@ def get_packs_not_to_install(modified_packs_names: Set[str], build: Build) -> Tu
         (Set[str]): The set of the non hidden packs names.
     """
     non_hidden_packs = get_turned_non_hidden_packs(modified_packs_names, build)
-    packs_with_higher_min_version = get_packs_with_higher_min_version(modified_packs_names - non_hidden_packs, build)
+    packs_with_higher_min_version = get_packs_with_higher_min_version(modified_packs_names - non_hidden_packs,
+                                                                      build.content_path, build.server_numeric_version)
     build.pack_ids_to_install = list(set(build.pack_ids_to_install) - packs_with_higher_min_version)
     return packs_with_higher_min_version.union(non_hidden_packs), non_hidden_packs
 
 
-def get_packs_with_higher_min_version(packs_names: Set[str], build: Build) -> Set[str]:
+def get_packs_with_higher_min_version(packs_names: Set[str], content_path: str, server_numeric_version: str) -> Set[str]:
     """
     Return a set of packs that have higher min version than the server version.
 
     Args:
         packs_names (Set[str]): A set of packs to install.
-        build (Build): The build object.
+        content_path (str): The content root path.
+        server_numeric_version (str): The server version.
 
     Returns:
         (Set[str]): The set of the packs names that supposed to be not installed because
@@ -1712,14 +1714,13 @@ def get_packs_with_higher_min_version(packs_names: Set[str], build: Build) -> Se
     packs_with_higher_version = set()
     for pack_name in packs_names:
 
-        pack_metadata = get_json_file(f"{build.content_path}/Packs/{pack_name}/pack_metadata.json")
+        pack_metadata = get_json_file(f"{content_path}/Packs/{pack_name}/pack_metadata.json")
         server_min_version = pack_metadata.get(Metadata.SERVER_MIN_VERSION, Metadata.SERVER_DEFAULT_MIN_VERSION)
-        server_version = build.server_numeric_version
 
-        if 'Master' not in server_version and Version(server_version) < Version(server_min_version):
+        if 'Master' not in server_numeric_version and Version(server_numeric_version) < Version(server_min_version):
             packs_with_higher_version.add(pack_name)
             logging.info(f"Found pack '{pack_name}' with min version {server_min_version} that is "
-                         f"higher than server version {server_version}")
+                         f"higher than server version {server_numeric_version}")
 
     return packs_with_higher_version
 
@@ -1761,10 +1762,10 @@ def main():
         build.install_nightly_pack()
     else:
         modified_packs_names = get_non_added_packs_ids(build)
-        packs_not_to_install, non_hidden_packs = get_packs_not_to_install(modified_packs_names, build)
+        packs_not_to_install, packs_to_install_in_post_update = get_packs_not_to_install(modified_packs_names, build)
         packs_to_install = modified_packs_names - packs_not_to_install
         build.install_packs(pack_ids=packs_to_install)
-        new_integrations_names, modified_integrations_names = build.get_changed_integrations(non_hidden_packs)
+        new_integrations_names, modified_integrations_names = build.get_changed_integrations(packs_to_install_in_post_update)
         pre_update_configuration_results = build.configure_and_test_integrations_pre_update(new_integrations_names,
                                                                                             modified_integrations_names)
         modified_module_instances, new_module_instances, failed_tests_pre, successful_tests_pre = pre_update_configuration_results
