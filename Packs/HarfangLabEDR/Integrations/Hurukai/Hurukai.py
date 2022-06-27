@@ -1724,7 +1724,7 @@ def hunt_search_running_process_hash(client, args):
         for x in data['results']:
             prefetchs.append({
                 "Hostname": x['agent']['hostname'],
-                "Domain": x['agent']['domainname'],
+                "Domain": x['agent'].get('domainname', ''),
                 "Username": x['username'],
                 "OS": x['agent']['osproducttype'] + " " + x['agent']['osversion'],
                 "Binary Path": x['binaryinfo']['fullpath'],
@@ -1734,7 +1734,7 @@ def hunt_search_running_process_hash(client, args):
             contextData.append({
                 'hash': filehash,
                 "hostname": x['agent']['hostname'],
-                "domain": x['agent']['domainname'],
+                "domain": x['agent'].get('domainname', ''),
                 "username": x['username'],
                 "os": x['agent']['osproducttype'],
                 "os_version": x['agent']['osversion'],
@@ -1785,7 +1785,7 @@ def hunt_search_runned_process_hash(client, args):
         for x in data['results']:
             prefetchs.append({
                 "Hostname": x['agent']['hostname'],
-                "Domain": x['agent']['domainname'],
+                "Domain": x['agent'].get('domainname', ''),
                 "Username": x['username'],
                 "OS": x['agent']['osproducttype'] + " " + x['agent']['osversion'],
                 "Binary Path": x['image_name'],
@@ -1794,7 +1794,7 @@ def hunt_search_runned_process_hash(client, args):
             contextData.append({
                 'hash': filehash,
                 "hostname": x['agent']['hostname'],
-                "domain": x['agent']['domainname'],
+                "domain": x['agent'].get('domainname', ''),
                 "username": x['username'],
                 "os": x['agent']['osproducttype'],
                 "os_version": x['agent']['osversion'],
