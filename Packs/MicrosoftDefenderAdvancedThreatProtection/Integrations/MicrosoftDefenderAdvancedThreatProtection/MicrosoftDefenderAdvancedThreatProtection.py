@@ -2137,8 +2137,8 @@ def get_machines_command(client: MsClient, args: dict):
     risk_score = args.get('risk_score', '')
     health_status = args.get('health_status', '')
     os_platform = args.get('os_platform', '')
-    page_num = args.get('page_num', None)
-    page_size = args.get('page_size', None)
+    page_num = args.get('page_num', '')
+    page_size = args.get('page_size', '')
 
     more_than_one_hostname = len(hostname) > 1
     more_than_one_ip = len(ip) > 1
@@ -4209,10 +4209,10 @@ def cover_up_command(client, args):  # pragma: no cover
         outputs=results
     )
 
-#
-# def test_module(client: MsClient):
-#     client.ms_client.http_request(method='GET', url_suffix='/alerts', params={'$top': '1'})
-#     demisto.results('ok')
+
+def test_module(client: MsClient):
+    client.ms_client.http_request(method='GET', url_suffix='/alerts', params={'$top': '1'})
+    demisto.results('ok')
 
 
 def get_dbot_indicator(dbot_type, dbot_score, value):
@@ -4863,7 +4863,7 @@ def main():  # pragma: no cover
         )
         if command == 'test-module':
             pass
-            # test_module(client)
+            test_module(client)
 
         elif command == 'fetch-incidents':
             incidents, last_run = fetch_incidents(client, last_run, fetch_evidence)
