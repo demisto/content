@@ -48,7 +48,7 @@ This integration was integrated and tested with version 8.1.0 and 9.0.1 of Palo 
    * [pan-os-query-logs](#pan-os-query-logs)
    * [pan-os-check-logs-status](#pan-os-check-logs-status)
    * [pan-os-get-logs](#pan-os-get-logs)
-* The target argument is supported only in operational type commands. Meaning, you can not use it with commit, logs, or PCAP commands.
+* The target argument is supported only in operational type commands. Meaning, you cannot use it with commit, logs, or PCAP commands.
 
 ## Configure Panorama on Cortex XSOAR
 
