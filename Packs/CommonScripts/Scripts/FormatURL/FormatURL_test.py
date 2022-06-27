@@ -194,6 +194,7 @@ class TestFormatURL:
         """
         import FormatURL as fu
         mocker.patch.object(fu, 'format_single_url', side_effect=('a', Exception(), 'b'))
+        mocker.patch.object(fu.demisto, 'error')
         res = fu.format_urls(['1', '2', '3'])
         assert len(res) == 3
         assert res[0]['Contents'] == 'a'
