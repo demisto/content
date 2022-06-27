@@ -10,15 +10,15 @@ import requests
 from requests import Response
 from requests.exceptions import MissingSchema, InvalidSchema
 
-from BMCHelixRemedyforce import Client, MESSAGES, date_to_timestamp, HR_MESSAGES, get_request_params, \
+from BmcHelixRemedyForce import Client, MESSAGES, date_to_timestamp, HR_MESSAGES, get_request_params, \
     bmc_remedy_create_service_request_command, remove_prefix, update_incident, OUTPUT_PREFIX, DISPLAY_DATE_FORMAT
-from BMCHelixRemedyforce import bmc_remedy_impact_details_get_command, bmc_remedy_service_offering_details_get_command, \
+from BmcHelixRemedyForce import bmc_remedy_impact_details_get_command, bmc_remedy_service_offering_details_get_command, \
     bmc_remedy_category_details_get_command, INCIDENT_CATEGORY_OBJECT, SERVICE_REQUEST_CATEGORY_OBJECT, \
     POSSIBLE_CATEGORY_TYPES, bmc_remedy_broadcast_details_get_command, URL_SUFFIX
-from BMCHelixRemedyforce import bmc_remedy_template_details_get_command, bmc_remedy_asset_details_get_command, \
+from BmcHelixRemedyForce import bmc_remedy_template_details_get_command, bmc_remedy_asset_details_get_command, \
     bmc_remedy_account_details_get_command, bmc_remedy_urgency_details_get_command, get_service_request_details
 
-from BMCHelixRemedyforce import get_valid_arguments, bmc_remedy_update_service_request_command, DemistoException, \
+from BmcHelixRemedyForce import get_valid_arguments, bmc_remedy_update_service_request_command, DemistoException, \
     prepare_outputs_for_get_service_request, bmc_remedy_service_request_get_command
 
 INCIDENT_TEST_DATA_FILE = './TestData/incident_data.json'
@@ -29,7 +29,7 @@ def prepare_expected_response_for_fetch_incidents():
     Prepares expected incidents list from response.
     :return: raw response, incident list.
     """
-    from BMCHelixRemedyforce import remove_empty_elements, prepare_date_or_markdown_fields_for_fetch_incidents
+    from BmcHelixRemedyForce import remove_empty_elements, prepare_date_or_markdown_fields_for_fetch_incidents
     with open('./TestData/fetch_incident_response.json') as f:
         expected_response = json.load(f)
     incidents = expected_response['records'][0]
@@ -111,7 +111,7 @@ def get_no_content_success_response():
     return resp
 
 
-class BMCHelixRemedyForceTestCase(unittest.TestCase):
+class BmcHelixRemedyForceTestCase(unittest.TestCase):
     client = Client(
         base_url='https://sample.api.com',  # Compliant
         verify=False,
@@ -138,7 +138,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
     expected_zero_record = {'totalSize': 0, 'done': True, 'records': []}
 
     @patch('demistomock.getIntegrationContext')
-    @patch('BMCHelixRemedyforce.Client.get_salesforce_session')
+    @patch('BmcHelixRemedyForce.Client.get_salesforce_session')
     @patch('demistomock.setIntegrationContext')
     def test_get_session_id_valid_credentials(self, mocker_set_context, mocker_session, mocker_get_context):
         """
@@ -166,7 +166,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         assert mocker_set_context.call_count == 1
 
     @patch('demistomock.getIntegrationContext')
-    @patch('BMCHelixRemedyforce.Client.get_salesforce_session')
+    @patch('BmcHelixRemedyForce.Client.get_salesforce_session')
     @patch('demistomock.setIntegrationContext')
     def test_get_session_id_invalid_credentials(self, mocker_set_context, mocker_session, mocker_get_context):
         """
@@ -192,7 +192,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         assert mocker_set_context.call_count == 0
 
     @patch('demistomock.getIntegrationContext')
-    @patch('BMCHelixRemedyforce.Client.get_salesforce_session')
+    @patch('BmcHelixRemedyForce.Client.get_salesforce_session')
     @patch('demistomock.setIntegrationContext')
     def test_get_session_id_valid_context(self, mocker_set_context, mocker_session, mocker_get_context):
         """
@@ -254,7 +254,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
             self.client.get_salesforce_session()
 
     @patch('CommonServerPython.BaseClient._http_request')
-    @patch('BMCHelixRemedyforce.Client.get_session_id')
+    @patch('BmcHelixRemedyForce.Client.get_session_id')
     def test_http_request_success_response(self, mocker_get_session_id, mocker_http_request):
         """
         Given overridden http request method
@@ -279,7 +279,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         assert response == dummy_response
 
     @patch('CommonServerPython.BaseClient._http_request')
-    @patch('BMCHelixRemedyforce.Client.get_session_id')
+    @patch('BmcHelixRemedyForce.Client.get_session_id')
     def test_http_request_success_response_no_content(self, mocker_get_session_id, mocker_http_request):
         """
         Given overridden http request method
@@ -301,7 +301,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         assert response == mocked_positive_response
 
     @patch('CommonServerPython.BaseClient._http_request')
-    @patch('BMCHelixRemedyforce.Client.get_session_id')
+    @patch('BmcHelixRemedyForce.Client.get_session_id')
     @patch('demistomock.getIntegrationContext')
     @patch('demistomock.setIntegrationContext')
     def test_http_request_unauthorized_response(self, mocker_set_context, mocker_get_context, mocker_get_session_id,
@@ -332,7 +332,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         assert mocker_set_context.call_count == 1
 
     @patch('CommonServerPython.BaseClient._http_request')
-    @patch('BMCHelixRemedyforce.Client.get_session_id')
+    @patch('BmcHelixRemedyForce.Client.get_session_id')
     def test_http_request_missing_schema(self, mocker_get_session_id, mocker_http_request):
         """
         Given overridden http request method
@@ -352,7 +352,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         assert str(e.value) == MESSAGES['MISSING_SCHEMA_ERROR']
 
     @patch('CommonServerPython.BaseClient._http_request')
-    @patch('BMCHelixRemedyforce.Client.get_session_id')
+    @patch('BmcHelixRemedyForce.Client.get_session_id')
     def test_http_request_invalid_schema(self, mocker_get_session_id, mocker_http_request):
         """
         Given overridden http request method
@@ -372,7 +372,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         assert str(e.value) == MESSAGES['INVALID_SCHEMA_ERROR']
 
     @patch('CommonServerPython.BaseClient._http_request')
-    @patch('BMCHelixRemedyforce.Client.get_session_id')
+    @patch('BmcHelixRemedyForce.Client.get_session_id')
     def test_http_request_proxy_error(self, mocker_get_session_id, mocker_http_request):
         """
         Given overridden http request method
@@ -412,7 +412,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         assert str(e.value) == MESSAGES['PROXY_ERROR']
 
     @patch('CommonServerPython.BaseClient._http_request')
-    @patch('BMCHelixRemedyforce.Client.get_session_id')
+    @patch('BmcHelixRemedyForce.Client.get_session_id')
     def test_http_request_connection_error(self, mocker_get_session_id, mocker_http_request):
         """
         Given overridden http request method
@@ -432,7 +432,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         assert str(e.value) == MESSAGES['CONNECTION_ERROR']
 
     @patch('CommonServerPython.BaseClient._http_request')
-    @patch('BMCHelixRemedyforce.Client.get_session_id')
+    @patch('BmcHelixRemedyForce.Client.get_session_id')
     def test_http_request_other_demisto_exception(self, mocker_get_session_id, mocker_http_request):
         """
         Given overridden http request method
@@ -452,7 +452,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         assert str(e.value) == 'Some other error!'
 
     @patch('CommonServerPython.BaseClient._http_request')
-    @patch('BMCHelixRemedyforce.Client.get_session_id')
+    @patch('BmcHelixRemedyForce.Client.get_session_id')
     def test_http_request_bad_request(self, mocker_get_session_id, mocker_http_request):
         """
         Given overridden http request method
@@ -494,7 +494,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
             "request_timeout": 25
         }
 
-        from BMCHelixRemedyforce import get_request_timeout
+        from BmcHelixRemedyForce import get_request_timeout
         assert get_request_timeout() == 25
 
     @patch('demistomock.params')
@@ -510,7 +510,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
             "request_timeout": '25asd'
         }
 
-        from BMCHelixRemedyforce import get_request_timeout
+        from BmcHelixRemedyForce import get_request_timeout
         with pytest.raises(ValueError):
             assert get_request_timeout()
 
@@ -527,7 +527,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
             "request_timeout": -25
         }
 
-        from BMCHelixRemedyforce import get_request_timeout
+        from BmcHelixRemedyForce import get_request_timeout
         with pytest.raises(ValueError):
             assert get_request_timeout()
 
@@ -544,14 +544,14 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
             "request_timeout": 92233720361
         }
 
-        from BMCHelixRemedyforce import get_request_timeout
+        from BmcHelixRemedyForce import get_request_timeout
         with pytest.raises(ValueError):
             assert get_request_timeout()
 
-    @patch('BMCHelixRemedyforce.get_service_request_details')
+    @patch('BmcHelixRemedyForce.get_service_request_details')
     @patch('demistomock.command')
-    @patch('BMCHelixRemedyforce.Client.http_request')
-    @patch('BMCHelixRemedyforce.return_results')
+    @patch('BmcHelixRemedyForce.Client.http_request')
+    @patch('BmcHelixRemedyForce.return_results')
     @patch('demistomock.params')
     def test_main_success(self, mocker_params, mocker_return_results,
                           mocker_http_request, mocker_command, mocker_sr_results):
@@ -580,15 +580,15 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
             'first_fetch': '10 hours'
         }
 
-        from BMCHelixRemedyforce import main
+        from BmcHelixRemedyForce import main
         main()
 
         mocker_return_results.assert_called_with('ok')
 
     @patch('demistomock.error')
     @patch('demistomock.command')
-    @patch('BMCHelixRemedyforce.Client.http_request')
-    @patch('BMCHelixRemedyforce.return_error')
+    @patch('BmcHelixRemedyForce.Client.http_request')
+    @patch('BmcHelixRemedyForce.return_error')
     @patch('demistomock.params')
     def test_main_failure(self, mocker_params, mocker_return_error, mocker_http_request, mocker_command, mocker_error):
         """
@@ -615,13 +615,13 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
             'url': 'some_base_url'
         }
 
-        from BMCHelixRemedyforce import main
+        from BmcHelixRemedyForce import main
         main()
 
         assert mocker_error.called
         assert mocker_return_error.called
 
-    @patch('BMCHelixRemedyforce.Client.http_request')
+    @patch('BmcHelixRemedyForce.Client.http_request')
     def test_bmc_remedy_service_request_definition_get_command_success(self, mocker_http_request):
         """
         Given working service integration
@@ -632,22 +632,22 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         :param mocker_http_request: Mocker object for http request call
         :return: None
         """
-        import BMCHelixRemedyforce
-        BMCHelixRemedyforce.process_single_service_request_definition = MagicMock(
-            side_effect=BMCHelixRemedyforce.process_single_service_request_definition)
-        BMCHelixRemedyforce.process_single_service_request_definition_output = MagicMock(
-            side_effect=BMCHelixRemedyforce.process_single_service_request_definition_output)
+        import BmcHelixRemedyForce
+        BmcHelixRemedyForce.process_single_service_request_definition = MagicMock(
+            side_effect=BmcHelixRemedyForce.process_single_service_request_definition)
+        BmcHelixRemedyForce.process_single_service_request_definition_output = MagicMock(
+            side_effect=BmcHelixRemedyForce.process_single_service_request_definition_output)
         success_resp = {'Success': True, 'Result': [{}, {}]}
         mocker_http_request.return_value = success_resp
 
-        command_resp = BMCHelixRemedyforce.bmc_remedy_service_request_definition_get_command(self.client, {})
+        command_resp = BmcHelixRemedyForce.bmc_remedy_service_request_definition_get_command(self.client, {})
 
         assert command_resp.raw_response == success_resp
         assert len(command_resp.outputs) == 2
-        assert BMCHelixRemedyforce.process_single_service_request_definition.call_count == 2
-        assert BMCHelixRemedyforce.process_single_service_request_definition_output.call_count == 2
+        assert BmcHelixRemedyForce.process_single_service_request_definition.call_count == 2
+        assert BmcHelixRemedyForce.process_single_service_request_definition_output.call_count == 2
 
-    @patch('BMCHelixRemedyforce.Client.http_request')
+    @patch('BmcHelixRemedyForce.Client.http_request')
     def test_bmc_remedy_service_request_definition_get_command_failure(self, mocker_http_request):
         """
         Given non-working service integration
@@ -659,7 +659,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         """
         failure_resp = {'Success': False}
         mocker_http_request.return_value = failure_resp
-        from BMCHelixRemedyforce import bmc_remedy_service_request_definition_get_command
+        from BmcHelixRemedyForce import bmc_remedy_service_request_definition_get_command
         with pytest.raises(DemistoException) as e:
             bmc_remedy_service_request_definition_get_command(self.client, {})
 
@@ -676,11 +676,11 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         with open('./TestData/service_request_definition.json', encoding='utf-8') as f:
             data = json.load(f)
 
-        from BMCHelixRemedyforce import prepare_hr_output_for_get_service_request_definitions
+        from BmcHelixRemedyForce import prepare_hr_output_for_get_service_request_definitions
         output = prepare_hr_output_for_get_service_request_definitions(data['input_data'])
         assert output == data['expected_output']
 
-    @patch('BMCHelixRemedyforce.Client.http_request')
+    @patch('BmcHelixRemedyForce.Client.http_request')
     def test_get_service_request_def_id_from_name_success(self, mocker_http_request):
         """
         Given working service integration
@@ -693,10 +693,10 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         success_resp = {'records': [{'Id': 'ID_FOR_GIVEN_NAME'}]}
         mocker_http_request.return_value = success_resp
 
-        from BMCHelixRemedyforce import get_service_request_def_id_from_name
+        from BmcHelixRemedyForce import get_service_request_def_id_from_name
         assert 'ID_FOR_GIVEN_NAME' == get_service_request_def_id_from_name("GIVEN_NAME", self.client)
 
-    @patch('BMCHelixRemedyforce.Client.http_request')
+    @patch('BmcHelixRemedyForce.Client.http_request')
     def test_get_service_request_def_id_from_name_failure(self, mocker_http_request):
         """
         Given working service integration
@@ -708,7 +708,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         """
         mocker_http_request.side_effect = DemistoException('ERROR_MSG')
 
-        from BMCHelixRemedyforce import get_service_request_def_id_from_name
+        from BmcHelixRemedyForce import get_service_request_def_id_from_name
         with pytest.raises(DemistoException) as e:
             get_service_request_def_id_from_name("GIVEN_NAME", self.client)
 
@@ -718,7 +718,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         """
         Tests the validation of max_incidents parameter.
         """
-        from BMCHelixRemedyforce import validate_max_incidents
+        from BmcHelixRemedyForce import validate_max_incidents
         # When non integer.
         with pytest.raises(ValueError):
             validate_max_incidents('test')
@@ -738,7 +738,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         """
         Tests the various scenarios related to preparing query based on provided parameters.
         """
-        from BMCHelixRemedyforce import prepare_query_for_fetch_incidents, SALESFORCE_QUERIES, timestamp_to_datestring
+        from BmcHelixRemedyForce import prepare_query_for_fetch_incidents, SALESFORCE_QUERIES, timestamp_to_datestring
         # Without query
         params = {
             'category': 'category',
@@ -784,10 +784,10 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
             timestamp_to_datestring(start_time))
         assert prepare_query_for_fetch_incidents(params, start_time) == expected_query
 
-    @patch('BMCHelixRemedyforce.get_service_request_details')
-    @patch('BMCHelixRemedyforce.get_attachments_for_incident')
+    @patch('BmcHelixRemedyForce.get_service_request_details')
+    @patch('BmcHelixRemedyForce.get_attachments_for_incident')
     @patch('demistomock.params')
-    @patch('BMCHelixRemedyforce.Client.http_request')
+    @patch('BmcHelixRemedyForce.Client.http_request')
     def test_fetch_incidents(self, http_request, demisto_params_url, mocker_get_attachments, mocker_sr_details):
         """
         Tests the fetch-incidents command.
@@ -796,7 +796,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         :param demisto_params_url: mocker object for demisto.params()
         :param mocker_get_attachments: mocker object for get_attachments_for_incident()
         """
-        from BMCHelixRemedyforce import fetch_incidents
+        from BmcHelixRemedyForce import fetch_incidents
 
         mocker_sr_details.return_value = {}
         expected_response, expected_incidents = prepare_expected_response_for_fetch_incidents()
@@ -833,13 +833,13 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
 
         assert incidents == expected_incidents
 
-    @patch('BMCHelixRemedyforce.get_service_request_details')
-    @patch('BMCHelixRemedyforce.get_attachments_for_incident')
+    @patch('BmcHelixRemedyForce.get_service_request_details')
+    @patch('BmcHelixRemedyForce.get_attachments_for_incident')
     @patch('demistomock.getLastRun')
     @patch('demistomock.setLastRun')
     @patch('demistomock.incidents')
     @patch('demistomock.command')
-    @patch('BMCHelixRemedyforce.Client.http_request')
+    @patch('BmcHelixRemedyForce.Client.http_request')
     @patch('demistomock.params')
     def test_main_fetch_incidents_success(self, *args):
         """
@@ -850,7 +850,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         :param args: Mocker objects.
         :return: None
         """
-        from BMCHelixRemedyforce import main
+        from BmcHelixRemedyForce import main
         expected_response, expected_incidents = prepare_expected_response_for_fetch_incidents()
         args[1].return_value = expected_response
 
@@ -876,7 +876,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         Given notes and summary as input params return should match expected output
         :return:None
         """
-        from BMCHelixRemedyforce import input_data_create_note
+        from BmcHelixRemedyForce import input_data_create_note
         summary = "test summery"
         notes = "test note"
         expected_output = {
@@ -890,7 +890,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         resp = input_data_create_note(summary, notes)
         assert expected_output == resp
 
-    @patch('BMCHelixRemedyforce.Client.http_request')
+    @patch('BmcHelixRemedyForce.Client.http_request')
     def test_get_id_from_incident_number_success(self, mocker_http_request):
         """
         Given input param incident number or service request should return expected id
@@ -898,7 +898,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         :param mocker_http_request: mocker object for Client.http_request
         :return: None
         """
-        from BMCHelixRemedyforce import get_id_from_incident_number
+        from BmcHelixRemedyForce import get_id_from_incident_number
         with open("TestData/get_id_from_name.json", encoding='utf-8') as f:
             expected_res = json.load(f)
 
@@ -908,7 +908,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
 
         assert '123456789' == resp
 
-    @patch('BMCHelixRemedyforce.Client.http_request')
+    @patch('BmcHelixRemedyForce.Client.http_request')
     def test_get_id_from_incident_name_failed(self, mocker_http_request):
         """
         Given invalid input param incident number or service request should not  return expected id
@@ -916,7 +916,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         :param mocker_http_request: mocker object for Client.http_request
         :return: None
         """
-        from BMCHelixRemedyforce import get_id_from_incident_number
+        from BmcHelixRemedyForce import get_id_from_incident_number
 
         mocker_http_request.return_value = {}
 
@@ -925,7 +925,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
 
         assert MESSAGES['NOTE_CREATE_FAIL'].format('123') == str(e.value)
 
-    @patch('BMCHelixRemedyforce.Client.http_request')
+    @patch('BmcHelixRemedyForce.Client.http_request')
     def test_get_id_from_incident_number_failed_value_error(self, mocker_http_request):
         """
         Given invalid input param incident or service request number should not  return expected id
@@ -933,7 +933,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         :param mocker_http_request: mocker object for Client.http_request
         :return: None
         """
-        from BMCHelixRemedyforce import get_id_from_incident_number
+        from BmcHelixRemedyForce import get_id_from_incident_number
         with open("TestData/get_id_from_name_null_id.json", encoding='utf-8') as f:
             expected_res = json.load(f)
         mocker_http_request.return_value = expected_res
@@ -943,7 +943,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
 
         assert MESSAGES['NOT_FOUND_ERROR'] == str(e.value)
 
-    @patch('BMCHelixRemedyforce.Client.http_request')
+    @patch('BmcHelixRemedyForce.Client.http_request')
     def test_get_id_from_incident_number_type_incident(self, mocker_http_request):
         """
         Given working salesforce integration API
@@ -953,7 +953,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         :param mocker_http_request: mocker object for Client.http_request
         :return: None
         """
-        from BMCHelixRemedyforce import get_id_from_incident_number
+        from BmcHelixRemedyForce import get_id_from_incident_number
         mocker_http_request.return_value = None
 
         with pytest.raises(Exception):
@@ -963,7 +963,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
             args, kwargs = call
             assert 'and BMCServiceDesk__isServiceRequest__c=false' in kwargs['params']['q']
 
-    @patch('BMCHelixRemedyforce.Client.http_request')
+    @patch('BmcHelixRemedyForce.Client.http_request')
     def test_get_id_from_incident_number_type_SR(self, mocker_http_request):
         """
         Given working salesforce integration API
@@ -973,7 +973,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         :param mocker_http_request: mocker object for Client.http_request
         :return: None
         """
-        from BMCHelixRemedyforce import get_id_from_incident_number
+        from BmcHelixRemedyForce import get_id_from_incident_number
         mocker_http_request.return_value = None
 
         with pytest.raises(Exception):
@@ -983,8 +983,8 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
             args, kwargs = call
             assert 'and BMCServiceDesk__isServiceRequest__c=true' in kwargs['params']['q']
 
-    @patch('BMCHelixRemedyforce.Client.http_request')
-    @patch('BMCHelixRemedyforce.get_id_from_incident_number')
+    @patch('BmcHelixRemedyForce.Client.http_request')
+    @patch('BmcHelixRemedyForce.get_id_from_incident_number')
     def test_remedy_note_create_command_success(self, mocker_id_from_incident_number, mocker_http_request):
         """
         Given valid param command will run successful
@@ -993,7 +993,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         :param mocker_http_request: mocker object for Client.http_request
         :return: None
         """
-        from BMCHelixRemedyforce import bmc_remedy_note_create_command
+        from BmcHelixRemedyForce import bmc_remedy_note_create_command
         with open("TestData/get_create_note_response.json", encoding='utf-8') as f:
             expected_res = json.load(f)
 
@@ -1009,8 +1009,8 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         assert result.readable_output == HR_MESSAGES['NOTE_CREATE_SUCCESS'].format('IN00000123')
         assert result.outputs_key_field == 'Id'
 
-    @patch('BMCHelixRemedyforce.Client.http_request')
-    @patch('BMCHelixRemedyforce.get_id_from_incident_number')
+    @patch('BmcHelixRemedyForce.Client.http_request')
+    @patch('BmcHelixRemedyForce.get_id_from_incident_number')
     def test_remedy_note_create_command_failed_raise_exception_with_message(self, mocker_id_from_incident_number,
                                                                             mocker_http_request):
         """
@@ -1021,7 +1021,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         :param mocker_http_request: mocker object for Client.http_request
         :return: None
         """
-        from BMCHelixRemedyforce import bmc_remedy_note_create_command
+        from BmcHelixRemedyForce import bmc_remedy_note_create_command
         # to cover expected error occurred
         mocker_http_request.side_effect = DemistoException(MESSAGES['UNEXPECTED_ERROR'])
         mocker_id_from_incident_number.return_value = 'a123bcd'
@@ -1035,7 +1035,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
 
         assert MESSAGES['EMPTY_REQUIRED_ARGUMENT'].format("request_number") == str(e.value)
 
-    @patch('BMCHelixRemedyforce.Client.http_request')
+    @patch('BmcHelixRemedyForce.Client.http_request')
     def test_bmc_remedy_template_details_get_command_success(self, mock_http_res):
         """
         When bmc_remedy_template_details_get command is called
@@ -1044,9 +1044,9 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         :param mock_http_res: mocker object for Client.http_request
         :return: None
         """
-        import BMCHelixRemedyforce
-        BMCHelixRemedyforce.create_template_output = MagicMock(
-            side_effect=BMCHelixRemedyforce.create_template_output)
+        import BmcHelixRemedyForce
+        BmcHelixRemedyForce.create_template_output = MagicMock(
+            side_effect=BmcHelixRemedyForce.create_template_output)
 
         with open("TestData/get_remedy_template_success.json", encoding='utf-8') as f:
             expected_res = json.load(f)
@@ -1055,16 +1055,16 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         args = {
             "template_name": "Summary"
         }
-        result = BMCHelixRemedyforce.bmc_remedy_template_details_get_command(self.client, args)
+        result = BmcHelixRemedyForce.bmc_remedy_template_details_get_command(self.client, args)
         assert result.raw_response == expected_res
-        assert BMCHelixRemedyforce.create_template_output.call_count == 1
+        assert BmcHelixRemedyForce.create_template_output.call_count == 1
 
         args = {}
-        result = BMCHelixRemedyforce.bmc_remedy_template_details_get_command(self.client, args)
+        result = BmcHelixRemedyForce.bmc_remedy_template_details_get_command(self.client, args)
         assert result.raw_response == expected_res
-        assert BMCHelixRemedyforce.create_template_output.call_count == 2
+        assert BmcHelixRemedyForce.create_template_output.call_count == 2
 
-    @patch('BMCHelixRemedyforce.Client.http_request')
+    @patch('BmcHelixRemedyForce.Client.http_request')
     def test_bmc_remedy_template_details_get_command_no_records_found(self, mock_http_res):
         """
         Testcase for bmc_remedy_template_details_get_command method in case of no records founds in get response.
@@ -1086,7 +1086,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         result = bmc_remedy_template_details_get_command(self.client, args)
         assert result == MESSAGES['NO_ENTITY_FOUND'].format('template(s)')
 
-    @patch('BMCHelixRemedyforce.Client.get_session_id')
+    @patch('BmcHelixRemedyForce.Client.get_session_id')
     @patch("requests.Session.request")
     def test_update_incident_positive(self, req_obj, mocker_get_session_id):
         """
@@ -1113,7 +1113,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
             assert kwargs["json"] == expected_output
         assert actual_response["outputs"]["LastUpdatedDate"][:10] == datetime.now().strftime(date_format)
 
-    @patch('BMCHelixRemedyforce.Client.get_session_id')
+    @patch('BmcHelixRemedyForce.Client.get_session_id')
     @patch("requests.Session.request")
     def test_update_incident_exception(self, req_obj, mocker_get_session_id):
         """
@@ -1157,7 +1157,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         assert data == ""
         assert exculded_fields == []
 
-    @patch('BMCHelixRemedyforce.Client.get_session_id')
+    @patch('BmcHelixRemedyForce.Client.get_session_id')
     @patch("requests.Session.request")
     def test_bmc_remedy_update_service_request_command_invalid_sr_number(self, req_obj, mocker_get_session_id):
         """
@@ -1185,7 +1185,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         except Exception as e:
             assert str(e) == "{}".format(MESSAGES["NOT_FOUND_SERVICE_REQUEST"]).format("345")
 
-    @patch('BMCHelixRemedyforce.Client.get_session_id')
+    @patch('BmcHelixRemedyForce.Client.get_session_id')
     @patch("requests.Session.request")
     def test_bmc_remedy_update_service_request_command_duplication(self, req_obj, mocker_get_session_id):
         """
@@ -1214,8 +1214,8 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         except Exception as e:
             assert str(e) == "{}".format(MESSAGES["INVALID_FIELDS_ERROR"]).format("category_id", "additional_fields")
 
-    @patch('BMCHelixRemedyforce.get_valid_arguments')
-    @patch('BMCHelixRemedyforce.Client.get_session_id')
+    @patch('BmcHelixRemedyForce.get_valid_arguments')
+    @patch('BmcHelixRemedyForce.Client.get_session_id')
     @patch("requests.Session.request")
     def test_bmc_remedy_update_service_request_command_invalid_additional_data(
             self, req_obj, mocker_get_session_id, get_mock):
@@ -1241,9 +1241,9 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
                 "additional_fields", "field_id1=value_1; field_2=value_2")
             assert str(e) == msg
 
-    @patch('BMCHelixRemedyforce.return_results')
-    @patch('BMCHelixRemedyforce.update_incident')
-    @patch('BMCHelixRemedyforce.Client.get_session_id')
+    @patch('BmcHelixRemedyForce.return_results')
+    @patch('BmcHelixRemedyForce.update_incident')
+    @patch('BmcHelixRemedyForce.Client.get_session_id')
     @patch("requests.Session.request")
     def test_update_service_request(self, req_obj, mocker_get_session_id, mocker_update_incident, mocker_context):
         """
@@ -1275,10 +1275,10 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
             )
 
     @patch('demistomock.error')
-    @patch('BMCHelixRemedyforce.return_warning')
-    @patch('BMCHelixRemedyforce.get_valid_arguments')
-    @patch('BMCHelixRemedyforce.update_incident')
-    @patch('BMCHelixRemedyforce.Client.get_session_id')
+    @patch('BmcHelixRemedyForce.return_warning')
+    @patch('BmcHelixRemedyForce.get_valid_arguments')
+    @patch('BmcHelixRemedyForce.update_incident')
+    @patch('BmcHelixRemedyForce.Client.get_session_id')
     @patch("requests.Session.request")
     def test_update_service_request_warning(
             self, req_obj, mocker_get_session_id, mocker_update_incident,
@@ -1314,9 +1314,9 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
             assert kwargs["outputs"]["BmcRemedyforce.ServiceRequest(val.Number === obj.Number)"]["Number"] == '345'
             assert kwargs["outputs"]["BmcRemedyforce.ServiceRequest(val.Number === obj.Number)"]["key"] == 'value'
 
-    @patch('BMCHelixRemedyforce.return_results')
-    @patch('BMCHelixRemedyforce.update_incident')
-    @patch('BMCHelixRemedyforce.Client.get_session_id')
+    @patch('BmcHelixRemedyForce.return_results')
+    @patch('BmcHelixRemedyForce.update_incident')
+    @patch('BmcHelixRemedyForce.Client.get_session_id')
     @patch("requests.Session.request")
     def test_update_service_request_failure(
             self, req_obj, mocker_get_session_id, mocker_update_incident, mocker_context):
@@ -1344,9 +1344,9 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
             assert str(e) == self.msg_for_invalid_format
 
     @patch('demistomock.error')
-    @patch('BMCHelixRemedyforce.return_results')
-    @patch('BMCHelixRemedyforce.update_incident')
-    @patch('BMCHelixRemedyforce.Client.get_session_id')
+    @patch('BmcHelixRemedyForce.return_results')
+    @patch('BmcHelixRemedyForce.update_incident')
+    @patch('BmcHelixRemedyForce.Client.get_session_id')
     @patch("requests.Session.request")
     def test_create_service_request(self, req_obj, mocker_get_session_id, mocker_update_incident, mocker_context,
                                     mocker_error):
@@ -1382,9 +1382,9 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
                 '00000132')
             assert args[0].raw_response == fetch_dummy_response()
 
-    @patch('BMCHelixRemedyforce.return_results')
-    @patch('BMCHelixRemedyforce.update_incident')
-    @patch('BMCHelixRemedyforce.Client.get_session_id')
+    @patch('BmcHelixRemedyForce.return_results')
+    @patch('BmcHelixRemedyForce.update_incident')
+    @patch('BmcHelixRemedyForce.Client.get_session_id')
     @patch("requests.Session.request")
     def test_create_service_request_failure(
             self, req_obj, mocker_get_session_id, mocker_update_incident, mocker_context):
@@ -1413,10 +1413,10 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
             assert str(e) == MESSAGES["UNEXPECTED_ERROR"]
 
     @patch('demistomock.error')
-    @patch('BMCHelixRemedyforce.return_warning')
-    @patch('BMCHelixRemedyforce.return_results')
-    @patch('BMCHelixRemedyforce.update_incident')
-    @patch('BMCHelixRemedyforce.Client.get_session_id')
+    @patch('BmcHelixRemedyForce.return_warning')
+    @patch('BmcHelixRemedyForce.return_results')
+    @patch('BmcHelixRemedyForce.update_incident')
+    @patch('BmcHelixRemedyForce.Client.get_session_id')
     @patch("requests.Session.request")
     def test_create_service_request_fail_to_update(
             self, req_obj, mocker_get_session_id, mocker_update_incident, mocker_context, mocker_return_warning,
@@ -1457,9 +1457,9 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
             assert kwargs['outputs'][OUTPUT_PREFIX['SERVICE_REQUEST_WARNING']]['Id'] == 'adfghjkl'
 
     @patch('demistomock.error')
-    @patch('BMCHelixRemedyforce.return_results')
-    @patch('BMCHelixRemedyforce.update_incident')
-    @patch('BMCHelixRemedyforce.Client.get_session_id')
+    @patch('BmcHelixRemedyForce.return_results')
+    @patch('BmcHelixRemedyForce.update_incident')
+    @patch('BmcHelixRemedyForce.Client.get_session_id')
     @patch("requests.Session.request")
     def test_create_service_request_invalid_additional_fields(
             self, req_obj, mocker_get_session_id, mocker_update_incident, mocker_context, mocker_error):
@@ -1516,7 +1516,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
 
         :param params_mock: parameter mock object.
         """
-        from BMCHelixRemedyforce import validate_params_for_fetch_incidents
+        from BmcHelixRemedyForce import validate_params_for_fetch_incidents
         params = {
             'isFetch': True,
             'max_fetch': '10',
@@ -1531,7 +1531,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         with pytest.raises(ValueError):
             validate_params_for_fetch_incidents({'query': 'select * a', 'isFetch': True})
 
-    @patch('BMCHelixRemedyforce.Client.get_session_id')
+    @patch('BmcHelixRemedyForce.Client.get_session_id')
     @patch("requests.Session.request")
     def test_bmc_remedy_impact_details_get_command(self, req_obj, mocker_get_session_id):
         """
@@ -1553,7 +1553,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         assert actual_response.raw_response == expected_output
         assert len(actual_response.outputs) == 2
 
-    @patch('BMCHelixRemedyforce.Client.http_request')
+    @patch('BmcHelixRemedyForce.Client.http_request')
     def test_bmc_remedy_impact_details_get_command_no_records_found(self, mock_http_res):
         """
         Testcase for bmc_remedy_impact_details_get_command method in case of no records founds in get response.
@@ -1576,7 +1576,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         result = bmc_remedy_impact_details_get_command(self.client, args)
         assert result == MESSAGES['NO_ENTITY_FOUND'].format('impact(s)')
 
-    @patch('BMCHelixRemedyforce.Client.http_request')
+    @patch('BmcHelixRemedyForce.Client.http_request')
     def test_bmc_remedy_service_offering_details_get_command_success(self, mock_http_res):
         """
         Given valid param command will run successful
@@ -1584,9 +1584,9 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         :param mock_http_res: mocker object for Client.http_request
         :return: None
         """
-        import BMCHelixRemedyforce
-        BMCHelixRemedyforce.create_hr_context_output = MagicMock(
-            side_effect=BMCHelixRemedyforce.create_hr_context_output)
+        import BmcHelixRemedyForce
+        BmcHelixRemedyForce.create_hr_context_output = MagicMock(
+            side_effect=BmcHelixRemedyForce.create_hr_context_output)
 
         with open("TestData/get_service_offering_details.json", encoding='utf-8') as f:
             expected_res = json.load(f)
@@ -1595,17 +1595,17 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         args = {
             "service_offering_name": "name"
         }
-        result = BMCHelixRemedyforce.bmc_remedy_service_offering_details_get_command(self.client, args)
+        result = BmcHelixRemedyForce.bmc_remedy_service_offering_details_get_command(self.client, args)
         assert result.raw_response == expected_res
-        assert BMCHelixRemedyforce.create_hr_context_output.call_count == 1
+        assert BmcHelixRemedyForce.create_hr_context_output.call_count == 1
 
         args = {}
-        result = BMCHelixRemedyforce.bmc_remedy_service_offering_details_get_command(self.client, args)
+        result = BmcHelixRemedyForce.bmc_remedy_service_offering_details_get_command(self.client, args)
         assert result.raw_response == expected_res
         assert len(result.outputs) == 2
-        assert BMCHelixRemedyforce.create_hr_context_output.call_count == 2
+        assert BmcHelixRemedyForce.create_hr_context_output.call_count == 2
 
-    @patch('BMCHelixRemedyforce.Client.http_request')
+    @patch('BmcHelixRemedyForce.Client.http_request')
     def test_bmc_remedy_service_offering_details_get_command_no_record_found(self, mock_http_res):
         """
         Testcase for bmc_remedy_service_offering_details_get_command method in case of no records founds
@@ -1629,8 +1629,8 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         result = bmc_remedy_service_offering_details_get_command(self.client, args)
         assert result == MESSAGES['NO_ENTITY_FOUND'].format('service offering(s)')
 
-    @patch('BMCHelixRemedyforce.return_results')
-    @patch('BMCHelixRemedyforce.Client.http_request')
+    @patch('BmcHelixRemedyForce.return_results')
+    @patch('BmcHelixRemedyForce.Client.http_request')
     def test_bmc_remedy_incident_create_command_success(self, mocker_http_request, mocker_return_results):
         """
         Given working create and update incident api
@@ -1648,7 +1648,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         mocker_return_results.return_value = None
         mocker_http_request.side_effect = mock_incident_success_response
 
-        from BMCHelixRemedyforce import bmc_remedy_incident_create_command
+        from BmcHelixRemedyForce import bmc_remedy_incident_create_command
         bmc_remedy_incident_create_command(self.client, {'client_id': 'SOME_CLIENT_ID', 'description': 'SOME_DESC'})
 
         assert mocker_return_results.call_count == 1
@@ -1660,8 +1660,8 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
             assert 'SUCCESS_NUMBER' in str(args[0].readable_output)
 
     @patch('demistomock.error')
-    @patch('BMCHelixRemedyforce.return_warning')
-    @patch('BMCHelixRemedyforce.Client.http_request')
+    @patch('BmcHelixRemedyForce.return_warning')
+    @patch('BmcHelixRemedyForce.Client.http_request')
     def test_bmc_remedy_incident_create_command_warning(self, mocker_http_request, mocker_return_warning, mocker_error):
         """
             Given working create and but not update incident api
@@ -1681,7 +1681,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         mocker_return_warning.return_value = None
         mocker_http_request.side_effect = mock_incident_warning_response
 
-        from BMCHelixRemedyforce import bmc_remedy_incident_create_command
+        from BmcHelixRemedyForce import bmc_remedy_incident_create_command
         bmc_remedy_incident_create_command(self.client,
                                            {'client_id': 'SOME_CLIENT_ID', 'additional_fields': 'service_id=SOME_ID'})
 
@@ -1698,7 +1698,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
             assert warning_output == kwargs['outputs']
             assert mocker_error.called
 
-    @patch('BMCHelixRemedyforce.Client.http_request')
+    @patch('BmcHelixRemedyForce.Client.http_request')
     def test_bmc_remedy_incident_create_command_failure(self, mocker_http_request):
         """
             Given non working create incident api
@@ -1711,7 +1711,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
 
         mocker_http_request.return_value = {'ErrorMessage': 'ERROR_MSG'}
 
-        from BMCHelixRemedyforce import bmc_remedy_incident_create_command
+        from BmcHelixRemedyForce import bmc_remedy_incident_create_command
         with pytest.raises(DemistoException) as e:
             bmc_remedy_incident_create_command(self.client, {'client_id': 'SOME_CLIENT_ID', 'description': 'SOME_DESC'})
 
@@ -1725,15 +1725,15 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
             :return: None
         """
 
-        from BMCHelixRemedyforce import bmc_remedy_incident_create_command
+        from BmcHelixRemedyForce import bmc_remedy_incident_create_command
         with pytest.raises(DemistoException) as e:
             bmc_remedy_incident_create_command(self.client,
                                                {'client_id': 'CLIENT_ID', 'additional_fields': 'description=test'})
         assert 'description' in str(e.value)
 
     @patch('demistomock.error')
-    @patch('BMCHelixRemedyforce.return_results')
-    @patch('BMCHelixRemedyforce.Client.http_request')
+    @patch('BmcHelixRemedyForce.return_results')
+    @patch('BmcHelixRemedyForce.Client.http_request')
     def test_bmc_remedy_incident_update_command_success(self, mocker_http_request, mocker_return_results, mocker_error):
         """
         Given working update incident api
@@ -1752,7 +1752,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         with open(INCIDENT_TEST_DATA_FILE) as f:
             update_success_context = json.load(f)['update_success']
 
-        from BMCHelixRemedyforce import bmc_remedy_incident_update_command
+        from BmcHelixRemedyForce import bmc_remedy_incident_update_command
         bmc_remedy_incident_update_command(self.client, {'incident_number': 'SOME_NUMBER'})
 
         for call in mocker_return_results.call_args_list:
@@ -1762,7 +1762,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
             assert args[0].readable_output == HR_MESSAGES['UPDATE_INCIDENT_SUCCESS'].format('SOME_NUMBER')
             assert mocker_error.called
 
-    @patch('BMCHelixRemedyforce.Client.http_request')
+    @patch('BmcHelixRemedyForce.Client.http_request')
     def test_bmc_remedy_incident_update_command_input_error(self, mocker_http_request):
         """
         Given working update incident api
@@ -1773,7 +1773,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         :return: None
         """
         mocker_http_request.return_value = fetch_dummy_response()
-        from BMCHelixRemedyforce import bmc_remedy_incident_update_command
+        from BmcHelixRemedyForce import bmc_remedy_incident_update_command
         args = {
             "incident_number": "321"
         }
@@ -1792,10 +1792,10 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
 
     sample_args = {"bad_1": "", "bad_2": "      ", "can_be_better": " good  ", "good": "good", "very_bad": None}
     sanitized_args = {"can_be_better": "good", "good": "good"}
-    from BMCHelixRemedyforce import remove_extra_space_from_args
+    from BmcHelixRemedyForce import remove_extra_space_from_args
     assert sanitized_args == remove_extra_space_from_args(sample_args)
 
-    @patch('BMCHelixRemedyforce.Client.http_request')
+    @patch('BmcHelixRemedyForce.Client.http_request')
     def test_bmc_remedy_asset_details_get_command_success(self, mock_http_res):
         """
         When bmc_remedy_asset_details_get_command command is called
@@ -1804,9 +1804,9 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         :param mock_http_res: mocker object for Client.http_request
         :return: None
         """
-        import BMCHelixRemedyforce
-        BMCHelixRemedyforce.create_asset_output = MagicMock(
-            side_effect=BMCHelixRemedyforce.create_asset_output)
+        import BmcHelixRemedyForce
+        BmcHelixRemedyForce.create_asset_output = MagicMock(
+            side_effect=BmcHelixRemedyForce.create_asset_output)
 
         with open("TestData/get_assets_details_records.json", encoding='utf-8') as f:
             expected_res = json.load(f)
@@ -1816,16 +1816,16 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
             "assets_name": "ADP",
             "instance_type": "Asset Classes"
         }
-        result = BMCHelixRemedyforce.bmc_remedy_asset_details_get_command(self.client, args)
+        result = BmcHelixRemedyForce.bmc_remedy_asset_details_get_command(self.client, args)
         assert result.raw_response == expected_res
-        assert BMCHelixRemedyforce.create_asset_output.call_count == 2
+        assert BmcHelixRemedyForce.create_asset_output.call_count == 2
 
         args = {}
-        result = BMCHelixRemedyforce.bmc_remedy_asset_details_get_command(self.client, args)
+        result = BmcHelixRemedyForce.bmc_remedy_asset_details_get_command(self.client, args)
         assert result.raw_response == expected_res
-        assert BMCHelixRemedyforce.create_asset_output.call_count == 4
+        assert BmcHelixRemedyForce.create_asset_output.call_count == 4
 
-    @patch('BMCHelixRemedyforce.Client.http_request')
+    @patch('BmcHelixRemedyForce.Client.http_request')
     def test_bmc_remedy_asset_details_get_command_no_record_found(self, mock_http_res):
         """
         Testcase for bmc_remedy_asset_details_get_command method in case of no records founds in get response.
@@ -1850,7 +1850,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
 
         assert result == MESSAGES['NO_ENTITY_FOUND'].format('asset(s)')
 
-    @patch('BMCHelixRemedyforce.Client.http_request')
+    @patch('BmcHelixRemedyForce.Client.http_request')
     def test_bmc_remedy_account_details_get_command_success(self, mock_http_res):
         """
         Given valid param command will run successful
@@ -1858,9 +1858,9 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         :param mock_http_res: mocker object for Client.http_request
         :return: None
         """
-        import BMCHelixRemedyforce
-        BMCHelixRemedyforce.create_hr_context_output = MagicMock(
-            side_effect=BMCHelixRemedyforce.create_hr_context_output)
+        import BmcHelixRemedyForce
+        BmcHelixRemedyForce.create_hr_context_output = MagicMock(
+            side_effect=BmcHelixRemedyForce.create_hr_context_output)
 
         with open("TestData/get_accounts_details_success.json", encoding='utf-8') as f:
             expected_res = json.load(f)
@@ -1871,15 +1871,15 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         }
         result = bmc_remedy_account_details_get_command(self.client, args)
         assert result.raw_response == expected_res
-        assert BMCHelixRemedyforce.create_hr_context_output.call_count == 1
+        assert BmcHelixRemedyForce.create_hr_context_output.call_count == 1
 
         args = {}
         result = bmc_remedy_account_details_get_command(self.client, args)
         assert result.raw_response == expected_res
         assert len(result.outputs) == 2
-        assert BMCHelixRemedyforce.create_hr_context_output.call_count == 2
+        assert BmcHelixRemedyForce.create_hr_context_output.call_count == 2
 
-    @patch('BMCHelixRemedyforce.Client.http_request')
+    @patch('BmcHelixRemedyForce.Client.http_request')
     def test_bmc_remedy_account_details_get_command_no_record_found(self, mock_http_res):
         """
         Testcase for bmc_remedy_account_details_get_command method in case of no records founds in get response.
@@ -1900,7 +1900,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         result = bmc_remedy_account_details_get_command(self.client, args)
         assert result == MESSAGES['NO_ENTITY_FOUND'].format('account(s)')
 
-    @patch('BMCHelixRemedyforce.Client.http_request')
+    @patch('BmcHelixRemedyForce.Client.http_request')
     def test_bmc_remedy_status_details_get_command_success(self, mocker_http_request):
         """
         Given working platform integration
@@ -1915,13 +1915,13 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
 
         mocker_http_request.return_value = mock_success_response
 
-        from BMCHelixRemedyforce import bmc_remedy_status_details_get_command
+        from BmcHelixRemedyForce import bmc_remedy_status_details_get_command
         command_resp = bmc_remedy_status_details_get_command(self.client, {})
 
         assert len(command_resp.outputs) == 1
         assert command_resp.raw_response == mock_success_response['records']
 
-    @patch('BMCHelixRemedyforce.Client.http_request')
+    @patch('BmcHelixRemedyForce.Client.http_request')
     def test_bmc_remedy_status_details_get_command_failure(self, mocker_http_request):
         """
         Given non-working platform integration
@@ -1933,12 +1933,12 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         mock_empty_response = {}
         mocker_http_request.return_value = mock_empty_response
 
-        from BMCHelixRemedyforce import bmc_remedy_status_details_get_command
+        from BmcHelixRemedyForce import bmc_remedy_status_details_get_command
         command_resp = bmc_remedy_status_details_get_command(self.client, {})
 
         assert MESSAGES['NO_ENTITY_FOUND'].format('status') == command_resp.readable_output
 
-    @patch('BMCHelixRemedyforce.Client.http_request')
+    @patch('BmcHelixRemedyForce.Client.http_request')
     def test_bmc_remedy_urgency_details_get_command_success(self, mock_http_res):
         """
         Given valid param command will run successful
@@ -1946,9 +1946,9 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         :param mock_http_res: mocker object for Client.http_request
         :return: None
         """
-        import BMCHelixRemedyforce
-        BMCHelixRemedyforce.create_hr_context_output = MagicMock(
-            side_effect=BMCHelixRemedyforce.create_hr_context_output)
+        import BmcHelixRemedyForce
+        BmcHelixRemedyForce.create_hr_context_output = MagicMock(
+            side_effect=BmcHelixRemedyForce.create_hr_context_output)
 
         with open("TestData/get_impacts.json", encoding='utf-8') as f:
             expected_res = json.load(f)
@@ -1959,15 +1959,15 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         }
         result = bmc_remedy_urgency_details_get_command(self.client, args)
         assert result.raw_response == expected_res
-        assert BMCHelixRemedyforce.create_hr_context_output.call_count == 1
+        assert BmcHelixRemedyForce.create_hr_context_output.call_count == 1
 
         args = {}
         result = bmc_remedy_urgency_details_get_command(self.client, args)
         assert result.raw_response == expected_res
         assert len(result.outputs) == 2
-        assert BMCHelixRemedyforce.create_hr_context_output.call_count == 2
+        assert BmcHelixRemedyForce.create_hr_context_output.call_count == 2
 
-    @patch('BMCHelixRemedyforce.Client.http_request')
+    @patch('BmcHelixRemedyForce.Client.http_request')
     def test_bmc_remedy_urgency_details_get_command_no_record_found(self, mock_http_res):
         """
         Testcase for bmc_remedy_urgency_details_get_command method in case of no records founds in get response.
@@ -2002,7 +2002,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
             assert str(e) == "{}".format(
                 MESSAGES["INVALID_TYPE_FOR_CATEGORIES"]).format("type", "type", ", ".join(POSSIBLE_CATEGORY_TYPES))
 
-    @patch('BMCHelixRemedyforce.Client.get_session_id')
+    @patch('BmcHelixRemedyForce.Client.get_session_id')
     @patch("requests.Session.request")
     def test_bmc_remedy_category_details_get_command_invalid_type_with_category(self, req_obj, mocker_get_session_id):
         """
@@ -2025,7 +2025,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
             assert str(e) == "{}".format(
                 MESSAGES["INVALID_TYPE_FOR_CATEGORIES"]).format("type", "type", ", ".join(POSSIBLE_CATEGORY_TYPES))
 
-    @patch('BMCHelixRemedyforce.Client.get_session_id')
+    @patch('BmcHelixRemedyForce.Client.get_session_id')
     @patch("requests.Session.request")
     def test_bmc_remedy_category_details_get_command_type_as_service_request(self, req_obj, mocker_get_session_id):
         """
@@ -2049,7 +2049,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         assert actual_result.raw_response == fetch_dummy_categories()
         assert actual_result.outputs == self.dummy_categories
 
-    @patch('BMCHelixRemedyforce.Client.get_session_id')
+    @patch('BmcHelixRemedyForce.Client.get_session_id')
     @patch("requests.Session.request")
     def test_bmc_remedy_category_details_get_command_type_as_incident(self, req_obj, mocker_get_session_id):
         """
@@ -2074,8 +2074,8 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         assert actual_result.raw_response == fetch_dummy_categories()
         assert actual_result.outputs == self.dummy_categories
 
-    @patch('BMCHelixRemedyforce.Client.get_session_id')
-    @patch('BMCHelixRemedyforce.Client.http_request')
+    @patch('BmcHelixRemedyForce.Client.get_session_id')
+    @patch('BmcHelixRemedyForce.Client.http_request')
     def test_bmc_remedy_category_details_get_command_no_record_found(self, req_obj, mocker_get_session_id):
         """
         Testcase for bmc_remedy_category_details_get_command method to fetch a mentioned category
@@ -2091,8 +2091,8 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         actual_result = bmc_remedy_category_details_get_command(self.client, args)
         assert actual_result == HR_MESSAGES['NOT_FOUND_FOR_ARGUMENTS'].format('category')
 
-    @patch('BMCHelixRemedyforce.Client.get_session_id')
-    @patch('BMCHelixRemedyforce.Client.http_request')
+    @patch('BmcHelixRemedyForce.Client.get_session_id')
+    @patch('BmcHelixRemedyForce.Client.http_request')
     def test_bmc_remedy_category_details_get_command_no_records_found(self, req_obj, mocker_get_session_id):
         """
         Testcase for bmc_remedy_category_details_get_command method to fetch all categories
@@ -2108,7 +2108,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         assert actual_result == MESSAGES['NO_ENTITY_FOUND'].format('category')
 
     @patch('demistomock.args')
-    @patch('BMCHelixRemedyforce.Client.http_request')
+    @patch('BmcHelixRemedyForce.Client.http_request')
     def test_bmc_remedy_queue_details_get_command(self, http_request, demisto_args):
         """
         Tests the get queue details command.
@@ -2116,7 +2116,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         :param http_request: mock object of http request.
         :param demisto_args: mock object of demisto.args.
         """
-        from BMCHelixRemedyforce import bmc_remedy_queue_details_get_command
+        from BmcHelixRemedyForce import bmc_remedy_queue_details_get_command
         with open('TestData/get_queue_details_response.json') as f:
             expected_response = json.load(f)
         http_request.return_value = expected_response
@@ -2143,7 +2143,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         """
          Tests the user details get command query by applying parameters.
         """
-        from BMCHelixRemedyforce import prepare_query_for_queue_details_get, SALESFORCE_QUERIES, QUEUE_TYPES
+        from BmcHelixRemedyForce import prepare_query_for_queue_details_get, SALESFORCE_QUERIES, QUEUE_TYPES
 
         # Without type and queue_name
         assert prepare_query_for_queue_details_get({}) == SALESFORCE_QUERIES['GET_QUEUE_DETAIL'].format('')
@@ -2167,7 +2167,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
             'GET_QUEUE_DETAIL_FOR_SPECIFIC_TYPE'].format('type') + " and queue.name = 'q1'"
 
     @patch('demistomock.args')
-    @patch('BMCHelixRemedyforce.Client.http_request')
+    @patch('BmcHelixRemedyForce.Client.http_request')
     def test_bmc_remedy_user_details_get_command(self, http_request, demisto_args):
         """
         Tests the get user details command.
@@ -2175,7 +2175,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         :param http_request: mock object of http request.
         :param demisto_args: mock object of demisto.args.
         """
-        from BMCHelixRemedyforce import bmc_remedy_user_details_get_command
+        from BmcHelixRemedyForce import bmc_remedy_user_details_get_command
         with open('TestData/get_user_details_response.json') as f:
             expected_response = json.load(f)
         http_request.return_value = expected_response
@@ -2202,7 +2202,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         """
          Tests the user details get command query by applying parameters.
         """
-        from BMCHelixRemedyforce import prepare_query_for_user_details_get
+        from BmcHelixRemedyForce import prepare_query_for_user_details_get
 
         args = {
             'email': 'email',
@@ -2219,7 +2219,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
                          " BMCServiceDesk__IsStaffUser__c=true and username='username'"
         assert prepare_query_for_user_details_get(args) == expected_query
 
-    @patch('BMCHelixRemedyforce.Client.get_session_id')
+    @patch('BmcHelixRemedyForce.Client.get_session_id')
     @patch("requests.Session.request")
     def test_bmc_remedy_broadcast_details_get_command_with_broadcast_name(self, req_obj, mocker_get_session_id):
         """
@@ -2243,7 +2243,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         assert actual_result.raw_response == fetch_dummy_broadcasts()
         assert actual_result.outputs == self.dummy_broadcasts
 
-    @patch('BMCHelixRemedyforce.Client.get_session_id')
+    @patch('BmcHelixRemedyForce.Client.get_session_id')
     @patch("requests.Session.request")
     def test_bmc_remedy_broadcast_details_get_command_with_category_name(self, req_obj, mocker_get_session_id):
         """
@@ -2269,8 +2269,8 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         assert actual_result.raw_response == fetch_dummy_broadcasts()
         assert actual_result.outputs == self.dummy_broadcasts
 
-    @patch('BMCHelixRemedyforce.Client.get_session_id')
-    @patch('BMCHelixRemedyforce.Client.http_request')
+    @patch('BmcHelixRemedyForce.Client.get_session_id')
+    @patch('BmcHelixRemedyForce.Client.http_request')
     def test_bmc_remedy_broadcast_details_get_command_no_records_found(self, req_obj, mocker_get_session_id):
         """
         Testcase for bmc_remedy_category_details_get_command method to fetch all categories
@@ -2286,7 +2286,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         assert actual_result == HR_MESSAGES["NO_BROADCAST_DETAILS_FOUND"]
 
     def test_prepare_iso_date_string(self):
-        from BMCHelixRemedyforce import prepare_iso_date_string
+        from BmcHelixRemedyForce import prepare_iso_date_string
         assert prepare_iso_date_string('') == ''
         assert prepare_iso_date_string('random string') == ''
         assert prepare_iso_date_string('2020-07-23T07:40:06.000+0000') == '2020-07-23T07:40:06+00:00'
@@ -2299,7 +2299,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         None should be returned if key does not exist
         :return:None
         """
-        from BMCHelixRemedyforce import validate_and_get_date_argument
+        from BmcHelixRemedyForce import validate_and_get_date_argument
         assert isinstance(validate_and_get_date_argument({'date_key': '2020-08-23T08:53:00.000Z'}, 'date_key', 'date'),
                           datetime)
         assert isinstance(
@@ -2321,7 +2321,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         invalid
         :return: None
         """
-        from BMCHelixRemedyforce import MAPPING_OF_FIELDS_WITH_SALESFORCE_COLUMNS, validate_incident_update_payload
+        from BmcHelixRemedyForce import MAPPING_OF_FIELDS_WITH_SALESFORCE_COLUMNS, validate_incident_update_payload
         sample_payload = {
             MAPPING_OF_FIELDS_WITH_SALESFORCE_COLUMNS['opened_date']: "2020-08-23T08:53:00.000Z",
             MAPPING_OF_FIELDS_WITH_SALESFORCE_COLUMNS['due_date']: "2020-08-23T08:54:00.000Z",
@@ -2342,7 +2342,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         assert MESSAGES['DATE_VALIDATION_ERROR'].format('due_date', 'opened_date') == str(e.value)
 
     @patch('demistomock.params')
-    @patch('BMCHelixRemedyforce.Client.http_request')
+    @patch('BmcHelixRemedyForce.Client.http_request')
     def test_get_attachments_for_incident_success(self, mocker_http_request, mocker_params):
         """
         Given working integration instance
@@ -2360,7 +2360,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
 
         mocker_http_request.return_value = api_response
 
-        from BMCHelixRemedyforce import get_attachments_for_incident
+        from BmcHelixRemedyForce import get_attachments_for_incident
 
         response = get_attachments_for_incident(self.client, 'SOME_ID')
 
@@ -2371,7 +2371,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         assert 'TEST USER' == response[0].get('Created By', '')
 
     @patch('demistomock.params')
-    @patch('BMCHelixRemedyforce.Client.http_request')
+    @patch('BmcHelixRemedyForce.Client.http_request')
     def test_get_attachments_for_incident_failure(self, mocker_http_request, mocker_params):
         """
         Given non working integration instance
@@ -2386,14 +2386,14 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
 
         mocker_http_request.side_effect = DemistoException('ERROR_MSG')
 
-        from BMCHelixRemedyforce import get_attachments_for_incident
+        from BmcHelixRemedyForce import get_attachments_for_incident
 
         with pytest.raises(DemistoException) as e:
             get_attachments_for_incident(self.client, 'SOME_ID')
 
         assert 'ERROR_MSG' == str(e.value)
 
-    @patch('BMCHelixRemedyforce.Client.http_request')
+    @patch('BmcHelixRemedyForce.Client.http_request')
     def test_get_notes_for_incident_success(self, mock_http_res):
         """
         When get_notes_for_incident method is called
@@ -2402,9 +2402,9 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         :param mock_http_res: mocker object for Client.http_request
         :return: None
         """
-        import BMCHelixRemedyforce
-        BMCHelixRemedyforce.process_notes_record = MagicMock(
-            side_effect=BMCHelixRemedyforce.process_notes_record)
+        import BmcHelixRemedyForce
+        BmcHelixRemedyForce.process_notes_record = MagicMock(
+            side_effect=BmcHelixRemedyForce.process_notes_record)
 
         with open("TestData/get_note_from_incident_success.json", encoding='utf-8') as f:
             expected_res = json.load(f)
@@ -2415,15 +2415,15 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
                     'Action~': 'action_id', 'Description': 'desc', 'Sender': 'sample_name'}]
         mock_http_res.return_value = expected_res
 
-        result = BMCHelixRemedyforce.get_notes_for_incident(self.client, '33')
+        result = BmcHelixRemedyForce.get_notes_for_incident(self.client, '33')
         assert result == records
-        assert BMCHelixRemedyforce.process_notes_record.call_count == 1
+        assert BmcHelixRemedyForce.process_notes_record.call_count == 1
 
-        result2 = BMCHelixRemedyforce.get_notes_for_incident(self.client, '')
+        result2 = BmcHelixRemedyForce.get_notes_for_incident(self.client, '')
         assert result2 == []
-        assert BMCHelixRemedyforce.process_notes_record.call_count == 1
+        assert BmcHelixRemedyForce.process_notes_record.call_count == 1
 
-    @patch('BMCHelixRemedyforce.Client.http_request')
+    @patch('BmcHelixRemedyForce.Client.http_request')
     def test_get_service_request_details(self, mock_http_res):
         """
         When get_service_request_details method is called
@@ -2454,7 +2454,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
             "question2": "answer2"
         }
 
-    @patch('BMCHelixRemedyforce.Client.http_request')
+    @patch('BmcHelixRemedyForce.Client.http_request')
     def test_bmc_remedy_incident_get_command_success(self, mock_http_res):
         """
         Given valid param command will run successful.
@@ -2462,9 +2462,9 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         :param mock_http_res: mocker object for Client.http_request
         :return: None
         """
-        import BMCHelixRemedyforce
-        BMCHelixRemedyforce.create_output_for_incident = MagicMock(
-            side_effect=BMCHelixRemedyforce.create_output_for_incident)
+        import BmcHelixRemedyForce
+        BmcHelixRemedyForce.create_output_for_incident = MagicMock(
+            side_effect=BmcHelixRemedyForce.create_output_for_incident)
 
         with open("TestData/fetch_incident_response.json", encoding='utf-8') as f:
             expected_res = json.load(f)
@@ -2475,17 +2475,17 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
             "incident_number": '123'
         }
 
-        result = BMCHelixRemedyforce.bmc_remedy_incident_get_command(self.client, args)
+        result = BmcHelixRemedyForce.bmc_remedy_incident_get_command(self.client, args)
         assert result.raw_response == expected_res
-        assert BMCHelixRemedyforce.create_output_for_incident.call_count == 1
+        assert BmcHelixRemedyForce.create_output_for_incident.call_count == 1
 
         args = {}
-        result = BMCHelixRemedyforce.bmc_remedy_incident_get_command(self.client, args)
+        result = BmcHelixRemedyForce.bmc_remedy_incident_get_command(self.client, args)
         assert result.raw_response == expected_res
         assert len(result.outputs) == 1
-        assert BMCHelixRemedyforce.create_output_for_incident.call_count == 2
+        assert BmcHelixRemedyForce.create_output_for_incident.call_count == 2
 
-    @patch('BMCHelixRemedyforce.Client.http_request')
+    @patch('BmcHelixRemedyForce.Client.http_request')
     def test_bmc_remedy_incident_get_command_no_incident_found(self, mock_http_res):
         """
         Given valid param command will run with message.
@@ -2493,14 +2493,14 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         :param mock_http_res: mocker object for Client.http_request
         :return: None
         """
-        import BMCHelixRemedyforce
+        import BmcHelixRemedyForce
         mock_http_res.return_value = {}
         args = {
             "time": "2 months",
             "incident_number": '321',
             "maximum_incident ": '50'
         }
-        result = BMCHelixRemedyforce.bmc_remedy_incident_get_command(self.client, args)
+        result = BmcHelixRemedyForce.bmc_remedy_incident_get_command(self.client, args)
         assert result == HR_MESSAGES['NO_INCIDENT_DETAILS_FOUND']
 
     def test_bmc_remedy_incident_get_command_invalid_maximum_service_request(self):
@@ -2509,7 +2509,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         given arguments and verify exception when invalid maximum_service_request is given.
 
         """
-        from BMCHelixRemedyforce import bmc_remedy_incident_get_command
+        from BmcHelixRemedyForce import bmc_remedy_incident_get_command
         args = {
             "maximum_incident": 'aaa'
         }
@@ -2535,7 +2535,7 @@ class BMCHelixRemedyForceTestCase(unittest.TestCase):
         assert outputs == self.get_service_request_response["expected_records"]
         assert hr_outputs == self.get_service_request_response["expected_records"]
 
-    @patch('BMCHelixRemedyforce.Client.http_request')
+    @patch('BmcHelixRemedyForce.Client.http_request')
     def test_bmc_remedy_service_request_get_command(self, mock_http_res):
         """
         Testcase for bmc_remedy_service_request_get_command method to fetch a service request with
