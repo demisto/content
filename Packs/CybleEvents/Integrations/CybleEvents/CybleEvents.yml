@@ -221,7 +221,7 @@ script:
         - default: false
           defaultValue: '10'
           description: The value in the field represents the number of events that can
-            be returned, maximum allowed is 50
+            be returned, maximum allowed is 1000
           isArray: false
           name: limit
           required: true
@@ -234,7 +234,7 @@ script:
         - contextPath: CybleEvents.Events.Details
           description: Returns details for given event of specific type
           type: String
-  dockerimage: demisto/python3:3.10.4.28442
+  dockerimage: demisto/python3:3.10.4.30607
   feed: false
   isfetch: true
   longRunning: false
