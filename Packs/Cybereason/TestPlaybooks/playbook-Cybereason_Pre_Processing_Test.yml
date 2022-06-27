@@ -1,22 +1,22 @@
 id: Cybereason Pre Processing Test
-version: 3
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Cybereason Pre Processing Test
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: bfc48a19-82d9-4989-8295-28adaf7489ba
     type: start
     task:
       id: bfc48a19-82d9-4989-8295-28adaf7489ba
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     separatecontext: false
     view: |-
       {
@@ -32,8 +32,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: 728acbcb-117a-47bc-81aa-29bb6fa7803e
     type: regular
     task:
@@ -46,10 +46,10 @@ tasks:
       scriptName: CybereasonPreProcessingExample
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     separatecontext: false
     view: |-
       {
@@ -65,8 +65,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: eeada645-264c-404e-8d7d-cd6ee0381737
     type: title
     task:
@@ -75,7 +75,8 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -105,3 +106,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0
+description: Test Playbook for Cybereason Pre Processing
