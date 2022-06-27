@@ -1112,10 +1112,19 @@ def search_all_mailboxes(receive_only_accounts):
         users_next_page_token = result.get('nextPageToken')
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
+            accounts_counter = 0
             futures = []
+            entries = []
             for user in result['users']:
                 futures.append(executor.submit(search_command, mailbox=user['primaryEmail']))
-            entries = [future.result() for future in concurrent.futures.as_completed(futures)]
+            for future in concurrent.futures.as_completed(futures):
+                accounts_counter += 1
+                entries.append(future.result())
+                if accounts_counter % 25 == 0:
+                    demisto.info('Still searching. Searched {} accounts, and found {} results so far'.format(
+                        accounts_counter,
+                        len(entries)),
+                    )
 
         if receive_only_accounts:
             entries = [mailboxes_to_entry(entries)]
