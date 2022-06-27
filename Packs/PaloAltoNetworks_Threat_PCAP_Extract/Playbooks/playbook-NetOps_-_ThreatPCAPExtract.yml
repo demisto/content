@@ -10,6 +10,7 @@ contentitemexportablefields:
     toServerVersion: ""
 description: Auto Retrieve PCAP from firewall threat logs
 id: 46d44dd4-9684-45f0-8ab2-20ec2c5eccbb
+fromversion: 6.5.0
 inputs:
 - description: clear context?
   key: debug
@@ -780,7 +781,6 @@ tasks:
       name: Set Severity from Log
       type: condition
       version: -1
-      description: ""
     taskid: 382c26bd-853f-4166-8791-9159be76c8e6
     timertriggers: []
     type: condition
