@@ -1,0 +1,45 @@
+category: Utilities
+commonfields:
+  id: Simple SFTP
+  version: -1
+configuration:
+- display: Host
+  name: host
+  required: true
+  type: 0
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Username
+  name: authentication
+  required: true
+  type: 9
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: f8338734-fb3e-4ad3-8608-7a345e66540b
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: Simple SFTP Integration to copy files from SFTP Server using pysftp.
+display: Simple SFTP
+name: Simple SFTP
+script:
+  commands:
+  - arguments:
+    - name: directory
+      required: true
+    name: sftp-listdir
+  - arguments:
+    - name: filePath
+      required: true
+    name: sftp-copyfrom
+  dockerimage: "demisto/pysftp\t"
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+sourcemoduleid: SFTP
