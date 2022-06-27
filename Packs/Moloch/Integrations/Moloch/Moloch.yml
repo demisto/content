@@ -2,7 +2,7 @@ commonfields:
   id: Moloch
   version: -1
 name: Moloch
-display: Moloch (deprecated)
+display: Moloch (Deprecated)
 deprecated: true
 category: Network Security
 description: Deprecated. Use Arkime instead.
