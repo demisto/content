@@ -294,7 +294,7 @@ Run any command supported in the API.
 | --- | --- | --- |
 | action | Action to be taken, such as show, get, set, edit, delete, rename, clone, move, override, multi-move, multi-clone, or complete. Documentation - https://docs.paloaltonetworks.com/pan-os/9-1/pan-os-panorama-api/pan-os-xml-api-request-types/configuration-api | Optional | 
 | category | Category parameter. For example, when exporting a configuration file, use "category=configuration". | Optional | 
-| cmd | Specifies the XML structure that defines the command. Used for operation commands (op type command). Can be retrieved from the debugging PAN-OS web UI. | Optional | 
+| cmd | Specifies the XML structure that defines the command. Used for operation commands (op type command). Can be retrieved from the PAN-OS web UI debugger or enabling debugging via the CLI using `debug cli on`. | Optional | 
 | command | Run a command. For example, command =&lt;show&gt;&lt;arp&gt;&lt;entry name='all'/&gt;&lt;/arp&gt;&lt;/show&gt; | Optional | 
 | dst | Specifies a destination. | Optional | 
 | element | Used to define a new value for an object. Should be an XML object, for example, <static><member>test</member></static>. | Optional | 
