@@ -62,16 +62,16 @@ class Client(BaseClient):
             priority, products and ref. Can not update or delete rule filter, ONLY add a new filter.
 
         Args:
-            id (str, optional): Firewall Rule identifier. Defaults to None.
-            description (str, optional): A description of the rule to help identify it. Defaults to None.
-            products (list, optional): List of products to bypass for a request when the bypass action is used. Defaults to None.
-            action (str, optional): The rule action. Defaults to None.
-            paused (bool, optional): Whether this firewall rule is currently paused. Defaults to None.
-            priority (int, optional): The priority of the rule to allow control of processing order. A lower number indicates
+            id(str): Firewall Rule identifier. Defaults to None.
+            description(str, optional): A description of the rule to help identify it. Defaults to None.
+            products(list, optional): List of products to bypass for a request when the bypass action is used. Defaults to None.
+            action(str, optional): The rule action. Defaults to None.
+            paused(bool, optional): Whether this firewall rule is currently paused. Defaults to None.
+            priority(int, optional): The priority of the rule to allow control of processing order. A lower number indicates
                 high priority. If not provided, any rules with a priority will be sequenced before those without.
                 Defaults to None.
-            ref (str, optional): Short reference tag to quickly select related rules. Defaults to None.
-            filter_id (int, optional): Filter ID (for adding an existing filter). Defaults to None.
+            ref(str, optional): Short reference tag to quickly select related rules. Defaults to None.
+            filter_id(int, optional): Filter ID(for adding an existing filter). Defaults to None.
 
         Returns:
             dict: API response from Cloudflare.
@@ -95,7 +95,7 @@ class Client(BaseClient):
     def cloudflare_waf_firewall_rule_delete_request(self, rule_id: str, zone_id: str) -> Dict[str, Any]:
         """ Delete Firewall rule for the specified rule id.
         Args:
-            id (str, optional): Firewall Rule identifier.
+            id(str, optional): Firewall Rule identifier.
 
         Returns:
             dict: API response from Cloudflare.
@@ -109,12 +109,12 @@ class Client(BaseClient):
         """ List of firewall rules or details of individual rule by ID.
 
         Args:
-            id (str, optional): Firewall Rule identifier. Defaults to None.
-            description (str, optional): A description of the rule to help identify it. Defaults to None.
-            action (str, optional): The rule action. Defaults to None.
-            paused (bool, optional): Whether this firewall rule is currently paused. Defaults to None.
-            page (int, optional): Page number of paginated results. min value: 1.
-            page_size (int, optional): Number of firewall rules per page. min value: 5, max value: 100.
+            id(str, optional): Firewall Rule identifier. Defaults to None.
+            description(str, optional): A description of the rule to help identify it. Defaults to None.
+            action(str, optional): The rule action. Defaults to None.
+            paused(bool, optional): Whether this firewall rule is currently paused. Defaults to None.
+            page(int, optional): Page number of paginated results. min value: 1.
+            page_size(int, optional): Number of firewall rules per page. min value: 5, max value: 100.
 
         Returns:
             dict: API response from Cloudflare.
@@ -138,21 +138,22 @@ class Client(BaseClient):
         """ List account's zones or details of individual zone by ID.
 
         Args:
-            match (str, optional): Whether to match all search requirements or at least one (any). Defaults to None.
-            name (str, optional):A domain name. Defaults to None.
-            account_name (str, optional): Account name. Defaults to None.
-            order (str, optional): Field to order zones by. Defaults to None.
-            status (str, optional): Status of the zone. Defaults to None.
-            account_id (str, optional): Account identifier tag. Defaults to None.
-            direction (str, optional): Direction to order zones. Defaults to None.
-            page (int, optional): Page number of paginated results. Defaults to 1.
-            page_size (int, optional): Number of zones per page. Defaults to 50.
+            match(str, optional): Whether to match all search requirements or at least one(any). Defaults to None.
+            name(str, optional): A domain name. Defaults to None.
+            account_name(str, optional): Account name. Defaults to None.
+            order(str, optional): Field to order zones by. Defaults to None.
+            status(str, optional): Status of the zone. Defaults to None.
+            account_id(str, optional): Account identifier tag. Defaults to None.
+            direction(str, optional): Direction to order zones. Defaults to None.
+            page(int, optional): Page number of paginated results. Defaults to 1.
+            page_size(int, optional): Number of zones per page. Defaults to 50.
 
         Returns:
             dict: API response from Cloudflare.
         """
         if args is None:
             args = {}
+
         params = remove_empty_elements({
             'match': args.get('match'),
             'name': args.get('name'),
@@ -173,11 +174,11 @@ class Client(BaseClient):
                                              description: str = None) -> Dict[str, Any]:
         """ Create a new Filter in Cloudflare.
         Args:
-            expression (str): The filter expression to be used. Defaults to None.
-            ref (str, optional): Short reference tag to quickly select related rules. Defaults to None.
-            paused (str, optional): Whether this filter is currently paused. Defaults to None.
-            description (str, optional): A note that you can use to describe the purpose of the filter. Defaults to None.
-            zone_id (str, optional): Zone identifier. Defaults to None.
+            expression(str): The filter expression to be used. Defaults to None.
+            ref(str, optional): Short reference tag to quickly select related rules. Defaults to None.
+            paused(str, optional): Whether this filter is currently paused. Defaults to None.
+            description(str, optional): A note that you can use to describe the purpose of the filter. Defaults to None.
+            zone_id(str, optional): Zone identifier. Defaults to None.
 
         Returns:
             dict: API response from Cloudflare.
@@ -231,6 +232,7 @@ class Client(BaseClient):
 
         Returns:
             dict: API response from Cloudflare.
+
         """
         return self._http_request(
             method='DELETE',
@@ -465,6 +467,7 @@ def pagination(request_command: Callable, args: Dict[str, Any], pagination_args:
             total_count = dict_safe_get(response, ['result_info', 'total_count'])
             output.extend(response['result'])  # type: ignore
             limit -= 100
+
         pagination_message = f'Showing {len(output)} rows out of {total_count}.'
 
     return response, output, pagination_message
@@ -641,7 +644,6 @@ def cloudflare_waf_firewall_rule_list_command(client: Client, args: Dict[str, An
     description = args.get('description')
     action = args.get('action')
     paused = arg_to_boolean(args.get('paused'))
-
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
     limit = arg_to_number(args.get('limit'))
@@ -1086,7 +1088,6 @@ def cloudflare_waf_ip_list_item_list_command(client: Client, args: Dict[str, Any
             raise ValueError(f"IP address {item_ip} it's not an item in IP list {list_id}")
 
     new_output = {'list_id': list_id, 'items': output}
-
     readable_output = tableToMarkdown(
         name=f'ip-list {list_id}',
         metadata=pagination_message,
@@ -1150,12 +1151,14 @@ def schedule_command(operation_id: str, interval: Optional[int], timeout: Option
     Returns:
         ScheduledCommand: Command, args, timeout and interval for CommandResults.
     """
+
     polling_args = {
         'operation_id': operation_id,
         'interval': interval,
         'polling': True,
         **args
     }
+
     scheduled_command = ScheduledCommand(
         command=cmd,
         next_run_in_seconds=interval,  # type: ignore
@@ -1166,6 +1169,7 @@ def schedule_command(operation_id: str, interval: Optional[int], timeout: Option
 
 def run_polling_command(client: Client, cmd: str, command_function: Callable, args: Dict[str, Any]) -> CommandResults:
     """ Run a pipeline.
+
     Args:
         cmd (str): The command name.
         command (Callable): The command.
@@ -1185,6 +1189,7 @@ def run_polling_command(client: Client, cmd: str, command_function: Callable, ar
         operation_id = output['operation_id']
         args['operation_id'] = operation_id
         scheduled_command = schedule_command(operation_id, interval, timeout, cmd, args)
+
         command_results.scheduled_command = scheduled_command
         return command_results
 

@@ -2700,6 +2700,35 @@ def get_machine_action_by_id_command(client: MsClient, args: dict):
     return human_readable, entry_context, response
 
 
+def request_download_investigation_package_command(client: MsClient, args: dict):
+    return run_polling_command(client, args, 'microsoft-atp-request-and-download-investigation-package',
+                               get_machine_investigation_package_command,
+                               get_machine_action_command, download_file_after_successful_status)
+
+
+def download_file_after_successful_status(client, res):
+    demisto.debug("post polling - download file")
+    machine_action_id = res['id']
+
+    # get file uri from action:
+    file_uri = client.get_investigation_package_sas_uri(machine_action_id)['value']
+    demisto.debug(f'Got file for downloading: {file_uri}')
+
+    # download link, create file result. File comes back as compressed gz file.
+    f_data = client.download_file(file_uri)
+    md_results = {
+        'Machine Action Id': res.get('id'),
+        'MachineId': res.get('machineId'),
+        'Status': res.get('status'),
+    }
+    return [fileResult('Response Result.gz', f_data.content),
+            CommandResults(
+                outputs_prefix='MicrosoftATP.MachineAction',
+                outputs=res,
+                readable_output=tableToMarkdown('Machine Action:', md_results)
+    )]
+
+
 def get_machine_action_data(machine_action_response):
     """Get machine raw response and returns the machine action info in context and human readable format.
 
@@ -2747,7 +2776,7 @@ def get_machine_investigation_package_command(client: MsClient, args: dict):
     entry_context = {
         'MicrosoftATP.MachineAction(val.ID === obj.ID)': action_data
     }
-    return human_readable, entry_context, machine_action_response
+    return CommandResults(readable_output=human_readable, outputs=entry_context, raw_response=machine_action_response)
 
 
 def get_investigation_package_sas_uri_command(client: MsClient, args: dict):
@@ -4439,13 +4468,11 @@ def run_polling_command(client: MsClient, args: dict, cmd: str, action_func: Cal
 
     # distinguish between the initial run, which is the upload run, and the results run
     is_first_run = 'machine_action_id' not in args
-    demisto.debug(f'polling args: {args}')
     if is_first_run:
         command_results = action_func(client, args)
-        outputs = command_results.outputs
         # schedule next poll
         polling_args = {
-            'machine_action_id': outputs.get('action_id'),
+            'machine_action_id': command_results.raw_response.get("id"),
             'interval_in_seconds': interval_in_secs,
             'polling': True,
             **args,
@@ -4459,14 +4486,20 @@ def run_polling_command(client: MsClient, args: dict, cmd: str, action_func: Cal
         return command_results
 
     # not a first run
-
     command_result = results_function(client, args)
     action_status = command_result.outputs.get("status")
-    command_status = command_result.outputs.get("commands", [{}])[0].get("commandStatus")
+    demisto.debug(f"action status is: {action_status}")
+    if command_result.outputs.get("commands", []):
+        command_status = command_result.outputs.get("commands", [{}])[0].get("commandStatus")
+    else:
+        command_status = 'Completed' if action_status == "Succeeded" else None
     if action_status in ['Failed', 'Cancelled'] or command_status == 'Failed':
-        raise Exception(
-            f'Command {action_status}. Additional info: {command_result.outputs.get("commands", [{}])[0].get("errors")}')
+        error_msg = f"Command {action_status}."
+        if command_result.outputs.get("commands", []):
+            error_msg += f'{command_result.outputs.get("commands", [{}])[0].get("errors")}'
+        raise Exception(error_msg)
     elif command_status != 'Completed' or action_status == 'InProgress':
+        demisto.debug("action status is not completed")
         # schedule next poll
         polling_args = {
             'interval_in_seconds': interval_in_secs,
@@ -4805,7 +4838,7 @@ def main():  # pragma: no cover
             return_outputs(*get_machine_action_by_id_command(client, args))
 
         elif command == 'microsoft-atp-collect-investigation-package':
-            return_outputs(*get_machine_investigation_package_command(client, args))
+            return_results(get_machine_investigation_package_command(client, args))
 
         elif command == 'microsoft-atp-get-investigation-package-sas-uri':
             return_outputs(*get_investigation_package_sas_uri_command(client, args))
@@ -4916,6 +4949,8 @@ def main():  # pragma: no cover
             return_results(get_machine_users_command(client, args))
         elif command == 'microsoft-atp-get-machine-alerts':
             return_results(get_machine_alerts_command(client, args))
+        elif command == 'microsoft-atp-request-and-download-investigation-package':
+            return_results(request_download_investigation_package_command(client, args))
     except Exception as err:
         return_error(str(err))
 

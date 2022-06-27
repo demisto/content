@@ -1,0 +1,257 @@
+id: CrowdStrike Falcon - Search Endpoints By Hash
+version: -1
+fromversion: 6.5.0
+name: CrowdStrike Falcon - Search Endpoints By Hash
+description: "This playbook searches across the organization for other endpoints associated with a specific SHA256 hash."
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fdebf4c2-18fa-45ad-8931-a1df035a26d8
+    type: start
+    task:
+      id: fdebf4c2-18fa-45ad-8931-a1df035a26d8
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 9ce410b8-ddde-4690-8625-2cfab080cd83
+    type: regular
+    task:
+      id: 9ce410b8-ddde-4690-8625-2cfab080cd83
+      version: -1
+      name: Search for hash in enviorment
+      description: Returns a list of device IDs an indicator ran on.
+      script: '|||cs-falcon-device-ran-on'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      type:
+        simple: sha256
+      value:
+        simple: ${inputs.FileSha256}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 04610f87-fee9-4de1-8980-1649f61b38d0
+    type: regular
+    task:
+      id: 04610f87-fee9-4de1-8980-1649f61b38d0
+      version: -1
+      name: Count hash in the environment
+      description: The number of hosts that observed the provided IOC.
+      script: '|||cs-falcon-device-count-ioc'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      type:
+        simple: sha256
+      value:
+        simple: ${inputs.FileSha256}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 0204bfc2-fc2d-483c-869b-8f85d0580b31
+    type: title
+    task:
+      id: 0204bfc2-fc2d-483c-869b-8f85d0580b31
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 9b555544-59aa-45db-81b2-a12eb98fc56e
+    type: condition
+    task:
+      id: 9b555544-59aa-45db-81b2-a12eb98fc56e
+      version: -1
+      name: Was the hash detected on additional hosts?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: CrowdStrike.IOC.DeviceCount
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: f7a79437-c0fa-4613-84fa-22581196d8ef
+    type: regular
+    task:
+      id: f7a79437-c0fa-4613-84fa-22581196d8ef
+      version: -1
+      name: Enrich endpoint details for non original host
+      description: Returns information about an endpoint.
+      script: '|||endpoint'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      id:
+        complex:
+          root: CrowdStrike.DeviceID
+          filters:
+          - - operator: notInList
+              left:
+                value:
+                  simple: CrowdStrike.DeviceID
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.HostId
+                iscontext: true
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 945,
+        "width": 610,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: FileSha256
+  value: {}
+  required: false
+  description: The SHA256 file hash to search for.
+  playbookInputQuery:
+- key: HostId
+  value: {}
+  required: false
+  description: The ID of the host that originated the detection.
+  playbookInputQuery:
+outputs:
+- contextPath: Endpoint
+  description: Additional hosts that have the SHA256 present.
+  type: string
+- contextPath: CrowdStrike.IOC.DeviceCount
+  description: The number of devices the IOC ran on.
+  type: number
+tests:
+ -  No tests
