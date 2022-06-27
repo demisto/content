@@ -32,6 +32,7 @@ class Client(BaseClient):
         self.api_timeout = api_timeout
         self.first_fetch = first_fetch
         self.max_fetch = min(max_fetch, PAGELENGTH)
+        self.test = 'test'
 
     def _http_request(self, **kwargs):
         try:
