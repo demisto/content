@@ -1,7 +1,7 @@
 contentitemexportablefields:
   contentitemfields:
     definitionid: ""
-    fromServerVersion: ""
+    fromServerVersion: 6.5.0
     itemVersion: ""
     packID: cc1b4eef-f5e0-4e93-8af7-fae1d023200e
     packName: NetOps-PANOS-Threat-PCAP-Extraction
@@ -89,6 +89,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ""
     taskid: 34199dfd-4efe-40ac-83e6-8e89dde1b77b
     timertriggers: []
     type: start
@@ -308,6 +309,7 @@ tasks:
       name: should we mine PCAP for flows?
       type: condition
       version: -1
+      description: ""
     taskid: 891ceb64-329c-4252-8e92-89c56eb166a8
     timertriggers: []
     type: condition
@@ -338,6 +340,7 @@ tasks:
       name: end
       type: title
       version: -1
+      description: ""
     taskid: acf2487c-3331-45b7-88de-32736e079e49
     timertriggers: []
     type: title
@@ -445,6 +448,7 @@ tasks:
       name: Set Incident Properties
       type: title
       version: -1
+      description: ""
     taskid: 49e76f35-9f28-4ca3-81a7-8e9f0f13eb2b
     timertriggers: []
     type: title
@@ -475,6 +479,7 @@ tasks:
       name: Get PCAP
       type: title
       version: -1
+      description: ""
     taskid: a03c3dc4-4782-4624-86ae-51a32305ee98
     timertriggers: []
     type: title
@@ -518,6 +523,7 @@ tasks:
       name: Connect Via Panorama or Firewall Direct for PCAP
       type: condition
       version: -1
+      description: ""
     taskid: d6347fd2-b7bf-4e8a-85d8-48f93ddb57c3
     timertriggers: []
     type: condition
@@ -774,6 +780,7 @@ tasks:
       name: Set Severity from Log
       type: condition
       version: -1
+      description: ""
     taskid: 382c26bd-853f-4166-8791-9159be76c8e6
     timertriggers: []
     type: condition
