@@ -582,7 +582,7 @@ def main():
     verify_certificate = not params.get('insecure', False)
     tags = argToList(params.get('feedTags', []))
     tlp_color = params.get('tlp_color')
-    create_relationships = argToBoolean(params.get('create_relationships'))
+    create_relationships = argToBoolean(params.get('create_relationships', False))
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
 
