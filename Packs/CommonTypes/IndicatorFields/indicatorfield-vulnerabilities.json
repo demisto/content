@@ -6,6 +6,10 @@
  "ownerOnly": false,
  "cliName": "vulnerabilities",
  "type": "multiSelect",
+ "associatedTypes": [
+  "MVision CASB Alert",
+  "MVision CASB Threat"
+ ],
  "closeForm": false,
  "editForm": true,
  "required": false,

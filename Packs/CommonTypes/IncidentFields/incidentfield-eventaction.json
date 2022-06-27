@@ -16,7 +16,9 @@
   "Create",
   "Update",
   "Deactivate",
-  "Reactivate"
+  "Reactivate",
+  "MVision CASB Alert",
+  "MVision CASB Threat"
  ],
  "useAsKpi": true,
  "locked": false,

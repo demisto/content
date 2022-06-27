@@ -6,21 +6,18 @@
 	"description": "",
 	"feed": false,
 	"fromServerVersion": "",
-	"id": "2a10472d-3b86-471b-8b53-59fcd8b27562",
+	"id": "b06ba6f8-22ac-4b39-89bb-0afb088ae0a6",
 	"incidentSamples": null,
 	"indicatorSamples": null,
 	"instanceIds": null,
 	"itemVersion": "",
 	"keyTypeMap": {},
 	"locked": false,
-	"logicalVersion": 9,
+	"logicalVersion": 3,
 	"mapping": {
 		"MVision CASB Threat": {
-			"dontMapEventToLabels": true,
+			"dontMapEventToLabels": false,
 			"internalMapping": {
-				"Activity Count": {
-					"simple": "activityCount"
-				},
 				"Activity Names": {
 					"simple": "activityNames"
 				},
@@ -30,113 +27,23 @@
 				"Actor Id Type": {
 					"simple": "actorIdType"
 				},
-				"Alert Action": {
-					"simple": "information.remediationResponse"
-				},
 				"Alert Category": {
 					"simple": "incidentGroup"
 				},
-				"Anomaly Category": {
-					"simple": "information.anomalyCategory"
-				},
-				"Anomaly Cause": {
-					"simple": "information.anomalyValue"
-				},
-				"Anomaly Count": {
-					"simple": "information.activityCount"
-				},
-				"Anomaly Value": {
-					"simple": "information.anomalyValue"
-				},
-				"Categories": {
-					"simple": "information.threatCategory"
-				},
-				"City": {
-					"simple": "information.cities"
-				},
-				"Cloud Account ID": {
-					"simple": "information.accountId"
-				},
-				"Content Item Hierarchy": {
-					"simple": "information.contentItemHierarchy"
-				},
-				"Content Item Id": {
-					"simple": "information.contentItemId"
-				},
-				"Content Item Name": {
-					"simple": "information.contentItemName"
-				},
-				"Content Item Parent": {
-					"simple": "information.contentItemParent"
-				},
-				"Content Item Size": {
-					"simple": "information.contentItemSize"
-				},
-				"Content Item Type": {
-					"simple": "information.contentItemType"
-				},
-				"Country": {
-					"simple": "information.countries"
-				},
-				"Device External IP": {
-					"simple": "information.device.ip"
-				},
-				"Device Type": {
-					"simple": "information.device.application.type"
-				},
-				"Domain Name": {
-					"simple": "information.recipientDomains"
-				},
-				"Event ID": {
-					"simple": "information.eventId"
-				},
-				"Is Part Of Threat": {
-					"simple": "information.isPartOfThreat"
-				},
-				"Is Tokenized": {
-					"simple": "isTokenized"
+				"Cloud Service": {
+					"simple": "serviceNames"
 				},
 				"Last Update Time": {
 					"simple": "timeModified"
 				},
-				"Malware Confidence": {
-					"simple": "malwareConfidence"
-				},
-				"OS": {
-					"simple": "information.device.os.platform"
-				},
-				"Org Unit": {
-					"simple": "information.sourceIpOrgs"
-				},
 				"Policy Actions": {
 					"simple": "responses"
-				},
-				"Policy Description": {
-					"simple": "information.policyName"
-				},
-				"Policy ID": {
-					"simple": "information.policyId"
-				},
-				"Region": {
-					"simple": "information.region"
-				},
-				"Resolution Action": {
-					"simple": "resolutionAction"
 				},
 				"Risk Score": {
 					"simple": "incidentRiskScore"
 				},
-				"Scan Name": {
-					"simple": "information.scanName"
-				},
-				"Scan Run Date": {
-					"simple": "information.scanRunDate"
-				},
 				"Significantly Updated At": {
 					"simple": "significantlyUpdatedAt"
-				},
-				"Source IPs": {
-					"simple": "information.sourceIps"
 				},
 				"Source Status": {
 					"simple": "status"
@@ -144,88 +51,41 @@
 				"Start Time": {
 					"simple": "timeCreated"
 				},
-				"Total Match Count": {
-					"simple": "information.totalMatchCount"
-				},
-				"User Agent": {
-					"simple": "information.device.application.user_agent"
-				},
-				"User Attributes": {
-					"simple": "information.userAttributes"
-				},
-				"content Item Created On": {
-					"simple": "information.contentItemCreatedOn"
-				},
 				"severity": {
 					"simple": "incidentRiskSeverity"
-				}
-			}
-		},
-		"dbot_classification_incident_type_all": {
-			"dontMapEventToLabels": true,
-			"internalMapping": {
-				"Activity Count": {
-					"simple": "activityCount"
 				},
-				"Activity Names": {
-					"simple": "activityNames"
+				"Alert Action": {
+					"simple": "information.remediationResponse"
 				},
-				"Actor Id": {
-					"simple": "actorId"
+				"Anomaly Count": {
+					"simple": "information.anomalyCount"
 				},
-				"Actor Id Type": {
-					"simple": "actorIdType"
+				"Anomaly Ids": {
+					"simple": "information.anomalyIds"
 				},
-				"Content Item Hierarchy": {
-					"simple": "information.contentItemHierarchy"
-				},
-				"Content Item Id": {
-					"simple": "information.contentItemId"
-				},
-				"Content Item Name": {
-					"simple": "information.contentItemName"
-				},
-				"Content Item Parent": {
-					"simple": "information.contentItemParent"
-				},
-				"Content Item Size": {
-					"simple": "information.contentItemSize"
-				},
-				"Content Item Type": {
-					"simple": "information.contentItemType"
+				"Device External IP": {
+					"simple": "information.device.ip"
 				},
 				"Device Type": {
 					"simple": "information.device.device_type"
 				},
-				"Is Tokenized": {
-					"simple": "isTokenized"
+				"Event ID": {
+					"simple": "information.eventId"
 				},
-				"Malware Confidence": {
-					"simple": "malwareConfidence"
+				"Is Tokenized": {
+					"simple": "information.isTokenized"
+				},
+				"OS": {
+					"simple": "information.device.os.platform"
 				},
 				"Resolution Action": {
-					"simple": "resolutionAction"
-				},
-				"Scan Name": {
-					"simple": "scanName"
-				},
-				"Scan Run Date": {
-					"simple": "scanRunDate"
-				},
-				"Significantly Updated At": {
-					"simple": "significantlyUpdatedAt"
-				},
-				"Total Match Count": {
-					"simple": "totalMatchCount"
+					"simple": "information.resolutionAction"
 				},
 				"User Agent": {
 					"simple": "information.device.application.user_agent"
 				},
 				"User Attributes": {
 					"simple": "information.userAttributes"
-				},
-				"content Item Created On": {
-					"simple": "information.contentItemCreatedOn"
 				}
 			}
 		}
@@ -236,7 +96,7 @@
 	"propagationLabels": [
 		"all"
 	],
-	"sourceClassifierId": "8eb1c013-59c4-43bc-8d2b-c64f71a45b5b",
+	"sourceClassifierId": "",
 	"system": false,
 	"toServerVersion": "",
 	"transformer": {},

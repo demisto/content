@@ -5,7 +5,9 @@
 		"GCP Compute Engine Misconfiguration",
 		"AWS CloudTrail Misconfiguration",
 		"AWS IAM Policy Misconfiguration",
-		"AWS EC2 Instance Misconfiguration"
+		"AWS EC2 Instance Misconfiguration",
+		"MVision CASB Alert",
+        "MVision CASB Threat"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,
