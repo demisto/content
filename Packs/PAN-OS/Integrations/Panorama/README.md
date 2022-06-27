@@ -48,7 +48,7 @@ This integration was integrated and tested with version 8.1.0 and 9.0.1 of Palo 
    * [pan-os-query-logs](#pan-os-query-logs)
    * [pan-os-check-logs-status](#pan-os-check-logs-status)
    * [pan-os-get-logs](#pan-os-get-logs)
-* The target argument is supported only in operational type commands. Meaning, you can not use it with commit, logs, PCAP commands.
+* The target argument is supported only in operational type commands. Meaning, you can not use it with commit, logs, or PCAP commands.
 
 ## Configure Panorama on Cortex XSOAR
 
@@ -77,7 +77,7 @@ This integration was integrated and tested with version 8.1.0 and 9.0.1 of Palo 
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-1. [Run any command supported in the Panorama API: panorama](#pan-os)
+1. [Run any command supported in the Panorama API: panorama](#panorama)
 2. [Get pre-defined threats list from a Firewall or Panorama and stores as a JSON file in the context: panorama-get-predefined-threats-list](#pan-os-get-predefined-threats-list)
 3. [Commit a configuration: panorama-commit](#pan-os-commit)
 4. [Pushes rules from PAN-OS to the configured device group: panorama-push-to-device-group](#pan-os-push-to-device-group)
@@ -3627,10 +3627,10 @@ Installs the target PAN-OS version on the specified target device.
 `pan-os-install-panos-version`
 #### Input
 
-| **Argument Name** | **Description**                                                                              | **Required** |
-| --- |----------------------------------------------------------------------------------------------| --- |
+| **Argument Name** | **Description**  | **Required** |
+| --- |---| --- |
 | target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
-| target_version | Target PAN-OS version to install.                                                            | Required | 
+| target_version | Target PAN-OS version to install. | Required | 
 
 
 #### Context Output
