@@ -119,7 +119,7 @@ def xsoar_configure_and_install_flow(options, branch_name: str, build_number: st
 
     pack_ids = get_packs_with_higher_min_version(
         packs_names=set(Build.fetch_pack_ids_to_install(options.pack_ids_to_install)),
-        content_path=XSOARBuild.content_path,
+        content_path=Build.content_path,
         server_numeric_version=server_version
     )
 
