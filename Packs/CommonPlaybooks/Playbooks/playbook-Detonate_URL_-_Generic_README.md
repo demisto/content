@@ -4,15 +4,22 @@ Detonate URL through active integrations that support URL detonation.
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Detonate URL - ThreatGrid
 * Detonate URL - Group-IB TDS Polygon
-* Detonate URL - JoeSecurity
-* Detonate URL - CrowdStrike
-* Detonate URL - Cuckoo
 * Detonate URL - McAfee ATD
+* Detonate URL - FireEye AX
+* Detonate URL - WildFire v2.1
 * Detonate URL - CrowdStrike Falcon X
-* Detonate URL - Lastline v2
 * Detonate URL - ANYRUN
+* Detonate URL - JoeSecurity
+* Detonate URL - VMRay
+* Detonate URL - Hybrid Analysis
+* Detonate URL - VirusTotal (API v3)
+* Detonate URL - ThreatGrid
+* Detonate URL - Hatching Triage
+* Detonate URL - Cuckoo
+* Detonate URL - CrowdStrike
+* Detonate URL - ThreatStream
+* Detonate URL - Lastline v2
 
 ### Integrations
 This playbook does not use any integrations.
@@ -151,4 +158,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![Detonate URL - Generic](../doc_files/Detonate_URL_-_Generic.png)
+![Detonate URL - Generic_patched](Insert the link to your image here)
