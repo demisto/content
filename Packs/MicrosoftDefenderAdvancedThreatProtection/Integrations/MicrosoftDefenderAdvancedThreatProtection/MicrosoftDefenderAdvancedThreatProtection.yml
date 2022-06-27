@@ -3027,7 +3027,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: The action to apply if the indicator is matched from within the targetProduct security tool. 
+      description: The action to apply if the indicator is matched from within the targetProduct security tool.
       isArray: false
       name: action
       predefined:
@@ -3795,7 +3795,7 @@ script:
       - Url
     - default: false
       auto: PREDEFINED
-      description: The action taken if the indicator is discovered in the organization. 
+      description: The action taken if the indicator is discovered in the organization.
       isArray: false
       name: action
       required: true
@@ -5738,6 +5738,7 @@ script:
     - contextPath: MicrosoftATP.MachineAction.MachineID
       description: The machine ID on which the action was executed.
       type: String
+<<<<<<< HEAD
   - arguments:
     - default: true
       description: A comma-separated list of machine IDs to be used for offboarding. e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424.

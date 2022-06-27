@@ -1197,7 +1197,8 @@ class MsClient:
         if page_size:
             page_size = arg_to_number(page_size)
             page_size = 10000 if page_size > 10000 else page_size
-            page_num = 0 if not page_num else arg_to_number(page_num)-1
+            page_num = arg_to_number(page_num)
+            page_num = 0 if not page_num else (page_num - 1)
             skip = page_num * page_size
             params['$skip'] = str(skip)
             params['$top'] = str(page_size)
