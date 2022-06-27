@@ -363,7 +363,7 @@ def get_device_groups_names():
         'GET',
         params=params
     )
-
+    a = 3
     device_groups = result['response']['result']['entry']
     device_group_names = []
     if isinstance(device_groups, dict):

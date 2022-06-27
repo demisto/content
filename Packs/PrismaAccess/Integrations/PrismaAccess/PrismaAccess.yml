@@ -14,7 +14,7 @@ configuration:
   required: true
 - display: API Port (e.g 443)
   name: port
-  defaultvalue: "443"
+  defaultvalue: 999
   type: 0
   required: false
 - display: API Key
