@@ -3656,7 +3656,7 @@ script:
     - description: The name of the virtual system to be configured. If no vsys is
         mentioned, this command will not use the vsys parameter.
       name: vsys
-    - description: The device group to target
+    - description: The device group in which to run the command.
       name: device-group
     - description: Return raw XML
       name: is_xml
@@ -4863,12 +4863,12 @@ script:
   - name: pan-os-get-running-config
     arguments:
     - name: target
-      description: The target device
+      description: The serial number of the device.
     description: Pull the running config file
   - name: pan-os-get-merged-config
     arguments:
     - name: target
-      description: The serial number of the device
+      description: The serial number of the device.
     description: Pull the merged config file
   - arguments:
     - description: The name of the EDL.
