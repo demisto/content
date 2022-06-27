@@ -1153,7 +1153,8 @@ def fetch_incidents(client: Client, fetch_time: Optional[str], incident_status: 
             violator_id = str(incident.get('violatorId', 0))
             # check if incident was already fetched due to updating over lastUpdateDate
             if incident_id not in already_fetched:
-                incident_name = get_incident_name(incident, incident_id, violator_id)  # Try to get incident reason as incident name
+                # Try to get incident reason as incident name
+                incident_name = get_incident_name(incident, incident_id, violator_id)
                 demisto_incidents.append({
                     'name': incident_name,
                     'occurred': timestamp_to_datestring(incident.get('lastUpdateDate')),
