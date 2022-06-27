@@ -14,6 +14,7 @@ from packaging.version import Version
 from enum import IntEnum
 from pprint import pformat
 from threading import Thread
+from Tests.Marketplace.marketplace_constants import Metadata
 from time import sleep
 from typing import List, Tuple, Union, Set
 
@@ -1741,6 +1742,31 @@ def main():
                                       new_integrations_names, build)
         if not success or not installed_content_packs_successfully:
             sys.exit(2)
+
+
+def get_packs_with_higher_min_version(packs_names: Set[str], content_path: str, server_numeric_version: str) -> Set[str]:
+    """
+    Return a set of packs that have higher min version than the server version.
+    Args:
+        packs_names (Set[str]): A set of packs to install.
+        content_path (str): The content root path.
+        server_numeric_version (str): The server version.
+    Returns:
+        (Set[str]): The set of the packs names that supposed to be not installed because
+                    their min version is greater than the server version.
+    """
+    packs_with_higher_version = set()
+    for pack_name in packs_names:
+
+        pack_metadata = get_json_file(f"{content_path}/Packs/{pack_name}/pack_metadata.json")
+        server_min_version = pack_metadata.get(Metadata.SERVER_MIN_VERSION, Metadata.SERVER_DEFAULT_MIN_VERSION)
+
+        if 'Master' not in server_numeric_version and Version(server_numeric_version) < Version(server_min_version):
+            packs_with_higher_version.add(pack_name)
+            logging.info(f"Found pack '{pack_name}' with min version {server_min_version} that is "
+                         f"higher than server version {server_numeric_version}")
+
+    return packs_with_higher_version
 
 
 if __name__ == '__main__':
