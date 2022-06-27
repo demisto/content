@@ -1,10 +1,10 @@
-Use the MITRE ATT&CK® feed to fetch MITRE’s Adversarial Tactics, Techniques, and Common Knowledge (ATT&CK®) content. MITRE ATT&CK is a globally-accessible knowledge base of adversary tactics and techniques based on real-world observations. The ATT&CK knowledge base is used as a foundation for the development of specific threat models and methodologies in the private sector, in government, and in the cybersecurity product and service community.
-This integration was integrated and tested with version xx of MITRE ATT&CK v2 test
+Use the MITRE ATT&CK Feed integration to fetch indicators from MITRE ATT&CK.
+For more information click [here](https://www.mitre.org/capabilities/cybersecurity/overview/cybersecurity-blog/attck%E2%84%A2-content-available-in-stix%E2%84%A2-20-via).
 
-## Configure MITRE ATT&CK Feed v2 test on Cortex XSOAR
+## Configure MITRE ATT&CK Feed on XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for MITRE ATT&CK Feed v2 test.
+2. Search for MITRE ATT&CK Feed.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |

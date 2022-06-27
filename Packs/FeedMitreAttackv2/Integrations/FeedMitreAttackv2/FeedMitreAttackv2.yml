@@ -97,7 +97,7 @@ description: Use the MITRE ATT&CK® feed to fetch MITRE’s Adversarial Tactics,
   and methodologies in the private sector, in government, and in the cybersecurity
   product and service community.
 display: MITRE ATT&CK Feed v2 test
-name: MITRE ATT&CK v2 test
+name: MITRE ATT&CK v2
 script:
   commands:
   - arguments:
