@@ -1125,7 +1125,6 @@ def search_all_mailboxes(receive_only_accounts):
                         'Still searching. Searched {}% of total accounts ({} / {}), and found {} results so far'.format(
                             int((accounts_counter / users_count) * 100),
                             accounts_counter,
-                            len(result['users']),
                             users_count,
                             len(entries)),
                     )
