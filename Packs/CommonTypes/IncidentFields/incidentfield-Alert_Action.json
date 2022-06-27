@@ -4,7 +4,9 @@
     "FireEye NX IPS Event",
     "FireEye NX Alert",
     "FireEye HX Alert",
-    "FireEye EX Alert"
+    "FireEye EX Alert",
+    "MVision CASB Alert",
+    "MVision CASB Threat"
   ],
   "breachScript": "",
   "caseInsensitive": true,

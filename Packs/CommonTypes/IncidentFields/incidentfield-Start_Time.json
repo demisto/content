@@ -6,7 +6,9 @@
         "Tanium TR Incident",
         "CrowdStrike Falcon Detection",
         "CrowdStrike Falcon Incident",
-        "Microsoft Defender For Endpoint"
+        "Microsoft Defender For Endpoint",
+        "MVision CASB Alert",
+        "MVision CASB Threat"
     ],
     "breachScript": "",
     "caseInsensitive": true,
