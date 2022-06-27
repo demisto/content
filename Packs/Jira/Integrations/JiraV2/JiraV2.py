@@ -905,7 +905,7 @@ def add_link_command(issue_id, title, url, summary=None, global_id=None, relatio
         link['application'] = {}
     if application_type:
         link['application']['type'] = application_type
-    if application_type:
+    if application_name:
         link['application']['name'] = application_name
 
     data = jira_req('POST', req_url, json.dumps(link), resp_type='json')
