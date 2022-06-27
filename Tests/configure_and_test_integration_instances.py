@@ -1688,7 +1688,7 @@ def get_packs_not_to_install(modified_packs_names: Set[str], build: Build) -> Tu
         modified_packs_names (Set[str]): The set of packs to install.
         build (Build): The build object.
     Returns:
-        (Set[str]): The set of the packs names that supposed to be not installed in the pre-update.
+        (Set[str]): The set of the pack names that should not be installed.
         (Set[str]): The set of the non hidden packs names.
     """
     non_hidden_packs = get_turned_non_hidden_packs(modified_packs_names, build)
