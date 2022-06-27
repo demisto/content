@@ -1,4 +1,4 @@
-[MODEL: dataset=jira_jira_raw, model=Audit]
+[MODEL: dataset=atlassian_jira_raw, model=Audit]
 alter XDM.Audit.operation = summary,
       XDM.Audit.TriggeredBy.ipv4 = remoteAddress,
       XDM.Audit.TriggeredBy.identity.name = authorKey,
