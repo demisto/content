@@ -1,0 +1,18 @@
+{
+    "status": "success",
+    "meta": {
+        "title": "some_title",
+        "description": "some_description",
+        "url": "https://example.com/url",
+        "tags": []
+    },
+    "data": {
+        "DOMAIN": [
+            "a1.com",
+            "b2.com"
+        ],
+        "URL": [
+            "https://a1.com"
+        ]
+    }
+}

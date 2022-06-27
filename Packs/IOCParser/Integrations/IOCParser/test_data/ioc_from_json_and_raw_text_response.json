@@ -1,0 +1,15 @@
+{
+    "status": "success",
+    "meta": {
+        "len": 23,
+        "bytes": 23
+    },
+    "data": {
+        "DOMAIN": [
+            "a1.com"
+        ],
+        "FILE_HASH_SHA256": [
+            "dummysha256"
+        ]
+    }
+}

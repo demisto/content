@@ -3658,6 +3658,11 @@
             "context_print_dt": "EDLHey"
         },
         {
+            "integrations": "IOCParser",
+            "playbookID": "IOCParser_test",
+            "fromversion": "6.0.0"
+        },
+        {
             "playbookID": "Export Indicators Performance Test",
             "instance_names": "eis_auto",
             "integrations": [

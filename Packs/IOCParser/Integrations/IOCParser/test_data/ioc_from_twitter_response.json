@@ -1,0 +1,48 @@
+{
+  "status": "success",
+  "meta": {
+    "author": "dummy",
+    "description": "some description",
+    "followers": 4014
+  },
+  "data": [
+    {
+      "meta": {
+        "author": "dummy",
+        "tweetId": "1",
+        "timestamp": "some timestamp",
+        "tweet": "some tweet",
+        "hashtags": [
+          "some hashtag"
+        ]
+      },
+      "data": {
+        "FILE_HASH_SHA256": [
+          "dummysha256_0"
+        ]
+      }
+    },
+    {
+      "meta": {
+        "author": "dummy",
+        "tweetId": "2",
+        "timestamp": "some timestamp",
+        "tweet": "some tweet",
+        "hashtags": [
+          "some hashtag"
+        ]
+      },
+      "data": {
+        "DOMAIN": [
+          "a1.com"
+        ],
+        "FILE_HASH_SHA256": [
+          "dummysha256_1"
+        ],
+        "URL": [
+          "https://a1.com"
+        ]
+      }
+    }
+  ]
+}

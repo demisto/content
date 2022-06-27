@@ -1,0 +1,156 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: IOCParser
+  version: -1
+configuration:
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  hidden: false
+  name: insecure
+  required: false
+  type: 8
+description: Use the IOCParser integration to extract IOCs and intelligence from different
+  data sources.
+display: IOC Parser
+name: IOCParser
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The URL from which the IOCs will be extracted
+      isArray: false
+      name: url
+      required: true
+      secret: false
+    - default: false
+      description: IOC Types to return. The supported types are 'ASN', 'BITCOIN_ADDRESS',
+        'CVE', 'DOMAIN', 'EMAIL', 'FILE_HASH_MD5', 'FILE_HASH_SHA1', 'FILE_HASH_SHA256',
+        'IPV4', 'IPV6', 'MAC_ADDRESS', 'MITRE_ATT&CK', 'URL', 'YARA_RULE'.
+      isArray: false
+      name: keys
+      required: false
+      secret: false
+    - default: false
+      description: limits the results to the specified number
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Parses and extracts IOCs from a given URL.
+    execution: false
+    name: ioc-parser-parse-url
+    outputs:
+    - contextPath: IOCParser.parseFromUrl
+      description: All IOCs that were parsed from the URL.
+      type: String
+  - arguments:
+    - default: false
+      description: The JSON from which the IOCs will be extracted
+      isArray: false
+      name: data
+      required: true
+      secret: false
+    - default: false
+      description: IOC Types to return. The supported types are 'ASN', 'BITCOIN_ADDRESS',
+        'CVE', 'DOMAIN', 'EMAIL', 'FILE_HASH_MD5', 'FILE_HASH_SHA1', 'FILE_HASH_SHA256',
+        'IPV4', 'IPV6', 'MAC_ADDRESS', 'MITRE_ATT&CK', 'URL', 'YARA_RULE'.
+      isArray: false
+      name: keys
+      required: false
+      secret: false
+    - default: false
+      description: limits the results to the specified number
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Parses and extracts IOCs from a given JSON.
+    execution: false
+    name: ioc-parser-parse-text
+    outputs:
+    - contextPath: IOCParser.parseFromJSONText
+      description: All IOCs that were parsed from the JSON text.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The text from which the IOCs will be extracted. If an entry ID
+        is supplied, do not use this argument.
+      isArray: false
+      name: data
+      required: false
+      secret: false
+    - default: false
+      description: IOC Types to return. The supported types are 'ASN', 'BITCOIN_ADDRESS',
+        'CVE', 'DOMAIN', 'EMAIL', 'FILE_HASH_MD5', 'FILE_HASH_SHA1', 'FILE_HASH_SHA256',
+        'IPV4', 'IPV6', 'MAC_ADDRESS', 'MITRE_ATT&CK', 'URL', 'YARA_RULE'.
+      isArray: false
+      name: keys
+      required: false
+      secret: false
+    - default: false
+      description: limits the results to the specified number
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: The text file from which the IOCs will be extracted. If data is
+        supplied, do not use this argument.
+      isArray: false
+      name: entry_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Parses and extracts IOCs from a given text.
+    execution: false
+    name: ioc-parser-parse-raw-text
+    outputs:
+    - contextPath: IOCParser.parseFromRawText
+      description: All IOCs that were parsed from the raw text.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The twitter account (user name) from which the IOCs will be extracted
+      isArray: false
+      name: data
+      required: true
+      secret: false
+    - default: false
+      description: IOC Types to return. The supported types are 'ASN', 'BITCOIN_ADDRESS',
+        'CVE', 'DOMAIN', 'EMAIL', 'FILE_HASH_MD5', 'FILE_HASH_SHA1', 'FILE_HASH_SHA256',
+        'IPV4', 'IPV6', 'MAC_ADDRESS', 'MITRE_ATT&CK', 'URL', 'YARA_RULE'.
+      isArray: false
+      name: keys
+      required: false
+      secret: false
+    - default: false
+      description: limits the results to the specified number
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Parses and extracts IOCs from a given twitter account.
+    execution: false
+    name: ioc-parser-parse-twitter
+    outputs:
+    - contextPath: IOCParser.parseFromTwitter
+      description: All IOCs that were parsed from the twitter account.
+      type: Unknown
+  dockerimage: demisto/python3:3.9.6.22912
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 5.5.0
