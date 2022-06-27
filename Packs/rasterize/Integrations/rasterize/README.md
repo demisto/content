@@ -14,18 +14,21 @@ If you are using the integration to rasterize un-trusted URLs or HTML content, s
 | with_error | Return Errors.  | False |
 | wait_time | Time to wait before taking a screenshot \(in seconds\). | False |
 | max_page_load_time | Maximum amount of time to wait for a page to load \(in seconds\). | False |
-| chrome_options | Chrome options \(Advanced. Click \[?\]\ for details.) | False |
+| chrome_options | Chrome options (Advanced. See `Configuration Notes`.) | False |
 | proxy | Use system proxy settings. | False |
+| rasterize_mode | Rasterize Mode. (See `Configuration Notes`.) | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
 **Configuration Notes:**
 * Return Errors: If this checkbox is not selected, a warning will be returned instead of an error.
-* Use system proxy settings: Select this checkbox to use the system's proxy settings. **Important**: This integration does not support proxies which require authentication.
-* Chrome options: A comma-separated list of Chrome options to add or remove for rasterization.  If a value contains a comma (for example, when setting the user agent value), escape it with the backslash (**\\**) character. To remove a default option that is used, put the option in square brackets. For example, to add the option *--disable-auto-reload* and remove the option *--disable-dev-shm-usage*, set the following value:
+* Chrome options: A comma-separated list of Chrome options to add or remove for rasterization. Use for advanced troubleshooting. If a value contains a comma (for example, when setting the user agent value), escape it with the backslash (**\\**) character. To remove a default option that is used, put the option in square brackets. For example, to add the option *--disable-auto-reload* and remove the option *--disable-dev-shm-usage*, set the following value:
 ```
 --disable-auto-reload,[--disable-dev-shm-usage]
 ```
+* Rasterize Mode: It is possible to rasterize either via Chrome WebDriver or Chrome Headless CLI. WebDriver supports more options than Headless CLI. Such as support for the `offline` option in the `rasterize-emails` command. There are some urls that do not rasterize well with WebDriver and may succeed with Headless CLI. Thus, it is recommended to use the `WebDriver - Preferred` mode, which will use WebDriver as a start and fallback to Headless CLI if it fails.
+* Use system proxy settings: Select this checkbox to use the system's proxy settings. **Important**: this integration does not support proxies which require authentication.
+
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
@@ -50,6 +53,7 @@ Converts the contents of a URL to an image file or a PDF file.
 | type | The file type to which to convert the contents of the URL. Can be "pdf" or "png". Default is "png". | Optional | 
 | file_name | The name the file will be saved as. Default is "url". | Optional |
 | full_screen | Get the full page. The actual page width and height will be auto calculated up to a max value of 8000px. (Marking full_screen as true means that the values for width and height arguments might not be respected). | Optional | 
+| mode | Rasterize mode to use (WebDriver or Headless CLI). If not specified, will use according to the integration instance settings. | Optional |
 
 
 #### Context Output
@@ -96,6 +100,7 @@ Converts the body of an email to an image file or a PDF file.
 | offline | If "true", will block all outgoing communication. | Optional | 
 | file_name | The name the file will be saved as. Default is "email". | Optional |
 | full_screen | Get the full page. The actual page width and height will be auto calculated up to a max value of 8000px. (Marking full_screen as true means that the values for width and height arguments might not be respected). | Optional | 
+| mode | Rasterize mode to use (WebDriver or Headless CLI). If not specified, will use according to the integration instance settings. | Optional |
 
 
 #### Context Output
@@ -141,6 +146,7 @@ Converts an image file to a PDF file.
 | height | The image height, for example, 800px. Specify with or without the px suffix. If empty, the height is the entire image. | Optional | 
 | file_name | The name the file will be saved as. Default is the EntryID. | Optional |
 | full_screen | Get the full page. The actual page width and height will be auto calculated up to a max value of 8000px. (Marking full_screen as true means that the values for width and height arguments might not be respected). | Optional | 
+| mode | Rasterize mode to use (WebDriver or Headless CLI). If not specified, will use according to the integration instance settings. | Optional |
 
 
 #### Context Output
