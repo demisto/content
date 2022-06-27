@@ -1689,7 +1689,7 @@ def get_packs_not_to_install(modified_packs_names: Set[str], build: Build) -> Tu
         build (Build): The build object.
     Returns:
         (Set[str]): The set of the pack names that should not be installed.
-        (Set[str]): The set of the non hidden packs names.
+        (Set[str]): The set of the non-hidden pack names (should be installed only in post update).
     """
     non_hidden_packs = get_turned_non_hidden_packs(modified_packs_names, build)
     packs_with_higher_min_version = get_packs_with_higher_min_version(modified_packs_names - non_hidden_packs,
