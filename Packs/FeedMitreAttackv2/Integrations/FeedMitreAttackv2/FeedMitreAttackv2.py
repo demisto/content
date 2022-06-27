@@ -455,7 +455,7 @@ def build_command_result(value, score, md, attack_obj):
     )
     attack_context = Common.AttackPattern(
         stix_id=attack_obj.get('stixid'),
-        value=value,
+        # value=value,
         kill_chain_phases=attack_obj.get('killchainphases'),
         first_seen_by_source=attack_obj.get('firstseenbysource'),
         description=attack_obj.get('description'),
@@ -483,7 +483,7 @@ def attack_pattern_reputation_command(client, args):
             filter_by_name = [Filter('type', '=', 'attack-pattern'), Filter('name', '=', name)]
             mitre_data = get_mitre_data_by_filter(client, filter_by_name)
             if not mitre_data:
-                break
+                continue
 
             value = mitre_data.get('name')
 
@@ -582,7 +582,7 @@ def main():
     verify_certificate = not params.get('insecure', False)
     tags = argToList(params.get('feedTags', []))
     tlp_color = params.get('tlp_color')
-    create_relationships = argToBoolean(params.get('create_relationships'))
+    create_relationships = argToBoolean(params.get('create_relationships', False))
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
 
