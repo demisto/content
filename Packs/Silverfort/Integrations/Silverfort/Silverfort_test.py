@@ -27,7 +27,7 @@ def domain():
 
 @pytest.fixture(autouse=True)
 def api_key():
-    return 'APIKEY'
+    return 'APP_USER_ID:APP_USER_SECRET'
 
 
 @pytest.fixture(autouse=True)
