@@ -175,8 +175,7 @@ def decrypt_email_body(client: Client, args: Dict, file_path=None):
         encrypt_message = file_path
     else:
         if encrypt_message_text:
-            res = fileResult('email_body.txt', encrypt_message_text)
-            encrypt_message = res.get('FileID', '')
+            pass
         else:
             encrypt_message = demisto.getFilePath(args.get('encrypt_message'))
 
