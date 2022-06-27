@@ -1,3 +1,4 @@
+from typing import *  # noqa: F401
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -156,6 +157,8 @@ def fetch_incidents(aws_client, aws_queue_url, max_fetch, parse_body_as_json):
     try:
         client = aws_client.aws_session(service='sqs')
         last_run = demisto.getLastRun().get('lastRun')
+        if last_run:
+            demisto.debug('LAST_RUN before fetch occurred" -> {} {}'.format(len(last_run), last_run))
         incidents_created = 0  # type: int
         max_number_of_messages = min(max_fetch, 10)
         receipt_handles = []  # type: list
@@ -187,6 +190,7 @@ def fetch_incidents(aws_client, aws_queue_url, max_fetch, parse_body_as_json):
                     break
 
         demisto.setLastRun({"lastRun": receipt_handles})
+        demisto.debug('LAST_RUN after fetch occurred" -> {} {}'.format(len(receipt_handles), receipt_handles))
         demisto.incidents(incidents)
         for receipt_handle in receipt_handles:
             client.delete_message(QueueUrl=aws_queue_url, ReceiptHandle=receipt_handle)
