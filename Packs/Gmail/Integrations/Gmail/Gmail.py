@@ -1120,7 +1120,7 @@ def search_all_mailboxes(receive_only_accounts):
             for future in concurrent.futures.as_completed(futures):
                 accounts_counter += 1
                 entries.append(future.result())
-                if accounts_counter % 25 == 0:
+                if accounts_counter % 100 == 0:
                     demisto.info('Still searching. Searched {} accounts, and found {} results so far'.format(
                         accounts_counter,
                         len(entries)),
