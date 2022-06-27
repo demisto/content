@@ -107,7 +107,11 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
         self.options.limit = 1 if demisto.command() == 'test-module' else SIEM_LOG_LIMIT
         stored = []
         if self.events_from_prev_run and self.options.limit:
+            # we have saved events from prev run
             if len(self.events_from_prev_run) >= self.options.limit:
+                # More than SIEM_LOG_LIMIT were saved from prev run.
+                # take SIEM_LOG_LIMIT from events_from_prev_run and put in stored
+                # save the rest in events_from_prev_run for the next run.
                 demisto.info(
                     f'{self.options.limit=} reached. \
                     slicing from {len(self.events_from_prev_run)=}.'
@@ -117,6 +121,8 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
                 return stored
 
             else:
+                # less than SIEM_LOG_LIMIT were saved from last run. put then in stored
+                # reset the events_from_prev_run and proceed to the next API call
                 stored = self.events_from_prev_run
                 demisto.info(f'added to stored {self.events_from_prev_run=}')
                 self.events_from_prev_run = []
@@ -142,7 +148,7 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
             return []
 
         while True:
-            demisto.info(f'\n {len(events)} Siem logs were fetched from mimecast \n')
+            demisto.info(f'\n {len(events)} Siem logs were fetched from Mimecast \n')
             yield events
 
             self.client.request = IntegrationHTTPRequest(**(self.get_req_object_siem()))
@@ -161,7 +167,7 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
         """
         resp_body = response.content
         resp_headers = response.headers
-        content_type = resp_headers['Content-Type']
+        content_type = str(resp_headers['Content-Type']).lower()
 
         # End if response is JSON as there is no log file to download
         if content_type == 'application/json':
@@ -221,8 +227,8 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
             event (dict) - a siem event dict
 
         Returns:
-            (None) this method works on the response as reference if the event had one of the following fields
-                    'IP', 'SourceIP', 'Recipient' they will the specified filed will be wrapped with an array.
+            (None) this method works on the response as reference. If the event had one of the following fields
+                    'IP', 'SourceIP', 'Recipient', 'Rcpt' the specified filed will be wrapped with an array.
         """
         for key in ['IP', 'SourceIP', 'Recipient', 'Rcpt']:
             if key in event.keys() and not isinstance(event[key], list):
@@ -234,14 +240,14 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
         """
         req_obj = {
             'headers': self.client.prepare_headers(self.uri),   # type: ignore
-            'data': self.prepare_siem_log_data(),
+            'data': self.prepare_siem_request_body(),
             'method': Method.POST,
             'url': self.options.base_url + self.uri,
             'verify': self.options.verify,
         }
         return req_obj
 
-    def prepare_siem_log_data(self):
+    def prepare_siem_request_body(self):
         """
         Return the data parameter for the http siem request
         """
@@ -282,7 +288,7 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
                 return_error('Error writing file ' + file_name + '. Cannot continue. Exception: ' + str(e))
 
         else:
-            return_error('We support only compressed siem logs request.')
+            return_error(f'Only compressed siem log files are supported. file_name: {file_name}')
 
 
 class MimecastGetAuditEvents(IntegrationGetEvents):
@@ -311,7 +317,7 @@ class MimecastGetAuditEvents(IntegrationGetEvents):
             return []
 
         while True:
-            demisto.info(f'\n {len(events)} Audit logs were fetched from mimecast \n')
+            demisto.info(f'\n {len(events)} Audit logs were fetched from Mimecast \n')
             yield events
 
             self.client.request = IntegrationHTTPRequest(**(self.get_req_object_audit()))
@@ -323,9 +329,9 @@ class MimecastGetAuditEvents(IntegrationGetEvents):
     def process_audit_response(self, res: dict):
         """
         Args:
-            res (dict) - This method gets the response.text from the get Audit events.
+            res (dict) - The response.text from the get Audit events.
         Returns:
-            event_list (list) - The processed audit events
+            event_list (list) - The processed Audit events
         """
         if res.get('fail', []):
             return_error(f'There was an error with audit events call {res.get("fail")}')
@@ -479,7 +485,7 @@ def prepare_potential_audit_duplicates_for_next_run(audit_events: list, next_run
 
     Args:
         audit_events (list): the list of the audit events
-        next_run_time (str): the new last_run type for next run
+        next_run_time (str): the new last_run time for next run
 
     Return:
         list: The event list for next run to check against duplicates.
@@ -487,6 +493,7 @@ def prepare_potential_audit_duplicates_for_next_run(audit_events: list, next_run
     if not audit_events or not next_run_time:
         return []
 
+    # same_time_events = [event.get('id') for event in audit_events if event.get('eventTime', '') == next_run_time]
     same_time_events = []
     for event in audit_events:
         if event.get('eventTime', '') == next_run_time:
@@ -505,7 +512,7 @@ def main():
     demisto_params['access_key'] = demisto_params.get('credentials', {}).get('identifier')
     should_push_events = argToBoolean(demisto_params.get('should_push_events', 'false'))
     options = MimecastOptions(**demisto_params)
-    empty_first_request = IntegrationHTTPRequest(method=Method.GET, url='http://bla.com', headers={})
+    empty_first_request = IntegrationHTTPRequest(method=Method.GET, url='http://dummy.com', headers={})
     client = MimecastClient(empty_first_request, options)
     siem_event_handler = MimecastGetSiemEvents(client, options)
     audit_event_handler = MimecastGetAuditEvents(client, options)
