@@ -1187,17 +1187,16 @@ def get_incident_name(incident: Dict, incident_id: str, violator_id: str) -> str
     try:
         incident_reason = ''
         for reason in incident_reasons:
-            if reason.startswith('Threat Model: '):
-                incident_reason += f"{reason[14:]}, "
-                break
-            if reason.startswith('Policy: '):
-                incident_reason += f"{reason[8:]}, "
-                break
+            if isinstance(reason, str):
+                if reason.startswith('Threat Model: '):
+                    incident_reason += f"{reason[14:]}, "
+                if reason.startswith('Policy: '):
+                    incident_reason += f"{reason[8:]}, "
         if incident_reason:
             # Remove ", " last chars and concatenate with the incident ID
             incident_name = f"{incident_reason[:-2]}: {incident_id}"
         else:
-            incident_name = f"Securonix Incident {incident_id} Violator ID: {violator_id}."
+            incident_name = f"Securonix Incident {incident_id}, Violator ID: {violator_id}"
     except ValueError:
         incident_name = f"Securonix Incident: {incident_id}."
 
