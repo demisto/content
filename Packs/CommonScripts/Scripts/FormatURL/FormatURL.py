@@ -210,7 +210,7 @@ def format_urls(non_formatted_urls: List[str]) -> List[Dict]:
         (Set[str]): Formatted URL, with its expanded URL if such exists.
     """
 
-    formatted_urls_groups = []
+    formatted_urls_groups: List[Union[str, List[str]]] = []
     for url_ in non_formatted_urls:
         try:
             formatted_urls_groups.append(format_single_url(url_))
