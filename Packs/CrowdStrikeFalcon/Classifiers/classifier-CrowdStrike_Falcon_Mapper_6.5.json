@@ -743,6 +743,9 @@
 								},
 								"operator": "append"
 							},
+                            {
+								"operator": "uniq"
+							},
 							{
 								"args": {
 									"separator": {
