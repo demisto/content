@@ -1670,6 +1670,9 @@ def update_integration_lists(new_integrations_names: List[str], packs_not_to_ins
     Returns:
         Tuple[List[str], List[str]]: The updated lists after filtering the turned non-hidden integrations.
     """
+    if not modified_integrations_names:
+        return new_integrations_names, modified_integrations_names
+
     hidden_integrations_names = packs_names_to_integrations_names(packs_not_to_install)
     # update the new integration and the modified integration with the non-hidden integrations.
     for hidden_integration_name in hidden_integrations_names:
