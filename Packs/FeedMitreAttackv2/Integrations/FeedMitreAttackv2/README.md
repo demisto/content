@@ -1,155 +1,65 @@
-Use the MITRE ATT&CK Feed integration to fetch indicators from MITRE ATT&CK.
-For more information click [here](https://www.mitre.org/capabilities/cybersecurity/overview/cybersecurity-blog/attck%E2%84%A2-content-available-in-stix%E2%84%A2-20-via).
+Use the MITRE ATT&CK® feed to fetch MITRE’s Adversarial Tactics, Techniques, and Common Knowledge (ATT&CK®) content. MITRE ATT&CK is a globally-accessible knowledge base of adversary tactics and techniques based on real-world observations. The ATT&CK knowledge base is used as a foundation for the development of specific threat models and methodologies in the private sector, in government, and in the cybersecurity product and service community.
+This integration was integrated and tested with version xx of MITRE ATT&CK v2 test
 
-## Configure MITRE ATT&CK Feed on XSOAR
+## Configure MITRE ATT&CK Feed v2 test on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for MITRE ATT&CK Feed.
+2. Search for MITRE ATT&CK Feed v2 test.
 3. Click **Add instance** to create and configure a new integration instance.
 
-| **Parameter** | **Description** | **Required** |
-| --- | --- | --- |
-| includeAPT | This option will also create indicators using APT / actor name references if they are part of a MITRE Intrusion Set | False |
-| feedReputation | The indicator reputation (defaults to 'None'). | False |
-| feedReliability | The source's reliability. | True |
-| tlp_color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at https://us-cert.cisa.gov/tlp | False |
-| feedExpirationPolicy | The feed's expiration policy. | False |
-| feedExpirationInterval | The interval after which the feed expires. | False |
-| feedFetchInterval | The feed fetch interval. | False |
-| feedBypassExclusionList | Whether to bypass exclusion list. | False |
-| insecure | Whether to trust any certificate (not secure). | False |
-| proxy | Whether to use the system proxy settings. | False |
-| Create relationships | Create relationships between indicators as part of Enrichment. | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Fetch indicators |  | False |
+    | Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
+    | Source Reliability | Reliability of the source providing the intelligence data. | True |
+    | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed. | False |
+    |  |  | False |
+    |  |  | False |
+    | Feed Fetch Interval |  | False |
+    | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
+    | Use system proxy settings |  | False |
+    | Trust any certificate (not secure) |  | False |
+    | Tags | Supports CSV values. | False |
+    | Create relationships |  | False |
 
-4. Click **Test** to validate the connection.
-
-#### Feed timeouts:
-MITRE enforce a rate limit for connecting to their taxii server. Ensure that your fetch interval is reasonable, otherwise you will receive connection errors.
-
+4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-
-### Get Indicators
+### mitre-get-indicators
 ***
-Gets the indicators from MITRE ATT&CK.
+Retrieves a limited number of indicators.
 
-Note: This command does not create indicators within Cortex XSOAR.
 
-##### Base Command
+#### Base Command
 
 `mitre-get-indicators`
-##### Input
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of indicators to return. The default value is 10. | Optional | 
-| raw | Enabling raw will also output the raw content of each indicator | Optional | 
+| limit | The maximum number of indicators to return. Default is 10. | Required | 
+| raw | Output in raw JSON format. Can be "True" or "False". Possible values are: False, True. Default is False. | Optional | 
 
 
-##### Context Output
+#### Context Output
 
-The context is output as:
-
-- MITRE *(dict)*
-    - ATT&CK *(list)*
-
-Each item in the "ATT&CK" list contains the following keys:
-- fields *(any fields that the indicator will attempt to map into the indicator)*
-- rawJSON *(the raw JSON of the indicator)*
-- score *(the indicator score)*
-- type *(the type of indicator - will always be "MITRE ATT&CK")*
-- value *(the indicator value, for example "T1134")*
-     
-
-##### Command Example
-```!mitre-get-indicators limit=2```
-
-
-##### Human Readable Output
-### MITRE ATT&CK Indicators:
-| Value | Score| Type |
-| ----- | ---- | ---- |
-| T1531 | 0 | MITRE ATT&CK |
-| T1506 | 0 | MITRE ATT&CK |
-
-
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| indicator | Indicator to lookup | Required |  
-
-
-##### Context Output
-
-The context is output as:
-
-- DBotScore
-- MITRE *(dict)*
-    - ATT&CK *(list)* 
-
-Each item in the "ATT&CK" list contains the customFields that are mapped into the indicator (each beginning with 'mitre')
-     
-
-### MITRE Show Feeds
+There is no context output for this command.
+### mitre-show-feeds
 ***
-Displays the available feeds from the MITRE taxii service.
-
-##### Base Command
-
-`mitre-showfeeds`
-##### Input
-
-There are no inputs  
-
-##### Context Output
-
-There is no context output
+Shows the feed names and IDs from TAXII.
 
 
-##### Command Example
-```!mitre-showfeeds```
+#### Base Command
 
+`mitre-show-feeds`
+#### Input
 
-##### Human Readable Output
-### MITRE ATT&CK Feeds:
-| Name | ID |
-| ---- | --- |
-| Enterprise ATT&CK | 95ecc380-afe9-11e4-9b6c-751b66dd541e |
-| PRE-ATT&CK | 062767bd-02d2-4b72-84ba-56caef0f8658 |
-| Mobile ATT&CK | 2f669986-b40b-4423-b720-4396ca6a462b |
+There are no input arguments for this command.
 
+#### Context Output
 
-### MITRE Get Indicator Name
-***
-Gets the Attack Pattern value from the Attack Pattern ID.
-
-##### Base Command
-
-`mitre-get-indicator-name`
-##### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| attack_ids | The Attack Pattern IDs list | True | 
-
-##### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| MITREATTACK.id | String | MITRE ATTACK Attack Pattern ID. | 
-| MITREATTACK.value | String | MITRE ATTACK Attack Pattern value. | 
-
-
-##### Command Example
-```!mitre-get-indicator-name attack_id=T1111```
-
-
-##### Human Readable Output
-### MITRE ATTACK Attack Patterns values:
-| Attack ID | Attack Value |
-| ---- | --- |
-| T1111 | Some Attack Value |
+There is no context output for this command.
 ### attack-pattern
 ***
 Looks up the reputation of the indicator.
@@ -182,10 +92,24 @@ Looks up the reputation of the indicator.
 | AttackPattern.MITREID | string | The MITRE ID of the Attack Pattern. | 
 | AttackPattern.Tags | string | The tags of the Attack Pattern. | 
 
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
+### mitre-get-indicator-name
+***
+Gets the Attack Pattern value from the Attack Pattern ID.
 
 
+#### Base Command
+
+`mitre-get-indicator-name`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| attack_ids | The Attack Pattern IDs list. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MITREATTACK.id | String | MITRE ATTACK Attack Pattern ID. | 
+| MITREATTACK.value | String | MITRE ATTACK Attack Pattern value. | 
