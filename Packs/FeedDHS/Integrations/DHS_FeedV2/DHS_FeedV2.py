@@ -52,7 +52,7 @@ def command_test_module(client: Taxii2FeedClient, first_fetch: str):
         return 'Could not connect to server'
 
 
-def fetch_indicators_command(client: Taxii2FeedClient, last_run_ctx, tlp_color: Optional[str] = None,
+def fetch_indicators_command(client: Taxii2FeedClient, last_run_ctx: Dict, tlp_color: Optional[str] = None,
                              initial_interval: str = '24 hours') -> Tuple[list, dict]:
     """
     Fetch indicators from TAXII 2 server
@@ -65,12 +65,10 @@ def fetch_indicators_command(client: Taxii2FeedClient, last_run_ctx, tlp_color: 
     if initial_interval:
         initial_interval = get_first_fetch(initial_interval)
 
-    last_fetch_time = last_run_ctx.get(client.collection_to_fetch.id) if client.collection_to_fetch else None
-
-    if client.collection_to_fetch is None:
-        indicators, last_run_ctx = fetch_all_collections(client, initial_interval, last_run_ctx)
+    if client.collection_to_fetch:
+        indicators, last_run_ctx = fetch_one_collection(client, initial_interval, last_run_ctx)
     else:
-        indicators, last_run_ctx = fetch_one_collection(client, initial_interval, last_fetch_time, last_run_ctx)
+        indicators, last_run_ctx = fetch_all_collections(client, initial_interval, last_run_ctx)
 
     if tlp_color:
         indicators = filter_indicators_by_tlp_color(indicators, tlp_color)
@@ -78,8 +76,10 @@ def fetch_indicators_command(client: Taxii2FeedClient, last_run_ctx, tlp_color: 
     return indicators, last_run_ctx
 
 
-def fetch_one_collection(client, initial_interval, last_fetch_time, last_run_ctx):
+def fetch_one_collection(client: Taxii2FeedClient, initial_interval: str, last_run_ctx: Dict):
+    last_fetch_time = last_run_ctx.get(client.collection_to_fetch.id)
     added_after = last_fetch_time or initial_interval
+
     indicators = client.build_iterator(added_after=added_after)
     last_run_ctx[client.collection_to_fetch.id] = (
         client.last_fetched_indicator__modified
@@ -89,7 +89,7 @@ def fetch_one_collection(client, initial_interval, last_fetch_time, last_run_ctx
     return indicators, last_run_ctx
 
 
-def fetch_all_collections(client, initial_interval, last_run_ctx):
+def fetch_all_collections(client: Taxii2FeedClient, initial_interval: str, last_run_ctx: Dict):
     if client.collections is None:
         raise DemistoException(ERR_NO_COLL)
     indicators: list = []
@@ -102,7 +102,7 @@ def fetch_all_collections(client, initial_interval, last_run_ctx):
     return indicators, last_run_ctx
 
 
-def get_indicators_results(indicators):
+def get_indicators_results(indicators: List[Dict]):
     entry_context = list(map(indicator_to_context, indicators))
     human_readable = tableToMarkdown(name='DHS indicators', t=entry_context,
                                      removeNull=True, headerTransform=header_transform)
@@ -114,7 +114,8 @@ def get_indicators_results(indicators):
     )
 
 
-def get_indicators_command(client: Taxii2FeedClient, limit: int = 20, added_after='20 days', tlp_color: Optional[str] = None):
+def get_indicators_command(client: Taxii2FeedClient, limit: int = 20, added_after: str = '20 days',
+                           tlp_color: Optional[str] = None):
     """
     Fetch indicators from TAXII 2 server
     :param client: Taxii2FeedClient
@@ -159,9 +160,9 @@ def get_indicators_command(client: Taxii2FeedClient, limit: int = 20, added_afte
     )
 
 
-def filter_indicators_by_tlp_color(indicators, tlp_color):
+def filter_indicators_by_tlp_color(indicators: List[Dict], tlp_color: str):
     # todo check if indicators need to be filtered by tlp_color, or tlp_color needs to be added to indicators
-    return [indicator for indicator in indicators if indicators["fields"].get('trafficlightprotocol') == tlp_color]
+    return [indicator for indicator in indicators if indicator["fields"].get('trafficlightprotocol') == tlp_color]
 
 
 def get_first_fetch(first_fetch_string: str) -> str:
@@ -210,14 +211,14 @@ def main():
 
         elif command == 'dhs-get-indicators':
             args = demisto.args()
-            limit = arg_to_number(args.get('limit', 20))
+            limit: int = arg_to_number(args.get('limit', 20))  # type: ignore
             command_results = get_indicators_command(client, limit=limit, tlp_color=tlp_color)
             return_results(command_results)
 
         elif command == 'test-module':
             return_results(command_test_module(client, params.get('first_fetch', '')))
         else:
-            raise DemistoException('not implemented.')
+            raise NotImplementedError(f'{command} command is not implemented.')
 
     except Exception as error:
         return_error(str(error), error)
