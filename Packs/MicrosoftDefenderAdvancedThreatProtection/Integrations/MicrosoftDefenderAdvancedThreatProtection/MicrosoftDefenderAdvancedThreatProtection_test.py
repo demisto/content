@@ -2317,15 +2317,15 @@ def test_get_machine_alerts_command(mocker):
     assert results.outputs[0] == MACHINE_ALERTS_OUTPUT
 
 
-@pytest.mark.parametrize('page_num, page_size, limit, res',
-                         [('5', '5600', '100', {'$filter': 'filter', '$skip': '25000', '$top': '100'}),
-                             ('3', '50', '6', {'$filter': 'filter', '$skip': '150', '$top': '6'}),
-                          (None, None, '10', {'$filter': 'filter', '$top': '10'}),
-                          ('5', '20', None, {'$filter': 'filter', '$skip': '100'}),
-                          pytest.param(None, '4', '7', DemistoException, marks=pytest.mark.xfail),
+@pytest.mark.parametrize('page_num, page_size, res',
+                         [('5', '10600', {'$filter': 'filter', '$skip': '40000', '$top': '10000'}),
+                          ('3', '50', {'$filter': 'filter', '$skip': '100', '$top': '50'}),
+                          (None, None, {'$filter': 'filter'}),
+                          (None, '3', {'$filter': 'filter', '$skip': '0', '$top': '3'}),
+                          ('3', None, {'$filter': 'filter'})
                           ]
                          )
-def test_get_machines(mocker, page_num, page_size, limit, res):
+def test_get_machines(mocker, page_num, page_size, res):
     """
     Given:
         - page_num, page_size, limit to the get_machines method
@@ -2337,5 +2337,5 @@ def test_get_machines(mocker, page_num, page_size, limit, res):
         - verify that the page_num , page_size, limit are added to the params array correctly.
     """
     req = mocker.patch.object(client_mocker.ms_client, 'http_request', return_value='')
-    client_mocker.get_machines('filter', page_num=page_num, page_size=page_size, limit=limit)
+    client_mocker.get_machines('filter', page_num=page_num, page_size=page_size)
     assert res == req.call_args.kwargs.get('params')

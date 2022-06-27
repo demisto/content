@@ -340,6 +340,8 @@ Retrieves a collection of machines that have communicated with WDATP cloud in th
 | risk_score | The machine risk score. Possible values are: Low, Medium, High. | Optional | 
 | health_status | The machine health status. Possible values are: Active, Inactive. | Optional | 
 | os_platform | The machine's OS platform. Only a single platform can be added. | Optional | 
+| page_size | Number of machines to return in a page - must be lower or equal to 10,000. | Optional | 
+| page_num | The page number to retrieve. Default is 1. | Optional | 
 
 
 #### Context Output
