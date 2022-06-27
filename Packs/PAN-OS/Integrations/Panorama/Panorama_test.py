@@ -2563,7 +2563,6 @@ def test_pan_os_get_running_config(mocker):
     from Panorama import pan_os_get_running_config
     import Panorama
     
-    results_mocker = mocker.patch.object(demisto, "results")
     mock_file = mocker.patch.object(Panorama, "fileResult") 
     mocker.patch("Panorama.http_request", return_value="<response status='error' code='13'><msg><line>SOME_SERIAL_NUMBER not connected</line></msg></response>") 
     pan_os_get_running_config({"target": "SOME_SERIAL_NUMBER"})
@@ -2585,7 +2584,6 @@ def test_pan_os_get_merged_config(mocker):
     from Panorama import pan_os_get_merged_config
     import Panorama
     
-    results_mocker = mocker.patch.object(demisto, "results")
     mock_file = mocker.patch.object(Panorama, "fileResult") 
     mocker.patch("Panorama.http_request", return_value="<response status='error' code='13'><msg><line>SOME_SERIAL_NUMBER not connected</line></msg></response>") 
     pan_os_get_merged_config({"target": "SOME_SERIAL_NUMBER"})
