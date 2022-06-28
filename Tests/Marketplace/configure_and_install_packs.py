@@ -121,14 +121,27 @@ def xsoar_configure_and_install_flow(options, branch_name: str, build_number: st
     if not content_path:
         raise Exception('Could not find content path')
 
-    pack_ids = get_packs_with_higher_min_version(
-        packs_names=set(Build.fetch_pack_ids_to_install(options.pack_ids_to_install)),
+    # all packs that should be installed
+    packs_to_install = set(Build.fetch_pack_ids_to_install(options.pack_ids_to_install))
+    logging.info(f'packs to install before filtering by minServerVersion {packs_to_install}')
+
+    # get packs that their minServerVersion is higher than the server version
+    packs_with_higher_server_version = get_packs_with_higher_min_version(
+        packs_names=packs_to_install,
         content_path=content_path,
         server_numeric_version=server_version
     )
+    logging.info(f'packs with minServerVersion that is higher than server version {packs_with_higher_server_version}')
 
-    install_packs_from_content_packs_to_install_path(servers, pack_ids)
-    logging.success(f'Finished installing all content packs in {[server.internal_ip for server in servers]}')
+    # remove all the packs that that their minServerVersion is higher than the server version.
+    pack_ids_with_valid_min_server_version = packs_to_install - packs_with_higher_server_version
+    logging.info(f'starting to install content packs {pack_ids_with_valid_min_server_version}')
+
+    install_packs_from_content_packs_to_install_path(servers, pack_ids_with_valid_min_server_version)
+    logging.success(
+        f'Finished installing all content packs {pack_ids_with_valid_min_server_version} '
+        f'in {[server.internal_ip for server in servers]}'
+    )
 
 
 def xsiam_configure_and_install_flow(options, branch_name: str, build_number: str):
