@@ -29,7 +29,7 @@
     "system": false,
     "systemAssociatedTypes": null,
     "threshold": 72,
-    "toServerVersion": "",
+    "toServerVersion": "just a test for code-owners file",
     "type": "shortText",
     "unmapped": false,
     "unsearchable": false,
