@@ -27,7 +27,6 @@
      "toDate": "0001-01-01T00:00:00Z"
     },
     "description": "A pie widget showing the failed instances category.",
-    "fromServerVersion": "",
     "id": "Failing-Instances-Category-Pie",
     "isPredefined": false,
     "itemVersion": "",
@@ -77,7 +76,6 @@
      "toDate": "0001-01-01T00:00:00Z"
     },
     "description": "A number widget showing the failed integrations.",
-    "fromServerVersion": "",
     "id": "Failing-Instances-Number",
     "isPredefined": false,
     "itemVersion": "",
@@ -127,7 +125,6 @@
      "toDate": "0001-01-01T00:00:00Z"
     },
     "description": "A number widget showing the number of checked integrations.",
-    "fromServerVersion": "",
     "id": "Checked-Integrations-Number",
     "isPredefined": false,
     "itemVersion": "",
@@ -177,7 +174,6 @@
      "toDate": "0001-01-01T00:00:00Z"
     },
     "description": "A table widget showing information about failed instances.",
-    "fromServerVersion": "",
     "id": "Failing-Instances-Info-Table",
     "isPredefined": false,
     "itemVersion": "",

@@ -26,7 +26,6 @@
                     },
                     "toDate": "0001-01-01T00:00:00Z"
                 },
-                "fromServerVersion": "",
                 "id": "f1d6a668-19d9-4921-8543-169a15555593",
                 "isPredefined": false,
                 "itemVersion": "",
@@ -79,7 +78,6 @@
                     },
                     "toDate": "0001-01-01T00:00:00Z"
                 },
-                "fromServerVersion": "",
                 "id": "5a86f8d8-cf01-4fde-8813-b8f1961afb79",
                 "isPredefined": false,
                 "itemVersion": "",

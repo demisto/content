@@ -30,7 +30,6 @@
     "sortValues": null,
     "packID": "",
     "itemVersion": "",
-    "fromServerVersion": "",
     "toServerVersion": "",
     "propagationLabels": [
      "all"
@@ -83,7 +82,6 @@
     "sortValues": null,
     "packID": "",
     "itemVersion": "",
-    "fromServerVersion": "",
     "toServerVersion": "",
     "propagationLabels": [
      "all"

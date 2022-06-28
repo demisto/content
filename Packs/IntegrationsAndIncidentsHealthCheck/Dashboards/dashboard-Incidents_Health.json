@@ -27,7 +27,6 @@
      "toDate": "0001-01-01T00:00:00Z"
     },
     "description": "A table widget showing information about failed incidents.",
-    "fromServerVersion": "",
     "id": "Failing-Incidents-Info-Table",
     "isPredefined": false,
     "itemVersion": "",
@@ -77,7 +76,6 @@
      "toDate": "0001-01-01T00:00:00Z"
     },
     "description": "A line widget showing the creation date of failed incidents.",
-    "fromServerVersion": "",
     "id": "Line-Incident-Created-Date-Line",
     "isPredefined": false,
     "itemVersion": "",
@@ -127,7 +125,6 @@
      "toDate": "0001-01-01T00:00:00Z"
     },
     "description": "A number widget showing the failed incidents.",
-    "fromServerVersion": "",
     "id": "Number-of-Failing-Incidents-Number",
     "isPredefined": false,
     "itemVersion": "",
@@ -177,7 +174,6 @@
      "toDate": "0001-01-01T00:00:00Z"
     },
     "description": "A number widget showing the total errors (entries ID).",
-    "fromServerVersion": "",
     "id": "Number-of-Errors-Number",
     "isPredefined": false,
     "itemVersion": "",
@@ -227,7 +223,6 @@
      "toDate": "0001-01-01T00:00:00Z"
     },
     "description": "A number widget shwoing the total unassigned failed incidents.",
-    "fromServerVersion": "",
     "id": "Number-of-Failing-Unassigned-Incidents-Number",
     "isPredefined": false,
     "itemVersion": "",
@@ -277,7 +272,6 @@
      "toDate": "0001-01-01T00:00:00Z"
     },
     "description": "A bar chart showing top failed playbook names.",
-    "fromServerVersion": "",
     "id": "Failing-Playbook-Names-Bar",
     "isPredefined": false,
     "itemVersion": "",
@@ -360,7 +354,6 @@
      "toDate": "0001-01-01T00:00:00Z"
     },
     "description": "A pie chart showing top failed commands.",
-    "fromServerVersion": "",
     "id": "Failing-Playbook-Commands-Pie",
     "isPredefined": false,
     "itemVersion": "",
