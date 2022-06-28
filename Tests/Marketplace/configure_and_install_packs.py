@@ -137,7 +137,7 @@ def xsoar_configure_and_install_flow(options, branch_name: str, build_number: st
     pack_ids_with_valid_min_server_version = packs_to_install - packs_with_higher_server_version
     logging.info(f'starting to install content packs {pack_ids_with_valid_min_server_version}')
 
-    install_packs_from_content_packs_to_install_path(servers, pack_ids_with_valid_min_server_version)
+    install_packs_from_content_packs_to_install_path(servers, list(pack_ids_with_valid_min_server_version))
     logging.success(
         f'Finished installing all content packs {pack_ids_with_valid_min_server_version} '
         f'in {[server.internal_ip for server in servers]}'
