@@ -7,7 +7,7 @@
     "description": "Welcome to the Deployment Wizard!  These steps will guide you through configuring your content pack so you'll have a working use case when the wizard finishes. Make sure to follow the steps in order, you can always continue the wizard where you left off. Learn more about this pack’s deployment.",
     "dependency_packs": [
       {
-        "name": "Email Gateways ",
+        "name": "Email Gateways",
         "min_required": 1,
         "packs": [
           {
@@ -167,8 +167,8 @@
             "display_name": "Palo Alto Networks Cortex XDR - Investigation and Response"
           },
           {
-            "name": "Cylance Protect",
-            "display_name": "Cylance_Protect"
+            "name": "Cylance_Protect",
+            "display_name": "Cylance Protect"
           },
           {
             "name": "Cybereason",
@@ -181,10 +181,6 @@
           {
             "name": "TrendMicroApex",
             "display_name": "Trend Micro Apex One"
-          },
-          {
-            "name": "CortexXDR",
-            "display_name": "Palo Alto Networks Cortex XDR - Investigation and Response"
           }
         ]
       },
@@ -220,7 +216,7 @@
           },
           {
             "name": "ProofpointServerProtection",
-            "display_name": "Proofpoint Protection Serve"
+            "display_name": "Proofpoint Protection Server"
           }
         ]
       }
