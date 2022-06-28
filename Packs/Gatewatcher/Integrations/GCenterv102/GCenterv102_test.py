@@ -1,6 +1,6 @@
 """Unit Tests file"""
 
-from Gcenterv102 import (
+from GCenterv102 import (
     gw_list_alerts,
     gw_get_alert,
     gw_add_malcore_list_entry,

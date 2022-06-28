@@ -11,7 +11,7 @@ Gatewatcher is a European leader in advanced Threats detection, protecting criti
 
 **This pack includes 1 integration:**
 
-- Gcenterv102 (Gcenter 2.5.3.102) integration:
+- GCenterv102 (GCenter 2.5.3.102) integration:
   - List Elasticsearch (NoSQL database) alerts.
   - Get an Elasticsearch (NoSQL database) alert by uid.
   - Add a malcore (Malwares analysis) whitelist/blacklist entry.
@@ -62,7 +62,7 @@ This section will give somme examples on how you can retreive some IOCs (Indicat
 
 > For more information on the documents produced by the codebreaker engine, check out our documentation https://docs.gatewatcher.com/en/gcenter/2.5.3/101/codebreaker.html#generated-events.
 
-> All the use cases below use the gw-es-query command of the Gcenterv102 integration.
+> All the use cases below use the gw-es-query command of the GCenterv102 integration.
 
 ### Malcore engine
 
