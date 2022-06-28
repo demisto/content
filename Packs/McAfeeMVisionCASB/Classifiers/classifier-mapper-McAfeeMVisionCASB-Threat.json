@@ -18,73 +18,73 @@
 		"MVision CASB Threat": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
-				"Activity Names": {
+				"McAfee Mvision Casb Activity Names": {
 					"simple": "activityNames"
 				},
-				"Actor Id": {
+				"McAfee Mvision Casb Actor Id": {
 					"simple": "actorId"
 				},
-				"Actor Id Type": {
+				"McAfee Mvision Casb Actor Id Type": {
 					"simple": "actorIdType"
 				},
-				"Alert Category": {
+				"McAfee Mvision Casb Alert Category": {
 					"simple": "incidentGroup"
 				},
-				"Cloud Service": {
+				"McAfee Mvision Casb Cloud Service": {
 					"simple": "serviceNames"
 				},
-				"Last Update Time": {
+				"McAfee Mvision Casb Last Update Time": {
 					"simple": "timeModified"
 				},
-				"Policy Actions": {
+				"McAfee Mvision Casb Policy Actions": {
 					"simple": "responses"
 				},
-				"Risk Score": {
+				"McAfee Mvision Casb Risk Score": {
 					"simple": "incidentRiskScore"
 				},
-				"Significantly Updated At": {
+				"McAfee Mvision Casb Significantly Updated At": {
 					"simple": "significantlyUpdatedAt"
 				},
-				"Source Status": {
+				"McAfee Mvision Casb Source Status": {
 					"simple": "status"
 				},
-				"Start Time": {
+				"McAfee Mvision Casb Start Time": {
 					"simple": "timeCreated"
 				},
-				"severity": {
+				"McAfee Mvision Casb severity": {
 					"simple": "incidentRiskSeverity"
 				},
-				"Alert Action": {
+				"McAfee Mvision Casb Alert Action": {
 					"simple": "information.remediationResponse"
 				},
-				"Anomaly Count": {
+				"McAfee Mvision Casb Anomaly Count": {
 					"simple": "information.anomalyCount"
 				},
-				"Anomaly Ids": {
+				"McAfee Mvision Casb Anomaly Ids": {
 					"simple": "information.anomalyIds"
 				},
-				"Device External IP": {
+				"McAfee Mvision Casb Device External IP": {
 					"simple": "information.device.ip"
 				},
-				"Device Type": {
+				"McAfee Mvision Casb Device Type": {
 					"simple": "information.device.device_type"
 				},
-				"Event ID": {
+				"McAfee Mvision Casb Event ID": {
 					"simple": "information.eventId"
 				},
-				"Is Tokenized": {
+				"McAfee Mvision Casb Is Tokenized": {
 					"simple": "information.isTokenized"
 				},
-				"OS": {
+				"McAfee Mvision Casb OS": {
 					"simple": "information.device.os.platform"
 				},
-				"Resolution Action": {
+				"McAfee Mvision Casb Resolution Action": {
 					"simple": "information.resolutionAction"
 				},
-				"User Agent": {
+				"McAfee Mvision Casb User Agent": {
 					"simple": "information.device.application.user_agent"
 				},
-				"User Attributes": {
+				"McAfee Mvision Casb User Attributes": {
 					"simple": "information.userAttributes"
 				}
 			}

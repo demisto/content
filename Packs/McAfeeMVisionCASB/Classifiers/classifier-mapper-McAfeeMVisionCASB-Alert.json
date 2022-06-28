@@ -18,172 +18,172 @@
 		"MVision CASB Alert": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
-				"Account ID": {
+				"McAfee Mvision Casb Account ID": {
 					"simple": "information.accountId"
 				},
-				"Activity Count": {
+				"McAfee Mvision Casb Activity Count": {
 					"simple": "information.activityCount"
 				},
-				"Activity Names": {
+				"McAfee Mvision Casb Activity Names": {
 					"simple": "activityNames"
 				},
-				"Actor Id": {
+				"McAfee Mvision Casb Actor Id": {
 					"simple": "actorId"
 				},
-				"Actor Id Type": {
+				"McAfee Mvision Casb Actor Id Type": {
 					"simple": "actorIdType"
 				},
-				"Alert Action": {
+				"McAfee Mvision Casb Alert Action": {
 					"simple": "information.remediationResponse"
 				},
-				"Alert Category": {
+				"McAfee Mvision Casb Alert Category": {
 					"simple": "incidentGroup"
 				},
-				"Anomaly Category": {
+				"McAfee Mvision Casb Anomaly Category": {
 					"simple": "information.anomalyCategory"
 				},
-				"Anomaly Cause": {
+				"McAfee Mvision Casb Anomaly Cause": {
 					"simple": "information.anomalyCause"
 				},
-				"Anomaly Value": {
+				"McAfee Mvision Casb Anomaly Value": {
 					"simple": "information.contentItemValue"
 				},
-				"Categories": {
+				"McAfee Mvision Casb Categories": {
 					"simple": "information.threatCategory"
 				},
-				"City": {
+				"McAfee Mvision Casb City": {
 					"simple": "information.cities"
 				},
-				"Cloud Service": {
+				"McAfee Mvision Casb Cloud Service": {
 					"simple": "serviceNames"
 				},
-				"Content Item Hierarchy": {
+				"McAfee Mvision Casb Content Item Hierarchy": {
 					"simple": "information.Content Item Created On"
 				},
-				"Content Item Id": {
+				"McAfee Mvision Casb Content Item Id": {
 					"simple": "information.contentItemId"
 				},
-				"Content Item Name": {
+				"McAfee Mvision Casb Content Item Name": {
 					"simple": "information.contentItemName"
 				},
-				"Content Item Parent": {
+				"McAfee Mvision Casb Content Item Parent": {
 					"simple": "information.contentItemParent"
 				},
-				"Content Item Size": {
+				"McAfee Mvision Casb Content Item Size": {
 					"simple": "information.contentItemSize"
 				},
-				"Content Item Type": {
+				"McAfee Mvision Casb Content Item Type": {
 					"simple": "information.contentItemType"
 				},
-				"Country": {
+				"McAfee Mvision Casb Country": {
 					"simple": "information.countries"
 				},
-				"Destination Hostname": {
+				"McAfee Mvision Casb Destination Hostname": {
 					"simple": "information.destinationHost"
 				},
-				"Device External IP": {
+				"McAfee Mvision Casb Device External IP": {
 					"simple": "information.device.ip"
 				},
-				"Device Type": {
+				"McAfee Mvision Casb Device Type": {
 					"simple": "information.device.device_type"
 				},
-				"Domain Name": {
+				"McAfee Mvision Casb Domain Name": {
 					"simple": "information.recipientDomains"
 				},
-				"Event Action": {
+				"McAfee Mvision Casb Event Action": {
 					"simple": "information.userAction"
 				},
-				"Event ID": {
+				"McAfee Mvision Casb Event ID": {
 					"simple": "information.eventId"
 				},
-				"File Hash": {
+				"McAfee Mvision Casb File Hash": {
 					"simple": "information.Checksums"
 				},
-				"Is Part Of Threat": {
+				"McAfee Mvision Casb Is Part Of Threat": {
 					"simple": "information.isPartOfThreat"
 				},
-				"Is Tokenized": {
+				"McAfee Mvision Casb Is Tokenized": {
 					"simple": "information.isTokenized"
 				},
-				"Last Update Time": {
+				"McAfee Mvision Casb Last Update Time": {
 					"simple": "timeModified"
 				},
-				"Malware Confidence": {
+				"McAfee Mvision Casb Malware Confidence": {
 					"simple": "information.malwareConfidence"
 				},
-				"Malware Family": {
+				"McAfee Mvision Casb Malware Family": {
 					"simple": "information.malwareCategory"
 				},
-				"Malware Name": {
+				"McAfee Mvision Casb Malware Name": {
 					"simple": "information.malwareName"
 				},
-				"Org Unit": {
+				"McAfee Mvision Casb Org Unit": {
 					"simple": "information.sourceIpOrgs"
 				},
-				"OS": {
+				"McAfee Mvision Casb OS": {
 					"simple": "information.device.os.platform"
 				},
-				"Policy Actions": {
+				"McAfee Mvision Casb Policy Actions": {
 					"simple": "responses"
 				},
-				"Policy Description": {
+				"McAfee Mvision Casb Policy Description": {
 					"simple": "information.policyName"
 				},
-				"Policy ID": {
+				"McAfee Mvision Casb Policy ID": {
 					"simple": "information.policyId"
 				},
-				"Region": {
+				"McAfee Mvision Casb Region": {
 					"simple": "information.region"
 				},
-				"Resolution Action": {
+				"McAfee Mvision Casb Resolution Action": {
 					"simple": "information.resolutionAction"
 				},
-				"Risk Score": {
+				"McAfee Mvision Casb Risk Score": {
 					"simple": "incidentRiskScore"
 				},
-				"Rule Name": {
+				"McAfee Mvision Casb Rule Name": {
 					"simple": "information.primaryRuleGroup"
 				},
-				"Scan Name": {
+				"McAfee Mvision Casb Scan Name": {
 					"simple": "information.scanName"
 				},
-				"Scan Run Date": {
+				"McAfee Mvision Casb Scan Run Date": {
 					"simple": "information.scanRunDate"
 				},
-				"Significantly Updated At": {
+				"McAfee Mvision Casb Significantly Updated At": {
 					"simple": "significantlyUpdatedAt"
 				},
-				"Source IPs": {
+				"McAfee Mvision Casb Source IPs": {
 					"simple": "information.sourceIps"
 				},
-				"Source Status": {
+				"McAfee Mvision Casb Source Status": {
 					"simple": "status"
 				},
-				"Start Time": {
+				"McAfee Mvision Casb Start Time": {
 					"simple": "timeCreated"
 				},
-				"Total Match Count": {
+				"McAfee Mvision Casb Total Match Count": {
 					"simple": "information.totalMatchCount"
 				},
-				"URLs": {
+				"McAfee Mvision Casb URLs": {
 					"simple": "information.destinationUrl"
 				},
-				"Unique Activity Names": {
+				"McAfee Mvision Casb Unique Activity Names": {
 					"simple": "information.uniqueActivityNames"
 				},
-				"User Agent": {
+				"McAfee Mvision Casb User Agent": {
 					"simple": "information.device.application.user_agent"
 				},
-				"User Attributes": {
+				"McAfee Mvision Casb User Attributes": {
 					"simple": "information.userAttributes"
 				},
-				"Vulnerability Category": {
+				"McAfee Mvision Casb Vulnerability Category": {
 					"simple": "information.Vulnerabilities"
 				},
-				"content Item Created On": {
+				"McAfee Mvision Casb content Item Created On": {
 					"simple": "information.contentItemCreatedOn"
 				},
-				"severity": {
+				"McAfee Mvision Casb severity": {
 					"simple": "incidentRiskSeverity"
 				}
 			}

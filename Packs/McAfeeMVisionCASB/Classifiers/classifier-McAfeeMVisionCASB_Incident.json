@@ -12,14 +12,14 @@
 	"instanceIds": null,
 	"itemVersion": "",
 	"keyTypeMap": {
-		"Alert": "MVision CASB Alert",
-		"Threat": "MVision CASB Threat"
+		"Alert": "McAfee Mvision Casb Alert",
+		"Threat": "McAfee Mvision Casb Threat"
 	},
 	"locked": false,
 	"logicalVersion": 1,
 	"mapping": null,
-	"name": "MVision CASB Incident",
-	"nameRaw": "MVision CASB Incident",
+	"name": "McAfee Mvision Casb Incident",
+	"nameRaw": "McAfee Mvision Casb Incident",
 	"packID": "",
 	"propagationLabels": [
 		"all"
