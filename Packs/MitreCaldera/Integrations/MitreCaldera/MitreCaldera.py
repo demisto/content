@@ -7,8 +7,8 @@ class Client(BaseClient):
     def __init__(self, server_url, verify, proxy, headers, auth):
         super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
 
-    def create_fact(self, fact_unique, fact_name, fact_links, fact_relationships, fact_origin_type, fact_limit_count, fact_technique_id, fact_trait, fact_source, fact_score, fact_value):
-        data = assign_params(unique=fact_unique, name=fact_name, links=fact_links, relationships=fact_relationships, origin_type=fact_origin_type,
+    def create_fact(self, fact_name, fact_links, fact_relationships, fact_origin_type, fact_limit_count, fact_technique_id, fact_trait, fact_source, fact_score, fact_value):
+        data = assign_params(name=fact_name, links=fact_links, relationships=fact_relationships, origin_type=fact_origin_type,
                              limit_count=fact_limit_count, technique_id=fact_technique_id, trait=fact_trait, source=fact_source, score=fact_score, value=fact_value)
         headers = self._headers
 
@@ -604,7 +604,6 @@ class Client(BaseClient):
 
 
 def create_fact_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    fact_unique = args.get('fact_unique')
     fact_name = args.get('fact_name')
     fact_links = argToList(args.get('fact_links', []))
     fact_relationships = argToList(args.get('fact_relationships', []))
@@ -616,10 +615,10 @@ def create_fact_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     fact_score = arg_to_number(args.get('fact_score'))
     fact_value = args.get('fact_value')
 
-    response = client.create_fact(fact_unique, fact_name, fact_links, fact_relationships, fact_origin_type,
+    response = client.create_fact(fact_name, fact_links, fact_relationships, fact_origin_type,
                                           fact_limit_count, fact_technique_id, fact_trait, fact_source, fact_score, fact_value)
     command_results = CommandResults(
-        outputs_prefix='MitreCaldera.Fact',
+        outputs_prefix='MitreCaldera.Facts',
         outputs_key_field='',
         outputs=response,
         raw_response=response
@@ -630,7 +629,10 @@ def create_fact_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
 def create_fact_source_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     name = args.get('name')
-    adjustments = json.loads(args.get('adjustments', []))
+    try:
+        adjustments = json.loads(args.get('adjustments', []))
+    except Exception:
+        adjustments = []
     relationships = json.loads(args.get('relationships', []))
     rules = json.loads(args.get('rules', []))
     facts = json.loads(args.get('facts', []))
@@ -740,7 +742,10 @@ def create_operation_command(client: Client, args: Dict[str, Any]) -> CommandRes
 
 def create_objective_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     name = args.get('name')
-    goals = json.loads(args.get('goals', []))
+    try:
+        goals = json.loads(args.get('goals', []))
+    except Exception:
+        goals = []
     description = args.get('description')
 
     response = client.create_objective(
@@ -810,7 +815,7 @@ def create_ability_command(client: Client, args: Dict[str, Any]) -> CommandResul
     response = client.create_ability(ability_ability_id, ability_name, ability_buckets, ability_technique_id, ability_delete_payload, ability_executors, ability_privilege,
                                                  ability_requirements, ability_plugin, ability_access, ability_tactic, ability_additional_info, ability_singleton, ability_technique_name, ability_repeatable, ability_description)
     command_results = CommandResults(
-        outputs_prefix='MitreCaldera.Ability',
+        outputs_prefix='MitreCaldera.Abilities',
         outputs_key_field='',
         outputs=response,
         raw_response=response
@@ -1512,7 +1517,7 @@ def update_agent_config_command(client: Client, args: Dict[str, Any]) -> Command
     response = client.update_agent_config(watchdog, sleep_min, deployments, deadman_abilities,
                                                 untrusted_timer, bootstrap_abilities, sleep_max, implant_name)
     command_results = CommandResults(
-        outputs_prefix='MitreCaldera.AgentConfigUpdate',
+        outputs_prefix='MitreCaldera.AgentConfig',
         outputs_key_field='',
         outputs=response,
         raw_response=response
@@ -1627,7 +1632,10 @@ def update_main_config_command(client: Client, args: Dict[str, Any]) -> CommandR
     value = args.get('value')
 
     client.update_main_config(property, value)
-    return f"{property} updated to {value} in main config."
+    command_results = CommandResults(
+        readable_output=f"{property} updated to {value} in main config."
+    )
+    return_results(command_results)
 
 
 def update_facts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
