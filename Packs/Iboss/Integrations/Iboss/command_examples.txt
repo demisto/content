@@ -7,4 +7,3 @@
 !iboss-add-entity-to-block-list entity=iboss.com
 !iboss-remove-entity-from-block-list entity=iboss.com
 
-!test-module
