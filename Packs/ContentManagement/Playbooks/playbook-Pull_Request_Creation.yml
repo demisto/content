@@ -173,8 +173,6 @@ tasks:
       files:
         complex:
           root: File
-      incidentURL:
-        simple: ' https://10.180.188.202/#/Custom/caseinfoid/56'
       pack:
         complex:
           root: PackName
@@ -183,10 +181,6 @@ tasks:
           root: DemistoUsers
           transformers:
           - operator: FirstArrayElement
-      username:
-        complex:
-          accessor: username
-          root: DemistoUsers
     separatecontext: false
     skipunavailable: false
     task:

@@ -4,11 +4,7 @@ from CommonServerPython import *  # noqa: F401
 import traceback
 import io
 from contextlib import redirect_stderr, redirect_stdout
-from demisto_sdk.commands.common.constants import FileType
-from demisto_sdk.commands.common.tools import find_type
 from demisto_sdk.commands.split.ymlsplitter import *
-from ruamel.yaml.scalarstring import SingleQuotedScalarString
-from demisto_sdk.commands.format.format_module import run_format_on_file
 
 
 TYPE_TO_FOLDER = {'playbook': 'Playbooks',
@@ -160,7 +156,7 @@ def main():
 
         # commit the files from the input
         for file in files:
-            if file.get('Unzipped') == True:
+            if file.get('Unzipped'):
                 continue
 
             content_file = ContentFile(pack_name=pack_name, file=file)
@@ -192,7 +188,7 @@ def main():
         ))
 
     except Exception as ex:
-        demisto.error(traceback.format_exc())  # print the traceback
+        demisto.error(str(ex))  # print the traceback
         return_error(f'Failed to execute CommitFiles script. Error: {str(traceback.format_exc())}')
 
 

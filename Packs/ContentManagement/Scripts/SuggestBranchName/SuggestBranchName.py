@@ -35,7 +35,7 @@ def main():
         ))
 
     except Exception as ex:
-        demisto.error(traceback.format_exc())  # print the traceback
+        demisto.error(str(ex))  # print the traceback
         return_error(f'Failed to execute script. Error: {str(traceback.format_exc())}')
 
 
