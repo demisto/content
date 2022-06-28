@@ -3,3 +3,9 @@ ignore=IN126,IN145
 
 [file:ProtectWise_image.png]
 ignore=IM111
+
+[file:PWObservationPcapDownload.yml]
+ignore=CJ105
+
+[file:PWEventPcapDownload.yml]
+ignore=CJ105
