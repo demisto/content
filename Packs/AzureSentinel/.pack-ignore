@@ -4,3 +4,9 @@ ignore=IN126,IN145
 
 [file:AzureSentinel_image.png]
 ignore=IM111
+
+[file:CBPBanHash.yml]
+ignore=CJ105
+
+[file:CBPApproveHash.yml]
+ignore=CJ105
