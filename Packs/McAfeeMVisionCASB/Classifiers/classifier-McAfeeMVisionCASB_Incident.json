@@ -1,61 +1,44 @@
 {
-	"brands": null,
-	"cacheVersn": 0,
-	"defaultIncidentType": "",
-	"definitionId": "",
-	"description": "",
-	"feed": false,
-	"fromServerVersion": "",
-	"id": "5ec43e8f-c69b-4b0b-8bf1-1fbb8b44bc70",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {
-		"Alert": "McAfee Mvision Casb Alert",
-		"Threat": "McAfee Mvision Casb Threat"
-	},
-	"locked": false,
-	"logicalVersion": 1,
-	"mapping": null,
-	"name": "McAfee Mvision Casb Incident",
-	"nameRaw": "McAfee Mvision Casb Incident",
-	"packID": "",
-	"propagationLabels": [
-		"all"
-	],
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {
-		"complex": {
-			"filters": [],
-			"root": "incidentGroup",
-			"transformers": [
-				{
-					"args": {
-						"delimiter": {
-							"value": {
-								"simple": "."
-							}
-						}
-					},
-					"operator": "splitAndTrim"
-				},
-				{
-					"args": {
-						"index": {
-							"value": {
-								"simple": "0"
-							}
-						}
-					},
-					"operator": "atIndex"
-				}
-			]
-		}
-	},
-	"type": "classification",
-	"unclassifiedCases": null,
-	"version": -1
+    "description": "",
+    "feed": false,
+    "id": "5ec43e8f-c69b-4b0b-8bf1-1fbb8b44bc70",
+    "keyTypeMap": {
+        "Alert": "McAfee Mvision Casb Alert",
+        "Threat": "McAfee Mvision Casb Threat"
+    },
+    "name": "McAfee Mvision Casb Incident",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "complex": {
+            "filters": [],
+            "root": "incidentGroup",
+            "transformers": [
+                {
+                    "args": {
+                        "delimiter": {
+                            "value": {
+                                "simple": "."
+                            }
+                        }
+                    },
+                    "operator": "splitAndTrim"
+                },
+                {
+                    "args": {
+                        "index": {
+                            "value": {
+                                "simple": "0"
+                            }
+                        }
+                    },
+                    "operator": "atIndex"
+                }
+            ]
+        }
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.2.0"
 }
