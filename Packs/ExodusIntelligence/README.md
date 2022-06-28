@@ -7,3 +7,20 @@
 - Based on an alert regarding a targeted vulnerability, query for alerts related to other hosts with that same vulnerability (or relevant CPE) 
 
 **To access Exodus Intelligence’s powerful vulnerability dataset via Cortex XSOAR, please contact** [Exodus Intelligence](mailto:sales@exodusintel.com).
+
+The EVE integration allows you to retrieve vulnerabilities using the Exodus Intelligence API. A new indicator of type Exodus Intelligence will be created for each vulnerability retrieved.
+
+Please note that an Exodus Intelligence account is necessary to access the API. Please visit https://vpx.exodusintel.com and create an account.
+
+## Required fields:
+- Email
+- Password
+- API Key 
+
+## Optional fields:
+- Min XI Score
+- Max XI Score
+
+## Available Commands:
+!fetch-indicator: Runs the integration
+!reset-data-stream: Reset the integration data stream to a later date. Ie: `!reset-data-stream reset=100` will reset the data stream 100 days in the past.
