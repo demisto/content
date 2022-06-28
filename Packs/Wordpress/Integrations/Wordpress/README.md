@@ -34,7 +34,7 @@ Get information from a custom URL
 | method | Method. Possible values are: get, post, put, delete, patch. Default is get. | Required | 
 | url | URL suffix to append to the base URL. | Required | 
 | body | Body data (JSON). | Optional | 
-| params | Parameters. | Optional | 
+| params | Parameters (JSON). | Optional | 
 
 
 #### Context Output

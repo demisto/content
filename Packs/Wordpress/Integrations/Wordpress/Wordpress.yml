@@ -56,7 +56,7 @@ script:
       name: body
       required: false
       secret: false
-    - description: 'Parameters'
+    - description: 'Parameters (JSON)'
       isArray: false
       name: params
       required: false
