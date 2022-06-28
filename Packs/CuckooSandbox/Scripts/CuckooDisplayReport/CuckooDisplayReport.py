@@ -1,7 +1,8 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-#ALL_SECTIONS = ["info","statistics","network","dropped","suricata","debug","procmemory","signatures","decompression","malfamily","behavior","target","malscore","static","feeds","strings","virustotal"]
+# ALL_SECTIONS = ["info","statistics","network","dropped","suricata","debug","procmemory","signatures","decompression",
+# "malfamily","behavior","target","malscore","static","feeds","strings","virustotal"]
 res = []
 if 'reportentryid' not in demisto.args() and 'reportfilepath' not in demisto.args() and 'reportdata' not in demisto.args():
     demisto.results({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
@@ -26,7 +27,7 @@ try:
                 filePath = demisto.executeCommand('getFilePath', {'id': demisto.args()['reportentryid']})[0]['Contents']['path']
             with open(filePath, 'rb') as jsonFile:
                 report = json.load(jsonFile)
-        except Exception as ex:
+        except Exception:
             entry = demisto.executeCommand('getEntry', {'id': demisto.args()['reportentryid']})[0]
             if isError(entry):
                 demisto.results(entry)
@@ -45,7 +46,6 @@ if not report:
 
 if showAllSections:
     showSections = report.keys()
-
 for s in showSections:
     try:
         if s not in report:
@@ -55,32 +55,32 @@ for s in showSections:
 
         if s == 'info':
             t = report['info']
-            data = {k: formatCell(t[k]) for k in t}
-            res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": data})
+            info_data = {k: formatCell(t[k]) for k in t}
+            res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": info_data})
         elif s == 'signatures':
             t = report['signatures']
-            data = [{k: formatCell(row[k]) for k in row} for row in t]
-            res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": data})
+            signatures_data = [{k: formatCell(row[k]) for k in row} for row in t]
+            res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": signatures_data})
         elif s == 'malscore':
             res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"],
                        "Contents": {'Malscore': report['malscore']}})
         elif s == 'strings':
             strings = demisto.get(report, 'strings')
             if strings:
-                data = [{'Strings': s} for s in strings]
-                res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": data})
+                strings_data = [{'Strings': s} for s in strings]
+                res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": strings_data})
         elif s == 'debug':
             t = demisto.get(report, 'debug')
             if t:
                 for part in ['errors', 'log']:
                     if part in t and t[part]:
-                        data = [{part: s} for s in t[part]]
-                        res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": data})
+                        debug_data = [{part: s} for s in t[part]]
+                        res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": debug_data})
         elif s == 'screenshots':
             t = demisto.get(report, 'screenshots')
             if t:
-                data = [{'screenshots': s} for s in t]
-                res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": data})
+                screenshots_data = [{'screenshots': s} for s in t]
+                res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": screenshots_data})
 
         elif s == 'statistics':
             t = demisto.get(report, 'statistics')
@@ -94,13 +94,13 @@ for s in showSections:
             if t and isinstance(t, list):
                 for subtable in t:
                     if t[subtable]:
-                        data = [{k: formatCell(row[k]) for k in row} for row in t[subtable]]
-                        res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": data})
+                        behavior_data = [{k: formatCell(row[k]) for k in row} for row in t[subtable]]
+                        res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": behavior_data})
         else:
             data = report[s] if isinstance(report[s], list) else [report[s]]
             data = [{k: formatCell(row[k]) for k in row} for row in data]
             res.append({"Type": entryTypes["note"], "ContentsFormat": formats["table"], "Contents": data})
-            #res.append({"Type": entryTypes["note"], "ContentsFormat": formats["json"], "Contents": report[s]})
+            # res.append({"Type": entryTypes["note"], "ContentsFormat": formats["json"], "Contents": report[s]})
     except Exception as ex:
         res.append({"Type": entryTypes["error"], "ContentsFormat": formats["text"],
                     "Contents": "Error occurred while parsing section " + s + " from report. Exception info:\n" + str(ex)})
