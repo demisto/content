@@ -18,6 +18,7 @@ class MockCollection:
 def mock_create_relations(original):
     def mock(item_json, id_to_name):
         return original(item_json, ID_TO_NAME)
+
     return mock
 
 
@@ -203,22 +204,21 @@ def test_create_relationships_invalid():
 
 def test_attack_pattern_reputation_command(mocker):
     import FeedMitreAttackv2
-    from typing import NamedTuple
-    from CommonServerPython import Common
-
     from stix2.v20.sdo import AttackPattern
 
     def mitre_data_mock(client, filter_by_name: list[FeedMitreAttackv2.Filter]):
         if (name := filter_by_name[1].value) == 'Malicious Activity':
             return None
-        return AttackPattern(name=name, created='2017-05-31T21:30:49.546Z', modified='2022-04-19T18:31:48.827Z', type='attack-pattern',
-                                id='attack-pattern--7385dfaf-6886-4229-9ecd-6fd678040830')
+        return AttackPattern(name=name, created='2017-05-31T21:30:49.546Z', modified='2022-04-19T18:31:48.827Z',
+                             type='attack-pattern', id='attack-pattern--7385dfaf-6886-4229-9ecd-6fd678040830')
 
     mocker.patch.object(FeedMitreAttackv2, 'get_mitre_data_by_filter', side_effect=mitre_data_mock)
-    args = {'attack_pattern': ['Command and Scripting Interpreter','Malicious Activity','Access Token Manipulation','Bypass User Account Control', 'Process Hollowing']}
+    args = {'attack_pattern': ['Command and Scripting Interpreter', 'Malicious Activity', 'Access Token Manipulation',
+                               'Bypass User Account Control', 'Process Hollowing']}
     client = FeedMitreAttackv2.Client(url="https://test.org", proxies=False, verify=False, tags=[], tlp_color=None)
     result = FeedMitreAttackv2.attack_pattern_reputation_command(client, args)
     assert len(result) == 4
-    names = ['Command and Scripting Interpreter', 'Access Token Manipulation','Bypass User Account Control', 'Process Hollowing']
+    names = ['Command and Scripting Interpreter', 'Access Token Manipulation', 'Bypass User Account Control',
+             'Process Hollowing']
     for name, res in zip(names, result):
         assert name in res.readable_output
