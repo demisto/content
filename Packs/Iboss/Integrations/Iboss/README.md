@@ -134,15 +134,15 @@ Looks up reputation data for IP addresses
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DBotScore.Indicator | Unknown | The indicator. | 
-| DBotScore.Type | Unknown | The indicator type. | 
-| DBotScore.Vendor | Unknown | The vendor. | 
+| DBotScore.Indicator | String | The indicator. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor. | 
 | DBotScore.Score | Number | The DBot score. | 
 | Domain.Malicious.Description | String | The indicator context description | 
 | Domain.Malicious.Vendor | String | The vendor that indicator context originated from. | 
-| Domain.Name | Unknown | The domain. | 
+| Domain.Name | String | The domain. | 
 | iboss.isSafeUrl | Number | Whether entity is deemed safe | 
-| iboss.categories | Unknown | The entity categories. | 
+| iboss.categories | String | The entity categories. | 
 | DBotScore.activeMalwareSubscription | Number | Whether active malware subscription is active | 
 | iboss.categorized | Number | Whether entity is categorized. | 
 | iboss.googleSafeBrowsingDescription | String | Google safe browsing description | 
@@ -267,15 +267,15 @@ Looks up reputation data for IP addresses
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DBotScore.Indicator | Unknown | The indicator. | 
-| DBotScore.Type | Unknown | The indicator type. | 
-| DBotScore.Vendor | Unknown | The vendor. | 
+| DBotScore.Indicator | String | The indicator. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor. | 
 | DBotScore.Score | Number | The DBot score. | 
 | IP.Malicious.Description | String | The indicator context description | 
 | IP.Malicious.Vendor | String | The vendor that indicator context originated from. | 
-| IP.Address | Unknown | The IP address. | 
+| IP.Address | String | The IP address. | 
 | iboss.isSafeUrl | Number | Whether entity is deemed safe | 
-| iboss.categories | Unknown | The entity categories. | 
+| iboss.categories | String | The entity categories. | 
 | DBotScore.activeMalwareSubscription | Number | Whether active malware subscription is active | 
 | iboss.categorized | Number | Whether entity is categorized. | 
 | iboss.googleSafeBrowsingDescription | String | Google safe browsing description | 
@@ -479,15 +479,15 @@ Looks up reputation data for URLs
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DBotScore.Indicator | Unknown | The indicator. | 
-| DBotScore.Type | Unknown | The indicator type. | 
-| DBotScore.Vendor | Unknown | The vendor. | 
+| DBotScore.Indicator | String | The indicator. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor. | 
 | DBotScore.Score | Number | The DBot score. | 
 | URL.Malicious.Description | String | The indicator context description | 
 | URL.Malicious.Vendor | String | The vendor that indicator context originated from. | 
-| URL.Data | Unknown | The URL. | 
+| URL.Data | String | The URL. | 
 | iboss.isSafeUrl | Number | Whether entity is deemed safe | 
-| iboss.categories | Unknown | The entity categories. | 
+| iboss.categories | String | The entity categories. | 
 | DBotScore.activeMalwareSubscription | Number | Whether active malware subscription is active | 
 | iboss.categorized | Number | Whether entity is categorized. | 
 | iboss.googleSafeBrowsingDescription | String | Google safe browsing description | 

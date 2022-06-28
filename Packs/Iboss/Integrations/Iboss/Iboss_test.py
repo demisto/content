@@ -97,7 +97,7 @@ def test_add_entity_to_block_list(requests_mock, mocker):
         Given:
          - User has provided valid credentials and arguments.
         When:
-         - A add_entity_to_allow_list command is called and the entry is added.
+         - A add_entity_to_block_list command is called and the entry is added.
         Then:
          - Ensure number of items is correct.
          - Ensure a sample value from the API matches what is generated in the context.
@@ -110,7 +110,7 @@ def test_add_entity_to_block_list(requests_mock, mocker):
         json={'message': 'URL added successfully.'})
 
     args = {
-        "entity": "google.com,demisto.com",
+        "entity": "domain1.com,domain2.com",
         "current_policy_being_edited": "1",
         "allow_keyword": "0",
         "direction": "2",
@@ -125,8 +125,8 @@ def test_add_entity_to_block_list(requests_mock, mocker):
     result = add_entity_to_block_list_command(client, args=args)
 
     assert len(result) == 2
-    assert result[0].outputs.get("message") == "URL added successfully."
-    assert result[1].outputs.get("message") == "URL added successfully."
+    assert result[0].outputs.get("message") == "`domain1.com` successfully added to policy 1 block list."
+    assert result[1].outputs.get("message") == "`domain2.com` successfully added to policy 1 block list."
 
 
 def test_add_entity_to_allow_list(requests_mock, mocker):
@@ -135,7 +135,7 @@ def test_add_entity_to_allow_list(requests_mock, mocker):
         Given:
          - User has provided valid credentials and arguments.
         When:
-         - A add_entity_to_block_list command is called and the entry is added.
+         - A add_entity_to_allow_list command is called and the entry is added.
         Then:
          - Ensure number of items is correct.
          - Ensure a sample value from the API matches what is generated in the context.
@@ -148,7 +148,7 @@ def test_add_entity_to_allow_list(requests_mock, mocker):
         json={'message': 'URL added successfully.'})
 
     args = {
-        "entity": "google.com",
+        "entity": "domain1.com",
         "current_policy_being_edited": "1",
         "allow_keyword": "0",
         "direction": "2",
@@ -163,7 +163,7 @@ def test_add_entity_to_allow_list(requests_mock, mocker):
     result = add_entity_to_allow_list_command(client, args=args)
 
     assert len(result) == 1
-    assert result[0].outputs.get("message") == "URL added successfully."
+    assert result[0].outputs.get("message") == "`domain1.com` successfully added to policy 1 allow list."
 
 
 def test_remove_entity_from_allow_list_no_exist(requests_mock, mocker):
@@ -183,10 +183,10 @@ def test_remove_entity_from_allow_list_no_exist(requests_mock, mocker):
     client = get_mock_client(mocker)
     requests_mock.delete(
         'https://pswg.com/json/controls/allowList?currentPolicyBeingEdited=1',
-        json={'message': 'URL not found in list.'})
+        json={'message': 'Failed to remove URL.', 'errorCode': 0})
 
     args = {
-        "entity": "google.com",
+        "entity": "noexist.com",
         "current_policy_being_edited": "1",
         "allow_keyword": "0",
         "direction": "2",
@@ -201,7 +201,7 @@ def test_remove_entity_from_allow_list_no_exist(requests_mock, mocker):
     result = remove_entity_from_allow_list_command(client, args=args)
 
     assert len(result) == 1
-    assert result[0].outputs.get("message") == "URL not found in list."
+    assert result[0].outputs.get("message") == "`noexist.com` not found in policy 1 allow list."
 
 
 def test_remove_entity_from_block_list(requests_mock, mocker):
@@ -223,7 +223,7 @@ def test_remove_entity_from_block_list(requests_mock, mocker):
         json={'message': 'URL removed successfully.'})
 
     args = {
-        "entity": "google.com, demisto.com",
+        "entity": "domain1.com, domain2.com",
         "current_policy_being_edited": "1",
         "allow_keyword": "0",
         "direction": "2",
@@ -238,8 +238,8 @@ def test_remove_entity_from_block_list(requests_mock, mocker):
     result = remove_entity_from_block_list_command(client, args=args)
 
     assert len(result) == 2
-    assert result[0].outputs.get("message") == "URL removed successfully."
-    assert result[1].outputs.get("message") == "URL removed successfully."
+    assert result[0].outputs.get("message") == "`domain1.com` removed from policy 1 block list."
+    assert result[1].outputs.get("message") == "`domain2.com` removed from policy 1 block list."
 
 
 def test_ip_lookup(requests_mock, mocker):

@@ -520,6 +520,28 @@ script:
       required: false
       secret: false
       defaultValue: '1'
+    - name: start_port
+      isArray: false
+      description: Which start port(s) to match; 0 indicates all ports.
+      required: false
+      secret: false
+      defaultValue: '0'
+    - name: end_port
+      isArray: false
+      description: Which end port(s) to match; 0 indicates all ports.
+      required: false
+      secret: false
+      defaultValue: '0'
+    - name: direction
+      isArray: false
+      description: Which direction(s) to match.
+      required: false
+      secret: false
+      defaultValue: '2'
+      predefined:
+      - '0'
+      - '1'
+      - '2'
     outputs:
     - contextPath: iboss.RemoveEntityFromAllowList.message
       description: Operation result.
@@ -540,6 +562,28 @@ script:
       required: false
       secret: false
       defaultValue: '1'
+    - name: start_port
+      isArray: false
+      description: Which start port(s) to match; 0 indicates all ports.
+      required: false
+      secret: false
+      defaultValue: '0'
+    - name: end_port
+      isArray: false
+      description: Which end port(s) to match; 0 indicates all ports.
+      required: false
+      secret: false
+      defaultValue: '0'
+    - name: direction
+      isArray: false
+      description: Which direction(s) to match.
+      required: false
+      secret: false
+      defaultValue: '2'
+      predefined:
+      - '0'
+      - '1'
+      - '2'
     outputs:
     - contextPath: iboss.RemoveEntityFromBlockList.message
       description: Operation result.

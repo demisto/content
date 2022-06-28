@@ -152,12 +152,9 @@ metadata_collector = YMLMetadataCollector(
     is_runonce=False,
     integration_subtype="python3",
     integration_type="python",
-    fromversion="5.0.0",
-    # default_mapper_in="HelloWorld-mapper",
-    # default_classifier="HelloWorld",
+    fromversion="6.2.0",
     conf=[ConfKey(name="auth",
                   display="Username",
-                  # displaypassword="Password",
                   required=True,
                   key_type=ParameterTypes.AUTH),
           ConfKey(name="account_settings_id",
@@ -188,7 +185,7 @@ def set_auth(method):
         try:
             return method(self, *method_args, **method_kwargs)
         except Exception as e:
-            if "Unauthorized" in str(e):
+            if "Unauthorized" in str(e) or "Please login" in str(e):
                 self.auth()
                 return method(self, *method_args, **method_kwargs)
             raise (e)
@@ -216,8 +213,6 @@ class Client(BaseClient):
     def _init_cache_params(self):
         context = get_integration_context()
 
-        # self.cloud_token = context.get("cloud_token")
-        # self.xsrf_token = context.get("xsrf_token")
         self.primary_gateway = context.get("primary_gateway")
         self.gateway_xsrf_token = context.get("gateway_xsrf_token")
         self.expiration = int(context.get("expiration", -1))
@@ -238,7 +233,7 @@ class Client(BaseClient):
         context = get_integration_context()
         context.update({
             'cloud_token': token,
-            'xsrf_token': token,
+            'xsrf_token': xsrf_token,
             'jsessionid': jsessionid,
             'primary_gateway': primary_gateway,
             'gateway_xsrf_token': gateway_xsrf_token,
@@ -271,7 +266,7 @@ class Client(BaseClient):
         token = result.get("token")
 
         if not token:
-            ValueError("System returned `None` for cloud token auth")
+            raise ValueError("System returned `None` for cloud token auth")
 
         return token
 
@@ -283,10 +278,6 @@ class Client(BaseClient):
             headers=headers,
             resp_type="response"
         ).headers.get("Set-Cookie")
-
-        # cv = requests.get(CLOUD_ACCOUNT_SETTINGS_URL, headers=headers).headers.get("Set-Cookie")
-
-        demisto.info(f"Cookie vals: {cookie_values}")
 
         xsrf_token = re.findall(r"(?<=XSRF-TOKEN=).*?(?=;)", cookie_values)[0]
         jsessionid = re.findall(r"(?<=JSESSIONID=).*?(?=;)", cookie_values)[0]
@@ -333,9 +324,8 @@ class Client(BaseClient):
 
     def _remove_from_list_error_handler(self, res):
         if res.status_code == 422:
-            resp = {'message': 'URL not found in list.'}
-            if resp["errorCode"] == 0:
-                return True
+            return True
+            # resp = {'message': 'URL not found in list.'}
         raise DemistoException(f"Bad request. Origin response from server: {res.text}")
 
     @set_auth
@@ -376,11 +366,13 @@ class Client(BaseClient):
         return result
 
     @set_auth
-    def remove_entity_from_block_list(self, url, current_policy_being_edited=1, apply_global=0):
+    def remove_entity_from_block_list(self, url, current_policy_being_edited=1, direction=2, end_port=0, start_port=0):
         params = {
             "url": url,
             "currentPolicyBeingEdited": current_policy_being_edited,
-            "global": apply_global,
+            "direction": direction,
+            "endPort": end_port,
+            "startPort": start_port,
         }
 
         result = self._http_request(
@@ -421,11 +413,13 @@ class Client(BaseClient):
         return result
 
     @set_auth
-    def remove_entity_from_allow_list(self, url, current_policy_being_edited=1, apply_global=0):
+    def remove_entity_from_allow_list(self, url, current_policy_being_edited=1, direction=2, end_port=0, start_port=0):
         params = {
             "url": url,
             "currentPolicyBeingEdited": current_policy_being_edited,
-            "global": apply_global,
+            "direction": direction,
+            "endPort": end_port,
+            "startPort": start_port,
         }
 
         result = self._http_request(
@@ -439,6 +433,16 @@ class Client(BaseClient):
 
     @set_auth
     def get_url_reputation(self, url):
+        """
+        Get the reputation of a domain, IP, or URL.
+
+        The iboss API endpoint is specifically named urlLookup because iboss treats all entities as URLs.
+        Domains and IPs will be redirected to their URL representation when performing website heuristics and
+        content/redirect analysis, and the actual indicator value will be otherwise checked against feeds and
+        other relevant detection engines.
+        @param url: The domain, IP, or URL to perform the `urlLookup` check against.
+        @return:
+        """
         data = {"url": url}
         result = self._http_request(
             method="post",
@@ -1187,7 +1191,6 @@ def add_entity_to_block_list_command(client: Client, args: Dict[str, Any]) -> li
         message (str): Update result.
     """
 
-    # entity = args.get('entity')
     entities = _get_validate_argument("entity", args, validator=lambda x: x and len(x) > 0,
                                       message="value is not specified")
 
@@ -1218,8 +1221,6 @@ def add_entity_to_block_list_command(client: Client, args: Dict[str, Any]) -> li
 
     note = _get_validate_argument("note", args)
 
-    # Initialize an empty list of CommandResults to return,
-    # each CommandResult will contain context standard for Domain
     command_results = []
 
     for entry in argToList(entities):
@@ -1229,8 +1230,17 @@ def add_entity_to_block_list_command(client: Client, args: Dict[str, Any]) -> li
             direction=direction, end_port=end_port, apply_global=apply_global, is_regex=is_regex,
             is_timed_url=is_timed_url, note=note,
             priority=priority, start_port=start_port, time_url_expires_in_minutes=time_url_expires_in_minutes)
+
+        # Update with friendlier message when user attempts to remove entry that is not present on list
+        message = result.get('message', '')
+        if 'No changes made to list' in message:
+            result["message"] = f'`{entry}` is already in policy {current_policy_being_edited} block list and covers ' \
+                                f'the domain entry being added. No changes made to list. '
+        else:
+            result["message"] = f'`{entry}` successfully added to policy {current_policy_being_edited} block list.'
+
         command_results.append(CommandResults(
-            readable_output=result['message'],
+            readable_output=result.get('message'),
             outputs_prefix='iboss.AddEntityToBlockList',
             outputs_key_field='message',
             outputs=result,
@@ -1253,20 +1263,6 @@ def add_entity_to_block_list_command(client: Client, args: Dict[str, Any]) -> li
         OutputArgument(name="message", description="Operation result.", output_type=str)
     ])
 def remove_entity_from_block_list_command(client: Client, args: Dict[str, Any]) -> list[CommandResults]:
-    """Removes entities from a block list
-
-     Args:
-        client (Client): iboss client to use.
-        entity: required. Domains, IPs, and/or URLs to remove from a block list.
-        current_policy_being_edited: required. The group/policy number to update. defaultValue=1.
-
-    Returns:
-        A ``CommandResults`` object that is then passed to ``return_results``, that contains the status of the removed entity.
-
-    Context Outputs:
-        message (str): Update result.
-    """
-
     entities = _get_validate_argument(
         "entity", args, validator=lambda x: x and len(x) > 0, message="value is not specified")
 
@@ -1274,14 +1270,27 @@ def remove_entity_from_block_list_command(client: Client, args: Dict[str, Any]) 
         "current_policy_being_edited", args, validator=lambda x: (x or x == 0) and x > 0, message="value must be >= 0",
         return_type=int)
 
+    start_port = _get_validate_argument(
+        "start_port", args, validator=lambda x: (x or x == 0) and x >= 0, message="value must be >= 0", return_type=int)
+
+    end_port = _get_validate_argument(
+        "end_port", args, validator=lambda x: (x or x == 0) and x >= 0, message="value must be >= 0", return_type=int)
+
+    direction = _get_validate_argument(
+        "direction", args, validator=lambda x: x in [0, 1, 2], message="value must be 0, 1, or 2", return_type=int)
+
     command_results = []
     for entry in argToList(entities):
-        result = client.remove_entity_from_block_list(url=entry,
-                                                      current_policy_being_edited=current_policy_being_edited)
+        result = client.remove_entity_from_block_list(
+            url=entry, current_policy_being_edited=current_policy_being_edited,
+            start_port=start_port, end_port=end_port, direction=direction)
 
         # Update with friendlier message when user attempts to remove entry that is not present on list
         if result.get("errorCode", -1) == 0 and result.get("message", "") == "Failed to remove URL.":
-            result["message"] = "URL not found in list."
+            result["message"] = f"`{entry}` not found in policy {current_policy_being_edited} block list."
+            result.pop("errorCode", None)
+        else:
+            result["message"] = f"`{entry}` removed from policy {current_policy_being_edited} block list."
 
         command_results.append(CommandResults(
             readable_output=result["message"],
@@ -1350,7 +1359,6 @@ def add_entity_to_allow_list_command(client: Client, args: Dict[str, Any]) -> li
         message (str): Update result.
     """
 
-    # entity = args.get('entity')
     entities = _get_validate_argument(
         "entity", args, validator=lambda x: x and len(x) > 0, message="value is not specified")
 
@@ -1380,8 +1388,6 @@ def add_entity_to_allow_list_command(client: Client, args: Dict[str, Any]) -> li
     if time_url_expires_in_minutes > 0:
         is_timed_url = 1
 
-    # Initialize an empty list of CommandResults to return,
-    # each CommandResult will contain context standard for Domain
     command_results = []
 
     for entry in argToList(entities):
@@ -1392,8 +1398,16 @@ def add_entity_to_allow_list_command(client: Client, args: Dict[str, Any]) -> li
             is_timed_url=is_timed_url, note=note,
             priority=priority, start_port=start_port, time_url_expires_in_minutes=time_url_expires_in_minutes)
 
+        # Update with friendlier message when user attempts to remove entry that is not present on list
+        message = result.get('message', '')
+        if 'No changes made to list' in message:
+            result["message"] = f'`{entry}` is already in policy {current_policy_being_edited} allow list and covers ' \
+                                f'the domain entry being added. No changes made to list. '
+        else:
+            result["message"] = f'`{entry}` successfully added to policy {current_policy_being_edited} allow list.'
+
         command_results.append(CommandResults(
-            readable_output=result['message'],
+            readable_output=result.get('message'),
             outputs_prefix='iboss.AddEntityToAllowList',
             outputs_key_field='message',
             outputs=result,
@@ -1410,26 +1424,17 @@ def add_entity_to_allow_list_command(client: Client, args: Dict[str, Any]) -> li
         InputArgument(name="entity", description="Domains, IPs, and/or URLs to remove from an allow list.",
                       required=True,
                       is_array=True),
-        InputArgument(name="current_policy_being_edited", description="The group/policy number to update.", default="1")
+        InputArgument(name="current_policy_being_edited", description="The group/policy number to update.",
+                      default="1"),
+        InputArgument(name="direction", description="Which direction(s) to match. Options=[0, 1, 2].", default="2"),
+        InputArgument(name="start_port", description="Which start port(s) to match. 0 indicates all ports.",
+                      default="0"),
+        InputArgument(name="end_port", description="Which end ports(s) to match. 0 indicates all ports.", default="0"),
     ],
     outputs_list=[
         OutputArgument(name="message", description="Operation result.", output_type=str)
     ])
 def remove_entity_from_allow_list_command(client: Client, args: Dict[str, Any]) -> list[CommandResults]:
-    """Removes entities from an allow list
-
-     Args:
-        client (Client): iboss client to use.
-        entity: required. Domains, IPs, and/or URLs to remove from an allow list.
-        current_policy_being_edited: required. The group/policy number to update. defaultValue=1.
-
-    Returns:
-        A ``CommandResults`` object that is then passed to ``return_results``, that contains the status of the removed entity.
-
-    Context Outputs:
-        message (str): Update result.
-    """
-
     entities = _get_validate_argument(
         "entity", args, validator=lambda x: x and len(x) > 0, message="value is not specified")
 
@@ -1437,20 +1442,31 @@ def remove_entity_from_allow_list_command(client: Client, args: Dict[str, Any]) 
         "current_policy_being_edited", args, validator=lambda x: (x or x == 0) and x > 0, message="value must be >= 0",
         return_type=int)
 
+    start_port = _get_validate_argument(
+        "start_port", args, validator=lambda x: (x or x == 0) and x >= 0, message="value must be >= 0", return_type=int)
+
+    end_port = _get_validate_argument(
+        "end_port", args, validator=lambda x: (x or x == 0) and x >= 0, message="value must be >= 0", return_type=int)
+
+    direction = _get_validate_argument(
+        "direction", args, validator=lambda x: x in [0, 1, 2], message="value must be 0, 1, or 2", return_type=int)
+
     command_results = []
     for entry in argToList(entities):
         result = client.remove_entity_from_allow_list(
-            url=entry,
-            current_policy_being_edited=current_policy_being_edited)
+            url=entry, current_policy_being_edited=current_policy_being_edited,
+            start_port=start_port, end_port=end_port, direction=direction)
 
         # Update with friendlier message when user attempts to remove entry that is not present on list
         if result.get("errorCode", -1) == 0 and result.get("message", "") == "Failed to remove URL.":
-            result["message"] = "URL not found in list."
+            result["message"] = f"`{entry}` not found in policy {current_policy_being_edited} allow list."
+        else:
+            result["message"] = f"`{entry}` removed from policy {current_policy_being_edited} allow list."
 
         command_results.append(CommandResults(
-            readable_output=result['message'],
-            outputs_prefix='iboss.RemoveEntityFromAllowList',
-            outputs_key_field='message',
+            readable_output=result["message"],
+            outputs_prefix="iboss.RemoveEntityFromAllowList",
+            outputs_key_field="message",
             outputs=result,
         ))
 
