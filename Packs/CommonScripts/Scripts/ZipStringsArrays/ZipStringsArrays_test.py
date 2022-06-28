@@ -8,6 +8,8 @@ TEST_CASES = [
     ({'list1': ['a', 'b'], 'list2': [], 'format': '{1}-{2}'}, []),
     ({'list1': ['c', 'd'], 'list2': ['a', 'b'], 'format': '{1}/{2}'}, ['c/a', 'd/b']),
     ({'list1': "aa", 'list2': "bb", 'format': '{1}/{2}'}, ['aa/bb']),
+    ({'list1': "", 'list2': "", 'format': '{1}/{2}'}, []),
+    ({'list1': "[\"aa\"]", 'list2': "[\"bb\"]", 'format': '{1}/{2}'}, ['aa/bb']),
 ]
 
 

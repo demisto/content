@@ -3590,8 +3590,8 @@ script:
       type: string
   - arguments:
     - auto: PREDEFINED
-      description: The action to be taken, such as show, get, set, edit, delete, rename,
-        clone, move, override, multi-move, multi-clone, or complete.
+      description: Action to be taken, such as show, get, set, edit, delete, rename, clone, move, override, multi-move, multi-clone, or complete.
+        Documentation - https://docs.paloaltonetworks.com/pan-os/9-1/pan-os-panorama-api/pan-os-xml-api-request-types/configuration-api.
       name: action
       predefined:
       - set
@@ -3609,18 +3609,17 @@ script:
     - description: The category parameter. For example, when exporting a configuration
         file, use "category=configuration".
       name: category
-    - description: The XML structure that defines the command. Used for
-        operation commands.
+    - description: Specifies the XML structure that defines the command. Used for operation commands (op type command). Can be retrieved from the PAN-OS web UI debugger or enabling debugging via the CLI using `debug cli on`.
       name: cmd
     - description: The command to run. For example, command =<show><arp><entry name='all'/></arp></show>
       name: command
     - description: The specified destination.
       name: dst
-    - description: The new value defined for an object.
+    - description: Used to define a new value for an object. Should be an XML object, for example, <static><member>test</member></static>.
       name: element
-    - description: The end time (used when cloning an object).
+    - description: The end time (used only when cloning an object).
       name: to
-    - description: The start time (used when cloning an object).
+    - description: The start time (used only when cloning an object).
       name: from
     - description: The key value to set.
       name: key
@@ -3631,7 +3630,8 @@ script:
       name: where
     - description: The time period, for example period=last-24-hrs
       name: period
-    - description: The xpath location, for example, xpath=/config/predefined/application/entry[@name='hotmail']
+    - description: xpath location. xpath defines the location of the object. For example, xpath=/config/predefined/application/entry[@name='hotmail'].
+        Documentation - https://docs.paloaltonetworks.com/pan-os/9-1/pan-os-panorama-api/about-the-pan-os-xml-api/structure-of-a-pan-os-xml-api-request/xml-and-xpath.
       name: xpath
     - description: The PCAP ID included in the threat log.
       name: pcap-id

@@ -182,3 +182,7 @@ AttackPattern
 ParsesUUID
 UUID
 Deprecated
+dbotMirrorDirection
+dbotMirrorId
+dbotMirrorInstance
+dbotMirrorTags
