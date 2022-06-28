@@ -3,8 +3,8 @@
     "fromVersion": "5.5.0",
     "associatedToAll": false,
     "associatedTypes": [
-        "MVision CASB Alert",
-        "MVision CASB Threat"
+        "McAfee Mvision Casb Alert",
+        "McAfee Mvision Casb Threat"
     ],
     "breachScript": "",
     "caseInsensitive": true,
