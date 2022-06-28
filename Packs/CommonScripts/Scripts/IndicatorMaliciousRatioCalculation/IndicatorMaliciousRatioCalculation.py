@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-import traceback
 import hashlib
 import json
 
@@ -136,7 +135,6 @@ def main():
     try:
         return_results(indicator_malicious_ratio_calculation(demisto.args()))
     except Exception as ex:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error('Failed to execute IndicatorMaliciousRatioCalculation. Error:' + str(ex))
 
 

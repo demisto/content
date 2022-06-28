@@ -70,9 +70,8 @@ def main():
             'HumanReadable': tableToMarkdown('Top Malicious Ratio Indicators', sorted_indicators)
         })
 
-    except Exception:
-        demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute TopMaliciousRatioIndicators. Error: {traceback.format_exc()}')
+    except Exception as e:
+        return_error(f'Failed to execute TopMaliciousRatioIndicators. Error: {str(e)}')
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):  # pragma: no cover

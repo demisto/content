@@ -32,7 +32,6 @@ def main():
         ip = demisto.args().get('ip')
         return_results(ip_to_host(ip))
     except Exception as e:
-        demisto.error(traceback.format_exc())
         return_error(f'Couldn\'t get the IP host info. Error information: {str(e)}')
 
 

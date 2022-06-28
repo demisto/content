@@ -49,7 +49,6 @@ def main():
     try:
         return_results(poll_field(demisto.args()))
     except Exception as ex:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute CheckFieldValue script. Error: {str(ex)}')
 
 

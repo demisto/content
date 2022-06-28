@@ -674,7 +674,6 @@ def main():
             return_results(marking_list_command(client, args))
 
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f"Error:\n [{e}]")
 
 
