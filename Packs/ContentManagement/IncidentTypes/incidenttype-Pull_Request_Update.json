@@ -1,0 +1,28 @@
+{
+    "autorun": true,
+    "color": "#D6EB8D",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {},
+        "mode": "Specific"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "Pull Request Update",
+    "layout": "c09cf8eb-2347-47d7-882c-86576772d284",
+    "locked": false,
+    "name": "Pull Request Update",
+    "onChangeRepAlg": 0,
+    "playbookId": "Pull Request Creation",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.0.0"
+}

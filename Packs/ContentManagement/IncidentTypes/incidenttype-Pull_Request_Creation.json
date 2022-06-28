@@ -1,0 +1,28 @@
+{
+    "autorun": true,
+    "color": "#C5EDFF",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {},
+        "mode": "Specific"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "Pull Request Creation",
+    "layout": "569e53f8-33c4-405d-8810-57c3c7f120ca",
+    "locked": false,
+    "name": "Pull Request Creation",
+    "onChangeRepAlg": 0,
+    "playbookId": "Pull Request Creation",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.0.0"
+}

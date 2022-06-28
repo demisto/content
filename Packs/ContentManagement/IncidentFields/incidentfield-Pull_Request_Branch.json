@@ -1,0 +1,38 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Pull Request Update"
+    ],
+    "caseInsensitive": true,
+    "cliName": "pullrequestbranch",
+    "closeForm": false,
+    "content": true,
+    "description": "The branch name of existing pull request to update, if the branch name is not in the list - set in the \"branch\" field.",
+    "editForm": true,
+    "fieldCalcScript": "2463625d-a25c-4381-8d5f-009995ff5d0d",
+    "group": 0,
+    "hidden": false,
+    "id": "incident_pullrequestbranch",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Pull Request Branch",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "selectValues": [
+        ""
+    ],
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "singleSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}
