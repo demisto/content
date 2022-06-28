@@ -1004,7 +1004,6 @@ def main():
                          new_attachment_names, sign_only, sign_and_encrypt)
 
     elif new_thread == 'false':
-        # TODO
         # This case is run when using the 'Email Threads' layout to reply to an existing email thread
         multi_thread_reply(new_email_body, incident_id, email_selected_thread, new_email_attachments, files, add_cc,
                            add_bcc, service_mail, mail_sender_instance, new_attachment_names,
