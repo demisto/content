@@ -3,6 +3,7 @@ import io
 import requests_mock
 from freezegun import freeze_time
 import demistomock as demisto
+from McAfeeMVisionCASB import main
 
 
 def util_load_json(path):
@@ -10,71 +11,73 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-def test_incident_query_command():
-    from McAfeeMVisionCASB import Client, incident_query_command
-
-    client = Client(base_url='https://www.example.com/', verify=False)
-    args = {'limit': 3}
-
-    with requests_mock.Mocker() as m:
-        m.post('https://www.example.com/external/api/v1/queryIncidents?limit=3', json=util_load_json('test_data/incidents.json'))
-        response = incident_query_command(client, args)
-
-    assert len(response.outputs) == 3
-    assert response.outputs[0]['incidentId'] == 'CAP-1111'
-
-
-def test_status_update_command():
-    from McAfeeMVisionCASB import Client, status_update_command
-
-    client = Client(base_url='https://www.example.com/', verify=False)
-    args = {'incident_ids': [1111, 2222], 'status': 'RESOLVED'}
+def test_incident_query_command(mocker):
+    mocker.patch.object(demisto, 'params', return_value={'url': 'https://www.example.com/', 'insecure': True})
+    mocker.patch.object(demisto, 'args', return_value={'limit': 3})
+    mocker.patch.object(demisto, 'command', return_value='mvision-casb-incident-query')
+    response = mocker.patch.object(demisto, 'results')
 
     with requests_mock.Mocker() as m:
-        m.post('https://www.example.com/external/api/v1/modifyIncidents', json={})
-        response = status_update_command(client, args)
+        m.post('https://www.example.com/shnapi/rest/external/api/v1/queryIncidents?limit=3', json=util_load_json('test_data/incidents.json'))
+        main()
 
-    assert response.readable_output == 'Status updated for user'
-
-
-def test_anomaly_activity_list_command():
-    from McAfeeMVisionCASB import Client, anomaly_activity_list_command
-
-    client = Client(base_url='https://www.example.com/', verify=False)
-    args = {'anomaly_id': 3333}
-
-    with requests_mock.Mocker() as m:
-        m.post('https://www.example.com/external/api/v1/queryActivities', json={})
-        response = anomaly_activity_list_command(client, args)
-
-    assert len(response.outputs) == 0
+    assert len(response.call_args[0][0]['Contents']) == 3
+    assert response.call_args[0][0]['Contents'][0]['incidentId'] == 'CAP-1111'
 
 
-def test_policy_dictionary_list_command():
-    from McAfeeMVisionCASB import Client, policy_dictionary_list_command
-
-    client = Client(base_url='https://www.example.com/', verify=False)
-    args = {'limit': 2}
+def test_status_update_command(mocker):
+    mocker.patch.object(demisto, 'params', return_value={'url': 'https://www.example.com/', 'insecure': True})
+    mocker.patch.object(demisto, 'args', return_value={'incident_ids': 'CAP-1111', 'status': 'archived'})
+    mocker.patch.object(demisto, 'command', return_value='mvision-casb-incident-status-update')
+    response = mocker.patch.object(demisto, 'results')
 
     with requests_mock.Mocker() as m:
-        m.get('https://www.example.com/dlp/dictionary', json=util_load_json('test_data/policies.json'))
-        response = policy_dictionary_list_command(client, args)
+        m.post('https://www.example.com/shnapi/rest/external/api/v1/modifyIncidents', json={})
+        main()
 
-    assert len(response.outputs) == 2
-    assert response.outputs[0]['ID'] == 1111
+    assert response.call_args[0][0].get('HumanReadable') == 'Status updated for user'
 
 
-def test_policy_dictionary_update_command():
-    from McAfeeMVisionCASB import Client, policy_dictionary_update_command
-
-    client = Client(base_url='https://www.example.com/', verify=False)
-    args = {'dictionary_id': 1111, 'name': 'Test', 'content': ['gmail.com', 'outlook.com']}
+def test_anomaly_activity_list_command(mocker):
+    mocker.patch.object(demisto, 'params', return_value={'url': 'https://www.example.com/', 'insecure': True})
+    mocker.patch.object(demisto, 'args', return_value={'anomaly_id': '1111'})
+    mocker.patch.object(demisto, 'command', return_value='mvision-casb-anomaly-activity-list')
+    response = mocker.patch.object(demisto, 'results')
 
     with requests_mock.Mocker() as m:
-        m.put('https://www.example.com/dlp/dictionary', json={})
-        response = policy_dictionary_update_command(client, args)
+        m.post('https://www.example.com/shnapi/rest/external/api/v1/queryActivities', json={})
+        main()
 
-    assert response.readable_output == f'Dictionary id: {args.get("dictionary_id")} was updated.'
+    assert response.call_args[0][0].get('HumanReadable') == '**No entries.**\n'
+
+
+def test_policy_dictionary_list_command(mocker):
+    mocker.patch.object(demisto, 'params', return_value={'url': 'https://www.example.com/', 'insecure': True})
+    mocker.patch.object(demisto, 'args', return_value={'limit': 3})
+    mocker.patch.object(demisto, 'command', return_value='mvision-casb-policy-dictionary-list')
+    response = mocker.patch.object(demisto, 'results')
+
+    with requests_mock.Mocker() as m:
+        m.get('https://www.example.com/shnapi/rest/dlp/dictionary', json=util_load_json('test_data/policies.json'))
+        main()
+
+    assert len(response.call_args[0][0]['Contents']) > 0
+    assert response.call_args[0][0]['Contents'][0]['ID'] == 1111
+
+
+def test_policy_dictionary_update_command(mocker):
+    mocker.patch.object(demisto, 'params', return_value={'url': 'https://www.example.com/', 'insecure': True})
+    mocker.patch.object(demisto, 'args', return_value={
+        'dictionary_id': '1111', 'name': '(Default) Internal Domains', 'content': 'gmail.com, outlook.com'
+    })
+    mocker.patch.object(demisto, 'command', return_value='mvision-casb-policy-dictionary-update')
+    response = mocker.patch.object(demisto, 'results')
+
+    with requests_mock.Mocker() as m:
+        m.put('https://www.example.com/shnapi/rest/dlp/dictionary', json={})
+        main()
+
+    assert response.call_args[0][0].get('HumanReadable') == f'Dictionary id: 1111 was updated.'
 
 
 def mock_incident_query(limit, start_time):
