@@ -86,7 +86,7 @@ class Client(BaseClient):
                         cursor = None
                         break
 
-                    if len(aggregated_logs) == user_defined_limit:
+                    elif len(aggregated_logs) == user_defined_limit:
                         last_run['first_id'] = event.get('id')
                         cursor = query_params['cursor']
                         break
@@ -94,7 +94,7 @@ class Client(BaseClient):
                     aggregated_logs.append(event)
 
                 else:
-                    # finished iterating through all events in this batch
+                    # Finished iterating through all events in this batch (did not encounter a break statement)
                     if not cursor:
                         break
                     query_params['cursor'] = cursor
