@@ -222,7 +222,8 @@ def get_indicators(client: Client, args_type: str, type_name: str) -> list:
 
     response, status_code = client.make_request(Method.GET, url)
     if status_code != 200:
-        return_error('Error from the API: ' + response.get('message', 'An error has occurred if it persist please contact your local help desk'))
+        return_error('Error from the API: ' + response.get('message',
+                                                           'An error has occurred if it persist please contact your local help desk'))
     indicators = response.get('data')
 
     ec, indicators = create_context(indicators, include_dbot_score=True)
@@ -333,7 +334,8 @@ def tc_get_indicators_command(client: Client, confidence_threshold: str = '', ra
         url = url.replace('&', '?', 1)
     response, status_code = client.make_request(Method.GET, url)
     if status_code != 200:
-        return_error('Error from the API: ' + response.get('message', 'An error has occurred if it persist please contact your local help desk'))
+        return_error('Error from the API: ' + response.get('message',
+                                                           'An error has occurred if it persist please contact your local help desk'))
     if return_raw:
         return response, status_code
     indicators = response.get('data')
@@ -353,7 +355,8 @@ def tc_get_owners_command(client: Client) -> Any:
 
     response, status_code = client.make_request(Method.GET, url)
     if status_code != 200:
-        return_error('Error from the API: ' + response.get('message', 'An error has occurred if it persist please contact your local help desk'))
+        return_error('Error from the API: ' + response.get('message',
+                                                           'An error has occurred if it persist please contact your local help desk'))
     raw_owners = response.get('data')
     owners = []
     for owner in raw_owners:
@@ -398,7 +401,8 @@ def get_group_associated_groups(client: Client) -> Any:
     response, status_code = list_groups(client, include_associated_groups='true', return_raw=True)
     headers = ['GroupID', 'Name', 'Type', 'OwnerName', 'DateAdded']
     if status_code != 200:
-        return_error('Error from the API: ' + response.get('message', 'An error has occurred if it persist please contact your local help desk'))
+        return_error('Error from the API: ' + response.get('message',
+                                                           'An error has occurred if it persist please contact your local help desk'))
     data = response.get('data', [])
     contents = []
     if response.get('status') == 'Success':
@@ -413,7 +417,8 @@ def get_group_associated_groups(client: Client) -> Any:
             })
 
     else:
-        return_error('Error from the API: ' + response.get('message', 'An error has occurred if it persist please contact your local help desk'))
+        return_error('Error from the API: ' + response.get('message',
+                                                           'An error has occurred if it persist please contact your local help desk'))
 
     context = {
         'TC.Group.AssociatedGroup(val.GroupID && val.GroupID === obj.GroupID)': contents
@@ -432,14 +437,16 @@ def test_integration(client: Client) -> None:
     if status_code == 200:
         demisto.results('ok')
     else:
-        return_error('Error from the API: ' + response.get('message', 'An error has occurred if it persist please contact your local help desk'))
+        return_error('Error from the API: ' + response.get('message',
+                                                           'An error has occurred if it persist please contact your local help desk'))
 
 
 def tc_fetch_incidents_command(client: Client) -> None:
     response, status_code = list_groups(client, group_type='Incident', include_tags='true', include_attributes='true',
                                         return_raw=True)
     if status_code != 200:
-        return_error('Error from the API: ' + response.get('message', 'An error has occurred if it persist please contact your local help desk'))
+        return_error('Error from the API: ' + response.get('message',
+                                                           'An error has occurred if it persist please contact your local help desk'))
     groups = (response.get('data'))
 
     demisto.results({
@@ -458,7 +465,8 @@ def tc_get_incident_associate_indicators_command(client: Client) -> None:
     response, status_code = list_groups(client, group_type='Incident', include_associated_indicators='true',
                                         return_raw=True)
     if status_code != 200:
-        return_error('Error from the API: ' + response.get('message', 'An error has occurred if it persist please contact your local help desk'))
+        return_error('Error from the API: ' + response.get('message',
+                                                           'An error has occurred if it persist please contact your local help desk'))
     groups = (response.get('data'))
 
     ec, indicators = create_context(groups[0].get('associatedIndicators', {}).get('data', []),
@@ -476,7 +484,8 @@ def tc_get_incident_associate_indicators_command(client: Client) -> None:
 def tc_get_events(client: Client) -> None:
     response, status_code = list_groups(client, group_type='Event', return_raw=True)
     if status_code != 200:
-        return_error('Error from the API: ' + response.get('message', 'An error has occurred if it persist please contact your local help desk'))
+        return_error('Error from the API: ' + response.get('message',
+                                                           'An error has occurred if it persist please contact your local help desk'))
 
     content = []
     headers = ['ID', 'Name', 'OwnerName', 'EventDate', 'DateAdded', 'Status', 'Tags', 'AssociatedIndicators',
@@ -531,7 +540,8 @@ def tc_create_event_command(client: Client) -> None:
     url = f'/api/v3/groups'
     response, status_code = client.make_request(Method.POST, url, payload=payload)
     if status_code != 201:
-        return_error('Error from the API: ' + response.get('message', 'An error has occurred if it persist please contact your local help desk'))
+        return_error('Error from the API: ' + response.get('message',
+                                                           'An error has occurred if it persist please contact your local help desk'))
 
     ec = {
         'ID': response.get('data', {}).get('id'),
@@ -570,7 +580,7 @@ def list_groups(client: Client, group_id: str = '', from_date: str = '', tag: st
                 include_attributes: str = '',
                 include_tags: str = '', include_associated_groups: str = '', include_associated_indicators: str = '',
                 include_all_metadata: str = '',
-                return_raw=False) -> None:
+                return_raw=False) -> Any:
     args = demisto.args()
     # FIELDS PARAMS
     include_all_metadata = args.get('include_all_metadata', include_all_metadata)
@@ -628,7 +638,8 @@ def list_groups(client: Client, group_id: str = '', from_date: str = '', tag: st
 
     response, status_code = client.make_request(Method.GET, url)
     if status_code != 200:
-        return_error('Error from the API: ' + response.get('message', 'An error has occurred if it persist please contact your local help desk'))
+        return_error('Error from the API: ' + response.get('message',
+                                                           'An error has occurred if it persist please contact your local help desk'))
     if return_raw:
         return response, status_code
     content = []
@@ -671,7 +682,8 @@ def tc_get_tags_command(client: Client) -> None:
     url = f'/api/v3/tags?{name}resultStart={page}&resultLimit={limit}'
     response, status_code = client.make_request(Method.GET, url)
     if status_code != 200:
-        return_error('Error from the API: ' + response.get('message', 'An error has occurred if it persist please contact your local help desk'))
+        return_error('Error from the API: ' + response.get('message',
+                                                           'An error has occurred if it persist please contact your local help desk'))
     tags = [t['name'] for t in response.get('data')]
 
     demisto.results({
@@ -689,7 +701,8 @@ def tc_get_indicator_types(client: Client) -> None:
     content = []
     response, status_code = client.make_request(Method.GET, url)
     if status_code != 200:
-        return_error('Error from the API: ' + response.get('message', 'An error has occurred if it persist please contact your local help desk'))
+        return_error('Error from the API: ' + response.get('message',
+                                                           'An error has occurred if it persist please contact your local help desk'))
     headers = ['Name', 'Custom', 'Parsable', 'ApiBranch', 'CasePreference', 'value1Label', 'Value1Type']
 
     for indicator_type in response.get('data', {}).get('indicatorType', []):
@@ -823,11 +836,221 @@ def tc_delete_indicator_command(client: Client) -> None:
     response, status_code = client.make_request(Method.DELETE, url)
     print(response)
     if status_code != 200:
-        return_error('Error from the API: ' + response.get('message', 'An error has occurred if it persist please contact your local help desk'))
+        return_error('Error from the API: ' + response.get('message',
+                                                           'An error has occurred if it persist please contact your local help desk'))
     demisto.results({
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
         'Contents': 'Indicator {} removed Successfully'.format(indicator_id)
+    })
+
+
+def create_document_group(client: Client) -> None:
+    file_name = demisto.args().get('file_name')
+    name = demisto.args().get('name')
+    # malware = bool(strtobool(demisto.args().get('malware', 'False')))
+    password = demisto.args().get('password')
+    res = demisto.getFilePath(demisto.args()['entry_id'])
+    owner = demisto.args().get('owner', demisto.params().get('defaultOrg'))
+    if not owner:
+        return_error('You must specify an owner in the command, or by using the Organization parameter.')
+
+    security_label = demisto.args().get('security_label')
+    description = demisto.args().get('description')
+
+    # open a file handle for a local file and read the contents thereof
+    f = open(res['path'], 'rb')
+    contents = f.read()
+    # TODO: add stream create
+    # raw_document = create_document_group_request(contents, file_name, name, owner, res, malware, password,
+    #                                              security_label, description)
+    # content = {
+    #     'ID': raw_document.get('id'),
+    #     'Name': raw_document.get('name'),
+    #     'Owner': raw_document.get('ownerName'),
+    #     'EventDate': raw_document.get('eventDate'),
+    #     'Description': description,
+    #     'SecurityLabel': security_label
+    # }
+    # context = {
+    #     'TC.Group(val.ID && val.ID === obj.ID)': content
+    # }
+    # return_outputs(tableToMarkdown('ThreatConnect document group was created successfully', content, removeNull=True),
+    #                context,
+    #                raw_document)
+
+
+def tc_create_threat_command(client: Client) -> None:
+    response, status_code = create_group(client, group_type='Threat')
+
+    ec = {
+        'ID': response.get('data', {}).get('id'),
+        'Name': response.get('data', {}).get('name'),
+        'Owner': response.get('data', {}).get('ownerName'),
+        'FirstSeen': response.get('data', {}).get('FirstSeen'),
+        'Tag': demisto.args().get('tags'),
+        'SecurityLabel': demisto.args().get('securityLabel'),
+    }
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': response,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': f'Threat {demisto.args().get("name")} Created Successfully with id: {response.get("data").get("id")}',
+        'EntryContext': {
+            'TC.Threat(val.ID && val.ID === obj.ID)': createContext([ec], removeNull=True)
+        }
+    })
+
+
+def tc_create_campaign_command(client: Client) -> None:
+    response, status_code = create_group(client, group_type='Campaign')
+
+    ec = {
+        'ID': response.get('data', {}).get('id'),
+        'Name': response.get('data', {}).get('name'),
+        'Owner': response.get('data', {}).get('ownerName'),
+        'FirstSeen': response.get('data', {}).get('FirstSeen'),
+        'Tag': demisto.args().get('tags'),
+        'SecurityLabel': demisto.args().get('securityLabel'),
+    }
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': response,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': f'Campaign {demisto.args().get("name")} Created Successfully with id: {response.get("data").get("id")}',
+        'EntryContext': {
+            'TC.Campaign(val.ID && val.ID === obj.ID)': createContext([ec], removeNull=True)
+        }
+    })
+
+
+def tc_create_incident_command(client: Client) -> None:
+    response, status_code = create_group(client, group_type='Incident')
+
+    ec = {
+        'ID': response.get('data', {}).get('id'),
+        'Name': response.get('data', {}).get('name'),
+        'Owner': response.get('data', {}).get('ownerName'),
+        'EventDate': response.get('data', {}).get('eventDate'),
+        'Tag': demisto.args().get('tags'),
+        'SecurityLabel': demisto.args().get('securityLabel'),
+    }
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': response,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': f'Incident {demisto.args().get("name")} Created Successfully with id: {response.get("data").get("id")}',
+        'EntryContext': {
+            'TC.Incident(val.ID && val.ID === obj.ID)': createContext([ec], removeNull=True)
+        }
+    })
+
+
+def create_group(client: Client, name: str = '', event_date: str = '', group_type: str = '',
+                 status: str = 'New', description: str = '', security_labels: str = [],
+                 tags: str = [], first_seen: str = '') -> Any:
+    args = demisto.args()
+    tags = args.get('tags', tags)
+    security_labels = args.get('securityLabel', security_labels)
+    description = args.get('description', description)
+    status = args.get('status', status)
+    group_type = args.get('group_type', group_type)
+    event_date = args.get('eventDate', event_date)
+    first_seen = args.get('firstSeen', first_seen)
+    name = args.get('name', name)
+    if tags:
+        tmp = []
+        for tag in tags.split(','):
+            tmp.append({'name': tag})
+        tags = tmp
+    if security_labels:
+        security_labels = [{'name': security_labels}]
+
+    payload = {
+        "type": group_type,
+        "name": name,
+        "status": status,
+        "tags": {
+            "data": tags
+        },
+        "securityLabels": {
+            "data": security_labels
+        },
+        "body": description
+    }
+    if event_date:
+        payload['eventDate'] = event_date
+    if first_seen:
+        payload['firstSeen'] = first_seen
+    if group_type == 'Document':
+        file_name = args.get('file_name', '')
+        malware = args.get('malware', 'false')
+        password = args.get('password', '')
+        payload['fileName'] = file_name
+        payload['malware'] = malware
+        payload['password'] = password
+    url = f'/api/v3/groups'
+    response, status_code = client.make_request(Method.POST, url, payload=json.dumps(payload))
+    if status_code != 201:
+        return_error('Error from the API: ' + response.get('message',
+                                                           'An error has occurred if it persist please contact your local help desk'))
+    return response, status_code
+
+
+def tc_add_indicator_command(client: Client, rating: str = '0', indicator: str = '', confidence: str = '0',
+                             description: str = '', tags: str = [], indicator_type:str = '') -> Any:
+    args = demisto.args()
+    tags = args.get('tags', tags)
+    description = args.get('description', description)
+    confidence = args.get('confidence', confidence)
+    rating = args.get('rating', rating)
+    indicator = args.get('indicator', indicator)
+    indicator_type = args.get('indicatorType', indicator_type)
+    if tags:
+        tmp = []
+        for tag in tags.split(','):
+            tmp.append({'name': tag})
+        tags = tmp
+
+    payload = {
+        "type": indicator_type,
+        "confidence": confidence,
+        "rating": rating,
+        "tags": {
+            "data": tags
+        },
+        "summary": indicator,
+        "body": description
+    }
+    if indicator_type == 'Host':
+        payload['hostName'] = indicator
+    if indicator_type == 'Address':
+        payload['ip'] = indicator
+    if indicator_type == 'URL':
+        payload['text'] = indicator
+    if indicator_type == 'EmailAddress':
+        payload['address'] = indicator
+    if indicator_type == 'File':
+        hash_type = args.get('hashType', 'md5')
+        payload['hash_type'] = indicator
+
+    url = f'/api/v3/indicators'
+    response, status_code = client.make_request(Method.POST, url, payload=json.dumps(payload))
+    if status_code != 201:
+        return_error('Error from the API: ' + response.get('message',
+                                                           'An error has occurred if it persist please contact your local help desk'))
+    ec, indicators = create_context([response.get('data')])
+    demisto.results({
+        'Type': entryTypes['note'],
+        'ContentsFormat': formats['json'],
+        'Contents': response,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': tableToMarkdown('Created new indicator successfully:', indicators,
+                                         headerTransform=pascalToSpace),
+        'EntryContext': ec
     })
 
 
@@ -845,23 +1068,23 @@ COMMANDS = {
     'tc-get-tags': tc_get_tags_command,
     #     'tc-tag-indicator': tc_tag_indicator_command,
     'tc-get-indicators-by-tag': tc_get_indicators_by_tag_command,
-    # 'tc-add-indicator': tc_add_indicator_command,
+    'tc-add-indicator': tc_add_indicator_command,
     #
-    #     'tc-create-incident': tc_create_incident_command,
+    'tc-create-incident': tc_create_incident_command,
     'tc-fetch-incidents': tc_fetch_incidents_command,
     'tc-get-incident-associate-indicators': tc_get_incident_associate_indicators_command,
     #     'tc-incident-associate-indicator': tc_incident_associate_indicator_command,
     #     'tc-update-indicator': tc_update_indicator_command,
     'tc-delete-indicator': tc_delete_indicator_command,
     #     'tc-delete-indicator-tag': tc_delete_indicator_tag_command,
-    #     'tc-create-campaign': tc_create_campaign_command,
+    'tc-create-campaign': tc_create_campaign_command,
     'tc-create-event': tc_create_event_command,
     'tc-get-events': tc_get_events,
     'tc-get-indicator': tc_get_indicator_command,
-    #     'tc-create-threat': tc_create_threat_command,
+    'tc-create-threat': tc_create_threat_command,
     'tc-delete-group': tc_delete_group_command,
     'tc-get-indicator-types': tc_get_indicator_types,
-    #     'tc-create-document-group': create_document_group,
+    'tc-create-document-group': create_document_group,
     #     'tc-download-document': download_document,
     'tc-get-associated-groups': get_group_associated_groups,
     'tc-get-indicator-owners': tc_get_indicator_owners,

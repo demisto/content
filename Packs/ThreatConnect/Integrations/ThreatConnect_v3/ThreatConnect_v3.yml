@@ -744,6 +744,24 @@ script:
     - description: The indicator to add.
       name: indicator
       required: true
+    - auto: PREDEFINED
+      description: The type of the indicator. Can be "ADDRESSES", "EMAIL_ADDRESSES",
+        "URLS", "HOSTS", "FILES", or "CUSTOM_INDICATORS".
+      name: indicatorType
+      predefined:
+      - Address
+      - EmailAddress
+      - URL
+      - Host
+      - File
+      required: true
+    - auto: PREDEFINED
+      description: The type of hash for file indicator.
+      name: hashType
+      predefined:
+      - md5
+      - sha1
+      - sha256
     - description: The threat rating of the indicator. Can be "0" - "Unknown", "1"
         - "Suspicious", "2" - "Low", "3" - Moderate, "4" - High, or "5" - "Critical".
       name: rating
@@ -751,9 +769,10 @@ script:
         "1% " - "Discredited", "2-29%" - "Improbable," "30-49%" - "Doubtful," "50-69%"
         - "Possible", "70-89%" - "Probable," or "90-100%" - "Confirmed".
       name: confidence
-    - description: The owner of the new indicator. The default is the "defaultOrg"
-        parameter.
-      name: owner
+    - description: The description of the indicator.
+      name: description
+    - description: Comma-seperated list of the tags to apply to the campaign.
+      name: tags
     description: Adds a new indicator to ThreatConnect.
     name: tc-add-indicator
     outputs:
@@ -842,18 +861,15 @@ script:
       description: The web link of the indicator.
       type: string
   - arguments:
-    - description: The owner of the new incident. The default is the "defaultOrg"
-        parameter.
-      name: owner
     - default: true
       description: The name of the incident group.
-      name: incidentName
+      name: name
       required: true
     - description: The creation time of an incident in the "2017-03-21T00:00:00Z"
         format.
       name: eventDate
-    - description: The tag applied to the incident.
-      name: tag
+    - description: A comma-separated list of The tags applied to the incident.
+      name: tags
     - auto: PREDEFINED
       description: The security label applied to the incident. Can be "TLP:RED", "TLP:GREEN",
         "TLP:AMBER", or "TLP:WHITE".
@@ -1435,15 +1451,19 @@ script:
       required: true
     - description: The earliest date on which the campaign was seen.
       name: firstSeen
-    - description: The owner of the new incident. The default is the "defaultOrg"
-        parameter.
-      name: owner
     - description: The description of the campaign.
       name: description
-    - description: The name of the tag to apply to the campaign.
-      name: tag
-    - description: The security label of the campaign. For example, "TLP:Green".
+    - description: Comma-seperated list of the tags to apply to the campaign.
+      name: tags
+    - auto: PREDEFINED
+      description: The security label applied to the incident. Can be "TLP:RED", "TLP:GREEN",
+        "TLP:AMBER", or "TLP:WHITE".
       name: securityLabel
+      predefined:
+      - TLP:RED
+      - TLP:GREEN
+      - TLP:AMBER
+      - TLP:WHITE
     description: Creates a group based on the "Campaign" type.
     name: tc-create-campaign
     outputs:
@@ -1532,9 +1552,26 @@ script:
       description: The type of the event.
       type: string
   - arguments:
-    - description: The name of the threat group.
+    - default: true
+      description: The name of the threat group.
       name: name
       required: true
+    - description: The creation time of an threat in the "2017-03-21T00:00:00Z"
+        format.
+      name: eventDate
+    - description: A comma-separated list of The tags applied to the threat.
+      name: tags
+    - auto: PREDEFINED
+      description: The security label applied to the threat. Can be "TLP:RED", "TLP:GREEN",
+        "TLP:AMBER", or "TLP:WHITE".
+      name: securityLabel
+      predefined:
+      - TLP:RED
+      - TLP:GREEN
+      - TLP:AMBER
+      - TLP:WHITE
+    - description: The description of the threat.
+      name: description
     description: Creates a group based on the "Threats" type.
     name: tc-create-threat
     outputs:
@@ -1918,8 +1955,15 @@ script:
       - 'false'
     - description: The password of the ZIP file.
       name: password
-    - description: The security label of the group.
-      name: security_label
+    - auto: PREDEFINED
+      description: The security label applied to the document. Can be "TLP:RED", "TLP:GREEN",
+        "TLP:AMBER", or "TLP:WHITE".
+      name: securityLabel
+      predefined:
+      - TLP:RED
+      - TLP:GREEN
+      - TLP:AMBER
+      - TLP:WHITE
     - description: A description of the group.
       name: description
     - description: The file of the ID of the entry, as displayed in the War Room.
