@@ -6,4 +6,5 @@ Use this pack to fetch, manage, and query threat feeds and samples.
 - The Cisco Threat Grid integration enables you to query and upload samples to Cisco's threat grid.
 - The playbooks enable detonating one or more files or URLs. The playbooks return relevant reports to the War Room and file/URL reputations to the context data.
 
+test_binat
  
