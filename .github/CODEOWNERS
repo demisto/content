@@ -67,8 +67,8 @@
 Utils/trigger_nightly_sdk_build.sh @dorschw
 
 # XDR Related
-/Packs/CortexXDR/Integrations/* @dansterenson
-/Packs/Core/Integrations/* @dansterenson
+/Packs/CortexXDR/Integrations/ @dansterenson
+/Packs/Core/Integrations/ @dansterenson
 /Packs/ApiModules/Scripts/CoreIRApiModule/* @dansterenson
 
 # Dependencies
