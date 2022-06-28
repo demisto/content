@@ -2,7 +2,7 @@
     "name": "Securonix",
     "description": "Use the Securonix integration to manage incidents and watchlists.",
     "support": "partner",
-    "currentVersion": "1.1.12",
+    "currentVersion": "1.2.0",
     "author": "Securonix",
     "url": "https:/www.securonix.com",
     "email": "support@securonix.com",
