@@ -1,5 +1,17 @@
 [file:CheckPointSandblast.yml]
 ignore=IN145
 
+[file:SbDownload.yml]
+ignore=CJ105
+
+[file:SbQuota.yml]
+ignore=CJ105
+
+[file:SbUpload.yml]
+ignore=CJ105
+
+[file:SbQuery.yml]
+ignore=CJ105
+
 [known_words]
 sb
