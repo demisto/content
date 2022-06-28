@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 import json
 import requests
-import traceback
 import dateparser
 from datetime import timedelta
 from typing import Any, Dict, Tuple, List, Optional, Set
@@ -817,7 +816,6 @@ def main() -> None:
     except NotImplementedError:
         raise
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 

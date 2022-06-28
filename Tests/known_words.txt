@@ -178,3 +178,11 @@ endpoints
 DNS
 XDR
 CommandRunner
+AttackPattern
+ParsesUUID
+UUID
+Deprecated
+dbotMirrorDirection
+dbotMirrorId
+dbotMirrorInstance
+dbotMirrorTags

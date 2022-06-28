@@ -2,7 +2,7 @@
 filter action in("oauth_application*","org_credential_authorization*")
 | alter XDM.Auth.Client.user.username = actor,
         XDM.Auth.Client.location.country = json_extract_scalar(actor_location, "$.country_code"),
-        XDM.Auth.event_timestamp = created_at,
+        XDM.Auth.event_timestamp = timestamp_seconds(to_integer(divide(created_at, 1000))),
         XDM.Auth.original_event_type = action;
 
 [MODEL: dataset=github_github_audit_raw, model=Audit]
@@ -11,5 +11,5 @@ filter action in("org*","role*","account*","advisory_credit*","billing*","busine
         XDM.Audit.identity.name = org,
         XDM.Audit.project = repo,
         XDM.Audit.TriggeredBy.identity.name = actor,
-        XDM.Audit.event_timestamp = created_at,
+        XDM.Audit.event_timestamp = timestamp_seconds(to_integer(divide(created_at, 1000))),
         XDM.Audit.original_event_type = action;

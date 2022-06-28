@@ -1,5 +1,5 @@
 {
-    "name": "LogRhythm",
+    "name": "LogRhythm (Deprecated)",
     "description": "Deprecated. Use LogRhythmRest pack instead.",
     "support": "xsoar",
     "currentVersion": "1.0.1",
