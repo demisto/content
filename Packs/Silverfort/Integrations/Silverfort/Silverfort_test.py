@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import patch
 from Silverfort import get_user_entity_risk_command, get_resource_entity_risk_command,\
-    update_user_entity_risk_command, update_resource_entity_risk_command
+    update_user_entity_risk_command, update_resource_entity_risk_command, get_jwt_token
 API_KEY = "APP_USER_ID:APP_USER_SECRET"
 
 
@@ -66,14 +66,32 @@ def sam_account():
 
 
 @pytest.fixture(autouse=True)
-def client(base_url):
+def client(base_url, api_key):
     from Silverfort import Client
-    return Client(base_url=base_url, verify=False)
+    app_user_id, app_user_secret = api_key.split(":")
+    return Client(app_user_id=app_user_id, app_user_secret=app_user_secret, base_url=base_url, verify=False)
 
 
 @pytest.fixture(autouse=True)
 def risk_args(risk):
     return {'risk_name': 'activity_risk', 'severity': 'medium', 'valid_for': 1, 'description': 'Suspicious activity'}
+
+
+@pytest.fixture(autouse=True)
+def current_time(risk):
+    return 1656417207.2854111
+
+
+@pytest.fixture(autouse=True)
+def expected_jwt_token(api_key, current_time):
+    import jwt
+    app_user_id, app_user_secret = api_key.split(":")
+    payload = {
+        "issuer": app_user_id,  # REQUIRED - Generated in the UI
+        "iat": current_time,  # REQUIRED - Issued time - current epoch timestamp
+        "exp": current_time + 30
+    }
+    return jwt.encode(payload, app_user_secret, algorithm="HS256")
 
 
 class TestSiverfort(object):
@@ -154,3 +172,13 @@ class TestSiverfort(object):
 
         requests_mock.post(f'{base_url}/updateEntityRisk?apikey={api_key}', json=bad_response)
         assert update_resource_entity_risk_command(client, args) == "Couldn't update the resource entity's risk"
+
+
+def test_get_jwt_token(api_key, current_time, expected_jwt_token):
+    import time
+
+    app_user_id, app_user_secret = api_key.split(":")
+    current_time = time.time()
+    jwt_token = get_jwt_token(app_user_id, app_user_secret, current_time)
+
+    assert jwt_token == expected_jwt_token
