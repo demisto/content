@@ -1,15 +1,15 @@
 id: playbook-urlhaus-feed_Test
-version: 3
+version: 2
 vcShouldKeepItemLegacyProdMachine: false
 name: playbook-urlhaus-feed_Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 972ecce2-90f7-4ea8-8e9f-57e69ca73902
+    taskid: c5de71d4-032b-4bda-84e4-4d51899acde5
     type: start
     task:
-      id: 972ecce2-90f7-4ea8-8e9f-57e69ca73902
+      id: c5de71d4-032b-4bda-84e4-4d51899acde5
       version: -1
       name: ""
       iscommand: false
@@ -34,10 +34,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: a97228b7-490c-48e9-8887-3bbc45c02245
+    taskid: f794674e-f910-411b-8002-a460fb2fe630
     type: regular
     task:
-      id: a97228b7-490c-48e9-8887-3bbc45c02245
+      id: f794674e-f910-411b-8002-a460fb2fe630
       version: -1
       name: DeleteContext
       description: |-
@@ -73,23 +73,23 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 17dc22ca-3b47-459e-8ad6-b6dac194c382
+    taskid: 62e8d94d-3de5-4bdc-8c36-02a88c93c9f1
     type: regular
     task:
-      id: 17dc22ca-3b47-459e-8ad6-b6dac194c382
+      id: 62e8d94d-3de5-4bdc-8c36-02a88c93c9f1
       version: -1
       name: urlhaus-get-indicators
       description: Retrieves a limited number of indicators.
-      script: URLhaus Feed|||urlhaus-get-indicators
+      script: FeedURLhaus|||urlhaus-get-indicators
       type: regular
       iscommand: true
-      brand: URLhaus Feed
+      brand: FeedURLhaus
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 410
+          "y": 470
         }
       }
     note: false
@@ -104,7 +104,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 455,
+        "height": 515,
         "width": 380,
         "x": 450,
         "y": 50
