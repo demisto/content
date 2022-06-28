@@ -1,6 +1,8 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+register_module_line('Okta v2', 'start', __line__())
+
 
 # IMPORTS
 # Disable insecure warnings
@@ -208,6 +210,9 @@ class Client(BaseClient):
     @staticmethod
     def get_readable_logs(raw_logs):
         logs = []
+        browser = ""
+        device = ""
+        os = ""
         raw_logs = raw_logs if isinstance(raw_logs, list) else [raw_logs]
         for log in raw_logs:
             if log.get('client', {}).get('userAgent'):
@@ -1315,3 +1320,5 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
+
+register_module_line('Okta v2', 'end', __line__())
