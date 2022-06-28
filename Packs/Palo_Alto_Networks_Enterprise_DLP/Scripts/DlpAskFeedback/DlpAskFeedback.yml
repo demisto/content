@@ -6,9 +6,16 @@ script: ''
 type: python
 tags: []
 enabled: true
-comment: Sends a message via Slack to the user whose file upload violated DLP
-  policies and triggered the incident.
+comment: Sends a message via Slack or MS Teams to the user whose file upload violated DLP policies and triggered the incident.
 args:
+- name: messenger
+  required: false
+  description: The messenger to use for sending notification,
+  auto: PREDEFINED
+  predefined:
+  - Slack
+  - Microsoft Teams
+  defaultValue: Slack
 - name: file_name
   required: true
   description: The name of the file that triggered the incident.
@@ -16,35 +23,34 @@ args:
   required: true
   description: The name of the DLP data profile that detected the violation.
 - name: app_name
-  required: false
   description: The application that performed the upload.
+  required: false
 - name: task
   description: A manual task that this task can close.
 - name: user_display_name
   required: true
   description: The user name displayed in the Slack message.
 - name: user_id
-  required: true
   description: The user ID to identify the recipient in Slack.
+
+  required: true
 - name: snippets
   description: The snippets of the violation.
-
 - name: include_violation_detail
   required: true
   auto: PREDEFINED
   predefined:
-  - "True"
-  - "False"
+  - 'True'
+  - 'False'
   description: Whether to include violation details in the message.
-  defaultValue: "True"
+  defaultValue: 'True'
 - name: question_type
   required: true
   auto: PREDEFINED
   predefined:
   - ABOUT_FILE
   - ABOUT_EXEMPTION
-  description: Whether to ask the user about the file content or about
-    exemption.
+  description: Whether to ask the user about the file content or about exemption.
   defaultValue: ABOUT_FILE
 scripttarget: 0
 subtype: python3
@@ -54,7 +60,7 @@ dependson:
   should:
   - SlackV3|||send-notification
 runonce: false
-dockerimage: demisto/python3:3.10.4.28442
+dockerimage: demisto/python3:3.10.4.30607
 runas: DBotWeakRole
 fromversion: 5.5.0
 tests:
