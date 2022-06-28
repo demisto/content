@@ -665,7 +665,7 @@ def tc_indicator_get_attributes(tc, owners, indicator_value, indicator_type):
 
 def tc_indicators_command():
     args = demisto.args()
-    limit = int(args.get('limit', 500))
+    limit = arg_to_number(args.get('limit', 500))
     owners = args.get('owner')
     ec, indicators, raw_response = tc_indicators(owners, limit)
 
@@ -912,7 +912,8 @@ def tc_get_indicators_by_tag_command():
     args = demisto.args()
     tag = args['tag']
     owner = args.get('owner')
-    response = tc_get_indicators_by_tag(tag, owner)
+    limit = arg_to_number(args.get('limit', MAX_CONTEXT))
+    response = tc_get_indicators_by_tag(tag, owner, limit)
     raw_indicators = response['data']['indicator']
     ec, indicators = create_context(raw_indicators, include_dbot_score=True)
 
@@ -928,11 +929,11 @@ def tc_get_indicators_by_tag_command():
 
 
 # @loger
-def tc_get_indicators_by_tag(tag, owner):
+def tc_get_indicators_by_tag(tag, owner, limit):
     tc = get_client()
     ro = RequestObject()
     ro.set_http_method('GET')
-    cmd = '/v2/tags/{}/indicators'.format(tag)
+    cmd = '/v2/tags/{}/indicators?resultLimit={}'.format(tag, limit)
     if owner is not None:
         cmd += '?owner={}'.format(owner)
 

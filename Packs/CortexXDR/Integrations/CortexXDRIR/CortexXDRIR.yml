@@ -91,6 +91,11 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: Prevent Only Mode
+  name: prevent_only
+  required: false
+  type: 8
+  additionalinfo: 'Whether the XDR tenant Mode is prevent only'
 - additionalinfo: 'The statuses of the incidents that will be fetched. If no status is provided then incidents of all the statuses will be fetched. Note: An incident whose status was changed to a filtered status after its creation time will not be fetched.'
   display: Incident Statuses to Fetch
   hidden: false
@@ -4122,7 +4127,7 @@ script:
     - contextPath: PaloAltoNetworksXDR.blocklist.removed_hashes
       description: Removed fileHash from blocklist
       type: Number
-  dockerimage: demisto/python3:3.10.4.29342
+  dockerimage: demisto/python3:3.10.4.30607
   feed: false
   isfetch: true
   longRunning: false
