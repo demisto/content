@@ -158,7 +158,7 @@ def fetch_incidents(aws_client, aws_queue_url, max_fetch, parse_body_as_json):
         last_receipt_handles = demisto.getLastRun().get('lastReceiptHandles')
         if last_receipt_handles:
             demisto.debug('last_receipt_handles before fetch occurred" -> {} {}'.format(len(last_receipt_handles),
-                                                                                            last_receipt_handles))
+                          last_receipt_handles))
         incidents_created = 0  # type: int
         max_number_of_messages = min(max_fetch, 10)
         receipt_handles = set()  # type: set
