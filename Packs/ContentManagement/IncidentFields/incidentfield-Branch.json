@@ -5,7 +5,7 @@
         "Pull Request Creation"
     ],
     "caseInsensitive": true,
-    "cliName": "branch",
+    "cliName": "xsoarci/cdBranch",
     "closeForm": false,
     "content": true,
     "description": "The name of the branch.",

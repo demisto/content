@@ -23,9 +23,6 @@
         "all"
     ],
     "required": false,
-    "selectValues": [
-        ""
-    ],
     "sla": 0,
     "system": false,
     "threshold": 72,

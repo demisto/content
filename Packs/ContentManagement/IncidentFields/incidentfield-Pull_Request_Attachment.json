@@ -5,7 +5,7 @@
         "Pull Request Creation"
     ],
     "caseInsensitive": true,
-    "cliName": "pullrequestattachment",
+    "cliName": "xsoarci/cdPullRequestAttachment",
     "closeForm": false,
     "content": true,
     "description": "Mandatory field - The pack zip file created in marketplace contributions page.",

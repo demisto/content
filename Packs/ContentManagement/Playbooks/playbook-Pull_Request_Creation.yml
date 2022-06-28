@@ -191,6 +191,7 @@ tasks:
       scriptName: CommitFiles
       type: regular
       version: -1
+      description: ''
     taskid: 48815582-7e27-45b7-8da6-a9ff76c7043b
     timertriggers: []
     type: regular
@@ -319,6 +320,7 @@ tasks:
       name: add reviewer?
       type: condition
       version: -1
+      description: ''
     taskid: 47f9f0e1-bb68-4576-8900-3f48e5187441
     timertriggers: []
     type: condition
@@ -527,6 +529,7 @@ tasks:
       name: does branch exist?
       type: condition
       version: -1
+      description: ''
     taskid: 9a3079ab-4506-4d71-8fb6-adfd97953335
     timertriggers: []
     type: condition
@@ -572,6 +575,7 @@ tasks:
       name: does branch exist?
       type: condition
       version: -1
+      description: ''
     taskid: 0ce37cd3-7c64-43ad-8431-d638dd21fc74
     timertriggers: []
     type: condition
@@ -727,6 +731,7 @@ tasks:
       name: is branch name given
       type: condition
       version: -1
+      description: ''
     taskid: 746dfd1b-eb00-42d0-8522-d6316fa9aea2
     timertriggers: []
     type: condition
@@ -761,6 +766,7 @@ tasks:
       scriptName: SuggestBranchName
       type: regular
       version: -1
+      description: ''
     taskid: 4163cbba-5aaf-4fe2-8735-bae2df1fe053
     timertriggers: []
     type: regular
@@ -839,6 +845,7 @@ tasks:
       name: is pr branch name given
       type: condition
       version: -1
+      description: ''
     taskid: 956194d9-c775-4491-8289-07dee0fd0b14
     timertriggers: []
     type: condition
@@ -1314,6 +1321,7 @@ tasks:
       name: is slack channel given
       type: condition
       version: -1
+      description: ''
     taskid: 0026be83-54c5-465b-8755-cfe028a0ff22
     timertriggers: []
     type: condition

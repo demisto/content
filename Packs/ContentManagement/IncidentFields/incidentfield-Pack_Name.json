@@ -4,7 +4,7 @@
         "Pull Request Creation"
     ],
     "caseInsensitive": true,
-    "cliName": "packname",
+    "cliName": "xsoarci/cdPackName",
     "closeForm": false,
     "content": true,
     "editForm": true,
