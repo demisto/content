@@ -43,6 +43,18 @@ class Client(BaseClient):
         ).get('data')
         return r
 
+    def set_extra_params(self, args: Dict[str, Any]) -> None : 
+        '''
+        Set any extra params (in the form of a dictionary) for this client
+        '''
+        self.extra_params = args 
+
+    def get_extra_params(self) -> Dict[str, Any]:
+        '''
+        Set any extra params (in the form of a dictionary) for this client
+        '''
+        return self.extra_params 
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -93,15 +105,6 @@ def add_list_to_q(q, fields, args):
             else:
                 q = add_to_query(q) + '{}:"{}"'.format(arg_field, arg_value)
     return q
-
-def convert_api_url_to_service_url(api_url):
-    '''
-    '''
-    if (api_url.rfind('stag')==-1):
-        return api_url[:-4].replace('api','service')
-    else:
-        api_url
-
 
 def insight_signal_to_readable(obj):
     '''
@@ -254,7 +257,7 @@ def insight_get_details(client: Client, args: Dict[str, Any]) -> CommandResults:
 
     resp_json = client.req('GET', 'sec/v1/insights/{}'.format(insight_id), query)
     insight = insight_signal_to_readable(resp_json)
-    insight['SumoUrl'] = craft_sumo_url(demisto.getParam('instance_endpoint'),'insight',insight_id)
+    insight['SumoUrl'] = craft_sumo_url(client.get_extra_params()['instance_endpoint'],'insight',insight_id)
 
     readable_output = tableToMarkdown(
         'Insight Details:', [insight],
@@ -701,7 +704,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], 
         query['recordSummaryFields'] = record_summary_fields
     incidents = []
     hasNextPage = True
-    instance_endpoint = demisto.getParam('instance_endpoint')
+    instance_endpoint = client.get_extra_params()['instance_endpoint']
     while hasNextPage:
 
         # only query parameter that changes loop to loop is the offset
@@ -784,6 +787,7 @@ def main() -> None:
     access_key = demisto.getParam('access_key')
     verify_certificate = not demisto.params().get('insecure', False)
 
+    
     # How much time before the first fetch to retrieve incidents
     first_fetch_time = arg_to_datetime(
         arg=demisto.params().get('first_fetch', '1 day'),
@@ -807,6 +811,7 @@ def main() -> None:
             proxy=proxy,
             auth=(access_id, access_key),
             ok_codes=[200])
+        client.set_extra_params({'instance_endpoint':demisto.getParam('instance_endpoint')})
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
