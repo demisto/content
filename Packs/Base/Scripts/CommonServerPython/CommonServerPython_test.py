@@ -1,27 +1,29 @@
 # -*- coding: utf-8 -*-
-import dateparser
-import gzip
-import demistomock as demisto
 import copy
+import gzip
 import json
-import re
 import os
+import re
 import sys
-import requests
-from pytest import raises, mark
-import pytest
 import warnings
 
+import dateparser
+import pytest
+import requests
+from pytest import raises, mark
+
+import CommonServerPython
+import demistomock as demisto
 from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
     flattenCell, date_to_timestamp, datetime, timedelta, camelize, pascalToSpace, argToList, \
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
-    IntegrationLogger, parse_date_string, IS_PY3, PY_VER_MINOR, DebugLogger, b64_encode, parse_date_range, return_outputs, \
+    IntegrationLogger, parse_date_string, IS_PY3, PY_VER_MINOR, DebugLogger, b64_encode, parse_date_range, \
+    return_outputs, \
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, urlRegex, ipv6Regex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
     url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, \
     remove_duplicates_from_list_arg, DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam
-import CommonServerPython
 
 try:
     from StringIO import StringIO
@@ -668,6 +670,7 @@ class TestTableToMarkdown:
         assert 'header_2' not in table
         assert headers == ['header_1', 'header_2']
 
+    # Test fails locally because expected time is in UTC
     @staticmethod
     def test_date_fields_param():
         """
@@ -4345,7 +4348,7 @@ class TestExecuteCommand:
 
     @staticmethod
     def test_failure_integration(monkeypatch):
-        from CommonServerPython import execute_command, EntryType
+        from CommonServerPython import execute_command
         monkeypatch.delattr(demisto, 'executeCommand')
 
         with raises(DemistoException, match=r'Cannot run demisto.executeCommand\(\) from integrations.'):
@@ -5058,7 +5061,7 @@ class TestCommonTypes:
            Then
                - The context created matches the data entry
        """
-        from CommonServerPython import CommandResults, Common, EntryType, EntryFormat, DBotScoreType
+        from CommonServerPython import CommandResults, Common, DBotScoreType
 
         dbot_score = Common.DBotScore(
             indicator='8.8.8.8',
@@ -5193,7 +5196,7 @@ class TestCommonTypes:
            Then
                - The context created matches the data entry
        """
-        from CommonServerPython import CommandResults, Common, EntryType, EntryFormat, DBotScoreType
+        from CommonServerPython import CommandResults, Common, DBotScoreType
 
         dbot_score = Common.DBotScore(
             indicator='somedomain.com',
@@ -5347,7 +5350,7 @@ class TestCommonTypes:
            Then
                - The context created matches the data entry
        """
-        from CommonServerPython import CommandResults, Common, EntryType, EntryFormat, DBotScoreType
+        from CommonServerPython import CommandResults, Common, DBotScoreType
 
         dbot_score = Common.DBotScore(
             indicator='https://somedomain.com',
@@ -5457,7 +5460,7 @@ class TestCommonTypes:
            Then
                - The context created matches the data entry
        """
-        from CommonServerPython import CommandResults, Common, EntryType, EntryFormat, DBotScoreType
+        from CommonServerPython import CommandResults, Common, DBotScoreType
 
         indicator_id = '63347f5d946164a23faca26b78a91e1c'
 
@@ -5579,7 +5582,7 @@ class TestCommonTypes:
            Then
                - The context created matches the data entry
        """
-        from CommonServerPython import CommandResults, Common, EntryType, EntryFormat
+        from CommonServerPython import CommandResults, Common
 
         cve = Common.CVE(
             id='CVE-2015-1653',
@@ -5653,7 +5656,7 @@ class TestCommonTypes:
            Then
                - The context created matches the data entry
        """
-        from CommonServerPython import CommandResults, Common, EntryType, EntryFormat
+        from CommonServerPython import CommandResults, Common
 
         dbot_score = Common.DBotScore(
             indicator='test_account_id',
@@ -6179,7 +6182,7 @@ class TestCommonTypes:
            Then
                - The context created matches the data entry
        """
-        from CommonServerPython import CommandResults, Common, EntryType, EntryFormat
+        from CommonServerPython import CommandResults, Common
 
         dbot_score = Common.DBotScore(
             indicator='test_stix_id',
@@ -7961,7 +7964,7 @@ def test_create_indicator_result_with_dbotscore_unknown(mocker, args, expected):
                                                                   ('html', '', 'html'),
                                                                   ('html', {}, 'html')))
 def test_content_type(content_format, outputs, expected_type):
-    from CommonServerPython import CommandResults, EntryFormat
+    from CommonServerPython import CommandResults
     command_results = CommandResults(
         outputs=outputs,
         readable_output='human_readable',
@@ -8050,3 +8053,180 @@ class TestSendEventsToXSIAMTest:
 
         demisto.updateModuleHealth.assert_called_with({'eventsPulled': number_of_events})
 
+    @pytest.mark.parametrize('error_msg', [None, {'error': 'error'}, ''])
+    def test_send_events_to_xsiam_error_handling(self, mocker, requests_mock, error_msg):
+        """
+        Given:
+            case a: response type containing None
+            case b: response type containing json
+            case c: response type containing empty string
+
+        When:
+            calling the send_events_to_xsiam function
+
+        Then:
+            DemistoException is raised with the correct error message on each case.
+        """
+        if not IS_PY3:
+            return
+
+        if isinstance(error_msg, dict):
+            requests_mock.post(
+                'https://api-url/logs/v1/xsiam', json=error_msg, status_code=401, reason='Unauthorized[401]'
+            )
+            error_msg = 'Unauthorized[401]'
+        else:
+            requests_mock.post('https://api-url/logs/v1/xsiam', text=None, status_code=401)
+            error_msg = '\n'
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        mocker.patch.object(demisto, 'updateModuleHealth')
+        mocker.patch.object(demisto, 'error')
+
+        events = self.test_data['json_events']['events']
+        with pytest.raises(
+            DemistoException,
+            match=re.escape('Error sending new events into XSIAM. \n' + error_msg),
+        ):
+            send_events_to_xsiam(events=events, vendor='some vendor', product='some product')
+
+class TestIsMetricsSupportedByServer:
+    @classmethod
+    @pytest.fixture(scope='function', autouse=True)
+    def clear_cache(cls):
+        get_demisto_version._version = None
+
+    def test_metrics_supported(self, mocker):
+        """
+        Given: An XSOAR server running version 7.0.0
+        When: Testing that a server supports ExecutionMetrics
+        Then: Assert that is_supported reports True
+        """
+        from CommonServerPython import ExecutionMetrics
+        mocker.patch.object(
+            demisto,
+            'demistoVersion',
+            return_value={
+                'version': '7.0.0',
+                'buildNumber': '50000'
+            }
+        )
+        mock_metrics = ExecutionMetrics()
+
+        # XSOAR version is 7.0.0 and should be supported. Assert that it is.
+        assert mock_metrics.is_supported() is True
+
+    def test_metrics_are_not_supported(self, mocker):
+        """
+        Given: An XSOAR server running version 1.0.0
+        When: Testing that a server does not support ExecutionMetrics
+        Then: Assert that is_supported reports False
+        """
+        from CommonServerPython import ExecutionMetrics
+
+        # XSOAR version is not supported.
+        mocker.patch.object(
+            demisto,
+            'demistoVersion',
+            return_value={
+                'version': '1.0.0',
+                'buildNumber': '50000'
+            }
+        )
+        mock_metrics = ExecutionMetrics()
+        # XSOAR version is 1.0.0 and should not be supported. Assert that it isn't.
+        assert mock_metrics.is_supported() is False
+
+
+def test_collect_execution_metrics():
+    """
+    Given:
+        An ExecutionMetrics object -
+            Case 1 - Reports a successful metric
+            Case 2 - Reports a quota error metric
+            Case 3 - Reports multiple quota error metrics
+    When:
+        Case 1 - Testing that a success metric has been reported
+        Case 2 - Testing that a quota metric has been reported
+        Case 3 - Testing that multiple quota errors have been reported
+    Then:
+        Case 1 - Assert that there is one successful metric and that the entry is an ExecutionMetrics entry
+        Case 2 - Assert that there is a quota error added to the metric report and is contained in the ExecutionMetrics entry
+        Case 3 - Assert that there are 26 total quota errors that are contained in the ExecutionMetrics entry
+    """
+    from CommonServerPython import ExecutionMetrics
+
+    mock_metrics = ExecutionMetrics()
+
+    # Report Successful Metrics
+    mock_metrics.success += 1
+
+    # Collect Metrics
+    collected_metrics = mock_metrics.metrics
+
+    expected_command_results = {'APIExecutionMetrics': [{'APICallsCount': 1, 'Type': 'Successful'}],
+                                'Contents': 'Metrics reported successfully.',
+                                'ContentsFormat': 'json',
+                                'EntryContext': {},
+                                'HumanReadable': None,
+                                'IgnoreAutoExtract': False,
+                                'IndicatorTimeline': [],
+                                'Note': False,
+                                'Relationships': [],
+                                'Type': 19}
+
+    # Assert collected metrics are correct
+    assert collected_metrics.to_context() == expected_command_results
+
+    # Report Quota Error
+    mock_metrics.quota_error += 1
+
+    # Update Test Bank
+    expected_command_results['APIExecutionMetrics'].append({'APICallsCount': 1, 'Type': 'QuotaError'})
+
+    # Assert collected metrics are correct
+    assert collected_metrics.to_context() == expected_command_results
+
+    # Report multiple metrics
+    mock_metrics.quota_error += 25
+
+    # Update Test Bank
+    expected_command_results['APIExecutionMetrics'][1]['APICallsCount'] = 26
+
+    # Assert collected metrics are correct
+    assert collected_metrics.to_context() == expected_command_results
+
+
+def test_is_scheduled_command_retry(mocker):
+    """
+    Given:
+        Test Case 1 - A command's metadata indicates it is scheduled.
+        Test Case 2 - A command's metadata indicates it is not scheduled.
+    When:
+        Test Case 1 - Checking if a command is scheduled or not.
+        Test Case 2 - Checking if a command is scheduled or not.
+    Then:
+        Test Case 1 - Assert the function returns True
+        Test Case 2 - Assert the function returns False
+    """
+    from CommonServerPython import is_scheduled_command_retry
+
+    mock_scheduled_command = {
+        'polling': True,
+        'pollingCommand': 'SomeCommand',
+        'pollingArgs': {'some': 'args'},
+        'timesRan': 0,
+        'startDate': '5.4.2022',
+        'endingDate': '1.2.2022'
+    }
+
+    mocker.patch.dict(demisto.callingContext, {'context': {'ParentEntry': mock_scheduled_command}})
+    mocker.patch.object(CommonServerPython, 'get_integration_name', return_value='')
+
+    # The run should be considered a scheduled command
+    assert is_scheduled_command_retry() is True
+
+    # Change run to not be a scheduled command
+    mock_scheduled_command['polling'] = False
+
+    # The run should not be considered a scheduled command
+    assert is_scheduled_command_retry() is False

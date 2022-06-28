@@ -3,6 +3,8 @@
 - For more information, see the [Unit 42 Intel documentation - Get Tags](https://docs.paloaltonetworks.com/autofocus/autofocus-api/perform-direct-searches/get-tags.html) and [Unit 42 Intel documentation - Get Object Details](https://docs.paloaltonetworks.com/autofocus/autofocus-api/perform-direct-searches/get-tag-details.html).
 
 ### Get Your API Key
+_NOTE_: As of Cortex XSOAR version 6.5 and above with the purchase of a Threat Intel Management (TIM) license, there is no need to enter an API key. Simply leave the API key field blank. The Unit 42 API key is included in the TIM license.
+
 To get your API key, you need to add an authorization code, and then activate the API.
 
  ### Add your authorization code

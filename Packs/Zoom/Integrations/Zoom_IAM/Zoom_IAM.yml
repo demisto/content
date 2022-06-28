@@ -97,7 +97,7 @@ script:
       within the application. Used for outgoing-mapping through the Get Schema option.
     execution: false
     name: get-mapping-fields
-  dockerimage: demisto/pyjwt3:1.0.0.23674
+  dockerimage: demisto/pyjwt3:1.0.0.29644
   feed: false
   isfetch: false
   longRunning: false
