@@ -29,7 +29,7 @@ configuration:
 - display: Vault enterprise namespace
   name: namespace
   defaultvalue: ""
-  type: 4
+  type: 0
   required: false
 - display: Trust any certificate (not secure)
   name: unsecure
