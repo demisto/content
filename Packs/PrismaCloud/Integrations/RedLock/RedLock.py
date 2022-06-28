@@ -878,7 +878,6 @@ def main():
         else:
             raise Exception('Unrecognized command: ' + command)
     except Exception as err:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(str(err))
 
 

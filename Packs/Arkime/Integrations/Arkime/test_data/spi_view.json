@@ -1,0 +1,12 @@
+{
+    "spi": {
+        "destination.ip": {
+            "doc_count_error_upper_bound": 0,
+            "sum_other_doc_count": 95,
+            "buckets": []
+        }
+    },
+    "error": null,
+    "recordsTotal": 6431195,
+    "recordsFiltered": 10385
+}
