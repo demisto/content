@@ -49,7 +49,7 @@ def test_insight_get_details(requests_mock):
         proxy=False,
         auth=('access_id', 'access_key'),
         ok_codes=[200])
-    client.set_extra_params({'instance_endpoint':'https://test.us2.sumologic.com'})    
+    client.set_extra_params({'instance_endpoint': 'https://test.us2.sumologic.com'})
 
     args = {
         'insight_id': insight_id,
@@ -64,7 +64,7 @@ def test_insight_get_details(requests_mock):
     assert response.readable_output == tableToMarkdown(
         'Insight Details:', [insight],
         ['Id', 'ReadableId', 'Name', 'Action', 'Status', 'Assignee', 'Description', 'LastUpdated', 'LastUpdatedBy', 'Severity',
-         'Closed', 'ClosedBy', 'Timestamp', 'Entity', 'Resolution','SumoUrl'], headerTransform=pascalToSpace)
+         'Closed', 'ClosedBy', 'Timestamp', 'Entity', 'Resolution', 'SumoUrl'], headerTransform=pascalToSpace)
 
 
 def test_insight_get_comments(requests_mock):
@@ -119,7 +119,7 @@ def test_signal_get_details(requests_mock):
         proxy=False,
         auth=('access_id', 'access_key'),
         ok_codes=[200])
-    client.set_extra_params({'instance_endpoint':'https://test.us2.sumologic.com'})    
+    client.set_extra_params({'instance_endpoint': 'https://test.us2.sumologic.com'})
 
     args = {
         'signal_id': signal_id
@@ -480,7 +480,7 @@ def test_fetch_incidents(requests_mock):
         auth=('access_id', 'access_key'),
         ok_codes=[200])
 
-    client.set_extra_params({'instance_endpoint':'https://test.us2.sumologic.com'})    
+    client.set_extra_params({'instance_endpoint': 'https://test.us2.sumologic.com'})
 
     next_run, incidents = fetch_incidents(client, 20, {}, 1621296000, None, RECORD_SUMMARY_FIELDS_DEFAULT)
 
