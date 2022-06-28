@@ -35,6 +35,7 @@ dependson:
   - urlscan.io|||urlscan-poll-uri
 runonce: false
 deprecated: true
+description: Deprecated. Due to the usage of multiple deprecated integration commands. No available replacement.
 runas: DBotWeakRole
 fromversion: 5.0.0
 tests:
