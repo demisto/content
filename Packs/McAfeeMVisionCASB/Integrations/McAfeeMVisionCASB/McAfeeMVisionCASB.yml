@@ -1,6 +1,6 @@
 category: CASB
 commonfields:
-  id: McAfeeMVisionCASB
+  id: McAfee MVision CASB
   version: -1
 configuration:
 - defaultvalue: https://www.myshn.net/
@@ -33,7 +33,7 @@ configuration:
   type: 8
 description: Skyhigh CASB is a cloud-based, multi-tenant service that enables Cloud
   Discovery and Risk Monitoring, Cloud Usage Analytics, Cloud Access and Control.
-display: McAfeeMVisionCASB
+display: McAfee MVision CASB
 name: McAfee MVision CASB
 script:
   commands:
