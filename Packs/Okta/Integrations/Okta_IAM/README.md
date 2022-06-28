@@ -6,7 +6,7 @@ For more information, refer to the [Identity Lifecycle Management article](https
 
 ## Configure Okta IAM on Cortex XSOAR
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. Navigate to **Settings** > **Integrations** > **Instances**.
 2. Search for Okta IAM.
 3. Click **Add instance** to create and configure a new integration instance.
 
