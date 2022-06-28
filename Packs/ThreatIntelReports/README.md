@@ -27,3 +27,7 @@ Malware report
 
 Vulnerability report
 ![Layout](https://raw.githubusercontent.com/demisto/content/db59767bf57ba1f2e1306f4a593f2c1b014d4e0c/Packs/ThreatIntel/doc_files/vulnerability.png)
+
+
+## just a test
+This is a test
