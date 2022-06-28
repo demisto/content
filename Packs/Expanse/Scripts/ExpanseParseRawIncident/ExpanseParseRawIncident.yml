@@ -6,7 +6,8 @@ args:
   name: expanse_raw_json_event
   required: true
   secret: false
-comment: Parses incident from Expanse in raw json to readable output
+comment: Deprecated. No available replacement
+deprecated: true
 tags:
 - Expanse
 commonfields:

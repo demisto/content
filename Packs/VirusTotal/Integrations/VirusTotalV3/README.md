@@ -123,6 +123,7 @@ The following lists the changes in this version according to the commands from t
   For more information regarding Domain relationships, see: <https://developers.virustotal.com/v3.0/reference#domains-1>
   For more information regarding File relationships, see: <https://developers.virustotal.com/v3.0/reference#files>
 
+- Starting with XSOAR version 6.8.0, You may monitor API usage via the *VirusTotal API Execution Metrics* dashboard.
 ### Comments
 
 In VirusTotal (API v3) you can now add comments to all indicator types (IP, Domain, File and URL) so each command now has the *resource_type* argument.

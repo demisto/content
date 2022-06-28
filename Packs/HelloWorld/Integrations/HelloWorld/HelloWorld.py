@@ -247,7 +247,6 @@ from CommonServerUserPython import *
 import json
 import urllib3
 import dateparser
-import traceback
 from typing import Any, Dict, Tuple, List, Optional, Union, cast
 
 # Disable insecure warnings
@@ -750,7 +749,8 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int],
     return next_run, incidents
 
 
-def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshold: int) -> List[CommandResults]:
+def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshold: int,
+                          reliability: DBotScoreReliability) -> List[CommandResults]:
     """ip command: Returns IP reputation for a list of IPs
 
     :type client: ``Client``
@@ -766,6 +766,10 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
     :param default_threshold:
         default threshold to determine whether an IP is malicious
         if threshold is not specified in the XSOAR arguments
+
+    :type reliability: ``DBotScoreReliability``
+    :param reliability:
+        reliability of the source providing the intelligence data.
 
     :return:
         A ``CommandResults`` object that is then passed to ``return_results``,
@@ -846,7 +850,8 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
             indicator_type=DBotScoreType.IP,
             integration_name='HelloWorld',
             score=score,
-            malicious_description=f'Hello World returned reputation {reputation}'
+            malicious_description=f'Hello World returned reputation {reputation}',
+            reliability=reliability
         )
 
         # Create the IP Standard Context structure using Common.IP and add
@@ -895,7 +900,8 @@ def ip_reputation_command(client: Client, args: Dict[str, Any], default_threshol
     return command_results
 
 
-def domain_reputation_command(client: Client, args: Dict[str, Any], default_threshold: int) -> List[CommandResults]:
+def domain_reputation_command(client: Client, args: Dict[str, Any], default_threshold: int,
+                              reliability: DBotScoreReliability) -> List[CommandResults]:
     """domain command: Returns domain reputation for a list of domains
 
     :type client: ``Client``
@@ -911,6 +917,11 @@ def domain_reputation_command(client: Client, args: Dict[str, Any], default_thre
     :param default_threshold:
         default threshold to determine whether an domain is malicious
         if threshold is not specified in the XSOAR arguments
+
+    :type reliability: ``DBotScoreReliability``
+    :param reliability:
+        reliability of the source providing the intelligence data.
+
 
     :return:
         A ``CommandResults`` object that is then passed to ``return_results``,
@@ -981,7 +992,8 @@ def domain_reputation_command(client: Client, args: Dict[str, Any], default_thre
             integration_name='HelloWorld',
             indicator_type=DBotScoreType.DOMAIN,
             score=score,
-            malicious_description=f'Hello World returned reputation {reputation}'
+            malicious_description=f'Hello World returned reputation {reputation}',
+            reliability=reliability
         )
 
         # Create the Domain Standard Context structure using Common.Domain and
@@ -1384,6 +1396,10 @@ def main() -> None:
     # out of the box by it, just pass ``proxy`` to the Client constructor
     proxy = demisto.params().get('proxy', False)
 
+    # Integration that implements reputation commands (e.g. url, ip, domain,..., etc) must have
+    # a reliability score of the source providing the intelligence data.
+    reliability = demisto.params().get('integrationReliability', DBotScoreReliability.C)
+
     # INTEGRATION DEVELOPER TIP
     # You can use functions such as ``demisto.debug()``, ``demisto.info()``,
     # etc. to print information in the XSOAR server log. You can set the log
@@ -1439,11 +1455,11 @@ def main() -> None:
 
         elif demisto.command() == 'ip':
             default_threshold_ip = int(demisto.params().get('threshold_ip', '65'))
-            return_results(ip_reputation_command(client, demisto.args(), default_threshold_ip))
+            return_results(ip_reputation_command(client, demisto.args(), default_threshold_ip, reliability))
 
         elif demisto.command() == 'domain':
             default_threshold_domain = int(demisto.params().get('threshold_domain', '65'))
-            return_results(domain_reputation_command(client, demisto.args(), default_threshold_domain))
+            return_results(domain_reputation_command(client, demisto.args(), default_threshold_domain, reliability))
 
         elif demisto.command() == 'helloworld-say-hello':
             return_results(say_hello_command(client, demisto.args()))
@@ -1468,7 +1484,6 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 

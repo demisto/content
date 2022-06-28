@@ -3,7 +3,6 @@ from datetime import datetime, timedelta
 from CommonServerPython import *
 
 import requests
-import traceback
 from typing import Dict, Any
 
 # Disable insecure warnings
@@ -465,7 +464,6 @@ def main() -> None:
             raise NotImplementedError(f'{demisto.command()} is not an existing HPE Aruba ClearPass command')
 
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 

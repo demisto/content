@@ -6,7 +6,7 @@ from pydantic import BaseConfig, BaseModel, AnyUrl, Json, Field  # pylint: disab
 import requests
 from requests.auth import HTTPBasicAuth
 import dateparser
-from datetime import datetime
+from datetime import datetime, timedelta
 
 urllib3.disable_warnings()
 
@@ -23,22 +23,24 @@ class Method(str, Enum):
 
 
 class Args(BaseModel):
-    from_day = demisto.params().get('first_fetch', '3 days')
-    default_from_day = datetime.now() - timedelta(days=3)
     from_: str = Field(
-        datetime.strftime(dateparser.parse(from_day, settings={'TIMEZONE': 'UTC'}) or default_from_day, DATETIME_FORMAT),
-        alias='from'
+        datetime.strftime(
+            dateparser.parse(
+                demisto.params().get('first_fetch', '3 days'), settings={'TIMEZONE': 'UTC'}
+            ) or datetime.now() - timedelta(days=3), DATETIME_FORMAT
+        ), alias='from'
     )
     limit: int = 1000
     offset: int = 0
 
 
 class ReqParams(BaseModel):
-    from_day = demisto.params().get('first_fetch', '3 days')
-    default_from_day = datetime.now() - timedelta(days=3)
     from_: str = Field(
-        datetime.strftime(dateparser.parse(from_day, settings={'TIMEZONE': 'UTC'}) or default_from_day, DATETIME_FORMAT),
-        alias='from'
+        datetime.strftime(
+            dateparser.parse(
+                demisto.params().get('first_fetch', '3 days'), settings={'TIMEZONE': 'UTC'}
+            ) or datetime.now() - timedelta(days=3), DATETIME_FORMAT
+        ), alias='from'
     )
     limit: int = 1000
     offset: int = 0
@@ -117,7 +119,7 @@ class GetEvents:
             self.client.prepare_next_run(self.client.request.params.limit)
             events = self.call()
 
-    def run(self, max_fetch: int = 100) -> List[dict]:
+    def run(self, max_fetch: int = 1000) -> List[dict]:
         stored = []
         last_run = demisto.getLastRun()
 
@@ -152,8 +154,9 @@ class GetEvents:
         last_run = demisto.getLastRun()
 
         if not last_run.get('next_time'):
-            last_time = log.get('created', '').removesuffix('+0000')
-            next_time = last_time[:-1] + str(int(last_time[-1]) + 1)
+            last_datetime = log.get('created', '').removesuffix('+0000')
+            last_datetime_with_delta = datetime.strptime(last_datetime, DATETIME_FORMAT) + timedelta(milliseconds=1)
+            next_time = datetime.strftime(last_datetime_with_delta, DATETIME_FORMAT)
 
             if last_run.get('offset'):
                 last_run['next_time'] = next_time
@@ -171,6 +174,7 @@ def main():
     # Args is always stronger. Get last run even stronger
     demisto_params = demisto.params() | demisto.args() | demisto.getLastRun()
 
+    demisto_params['url'] = f'{str(demisto_params.get("url", "")).removesuffix("/")}/rest/api/3/auditing/record'
     demisto_params['params'] = ReqParams.parse_obj(demisto_params)
 
     request = Request.parse_obj(demisto_params)
@@ -183,8 +187,8 @@ def main():
         demisto.results('ok')
 
     elif command in ('fetch-events', 'jira-get-events'):
-        events = get_events.run(int(demisto_params.get('max_fetch', 100)))
-        send_events_to_xsiam(events, 'Jira', 'jira')
+        events = get_events.run(int(demisto_params.get('max_fetch', 1000)))
+        send_events_to_xsiam(events, 'atlassian', 'jira')
 
         if events:
             demisto.setLastRun(get_events.set_next_run(events[0]))
