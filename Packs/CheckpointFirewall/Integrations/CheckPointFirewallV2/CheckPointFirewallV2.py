@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-register_module_line('CheckPointFirewall_v2', 'start', __line__())
 
 
 # Disable insecure warnings
