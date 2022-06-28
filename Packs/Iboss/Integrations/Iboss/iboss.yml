@@ -362,7 +362,7 @@ script:
     - name: ip
       isArray: true
       description: IP(s) to lookup.
-      required: false
+      required: true
       secret: false
       default: true
     outputs:
