@@ -303,7 +303,7 @@ def signal_get_details(client: Client, args: Dict[str, Any]) -> CommandResults:
     signal = client.req('GET', 'sec/v1/signals/{}'.format(signal_id))
     signal.pop('allRecords', None)  # don't need to display records from signal
     signal = insight_signal_to_readable(signal)
-    signal['SumoUrl'] = craft_sumo_url(demisto.getParam('instance_endpoint'),'signal',signal_id)
+    signal['SumoUrl'] = craft_sumo_url(client.get_extra_params()['instance_endpoint'],'signal',signal_id)
     readable_output = tableToMarkdown(
         'Signal Details:', [signal],
         ['Id', 'Name', 'RuleId', 'Description', 'Severity', 'ContentType', 'Timestamp', 'Entity','SumoUrl'], headerTransform=pascalToSpace)
