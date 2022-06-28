@@ -116,10 +116,10 @@ def xsoar_configure_and_install_flow(options, branch_name: str, build_number: st
         server.add_server_configuration(config_dict=MARKET_PLACE_CONFIGURATION, error_msg=error_msg)
         XSOARBuild.set_marketplace_url(servers=[server], branch_name=branch_name, ci_build_number=build_number)
         servers.append(server)
-    
+
     content_path = Build.content_path or ''
     if not content_path:
-        raise Exception(f'Could not find content path')
+        raise Exception('Could not find content path')
 
     pack_ids = get_packs_with_higher_min_version(
         packs_names=set(Build.fetch_pack_ids_to_install(options.pack_ids_to_install)),
