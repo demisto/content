@@ -533,7 +533,7 @@ def cloudflare_waf_firewall_rule_create_command(client: Client, args: Dict[str, 
     filter_expression = args.get('filter_expression')
     products = argToList(args.get('products'))
     description = args.get('description')
-    paused = arg_to_boolean(args.get('paused'))
+    paused = arg_to_boolean(args.get('paused')) # type: ignore
     priority = arg_to_number(args.get('priority'))
     ref = args.get('ref')
 
@@ -588,7 +588,7 @@ def cloudflare_waf_firewall_rule_update_command(client: Client, args: Dict[str, 
     filter_id = args.get('filter_id')
     products = args.get('products')
     description = args.get('description')
-    paused = arg_to_boolean(args.get('paused'))
+    paused = arg_to_boolean(args.get('paused')) # type: ignore
     priority = arg_to_number(args.get('priority'))
     ref = args.get('ref')
 
@@ -643,7 +643,7 @@ def cloudflare_waf_firewall_rule_list_command(client: Client, args: Dict[str, An
     rule_id = args.get('id')
     description = args.get('description')
     action = args.get('action')
-    paused = arg_to_boolean(args.get('paused'))
+    paused = arg_to_boolean(args.get('paused')) # type: ignore
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
     limit = arg_to_number(args.get('limit'))
@@ -744,7 +744,7 @@ def cloudflare_waf_filter_create_command(client: Client, args: Dict[str, Any]) -
 
     ref = args.get('ref')
     description = args.get('description')
-    paused = arg_to_boolean(args.get('paused'))
+    paused = arg_to_boolean(args.get('paused')) # type: ignore
 
     response = client.cloudflare_waf_filter_create_request(
         expression, zone_id, description=description, paused=paused, ref=ref)
@@ -784,7 +784,7 @@ def cloudflare_waf_filter_update_command(client: Client, args: Dict[str, Any]) -
     zone_id = args.get('zone_id', client.zone_id)
     ref = args.get('ref')
     description = args.get('description')
-    paused = arg_to_boolean(args.get('paused'))
+    paused = arg_to_boolean(args.get('paused')) # type: ignore
 
     response = client.cloudflare_waf_filter_update_request(
         filter_id, expression, zone_id, description=description,  # type: ignore
@@ -838,7 +838,7 @@ def cloudflare_waf_filter_list_command(client: Client, args: Dict[str, Any]) -> 
     expression = args.get('expression')
     ref = args.get('ref')
     description = args.get('description')
-    paused = arg_to_boolean(args.get('paused'))
+    paused = arg_to_boolean(args.get('paused')) # type: ignore
 
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
