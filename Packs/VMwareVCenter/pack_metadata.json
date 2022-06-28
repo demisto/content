@@ -1,19 +1,16 @@
 {
-    "name": "Core - Investigation and Response",
-    "description": "Automates incident response",
+    "name": "VMware vCenter",
+    "description": "Modeling Rules for the VMware vCenter logs collector",
     "support": "xsoar",
-    "currentVersion": "1.3.0",
+    "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
-        "Endpoint",
-        "Data Enrichment & Threat Intelligence"
+        "Analytics & SIEM"
     ],
     "tags": [],
-    "useCases": [
-        "Malware"
-    ],
+    "useCases": [],
     "keywords": [],
     "marketplaces": [
         "marketplacev2"
