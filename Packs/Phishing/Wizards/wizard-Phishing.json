@@ -2,25 +2,33 @@
     "id": "Phishing use-case",
     "version": -1,
     "modified": "2022-04-10T11:55:54.250933+03:00",
-    "fromVersion": "6.8.0",
+    "fromVersion": "6.9.0",
     "name": "Phishing use-case",
     "description": "Welcome to the Deployment Wizard!  These steps will guide you through configuring your content pack so you'll have a working use case when the wizard finishes. Make sure to follow the steps in order, you can always continue the wizard where you left off. Learn more about this pack’s deployment.",
     "dependency_packs": [
       {
-        "name": "Email Integrations",
+        "name": "Email Gateways",
         "min_required": 1,
         "packs": [
           {
-            "name": "EWSMailSender",
-            "display_name": "EWS Mail Sender"
+            "name": "EWS",
+            "display_name": "EWS Mail"
           },
           {
             "name": "Gmail",
             "display_name": "Gmail"
           },
           {
+            "name": "GmailSingleUser",
+            "display_name": "Gmail - Single User"
+          },
+          {
             "name": "MicrosoftGraphMail",
             "display_name": "Microsoft Graph Mail"
+          },
+          {
+            "name": "MicrosoftGraphListener",
+            "display_name": "Microsoft Graph Mail - Single User"
           }
         ]
       },
@@ -34,11 +42,51 @@
           },
           {
             "name": "CrowdStrikeFalconX",
-            "display_name": "CrowdStrike Falcon X"
+            "display_name": "CrowdStrike FalconX"
           },
           {
             "name": "FortiSandbox",
             "display_name": "Forti SandBox"
+          },
+          {
+            "name": "Polygon",
+            "display_name": "Polygon - Group-IB TH"
+          },
+          {
+            "name": "JoeSecurity",
+            "display_name": "Joe Security - Cloud SandBox"
+          },
+          {
+            "name": "ThreatGrid",
+            "display_name": "Cisco Secure Malware Analytics - Threat Grid"
+          },
+          {
+            "name": "CrowdStrikeFalconSandbox",
+            "display_name": "CrowdStrike Falcon Sandbox"
+          },
+          {
+            "name": "Lastline",
+            "display_name": "Lastline"
+          },
+          {
+            "name": "CuckooSandbox",
+            "display_name": "Cuckoo Sandbox"
+          },
+          {
+            "name": "HybridAnalysis",
+            "display_name": "Hybrid Analysis"
+          },
+          {
+            "name": "fireeye",
+            "display_name": "FireEye (AX Series)"
+          },
+          {
+            "name": "VMRay",
+            "display_name": "VMRay"
+          },
+          {
+            "name": "McAfee_Advanced_Threat_Defense",
+            "display_name": "McAfee Advanced Threat Defense"
           }
         ]
       },
@@ -77,6 +125,30 @@
             "display_name": "Mitre Attack v2"
           }
         ]
+      },
+      {
+        "name": "Network Security",
+        "min_required": 0,
+        "packs": [
+          {
+            "name": "Zscaler",
+            "display_name": "Zscaler Internet Access"
+          },
+          {
+            "name": "Zscaler",
+            "display_name": "Zscaler Internet Access"
+          }
+        ]
+      },
+      {
+        "name": "Endpoint Security",
+        "min_required": 0,
+        "packs": [
+          {
+            "name": "Blaaa Blaaaa",
+            "display_name": "Blaaaaaaaaa"
+          }
+        ]
       }
     ],
     "wizard": {
@@ -85,7 +157,7 @@
           "priority": 3,
           "name": "Gmail",
           "action": {
-            "existing": "Update your current instance to work with the new Malware Investigation and Response incident type: \n1. Enable fetching. \n2. Set the Incident type field to Phishing. \n3. Set the Mapper field to 'Default Mapper'. \n4. Check the 'Fetch alert evidence' option.",
+            "existing": "Update your current instance to work with the Phishing incident type: \n1. Enable fetching. \n2. Set the Incident type field to Phishing. \n3. Set the Mapper field to 'Default Mapper'. \n4. Check the 'Fetch alert evidence' option.",
             "new": "Set up new 'Microsoft Defender Advanced Threat Protection' instance to start fetching Malware Investigation and Response incidents: \n1. Enable fetching. \n2. Set the Incident type field to Phishing. \n3. Set the Mapper field to 'Default Mapper'. \n4. Check the 'Fetch alert evidence' option."
           },
           "description": "Set up the 'Microsoft Defender for Endpoint' integration to work with your Malware Investigation and Response use case.",
@@ -93,13 +165,13 @@
         },
         {
           "priority": 2,
-          "name": "EWS Mail Sender",
+          "name": "EWS v2",
           "action": {
             "existing": "Update your current instance to work with the new Malware incident type: \n1. Enable fetching. \n2. Set the Incident type field to Phishing. \n3. Set the Mapper field to 'CrowdStrike Falcon Mapper'.",
             "new": "Set up new 'Crowdstrike Falcon' instance to start fetching Malware Investigation and Response incidents: \n1. Enable fetching. \n2. Set the Incident type field to Phishing. \n3. Set the Mapper field to 'CrowdStrike Falcon Mapper'."
           },
           "description": "Set up the 'Crowdstrike Falcon' integration to work with your Malware Investigation and Response use case.",
-          "incident_type": "Phishing Alerts"
+           "incident_type": "Phishing"
         },
         {
           "priority": 1,
@@ -109,12 +181,14 @@
             "new": "Set up new 'Cortex XDR - IR' to work with the Phishing type: \n1. Turn on fetching. \n2. Choose the 'Cortex XDR Incident Handler - Classifier .\n3. Set the Incident type field to Malware Investigation and Response. \n4. Set the Mapper field to 'Cortex XDR - IR-mapper'."
           },
           "description": "Set up the 'Cortex XDR - IR' integration to work with your Malware Investigation and Response use case.",
-          "incident_type": "Malware"
+          "incident_type": "Phishing"
         }
       ],
       "set_playbook": [
         {
-          "name": "Phishing Alerts Investigation"
+          "name": "Phishing Alerts Investigation",
+
+
         }
       ],
       "supporting_integrations": [
