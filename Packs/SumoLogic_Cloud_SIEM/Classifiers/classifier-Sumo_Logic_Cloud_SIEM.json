@@ -3,7 +3,7 @@
 	"definitionId": "",
 	"description": "Classifier for Sumo Logic Insight",
 	"feed": false,
-	"fromVersion": "6.0.0",
+	"fromVersion": "6.2.0",
 	"id": "SumoLogicInsight",
 	"keyTypeMap": {
 		"INSIGHT": "Sumo Logic Insight"

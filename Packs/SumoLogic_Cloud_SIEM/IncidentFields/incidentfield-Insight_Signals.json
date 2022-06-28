@@ -4,7 +4,7 @@
     "id": "incident_insightsignals",
     "version": -1,
     "itemVersion": "",
-    "fromVersion": "6.0.0",
+    "fromVersion": "6.2.0",
     "name": "Sumo Logic Cloud SIEM Insight Signals",
     "ownerOnly": false,
     "description": "List of Insight Signals",

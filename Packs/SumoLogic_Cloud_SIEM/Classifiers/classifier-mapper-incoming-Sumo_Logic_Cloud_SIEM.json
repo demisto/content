@@ -3,7 +3,7 @@
 	"definitionId": "",
 	"description": "Sumo Logic Insight Mapper",
 	"feed": false,
-	"fromVersion": "6.0.0",
+	"fromVersion": "6.2.0",
 	"id": "Sumo Logic Insight - Mapper",
 	"mapping": {
 		"Sumo Logic Insight": {

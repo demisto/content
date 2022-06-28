@@ -446,7 +446,7 @@
 			}
 		]
 	},
-	"fromVersion": "6.0.0",
+	"fromVersion": "6.2.0",
 	"group": "incident",
 	"id": "Sumo Logic Insight",
 	"name": "Sumo Logic Insight",

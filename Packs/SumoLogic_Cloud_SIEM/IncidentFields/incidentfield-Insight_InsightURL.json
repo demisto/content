@@ -12,7 +12,7 @@
 	"description": "Sumo URL for the Insight",
 	"editForm": true,
 	"fieldCalcScript": "",
-	"fromVersion": "6.0.0",
+	"fromVersion": "6.2.0",
 	"group": 0,
 	"hidden": false,
 	"isReadOnly": false,
