@@ -13,10 +13,7 @@ type: python
 runas: DBotRole
 runonce: false
 subtype: python3
-dependson:
-  must:
-    - demisto-api-get
 tests:
 - GetTasksWithSections SetIRProcedures end to end test
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.10.4.30607
 fromversion: 6.0.0

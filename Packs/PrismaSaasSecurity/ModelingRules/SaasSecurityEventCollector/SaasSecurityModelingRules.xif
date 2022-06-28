@@ -1,0 +1,13 @@
+[MODEL: dataset=paloaltonetworks_saassecurity_raw, model=Audit]
+alter XDM.Audit.original_event_type = log_type,
+XDM.Audit.event_timestamp = timestamp,
+XDM.Audit.TriggeredBy.ipv4 = coalesce(ip, source_ip),
+XDM.Audit.original_event_sub_type = event_type,
+XDM.Audit.audited_resource.type = item_type,
+XDM.Audit.audited_resource.name = action,
+XDM.Audit.operation = coalesce(remoteAddress, target_name),
+XDM.Audit.audited_resource_before.value = resource_value_old,
+XDM.Audit.audited_resource.value = resource_value_new,
+XDM.Audit.audited_resource.id = asset_id,
+XDM.Audit.TriggeredBy.identity.name = coalesce(user, admin_role),
+XDM.Audit.TriggeredBy.location.city = location;

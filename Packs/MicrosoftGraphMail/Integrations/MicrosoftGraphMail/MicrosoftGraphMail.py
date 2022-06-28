@@ -695,11 +695,14 @@ class MsGraphClient:
             'GET', suffix_endpoint, params=params
         ).get('value', [])
 
-        exclude_ids_size = len(exclude_ids)
-        if not fetched_emails or exclude_ids_size >= len(fetched_emails):
+        fetched_emails_ids = {email.get('id') for email in fetched_emails}
+        exclude_ids_set = set(exclude_ids)
+        if not fetched_emails or not (filtered_new_email_ids := fetched_emails_ids - exclude_ids_set):
             # no new emails
-            return [], exclude_ids
-        new_emails = fetched_emails[exclude_ids_size:exclude_ids_size + self._emails_fetch_limit]
+            demisto.debug(f'No new emails: {fetched_emails_ids=}. {exclude_ids_set=}')
+            return [], exclude_ids, last_fetch
+        new_emails = [mail for mail in fetched_emails
+                      if mail.get('id') in filtered_new_email_ids][:self._emails_fetch_limit]
         last_email_time = new_emails[-1].get('receivedDateTime')
         if last_email_time == last_fetch:
             # next fetch will need to skip existing exclude_ids
@@ -709,7 +712,7 @@ class MsGraphClient:
             excluded_ids_for_nextrun = [email.get('id') for email in new_emails if
                                         email.get('receivedDateTime') == last_email_time]
 
-        return new_emails, excluded_ids_for_nextrun
+        return new_emails, excluded_ids_for_nextrun, last_email_time
 
     @staticmethod
     def _parse_item_as_dict(email):
@@ -847,25 +850,6 @@ class MsGraphClient:
 
         return incident
 
-    @staticmethod
-    def _get_next_run_time(fetched_emails, start_time):
-        """
-        Returns received time of last email if exist, else utc time that was passed as start_time.
-
-        The elements in fetched emails are ordered by modified time in ascending order,
-        meaning the last element has the latest received time.
-
-        :type fetched_emails: ``list``
-        :param fetched_emails: List of fetched emails
-
-        :type start_time: ``str``
-        :param start_time: utc string of format Y-m-dTH:M:SZ
-
-        :return: Returns str date of format Y-m-dTH:M:SZ
-        :rtype: `str`
-        """
-        return fetched_emails[-1].get('receivedDateTime') if fetched_emails else start_time
-
     @logger
     def fetch_incidents(self, last_run):
         """
@@ -879,9 +863,8 @@ class MsGraphClient:
         :return: Next run data and parsed fetched incidents
         :rtype: ``dict`` and ``list``
         """
-        start_time = get_now_utc()
         last_fetch = last_run.get('LAST_RUN_TIME')
-        exclude_ids = last_run.get('LAST_RUN_IDS', [])
+        exclude_ids = list(set(last_run.get('LAST_RUN_IDS', [])))  # remove any possible duplicates
         last_run_folder_path = last_run.get('LAST_RUN_FOLDER_PATH')
         folder_path_changed = (last_run_folder_path != self._folder_to_fetch)
         last_run_account = last_run.get('LAST_RUN_ACCOUNT')
@@ -899,10 +882,9 @@ class MsGraphClient:
             last_fetch, _ = parse_date_range(self._first_fetch_interval, date_format=DATE_FORMAT, utc=True)
             demisto.info(f"MS-Graph-Listener: initialize fetch and pull emails from date :{last_fetch}")
 
-        fetched_emails, exclude_ids = self._fetch_last_emails(
+        fetched_emails, exclude_ids, next_run_time = self._fetch_last_emails(
             folder_id=folder_id, last_fetch=last_fetch, exclude_ids=exclude_ids)
         incidents = list(map(self._parse_email_as_incident, fetched_emails))
-        next_run_time = MsGraphClient._get_next_run_time(fetched_emails, start_time)
         next_run = {
             'LAST_RUN_TIME': next_run_time,
             'LAST_RUN_IDS': exclude_ids,
@@ -911,6 +893,7 @@ class MsGraphClient:
             'LAST_RUN_ACCOUNT': self._mailbox_to_fetch,
         }
         demisto.info(f"MS-Graph-Listener: fetched {len(incidents)} incidents")
+        demisto.debug(next_run)
 
         return next_run, incidents
 
