@@ -10,8 +10,8 @@ This integration was integrated and tested with version xx of Wordpress
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Your server URL |  | True |
-    | None | Username | True |
-    | None | The Application Password to use for connection | True |
+    | User | Username | True |
+    | Application Password | The Application Password to use for connection | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
 
