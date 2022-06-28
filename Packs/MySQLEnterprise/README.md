@@ -2,35 +2,33 @@ This pack includes XSIAM content.
 
 ## Collect Events from Vendor
 
-In order to use the collector, you can use one of the following options to collect events from the vendor:
- - [Broker VM](#broker-vm)
- - [XDRC (XDR Collector)](#xdrc-xdr-collector) 
+- [MySQL Enterprise Server Configuration](#mysql-enterprise-server-configuration)
+- [XDRC (XDR Collector)](#xdrc-xdr-collector)
 
-In either option, you will need to configure the vendor and product for this specific collector.
+### MySQL Enterprise Server Configuration
 
-### Broker VM
-You will need to use the information described [here](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-pro-admin/broker-vm/set-up-broker-vm/configure-your-broker-vm).\
-You can configure the specific vendor and product for this instance.
-1. Navigate to **Settings** -> **Configuration** -> **Data Broker** -> **Broker VMs**. 
-2. Right-click, and select **Syslog Collector** -> **Configure**.
-3. When configuring the Syslog Collector, set:
-   - vendor as mysql
-   - product as enterprise
+1. Install the [audit log plugin](https://dev.mysql.com/doc/mysql-secure-deployment-guide/5.7/en/secure-deployment-audit.html)
+2. After the audit log plugin installation verify the following two lines in the `my.cnf` file:
+```
+plugin-load = audit_log.so
+audit_log_format=JSON
+```
 
 ### XDRC (XDR Collector)
+
 You will need to use the information described [here](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-pro-admin/cortex-xdr-collectors/xdr-collector-datasets#id7f0fcd4d-b019-4959-a43a-40b03db8a8b2).\
 You can configure the vendor and product by replacing [vendor]_[product]_raw with mysql_enterprise_raw.\
-When configuring the instance, you should use a yml that configures the vendor and product, like this example for the Microsoft NPS product:
+When configuring the instance, you should use a yml that configures the vendor and product, like this example:
 
 ```
-filebeat.inputs:
-- type: filestream
-  enabled: true
-  paths:
-    - c:\windows\system32\logfiles\*.log
+filebeat.modules:
+- module: mysqlenterprise
+  audit:
+    var.input: file
+    var.paths: /home/user/mysqlauditlogs/audit.*.log
   processors:
     - add_fields:
         fields:
-          vendor: msft
-          product: nps
+          vendor: mysql
+          product: enterprise
 ```
