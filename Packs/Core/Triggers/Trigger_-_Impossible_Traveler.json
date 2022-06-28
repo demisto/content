@@ -1,0 +1,19 @@
+{
+  "trigger_id": "b0b1552aad770ec22f4bd6c4cc48db01",
+  "playbook_id": "Impossible Traveler Response",
+  "suggestion_reason": "Recommended for Impossible Traveler alerts",
+  "description": "This trigger is responsible for handling Impossible Traveler alerts",
+  "trigger_name": "Impossible Traveler",
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+            "SEARCH_FIELD": "alert_name",
+            "SEARCH_TYPE": "CONTAINS",
+            "SEARCH_VALUE": "Impossible traveler"
+        }
+      ]
+    }
+  }
+}
+

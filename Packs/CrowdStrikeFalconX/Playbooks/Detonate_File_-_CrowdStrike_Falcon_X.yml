@@ -410,7 +410,7 @@ tasks:
       file:
         simple: ${inputs.File.EntryID}
       file_name:
-        simple: inputs.File.EntryID
+        simple: ${inputs.File.Name}
       is_confidential: {}
     separatecontext: false
     view: |-
