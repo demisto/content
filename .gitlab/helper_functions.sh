@@ -1,7 +1,7 @@
 #!/bin/bash
 
 CYAN="\e[0;36m"
-CLEAR="\e[31mRed"
+CLEAR="\e[31m"
 SECTION_START="\e[0Ksection_start:the_time:section_id\r\e[0K${CYAN}section_header${CLEAR}"
 SECTION_END="\e[0Ksection_end:the_time:section_id\r\e[0K"
 
