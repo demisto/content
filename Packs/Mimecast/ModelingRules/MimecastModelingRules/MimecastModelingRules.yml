@@ -11,7 +11,7 @@ schema: |-
         "is_array": false
       },
       "eventTime": {
-        "type": "string",
+        "type": "datetime",
         "is_array": false
       },
       "eventInfo": {
@@ -47,7 +47,7 @@ schema: |-
         "is_array": false
       },
       "datetime": {
-        "type": "string",
+        "type": "datetime",
         "is_array": false
       },
       "IP": {
@@ -105,6 +105,10 @@ schema: |-
       "Recipient": {
         "type": "string",
         "is_array": true
+      },
+      "xsiem_classifier": {
+        "type": "string",
+        "is_array": false
       }
     }
   }

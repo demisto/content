@@ -508,8 +508,10 @@ def main():
     # Args is always stronger. Get last run even stronger
     demisto.info('\n started running main\n')
     demisto_params = demisto.params() | demisto.args()
-    demisto_params['secret_key'] = demisto_params.get('credentials', {}).get('password')
-    demisto_params['access_key'] = demisto_params.get('credentials', {}).get('identifier')
+    demisto_params['secret_key'] = demisto_params.get('credentials_secret_key', {}).get('password')
+    demisto_params['access_key'] = demisto_params.get('credentials_access_key', {}).get('password')
+    demisto_params['app_id'] = demisto_params.get('credentials_app', {}).get('identifier')
+    demisto_params['app_key'] = demisto_params.get('credentials_app', {}).get('password')
     should_push_events = argToBoolean(demisto_params.get('should_push_events', 'false'))
     options = MimecastOptions(**demisto_params)
     empty_first_request = IntegrationHTTPRequest(method=Method.GET, url='http://dummy.com', headers={})

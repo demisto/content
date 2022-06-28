@@ -7,19 +7,21 @@ configuration:
   name: base_url
   required: true
   type: 0
-- display: App Id
-  name: app_id
-  required: true
-  type: 0
-- display: Application key
-  name: app_key
-  required: true
-  type: 0
-- display: Access Key
-  displaypassword: Secret Key
-  name: credentials
+- display: Application Id
+  displaypassword: Application key
+  name: credentials_app
   type: 9
   required: true
+- displaypassword: Access Key
+  name: credentials_access_key
+  type: 9
+  required: true
+  hiddenusername: true
+- displaypassword: Secret Key
+  name: credentials_secret_key
+  type: 9
+  required: true
+  hiddenusername: true
 - display: First fetch timestamp (<number> <time unit>, for example, 12 hours, 7 days,
     3 months, 1 year)
   name: after
