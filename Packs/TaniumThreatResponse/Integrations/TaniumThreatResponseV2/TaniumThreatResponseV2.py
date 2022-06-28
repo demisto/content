@@ -12,7 +12,6 @@ from CommonServerPython import *  # noqa: F401
 from dateutil.parser import parse
 from lxml import etree
 
-register_module_line('Tanium Threat Response v2', 'start', __line__())
 
 
 ''' IMPORTS '''
