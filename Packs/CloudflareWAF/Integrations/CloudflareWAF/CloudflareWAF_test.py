@@ -373,7 +373,7 @@ def test_cloudflare_waf_ip_lists_list_command(requests_mock, mock_client):
     url = f'{BASE_URL}accounts/{ACCOUNT_ID}/rules/lists'
     requests_mock.get(url=url, json=mock_response)
 
-    result = cloudflare_waf_ip_lists_list_command(mock_client, {'limit': 5})
+    result = cloudflare_waf_ip_lists_list_command(mock_client, {'limit': 5, 'item_ip': '120.2.2.8'})
 
     assert result.outputs_prefix == 'CloudflareWAF.IpList'
     assert len(result.outputs) == 2
