@@ -10831,6 +10831,7 @@ def dataclasses_to_command_results(
     )
     return command_result
 
+
 def pan_os_get_running_config(args: dict):
     """
     Get running config file
@@ -10848,6 +10849,7 @@ def pan_os_get_running_config(args: dict):
     result = http_request(URL, 'POST', params=params, is_xml=True)
     file = fileResult("running_config", result)
     return_results(file)
+
 
 def pan_os_get_merged_config(args: dict):
     """

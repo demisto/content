@@ -2550,6 +2550,7 @@ class TestObjectFunctions:
             )
             assert not result
 
+
 def test_pan_os_get_running_config(mocker):
     """ 
     Given -
@@ -2563,13 +2564,18 @@ def test_pan_os_get_running_config(mocker):
     from Panorama import pan_os_get_running_config
     import Panorama
     
+
+    return_mock = """
+    <response status='error' code='13'><msg><line>SOME_SERIAL_NUMBER not connected</line></msg></response>
+    """ 
     mock_file = mocker.patch.object(Panorama, "fileResult") 
-    mocker.patch("Panorama.http_request", return_value="<response status='error' code='13'><msg><line>SOME_SERIAL_NUMBER not connected</line></msg></response>") 
+    mocker.patch("Panorama.http_request", return_value=return_mock)
     pan_os_get_running_config({"target": "SOME_SERIAL_NUMBER"})
     assert mock_file.call_args.args[0] == "running_config"
 
     with pytest.raises(ValueError):
         json.loads(mock_file.call_args.args[1])
+
 
 def test_pan_os_get_merged_config(mocker):
     """ 
@@ -2584,8 +2590,11 @@ def test_pan_os_get_merged_config(mocker):
     from Panorama import pan_os_get_merged_config
     import Panorama
     
+    return_mock = """
+    <response status='error' code='13'><msg><line>SOME_SERIAL_NUMBER not connected</line></msg></response>
+    """ 
     mock_file = mocker.patch.object(Panorama, "fileResult") 
-    mocker.patch("Panorama.http_request", return_value="<response status='error' code='13'><msg><line>SOME_SERIAL_NUMBER not connected</line></msg></response>") 
+    mocker.patch("Panorama.http_request", return_value=return_mock)
     pan_os_get_merged_config({"target": "SOME_SERIAL_NUMBER"})
     assert mock_file.call_args.args[0] == "merged_config"
 
