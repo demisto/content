@@ -1167,8 +1167,6 @@ def url_lookup(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
 )
 def add_entity_to_block_list_command(client: Client, args: Dict[str, Any]) -> list[CommandResults]:
     """Adds domains, IPs, and/or URLs to a block list
-    """
-    """
     Args:
         client (Client): iboss client to use.
         entity (str): required. Domains, IPs, and/or URLs to add to a block list.
