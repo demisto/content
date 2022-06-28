@@ -14,21 +14,21 @@ class mock_class:
 
 MOCK_FETCH_INCIDENTS = [
     (
-        {'lastRun': ['123456', '234567', '345678']},
+        {'lastReceiptHandles': ['123456', '234567', '345678']},
         [{'Messages': [{'ReceiptHandle': '654321'}, {'ReceiptHandle': '765432'}]},
          {'Messages': [{'ReceiptHandle': '654321'}, {'ReceiptHandle': '765432'}]}],
         {'aws_client': AWSClient, 'aws_queue_url': '', 'max_fetch': 3, 'parse_body_as_json': False},
         3
     ),
     (
-        {'lastRun': ['123456', '234567', '345678']},
+        {'lastReceiptHandles': ['123456', '234567', '345678']},
         [{'Messages': [{'ReceiptHandle': '654321'}, {'ReceiptHandle': '765432'}]},
          {'Messages': [{'ReceiptHandle': '654321'}, {'ReceiptHandle': '765432'}]}, {}],
         {'aws_client': AWSClient, 'aws_queue_url': '', 'max_fetch': 10, 'parse_body_as_json': False},
         4
     ),
     (
-        {'lastRun': ['123456', '234567', '345678']},
+        {'lastReceiptHandles': ['123456', '234567', '345678']},
         [{'Messages': [{'ReceiptHandle': '123456'}, {'ReceiptHandle': '765432'}]},
          {'Messages': [{'ReceiptHandle': '654321'}, {'ReceiptHandle': '765432'}]}, {}],
         {'aws_client': AWSClient, 'aws_queue_url': '', 'max_fetch': 10, 'parse_body_as_json': False},
@@ -37,10 +37,10 @@ MOCK_FETCH_INCIDENTS = [
 ]
 
 
-@pytest.mark.parametrize('last_run, messages, args, expected', MOCK_FETCH_INCIDENTS)
-def test_fetch_incidents(mocker, last_run, messages, args, expected):
+@pytest.mark.parametrize('lastReceiptHandles, messages, args, expected', MOCK_FETCH_INCIDENTS)
+def test_fetch_incidents(mocker, lastReceiptHandles, messages, args, expected):
 
-    mocker.patch('AWS-SQS.demisto.getLastRun', return_value=last_run)
+    mocker.patch('AWS-SQS.demisto.getLastRun', return_value=lastReceiptHandles)
     mocker.patch('AWS-SQS.demisto.setLastRun', return_value='test')
     client = mocker.patch.object(AWSClient, 'aws_session', return_value=mock_class())
     mocker.patch.object(client.return_value, 'receive_message', side_effect=messages)

@@ -1,4 +1,3 @@
-from typing import *  # noqa: F401
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -156,12 +155,12 @@ def parse_incident_from_finding(message, parse_body_as_json=False):
 def fetch_incidents(aws_client, aws_queue_url, max_fetch, parse_body_as_json):
     try:
         client = aws_client.aws_session(service='sqs')
-        last_run = demisto.getLastRun().get('lastRun')
-        if last_run:
-            demisto.debug('LAST_RUN before fetch occurred" -> {} {}'.format(len(last_run), last_run))
+        last_receipt_handles = demisto.getLastRun().get('lastReceiptHandles')
+        if last_receipt_handles:
+            demisto.debug('last_receipt_handles before fetch occurred" -> {} {}'.format(len(last_receipt_handles), last_receipt_handles))
         incidents_created = 0  # type: int
         max_number_of_messages = min(max_fetch, 10)
-        receipt_handles = []  # type: list
+        receipt_handles = set()  # type: set
         incidents = []  # type: list
         while incidents_created < max_fetch:
             messages = client.receive_message(
@@ -180,17 +179,17 @@ def fetch_incidents(aws_client, aws_queue_url, max_fetch, parse_body_as_json):
                     break
 
             for message in messages["Messages"]:
-                receipt_handles.append(message['ReceiptHandle'])
+                receipt_handles.add(message['ReceiptHandle'])
                 # Checking to avoid duplicates
-                if last_run and message['ReceiptHandle'] in last_run:
+                if last_receipt_handles and message['ReceiptHandle'] in last_receipt_handles:
                     continue
                 incidents.append(parse_incident_from_finding(message, parse_body_as_json))
                 incidents_created += 1
                 if incidents_created == max_fetch:
                     break
 
-        demisto.setLastRun({"lastRun": receipt_handles})
-        demisto.debug('LAST_RUN after fetch occurred" -> {} {}'.format(len(receipt_handles), receipt_handles))
+        demisto.setLastRun({"lastReceiptHandles": receipt_handles})
+        demisto.debug('last_receipt_handles after fetch occurred" -> {} {}'.format(len(receipt_handles), receipt_handles))
         demisto.incidents(incidents)
         for receipt_handle in receipt_handles:
             client.delete_message(QueueUrl=aws_queue_url, ReceiptHandle=receipt_handle)
