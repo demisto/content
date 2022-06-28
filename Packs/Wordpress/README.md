@@ -11,5 +11,4 @@ To obtain your application password (API key) do the following:
 - Enter a new application name and click **Add New Application Password**
 - Copy the Application Password (API key)
 
-Then fill this in the **app_password** of the interation and provide the **username** under which the application password
-was generated.
+Then fill this in the **app_password** of the integration and provide the **username** under which the application password was generated.
