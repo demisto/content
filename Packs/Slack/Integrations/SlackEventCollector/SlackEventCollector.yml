@@ -29,7 +29,6 @@ configuration:
   type: 0
   defaultvalue: 1000
   required: false
-  additionalinfo: Maximum is 10000.
 - display: First fetch time interval
   name: oldest
   type: 0
@@ -114,7 +113,7 @@ script:
   type: python
   subtype: python3
   isfetchevents: true
-  dockerimage: demisto/pydantic-jwt3:1.0.0.29883
+  dockerimage: demisto/python3:3.10.4.30607
   feed: false
 marketplaces:
 - marketplacev2

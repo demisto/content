@@ -33,7 +33,7 @@ def prepare_query_params(params: dict) -> dict:
 
 
 class Client(BaseClient):
-    def test(self, params) -> dict:
+    def test(self, params: dict) -> dict:
         query_params = prepare_query_params(params)
         return self.get_logs(query_params)[0]
 
@@ -64,7 +64,8 @@ class Client(BaseClient):
         """
         Aggregates logs using cursor-based pagination, until one of the following occurs:
         1. Encounters an event that was already fetched in a previous run / reaches the end of the pagination.
-           In both cases, clears the cursor from the lastRun obj and returns the aggragated logs.
+           In both cases, clears the cursor from the lastRun obj, updates `last_id` to know where
+           to stop in the next runs and returns the aggragated logs.
 
         2. Reaches the user-defined limit (parameter).
            In this case, stores the last used cursor and the id of the next event to collect (`first_id`)
@@ -83,10 +84,12 @@ class Client(BaseClient):
             while events:
                 for event in events:
                     if event.get('id') == last_run.get('last_id'):
+                        demisto.debug('Encountered an event that was already fetched - stopping.')
                         cursor = None
                         break
 
                     elif len(aggregated_logs) == user_defined_limit:
+                        demisto.debug(f'Reached the user-defined limit ({user_defined_limit}) - stopping.')
                         last_run['first_id'] = event.get('id')
                         cursor = query_params['cursor']
                         break
@@ -96,9 +99,15 @@ class Client(BaseClient):
                 else:
                     # Finished iterating through all events in this batch (did not encounter a break statement)
                     if not cursor:
+                        demisto.debug('Finished iterating through all events in this fetch run.')
                         break
+
+                    demisto.debug('Using the cursor from the last API call to execute the next call.')
                     query_params['cursor'] = cursor
                     _, events, cursor = self.get_logs(query_params)
+
+                # Encountered a break statement in the for loop - exit while loop
+                break
 
         except DemistoException as e:
             if not e.res or e.res.status_code != 429:
@@ -107,6 +116,10 @@ class Client(BaseClient):
             cursor = query_params['cursor']
 
         last_run['cursor'] = cursor
+        if not cursor and aggregated_logs:
+            # we need to know where to stop in the next runs
+            last_run['last_id'] = aggregated_logs[0].get('id')
+
         return aggregated_logs
 
 
@@ -162,8 +175,7 @@ def fetch_events_command(client: Client, params: dict, last_run: dict) -> Tuple[
         (dict) the updated lastRun object.
     """
     query_params = prepare_query_params(params)
-    if events := client.get_logs_with_pagination(query_params, last_run):
-        last_run['last_id'] = events[0].get('id')
+    events = client.get_logs_with_pagination(query_params, last_run)
     return events, last_run
 
 
