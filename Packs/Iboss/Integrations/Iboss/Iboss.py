@@ -273,7 +273,7 @@ class Client(BaseClient):
         if not token:
             ValueError("System returned `None` for cloud token auth")
 
-        return result["token"]
+        return token
 
     def _get_cloud_settings_tokens(self, auth_token):
         headers = {"Authorization": f"Token {auth_token}"}
