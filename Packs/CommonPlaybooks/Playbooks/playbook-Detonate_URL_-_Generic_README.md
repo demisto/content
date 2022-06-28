@@ -6,22 +6,22 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-- Detonate URL - Group-IB TDS Polygon
-- Detonate URL - McAfee ATD
-- Detonate URL - FireEye AX
-- Detonate URL - WildFire v2.1
-- Detonate URL - CrowdStrike Falcon X
+- Detonate URL - CrowdStrike
+- Detonate URL - Lastline v2
 - Detonate URL - ANYRUN
+- Detonate URL - McAfee ATD
+- Detonate URL - ThreatStream
+- Detonate URL - VirusTotal (API v3)
 - Detonate URL - JoeSecurity
 - Detonate URL - VMRay
-- Detonate URL - Hybrid Analysis
-- Detonate URL - VirusTotal (API v3)
-- Detonate URL - ThreatGrid
-- Detonate URL - Hatching Triage
 - Detonate URL - Cuckoo
-- Detonate URL - CrowdStrike
-- Detonate URL - ThreatStream
-- Detonate URL - Lastline v2
+- Detonate URL - CrowdStrike Falcon X
+- Detonate URL - FireEye AX
+- Detonate URL - Hatching Triage
+- Detonate URL - WildFire v2.1
+- Detonate URL - ThreatGrid
+- Detonate URL - Group-IB TDS Polygon
+- Detonate URL - Hybrid Analysis
 
 ### Integrations
 
