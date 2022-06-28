@@ -825,14 +825,14 @@ Get list of operators.
 | TOPdesk.Operator.ProblemManager | Boolean | Operator's problem manager. | 
 | TOPdesk.Operator.ProblemOperator | Boolean | Operator's problem operator. | 
 | TOPdesk.Operator.ChangeCoordinator | Boolean | Operator's change coordinator. | 
-| TOPdesk.Operator.ChangeActiviesOperator | Boolean | Operator's change activities operator. | 
+| TOPdesk.Operator.ChangeActivitiesOperator | Boolean | Operator's change activities operator. | 
 | TOPdesk.Operator.RequestForChangeOperator | Boolean | Operator's request for change operator. | 
 | TOPdesk.Operator.ExtensiveChangeOperator | Boolean | Operator's extensive change operator. | 
 | TOPdesk.Operator.SimpleChangeOperator | Boolean | Operator's simple change operator. | 
 | TOPdesk.Operator.ScenarioManager | Boolean | Operator's scenario manager. | 
 | TOPdesk.Operator.PlanningActivityManager | Boolean | Operator's planning activity manager. | 
 | TOPdesk.Operator.ProjectCoordinator | Boolean | Operator's project coordinator. | 
-| TOPdesk.Operator.ProjectActivitiesOperator | Boolean | Operator's project activities operator. | 
+| TOPdesk.Operator.ProjectActiviesOperator | Boolean | Operator's project activities operator. | 
 | TOPdesk.Operator.StockManager | Boolean | Operator's stock manager. | 
 | TOPdesk.Operator.ReservationsOperator | Boolean | Operator's reservations operator. | 
 | TOPdesk.Operator.ServiceOperator | Boolean | Operator's service operator. | 
