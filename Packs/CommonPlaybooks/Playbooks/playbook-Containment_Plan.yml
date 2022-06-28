@@ -2178,7 +2178,7 @@ tasks:
             value:
               simple: WORKSTATION
           ignorecase: true
-      - - operator: isNotEqualString
+      - - operator: isEqualString
           left:
             value:
               complex:
@@ -2187,7 +2187,18 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "True"
+              simple: AGENT_UNISOLATED
+          ignorecase: true
+      - - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: Core.Endpoint
+                accessor: endpoint_status
+            iscontext: true
+          right:
+            value:
+              simple: DISCONNECTED
           ignorecase: true
     - label: Manual
       condition:
@@ -2211,7 +2222,7 @@ tasks:
           right:
             value:
               simple: WORKSTATION
-      - - operator: isNotEqualString
+      - - operator: isEqualString
           left:
             value:
               complex:
@@ -2220,7 +2231,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "true"
+              simple: AGENT_UNISOLATED
           ignorecase: true
     view: |-
       {
