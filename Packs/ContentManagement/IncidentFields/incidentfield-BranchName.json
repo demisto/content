@@ -1,9 +1,7 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Configuration Setup",
-        "Pull Request Update",
-        "Pull Request Creation"
+        "Configuration Setup"
     ],
     "caseInsensitive": true,
     "cliName": "branchname",

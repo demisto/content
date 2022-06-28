@@ -1,27 +1,28 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
+        "Pull Request Update",
         "Pull Request Creation"
     ],
     "caseInsensitive": true,
-    "cliName": "pullrequesttitle",
+    "cliName": "branch",
     "closeForm": false,
     "content": true,
-    "description": "The title of the pull request.",
+    "description": "The name of the branch.",
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_pullrequesttitle",
+    "id": "incident_branch",
     "isReadOnly": false,
     "locked": false,
-    "name": "Pull Request Title",
+    "name": "Branch",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,
     "propagationLabels": [
         "all"
     ],
-    "required": true,
+    "required": false,
     "sla": 0,
     "system": false,
     "threshold": 72,

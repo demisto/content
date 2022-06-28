@@ -353,7 +353,7 @@
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_configurationsetup_branchname",
+                        "fieldId": "incident_branch",
                         "isVisible": true
                     },
                     {

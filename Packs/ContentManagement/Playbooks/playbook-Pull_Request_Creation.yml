@@ -679,7 +679,7 @@ tasks:
         simple: BranchName
       value:
         complex:
-          accessor: branchname
+          accessor: branch
           root: incident
     separatecontext: false
     skipunavailable: false
