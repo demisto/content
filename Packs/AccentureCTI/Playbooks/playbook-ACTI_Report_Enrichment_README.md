@@ -1,3 +1,4 @@
+- NOTE: This playbook is deprecated.
 - This sub-playbook can be plugged into playbooks from other vendors in order to pull ACTI Intelligence Alerts & Intelligence Reports into an XSOAR incident.
 - This sub-playbook can be integrated into generic XSOAR playbooks and playbooks from other vendors by itself.
 
