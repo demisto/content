@@ -31,7 +31,7 @@ class Client(BaseClient):
         response = self._http_request(
             method='GET',
             url_suffix='getBootStatus',
-            headers={'Authorization': 'Bearer %s' % get_jwt_token()}
+            headers={'Authorization': 'Bearer %s' % get_jwt_token(self.app_user_id, self.app_user_secret)}
         )
         return response
 
