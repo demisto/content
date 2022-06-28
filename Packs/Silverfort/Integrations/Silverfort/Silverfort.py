@@ -6,24 +6,24 @@ from CommonServerPython import *
 requests.packages.urllib3.disable_warnings()
 
 # CONSTANTS
-API_KEY = demisto.params().get('apikey')
 UPDATE_REQ_RESPONSE = {'result': 'updated successfully!'}
 
 
-def get_jwt_token():
-    app_user_id, app_user_secret = API_KEY.split(":")
-    expire_time_sec = 30
-    # Generate JWT token for authentication to Admin Console
-    current_time = time.time()
+def get_jwt_token(app_user_id: str, app_user_secret: str, current_time: float = time.time(), expire_time_sec: int = 30):
     payload = {
         "issuer": app_user_id,  # REQUIRED - Generated in the UI
         "iat": current_time,  # REQUIRED - Issued time - current epoch timestamp
-        "exp": current_time + expire_time_sec  # OPTIONAL - Expire tine - token expiry (default 30 seconds from iat)
+        "exp": current_time + expire_time_sec  # OPTIONAL - Expire time - token expiry (default 30 seconds from iat)
     }
     return jwt.encode(payload, app_user_secret, algorithm="HS256")
 
 
 class Client(BaseClient):
+    def __init__(self, app_user_id, app_user_secret, *args, **kwargs):
+        self.app_user_id = app_user_id
+        self.app_user_secret = app_user_secret
+        super().__init__(args, kwargs)
+
     def get_status_http_request(self):
         """
         initiates an http request to get the service status
@@ -49,7 +49,7 @@ class Client(BaseClient):
             method='GET',
             url_suffix='getUPN',
             params=params,
-            headers={'Authorization': 'Bearer %s' % get_jwt_token()}
+            headers={'Authorization': 'Bearer %s' % get_jwt_token(self.app_user_id, self.app_user_secret)}
         )
         return response['user_principal_name']
 
@@ -61,7 +61,7 @@ class Client(BaseClient):
             method='GET',
             url_suffix='getEntityRisk',
             params={'user_principal_name': upn},
-            headers={'Authorization': 'Bearer %s' % get_jwt_token()}
+            headers={'Authorization': 'Bearer %s' % get_jwt_token(self.app_user_id, self.app_user_secret)}
         )
         return response
 
@@ -73,7 +73,7 @@ class Client(BaseClient):
             method='GET',
             url_suffix='getEntityRisk',
             params={'resource_name': resource_name, 'domain_name': domain_name},
-            headers={'Authorization': 'Bearer %s' % get_jwt_token()}
+            headers={'Authorization': 'Bearer %s' % get_jwt_token(self.app_user_id, self.app_user_secret)}
         )
         return response
 
@@ -84,7 +84,7 @@ class Client(BaseClient):
         response = self._http_request(
             method='POST',
             url_suffix='updateEntityRisk',
-            headers={'Authorization': 'Bearer %s' % get_jwt_token()},
+            headers={'Authorization': 'Bearer %s' % get_jwt_token(self.app_user_id, self.app_user_secret)},
             json_data={'user_principal_name': upn, 'risks': risks}
         )
         return response
@@ -97,7 +97,7 @@ class Client(BaseClient):
             method='POST',
             url_suffix='updateEntityRisk',
             json_data={'resource_name': resource_name, 'domain_name': domain_name, 'risks': risks},
-            headers={'Authorization': 'Bearer %s' % get_jwt_token()}
+            headers={'Authorization': 'Bearer %s' % get_jwt_token(self.app_user_id, self.app_user_secret)}
         )
         return response
 
@@ -209,12 +209,17 @@ def main():
     """
     # get the service API url
     base_url = urljoin(demisto.params().get('url'), '/v1/public')
-
     verify_certificate = demisto.params().get('insecure', True)
+    api_key = demisto.params().get('apikey')
+    app_user_id, app_user_secret = api_key.split(":")
+    if not app_user_id or not app_user_secret:
+        return_error(message='Verify the API KEY parameter is correct')
 
     LOG(f'Command being called is {demisto.command()}')
     try:
         client = Client(
+            app_user_id=app_user_id,
+            app_user_secret=app_user_secret,
             base_url=base_url,
             verify=verify_certificate)
 
