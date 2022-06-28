@@ -1,7 +1,5 @@
-## BaseIntegration Help
+## MITRE Caldera
 
-Markdown file for integration configuration  help snippet. In this file add:
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
+### API Keys
 
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
+To retrieve your API keys, please see the MITRE Caldera documentation. The API keys are located in the /conf/<config-file>
