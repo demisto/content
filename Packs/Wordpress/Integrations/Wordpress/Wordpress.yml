@@ -2222,7 +2222,7 @@ script:
     - defaultValue: "en_US"
       description: 'Locale for the user (default is en_US).'
       isArray: false
-      name: status
+      name: locale
       required: false
       secret: false
     - description: 'Login name for the user.'
@@ -2326,7 +2326,7 @@ script:
     - defaultValue: "en_US"
       description: 'Locale for the user (default is en_US).'
       isArray: false
-      name: status
+      name: locale
       required: false
       secret: false
     - description: 'Login name for the user.'
