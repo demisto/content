@@ -1,5 +1,5 @@
 Manage block lists, manage allow lists, and perform domain, IP, and/or URL reputation and categorization lookups.
-This integration was integrated and tested with iboss Zero Trust Secure Service Edge 9.8.38.245.
+This integration was integrated and tested with version 9.8.38.245 of iboss Zero Trust Secure Service Edge.
 
 ## Configure iboss on Cortex XSOAR
 
@@ -21,7 +21,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### iboss-add-entity-to-allow-list
 ***
-Adds domains, IPs, and/or URLs to an allow list
+Adds domains, IPs, and/or URLs to an allow list.
 
 
 #### Base Command
@@ -31,7 +31,7 @@ Adds domains, IPs, and/or URLs to an allow list
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entity | Domains, IPs, and/or URLs to add to the allow list. | Required | 
+| entity | Domains, IPs, and/or URLs to add to an allow list. | Required | 
 | current_policy_being_edited | The group/policy number to update. Default is 1. | Optional | 
 | allow_keyword | Whether to enforce blocked keywords. Possible values are: 0, 1. Default is 0. | Optional | 
 | direction | Which direction(s) to match. Possible values are: 0, 1, 2. Default is 2. | Optional | 
@@ -39,8 +39,9 @@ Adds domains, IPs, and/or URLs to an allow list
 | end_port | Which end port(s) to match; 0 indicates all ports. Default is 0. | Optional | 
 | global | Whether to apply to all groups. Possible values are: 0, 1. Default is 0. | Optional | 
 | is_regex | Whether entity consists of a regex pattern. Possible values are: 0, 1. Default is 0. | Optional | 
-| priority |  Priority of entry (higher number takes precedence) when conflicting entry in allow list. Default is 0. | Optional | 
+| priority | Priority of entry (higher number takes precedence) when conflicting entry in allow list. Default is 0. | Optional | 
 | time_url_expires_in_minutes | The expiration time in minutes for the entry (0 indicates an entry that does not expire). Default is 0. | Optional | 
+| note | Note added to the entry. | Optional | 
 
 
 #### Context Output
@@ -56,7 +57,7 @@ Adds domains, IPs, and/or URLs to an allow list
 {
     "iboss": {
         "AddEntityToAllowList": {
-            "message": "URL added successfully."
+            "message": "`iboss.com` successfully added to policy 1 allow list."
         }
     }
 }
@@ -64,12 +65,11 @@ Adds domains, IPs, and/or URLs to an allow list
 
 #### Human Readable Output
 
->URL added successfully.
+>`iboss.com` successfully added to policy 1 allow list.
 
 ### iboss-add-entity-to-block-list
 ***
-Adds domains, IPs, and/or URLs to a block list
-    
+Adds domains, IPs, and/or URLs to a block list.
 
 
 #### Base Command
@@ -87,8 +87,9 @@ Adds domains, IPs, and/or URLs to a block list
 | end_port | Which end port(s) to match; 0 indicates all ports. Default is 0. | Optional | 
 | global | Whether to apply to all groups. Possible values are: 0, 1. Default is 0. | Optional | 
 | is_regex | Whether entity consists of a regex pattern. Possible values are: 0, 1. Default is 0. | Optional | 
-| priority |  Priority of entry (higher number takes precedence) when conflicting entry in the block list. Default is 0. | Optional | 
+| priority | Priority of entry (higher number takes precedence) when conflicting entry in the block list. Default is 0. | Optional | 
 | time_url_expires_in_minutes | The expiration time in minutes for the entry (0 indicates an entry that does not expire). Default is 0. | Optional | 
+| note | Note added to the entry. | Optional | 
 
 
 #### Context Output
@@ -104,7 +105,7 @@ Adds domains, IPs, and/or URLs to a block list
 {
     "iboss": {
         "AddEntityToBlockList": {
-            "message": "Successfully added URL to list."
+            "message": "`iboss.com` successfully added to policy 1 block list."
         }
     }
 }
@@ -112,12 +113,11 @@ Adds domains, IPs, and/or URLs to a block list
 
 #### Human Readable Output
 
->Successfully added URL to list.
+>`iboss.com` successfully added to policy 1 block list.
 
 ### domain
 ***
-Looks up reputation data for IP addresses
-    
+Lookup reputation for domain names.
 
 
 #### Base Command
@@ -141,45 +141,45 @@ Looks up reputation data for IP addresses
 | Domain.Malicious.Description | String | The indicator context description | 
 | Domain.Malicious.Vendor | String | The vendor that indicator context originated from. | 
 | Domain.Name | String | The domain. | 
-| iboss.isSafeUrl | Number | Whether entity is deemed safe | 
-| iboss.categories | String | The entity categories. | 
+| iboss.Domain.isSafeUrl | Number | Whether entity is deemed safe | 
+| iboss.Domain.categories | String | The entity categories. | 
 | DBotScore.activeMalwareSubscription | Number | Whether active malware subscription is active | 
-| iboss.categorized | Number | Whether entity is categorized. | 
-| iboss.googleSafeBrowsingDescription | String | Google safe browsing description | 
-| iboss.message | String | Entity lookup message. | 
-| iboss.url | String | The entity to perforum URL check on. | 
-| iboss.googleSafeBrowsingEnabled | Number | Whether Google safe browsing is enabled. | 
-| iboss.googleSafeBrowsingIsSafeUrl | Number | Whether entity deemed safe by Google safe browsing. | 
-| iboss.googleSafeBrowsingSuccess | Number | Whether Google safe browsing check was successful. | 
-| iboss.googleSafeBrowsingSupport | String | Whether Google safe browsing is supported | 
-| iboss.malwareEngineAnalysisDescription | String | Malware engine analysis description | 
-| iboss.malwareEngineAnalysisEnabled | Number | Whether the malware engine analysis is enabled. | 
-| iboss.malwareEngineAnalysisSuccess | Number | Whether the malware engine analysis check was successful. | 
-| iboss.malwareEngineIsSafeUrl | Number | Whether the entity was deemed safe by the malware engine. | 
-| iboss.malwareEngineResultCode | String | The result code from the malware engine analysis | 
-| iboss.realtimeCloudLookupDomainIsGrey | Number | Whether realtime cloud lookup is grey. | 
-| iboss.realtimeCloudLookupDomainEnabled | Number | Whether realtime cloud lookup is enabled. | 
-| iboss.realtimeCloudLookupIsSafeUrl | Number | Whether realtime cloud lookup determined entity is safe. | 
-| iboss.realtimeCloudLookupRiskDescription | String | Realtime cloud lookup risk description. | 
-| iboss.realtimeCloudLookupSuccess | Number | Whether realtime cloud lookup chec was successful. | 
-| iboss.reputationDatabaseBotnetDetection | Number | Whether reputation database detected a botnet. | 
-| iboss.reputationDatabaseMalwareDetection | Number | Whether reputation database detected malware. | 
-| iboss.reputationDatabaseEnabled | Number | Whether reputation database check is enabled. | 
-| iboss.reputationDatabaseIsSafeUrl | String | Whether reputation database check determined entity is safe. | 
-| iboss.reputationDatabaseLookupSuccess | Number | Whether reputation database lookup was successful. | 
-| iboss.webRequestHeuristicBlockUnreachableSites | Number | Whether unreachable sites will be blocked. | 
-| iboss.webRequestHeuristicDescription | String | The web request heuristic description. | 
-| iboss.webRequestHeuristicIsSafeUrl | Number | Whether web request heuristics determined URL is safe. | 
-| iboss.webRequestHeuristicLevelHighScore | String | The web request heuristic score high threshold. | 
-| iboss.webRequestHeuristicLevelLowScore | String | The web request heuristic score low threshold. | 
-| iboss.webRequestHeuristicLevelMediumScore | String | The web request heuristic score low threshold. | 
-| iboss.webRequestHeuristicLevelNoneScore | String | The web request heuristic score none threshold. | 
-| iboss.webRequestHeuristicProtectionActionHigh | Number | The web request heuristic protection action high threshold. | 
-| iboss.webRequestHeuristicProtectionActionLow | Number | The web request heuristic protection action low threshold. | 
-| iboss.webRequestHeuristicProtectionActionMedium | Number | The web request heuristic protection action medium threshold. | 
-| iboss.webRequestHeuristicProtectionLevel | String | The web request heuristic protection level. | 
-| iboss.webRequestHeuristicSuccess | Number | Whether web request heuristic check was successful. | 
-| iboss.webRequestHeuristicSupport | Number | Whether web request heuristic support enabled. | 
+| iboss.Domain.categorized | Number | Whether entity is categorized. | 
+| iboss.Domain.googleSafeBrowsingDescription | String | Google safe browsing description | 
+| iboss.Domain.message | String | Entity lookup message. | 
+| iboss.Domain.url | String | The entity to perforum URL check on. | 
+| iboss.Domain.googleSafeBrowsingEnabled | Number | Whether Google safe browsing is enabled. | 
+| iboss.Domain.googleSafeBrowsingIsSafeUrl | Number | Whether entity deemed safe by Google safe browsing. | 
+| iboss.Domain.googleSafeBrowsingSuccess | Number | Whether Google safe browsing check was successful. | 
+| iboss.Domain.googleSafeBrowsingSupport | String | Whether Google safe browsing is supported | 
+| iboss.Domain.malwareEngineAnalysisDescription | String | Malware engine analysis description | 
+| iboss.Domain.malwareEngineAnalysisEnabled | Number | Whether the malware engine analysis is enabled. | 
+| iboss.Domain.malwareEngineAnalysisSuccess | Number | Whether the malware engine analysis check was successful. | 
+| iboss.Domain.malwareEngineIsSafeUrl | Number | Whether the entity was deemed safe by the malware engine. | 
+| iboss.Domain.malwareEngineResultCode | String | The result code from the malware engine analysis | 
+| iboss.Domain.realtimeCloudLookupDomainIsGrey | Number | Whether realtime cloud lookup is grey. | 
+| iboss.Domain.realtimeCloudLookupDomainEnabled | Number | Whether realtime cloud lookup is enabled. | 
+| iboss.Domain.realtimeCloudLookupIsSafeUrl | Number | Whether realtime cloud lookup determined entity is safe. | 
+| iboss.Domain.realtimeCloudLookupRiskDescription | String | Realtime cloud lookup risk description. | 
+| iboss.Domain.realtimeCloudLookupSuccess | Number | Whether realtime cloud lookup chec was successful. | 
+| iboss.Domain.reputationDatabaseBotnetDetection | Number | Whether reputation database detected a botnet. | 
+| iboss.Domain.reputationDatabaseMalwareDetection | Number | Whether reputation database detected malware. | 
+| iboss.Domain.reputationDatabaseEnabled | Number | Whether reputation database check is enabled. | 
+| iboss.Domain.reputationDatabaseIsSafeUrl | String | Whether reputation database check determined entity is safe. | 
+| iboss.Domain.reputationDatabaseLookupSuccess | Number | Whether reputation database lookup was successful. | 
+| iboss.Domain.webRequestHeuristicBlockUnreachableSites | Number | Whether unreachable sites will be blocked. | 
+| iboss.Domain.webRequestHeuristicDescription | String | The web request heuristic description. | 
+| iboss.Domain.webRequestHeuristicIsSafeUrl | Number | Whether web request heuristics determined URL is safe. | 
+| iboss.Domain.webRequestHeuristicLevelHighScore | String | The web request heuristic score high threshold. | 
+| iboss.Domain.webRequestHeuristicLevelLowScore | String | The web request heuristic score low threshold. | 
+| iboss.Domain.webRequestHeuristicLevelMediumScore | String | The web request heuristic score low threshold. | 
+| iboss.Domain.webRequestHeuristicLevelNoneScore | String | The web request heuristic score none threshold. | 
+| iboss.Domain.webRequestHeuristicProtectionActionHigh | Number | The web request heuristic protection action high threshold. | 
+| iboss.Domain.webRequestHeuristicProtectionActionLow | Number | The web request heuristic protection action low threshold. | 
+| iboss.Domain.webRequestHeuristicProtectionActionMedium | Number | The web request heuristic protection action medium threshold. | 
+| iboss.Domain.webRequestHeuristicProtectionLevel | String | The web request heuristic protection level. | 
+| iboss.Domain.webRequestHeuristicSuccess | Number | Whether web request heuristic check was successful. | 
+| iboss.Domain.webRequestHeuristicSupport | Number | Whether web request heuristic support enabled. | 
 
 #### Command example
 ```!domain domain=iboss.com```
@@ -192,65 +192,71 @@ Looks up reputation data for IP addresses
         "Type": "domain",
         "Vendor": "iboss"
     },
+    "Domain": {
+        "DetectionEngines": 5,
+        "Name": "iboss.com",
+        "PositiveDetections": 0
+    },
     "iboss": {
-        "activeMalwareSubscription": 1,
-        "categories": [
-            "Business",
-            "Technology"
-        ],
-        "categorized": "true",
-        "googleSafeBrowsingDescription": "",
-        "googleSafeBrowsingEnabled": 1,
-        "googleSafeBrowsingIsSafeUrl": 1,
-        "googleSafeBrowsingSuccess": 1,
-        "googleSafeBrowsingSupport": 1,
-        "isSafeUrl": 1,
-        "malwareEngineAnalysisDescription": "",
-        "malwareEngineAnalysisEnabled": 1,
-        "malwareEngineAnalysisSuccess": 1,
-        "malwareEngineIsSafeUrl": 1,
-        "malwareEngineResultCode": 0,
-        "message": "Status: Url Known. Please see categories below.",
-        "realtimeCloudLookupDomainIsGrey": 0,
-        "realtimeCloudLookupEnabled": 1,
-        "realtimeCloudLookupIsSafeUrl": 1,
-        "realtimeCloudLookupRiskDescription": "",
-        "realtimeCloudLookupSuccess": 1,
-        "reputationDatabaseBotnetDetection": 0,
-        "reputationDatabaseEnabled": 1,
-        "reputationDatabaseIsSafeUrl": 1,
-        "reputationDatabaseLookupSuccess": 1,
-        "reputationDatabaseMalwareDetection": 0,
-        "url": "iboss.com",
-        "webRequestHeuristicBlockUnreachableSites": "1",
-        "webRequestHeuristicDescription": "",
-        "webRequestHeuristicIsSafeUrl": 1,
-        "webRequestHeuristicLevelHighScore": "79",
-        "webRequestHeuristicLevelLowScore": "10",
-        "webRequestHeuristicLevelMediumScore": "60",
-        "webRequestHeuristicLevelNoneScore": "0",
-        "webRequestHeuristicProtectionActionHigh": "0",
-        "webRequestHeuristicProtectionActionLow": "0",
-        "webRequestHeuristicProtectionActionMedium": "0",
-        "webRequestHeuristicProtectionLevel": "1",
-        "webRequestHeuristicSuccess": 1,
-        "webRequestHeuristicSupport": 1
+        "Domain": {
+            "activeMalwareSubscription": 1,
+            "categories": [
+                "Business",
+                "Technology"
+            ],
+            "categorized": "true",
+            "googleSafeBrowsingDescription": "",
+            "googleSafeBrowsingEnabled": 1,
+            "googleSafeBrowsingIsSafeUrl": 1,
+            "googleSafeBrowsingSuccess": 1,
+            "googleSafeBrowsingSupport": 1,
+            "isSafeUrl": 1,
+            "malwareEngineAnalysisDescription": "",
+            "malwareEngineAnalysisEnabled": 1,
+            "malwareEngineAnalysisSuccess": 1,
+            "malwareEngineIsSafeUrl": 1,
+            "malwareEngineResultCode": 0,
+            "message": "Status: Url Known. Please see categories below.",
+            "realtimeCloudLookupDomainIsGrey": 0,
+            "realtimeCloudLookupEnabled": 1,
+            "realtimeCloudLookupIsSafeUrl": 1,
+            "realtimeCloudLookupRiskDescription": "",
+            "realtimeCloudLookupSuccess": 1,
+            "reputationDatabaseBotnetDetection": 0,
+            "reputationDatabaseEnabled": 1,
+            "reputationDatabaseIsSafeUrl": 1,
+            "reputationDatabaseLookupSuccess": 1,
+            "reputationDatabaseMalwareDetection": 0,
+            "url": "iboss.com",
+            "webRequestHeuristicBlockUnreachableSites": "1",
+            "webRequestHeuristicDescription": "",
+            "webRequestHeuristicIsSafeUrl": 1,
+            "webRequestHeuristicLevelHighScore": "79",
+            "webRequestHeuristicLevelLowScore": "10",
+            "webRequestHeuristicLevelMediumScore": "60",
+            "webRequestHeuristicLevelNoneScore": "0",
+            "webRequestHeuristicProtectionActionHigh": "0",
+            "webRequestHeuristicProtectionActionLow": "0",
+            "webRequestHeuristicProtectionActionMedium": "0",
+            "webRequestHeuristicProtectionLevel": "1",
+            "webRequestHeuristicSuccess": 1,
+            "webRequestHeuristicSupport": 1
+        }
     }
 }
 ```
 
 #### Human Readable Output
 
->### Result
->|DBotScore|iboss|
->|---|---|
->| Indicator: iboss.com<br/>Type: domain<br/>Vendor: iboss<br/>Score: 1 | activeMalwareSubscription: 1<br/>categories: Business,<br/>Technology<br/>categorized: true<br/>googleSafeBrowsingDescription: <br/>googleSafeBrowsingEnabled: 1<br/>googleSafeBrowsingIsSafeUrl: 1<br/>googleSafeBrowsingSuccess: 1<br/>googleSafeBrowsingSupport: 1<br/>isSafeUrl: 1<br/>malwareEngineAnalysisDescription: <br/>malwareEngineAnalysisEnabled: 1<br/>malwareEngineAnalysisSuccess: 1<br/>malwareEngineIsSafeUrl: 1<br/>malwareEngineResultCode: 0<br/>message: Status: Url Known. Please see categories below.<br/>realtimeCloudLookupDomainIsGrey: 0<br/>realtimeCloudLookupEnabled: 1<br/>realtimeCloudLookupIsSafeUrl: 1<br/>realtimeCloudLookupRiskDescription: <br/>realtimeCloudLookupSuccess: 1<br/>reputationDatabaseBotnetDetection: 0<br/>reputationDatabaseEnabled: 1<br/>reputationDatabaseIsSafeUrl: 1<br/>reputationDatabaseLookupSuccess: 1<br/>reputationDatabaseMalwareDetection: 0<br/>url: iboss.com<br/>webRequestHeuristicBlockUnreachableSites: 1<br/>webRequestHeuristicDescription: <br/>webRequestHeuristicIsSafeUrl: 1<br/>webRequestHeuristicLevelHighScore: 79<br/>webRequestHeuristicLevelLowScore: 10<br/>webRequestHeuristicLevelMediumScore: 60<br/>webRequestHeuristicLevelNoneScore: 0<br/>webRequestHeuristicProtectionActionHigh: 0<br/>webRequestHeuristicProtectionActionLow: 0<br/>webRequestHeuristicProtectionActionMedium: 0<br/>webRequestHeuristicProtectionLevel: 1<br/>webRequestHeuristicSuccess: 1<br/>webRequestHeuristicSupport: 1 |
+>### iboss Result for domain iboss.com
+>|message|categories|isSafeUrl|malwareEngineAnalysisSuccess|malwareEngineAnalysisDescription|reputationDatabaseLookupSuccess|reputationDatabaseMalwareDetection|reputationDatabaseBotnetDetection|webRequestHeuristicSuccess|webRequestHeuristicProtectionLevel|webRequestHeuristicDescription|googleSafeBrowsingSuccess|googleSafeBrowsingIsSafeUrl|googleSafeBrowsingDescription|realtimeCloudLookupSuccess|realtimeCloudLookupDomainIsGrey|realtimeCloudLookupRiskDescription|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| Status: Url Known. Please see categories below. | Business,<br/>Technology | 1 | 1 |  | 1 | 0 | 0 | 1 | 1 |  | 1 | 1 |  | 1 | 0 |  |
 
 
 ### ip
 ***
-Looks up reputation data for IP addresses
-    
+Lookup reputation data for IP addresses.
 
 
 #### Base Command
@@ -260,7 +266,7 @@ Looks up reputation data for IP addresses
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | IP(s) to lookup. Default is True. | Optional | 
+| ip | IP(s) to lookup. | Required | 
 
 
 #### Context Output
@@ -274,45 +280,45 @@ Looks up reputation data for IP addresses
 | IP.Malicious.Description | String | The indicator context description | 
 | IP.Malicious.Vendor | String | The vendor that indicator context originated from. | 
 | IP.Address | String | The IP address. | 
-| iboss.isSafeUrl | Number | Whether entity is deemed safe | 
-| iboss.categories | String | The entity categories. | 
+| iboss.IP.isSafeUrl | Number | Whether entity is deemed safe | 
+| iboss.IP.categories | String | The entity categories. | 
 | DBotScore.activeMalwareSubscription | Number | Whether active malware subscription is active | 
-| iboss.categorized | Number | Whether entity is categorized. | 
-| iboss.googleSafeBrowsingDescription | String | Google safe browsing description | 
-| iboss.message | String | Entity lookup message. | 
-| iboss.url | String | The entity to perforum URL check on. | 
-| iboss.googleSafeBrowsingEnabled | Number | Whether Google safe browsing is enabled. | 
-| iboss.googleSafeBrowsingIsSafeUrl | Number | Whether entity deemed safe by Google safe browsing. | 
-| iboss.googleSafeBrowsingSuccess | Number | Whether Google safe browsing check was successful. | 
-| iboss.googleSafeBrowsingSupport | String | Whether Google safe browsing is supported | 
-| iboss.malwareEngineAnalysisDescription | String | Malware engine analysis description | 
-| iboss.malwareEngineAnalysisEnabled | Number | Whether the malware engine analysis is enabled. | 
-| iboss.malwareEngineAnalysisSuccess | Number | Whether the malware engine analysis check was successful. | 
-| iboss.malwareEngineIsSafeUrl | Number | Whether the entity was deemed safe by the malware engine. | 
-| iboss.malwareEngineResultCode | String | The result code from the malware engine analysis | 
-| iboss.realtimeCloudLookupDomainIsGrey | Number | Whether realtime cloud lookup is grey. | 
-| iboss.realtimeCloudLookupDomainEnabled | Number | Whether realtime cloud lookup is enabled. | 
-| iboss.realtimeCloudLookupIsSafeUrl | Number | Whether realtime cloud lookup determined entity is safe. | 
-| iboss.realtimeCloudLookupRiskDescription | String | Realtime cloud lookup risk description. | 
-| iboss.realtimeCloudLookupSuccess | Number | Whether realtime cloud lookup chec was successful. | 
-| iboss.reputationDatabaseBotnetDetection | Number | Whether reputation database detected a botnet. | 
-| iboss.reputationDatabaseMalwareDetection | Number | Whether reputation database detected malware. | 
-| iboss.reputationDatabaseEnabled | Number | Whether reputation database check is enabled. | 
-| iboss.reputationDatabaseIsSafeUrl | String | Whether reputation database check determined entity is safe. | 
-| iboss.reputationDatabaseLookupSuccess | Number | Whether reputation database lookup was successful. | 
-| iboss.webRequestHeuristicBlockUnreachableSites | Number | Whether unreachable sites will be blocked. | 
-| iboss.webRequestHeuristicDescription | String | The web request heuristic description. | 
-| iboss.webRequestHeuristicIsSafeUrl | Number | Whether web request heuristics determined URL is safe. | 
-| iboss.webRequestHeuristicLevelHighScore | String | The web request heuristic score high threshold. | 
-| iboss.webRequestHeuristicLevelLowScore | String | The web request heuristic score low threshold. | 
-| iboss.webRequestHeuristicLevelMediumScore | String | The web request heuristic score low threshold. | 
-| iboss.webRequestHeuristicLevelNoneScore | String | The web request heuristic score none threshold. | 
-| iboss.webRequestHeuristicProtectionActionHigh | Number | The web request heuristic protection action high threshold. | 
-| iboss.webRequestHeuristicProtectionActionLow | Number | The web request heuristic protection action low threshold. | 
-| iboss.webRequestHeuristicProtectionActionMedium | Number | The web request heuristic protection action medium threshold. | 
-| iboss.webRequestHeuristicProtectionLevel | String | The web request heuristic protection level. | 
-| iboss.webRequestHeuristicSuccess | Number | Whether web request heuristic check was successful. | 
-| iboss.webRequestHeuristicSupport | Number | Whether web request heuristic support enabled. | 
+| iboss.IP.categorized | Number | Whether entity is categorized. | 
+| iboss.IP.googleSafeBrowsingDescription | String | Google safe browsing description | 
+| iboss.IP.message | String | Entity lookup message. | 
+| iboss.IP.url | String | The entity to perforum URL check on. | 
+| iboss.IP.googleSafeBrowsingEnabled | Number | Whether Google safe browsing is enabled. | 
+| iboss.IP.googleSafeBrowsingIsSafeUrl | Number | Whether entity deemed safe by Google safe browsing. | 
+| iboss.IP.googleSafeBrowsingSuccess | Number | Whether Google safe browsing check was successful. | 
+| iboss.IP.googleSafeBrowsingSupport | String | Whether Google safe browsing is supported | 
+| iboss.IP.malwareEngineAnalysisDescription | String | Malware engine analysis description | 
+| iboss.IP.malwareEngineAnalysisEnabled | Number | Whether the malware engine analysis is enabled. | 
+| iboss.IP.malwareEngineAnalysisSuccess | Number | Whether the malware engine analysis check was successful. | 
+| iboss.IP.malwareEngineIsSafeUrl | Number | Whether the entity was deemed safe by the malware engine. | 
+| iboss.IP.malwareEngineResultCode | String | The result code from the malware engine analysis | 
+| iboss.IP.realtimeCloudLookupDomainIsGrey | Number | Whether realtime cloud lookup is grey. | 
+| iboss.IP.realtimeCloudLookupDomainEnabled | Number | Whether realtime cloud lookup is enabled. | 
+| iboss.IP.realtimeCloudLookupIsSafeUrl | Number | Whether realtime cloud lookup determined entity is safe. | 
+| iboss.IP.realtimeCloudLookupRiskDescription | String | Realtime cloud lookup risk description. | 
+| iboss.IP.realtimeCloudLookupSuccess | Number | Whether realtime cloud lookup chec was successful. | 
+| iboss.IP.reputationDatabaseBotnetDetection | Number | Whether reputation database detected a botnet. | 
+| iboss.IP.reputationDatabaseMalwareDetection | Number | Whether reputation database detected malware. | 
+| iboss.IP.reputationDatabaseEnabled | Number | Whether reputation database check is enabled. | 
+| iboss.IP.reputationDatabaseIsSafeUrl | String | Whether reputation database check determined entity is safe. | 
+| iboss.IP.reputationDatabaseLookupSuccess | Number | Whether reputation database lookup was successful. | 
+| iboss.IP.webRequestHeuristicBlockUnreachableSites | Number | Whether unreachable sites will be blocked. | 
+| iboss.IP.webRequestHeuristicDescription | String | The web request heuristic description. | 
+| iboss.IP.webRequestHeuristicIsSafeUrl | Number | Whether web request heuristics determined URL is safe. | 
+| iboss.IP.webRequestHeuristicLevelHighScore | String | The web request heuristic score high threshold. | 
+| iboss.IP.webRequestHeuristicLevelLowScore | String | The web request heuristic score low threshold. | 
+| iboss.IP.webRequestHeuristicLevelMediumScore | String | The web request heuristic score low threshold. | 
+| iboss.IP.webRequestHeuristicLevelNoneScore | String | The web request heuristic score none threshold. | 
+| iboss.IP.webRequestHeuristicProtectionActionHigh | Number | The web request heuristic protection action high threshold. | 
+| iboss.IP.webRequestHeuristicProtectionActionLow | Number | The web request heuristic protection action low threshold. | 
+| iboss.IP.webRequestHeuristicProtectionActionMedium | Number | The web request heuristic protection action medium threshold. | 
+| iboss.IP.webRequestHeuristicProtectionLevel | String | The web request heuristic protection level. | 
+| iboss.IP.webRequestHeuristicSuccess | Number | Whether web request heuristic check was successful. | 
+| iboss.IP.webRequestHeuristicSupport | Number | Whether web request heuristic support enabled. | 
 
 #### Command example
 ```!ip ip=1.1.1.1```
@@ -325,63 +331,70 @@ Looks up reputation data for IP addresses
         "Type": "ip",
         "Vendor": "iboss"
     },
+    "IP": {
+        "Address": "1.1.1.1",
+        "DetectionEngines": 5,
+        "PositiveDetections": 1
+    },
     "iboss": {
-        "activeMalwareSubscription": 1,
-        "categories": [
-            "Technology"
-        ],
-        "categorized": "true",
-        "googleSafeBrowsingDescription": "",
-        "googleSafeBrowsingEnabled": 1,
-        "googleSafeBrowsingIsSafeUrl": 1,
-        "googleSafeBrowsingSuccess": 1,
-        "googleSafeBrowsingSupport": 1,
-        "isSafeUrl": 0,
-        "malwareEngineAnalysisDescription": "Redirect - Redirects to: https://1.1.1.1/",
-        "malwareEngineAnalysisEnabled": 1,
-        "malwareEngineAnalysisSuccess": 1,
-        "malwareEngineIsSafeUrl": 1,
-        "malwareEngineResultCode": 3,
-        "message": "Status: Url Known. Please see categories below.",
-        "realtimeCloudLookupDomainIsGrey": 0,
-        "realtimeCloudLookupEnabled": 1,
-        "realtimeCloudLookupIsSafeUrl": 1,
-        "realtimeCloudLookupRiskDescription": "",
-        "realtimeCloudLookupSuccess": 1,
-        "reputationDatabaseBotnetDetection": 0,
-        "reputationDatabaseEnabled": 1,
-        "reputationDatabaseIsSafeUrl": 1,
-        "reputationDatabaseLookupSuccess": 1,
-        "reputationDatabaseMalwareDetection": 0,
-        "url": "1.1.1.1",
-        "webRequestHeuristicBlockUnreachableSites": "1",
-        "webRequestHeuristicDescription": "Heuristic Engine Detection",
-        "webRequestHeuristicIsSafeUrl": 0,
-        "webRequestHeuristicLevelHighScore": "79",
-        "webRequestHeuristicLevelLowScore": "10",
-        "webRequestHeuristicLevelMediumScore": "60",
-        "webRequestHeuristicLevelNoneScore": "0",
-        "webRequestHeuristicProtectionActionHigh": "0",
-        "webRequestHeuristicProtectionActionLow": "0",
-        "webRequestHeuristicProtectionActionMedium": "0",
-        "webRequestHeuristicProtectionLevel": "1",
-        "webRequestHeuristicSuccess": 1,
-        "webRequestHeuristicSupport": 1
+        "IP": {
+            "activeMalwareSubscription": 1,
+            "categories": [
+                "Technology"
+            ],
+            "categorized": "true",
+            "googleSafeBrowsingDescription": "",
+            "googleSafeBrowsingEnabled": 1,
+            "googleSafeBrowsingIsSafeUrl": 1,
+            "googleSafeBrowsingSuccess": 1,
+            "googleSafeBrowsingSupport": 1,
+            "isSafeUrl": 0,
+            "malwareEngineAnalysisDescription": "Redirect - Redirects to: https://1.1.1.1/",
+            "malwareEngineAnalysisEnabled": 1,
+            "malwareEngineAnalysisSuccess": 1,
+            "malwareEngineIsSafeUrl": 1,
+            "malwareEngineResultCode": 3,
+            "message": "Status: Url Known. Please see categories below.",
+            "realtimeCloudLookupDomainIsGrey": 0,
+            "realtimeCloudLookupEnabled": 1,
+            "realtimeCloudLookupIsSafeUrl": 1,
+            "realtimeCloudLookupRiskDescription": "",
+            "realtimeCloudLookupSuccess": 1,
+            "reputationDatabaseBotnetDetection": 0,
+            "reputationDatabaseEnabled": 1,
+            "reputationDatabaseIsSafeUrl": 1,
+            "reputationDatabaseLookupSuccess": 1,
+            "reputationDatabaseMalwareDetection": 0,
+            "url": "1.1.1.1",
+            "webRequestHeuristicBlockUnreachableSites": "1",
+            "webRequestHeuristicDescription": "Heuristic Engine Detection",
+            "webRequestHeuristicIsSafeUrl": 0,
+            "webRequestHeuristicLevelHighScore": "79",
+            "webRequestHeuristicLevelLowScore": "10",
+            "webRequestHeuristicLevelMediumScore": "60",
+            "webRequestHeuristicLevelNoneScore": "0",
+            "webRequestHeuristicProtectionActionHigh": "0",
+            "webRequestHeuristicProtectionActionLow": "0",
+            "webRequestHeuristicProtectionActionMedium": "0",
+            "webRequestHeuristicProtectionLevel": "1",
+            "webRequestHeuristicSuccess": 1,
+            "webRequestHeuristicSupport": 1
+        }
     }
 }
 ```
 
 #### Human Readable Output
 
->### Result
->|DBotScore|iboss|
->|---|---|
->| Indicator: 1.1.1.1<br/>Type: ip<br/>Vendor: iboss<br/>Score: 2 | activeMalwareSubscription: 1<br/>categories: Technology<br/>categorized: true<br/>googleSafeBrowsingDescription: <br/>googleSafeBrowsingEnabled: 1<br/>googleSafeBrowsingIsSafeUrl: 1<br/>googleSafeBrowsingSuccess: 1<br/>googleSafeBrowsingSupport: 1<br/>isSafeUrl: 0<br/>malwareEngineAnalysisDescription: Redirect - Redirects to: https:<span>//</span>1.1.1.1/<br/>malwareEngineAnalysisEnabled: 1<br/>malwareEngineAnalysisSuccess: 1<br/>malwareEngineIsSafeUrl: 1<br/>malwareEngineResultCode: 3<br/>message: Status: Url Known. Please see categories below.<br/>realtimeCloudLookupDomainIsGrey: 0<br/>realtimeCloudLookupEnabled: 1<br/>realtimeCloudLookupIsSafeUrl: 1<br/>realtimeCloudLookupRiskDescription: <br/>realtimeCloudLookupSuccess: 1<br/>reputationDatabaseBotnetDetection: 0<br/>reputationDatabaseEnabled: 1<br/>reputationDatabaseIsSafeUrl: 1<br/>reputationDatabaseLookupSuccess: 1<br/>reputationDatabaseMalwareDetection: 0<br/>url: 1.1.1.1<br/>webRequestHeuristicBlockUnreachableSites: 1<br/>webRequestHeuristicDescription: Heuristic Engine Detection<br/>webRequestHeuristicIsSafeUrl: 0<br/>webRequestHeuristicLevelHighScore: 79<br/>webRequestHeuristicLevelLowScore: 10<br/>webRequestHeuristicLevelMediumScore: 60<br/>webRequestHeuristicLevelNoneScore: 0<br/>webRequestHeuristicProtectionActionHigh: 0<br/>webRequestHeuristicProtectionActionLow: 0<br/>webRequestHeuristicProtectionActionMedium: 0<br/>webRequestHeuristicProtectionLevel: 1<br/>webRequestHeuristicSuccess: 1<br/>webRequestHeuristicSupport: 1 |
+>### iboss Result for IP 1.1.1.1
+>|message|categories|isSafeUrl|malwareEngineAnalysisSuccess|malwareEngineAnalysisDescription|reputationDatabaseLookupSuccess|reputationDatabaseMalwareDetection|reputationDatabaseBotnetDetection|webRequestHeuristicSuccess|webRequestHeuristicProtectionLevel|webRequestHeuristicDescription|googleSafeBrowsingSuccess|googleSafeBrowsingIsSafeUrl|googleSafeBrowsingDescription|realtimeCloudLookupSuccess|realtimeCloudLookupDomainIsGrey|realtimeCloudLookupRiskDescription|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| Status: Url Known. Please see categories below. | Technology | 0 | 1 | Redirect - Redirects to: https:<span>//</span>1.1.1.1/ | 1 | 0 | 0 | 1 | 1 | Heuristic Engine Detection | 1 | 1 |  | 1 | 0 |  |
 
 
 ### iboss-remove-entity-from-allow-list
 ***
-Removes entities from an allow list
+Removes domains, IPs, and/or URLs from an allow list
 
 
 #### Base Command
@@ -391,8 +404,11 @@ Removes entities from an allow list
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entity | Domains, IPs, and/or URLs to remove from allow list. | Required | 
+| entity | Domains, IPs, and/or URLs to remove from an allow list. | Required | 
 | current_policy_being_edited | The group/policy number to update. Default is 1. | Optional | 
+| start_port | Which start port(s) to match; 0 indicates all ports. Default is 0. | Optional | 
+| end_port | Which end port(s) to match; 0 indicates all ports. Default is 0. | Optional | 
+| direction | Which direction(s) to match. Possible values are: 0, 1, 2. Default is 2. | Optional | 
 
 
 #### Context Output
@@ -408,7 +424,7 @@ Removes entities from an allow list
 {
     "iboss": {
         "RemoveEntityFromAllowList": {
-            "message": "URL removed successfully."
+            "message": "`iboss.com` removed from policy 1 allow list."
         }
     }
 }
@@ -416,11 +432,11 @@ Removes entities from an allow list
 
 #### Human Readable Output
 
->URL removed successfully.
+>`iboss.com` removed from policy 1 allow list.
 
 ### iboss-remove-entity-from-block-list
 ***
-Removes entities from a block list
+Removes domains, IPs, and/or URLs to a block list.
 
 
 #### Base Command
@@ -430,8 +446,11 @@ Removes entities from a block list
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entity | Domains, IPs, and/or URLs to remove from block list. | Required | 
+| entity | Domains, IPs, and/or URLs to remove from a block list. | Required | 
 | current_policy_being_edited | The group/policy number to update. Default is 1. | Optional | 
+| start_port | Which start port(s) to match; 0 indicates all ports. Default is 0. | Optional | 
+| end_port | Which end port(s) to match; 0 indicates all ports. Default is 0. | Optional | 
+| direction | Which direction(s) to match. Possible values are: 0, 1, 2. Default is 2. | Optional | 
 
 
 #### Context Output
@@ -447,7 +466,7 @@ Removes entities from a block list
 {
     "iboss": {
         "RemoveEntityFromBlockList": {
-            "message": "URL removed successfully."
+            "message": "`iboss.com` removed from policy 1 block list."
         }
     }
 }
@@ -455,14 +474,11 @@ Removes entities from a block list
 
 #### Human Readable Output
 
->URL removed successfully.
-
-
+>`iboss.com` removed from policy 1 block list.
 
 ### url
 ***
-Looks up reputation data for URLs
-    
+Lookup reputation data for URLs.
 
 
 #### Base Command
@@ -486,45 +502,45 @@ Looks up reputation data for URLs
 | URL.Malicious.Description | String | The indicator context description | 
 | URL.Malicious.Vendor | String | The vendor that indicator context originated from. | 
 | URL.Data | String | The URL. | 
-| iboss.isSafeUrl | Number | Whether entity is deemed safe | 
-| iboss.categories | String | The entity categories. | 
+| iboss.URL.isSafeUrl | Number | Whether entity is deemed safe | 
+| iboss.URL.categories | String | The entity categories. | 
 | DBotScore.activeMalwareSubscription | Number | Whether active malware subscription is active | 
-| iboss.categorized | Number | Whether entity is categorized. | 
-| iboss.googleSafeBrowsingDescription | String | Google safe browsing description | 
-| iboss.message | String | Entity lookup message. | 
-| iboss.url | String | The entity to perforum URL check on. | 
-| iboss.googleSafeBrowsingEnabled | Number | Whether Google safe browsing is enabled. | 
-| iboss.googleSafeBrowsingIsSafeUrl | Number | Whether entity deemed safe by Google safe browsing. | 
-| iboss.googleSafeBrowsingSuccess | Number | Whether Google safe browsing check was successful. | 
-| iboss.googleSafeBrowsingSupport | String | Whether Google safe browsing is supported | 
-| iboss.malwareEngineAnalysisDescription | String | Malware engine analysis description | 
-| iboss.malwareEngineAnalysisEnabled | Number | Whether the malware engine analysis is enabled. | 
-| iboss.malwareEngineAnalysisSuccess | Number | Whether the malware engine analysis check was successful. | 
-| iboss.malwareEngineIsSafeUrl | Number | Whether the entity was deemed safe by the malware engine. | 
-| iboss.malwareEngineResultCode | String | The result code from the malware engine analysis | 
-| iboss.realtimeCloudLookupDomainIsGrey | Number | Whether realtime cloud lookup is grey. | 
-| iboss.realtimeCloudLookupDomainEnabled | Number | Whether realtime cloud lookup is enabled. | 
-| iboss.realtimeCloudLookupIsSafeUrl | Number | Whether realtime cloud lookup determined entity is safe. | 
-| iboss.realtimeCloudLookupRiskDescription | String | Realtime cloud lookup risk description. | 
-| iboss.realtimeCloudLookupSuccess | Number | Whether realtime cloud lookup chec was successful. | 
-| iboss.reputationDatabaseBotnetDetection | Number | Whether reputation database detected a botnet. | 
-| iboss.reputationDatabaseMalwareDetection | Number | Whether reputation database detected malware. | 
-| iboss.reputationDatabaseEnabled | Number | Whether reputation database check is enabled. | 
-| iboss.reputationDatabaseIsSafeUrl | String | Whether reputation database check determined entity is safe. | 
-| iboss.reputationDatabaseLookupSuccess | Number | Whether reputation database lookup was successful. | 
-| iboss.webRequestHeuristicBlockUnreachableSites | Number | Whether unreachable sites will be blocked. | 
-| iboss.webRequestHeuristicDescription | String | The web request heuristic description. | 
-| iboss.webRequestHeuristicIsSafeUrl | Number | Whether web request heuristics determined URL is safe. | 
-| iboss.webRequestHeuristicLevelHighScore | String | The web request heuristic score high threshold. | 
-| iboss.webRequestHeuristicLevelLowScore | String | The web request heuristic score low threshold. | 
-| iboss.webRequestHeuristicLevelMediumScore | String | The web request heuristic score low threshold. | 
-| iboss.webRequestHeuristicLevelNoneScore | String | The web request heuristic score none threshold. | 
-| iboss.webRequestHeuristicProtectionActionHigh | Number | The web request heuristic protection action high threshold. | 
-| iboss.webRequestHeuristicProtectionActionLow | Number | The web request heuristic protection action low threshold. | 
-| iboss.webRequestHeuristicProtectionActionMedium | Number | The web request heuristic protection action medium threshold. | 
-| iboss.webRequestHeuristicProtectionLevel | String | The web request heuristic protection level. | 
-| iboss.webRequestHeuristicSuccess | Number | Whether web request heuristic check was successful. | 
-| iboss.webRequestHeuristicSupport | Number | Whether web request heuristic support enabled. | 
+| iboss.URL.categorized | Number | Whether entity is categorized. | 
+| iboss.URL.googleSafeBrowsingDescription | String | Google safe browsing description | 
+| iboss.URL.message | String | Entity lookup message. | 
+| iboss.URL.url | String | The entity to perforum URL check on. | 
+| iboss.URL.googleSafeBrowsingEnabled | Number | Whether Google safe browsing is enabled. | 
+| iboss.URL.googleSafeBrowsingIsSafeUrl | Number | Whether entity deemed safe by Google safe browsing. | 
+| iboss.URL.googleSafeBrowsingSuccess | Number | Whether Google safe browsing check was successful. | 
+| iboss.URL.googleSafeBrowsingSupport | String | Whether Google safe browsing is supported | 
+| iboss.URL.malwareEngineAnalysisDescription | String | Malware engine analysis description | 
+| iboss.URL.malwareEngineAnalysisEnabled | Number | Whether the malware engine analysis is enabled. | 
+| iboss.URL.malwareEngineAnalysisSuccess | Number | Whether the malware engine analysis check was successful. | 
+| iboss.URL.malwareEngineIsSafeUrl | Number | Whether the entity was deemed safe by the malware engine. | 
+| iboss.URL.malwareEngineResultCode | String | The result code from the malware engine analysis | 
+| iboss.URL.realtimeCloudLookupDomainIsGrey | Number | Whether realtime cloud lookup is grey. | 
+| iboss.URL.realtimeCloudLookupDomainEnabled | Number | Whether realtime cloud lookup is enabled. | 
+| iboss.URL.realtimeCloudLookupIsSafeUrl | Number | Whether realtime cloud lookup determined entity is safe. | 
+| iboss.URL.realtimeCloudLookupRiskDescription | String | Realtime cloud lookup risk description. | 
+| iboss.URL.realtimeCloudLookupSuccess | Number | Whether realtime cloud lookup chec was successful. | 
+| iboss.URL.reputationDatabaseBotnetDetection | Number | Whether reputation database detected a botnet. | 
+| iboss.URL.reputationDatabaseMalwareDetection | Number | Whether reputation database detected malware. | 
+| iboss.URL.reputationDatabaseEnabled | Number | Whether reputation database check is enabled. | 
+| iboss.URL.reputationDatabaseIsSafeUrl | String | Whether reputation database check determined entity is safe. | 
+| iboss.URL.reputationDatabaseLookupSuccess | Number | Whether reputation database lookup was successful. | 
+| iboss.URL.webRequestHeuristicBlockUnreachableSites | Number | Whether unreachable sites will be blocked. | 
+| iboss.URL.webRequestHeuristicDescription | String | The web request heuristic description. | 
+| iboss.URL.webRequestHeuristicIsSafeUrl | Number | Whether web request heuristics determined URL is safe. | 
+| iboss.URL.webRequestHeuristicLevelHighScore | String | The web request heuristic score high threshold. | 
+| iboss.URL.webRequestHeuristicLevelLowScore | String | The web request heuristic score low threshold. | 
+| iboss.URL.webRequestHeuristicLevelMediumScore | String | The web request heuristic score low threshold. | 
+| iboss.URL.webRequestHeuristicLevelNoneScore | String | The web request heuristic score none threshold. | 
+| iboss.URL.webRequestHeuristicProtectionActionHigh | Number | The web request heuristic protection action high threshold. | 
+| iboss.URL.webRequestHeuristicProtectionActionLow | Number | The web request heuristic protection action low threshold. | 
+| iboss.URL.webRequestHeuristicProtectionActionMedium | Number | The web request heuristic protection action medium threshold. | 
+| iboss.URL.webRequestHeuristicProtectionLevel | String | The web request heuristic protection level. | 
+| iboss.URL.webRequestHeuristicSuccess | Number | Whether web request heuristic check was successful. | 
+| iboss.URL.webRequestHeuristicSupport | Number | Whether web request heuristic support enabled. | 
 
 #### Command example
 ```!url url=https://www.iboss.com```
@@ -537,56 +553,63 @@ Looks up reputation data for URLs
         "Type": "url",
         "Vendor": "iboss"
     },
+    "URL": {
+        "Data": "https://www.iboss.com",
+        "DetectionEngines": 5,
+        "PositiveDetections": 0
+    },
     "iboss": {
-        "activeMalwareSubscription": 1,
-        "categories": [
-            "Business",
-            "Technology"
-        ],
-        "categorized": "true",
-        "googleSafeBrowsingDescription": "",
-        "googleSafeBrowsingEnabled": 1,
-        "googleSafeBrowsingIsSafeUrl": 1,
-        "googleSafeBrowsingSuccess": 1,
-        "googleSafeBrowsingSupport": 1,
-        "isSafeUrl": 1,
-        "malwareEngineAnalysisDescription": "",
-        "malwareEngineAnalysisEnabled": 1,
-        "malwareEngineAnalysisSuccess": 1,
-        "malwareEngineIsSafeUrl": 1,
-        "malwareEngineResultCode": 0,
-        "message": "Status: Url Known. Please see categories below.",
-        "realtimeCloudLookupDomainIsGrey": 0,
-        "realtimeCloudLookupEnabled": 1,
-        "realtimeCloudLookupIsSafeUrl": 1,
-        "realtimeCloudLookupRiskDescription": "",
-        "realtimeCloudLookupSuccess": 1,
-        "reputationDatabaseBotnetDetection": 0,
-        "reputationDatabaseEnabled": 1,
-        "reputationDatabaseIsSafeUrl": 1,
-        "reputationDatabaseLookupSuccess": 1,
-        "reputationDatabaseMalwareDetection": 0,
-        "url": "https://www.iboss.com",
-        "webRequestHeuristicBlockUnreachableSites": "1",
-        "webRequestHeuristicDescription": "",
-        "webRequestHeuristicIsSafeUrl": 1,
-        "webRequestHeuristicLevelHighScore": "79",
-        "webRequestHeuristicLevelLowScore": "10",
-        "webRequestHeuristicLevelMediumScore": "60",
-        "webRequestHeuristicLevelNoneScore": "0",
-        "webRequestHeuristicProtectionActionHigh": "0",
-        "webRequestHeuristicProtectionActionLow": "0",
-        "webRequestHeuristicProtectionActionMedium": "0",
-        "webRequestHeuristicProtectionLevel": "1",
-        "webRequestHeuristicSuccess": 1,
-        "webRequestHeuristicSupport": 1
+        "URL": {
+            "activeMalwareSubscription": 1,
+            "categories": [
+                "Business",
+                "Technology"
+            ],
+            "categorized": "true",
+            "googleSafeBrowsingDescription": "",
+            "googleSafeBrowsingEnabled": 1,
+            "googleSafeBrowsingIsSafeUrl": 1,
+            "googleSafeBrowsingSuccess": 1,
+            "googleSafeBrowsingSupport": 1,
+            "isSafeUrl": 1,
+            "malwareEngineAnalysisDescription": "",
+            "malwareEngineAnalysisEnabled": 1,
+            "malwareEngineAnalysisSuccess": 1,
+            "malwareEngineIsSafeUrl": 1,
+            "malwareEngineResultCode": 0,
+            "message": "Status: Url Known. Please see categories below.",
+            "realtimeCloudLookupDomainIsGrey": 0,
+            "realtimeCloudLookupEnabled": 1,
+            "realtimeCloudLookupIsSafeUrl": 1,
+            "realtimeCloudLookupRiskDescription": "",
+            "realtimeCloudLookupSuccess": 1,
+            "reputationDatabaseBotnetDetection": 0,
+            "reputationDatabaseEnabled": 1,
+            "reputationDatabaseIsSafeUrl": 1,
+            "reputationDatabaseLookupSuccess": 1,
+            "reputationDatabaseMalwareDetection": 0,
+            "url": "https://www.iboss.com",
+            "webRequestHeuristicBlockUnreachableSites": "1",
+            "webRequestHeuristicDescription": "",
+            "webRequestHeuristicIsSafeUrl": 1,
+            "webRequestHeuristicLevelHighScore": "79",
+            "webRequestHeuristicLevelLowScore": "10",
+            "webRequestHeuristicLevelMediumScore": "60",
+            "webRequestHeuristicLevelNoneScore": "0",
+            "webRequestHeuristicProtectionActionHigh": "0",
+            "webRequestHeuristicProtectionActionLow": "0",
+            "webRequestHeuristicProtectionActionMedium": "0",
+            "webRequestHeuristicProtectionLevel": "1",
+            "webRequestHeuristicSuccess": 1,
+            "webRequestHeuristicSupport": 1
+        }
     }
 }
 ```
 
 #### Human Readable Output
 
->### Result
->|DBotScore|iboss|
->|---|---|
->| Indicator: https:<span>//</span>www.iboss.com<br/>Type: url<br/>Vendor: iboss<br/>Score: 1 | activeMalwareSubscription: 1<br/>categories: Business,<br/>Technology<br/>categorized: true<br/>googleSafeBrowsingDescription: <br/>googleSafeBrowsingEnabled: 1<br/>googleSafeBrowsingIsSafeUrl: 1<br/>googleSafeBrowsingSuccess: 1<br/>googleSafeBrowsingSupport: 1<br/>isSafeUrl: 1<br/>malwareEngineAnalysisDescription: <br/>malwareEngineAnalysisEnabled: 1<br/>malwareEngineAnalysisSuccess: 1<br/>malwareEngineIsSafeUrl: 1<br/>malwareEngineResultCode: 0<br/>message: Status: Url Known. Please see categories below.<br/>realtimeCloudLookupDomainIsGrey: 0<br/>realtimeCloudLookupEnabled: 1<br/>realtimeCloudLookupIsSafeUrl: 1<br/>realtimeCloudLookupRiskDescription: <br/>realtimeCloudLookupSuccess: 1<br/>reputationDatabaseBotnetDetection: 0<br/>reputationDatabaseEnabled: 1<br/>reputationDatabaseIsSafeUrl: 1<br/>reputationDatabaseLookupSuccess: 1<br/>reputationDatabaseMalwareDetection: 0<br/>url: https:<span>//</span>www.iboss.com<br/>webRequestHeuristicBlockUnreachableSites: 1<br/>webRequestHeuristicDescription: <br/>webRequestHeuristicIsSafeUrl: 1<br/>webRequestHeuristicLevelHighScore: 79<br/>webRequestHeuristicLevelLowScore: 10<br/>webRequestHeuristicLevelMediumScore: 60<br/>webRequestHeuristicLevelNoneScore: 0<br/>webRequestHeuristicProtectionActionHigh: 0<br/>webRequestHeuristicProtectionActionLow: 0<br/>webRequestHeuristicProtectionActionMedium: 0<br/>webRequestHeuristicProtectionLevel: 1<br/>webRequestHeuristicSuccess: 1<br/>webRequestHeuristicSupport: 1 |
+>### iboss Result for URL https:<span>//</span>www.iboss.com
+>|message|categories|isSafeUrl|malwareEngineAnalysisSuccess|malwareEngineAnalysisDescription|reputationDatabaseLookupSuccess|reputationDatabaseMalwareDetection|reputationDatabaseBotnetDetection|webRequestHeuristicSuccess|webRequestHeuristicProtectionLevel|webRequestHeuristicDescription|googleSafeBrowsingSuccess|googleSafeBrowsingIsSafeUrl|googleSafeBrowsingDescription|realtimeCloudLookupSuccess|realtimeCloudLookupDomainIsGrey|realtimeCloudLookupRiskDescription|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| Status: Url Known. Please see categories below. | Business,<br/>Technology | 1 | 1 |  | 1 | 0 | 0 | 1 | 1 |  | 1 | 1 |  | 1 | 0 |  |

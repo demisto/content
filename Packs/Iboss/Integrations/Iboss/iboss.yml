@@ -238,121 +238,121 @@ script:
     - contextPath: Domain.Name
       description: The domain.
       type: String
-    - contextPath: iboss.isSafeUrl
+    - contextPath: iboss.Domain.isSafeUrl
       description: Whether entity is deemed safe
       type: Number
-    - contextPath: iboss.categories
+    - contextPath: iboss.Domain.categories
       description: The entity categories.
       type: String
     - contextPath: DBotScore.activeMalwareSubscription
       description: Whether active malware subscription is active
       type: Number
-    - contextPath: iboss.categorized
+    - contextPath: iboss.Domain.categorized
       description: Whether entity is categorized.
       type: Number
-    - contextPath: iboss.googleSafeBrowsingDescription
+    - contextPath: iboss.Domain.googleSafeBrowsingDescription
       description: Google safe browsing description
       type: String
-    - contextPath: iboss.message
+    - contextPath: iboss.Domain.message
       description: Entity lookup message.
       type: String
-    - contextPath: iboss.url
+    - contextPath: iboss.Domain.url
       description: The entity to perforum URL check on.
       type: String
-    - contextPath: iboss.googleSafeBrowsingEnabled
+    - contextPath: iboss.Domain.googleSafeBrowsingEnabled
       description: Whether Google safe browsing is enabled.
       type: Number
-    - contextPath: iboss.googleSafeBrowsingIsSafeUrl
+    - contextPath: iboss.Domain.googleSafeBrowsingIsSafeUrl
       description: Whether entity deemed safe by Google safe browsing.
       type: Number
-    - contextPath: iboss.googleSafeBrowsingSuccess
+    - contextPath: iboss.Domain.googleSafeBrowsingSuccess
       description: Whether Google safe browsing check was successful.
       type: Number
-    - contextPath: iboss.googleSafeBrowsingSupport
+    - contextPath: iboss.Domain.googleSafeBrowsingSupport
       description: Whether Google safe browsing is supported
       type: String
-    - contextPath: iboss.malwareEngineAnalysisDescription
+    - contextPath: iboss.Domain.malwareEngineAnalysisDescription
       description: Malware engine analysis description
       type: String
-    - contextPath: iboss.malwareEngineAnalysisEnabled
+    - contextPath: iboss.Domain.malwareEngineAnalysisEnabled
       description: Whether the malware engine analysis is enabled.
       type: Number
-    - contextPath: iboss.malwareEngineAnalysisSuccess
+    - contextPath: iboss.Domain.malwareEngineAnalysisSuccess
       description: Whether the malware engine analysis check was successful.
       type: Number
-    - contextPath: iboss.malwareEngineIsSafeUrl
+    - contextPath: iboss.Domain.malwareEngineIsSafeUrl
       description: Whether the entity was deemed safe by the malware engine.
       type: Number
-    - contextPath: iboss.malwareEngineResultCode
+    - contextPath: iboss.Domain.malwareEngineResultCode
       description: The result code from the malware engine analysis
       type: String
-    - contextPath: iboss.realtimeCloudLookupDomainIsGrey
+    - contextPath: iboss.Domain.realtimeCloudLookupDomainIsGrey
       description: Whether realtime cloud lookup is grey.
       type: Number
-    - contextPath: iboss.realtimeCloudLookupDomainEnabled
+    - contextPath: iboss.Domain.realtimeCloudLookupDomainEnabled
       description: Whether realtime cloud lookup is enabled.
       type: Number
-    - contextPath: iboss.realtimeCloudLookupIsSafeUrl
+    - contextPath: iboss.Domain.realtimeCloudLookupIsSafeUrl
       description: Whether realtime cloud lookup determined entity is safe.
       type: Number
-    - contextPath: iboss.realtimeCloudLookupRiskDescription
+    - contextPath: iboss.Domain.realtimeCloudLookupRiskDescription
       description: Realtime cloud lookup risk description.
       type: String
-    - contextPath: iboss.realtimeCloudLookupSuccess
+    - contextPath: iboss.Domain.realtimeCloudLookupSuccess
       description: Whether realtime cloud lookup chec was successful.
       type: Number
-    - contextPath: iboss.reputationDatabaseBotnetDetection
+    - contextPath: iboss.Domain.reputationDatabaseBotnetDetection
       description: Whether reputation database detected a botnet.
       type: Number
-    - contextPath: iboss.reputationDatabaseMalwareDetection
+    - contextPath: iboss.Domain.reputationDatabaseMalwareDetection
       description: Whether reputation database detected malware.
       type: Number
-    - contextPath: iboss.reputationDatabaseEnabled
+    - contextPath: iboss.Domain.reputationDatabaseEnabled
       description: Whether reputation database check is enabled.
       type: Number
-    - contextPath: iboss.reputationDatabaseIsSafeUrl
+    - contextPath: iboss.Domain.reputationDatabaseIsSafeUrl
       description: Whether reputation database check determined entity is safe.
       type: String
-    - contextPath: iboss.reputationDatabaseLookupSuccess
+    - contextPath: iboss.Domain.reputationDatabaseLookupSuccess
       description: Whether reputation database lookup was successful.
       type: Number
-    - contextPath: iboss.webRequestHeuristicBlockUnreachableSites
+    - contextPath: iboss.Domain.webRequestHeuristicBlockUnreachableSites
       description: Whether unreachable sites will be blocked.
       type: Number
-    - contextPath: iboss.webRequestHeuristicDescription
+    - contextPath: iboss.Domain.webRequestHeuristicDescription
       description: The web request heuristic description.
       type: String
-    - contextPath: iboss.webRequestHeuristicIsSafeUrl
+    - contextPath: iboss.Domain.webRequestHeuristicIsSafeUrl
       description: Whether web request heuristics determined URL is safe.
       type: Number
-    - contextPath: iboss.webRequestHeuristicLevelHighScore
+    - contextPath: iboss.Domain.webRequestHeuristicLevelHighScore
       description: The web request heuristic score high threshold.
       type: String
-    - contextPath: iboss.webRequestHeuristicLevelLowScore
+    - contextPath: iboss.Domain.webRequestHeuristicLevelLowScore
       description: The web request heuristic score low threshold.
       type: String
-    - contextPath: iboss.webRequestHeuristicLevelMediumScore
+    - contextPath: iboss.Domain.webRequestHeuristicLevelMediumScore
       description: The web request heuristic score low threshold.
       type: String
-    - contextPath: iboss.webRequestHeuristicLevelNoneScore
+    - contextPath: iboss.Domain.webRequestHeuristicLevelNoneScore
       description: The web request heuristic score none threshold.
       type: String
-    - contextPath: iboss.webRequestHeuristicProtectionActionHigh
+    - contextPath: iboss.Domain.webRequestHeuristicProtectionActionHigh
       description: The web request heuristic protection action high threshold.
       type: Number
-    - contextPath: iboss.webRequestHeuristicProtectionActionLow
+    - contextPath: iboss.Domain.webRequestHeuristicProtectionActionLow
       description: The web request heuristic protection action low threshold.
       type: Number
-    - contextPath: iboss.webRequestHeuristicProtectionActionMedium
+    - contextPath: iboss.Domain.webRequestHeuristicProtectionActionMedium
       description: The web request heuristic protection action medium threshold.
       type: Number
-    - contextPath: iboss.webRequestHeuristicProtectionLevel
+    - contextPath: iboss.Domain.webRequestHeuristicProtectionLevel
       description: The web request heuristic protection level.
       type: String
-    - contextPath: iboss.webRequestHeuristicSuccess
+    - contextPath: iboss.Domain.webRequestHeuristicSuccess
       description: Whether web request heuristic check was successful.
       type: Number
-    - contextPath: iboss.webRequestHeuristicSupport
+    - contextPath: iboss.Domain.webRequestHeuristicSupport
       description: Whether web request heuristic support enabled.
       type: Number
   - deprecated: false
@@ -387,121 +387,121 @@ script:
     - contextPath: IP.Address
       description: The IP address.
       type: String
-    - contextPath: iboss.isSafeUrl
+    - contextPath: iboss.IP.isSafeUrl
       description: Whether entity is deemed safe
       type: Number
-    - contextPath: iboss.categories
+    - contextPath: iboss.IP.categories
       description: The entity categories.
       type: String
     - contextPath: DBotScore.activeMalwareSubscription
       description: Whether active malware subscription is active
       type: Number
-    - contextPath: iboss.categorized
+    - contextPath: iboss.IP.categorized
       description: Whether entity is categorized.
       type: Number
-    - contextPath: iboss.googleSafeBrowsingDescription
+    - contextPath: iboss.IP.googleSafeBrowsingDescription
       description: Google safe browsing description
       type: String
-    - contextPath: iboss.message
+    - contextPath: iboss.IP.message
       description: Entity lookup message.
       type: String
-    - contextPath: iboss.url
+    - contextPath: iboss.IP.url
       description: The entity to perforum URL check on.
       type: String
-    - contextPath: iboss.googleSafeBrowsingEnabled
+    - contextPath: iboss.IP.googleSafeBrowsingEnabled
       description: Whether Google safe browsing is enabled.
       type: Number
-    - contextPath: iboss.googleSafeBrowsingIsSafeUrl
+    - contextPath: iboss.IP.googleSafeBrowsingIsSafeUrl
       description: Whether entity deemed safe by Google safe browsing.
       type: Number
-    - contextPath: iboss.googleSafeBrowsingSuccess
+    - contextPath: iboss.IP.googleSafeBrowsingSuccess
       description: Whether Google safe browsing check was successful.
       type: Number
-    - contextPath: iboss.googleSafeBrowsingSupport
+    - contextPath: iboss.IP.googleSafeBrowsingSupport
       description: Whether Google safe browsing is supported
       type: String
-    - contextPath: iboss.malwareEngineAnalysisDescription
+    - contextPath: iboss.IP.malwareEngineAnalysisDescription
       description: Malware engine analysis description
       type: String
-    - contextPath: iboss.malwareEngineAnalysisEnabled
+    - contextPath: iboss.IP.malwareEngineAnalysisEnabled
       description: Whether the malware engine analysis is enabled.
       type: Number
-    - contextPath: iboss.malwareEngineAnalysisSuccess
+    - contextPath: iboss.IP.malwareEngineAnalysisSuccess
       description: Whether the malware engine analysis check was successful.
       type: Number
-    - contextPath: iboss.malwareEngineIsSafeUrl
+    - contextPath: iboss.IP.malwareEngineIsSafeUrl
       description: Whether the entity was deemed safe by the malware engine.
       type: Number
-    - contextPath: iboss.malwareEngineResultCode
+    - contextPath: iboss.IP.malwareEngineResultCode
       description: The result code from the malware engine analysis
       type: String
-    - contextPath: iboss.realtimeCloudLookupDomainIsGrey
+    - contextPath: iboss.IP.realtimeCloudLookupDomainIsGrey
       description: Whether realtime cloud lookup is grey.
       type: Number
-    - contextPath: iboss.realtimeCloudLookupDomainEnabled
+    - contextPath: iboss.IP.realtimeCloudLookupDomainEnabled
       description: Whether realtime cloud lookup is enabled.
       type: Number
-    - contextPath: iboss.realtimeCloudLookupIsSafeUrl
+    - contextPath: iboss.IP.realtimeCloudLookupIsSafeUrl
       description: Whether realtime cloud lookup determined entity is safe.
       type: Number
-    - contextPath: iboss.realtimeCloudLookupRiskDescription
+    - contextPath: iboss.IP.realtimeCloudLookupRiskDescription
       description: Realtime cloud lookup risk description.
       type: String
-    - contextPath: iboss.realtimeCloudLookupSuccess
+    - contextPath: iboss.IP.realtimeCloudLookupSuccess
       description: Whether realtime cloud lookup chec was successful.
       type: Number
-    - contextPath: iboss.reputationDatabaseBotnetDetection
+    - contextPath: iboss.IP.reputationDatabaseBotnetDetection
       description: Whether reputation database detected a botnet.
       type: Number
-    - contextPath: iboss.reputationDatabaseMalwareDetection
+    - contextPath: iboss.IP.reputationDatabaseMalwareDetection
       description: Whether reputation database detected malware.
       type: Number
-    - contextPath: iboss.reputationDatabaseEnabled
+    - contextPath: iboss.IP.reputationDatabaseEnabled
       description: Whether reputation database check is enabled.
       type: Number
-    - contextPath: iboss.reputationDatabaseIsSafeUrl
+    - contextPath: iboss.IP.reputationDatabaseIsSafeUrl
       description: Whether reputation database check determined entity is safe.
       type: String
-    - contextPath: iboss.reputationDatabaseLookupSuccess
+    - contextPath: iboss.IP.reputationDatabaseLookupSuccess
       description: Whether reputation database lookup was successful.
       type: Number
-    - contextPath: iboss.webRequestHeuristicBlockUnreachableSites
+    - contextPath: iboss.IP.webRequestHeuristicBlockUnreachableSites
       description: Whether unreachable sites will be blocked.
       type: Number
-    - contextPath: iboss.webRequestHeuristicDescription
+    - contextPath: iboss.IP.webRequestHeuristicDescription
       description: The web request heuristic description.
       type: String
-    - contextPath: iboss.webRequestHeuristicIsSafeUrl
+    - contextPath: iboss.IP.webRequestHeuristicIsSafeUrl
       description: Whether web request heuristics determined URL is safe.
       type: Number
-    - contextPath: iboss.webRequestHeuristicLevelHighScore
+    - contextPath: iboss.IP.webRequestHeuristicLevelHighScore
       description: The web request heuristic score high threshold.
       type: String
-    - contextPath: iboss.webRequestHeuristicLevelLowScore
+    - contextPath: iboss.IP.webRequestHeuristicLevelLowScore
       description: The web request heuristic score low threshold.
       type: String
-    - contextPath: iboss.webRequestHeuristicLevelMediumScore
+    - contextPath: iboss.IP.webRequestHeuristicLevelMediumScore
       description: The web request heuristic score low threshold.
       type: String
-    - contextPath: iboss.webRequestHeuristicLevelNoneScore
+    - contextPath: iboss.IP.webRequestHeuristicLevelNoneScore
       description: The web request heuristic score none threshold.
       type: String
-    - contextPath: iboss.webRequestHeuristicProtectionActionHigh
+    - contextPath: iboss.IP.webRequestHeuristicProtectionActionHigh
       description: The web request heuristic protection action high threshold.
       type: Number
-    - contextPath: iboss.webRequestHeuristicProtectionActionLow
+    - contextPath: iboss.IP.webRequestHeuristicProtectionActionLow
       description: The web request heuristic protection action low threshold.
       type: Number
-    - contextPath: iboss.webRequestHeuristicProtectionActionMedium
+    - contextPath: iboss.IP.webRequestHeuristicProtectionActionMedium
       description: The web request heuristic protection action medium threshold.
       type: Number
-    - contextPath: iboss.webRequestHeuristicProtectionLevel
+    - contextPath: iboss.IP.webRequestHeuristicProtectionLevel
       description: The web request heuristic protection level.
       type: String
-    - contextPath: iboss.webRequestHeuristicSuccess
+    - contextPath: iboss.IP.webRequestHeuristicSuccess
       description: Whether web request heuristic check was successful.
       type: Number
-    - contextPath: iboss.webRequestHeuristicSupport
+    - contextPath: iboss.IP.webRequestHeuristicSupport
       description: Whether web request heuristic support enabled.
       type: Number
   - deprecated: false
@@ -620,121 +620,121 @@ script:
     - contextPath: URL.Data
       description: The URL.
       type: String
-    - contextPath: iboss.isSafeUrl
+    - contextPath: iboss.URL.isSafeUrl
       description: Whether entity is deemed safe
       type: Number
-    - contextPath: iboss.categories
+    - contextPath: iboss.URL.categories
       description: The entity categories.
       type: String
     - contextPath: DBotScore.activeMalwareSubscription
       description: Whether active malware subscription is active
       type: Number
-    - contextPath: iboss.categorized
+    - contextPath: iboss.URL.categorized
       description: Whether entity is categorized.
       type: Number
-    - contextPath: iboss.googleSafeBrowsingDescription
+    - contextPath: iboss.URL.googleSafeBrowsingDescription
       description: Google safe browsing description
       type: String
-    - contextPath: iboss.message
+    - contextPath: iboss.URL.message
       description: Entity lookup message.
       type: String
-    - contextPath: iboss.url
+    - contextPath: iboss.URL.url
       description: The entity to perforum URL check on.
       type: String
-    - contextPath: iboss.googleSafeBrowsingEnabled
+    - contextPath: iboss.URL.googleSafeBrowsingEnabled
       description: Whether Google safe browsing is enabled.
       type: Number
-    - contextPath: iboss.googleSafeBrowsingIsSafeUrl
+    - contextPath: iboss.URL.googleSafeBrowsingIsSafeUrl
       description: Whether entity deemed safe by Google safe browsing.
       type: Number
-    - contextPath: iboss.googleSafeBrowsingSuccess
+    - contextPath: iboss.URL.googleSafeBrowsingSuccess
       description: Whether Google safe browsing check was successful.
       type: Number
-    - contextPath: iboss.googleSafeBrowsingSupport
+    - contextPath: iboss.URL.googleSafeBrowsingSupport
       description: Whether Google safe browsing is supported
       type: String
-    - contextPath: iboss.malwareEngineAnalysisDescription
+    - contextPath: iboss.URL.malwareEngineAnalysisDescription
       description: Malware engine analysis description
       type: String
-    - contextPath: iboss.malwareEngineAnalysisEnabled
+    - contextPath: iboss.URL.malwareEngineAnalysisEnabled
       description: Whether the malware engine analysis is enabled.
       type: Number
-    - contextPath: iboss.malwareEngineAnalysisSuccess
+    - contextPath: iboss.URL.malwareEngineAnalysisSuccess
       description: Whether the malware engine analysis check was successful.
       type: Number
-    - contextPath: iboss.malwareEngineIsSafeUrl
+    - contextPath: iboss.URL.malwareEngineIsSafeUrl
       description: Whether the entity was deemed safe by the malware engine.
       type: Number
-    - contextPath: iboss.malwareEngineResultCode
+    - contextPath: iboss.URL.malwareEngineResultCode
       description: The result code from the malware engine analysis
       type: String
-    - contextPath: iboss.realtimeCloudLookupDomainIsGrey
+    - contextPath: iboss.URL.realtimeCloudLookupDomainIsGrey
       description: Whether realtime cloud lookup is grey.
       type: Number
-    - contextPath: iboss.realtimeCloudLookupDomainEnabled
+    - contextPath: iboss.URL.realtimeCloudLookupDomainEnabled
       description: Whether realtime cloud lookup is enabled.
       type: Number
-    - contextPath: iboss.realtimeCloudLookupIsSafeUrl
+    - contextPath: iboss.URL.realtimeCloudLookupIsSafeUrl
       description: Whether realtime cloud lookup determined entity is safe.
       type: Number
-    - contextPath: iboss.realtimeCloudLookupRiskDescription
+    - contextPath: iboss.URL.realtimeCloudLookupRiskDescription
       description: Realtime cloud lookup risk description.
       type: String
-    - contextPath: iboss.realtimeCloudLookupSuccess
+    - contextPath: iboss.URL.realtimeCloudLookupSuccess
       description: Whether realtime cloud lookup chec was successful.
       type: Number
-    - contextPath: iboss.reputationDatabaseBotnetDetection
+    - contextPath: iboss.URL.reputationDatabaseBotnetDetection
       description: Whether reputation database detected a botnet.
       type: Number
-    - contextPath: iboss.reputationDatabaseMalwareDetection
+    - contextPath: iboss.URL.reputationDatabaseMalwareDetection
       description: Whether reputation database detected malware.
       type: Number
-    - contextPath: iboss.reputationDatabaseEnabled
+    - contextPath: iboss.URL.reputationDatabaseEnabled
       description: Whether reputation database check is enabled.
       type: Number
-    - contextPath: iboss.reputationDatabaseIsSafeUrl
+    - contextPath: iboss.URL.reputationDatabaseIsSafeUrl
       description: Whether reputation database check determined entity is safe.
       type: String
-    - contextPath: iboss.reputationDatabaseLookupSuccess
+    - contextPath: iboss.URL.reputationDatabaseLookupSuccess
       description: Whether reputation database lookup was successful.
       type: Number
-    - contextPath: iboss.webRequestHeuristicBlockUnreachableSites
+    - contextPath: iboss.URL.webRequestHeuristicBlockUnreachableSites
       description: Whether unreachable sites will be blocked.
       type: Number
-    - contextPath: iboss.webRequestHeuristicDescription
+    - contextPath: iboss.URL.webRequestHeuristicDescription
       description: The web request heuristic description.
       type: String
-    - contextPath: iboss.webRequestHeuristicIsSafeUrl
+    - contextPath: iboss.URL.webRequestHeuristicIsSafeUrl
       description: Whether web request heuristics determined URL is safe.
       type: Number
-    - contextPath: iboss.webRequestHeuristicLevelHighScore
+    - contextPath: iboss.URL.webRequestHeuristicLevelHighScore
       description: The web request heuristic score high threshold.
       type: String
-    - contextPath: iboss.webRequestHeuristicLevelLowScore
+    - contextPath: iboss.URL.webRequestHeuristicLevelLowScore
       description: The web request heuristic score low threshold.
       type: String
-    - contextPath: iboss.webRequestHeuristicLevelMediumScore
+    - contextPath: iboss.URL.webRequestHeuristicLevelMediumScore
       description: The web request heuristic score low threshold.
       type: String
-    - contextPath: iboss.webRequestHeuristicLevelNoneScore
+    - contextPath: iboss.URL.webRequestHeuristicLevelNoneScore
       description: The web request heuristic score none threshold.
       type: String
-    - contextPath: iboss.webRequestHeuristicProtectionActionHigh
+    - contextPath: iboss.URL.webRequestHeuristicProtectionActionHigh
       description: The web request heuristic protection action high threshold.
       type: Number
-    - contextPath: iboss.webRequestHeuristicProtectionActionLow
+    - contextPath: iboss.URL.webRequestHeuristicProtectionActionLow
       description: The web request heuristic protection action low threshold.
       type: Number
-    - contextPath: iboss.webRequestHeuristicProtectionActionMedium
+    - contextPath: iboss.URL.webRequestHeuristicProtectionActionMedium
       description: The web request heuristic protection action medium threshold.
       type: Number
-    - contextPath: iboss.webRequestHeuristicProtectionLevel
+    - contextPath: iboss.URL.webRequestHeuristicProtectionLevel
       description: The web request heuristic protection level.
       type: String
-    - contextPath: iboss.webRequestHeuristicSuccess
+    - contextPath: iboss.URL.webRequestHeuristicSuccess
       description: Whether web request heuristic check was successful.
       type: Number
-    - contextPath: iboss.webRequestHeuristicSupport
+    - contextPath: iboss.URL.webRequestHeuristicSupport
       description: Whether web request heuristic support enabled.
       type: Number
   script: '-'
