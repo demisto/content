@@ -8,7 +8,9 @@ from test_data.response_constants import RESPONSE_LIST_WORKFLOWS, RESPONSE_DEFAU
     RESPONSE_POSSIBLE_THREAT_ACTIONS, RESPONSE_LIST_RESOURCE_GROUPS, RESPONSE_LIST_USERS, RESPONSE_LIST_INCIDENT, \
     RESPONSE_GET_INCIDENT, RESPONSE_CREATE_INCIDENT, RESPONSE_PERFORM_ACTION_ON_INCIDENT, RESPONSE_LIST_WATCHLISTS, \
     RESPONSE_GET_WATCHLIST, RESPONSE_CREATE_WATCHLIST, RESPONSE_ENTITY_IN_WATCHLIST, RESPONSE_ADD_ENTITY_TO_WATCHLIST, \
-    RESPONSE_FETCH_INCIDENT_ITEM, RESPONSE_FETCH_INCIDENT_ITEM_MULTIPLE_REASONS, RESPONSE_FETCH_INCIDENTS
+    RESPONSE_FETCH_INCIDENT_ITEM, RESPONSE_FETCH_INCIDENT_ITEM_MULTIPLE_REASONS, RESPONSE_FETCH_INCIDENTS,\
+    RESPONSE_FETCH_INCIDENT_ITEM_NO_THREAT_MODEL, RESPONSE_FETCH_INCIDENT_ITEM_VERSION_6_4
+
 from test_data.result_constants import EXPECTED_LIST_WORKFLOWS, EXPECTED_DEFAULT_ASSIGNEE, \
     EXPECTED_POSSIBLE_THREAT_ACTIONS, EXPECTED_LIST_RESOURCE_GROUPS, EXPECTED_LIST_USERS, EXPECTED_LIST_INCIDENT, \
     EXPECTED_GET_INCIDENT, EXPECTED_CREATE_INCIDENT, EXPECTED_PERFORM_ACTION_ON_INCIDENT, \
@@ -57,11 +59,19 @@ def test_parse_data_arr():
 
 def test_get_incident_name():
     expected_incident_name = 'Uploads to personal websites: 10134'
-    assert expected_incident_name == get_incident_name(RESPONSE_FETCH_INCIDENT_ITEM, '10134')
+    assert expected_incident_name == get_incident_name(RESPONSE_FETCH_INCIDENT_ITEM, '10134', '12')
 
     expected_multiple_reasons_incident_name = 'Uploads to personal websites, Emails Sent to Personal Email: 10135'
     assert expected_multiple_reasons_incident_name == get_incident_name(RESPONSE_FETCH_INCIDENT_ITEM_MULTIPLE_REASONS,
-                                                                        '10135')
+                                                                        '10135', '12')
+
+    expected_multiple_reasons_incident_name = 'Securonix Incident 10135, Violator ID: 12'
+    assert expected_multiple_reasons_incident_name == get_incident_name(RESPONSE_FETCH_INCIDENT_ITEM_NO_THREAT_MODEL,
+                                                                        '10135', '12')
+
+    expected_multiple_reasons_incident_name = 'Data egress via network uploads: 10135'
+    assert expected_multiple_reasons_incident_name == get_incident_name(RESPONSE_FETCH_INCIDENT_ITEM_VERSION_6_4,
+                                                                        '10135', '12')
 
 
 def test_fetch_incidents(mocker):
