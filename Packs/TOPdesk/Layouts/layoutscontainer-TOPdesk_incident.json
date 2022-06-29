@@ -569,7 +569,85 @@
             "w": 1,
             "x": 2,
             "y": 1
-          }
+          },
+					{
+						"h": 4,
+						"i": "caseinfoid-c544c680-ed78-11ec-9a44-87ec0dad85a8",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Notes",
+						"static": false,
+						"type": "notes",
+						"w": 2,
+						"x": 0,
+						"y": 3
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-e8f15033-ed78-11ec-9a44-87ec0dad85a8",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "closenotes",
+								"height": 44,
+								"id": "16873c30-ed79-11ec-9a44-87ec0dad85a8",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "ticketcloseddate",
+								"height": 22,
+								"id": "1c5d6030-ed79-11ec-9a44-87ec0dad85a8",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Ticket Closing Information",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 3
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"hideItemTitleOnlyOne": true,
+						"i": "caseinfoid-0330d380-ed79-11ec-9a44-87ec0dad85a8",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "incident_attachment",
+								"height": 53,
+								"id": "02ff3c30-ed79-11ec-9a44-87ec0dad85a8",
+								"index": 0,
+								"isVisible": true,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Attachments",
+						"static": false,
+						"type": "",
+						"w": 1,
+						"x": 2,
+						"y": 5
+					}
         ],
         "type": "custom"
       },
