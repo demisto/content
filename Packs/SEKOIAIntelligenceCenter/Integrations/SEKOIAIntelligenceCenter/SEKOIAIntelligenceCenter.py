@@ -1,0 +1,614 @@
+"""SEKOIA.IO Integration for Cortex XSOAR (aka Demisto)
+"""
+import demistomock as demisto
+from CommonServerPython import *
+import urllib3
+import traceback
+from typing import Any, Dict
+
+
+# Disable insecure warnings
+urllib3.disable_warnings()
+
+DOC_MAPPING = {
+    "GetObservable": "https://docs.sekoia.io/develop/rest_api/intelligence_center/intelligence/#tag/Observables/operation/get_observables",  # noqa
+    "GetIndicator": "https://docs.sekoia.io/develop/rest_api/intelligence_center/intelligence/#tag/Indicators/operation/get_indicator",  # noqa
+    "GetIndicatorContext": "https://docs.sekoia.io/develop/rest_api/intelligence_center/intelligence/#tag/Indicators/operation/get_indicator_context",  # noqa
+}
+
+DBOTSCORE_MAPPING = {
+    "anomalous-activity": Common.DBotScore.BAD,
+    "compromised": Common.DBotScore.BAD,
+    "attribution": Common.DBotScore.BAD,
+    "anonymization": Common.DBotScore.SUSPICIOUS,
+    "malicious-activity": Common.DBotScore.SUSPICIOUS,
+    "benign": Common.DBotScore.GOOD,
+}
+
+INTEGRATION_NAME = "SEKOIAIntelligenceCenter"
+
+BASE_URL = "https://app.sekoia.io"
+
+""" CLIENT CLASS """
+
+
+class Client(BaseClient):
+    """Client class to interact with the SEKOIA.IO API"""
+
+    def get_validate_resource(self) -> str:
+        """
+        Validate the API Key againt SEKOIA.IO API
+        """
+        response = self._http_request(
+            method="GET",
+            url_suffix="/v1/apiauth/auth/validate",
+        )
+        if response.get('message') == "The token is invalid":
+            raise DemistoException(f'{INTEGRATION_NAME} error: the request failed due to: {response}')
+        
+        return "ok"
+
+    def get_observable(self, value: str, indicator_type: str) -> dict:
+        """Find observable matching the given value
+
+        :type value: ``str``
+        :param value: indicator to get the context for
+
+        :type indicator_type: ``str``
+        :param indicator_type: type of the indicator
+
+        :return: dict containing the context as returned from the API
+        :rtype: ``Dict[str, Any]``
+        """
+
+        return self._http_request(
+            method="GET",
+            url_suffix="/v2/inthreat/observables",
+            params={"match[value]": value, "match[type]": indicator_type},
+        )
+
+    """Client class to interact with the SEKOIA.IO API"""
+
+    def get_indicator(self, value: str, indicator_type: str) -> dict:
+        """Find indicators matching the given value
+
+        :type value: ``str``
+        :param value: indicator to get the context for
+
+        :type indicator_type: ``str``
+        :param indicator_type: type of the indicator
+
+        :return: dict containing the context as returned from the API
+        :rtype: ``Dict[str, Any]``
+        """
+
+        return self._http_request(
+            method="GET",
+            url_suffix="/v2/inthreat/indicators",
+            params={"value": value, "type": indicator_type},
+        )
+
+    def get_indicator_context(self, value: str, indicator_type: str) -> dict:
+        """Get context around the indicators matching the given value
+
+        :type value: ``str``
+        :param value: indicator to get the context for
+
+        :type type: ``str``
+        :param type: type of the indicator
+
+        :return: dict containing the context as returned from the API
+        :rtype: ``Dict[str, Any]``
+        """
+
+        return self._http_request(
+            method="GET",
+            url_suffix="/v2/inthreat/indicators/context",
+            params={"value": value, "type": indicator_type},
+        )
+
+
+""" HELPER FUNCTIONS """
+
+
+def get_reputation_score(indicator_types: list[str]) -> int:
+    """
+    Return DBotScore based on indicator_types.
+    Default score is Unknown
+    """
+
+    for indicator_type in indicator_types:
+        dbotscore = DBOTSCORE_MAPPING.get(indicator_type)
+        if dbotscore:
+            return dbotscore
+
+    return Common.DBotScore.NONE
+
+
+def extract_file_indicator_hashes(file_name: str) -> dict:
+    """
+    Extract hashes composing the STIX indicator name
+    """
+    hashes = {"sha256": "", "sha1": "", "md5": ""}
+
+    # Remove enclosing brackets
+    file_name = file_name.replace("[", "").replace("]", "")
+    stix_object_hashes = file_name.split("OR")
+    for object_hash in stix_object_hashes:
+        if "SHA-256" in object_hash:
+            hashes["sha256"] = object_hash.split("=")[1].strip(" ").strip("'")
+        if "SHA-1" in object_hash:
+            hashes["sha1"] = object_hash.split("=")[1].strip(" ").strip("'")
+        if "MD5" in object_hash:
+            hashes["md5"] = object_hash.split("=")[1].strip(" ").strip("'")
+
+    return hashes
+
+
+def get_reliability_score(confidence: int) -> str:
+    # Based on "Admiralty Credibility" table see
+    # https://docs.oasis-open.org/cti/stix/v2.1/os/stix-v2.1-os.html#_1v6elyto0uqg
+
+    if confidence in range(80, 100):
+        return DBotScoreReliability.A_PLUS
+    if confidence in range(60, 79):
+        return DBotScoreReliability.A
+    if confidence in range(40, 59):
+        return DBotScoreReliability.B
+    if confidence in range(20, 39):
+        return DBotScoreReliability.C
+    if confidence in range(1, 19):
+        return DBotScoreReliability.D
+    if confidence == 0:
+        return DBotScoreReliability.E
+    else:
+        return DBotScoreReliability.F
+
+
+def get_tlp(object_marking_refs: list[str], stix_bundle: dict) -> str:
+    """
+    Retrieve marking-definition object from object_marking_refs and return TLP
+    If no TLP where found, return "RED" by default
+    """
+    for object_marking_ref in object_marking_refs:
+        for stix_object in stix_bundle["objects"]:
+            if stix_object["id"] == object_marking_ref:
+                return stix_object["definition"]["tlp"]
+
+    return "red"
+
+
+def get_stix_object_reputation(stix_bundle: dict, stix_object: dict) -> Optional[CommandResults]:
+    """ "
+    Transform a STIX object into a Cortex XSOAR indicator
+    """
+
+    reputation_score: int = get_reputation_score(stix_object.get("indicator_types", []))
+    reliability_score: str = get_reliability_score(int(stix_object.get("confidence", -1)))
+    tlp: str = get_tlp(stix_object["object_marking_refs"], stix_bundle)
+
+    if "ipv4-addr" in stix_object["x_ic_observable_types"] or "ipv6-addr" in stix_object["x_ic_observable_types"]:
+        return get_ip_indicator_reputation(stix_object, reputation_score, reliability_score, tlp)
+    if "file" in stix_object["x_ic_observable_types"]:
+        return get_file_indicator_reputation(stix_object, reputation_score, reliability_score, tlp)
+    if "domain-name" in stix_object["x_ic_observable_types"]:
+        return get_domain_indicator_reputation(stix_object, reputation_score)
+    if "url" in stix_object["x_ic_observable_types"]:
+        return get_url_indicator_reputation(stix_object, reputation_score)
+
+    return None
+
+
+def get_ip_indicator_reputation(stix_object: dict, reputation_score: int, reliability_score: str, tlp: str) -> CommandResults:
+    """
+    Return stix_object of type IP as indicator
+    """
+    dbot_score = Common.DBotScore(
+        indicator=stix_object["name"],
+        indicator_type=DBotScoreType.IP,
+        integration_name=INTEGRATION_NAME,
+        score=reputation_score,
+        reliability=reliability_score,
+    )
+
+    ip = Common.IP(
+        ip=stix_object["name"],
+        dbot_score=dbot_score,
+        traffic_light_protocol=tlp,
+    )
+    return CommandResults(
+        outputs_prefix="SEKOIAIntelligenceCenter.IP",
+        outputs_key_field="name",
+        outputs=stix_object,
+        indicator=ip,
+    )
+
+
+def get_file_indicator_reputation(stix_object: dict, reputation_score: int, reliability_score: str, tlp: str) -> CommandResults:
+    """
+    Return stix_object of type file as indicator
+    """
+
+    dbot_score = Common.DBotScore(
+        indicator=stix_object["name"],
+        indicator_type=DBotScoreType.FILE,
+        integration_name=INTEGRATION_NAME,
+        score=reputation_score,
+        reliability=reliability_score,
+    )
+
+    hashes = extract_file_indicator_hashes(stix_object["name"])
+    file = Common.File(
+        md5=hashes["md5"],
+        sha1=hashes["sha1"],
+        sha256=hashes["sha256"],
+        dbot_score=dbot_score,
+        traffic_light_protocol=tlp,
+    )
+
+    return CommandResults(
+        outputs_prefix="SEKOIAIntelligenceCenter.File",
+        outputs_key_field="name",
+        outputs=stix_object,
+        indicator=file,
+    )
+
+
+def get_domain_indicator_reputation(stix_object: dict, reputation_score: int) -> CommandResults:
+    """
+    Return stix_object of type domain as indicator
+    """
+
+    dbot_score = Common.DBotScore(
+        indicator=stix_object["name"],
+        indicator_type=DBotScoreType.DOMAIN,
+        integration_name=INTEGRATION_NAME,
+        score=reputation_score,
+    )
+
+    domain = Common.Domain(
+        domain=stix_object["name"],
+        dbot_score=dbot_score,
+    )
+
+    return CommandResults(
+        outputs_prefix="SEKOIAIntelligenceCenter.Domain",
+        outputs_key_field="name",
+        outputs=stix_object,
+        indicator=domain,
+    )
+
+
+def get_url_indicator_reputation(stix_object: dict, reputation_score: int) -> CommandResults:
+    """
+    Return stix_object of type url as indicator
+    """
+
+    dbot_score = Common.DBotScore(
+        indicator=stix_object["name"],
+        indicator_type=DBotScoreType.URL,
+        integration_name=INTEGRATION_NAME,
+        score=reputation_score,
+    )
+
+    url = Common.URL(url=stix_object["name"], dbot_score=dbot_score)
+
+    return CommandResults(
+        outputs_prefix="SEKOIAIntelligenceCenter.URL",
+        outputs_key_field="name",
+        outputs=stix_object,
+        indicator=url,
+    )
+
+
+def indicator_context_to_markdown(indicator_context: dict) -> str:
+    """
+    Find first level relationships with the stix bundle indicator
+    Return the data to display as markdown
+
+    Workflow:
+    1. Find where main indicator ID is a source_ref in a relationship
+    2. Use relationship's target_ref to find the linked object
+    """
+    table_headers = [
+        "name",
+        "description",
+        "type",
+        "aliases",
+        "goals",
+        "revoked",
+        "created",
+        "modified",
+        "more_info",
+    ]
+    indicator_id = ""
+    markdown = ""
+    # Read every items of the reponse
+    for stix_bundle in indicator_context["items"]:
+        new_list_of_objects = []
+        # Read every objects of the bundle
+        for stix_object in stix_bundle["objects"]:
+            # Get the ID of the STIX bundle's indicator
+            if stix_object["type"] == "indicator":
+                indicator_id = "".join(stix_object["id"])
+                indicator_name = stix_object["name"]
+
+        # Retrieve STIX objects relationships where source_refs is the indicator ID
+        linked_stix_objects_refs: list = [
+            stix_object.get("target_ref")
+            for stix_object in stix_bundle["objects"]
+            if stix_object.get("source_ref", "") == indicator_id
+        ]
+
+        if linked_stix_objects_refs:
+            # Retrieve STIX objects which are the target in the relationship
+            linked_stix_objects = [
+                stix_object for stix_object in stix_bundle["objects"] if stix_object["id"] in linked_stix_objects_refs
+            ]
+
+            # Add "more_info" link, which redirect to SEKOIA Intelligence Center
+            for linked_object in linked_stix_objects:
+                linked_object[
+                    "more_info"
+                ] = f'[More info about {linked_object["name"]}' \
+                    f'on SEKOIA.IO]({BASE_URL}/intelligence/objects/{linked_object["id"]})'
+                new_list_of_objects.append(linked_object)
+
+            markdown += tableToMarkdown(
+                name=f"Indicator {indicator_name} is linked to the following:",
+                t=new_list_of_objects,
+                headers=table_headers,
+            )
+    return markdown
+
+
+def extract_indicators(indicator_context: dict, command_results_list: list[CommandResults]) -> list:
+    """
+    Return each indicators of the STIX bundles as a list of CommandResults
+    """
+    for stix_bundle in indicator_context["items"]:
+        for stix_object in stix_bundle["objects"]:
+            if stix_object["type"] == "indicator":
+                object_reputation = get_stix_object_reputation(stix_bundle, stix_object)
+                if object_reputation:
+                    command_results_list.append(object_reputation)
+
+    return command_results_list
+
+
+""" COMMAND FUNCTIONS """
+
+
+def test_module(client: Client) -> str:
+    """Tests API connectivity and authentication'
+
+    Returning 'ok' indicates that the integration works like it is supposed to.
+    Connection to the service is successful.
+    Raises exceptions if something goes wrong.
+
+    :type client: ``Client``
+    :param Client: Client
+
+    :return: 'ok' if test passed, anything else will fail the test.
+    :rtype: ``str``
+    """
+    # Check a JWT token’s validity
+    # https://docs.sekoia.io/develop/rest_api/identity_and_authentication/#tag/User-Authentication/operation/get_validate_resource
+
+    try:
+        client.get_validate_resource()
+    except DemistoException as e:
+        if "The token is invalid" in str(e):
+            return "Authorization Error: make sure API Key is correctly set"
+        else:
+            raise e
+    return "ok"
+
+
+def get_observable_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """ip command: Returns IP reputation for a list of IPs
+
+    :type client: ``Client``
+    :param Client: SEKOIA.IO client to use
+
+    :type args: ``Dict[str, Any]``
+    :param args:
+        all command arguments, usually passed from ``demisto.args()``.
+        ``args['indicator']`` is a list of indicators or a single indicator
+
+    :return:
+        A ``CommandResults`` object that is then passed to ``return_results``,
+        that contains indicators
+
+    :rtype: ``CommandResults``
+    """
+
+    indicator_value = args.get("value")
+    indicator_type = args.get("type")
+    if not indicator_value or not indicator_type:
+        raise ValueError(f"incomplete command for value {indicator_value} and type {indicator_type}")
+
+    result = client.get_observable(value=indicator_value, indicator_type=indicator_type)
+    indicator = {"value": indicator_value, "type": indicator_type}
+    outputs = {"indicator": indicator, "items": result.get("items", [])}
+
+    if result["items"] == []:
+        markdown = f"### {indicator_value} of type {indicator_type} is an unknown observable."
+    else:
+        table_title = f'Observable {result["items"][0].get("value")}'
+        table_headers = ["modified", "created"]
+        markdown = tableToMarkdown(table_title, result["items"][0], headers=table_headers)
+        table_headers = ["valid_from", "valid_until", "name"]
+        markdown += tableToMarkdown(
+            "Associated tags",
+            result["items"][0].get("x_inthreat_tags"),
+            headers=table_headers,
+        )
+        markdown += f'Please consult the [dedicated page]' \
+                    f'({BASE_URL}/intelligence/objects/{result["items"][0]["id"]}) for more information.\n'
+
+    return CommandResults(
+        readable_output=markdown,
+        outputs_prefix="SEKOIAIO.Observable",
+        outputs_key_field="ip",
+        outputs=outputs,
+    )
+
+
+def get_indicator_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """ip command: Returns IP reputation for a list of IPs
+
+    :type client: ``Client``
+    :param Client: SEKOIA.IO client to use
+
+    :type args: ``Dict[str, Any]``
+    :param args:
+        all command arguments, usually passed from ``demisto.args()``.
+        ``args['indicator']`` is a list of indicators or a single indicator
+
+    :return:
+        A ``CommandResults`` object that is then passed to ``return_results``,
+        that contains indicators
+
+    :rtype: ``CommandResults``
+    """
+
+    indicator_value = args.get("value")
+    indicator_type = args.get("type")
+    if not indicator_value or not indicator_type:
+        raise ValueError(f"incomplete command for value {indicator_value} and type {indicator_type}")
+
+    result = client.get_indicator(value=indicator_value, indicator_type=indicator_type)
+    indicator = {"value": indicator_value, "type": indicator_type}
+    outputs = {"indicator": indicator, "items": result.get("items", [])}
+
+    # Format output
+    if result["items"] == []:
+        markdown = f"### {indicator_value} of type {indicator_type} is an unknown indicator."
+    else:
+        markdown = (
+            f'### Indicator {result["items"][0].get("name")} is categorized as {result["items"][0].get("indicator_types")}\n\n'
+        )
+        markdown += result["items"][0].get("description", "")
+        table_headers = ["kill_chain_name", "phase_name"]
+        markdown += tableToMarkdown(
+            "Kill chain",
+            result["items"][0].get("kill_chain_phases"),
+            headers=table_headers,
+        )
+        markdown += f'\n\nPlease consult the [dedicated page]' \
+                    f'({BASE_URL}/intelligence/objects/{result["items"][0]["id"]}) for more information.\n'
+
+    return CommandResults(
+        outputs_prefix="SEKOIAIntelligenceCenter.Analysis",
+        outputs=outputs,
+        readable_output=markdown,
+        raw_response=result,
+    )
+
+
+def get_indicator_context_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+    """ip command: Returns IP reputation for a list of IPs
+
+    :type client: ``Client``
+    :param Client: SEKOIA.IO client to use
+
+    :type args: ``Dict[str, Any]``
+    :param args:
+        all command arguments, usually passed from ``demisto.args()``.
+        ``args['indicator']`` is a list of indicators or a single indicator
+
+    :return:
+        A ``CommandResults`` object that is then passed to ``return_results``,
+        that contains indicators
+
+    :rtype: ``CommandResults``
+    """
+
+    indicator = {"value": args.get("value"), "type": args.get("type")}
+    if not indicator["value"] or not indicator["type"]:
+        raise ValueError(f"incomplete command for {indicator}")
+
+    command_results_list: List[CommandResults] = []
+
+    indicator_context = client.get_indicator_context(value=indicator["value"], indicator_type=indicator["type"])
+    outputs = {"indicator": indicator, "items": indicator_context.get("items", [])}
+
+    if indicator_context["items"] == []:
+        markdown = f"### {indicator['value']} of type {indicator['type']} is an unknown indicator."
+    else:
+        # Format output
+        markdown = indicator_context_to_markdown(indicator_context)
+
+    # Extract STIX object type indicator from the STIX bundles
+    command_results_list = extract_indicators(indicator_context, command_results_list)
+
+    command_results_list.append(
+        CommandResults(
+            outputs_prefix="SEKOIAIO.IndicatorContext",
+            readable_output=markdown,
+            outputs=outputs,
+            raw_response=indicator_context,
+        )
+    )
+    return command_results_list
+
+
+""" MAIN FUNCTION """
+
+
+def main() -> None:
+    """main function, parses params and runs command functions
+
+    :return:
+    :rtype:
+    """
+
+    api_key = demisto.params().get("apikey")
+    if not api_key:
+        demisto.error("API Key is missing")
+
+    # get the service API url
+    BASE_URL = urljoin(demisto.params()["url"], "/")
+    verify_certificate = not demisto.params().get("insecure", False)
+    proxy = demisto.params().get("proxy", False)
+
+    # TODO
+    # Integration that implements reputation commands (e.g. url, ip, domain,..., etc) must have
+    # a reliability score of the source providing the intelligence data.
+    # reliability = demisto.params().get("integrationReliability", DBotScoreReliability.C)
+
+    demisto.debug(f"Command being called is {demisto.command()}")
+    try:
+        headers = {"Authorization": f"Bearer {api_key}"}
+
+        client = Client(base_url=BASE_URL, verify=verify_certificate, headers=headers, proxy=proxy)
+
+        if demisto.command() == "test-module":
+            # This is the call made when pressing the integration Test button.
+            # https://api.sekoia.io/v1/apiauth/auth/validate
+            result = test_module(client)
+            return_results(result)
+
+        elif demisto.command() == "GetObservable":
+            return_results(get_observable_command(client, demisto.args()))
+
+        elif demisto.command() == "GetIndicator":
+            return_results(get_indicator_command(client, demisto.args()))
+
+        elif demisto.command() == "GetIndicatorContext":
+            return_results(get_indicator_context_command(client, demisto.args()))
+
+    # Log exceptions and return errors
+    except Exception as e:
+        demisto.error(traceback.format_exc())  # print the traceback
+        return_error(
+            f"Failed to execute {demisto.command()} command. "
+            f"\nError:\n{str(e)} please consult endpoint documentation {DOC_MAPPING.get(demisto.command())}"
+        )
+
+
+""" ENTRY POINT """
+
+if __name__ in ("__main__", "__builtin__", "builtins"):
+    main()

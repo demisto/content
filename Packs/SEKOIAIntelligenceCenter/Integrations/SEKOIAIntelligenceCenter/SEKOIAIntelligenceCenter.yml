@@ -1,0 +1,360 @@
+commonfields:
+  id: SEKOIAIntelligenceCenter
+  version: -1
+name: SEKOIAIntelligenceCenter
+display: SEKOIAIntelligenceCenter
+category: Data Enrichment & Threat Intelligence
+description: |
+  Fetch Indicator and Observables from SEKOIA.IO Intelligence Center.
+  To use this integration, please create an API Key with the right permissions.
+
+
+configuration:
+- defaultvalue: https://api.sekoia.io/
+  display: Your server URL
+  name: url
+  required: true
+  type: 0
+- displaypassword: API Key
+  additionalinfo: The API Key to use for connection
+  name: apikey
+  required: true
+  hiddenusername: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Indicator value
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    - default: false
+      description: Indicator type
+      isArray: false
+      name: type
+      required: true
+      secret: false
+    deprecated: false
+    description: 'Query SEKOIA.IO Intelligence Center for information about this observable. '
+    execution: false
+    name: GetObservable
+    outputs:
+    - contextPath: GetObservable.Output
+      description: SEKOIA.IO returned data
+      type: String
+  - arguments:
+    - default: false
+      description: Indicator value
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    - default: false
+      description: Indicator type
+      isArray: false
+      name: type
+      required: true
+      secret: false
+    deprecated: false
+    description: Query SEKOIA.IO Intelligence Center for information about this indicator. No information is returned if the value is not a known by SEKOIA.IO as an indicator (IoC).
+    execution: false
+    name: GetIndicator
+    outputs:
+    - contextPath: SEKOIAIntelligenceCenter.has_more
+      description: ''
+      type: Boolean
+    - contextPath: SEKOIAIntelligenceCenter.items.lang
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.x_ic_is_in_flint
+      description: ''
+      type: Boolean
+    - contextPath: SEKOIAIntelligenceCenter.items.kill_chain_phases.kill_chain_name
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.kill_chain_phases.phase_name
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.name
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.valid_until
+      description: ''
+      type: Date
+    - contextPath: SEKOIAIntelligenceCenter.items.x_ic_deprecated
+      description: ''
+      type: Boolean
+    - contextPath: SEKOIAIntelligenceCenter.items.x_inthreat_sources_refs
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.spec_version
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.description
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.modified
+      description: ''
+      type: Date
+    - contextPath: SEKOIAIntelligenceCenter.items.id
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.created_by_ref
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.pattern
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.pattern_type
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.valid_from
+      description: ''
+      type: Date
+    - contextPath: SEKOIAIntelligenceCenter.items.x_ic_observable_types
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.type
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.revoked
+      description: ''
+      type: Boolean
+    - contextPath: SEKOIAIntelligenceCenter.items.object_marking_refs
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.created
+      description: ''
+      type: Date
+    - contextPath: SEKOIAIntelligenceCenter.items.indicator_types
+      description: ''
+      type: String
+  - arguments:
+    - default: false
+      description: Indicator value
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    - default: false
+      description: Indicator type
+      isArray: false
+      name: type
+      required: true
+      secret: false
+    deprecated: false
+    description: Query SEKOIA.IO Intelligence Center for context around this observable
+    execution: false
+    name: GetIndicatorContext
+    outputs:
+    - contextPath: SEKOIAIntelligenceCenter.items.type
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.type
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.id
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.objects.valid_from
+      description: ''
+      type: Date
+    - contextPath: SEKOIAIntelligenceCenter.items.objects.x_inthreat_sources_refs
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.objects.spec_version
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.objects.x_ic_is_in_flint
+      description: ''
+      type: Boolean
+    - contextPath: SEKOIAIntelligenceCenter.items.objects.lang
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.objects.x_ic_impacted_locations
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.objects.id
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.objects.created_by_ref
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.objects.modified
+      description: ''
+      type: Date
+    - contextPath: SEKOIAIntelligenceCenter.items.objects.type
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.objects.revoked
+      description: ''
+      type: Boolean
+    - contextPath: SEKOIAIntelligenceCenter.items.objects.created
+      description: ''
+      type: Date
+    - contextPath: SEKOIAIntelligenceCenter.items.objects.x_ic_observable_types
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.objects.pattern_type
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.objects.name
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.objects.pattern
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.objects.indicator_types
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.objects.object_marking_refs
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.objects.x_ic_impacted_sectors
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.objects.kill_chain_phases.kill_chain_name
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.objects.kill_chain_phases.phase_name
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.objects.confidence
+      description: ''
+      type: Number
+    - contextPath: SEKOIAIntelligenceCenter.items.objects.x_ic_deprecated
+      description: ''
+      type: Boolean
+    - contextPath: SEKOIAIntelligenceCenter.items.objects.valid_until
+      description: ''
+      type: Date
+    - contextPath: SEKOIAIntelligenceCenter.items.objects.x_ic_external_refs
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.objects.first_seen
+      description: ''
+      type: Date
+    - contextPath: SEKOIAIntelligenceCenter.items.objects.aliases
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.objects.is_family
+      description: ''
+      type: Boolean
+    - contextPath: SEKOIAIntelligenceCenter.items.objects.external_references.description
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.objects.external_references.source_name
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.objects.external_references.url
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.objects.capabilities
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.objects.malware_types
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.objects.implementation_languages
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.objects.description
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.objects.stop_time
+      description: ''
+      type: Date
+    - contextPath: SEKOIAIntelligenceCenter.items.objects.relationship_type
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.objects.target_ref
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.objects.source_ref
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.objects.start_time
+      description: ''
+      type: Date
+    - contextPath: SEKOIAIntelligenceCenter.items.objects.x_ic_is_sector
+      description: ''
+      type: Boolean
+    - contextPath: SEKOIAIntelligenceCenter.items.objects.contact_information
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.objects.x_ic_is_source
+      description: ''
+      type: Boolean
+    - contextPath: SEKOIAIntelligenceCenter.items.objects.sectors
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.objects.identity_class
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.objects.definition_type
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.objects.definition.tlp
+      description: ''
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.has_more
+      description: ''
+      type: Boolean
+    - contextPath: Domain.DNS
+      description: A list of IP objects resolved by DNS.
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.Domain
+      description: A list of IP objects resolved by DNS.
+      type: String
+    - contextPath: IP.Address
+      description: IP address
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.File.sha1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.File.sha256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.File.total
+      description: Total number of engines
+      type: Number
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.4.31492
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)
