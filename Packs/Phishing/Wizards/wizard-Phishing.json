@@ -12,7 +12,7 @@
         "packs": [
           {
             "name": "EWS",
-            "display_name": "EWS Mail"
+            "display_name": "EWS Mail (Please Also install EWS Mail Sender Pack)"
           },
           {
             "name": "Gmail",
@@ -277,8 +277,8 @@
           "priority": 3,
           "name": "MicrosoftGraphMail",
           "action": {
-            "existing": "Update your current instance to work with the new Phishing type: \n1. Enable fetching. \n2. Set the 'Microsoft Graph Mail Mapper'.\n3. Set the Incident type field to Phishing. \n4. Set the Mapper field to 'Cortex XDR - IR-mapper'",
-            "new": "Set up new 'Microsoft Graph Mail' to work with the Phishing type: \n1. Enable fetching. \n2. Choose the 'Microsoft Graph Mail Mapper .\n3. Set the Incident type field to Phishing. \n4. Set the Mapper field to 'Cortex XDR - IR-mapper'."
+            "existing": "Update your current instance to work with the new Phishing type: \n1. Enable fetching. \n2. Set the 'Microsoft Graph Mail Mapper'.\n3. Set the Incident type field to Phishing.",
+            "new": "Set up new 'Microsoft Graph Mail' to work with the Phishing type: \n1. Enable fetching. \n2. Choose the 'Microsoft Graph Mail Mapper .\n3. Set the Incident type field to Phishing."
           },
           "description": "Set up the 'O365 Outlook Mail (Using Graph API)' integration to work with your Phishing use case.",
           "incident_type": "Phishing"
@@ -313,14 +313,6 @@
             "new": "Configure EWS Mail Sender to enable email notifications."
           },
           "description": "Configure EWS Mail Sender to enable email notifications."
-        },
-        {
-          "name": "Gmail",
-          "action": {
-            "existing": "Configure 'Gmail' to enable email notifications.",
-            "new": "Configure Gmail to enable email notifications."
-          },
-          "description": "Configure Gmail to enable email notifications."
         },
         {
           "name": "Active Directory Query v2",
