@@ -219,7 +219,7 @@ script:
           required: true
           secret: false
         - default: false
-          defaultValue: '10'
+          defaultValue: '100'
           description: The value in the field represents the number of events that can
             be returned, maximum allowed is 1000
           isArray: false
