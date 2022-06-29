@@ -97,19 +97,19 @@ class TestSiverfort(object):
     def test_get_status(self, requests_mock, base_url, api_key, client):
         from Silverfort import test_module
 
-        requests_mock.get(f'{base_url}/getBootStatus?apikey={api_key}', json="True")
+        requests_mock.get(f'{base_url}/v1/public/getBootStatus?apikey={api_key}', json="True")
         output = test_module(client)
         assert output == "ok"
 
     def test_get_upn_by_email(self, requests_mock, upn, base_url, valid_get_upn_response, api_key, client, email, domain):
-        requests_mock.get(f'{base_url}/getUPN?apikey={api_key}&email={email}&domain={domain}', json=valid_get_upn_response)
+        requests_mock.get(f'{base_url}/v1/public/getUPN?apikey={api_key}&email={email}&domain={domain}', json=valid_get_upn_response)
 
         output = client.get_upn_by_email_or_sam_account_http_request(domain, email=email)
         assert output == upn
 
     def test_get_upn_by_sam_account(self, requests_mock, upn, base_url, valid_get_upn_response, api_key, client, sam_account,
                                     domain):
-        requests_mock.get(f'{base_url}/getUPN?apikey={api_key}&sam_account={sam_account}&domain={domain}',
+        requests_mock.get(f'{base_url}/v1/public/getUPN?apikey={api_key}&sam_account={sam_account}&domain={domain}',
                           json=valid_get_upn_response)
 
         output = client.get_upn_by_email_or_sam_account_http_request(domain, sam_account=sam_account)
@@ -117,7 +117,7 @@ class TestSiverfort(object):
 
     def test_get_user_entity_risk(self, requests_mock, upn, base_url, api_key, client, valid_get_risk_response):
         args = {'upn': upn}
-        requests_mock.get(f'{base_url}/getEntityRisk?apikey={api_key}&user_principal_name={upn}',
+        requests_mock.get(f'{base_url}/v1/public/getEntityRisk?apikey={api_key}&user_principal_name={upn}',
                           json=valid_get_risk_response)
 
         _, outputs, _ = get_user_entity_risk_command(client, args)
@@ -131,7 +131,7 @@ class TestSiverfort(object):
     def test_get_resource_entity_risk(self, requests_mock, base_url, api_key, client, valid_get_risk_response, resource_name,
                                       domain):
         args = {'resource_name': resource_name, 'domain_name': domain}
-        requests_mock.get(f'{base_url}/getEntityRisk?apikey={api_key}&resource_name={resource_name}'
+        requests_mock.get(f'{base_url}/v1/public/getEntityRisk?apikey={api_key}&resource_name={resource_name}'
                           f'&domain_name={domain}', json=valid_get_risk_response)
 
         _, outputs, _ = get_resource_entity_risk_command(client, args)
@@ -147,10 +147,10 @@ class TestSiverfort(object):
         args = risk_args
         args['upn'] = upn
 
-        requests_mock.post(f'{base_url}/updateEntityRisk?apikey={api_key}', json=valid_update_response)
+        requests_mock.post(f'{base_url}/v1/public/updateEntityRisk?apikey={api_key}', json=valid_update_response)
         assert update_user_entity_risk_command(client, args) == "updated successfully!"
 
-        requests_mock.post(f'{base_url}/updateEntityRisk?apikey={api_key}', json=bad_response)
+        requests_mock.post(f'{base_url}/v1/public/updateEntityRisk?apikey={api_key}', json=bad_response)
         assert update_user_entity_risk_command(client, args) == "Couldn't update the user entity's risk"
 
     def test_update_resource_entity_risk_successfully(self, requests_mock, base_url, api_key, client, valid_update_response,
@@ -159,10 +159,10 @@ class TestSiverfort(object):
         args['resource_name'] = resource_name
         args['domain_name'] = domain
 
-        requests_mock.post(f'{base_url}/updateEntityRisk?apikey={api_key}', json=valid_update_response)
+        requests_mock.post(f'{base_url}/v1/public/updateEntityRisk?apikey={api_key}', json=valid_update_response)
         assert update_resource_entity_risk_command(client, args) == 'updated successfully!'
 
-        requests_mock.post(f'{base_url}/updateEntityRisk?apikey={api_key}', json=bad_response)
+        requests_mock.post(f'{base_url}/v1/public/updateEntityRisk?apikey={api_key}', json=bad_response)
         assert update_resource_entity_risk_command(client, args) == "Couldn't update the resource entity's risk"
 
 
