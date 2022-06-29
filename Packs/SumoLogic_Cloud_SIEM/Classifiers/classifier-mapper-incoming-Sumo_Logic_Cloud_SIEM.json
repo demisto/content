@@ -20,7 +20,7 @@
 						]
 					}
 				},
-				"Insight Involved Entities": {
+				"Sumo Logic Cloud SIEM Insight Involved Entities": {
 					"complex": {
 						"filters": [],
 						"root": "involvedEntities",
