@@ -25,9 +25,9 @@ Fair notice - for this step you may have to wait up to 20 minutes upon creation 
   
 ### Base URL 
 
-Insert your custom base url or checkout for example (https://us-api.mimecast.com) 
+Insert your custom base url or checkout 
 [Mimecast base url](https://integrations.mimecast.com/documentation/api-overview/global-base-urls/)
-inorder to find your base url.
+inorder to find your base url. (example: https://us-api.mimecast.com) 
 
 ### Pre-requisites
 
