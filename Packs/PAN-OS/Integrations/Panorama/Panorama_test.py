@@ -2557,7 +2557,7 @@ def test_pan_os_get_running_config(mocker):
         A target serial number
     When -
         Returning the running config
-    Then - 
+    Then -
         File returned should be called 'running_config'
         The contents should be XML and not JSON
     """
