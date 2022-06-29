@@ -310,6 +310,16 @@ tasks:
       '#none#':
       - "8"
     scriptarguments:
+      action_script:
+        simple: ${inputs.ActionScript}
+      command_line:
+        simple: ${inputs.CommandLine}
+      document_password:
+        simple: ${inputs.documentPassword}
+      enable_tor:
+        simple: ${inputs.EnableTor}
+      environment_id:
+        simple: ${inputs.EnvironmentID}
       extended_data:
         simple: "true"
       file:
@@ -318,16 +328,12 @@ tasks:
         simple: example
       submit_file:
         simple: "no"
-      enable_tor:
-        simple: "false"
-      environment_id:
-        simple: '160: Windows 10'
-      action_script: {}
-      command_line: {}
-      document_password: {}
-      submit_name: {}
-      system_date: {}
-      system_time: {}
+      submit_name:
+        simple: ${inputs.SubmitName}
+      system_date:
+        simple: ${inputs.SystemDate}
+      system_time:
+        simple: ${inputs.SystemTime}
     separatecontext: false
     view: |-
       {
@@ -379,7 +385,49 @@ inputs:
   description: |-
     The operating system for which the alert was raised.
     accepted values are Windows, Linux, Android
-  playbookInputQuery:
+  playbookInputQuery: null
+- key: EnableTor
+  value:
+    simple: "false"
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: EnvironmentID
+  value:
+    simple: '''160: Windows 10'''
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: ActionScript
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: CommandLine
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: documentPassword
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: SubmitName
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: SystemDate
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: SystemTime
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery: null
 outputs:
 - contextPath: csfalconx.resource.tags
   description: The analysis tags.
