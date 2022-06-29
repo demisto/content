@@ -4,7 +4,7 @@ from CommonServerPython import *  # noqa: F401
 import traceback
 import io
 from contextlib import redirect_stderr, redirect_stdout
-from demisto_sdk.commands.split.ymlsplitter import *
+from demisto_sdk.commands.split.ymlsplitter import YmlSplitter
 
 
 TYPE_TO_FOLDER = {'playbook': 'Playbooks',
@@ -60,7 +60,7 @@ def commit_content_item(branch_name, content_file):
 
     commit_res = demisto.executeCommand('Github-commit-file', commit_args)
     if is_error(commit_res):
-        print(str(get_error(commit_res)))
+        raise DemistoException(get_error(commit_res))
 
 
 def split_script_file(content_file):
@@ -148,7 +148,9 @@ def main():
         branch_name = demisto.getArg('branch')
         pack_name = demisto.getArg('pack')
         user = demisto.getArg('user')
-        comment = demisto.getArg('comment', '')
+        comment = demisto.getArg('comment')
+        if not comment:
+            comment = ''
 
         username = user.get('username')
         if user.get('email'):

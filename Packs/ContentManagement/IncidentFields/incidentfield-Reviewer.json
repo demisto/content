@@ -4,7 +4,7 @@
         "Pull Request Creation"
     ],
     "caseInsensitive": true,
-    "cliName": "xsoarci/cdReviewer",
+    "cliName": "reviewer",
     "closeForm": false,
     "content": true,
     "description": "Github username to set as pull request reviewer.",

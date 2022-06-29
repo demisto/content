@@ -1,20 +1,19 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Pull Request Creation",
-        "Pull Request Update"
+        "Pull Request Creation"
     ],
     "caseInsensitive": true,
-    "cliName": "xsoarci/cdPullRequestLink",
+    "cliName": "packname",
     "closeForm": false,
     "content": true,
     "editForm": true,
     "group": 0,
     "hidden": false,
-    "id": "incident_pullrequestlink",
+    "id": "incident_packname",
     "isReadOnly": false,
     "locked": false,
-    "name": "Pull Request Link",
+    "name": "Pack Name",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,
@@ -25,7 +24,7 @@
     "sla": 0,
     "system": false,
     "threshold": 72,
-    "type": "url",
+    "type": "shortText",
     "unmapped": false,
     "unsearchable": true,
     "useAsKpi": false,

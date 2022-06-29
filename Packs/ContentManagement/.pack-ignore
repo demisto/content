@@ -28,3 +28,27 @@ ignore=BA116
 
 [file:README.md]
 ignore=RM108
+
+[file:incidentfield-PullRequestComment.json]
+ignore=IF113
+
+[file:incidentfield-PullRequestAttachment.json]
+ignore=IF113
+
+[file:incidentfield-PullRequestBranch.json]
+ignore=IF113
+
+[file:incidentfield-PackName.json]
+ignore=IF113
+
+[file:incidentfield-Branch.json]
+ignore=IF113
+
+[file:incidentfield-Reviewer.json]
+ignore=IF113
+
+[file:incidentfield-PullRequestLink.json]
+ignore=IF113
+
+[file:incidentfield-PullRequestTitle.json]
+ignore=IF113
