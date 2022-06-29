@@ -1,1 +1,0 @@
-Zendesk integration requires the API key and a username.

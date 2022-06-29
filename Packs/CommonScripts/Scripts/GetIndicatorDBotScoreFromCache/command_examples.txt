@@ -1,1 +1,0 @@
-!GetIndicatorDBotScoreFromCache value=1.1.1.1

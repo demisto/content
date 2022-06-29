@@ -1,1 +1,0 @@
-!nmap-scan options="-sV" targets=scanme.nmap.org

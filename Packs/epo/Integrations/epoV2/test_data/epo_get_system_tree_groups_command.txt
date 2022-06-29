@@ -1,2 +1,0 @@
-OK:
-[ { "groupId" : 6, "groupPath" : "My Organization\\Lost&Found\\WORKGROUP" } ]

@@ -1,1 +1,0 @@
-wait(parseInt(args.seconds));

@@ -1,7 +1,0 @@
-{
-    "data": {
-        "vsphereVMInitiateLiveMount": {
-            "id": "MOUNT_SNAPSHOT_dummy_id:::0"
-        }
-    }
-}

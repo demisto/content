@@ -1,5 +1,0 @@
-[file:README.md]
-ignore=RM106
-
-[file:GoogleCloudFunctions.yml]
-ignore=IN145

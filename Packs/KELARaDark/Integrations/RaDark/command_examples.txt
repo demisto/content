@@ -1,4 +1,0 @@
-!radark-incident-get-items incident_id=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-!radark-email-enrich email=testa@test.com
-!radark-item-handle item_id=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-!radark-item-purchase item_id=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx

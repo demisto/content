@@ -1,5 +1,0 @@
-[file:LogsignSiem.yml]
-ignore=IN145
-
-[file:classifier-LogsignSIEM_Classifier.json]
-ignore=BA101

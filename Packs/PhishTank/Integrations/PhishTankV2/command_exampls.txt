@@ -1,3 +1,0 @@
-!phishtank-reload
-!phishtank-status
-!url url=https://login.rakuten.co.jp.reise

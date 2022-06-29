@@ -1,2 +1,0 @@
-!cymptom-get-mitigations
-!cymptom-get-users-with-cracked-passwords

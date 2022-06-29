@@ -1,5 +1,0 @@
-[file:PiHole.yml]
-ignore=IN145
-
-[file:PiHole_image.png]
-ignore=IM111

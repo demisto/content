@@ -1,9 +1,0 @@
-{
-    "created": "2020-11-26T07:28:25.818225Z",
-    "description": "Test tag",
-    "disabled": false,
-    "id": "9cfde341-ccff-4e59-8017-ea462da4c736",
-    "modified": "2020-11-26T07:28:25.818225Z",
-    "name": "xsoar-test-tag1",
-    "tenantId": "adce644d-8698-4135-aa99-32cb75480c8a"
-}
