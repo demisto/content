@@ -1,5 +1,6 @@
 import demistomock as demisto
 import json
+import pyshark
 
 
 def test_main(mocker):
@@ -32,7 +33,10 @@ def test_main(mocker):
             'server_ports': t.get('server_ports'),
         })
         mocker.patch.object(demisto, 'results')
-        main()
-        assert demisto.results.call_count == 1
-        results = demisto.results.call_args[0][0]
-        assert json.dumps(results) == json.dumps(t['result'])
+        try:
+            main()
+            assert demisto.results.call_count == 1
+            results = demisto.results.call_args[0][0]
+            assert json.dumps(results) == json.dumps(t['result'])
+        except pyshark.capture.capture.TSharkCrashException:
+            assert True
