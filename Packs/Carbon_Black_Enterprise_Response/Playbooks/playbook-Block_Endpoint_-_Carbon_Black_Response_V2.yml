@@ -4,22 +4,22 @@ contentitemexportablefields:
   contentitemfields: {}
 name: Block Endpoint - Carbon Black Response V2
 description: Carbon Black Response - isolates an endpoint for a given hostname.
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 73040a0e-cca5-4197-8089-f46650317040
     type: start
     task:
       id: 73040a0e-cca5-4197-8089-f46650317040
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     separatecontext: false
     view: |-
       {
@@ -33,8 +33,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: 8d840b85-2255-4771-8047-1cffd0133d56
     type: regular
     task:
@@ -45,10 +45,10 @@ tasks:
       script: '|||cb-sensor-info'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
     scriptarguments:
       groupid: {}
       hostname:
@@ -69,8 +69,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     taskid: 8a7b3b07-16d1-4953-897b-dde82b8153f3
     type: regular
     task:
@@ -81,10 +81,10 @@ tasks:
       script: '|||cb-quarantine-device'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     scriptarguments:
       sensor:
         simple: ${CbResponse.Sensors.CbSensorID}
@@ -101,8 +101,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     taskid: d35be2d6-6709-40d0-846e-dc9aef142e30
     type: title
     task:
@@ -111,7 +111,7 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     separatecontext: false
     view: |-
@@ -126,25 +126,24 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     taskid: d338c691-a845-4f21-841e-5482255c63f6
     type: condition
     task:
       id: d338c691-a845-4f21-841e-5482255c63f6
       version: -1
       name: Is Carbon Black Enterprise Response enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'.
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "4"
-      "yes":
-      - "2"
+      - '4'
+      yes:
+      - '2'
     scriptarguments:
       brandname:
         simple: carbonblack-v2
@@ -163,8 +162,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "7":
-    id: "7"
+  '7':
+    id: '7'
     taskid: 179cbf36-32ef-47d3-8d77-2bac9a797283
     type: condition
     task:
@@ -173,16 +172,16 @@ tasks:
       name: 'Is the endpoint ready for isolation? '
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#default#':
-      - "4"
-      "yes":
-      - "3"
+      - '4'
+      yes:
+      - '3'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -191,7 +190,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "false"
+              simple: 'false'
     view: |-
       {
         "position": {

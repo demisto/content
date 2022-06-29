@@ -18,8 +18,7 @@ args:
   isArray: false
   name: timeout
   predefined:
-  - Session timeout (If a command is not issued after this time the session will be
-    closed)
+  - Session timeout (If a command is not issued after this time the session will be closed)
   required: false
   secret: false
 comment: |-
@@ -38,8 +37,7 @@ outputs:
   description: The command name.
   type: String
 - contextPath: CbLiveResponse.Commands.Status
-  description: The command status ('pending', 'in progress', 'complete', 'error',
-    or 'canceled').
+  description: The command status ('pending', 'in progress', 'complete', 'error', or 'canceled').
   type: String
 - contextPath: CbLiveResponse.Commands.CommandCompletionTime
   description: The command completion time (0 if not complete).
@@ -118,7 +116,7 @@ tags:
 - endpoint
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.4.30607
 tests:
 - No Test
 dependson:

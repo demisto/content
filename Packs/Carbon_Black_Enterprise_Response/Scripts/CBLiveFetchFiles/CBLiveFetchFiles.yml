@@ -8,8 +8,7 @@ subtype: python2
 tags:
 - carbon-black
 - endpoint
-comment: Fetch all of the files from the endpoints where they were found using Cb
-  Live.
+comment: Fetch all of the files from the endpoints where they were found using Cb Live.
 system: true
 args:
 - name: filelocations

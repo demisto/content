@@ -1,24 +1,24 @@
 id: CBFindIP - Test
 version: -1
 name: CBFindIP - Test
-starttaskid: "0"
-description: ""
+starttaskid: '0'
+description: ''
 fromversion: 5.0.0
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 11ee419a-12a9-4c9a-8064-661025b9413c
     type: start
     task:
-      description: ""
+      description: ''
       id: 11ee419a-12a9-4c9a-8064-661025b9413c
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     separatecontext: false
     view: |-
       {
@@ -30,8 +30,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: f9c6da92-d6e1-4a7f-8de2-0474ae4fc01f
     type: regular
     task:
@@ -42,13 +42,13 @@ tasks:
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       all:
-        simple: "yes"
+        simple: yes
       index: {}
       key: {}
       keysToKeep: {}
@@ -64,8 +64,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: 86ab5275-9919-4f4d-8290-324fe01bb228
     type: regular
     task:
@@ -76,10 +76,10 @@ tasks:
       scriptName: CBFindIP
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     scriptarguments:
       ip:
         simple: 8.8.8.8
@@ -94,24 +94,24 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     taskid: fd769a21-e039-49d1-8f17-2fa528084b89
     type: condition
     task:
-      description: ""
+      description: ''
       id: fd769a21-e039-49d1-8f17-2fa528084b89
       version: -1
       name: Check results
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "4"
+      yes:
+      - '4'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -132,18 +132,18 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     taskid: a85785c4-6612-447c-873f-142d418f61f0
     type: title
     task:
-      description: ""
+      description: ''
       id: a85785c4-6612-447c-873f-142d418f61f0
       version: -1
       name: Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
     separatecontext: false
     view: |-
       {

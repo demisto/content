@@ -81,6 +81,10 @@
                 "severity": {
                     "complex": null,
                     "simple": "alert_severity"
+                },
+                "Carbon Black EDR Unique ID": {
+                    "complex": null,
+                    "simple": "unique_id"
                 }
             }
         }

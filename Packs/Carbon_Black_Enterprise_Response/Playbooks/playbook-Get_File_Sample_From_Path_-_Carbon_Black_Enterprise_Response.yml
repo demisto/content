@@ -1,24 +1,24 @@
 id: get_file_sample_from_path_-_carbon_black_enterprise_response
 version: -1
 name: Get File Sample From Path - Carbon Black Enterprise Response
-fromversion: "5.0.0"
+fromversion: 5.0.0
 description: Returns a file sample to the war-room from a path on an endpoint using Carbon Black Enterprise Response
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 6b09e12d-a699-4b98-8f93-0ee2fb3904df
     type: start
     task:
       id: 6b09e12d-a699-4b98-8f93-0ee2fb3904df
       version: -1
-      description: ""
-      name: ""
+      description: ''
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     separatecontext: false
     view: |-
       {
@@ -27,8 +27,8 @@ tasks:
           "y": 48
         }
       }
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: 40ec070b-2ab3-432a-86fa-eb02b381398a
     type: condition
     task:
@@ -39,12 +39,12 @@ tasks:
       scriptName: Exists
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "3"
-      "yes":
-      - "5"
+      - '3'
+      yes:
+      - '5'
     scriptarguments:
       extend-context: {}
       value:
@@ -75,18 +75,18 @@ tasks:
           "y": 196
         }
       }
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     taskid: 347006fd-60f5-4233-8c40-9b941735dd2a
     type: title
     task:
       id: 347006fd-60f5-4233-8c40-9b941735dd2a
       version: -1
-      description: ""
+      description: ''
       name: Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
     separatecontext: false
     view: |-
       {
@@ -95,8 +95,8 @@ tasks:
           "y": 720
         }
       }
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     taskid: 6361a341-4a5c-4735-8ffe-ce13d9539b91
     type: regular
     task:
@@ -107,10 +107,10 @@ tasks:
       scriptName: CBLiveGetFile_V2
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     scriptarguments:
       endpoint:
         simple: ${inputs.Hostname}
@@ -124,8 +124,8 @@ tasks:
           "y": 544
         }
       }
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     taskid: 69aeb053-04ea-4853-872a-adf410c08c5e
     type: condition
     task:
@@ -135,18 +135,18 @@ tasks:
       description: Checks if a file path exists in playbook inputs.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "3"
-      "yes":
-      - "4"
+      - '3'
+      yes:
+      - '4'
     scriptarguments:
       value:
         simple: ${inputs.Path}
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: general.isExists
           left:
@@ -198,8 +198,7 @@ outputs:
   description: The command name.
   type: String
 - contextPath: CbLiveResponse.Commands.Status
-  description: The command status ('pending', 'in progress', 'complete', 'error',
-    or 'canceled').
+  description: The command status ('pending', 'in progress', 'complete', 'error', or 'canceled').
   type: String
 - contextPath: CbLiveResponse.Commands.CommandCompletionTime
   description: The command completion time (0 if not complete).

@@ -2,22 +2,22 @@ id: Search Endpoints By Hash - Carbon Black Response V2
 version: -1
 name: Search Endpoints By Hash - Carbon Black Response V2
 description: Hunt for malicious indicators using Carbon Black
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: edc8b672-13e8-48fa-87c9-594118876ac4
     type: start
     task:
       id: edc8b672-13e8-48fa-87c9-594118876ac4
       version: -1
-      name: ""
+      name: ''
       description: Playbook start point
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     separatecontext: false
     view: |-
       {
@@ -29,8 +29,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: 71c8642a-2af7-4af6-8015-5a2f89fd40d2
     type: regular
     task:
@@ -41,10 +41,10 @@ tasks:
       script: '|||cb-get-processes'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     scriptarguments:
       facet: {}
       group: {}
@@ -71,8 +71,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: a43ea7bf-d5e3-4c0b-8da7-5ce65cc1aae3
     type: condition
     task:
@@ -82,18 +82,18 @@ tasks:
       description: Is Carbon Black enabled?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "7"
-      "yes":
-      - "5"
+      - '7'
+      yes:
+      - '5'
     scriptarguments:
       value:
         simple: ${modules(val.brand == 'carbonblack' && val.state == 'active')}
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -129,8 +129,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     taskid: 108ba97d-b9da-4162-808d-025b5f6b7986
     type: title
     task:
@@ -140,7 +140,7 @@ tasks:
       description: Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
     separatecontext: false
     view: |-
       {
@@ -152,8 +152,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     taskid: 00c09fd8-6352-4b6c-8e7a-5a2459544fc7
     type: condition
     task:
@@ -163,15 +163,15 @@ tasks:
       description: Checks if there is an MD5 hash to hunt.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "7"
-      "yes":
-      - "6"
+      - '7'
+      yes:
+      - '6'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -189,8 +189,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     taskid: 4fd8eec7-f7ec-4f53-8473-932db46cc0ec
     type: title
     task:
@@ -199,11 +199,11 @@ tasks:
       name: Hunt MD5
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     separatecontext: false
     view: |-
       {
@@ -215,8 +215,8 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "7":
-    id: "7"
+  '7':
+    id: '7'
     taskid: 863da4aa-ab0b-416b-8072-1f36602773aa
     type: title
     task:
@@ -225,11 +225,11 @@ tasks:
       name: No Integration \ No Hash
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     separatecontext: false
     view: |-
       {

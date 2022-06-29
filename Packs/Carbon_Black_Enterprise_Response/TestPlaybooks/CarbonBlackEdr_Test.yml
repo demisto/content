@@ -3,21 +3,22 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Carbon Black Edr - Test
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 8b46dcb8-73ff-4616-843f-4f6d4a189549
     type: start
     task:
       id: 8b46dcb8-73ff-4616-843f-4f6d4a189549
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     separatecontext: false
     view: |-
       {
@@ -31,8 +32,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: 1a925e20-1bb4-45fc-8759-1e3c02e3ebfd
     type: regular
     task:
@@ -42,13 +43,13 @@ tasks:
       script: DeleteContext
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "13"
+      - '13'
     scriptarguments:
       all:
-        simple: "yes"
+        simple: yes
     separatecontext: false
     view: |-
       {
@@ -62,8 +63,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: 01860141-2cc4-4075-881e-862fb1caca85
     type: regular
     task:
@@ -73,13 +74,13 @@ tasks:
       script: '|||cb-edr-processes-search'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     scriptarguments:
       limit:
-        simple: "1"
+        simple: '1'
       process_name:
         simple: chrome.exe
     separatecontext: false
@@ -95,8 +96,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     taskid: 39d4765f-6874-47dc-8df3-1dff33ea6e8d
     type: condition
     task:
@@ -105,13 +106,13 @@ tasks:
       name: Verify Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "4"
+      yes:
+      - '4'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -150,8 +151,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     taskid: e086dd42-a33a-4459-8784-43d3389e48e8
     type: regular
     task:
@@ -161,13 +162,13 @@ tasks:
       script: '|||cb-edr-process-get'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     scriptarguments:
       get_related:
-        simple: "True"
+        simple: 'True'
       process_id:
         simple: ${CarbonBlackEDR.ProcessSearch.Results.id}
       segment_id:
@@ -185,8 +186,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     taskid: 4a058c7c-d570-40cb-8489-53733b97a758
     type: condition
     task:
@@ -195,13 +196,13 @@ tasks:
       name: Verify Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "6"
+      yes:
+      - '6'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -255,8 +256,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     taskid: dd4e23b6-c32b-4144-8943-0661c2451cd0
     type: regular
     task:
@@ -266,13 +267,13 @@ tasks:
       script: '|||cb-edr-process-segments-get'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
     scriptarguments:
       limit:
-        simple: "3"
+        simple: '3'
       process_id:
         simple: ${CarbonBlackEDR.Process.process.id}
     separatecontext: false
@@ -288,8 +289,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "7":
-    id: "7"
+  '7':
+    id: '7'
     taskid: afbd1b05-f831-4d54-8ce2-5d27f5d4103e
     type: condition
     task:
@@ -298,13 +299,13 @@ tasks:
       name: Verify Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "9"
+      yes:
+      - '9'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -328,8 +329,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "9":
-    id: "9"
+  '9':
+    id: '9'
     taskid: e56af198-b3c8-4dab-8863-663e9c7bc68c
     type: regular
     task:
@@ -339,10 +340,10 @@ tasks:
       script: '|||cb-edr-process-events-list'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "10"
+      - '10'
     scriptarguments:
       process_id:
         simple: ${CarbonBlackEDR.Process.process.id}
@@ -361,8 +362,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "10":
-    id: "10"
+  '10':
+    id: '10'
     taskid: fb8523df-9aaa-46dd-81c9-a8447ba9ac2f
     type: condition
     task:
@@ -371,13 +372,13 @@ tasks:
       name: Verify Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "24"
+      yes:
+      - '24'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -466,8 +467,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "11":
-    id: "11"
+  '11':
+    id: '11'
     taskid: 76cf94b8-729a-4bb9-8f8c-7014f4577d7a
     type: regular
     task:
@@ -477,13 +478,13 @@ tasks:
       script: '|||cb-edr-unquarantine-device'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "31"
+      - '31'
     scriptarguments:
       sensor_id:
-        simple: "15"
+        simple: '15'
     separatecontext: false
     view: |-
       {
@@ -497,8 +498,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "12":
-    id: "12"
+  '12':
+    id: '12'
     taskid: eac9fd5e-6aef-4f91-8e6b-b103eb74eaa4
     type: regular
     task:
@@ -508,13 +509,13 @@ tasks:
       script: '|||cb-edr-quarantine-device'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "11"
+      - '11'
     scriptarguments:
       sensor_id:
-        simple: "15"
+        simple: '15'
     separatecontext: false
     view: |-
       {
@@ -528,8 +529,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "13":
-    id: "13"
+  '13':
+    id: '13'
     taskid: 0710b665-5bf8-4a44-8d36-ad2448cb32df
     type: regular
     task:
@@ -539,13 +540,13 @@ tasks:
       script: '|||cb-edr-sensors-list'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "14"
+      - '14'
     scriptarguments:
       limit:
-        simple: "1"
+        simple: '1'
     separatecontext: false
     view: |-
       {
@@ -559,8 +560,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "14":
-    id: "14"
+  '14':
+    id: '14'
     taskid: 68da2686-c860-4afc-8e91-a217668d20e5
     type: condition
     task:
@@ -569,13 +570,13 @@ tasks:
       name: Verify Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "12"
+      yes:
+      - '12'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -609,8 +610,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "15":
-    id: "15"
+  '15':
+    id: '15'
     taskid: e3fdc759-c99d-4471-896d-664abf7aeb10
     type: regular
     task:
@@ -620,10 +621,10 @@ tasks:
       script: '|||cb-edr-watchlist-delete'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "18"
+      - '18'
     scriptarguments:
       id:
         complex:
@@ -634,7 +635,7 @@ tasks:
             args:
               index:
                 value:
-                  simple: "0"
+                  simple: '0'
     separatecontext: false
     view: |-
       {
@@ -648,8 +649,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "16":
-    id: "16"
+  '16':
+    id: '16'
     taskid: d7bf5f1a-2b4e-4b8b-87c6-5c6eb9655746
     type: regular
     task:
@@ -659,10 +660,10 @@ tasks:
       script: '|||cb-edr-watchlist-update'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "15"
+      - '15'
     scriptarguments:
       description:
         simple: updating description for test playbook.
@@ -683,8 +684,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "17":
-    id: "17"
+  '17':
+    id: '17'
     taskid: 169d7544-2e36-49c1-8d24-6fffff51e5e6
     type: regular
     task:
@@ -694,10 +695,10 @@ tasks:
       script: '|||cb-edr-watchlist-create'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "16"
+      - '16'
     scriptarguments:
       description:
         simple: plyabook test
@@ -718,8 +719,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "18":
-    id: "18"
+  '18':
+    id: '18'
     taskid: b2ce7103-49ab-472c-8b2e-8e2acc2d2f10
     type: regular
     task:
@@ -729,10 +730,10 @@ tasks:
       script: '|||cb-edr-watchlists-list'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "19"
+      - '19'
     separatecontext: false
     view: |-
       {
@@ -746,8 +747,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "19":
-    id: "19"
+  '19':
+    id: '19'
     taskid: 33989d36-9e52-4098-8791-feee12806d45
     type: condition
     task:
@@ -756,13 +757,13 @@ tasks:
       name: Verify Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "2"
+      yes:
+      - '2'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -796,8 +797,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "21":
-    id: "21"
+  '21':
+    id: '21'
     taskid: 01716b13-96cf-4b4a-85b5-c94a6b64a4bf
     type: regular
     task:
@@ -808,13 +809,13 @@ tasks:
       script: '|||cb-edr-binary-bans-list'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "22"
+      - '22'
     scriptarguments:
       limit:
-        simple: "5"
+        simple: '5'
     separatecontext: false
     view: |-
       {
@@ -828,8 +829,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "22":
-    id: "22"
+  '22':
+    id: '22'
     taskid: 0a68713c-e02f-45f3-81e9-33ac49dbbff8
     type: condition
     task:
@@ -838,13 +839,13 @@ tasks:
       name: Verify Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "29"
+      yes:
+      - '29'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -893,8 +894,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "23":
-    id: "23"
+  '23':
+    id: '23'
     taskid: 98a7c9a1-362d-495d-8289-5c3e800ae6d5
     type: regular
     task:
@@ -904,10 +905,10 @@ tasks:
       script: '|||cb-edr-alert-update'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "34"
+      - '34'
     scriptarguments:
       alert_ids:
         complex:
@@ -918,7 +919,7 @@ tasks:
             args:
               index:
                 value:
-                  simple: "0"
+                  simple: '0'
       status:
         simple: In Progress
     separatecontext: false
@@ -934,8 +935,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "24":
-    id: "24"
+  '24':
+    id: '24'
     taskid: cc241b54-2a8e-4e04-8730-6a2cf9b81098
     type: regular
     task:
@@ -945,10 +946,10 @@ tasks:
       script: '|||cb-edr-alert-search'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "25"
+      - '25'
     scriptarguments:
       status:
         simple: Unresolved
@@ -965,8 +966,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "25":
-    id: "25"
+  '25':
+    id: '25'
     taskid: 5b56ec70-3724-4e4e-864b-6a8e41bde59a
     type: condition
     task:
@@ -975,13 +976,13 @@ tasks:
       name: Verify Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "23"
+      yes:
+      - '23'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -1195,8 +1196,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "26":
-    id: "26"
+  '26':
+    id: '26'
     taskid: ade67e78-1bfe-4a5b-86a3-44948cee29c1
     type: regular
     task:
@@ -1206,10 +1207,10 @@ tasks:
       script: '|||cb-edr-binary-summary'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "27"
+      - '27'
     scriptarguments:
       md5:
         complex:
@@ -1220,7 +1221,7 @@ tasks:
             args:
               index:
                 value:
-                  simple: "0"
+                  simple: '0'
     separatecontext: false
     view: |-
       {
@@ -1234,8 +1235,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "27":
-    id: "27"
+  '27':
+    id: '27'
     taskid: 143d2766-a4e9-4e7c-8dea-5eb40adc0340
     type: condition
     task:
@@ -1244,13 +1245,13 @@ tasks:
       name: Verify Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "17"
+      yes:
+      - '17'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -1384,8 +1385,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "29":
-    id: "29"
+  '29':
+    id: '29'
     taskid: 75b06ead-0eed-449f-83cc-b8b419c4991a
     type: regular
     task:
@@ -1396,15 +1397,15 @@ tasks:
       script: '|||cb-edr-binary-search'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "30"
+      - '30'
     scriptarguments:
       company_name:
         simple: Microsoft
       limit:
-        simple: "3"
+        simple: '3'
     separatecontext: false
     view: |-
       {
@@ -1418,8 +1419,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "30":
-    id: "30"
+  '30':
+    id: '30'
     taskid: ede6e993-d9f2-4e58-81e6-77ed5c6a20ae
     type: condition
     task:
@@ -1428,13 +1429,13 @@ tasks:
       name: Verify Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "26"
+      yes:
+      - '26'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -1503,8 +1504,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "31":
-    id: "31"
+  '31':
+    id: '31'
     taskid: 4f339007-62d2-4556-84b4-e07ca64201a9
     type: regular
     task:
@@ -1514,10 +1515,10 @@ tasks:
       script: '|||endpoint'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "32"
+      - '32'
     scriptarguments:
       id:
         complex:
@@ -1528,7 +1529,7 @@ tasks:
             args:
               index:
                 value:
-                  simple: "0"
+                  simple: '0'
     separatecontext: false
     view: |-
       {
@@ -1542,8 +1543,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "32":
-    id: "32"
+  '32':
+    id: '32'
     taskid: 57bf63a2-6929-4f4d-8ec6-01ecfe6a4ced
     type: condition
     task:
@@ -1552,13 +1553,13 @@ tasks:
       name: Verify Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "37"
+      yes:
+      - '37'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -1587,8 +1588,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "33":
-    id: "33"
+  '33':
+    id: '33'
     taskid: 59042624-7479-4a6c-8710-cd38fcd3eabf
     type: title
     task:
@@ -1597,7 +1598,7 @@ tasks:
       name: Test Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     separatecontext: false
     view: |-
@@ -1612,8 +1613,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "34":
-    id: "34"
+  '34':
+    id: '34'
     taskid: 1c4e9433-545c-465d-8e04-bf4f0a10f95b
     type: regular
     task:
@@ -1623,10 +1624,10 @@ tasks:
       script: '|||cb-edr-alert-update'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "33"
+      - '33'
     scriptarguments:
       alert_ids:
         complex:
@@ -1637,7 +1638,7 @@ tasks:
             args:
               index:
                 value:
-                  simple: "0"
+                  simple: '0'
       status:
         simple: Unresolved
     separatecontext: false
@@ -1655,8 +1656,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "35":
-    id: "35"
+  '35':
+    id: '35'
     taskid: 3926c54f-c545-4a71-87fb-4fe766130bd0
     type: regular
     task:
@@ -1666,10 +1667,10 @@ tasks:
       script: '|||endpoint'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "36"
+      - '36'
     scriptarguments:
       ip:
         simple: 172.31.11.44,172.31.35.147
@@ -1688,8 +1689,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "36":
-    id: "36"
+  '36':
+    id: '36'
     taskid: 7269bd5a-4a20-4079-8062-244c28f5921c
     type: condition
     task:
@@ -1698,13 +1699,13 @@ tasks:
       name: Verify Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "21"
+      yes:
+      - '21'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isNotEmpty
           left:
@@ -1735,8 +1736,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "37":
-    id: "37"
+  '37':
+    id: '37'
     taskid: aec16752-35b4-474f-8196-b0c7c6c59569
     type: regular
     task:
@@ -1747,13 +1748,13 @@ tasks:
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "35"
+      - '35'
     scriptarguments:
       all:
-        simple: "no"
+        simple: no
       key:
         simple: Endpoint
     separatecontext: false
@@ -1784,5 +1785,5 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 5.5.0
+fromversion: 6.2.0
 description: Tests Carbon Black EDR selected use cases and commands
