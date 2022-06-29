@@ -6,6 +6,7 @@
 			"IMAGENAME": "devdemisto/content-env:1.0.0."
 		}
 	},
+	"initializeCommand": "docker pull devdemisto/content-env:1.0.0.",
 	"containerUser": "root",
 	"settings": {
 		"terminal.integrated.defaultProfile.linux": "zsh",
