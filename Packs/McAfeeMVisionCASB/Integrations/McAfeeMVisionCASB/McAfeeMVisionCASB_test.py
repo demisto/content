@@ -18,7 +18,8 @@ def test_incident_query_command(mocker):
     response = mocker.patch.object(demisto, 'results')
 
     with requests_mock.Mocker() as m:
-        m.post('https://www.example.com/shnapi/rest/external/api/v1/queryIncidents?limit=3', json=util_load_json('test_data/incidents.json'))
+        m.post('https://www.example.com/shnapi/rest/external/api/v1/queryIncidents?limit=3',
+               json=util_load_json('test_data/incidents.json'))
         main()
 
     assert len(response.call_args[0][0]['Contents']) == 3
@@ -77,7 +78,7 @@ def test_policy_dictionary_update_command(mocker):
         m.put('https://www.example.com/shnapi/rest/dlp/dictionary', json={})
         main()
 
-    assert response.call_args[0][0].get('HumanReadable') == f'Dictionary id: 1111 was updated.'
+    assert response.call_args[0][0].get('HumanReadable') == 'Dictionary id: 1111 was updated.'
 
 
 def mock_incident_query(limit, start_time):
