@@ -3,8 +3,8 @@
     "fromVersion": "5.5.0",
     "associatedToAll": false,
     "associatedTypes": [
-        "McAfee Mvision Casb Alert",
-        "McAfee Mvision Casb Threat"
+        "McAfee Mvision CASB Alert",
+        "McAfee Mvision CASB Threat"
     ],
     "breachScript": "",
     "caseInsensitive": true,
@@ -21,7 +21,7 @@
     "id": "incident_mcafeemvisioncasbcontentitemsize",
     "isReadOnly": false,
     "locked": false,
-    "name": "McAfee Mvision Casb Content Item Size",
+    "name": "McAfee Mvision CASB Content Item Size",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "placeholder": "",
