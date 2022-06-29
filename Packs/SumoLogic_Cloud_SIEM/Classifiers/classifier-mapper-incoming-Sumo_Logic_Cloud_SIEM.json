@@ -9,7 +9,7 @@
 		"Sumo Logic Insight": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
-				"Insight Entity": {
+				"Sumo Logic Cloud SIEM Insight Entity": {
 					"complex": {
 						"filters": [],
 						"root": "entity",
