@@ -22,7 +22,7 @@ class Client(BaseClient):
     def __init__(self, app_user_id, app_user_secret, *args, **kwargs):
         self.app_user_id = app_user_id
         self.app_user_secret = app_user_secret
-        super().__init__(args, kwargs)
+        super().__init__(*args, **kwargs)
 
     def get_status_http_request(self):
         """
