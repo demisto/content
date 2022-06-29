@@ -28,7 +28,7 @@ from distutils.version import LooseVersion
 from threading import Lock
 from inspect import currentframe
 
-import demistomock as demisto
+import demistomock as demisto # noqa: F401
 import warnings
 
 
