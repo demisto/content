@@ -4,7 +4,7 @@
         "Pull Request Update"
     ],
     "caseInsensitive": true,
-    "cliName": "pullrequestbranch",
+    "cliName": "CICDpullrequestbranch",
     "closeForm": false,
     "content": true,
     "description": "The branch name of existing pull request to update, if the branch name is not in the list - set in the \"branch\" field.",

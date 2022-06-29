@@ -5,7 +5,7 @@
         "Pull Request Creation"
     ],
     "caseInsensitive": true,
-    "cliName": "branch",
+    "cliName": "CICDbranch",
     "closeForm": false,
     "content": true,
     "description": "The name of the branch.",

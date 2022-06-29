@@ -4,7 +4,7 @@
         "Pull Request Creation"
     ],
     "caseInsensitive": true,
-    "cliName": "pullrequestcomment",
+    "cliName": "CICDpullrequestcomment",
     "closeForm": false,
     "content": true,
     "description": "A short description for the pull request.",

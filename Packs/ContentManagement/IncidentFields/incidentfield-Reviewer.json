@@ -4,7 +4,7 @@
         "Pull Request Creation"
     ],
     "caseInsensitive": true,
-    "cliName": "reviewer",
+    "cliName": "CICDreviewer",
     "closeForm": false,
     "content": true,
     "description": "Github username to set as pull request reviewer.",

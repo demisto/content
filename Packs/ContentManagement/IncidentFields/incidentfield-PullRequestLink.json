@@ -5,7 +5,7 @@
         "Pull Request Update"
     ],
     "caseInsensitive": true,
-    "cliName": "pullrequestlink",
+    "cliName": "CICDpullrequestlink",
     "closeForm": false,
     "content": true,
     "editForm": true,

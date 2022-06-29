@@ -4,7 +4,7 @@
         "Pull Request Creation"
     ],
     "caseInsensitive": true,
-    "cliName": "packname",
+    "cliName": "CICDpackname",
     "closeForm": false,
     "content": true,
     "editForm": true,
