@@ -1,38 +1,37 @@
 ## Mimecast Event Collector  
 
-In order to retrieve your Mimecast credentials for XSIEM follow the instructions below. 
+In order to retrieve your Mimecast credentials for Cortex XSIEM, follow the instructions below. 
 
-### Application id & Application key 
-follow the next steps in your Mimecast application:  
+### Application ID and Application Key 
+Perform the following steps in your Mimecast application:  
 
-Administration console -> Administration -> Services -> 
-API and Platform Integrations -> Your Application Integrations   
-- if you already have an application  
-press the '3 dot' symbol and press view to retrieve your application id,   
+1. Go to **Administration console** -> **Administration** -> **Services** -> 
+**API and Platform Integrations** -> Your Application Integrations.  
+2. If you already have an application, 
+click the 3-dot menu and click **View** to retrieve your application ID and    
 application key.   
-- else press 'Add API Application' and follow the instruction.   
+   Otherwise, click **Add API Application** and follow the instructions.   
   
-### Secret Key & Access Key 
+### Secret Key and Access Key 
 
-follow the instruction at:
-Administration console -> Administration -> Services -> 
-API and Platform Integrations -> Your Application Integrations
-press the '3 dot' symbol and press 'Create Keys' 
+1. Go to **Administration console** -> **Administration** -> **Services** -> 
+**API and Platform Integrations** -> Your Application Integrations.  
+2. Click the 3-dot menu and click **Create Keys** and
 follow the steps to retrieve your Access Key and Secret Key
 
-Fair notice - for this step you may have to wait up to 20 minutes upon creation of a new API Application.
+*Note: You may have to wait up to 20 minutes after creation of a new API Application.*
   
   
 ### Base URL 
 
-Insert your custom base url or checkout 
+Insert your custom base URL or checkout 
 [Mimecast base url](https://integrations.mimecast.com/documentation/api-overview/global-base-urls/)
-inorder to find your base url. (example: https://us-api.mimecast.com) 
+in order to find your base URL (for example: https://us-api.mimecast.com).
 
 ### Pre-requisites
 
-##### Audit logs 
+##### Audit Logs 
 [Audit pre-requisites](https://integrations.mimecast.com/documentation/endpoint-reference/logs-and-statistics/get-audit-events/#:~:text=Sample%20Code-,Pre,-%2Drequisites)
 
-##### Siem logs
-[Siem pre-requisites](https://integrations.mimecast.com/documentation/endpoint-reference/logs-and-statistics/get-siem-logs/#description:~:text=in%20logs%27%20downloaded.-,Pre%2Drequisites,-The%20data%20served)
+##### SIEM Logs
+[SIEM pre-requisites](https://integrations.mimecast.com/documentation/endpoint-reference/logs-and-statistics/get-siem-logs/#description:~:text=in%20logs%27%20downloaded.-,Pre%2Drequisites,-The%20data%20served)
