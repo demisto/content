@@ -104,7 +104,7 @@ Modifies the AD account attribute "Password never expire".
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| username | The username (samAccountName) of the user to modify. | Required |
+| username | The username (sAMAccountName) of the user to modify. | Required |
 | value | Value to set "Password Never Expire" (default is false). | Required |
 
 ##### Context Output
