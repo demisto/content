@@ -1,2 +1,5 @@
 [file:Opsgeniev2.yml]
 ignore=IN145
+
+[file:Opsgeniev2_image.png]
+ignore=IM111

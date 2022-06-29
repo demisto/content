@@ -1660,6 +1660,74 @@ Get teams
 >| Integration Team | fbbc3f9a-12f4-4794-9938-7e0a85a06f8b | web: https:<span>//</span>demisto1.app.opsgenie.com/teams/dashboard/fbbc3f9a-12f4-4794-9938-7e0a85a06f8b/main<br/>api: https:<span>//</span>api.opsgenie.com/v2/teams/fbbc3f9a-12f4-4794-9938-7e0a85a06f8b | Integration Team |
 
 
+### opsgenie-get-request
+***
+Get a request in Opsgenie.
+
+#### Base Command
+
+`opsgenie-get-request`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| request_id | The id of the request to get | Required | 
+| request_type | The type of the request to get | Required |  
+
+
+#### Context Output
+
+| **Path**                       | **Type** | **Description** |
+|--------------------------------| --- | --- |
+| OpsGenie.Alert.action          | String | Action of this request. | 
+| OpsGenie.Alert.alertId         | String | ID of the created alert. | 
+| OpsGenie.Alert.alias           | String | Alias of the created alert. | 
+| OpsGenie.Alert.integrationId   | String | Integration ID of the created alert. | 
+| OpsGenie.Alert.isSuccess       | Boolean | Whether the request was successful. | 
+| OpsGenie.Alert.processedAt     | Date | When the request was processed. | 
+| OpsGenie.Alert.requestId       | String | The ID of the request. | 
+| OpsGenie.Alert.status          | String | The human readable result of the request. | 
+| OpsGenie.Alert.success         | Boolean | Whether the request was successful. |
+| OpsGenie.Incident.action        | String | Action of this request. | 
+| OpsGenie.Incident.alertId      | String | ID of the created alert. | 
+| OpsGenie.Incident.alias        | String | Alias of the created alert. | 
+| OpsGenie.Incident.integrationId | String | Integration ID of the created alert. | 
+| OpsGenie.Incident.isSuccess    | Boolean | Whether the request was successful. | 
+| OpsGenie.Incident.processedAt  | Date | When the request was processed. | 
+| OpsGenie.Incident.requestId            | String | The ID of the request. | 
+| OpsGenie.Incident.status       | String | The human readable result of the request. | 
+| OpsGenie.Incident.success      | Boolean | Whether the request was successful. | 
+
+
+#### Command Example
+```opsgenie-get-request request_id=b79800b2-4378-4249-8677-0bf2332b8a1f request_type=alerts"```
+
+#### Context Example
+```json
+{
+    "OpsGenie": {
+        "Alert": {
+            "action": "Create",
+            "alertId": "4c4623e3-0b3f-47b7-becd-907d3e51d129-1638366498716",
+            "alias": "4c4623e3-0b3f-47b7-becd-907d3e51d129-1638366498716",
+            "integrationId": "3cc69931-167f-411c-a331-768997c29d2e",
+            "isSuccess": true,
+            "processedAt": "2021-12-01T13:48:18.757Z",
+            "status": "Created alert",
+            "success": true
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### OpsGenie
+>|action|alertId|alias|integrationId|isSuccess|processedAt|status|success|
+>|---|---|---|---|---|---|---|---|
+>| Create | 4c4623e3-0b3f-47b7-becd-907d3e51d129-1638366498716 | 4c4623e3-0b3f-47b7-becd-907d3e51d129-1638366498716 | 3cc69931-167f-411c-a331-768997c29d2e | true | 2021-12-01T13:48:18.757Z | Created alert | true |
+
+
 ## Breaking changes from the previous version of this integration - OpsGenie v3
 
 ### Commands

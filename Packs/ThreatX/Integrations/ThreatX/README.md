@@ -209,7 +209,7 @@
 <tbody>
 <tr>
 <td style="width: 138px;">ip</td>
-<td style="width: 430px;">IP address or CIDR, for example: "10.1.1.1" or "10.1.1.0/24".</td>
+<td style="width: 430px;">IP address or CIDR in CSV format, for example: "10.1.1.1,10.1.1.0/24".</td>
 <td style="width: 71px;">Required</td>
 </tr>
 <tr>

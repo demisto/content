@@ -6,6 +6,7 @@
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
+    "videos": ["https://www.youtube.com/watch?v=J6DcD5y5B_U"],
     "categories": [
         "Case Management"
     ],
@@ -44,5 +45,9 @@
             "mandatory": false,
             "display_name": "Microsoft Graph User"
         }
-    }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

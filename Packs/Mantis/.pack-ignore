@@ -1,2 +1,5 @@
 [file:Mantis.yml]
 ignore=IN145
+
+[file:Mantis_image.png]
+ignore=IM111

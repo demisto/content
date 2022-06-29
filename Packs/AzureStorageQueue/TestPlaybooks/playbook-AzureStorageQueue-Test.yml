@@ -1,0 +1,919 @@
+id: playbook-AzureStorageQueue-Test
+version: -1
+name: playbook-AzureStorageQueue-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b1584362-7dbc-4e58-86e3-a539e08434cd
+    type: start
+    task:
+      id: b1584362-7dbc-4e58-86e3-a539e08434cd
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: d4fcf71e-fad4-461a-80ca-fd5f5354f9e1
+    type: regular
+    task:
+      id: d4fcf71e-fad4-461a-80ca-fd5f5354f9e1
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: ea681563-f779-476a-8fcb-009defca7b14
+    type: regular
+    task:
+      id: ea681563-f779-476a-8fcb-009defca7b14
+      version: -1
+      name: azure-storage-queue-list
+      script: '|||azure-storage-queue-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 66c76e2d-74b4-4f85-8599-c7086f5bfff0
+    type: condition
+    task:
+      id: 66c76e2d-74b4-4f85-8599-c7086f5bfff0
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageQueue.Queue.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 42bbb5f6-cee6-492a-81ec-c8eb46194d66
+    type: regular
+    task:
+      id: 42bbb5f6-cee6-492a-81ec-c8eb46194d66
+      version: -1
+      name: azure-storage-queue-create
+      script: '|||azure-storage-queue-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      queue_name:
+        simple: xsoar
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 2b5ae0c1-6713-40cc-8633-73ff827190c2
+    type: regular
+    task:
+      id: 2b5ae0c1-6713-40cc-8633-73ff827190c2
+      version: -1
+      name: azure-storage-queue-delete
+      script: '|||azure-storage-queue-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      queue_name:
+        simple: xsoar
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 79933926-7b8b-4028-8400-f7bd45c61d27
+    type: regular
+    task:
+      id: 79933926-7b8b-4028-8400-f7bd45c61d27
+      version: -1
+      name: azure-storage-queue-message-create
+      script: '|||azure-storage-queue-message-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      base64_encoding: {}
+      message_content:
+        simple: test playbook 2
+      queue_name:
+        simple: xsoar
+      time_to_live: {}
+      visibility_time_out:
+        simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 0fb4a675-6e66-47a8-8c6f-99dd15330ac3
+    type: condition
+    task:
+      id: 0fb4a675-6e66-47a8-8c6f-99dd15330ac3
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageQueue.Queue.Message.MessageId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageQueue.Queue.Message.InsertionTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageQueue.Queue.Message.ExpirationTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageQueue.Queue.Message.PopReceipt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageQueue.Queue.Message.TimeNextVisible
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageQueue.Queue.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 137692a2-2ccf-4015-83d3-89992142e6af
+    type: regular
+    task:
+      id: 137692a2-2ccf-4015-83d3-89992142e6af
+      version: -1
+      name: azure-storage-queue-message-get
+      script: '|||azure-storage-queue-message-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      limit: {}
+      queue_name:
+        simple: xsoar
+      visibility_time_out: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 51b439a0-c67f-4c6b-8a63-81b6eed6abdc
+    type: condition
+    task:
+      id: 51b439a0-c67f-4c6b-8a63-81b6eed6abdc
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageQueue.Queue.Message.MessageId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageQueue.Queue.Message.InsertionTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageQueue.Queue.Message.ExpirationTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageQueue.Queue.Message.PopReceipt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageQueue.Queue.Message.TimeNextVisible
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageQueue.Queue.Message.MessageText
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageQueue.Queue.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageQueue.Queue.Message.DequeueCount
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 0e001a96-98ec-4b34-83ee-090d5d7f0cd7
+    type: regular
+    task:
+      id: 0e001a96-98ec-4b34-83ee-090d5d7f0cd7
+      version: -1
+      name: azure-storage-queue-message-peek
+      script: '|||azure-storage-queue-message-peek'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      limit: {}
+      queue_name:
+        simple: xsoar
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 5882ca50-3610-4a2d-8f78-457b76a40ff7
+    type: condition
+    task:
+      id: 5882ca50-3610-4a2d-8f78-457b76a40ff7
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageQueue.Queue.Message.MessageId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageQueue.Queue.Message.InsertionTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageQueue.Queue.Message.ExpirationTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageQueue.Queue.Message.DequeueCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageQueue.Queue.Message.MessageText
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageQueue.Queue.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: c0b70d5a-db17-4409-8e37-2fcd399a8e69
+    type: regular
+    task:
+      id: c0b70d5a-db17-4409-8e37-2fcd399a8e69
+      version: -1
+      name: azure-storage-queue-message-dequeue
+      script: '|||azure-storage-queue-message-dequeue'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      queue_name:
+        simple: xsoar
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: f707527e-99d6-486d-8d3f-78ffa82bfb00
+    type: regular
+    task:
+      id: f707527e-99d6-486d-8d3f-78ffa82bfb00
+      version: -1
+      name: azure-storage-queue-message-update
+      script: '|||azure-storage-queue-message-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      base64_encoding: {}
+      message_content:
+        simple: new content
+      message_id:
+        simple: ${AzureStorageQueue.Queue.Message.MessageId}
+      pop_receipt:
+        simple: ${AzureStorageQueue.Queue.Message.PopReceipt}
+      queue_name:
+        simple: ${AzureStorageQueue.Queue.name}
+      visibility_time_out: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: ec154dc7-7058-41fd-86c0-c48c6e6b4952
+    type: regular
+    task:
+      id: ec154dc7-7058-41fd-86c0-c48c6e6b4952
+      version: -1
+      name: azure-storage-queue-message-delete
+      script: '|||azure-storage-queue-message-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      message_id:
+        simple: ${AzureStorageQueue.Queue.Message.MessageId}
+      pop_receipt:
+        simple: ${AzureStorageQueue.Queue.Message.PopReceipt}
+      queue_name:
+        simple: ${AzureStorageQueue.Queue.name}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 3b984ca0-4490-4911-8d05-4e8b50e70353
+    type: regular
+    task:
+      id: 3b984ca0-4490-4911-8d05-4e8b50e70353
+      version: -1
+      name: azure-storage-queue-message-clear
+      script: '|||azure-storage-queue-message-clear'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      queue_name:
+        simple: xsoar
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: f6be178c-984d-4eee-8f6c-1238f5f46ed3
+    type: title
+    task:
+      id: f6be178c-984d-4eee-8f6c-1238f5f46ed3
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: 7a972292-f56f-4db6-8948-b68a13585d42
+    type: regular
+    task:
+      id: 7a972292-f56f-4db6-8948-b68a13585d42
+      version: -1
+      name: azure-storage-queue-message-create
+      script: '|||azure-storage-queue-message-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      base64_encoding: {}
+      message_content:
+        simple: test playbook 1
+      queue_name:
+        simple: xsoar
+      time_to_live: {}
+      visibility_time_out:
+        simple: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 9ebccc0f-d774-4557-8791-fbb2de075873
+    type: condition
+    task:
+      id: 9ebccc0f-d774-4557-8791-fbb2de075873
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageQueue.Queue.Message.MessageId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageQueue.Queue.Message.InsertionTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageQueue.Queue.Message.ExpirationTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageQueue.Queue.Message.PopReceipt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageQueue.Queue.Message.TimeNextVisible
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageQueue.Queue.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 9936ee90-6c64-439e-862e-5cc44e985647
+    type: regular
+    task:
+      id: 9936ee90-6c64-439e-862e-5cc44e985647
+      version: -1
+      name: azure-storage-queue-message-get
+      script: '|||azure-storage-queue-message-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      limit: {}
+      queue_name:
+        simple: xsoar
+      visibility_time_out: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 8cf567d5-4bcc-49a8-850e-4802170bd9e0
+    type: condition
+    task:
+      id: 8cf567d5-4bcc-49a8-850e-4802170bd9e0
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageQueue.Queue.Message.MessageId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageQueue.Queue.Message.InsertionTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageQueue.Queue.Message.ExpirationTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageQueue.Queue.Message.PopReceipt
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageQueue.Queue.Message.TimeNextVisible
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageQueue.Queue.Message.MessageText
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageQueue.Queue.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageQueue.Queue.Message.DequeueCount
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: b985170f-8f55-4b9b-8f4c-96a48122dc94
+    type: regular
+    task:
+      id: b985170f-8f55-4b9b-8f4c-96a48122dc94
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: e51a2130-f67f-4334-832f-9e93a12c552e
+    type: regular
+    task:
+      id: e51a2130-f67f-4334-832f-9e93a12c552e
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 4195,
+        "width": 380,
+        "x": 50,
+        "y": -350
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.0.0
+description: ''

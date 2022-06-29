@@ -1,11 +1,11 @@
 {
     "id": "indicator_cofensefeedthreatid",
     "version": -1,
-    "modified": "2021-11-23T14:53:29.254449736+05:30",
+    "modified": "2021-12-08T11:37:07.042611103+05:30",
     "name": "Cofense Feed Threat ID",
     "ownerOnly": false,
     "cliName": "cofensefeedthreatid",
-    "type": "shortText",
+    "type": "markdown",
     "closeForm": false,
     "editForm": true,
     "required": false,

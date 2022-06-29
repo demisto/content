@@ -16,5 +16,9 @@
     "githubUser": [
         "joshhe"
     ],
-    "certification": "certified"
+    "certification": "certified",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

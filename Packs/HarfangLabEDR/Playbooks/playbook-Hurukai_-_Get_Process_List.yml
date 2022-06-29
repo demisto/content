@@ -1,0 +1,317 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: Hurukai - Get Process List
+inputs:
+- description: ''
+  key: agentid
+  playbookInputQuery:
+  required: true
+  value: {}
+name: Hurukai - Get Process List
+outputs: []
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '9'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: e40778e5-58ec-4242-8159-0b25a9b6c750
+      iscommand: false
+      name: ''
+      version: -1
+      description: ''
+    taskid: e40778e5-58ec-4242-8159-0b25a9b6c750
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": -980
+        }
+      }
+  '3':
+    id: '3'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '7'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Ids:
+        simple: ${Harfanglab.Job.ID}
+      Interval:
+        simple: '1'
+      PollingCommandArgName:
+        simple: ids
+      PollingCommandName:
+        simple: harfanglab-job-info
+      Timeout:
+        simple: '60'
+      dt:
+        simple: Harfanglab.Job.Info(val.Status !== 'finished').ID
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ''
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      id: bcba04cb-e915-49c1-8aac-2be9bb3096cf
+      iscommand: false
+      name: GenericPolling
+      playbookId: GenericPolling
+      type: playbook
+      version: -1
+    taskid: bcba04cb-e915-49c1-8aac-2be9bb3096cf
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": -260
+        }
+      }
+  '5':
+    id: '5'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: c61e2b1b-49da-4850-8b5c-2b01d3f925d9
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: c61e2b1b-49da-4850-8b5c-2b01d3f925d9
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 100
+        }
+      }
+  '6':
+    id: '6'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      agent_id:
+        simple: ${inputs.agentid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Hurukai
+      description: Start a job to get the list of processes from a host (Windows / Linux)
+      id: 3fa80a96-a267-4ffb-8f91-f0f300845dec
+      iscommand: true
+      name: harfanglab-job-processlist
+      script: Hurukai|||harfanglab-job-processlist
+      type: regular
+      version: -1
+    taskid: 3fa80a96-a267-4ffb-8f91-f0f300845dec
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": -450
+        }
+      }
+  '7':
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Process list
+    id: '7'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '5'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      job_id:
+        simple: ${Harfanglab.Job.ID}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Hurukai
+      description: Get a hostname's list of processes from job results
+      id: 020c42b1-c93d-4565-861f-4efab3c93c1c
+      iscommand: true
+      name: harfanglab-result-processlist
+      script: Hurukai|||harfanglab-result-processlist
+      type: regular
+      version: -1
+    taskid: 020c42b1-c93d-4565-861f-4efab3c93c1c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": -90
+        }
+      }
+  '8':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Agent
+                root: Harfanglab
+                transformers:
+                - args:
+                    field:
+                      value:
+                        simple: ostype
+                  operator: getField
+          operator: isEqualString
+          right:
+            value:
+              simple: windows
+        - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Agent
+                root: Harfanglab
+                transformers:
+                - args:
+                    field:
+                      value:
+                        simple: ostype
+                  operator: getField
+          operator: isEqualString
+          right:
+            value:
+              simple: linux
+      label: windows/linux
+    id: '8'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '5'
+      windows/linux:
+      - '6'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: ad6b5ae2-ebd5-4098-85b8-b52094451282
+      iscommand: false
+      name: Which platform is the agent running on ?
+      type: condition
+      version: -1
+      description: ''
+    taskid: ad6b5ae2-ebd5-4098-85b8-b52094451282
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": -670
+        }
+      }
+  '9':
+    id: '9'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '8'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      agent_id:
+        simple: ${inputs.agentid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Hurukai
+      description: Get endpoint information from agent_id
+      id: bd01b2c7-ae7a-40b9-8c60-06183cfa6bf0
+      iscommand: true
+      name: harfanglab-get-endpoint-info
+      script: Hurukai|||harfanglab-get-endpoint-info
+      type: regular
+      version: -1
+    taskid: bd01b2c7-ae7a-40b9-8c60-06183cfa6bf0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": -845
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1145,
+        "width": 530,
+        "x": 550,
+        "y": -980
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.2.0
+description: Get the list of processes

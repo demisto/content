@@ -162,6 +162,12 @@ script:
       - 'false'
       required: false
       secret: false
+    - default: false
+      description: 'Search for events that include match the searchstring in the events info field.'
+      isArray: false
+      name: eventinfo
+      required: false
+      secret: false
     deprecated: false
     description: Search for events in MISP. This search command will return only information
       about the matched events. To get information about attributes, use the misp-search-attributes
@@ -1057,7 +1063,8 @@ script:
       default: false
       defaultValue: Your_organization_only
       description: 'Where to distribute the event. Possible values: "Your_organization_only",
-        "This_community_only", "Connected_communities", "All_communities", and "Inherit_event".'
+        "This_community_only", "Connected_communities", "All_communities", "Sharing_group"
+        and "Inherit_event".'
       isArray: false
       name: distribution
       predefined:
@@ -1065,6 +1072,7 @@ script:
       - This_community_only
       - Connected_communities
       - All_communities
+      - Sharing_group
       - Inherit_event
       required: false
       secret: false
@@ -1124,6 +1132,18 @@ script:
       - initial
       - ongoing
       - completed
+      required: false
+      secret: false
+    - default: false
+      description: Sharing group ID. Mandatory when Sharing_group distribution is set.
+      isArray: false
+      name: sharing_group_id
+      required: false
+      secret: false
+    - default: false
+      description: Set the creation date for the event in the format YYYY-MM-DD.
+      isArray: false
+      name: creation_date
       required: false
       secret: false
     deprecated: false
@@ -1271,7 +1291,7 @@ script:
       default: false
       defaultValue: Inherit_event
       description: 'Where to distribute the event. Possible values: "Your_organization_only",
-        "This_community_only", "Connected_communities", "All_communities", and "Inherit_event".'
+        "This_community_only", "Connected_communities", "Sharing_group", "All_communities", and "Inherit_event".'
       isArray: false
       name: distribution
       predefined:
@@ -1279,6 +1299,7 @@ script:
       - This_community_only
       - Connected_communities
       - All_communities
+      - Sharing_group
       - Inherit_event
       required: false
       secret: false
@@ -1294,6 +1315,12 @@ script:
       isArray: false
       name: value
       required: true
+      secret: false
+    - default: false
+      description: Sharing group ID. Mandatory when Sharing_group distribution is set.
+      isArray: false
+      name: sharing_group_id
+      required: false
       secret: false
     deprecated: false
     description: Adds an attribute to an existing MISP event.
@@ -1507,6 +1534,16 @@ script:
       name: tag
       required: true
       secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to add the tag as a local tag.
+      isArray: false
+      name: is_local
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
     deprecated: false
     description: Adds a tag to the given UUID event .
     execution: false
@@ -1626,6 +1663,16 @@ script:
       isArray: false
       name: tag
       required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to add the tag as a local tag.
+      isArray: false
+      name: is_local
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
       secret: false
     deprecated: false
     description: Adds a tag to the given UUID attribute.
@@ -2788,7 +2835,79 @@ script:
     - contextPath: MISP.Attribute.Comment
       description: Attribute comment.
       type: string
-  dockerimage: demisto/pymisp2:1.0.0.23423
+  - arguments:
+    - default: false
+      description: Attribute ID to delete.
+      isArray: false
+      name: attribute_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete an attribute according to the given attribute ID.
+    execution: false
+    name: misp-delete-attribute
+  - arguments:
+    - default: false
+      description: Event ID to be published.
+      isArray: false
+      name: event_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to send an email. The default is to not send a mail.
+      isArray: false
+      name: alert
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Publish an event.
+    execution: false
+    name: misp-publish-event
+  - arguments:
+    - default: false
+      description: Event ID to set attributes for.
+      isArray: false
+      name: event_id
+      required: true
+      secret: false
+    - default: false
+      description: 'Adjust current attributes of an event to match the given attribute data. Has
+        to be json formated list with attributes that should be part of the event. E.g.:
+        [{"type":"domain","value":"target.domain"},{"type":"ip-dst","value":"1.2.3.4"}]'
+      isArray: false
+      name: attribute_data
+      required: true
+      secret: false
+    deprecated: false
+    description: Set event attributes according to the given attributes data.
+    execution: false
+    name: misp-set-event-attributes
+  - arguments:
+    - default: false
+      description: Indicator values to check against the MISP warninglist.
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    deprecated: false
+    description: Check a list of indicator values against the MISP warninglist.
+    execution: false
+    name: misp-check-warninglist
+    outputs:
+    - contextPath: MISP.Warninglist.Count
+      description: Count on how many warninglists the value was found.
+      type: number
+    - contextPath: MISP.Warninglist.Value
+      description: Value checked.
+      type: string
+    - contextPath: MISP.Warninglist.Lists
+      description: Name of warninglists where the value was found.
+      type: string
+  dockerimage: demisto/pymisp2:1.0.0.30164
   feed: false
   isfetch: false
   longRunning: false

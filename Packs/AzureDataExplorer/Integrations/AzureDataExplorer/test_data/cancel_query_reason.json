@@ -1,0 +1,31 @@
+{
+    "Tables": [
+        {
+            "TableName": "Table_0",
+            "Columns": [
+                {
+                    "ColumnName": "RunningQueryCanceled",
+                    "DataType": "Boolean",
+                    "ColumnType": "bool"
+                },
+                {
+                    "ColumnName": "ClientRequestId",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                },
+                {
+                    "ColumnName": "ReasonPhrase",
+                    "DataType": "String",
+                    "ColumnType": "string"
+                }
+            ],
+            "Rows": [
+                [
+                    false,
+                    "XSOAR-DataExplorer1;xxxx-xxxxx-xxxxx-xxxx",
+                    "Query cancelled by the user's request"
+                ]
+            ]
+        }
+    ]
+}

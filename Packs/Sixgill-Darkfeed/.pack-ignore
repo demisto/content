@@ -12,3 +12,12 @@ ignore=PB115
 
 [file:SixgillDVEFeed.yml]
 ignore=IN145
+
+[file:SixgillDVEFeed_image.png]
+ignore=IM111
+
+[file:Sixgill_Darkfeed_image.png]
+ignore=IM111
+
+[file:Sixgill_Darkfeed_Enrichment_image.png]
+ignore=IM111

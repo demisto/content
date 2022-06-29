@@ -1,0 +1,20 @@
+{
+ "id": "OTSecurity Rogue Device Found",
+ "version": -1,
+ "name": "OTSecurity Rogue Device Found",
+ "color": "#92F4EF",
+ "playbookId": "OTSecurity - Rogue Device Investigation",
+ "hours": 0,
+ "days": 0,
+ "weeks": 0,
+ "hoursR": 0,
+ "daysR": 0,
+ "weeksR": 0,
+ "autorun": true,
+ "disabled": false,
+ "reputationCalc": 0,
+ "onChangeRepAlg": 0,
+ "layout": "OTSecurity Rogue Device Found",
+ "fromVersion": "6.0.0",
+ "system": false
+}

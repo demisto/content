@@ -1,3 +1,6 @@
+from CommonServerPython import timedelta
+from datetime import datetime
+
 RESPONSE_TICKET = {
     'parent': '', 'made_sla': 'false', 'caused_by': '', 'watch_list': '', 'upon_reject': '',
     'sys_updated_on': '2020-04-02 14:03:31',
@@ -88,6 +91,9 @@ RESPONSE_TICKET_MIRROR = {'result': [{
     'correlation_id': '', 'location': {'link': 'demisto.com', 'value': 'test'}, 'category': 'network'
     }]
 }
+
+USER_RESPONSE = {
+    'result': {'first_name': 'Oscar', 'email': 'oscar@example.com'}}
 
 
 RESPONSE_CLOSING_TICKET_MIRROR = {'result': [{
@@ -2968,7 +2974,9 @@ RESPONSE_FETCH = {
                 'cmdb_ci': {'link': 'demisto.com', 'value': 'test'}, 'delivery_plan': '', 'impact': '2',
                 'active': 'true',
                 'work_notes_list': '', 'business_service': '', 'priority': '4', 'sys_domain_path': '/', 'rfc': '',
-                'time_worked': '', 'expected_start': '', 'opened_at': '2019-09-05 00:41:01', 'business_duration': '',
+                'time_worked': '', 'expected_start': '',
+                'opened_at': '',
+                'business_duration': '',
                 'group_list': '', 'work_end': '', 'caller_id': {'link': 'demisto.com', 'value': 'test'},
                 'reopened_time': '', 'resolved_at': '', 'approval_set': '', 'subcategory': '', 'work_notes': '',
                 'short_description': 'Trouble getting to Oregon mail server', 'close_code': '',
@@ -2999,7 +3007,9 @@ RESPONSE_FETCH = {
                 'cmdb_ci': {'link': 'demisto.com', 'value': 'test'}, 'delivery_plan': '', 'impact': '2',
                 'active': 'true',
                 'work_notes_list': '', 'business_service': '', 'priority': '4', 'sys_domain_path': '/', 'rfc': '',
-                'time_worked': '', 'expected_start': '', 'opened_at': '2019-09-05 00:41:01', 'business_duration': '',
+                'time_worked': '', 'expected_start': '',
+                'opened_at': '',
+                'business_duration': '',
                 'group_list': '', 'work_end': '', 'caller_id': {'link': 'demisto.com', 'value': 'test'},
                 'reopened_time': '', 'resolved_at': '', 'approval_set': '', 'subcategory': '', 'work_notes': '',
                 'short_description': 'Trouble getting to Oregon mail server', 'close_code': '',
@@ -3088,7 +3098,7 @@ RESPONSE_FETCH_ATTACHMENTS_TICKET = {
             "made_sla": "true",
             "notify": "1",
             "number": "INC0000060",
-            "opened_at": "2016-12-12 15:19:57",
+            "opened_at": '',
             "opened_by": {
                 "link": "https://dev61466.service-now.com/api/now/table/sys_user/681ccaf9c0a8016400b98a06818d57c7",
                 "value": "681ccaf9c0a8016400b98a06818d57c7"
@@ -3196,4 +3206,9 @@ OAUTH_PARAMS = {
     'client_id': 'client_id',
     'client_secret': 'client_secret',
     'use_oauth': True
+}
+
+RESPONSE_GENERIC_TICKET = {
+    'sys_created_by': 'svc.SecOps_SplunkPhantom',
+    'sys_class_name': 'sn_si_incident'
 }

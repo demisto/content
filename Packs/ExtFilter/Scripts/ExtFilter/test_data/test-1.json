@@ -8096,5 +8096,76 @@
                 "result": ["xyz"]
             }
         ]
+    }, {
+        "path": "path2",
+        "operation": "is transformed with",
+        "filter": {
+            "is updated with": "new value"
+        },
+        "ctx_demisto": null,
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": [{
+                        "path1": "aaa",
+                        "path2": "bbb"
+                    }, {
+                        "path1": "aaa"
+                    }
+                ],
+                "result": [{
+                        "path1": "aaa",
+                        "path2": "new value"
+                    }, {
+                        "path1": "aaa"
+                    }
+                ]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "if-then-else",
+        "filter": {
+            "if": {
+                "===": true
+            },
+            "then": {
+                "ends with": ".exe"
+            },
+            "lhs": "${enable_filter}"
+        },
+        "ctx_demisto": {
+          "enable_filter": true
+        },
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["a.dat", "b.exe", "c.txt"],
+                "result": ["b.exe"]
+            }
+        ]
+    }, {
+        "path": "",
+        "operation": "if-then-else",
+        "filter": {
+            "if": {
+                "===": true
+            },
+            "then": {
+                "ends with": ".exe"
+            },
+            "lhs": "${enable_filter}"
+        },
+        "ctx_demisto": {},
+        "ctx_inputs": null,
+        "ctx_lists": null,
+        "ctx_incident": null,
+        "eval": [{
+                "value": ["a.dat", "b.exe", "c.txt"],
+                "result": ["a.dat", "b.exe", "c.txt"]
+            }
+        ]
     }
 ]

@@ -1,4 +1,5 @@
 <!-- HTML_DOC -->
+<p><b>This integration supports Bluecat Address Manager version 9.1, Newer versions might fail to run.</b></p>
 <p>Use the BlueCat integration to enrich IP addresses and manage response policies.</p>
 <h2>Configure BluecatAddressManager on Cortex XSOAR</h2>
 <ol>

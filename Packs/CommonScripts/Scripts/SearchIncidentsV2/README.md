@@ -47,6 +47,7 @@ This script is used in the following playbooks and scripts.
 | page | Filter by the page number |
 | size | Number of incidents per page \(per fetch\) |
 | sort | Sort in format of field.asc,field.desc,... |
+| searchresultslabel | If provided, the value of this argument will be set under the searchResultsLabel context key for each incident found. |
 
 ## Outputs
 ---
@@ -64,6 +65,7 @@ This script is used in the following playbooks and scripts.
 | foundIncidents.details | Details of the incidents returned from the query. | Unknown |
 | foundIncidents.dueDate | A list of incident due dates returned from the query. | Unknown |
 | foundIncidents.phase | A list of incident phases returned from the query. | Unknown |
+| foundIncidents.searchResultsLabel| The value provided in the searchresultslabel argument. | String |
 
 
 ## Script Example

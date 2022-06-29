@@ -1,4 +1,10 @@
 import pytest
+import json
+import io
+from datetime import datetime, timedelta
+from freezegun import freeze_time
+import ServiceNowv2
+from CommonServerPython import DemistoException, EntryType
 from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_readable, \
     generate_body, split_fields, Client, update_ticket_command, create_ticket_command, delete_ticket_command, \
     query_tickets_command, add_link_command, add_comment_command, upload_file_command, get_ticket_notes_command, \
@@ -6,7 +12,8 @@ from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_re
     list_table_fields_command, query_computers_command, get_table_name_command, add_tag_command, query_items_command, \
     get_item_details_command, create_order_item_command, document_route_to_table, fetch_incidents, main, \
     get_mapping_fields_command, get_remote_data_command, update_remote_system_command, build_query_for_request_params, \
-    ServiceNowClient, oauth_test_module, login_command, get_modified_remote_data_command, parse_build_query
+    ServiceNowClient, oauth_test_module, login_command, get_modified_remote_data_command, parse_build_query, \
+    get_ticket_fields, check_assigned_to_field, generic_api_call_command
 from ServiceNowv2 import test_module as module
 from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICKET, RESPONSE_UPDATE_TICKET, \
     RESPONSE_UPDATE_TICKET_SC_REQ, RESPONSE_CREATE_TICKET, RESPONSE_CREATE_TICKET_WITH_OUT_JSON, RESPONSE_QUERY_TICKETS, \
@@ -18,7 +25,8 @@ from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICK
     RESPONSE_FETCH_ATTACHMENTS_TICKET, RESPONSE_TICKET_MIRROR, MIRROR_COMMENTS_RESPONSE, RESPONSE_MIRROR_FILE_ENTRY, \
     RESPONSE_ASSIGNMENT_GROUP, RESPONSE_MIRROR_FILE_ENTRY_FROM_XSOAR, MIRROR_COMMENTS_RESPONSE_FROM_XSOAR, \
     MIRROR_ENTRIES, RESPONSE_CLOSING_TICKET_MIRROR, RESPONSE_TICKET_ASSIGNED, OAUTH_PARAMS, \
-    RESPONSE_QUERY_TICKETS_EXCLUDE_REFERENCE_LINK, MIRROR_ENTRIES_WITH_EMPTY_USERNAME
+    RESPONSE_QUERY_TICKETS_EXCLUDE_REFERENCE_LINK, MIRROR_ENTRIES_WITH_EMPTY_USERNAME, USER_RESPONSE, \
+    RESPONSE_GENERIC_TICKET
 from test_data.result_constants import EXPECTED_TICKET_CONTEXT, EXPECTED_MULTIPLE_TICKET_CONTEXT, \
     EXPECTED_TICKET_HR, EXPECTED_MULTIPLE_TICKET_HR, EXPECTED_UPDATE_TICKET, EXPECTED_UPDATE_TICKET_SC_REQ, \
     EXPECTED_CREATE_TICKET, EXPECTED_CREATE_TICKET_WITH_OUT_JSON, EXPECTED_QUERY_TICKETS, EXPECTED_ADD_LINK_HR, \
@@ -29,9 +37,16 @@ from test_data.result_constants import EXPECTED_TICKET_CONTEXT, EXPECTED_MULTIPL
     EXPECTED_CREATE_ITEM_ORDER, EXPECTED_DOCUMENT_ROUTE, EXPECTED_MAPPING, \
     EXPECTED_TICKET_CONTEXT_WITH_ADDITIONAL_FIELDS, EXPECTED_QUERY_TICKETS_EXCLUDE_REFERENCE_LINK, \
     EXPECTED_TICKET_CONTEXT_WITH_NESTED_ADDITIONAL_FIELDS
+from test_data.created_ticket_context import CREATED_TICKET_CONTEXT_CREATE_CO_FROM_TEMPLATE_COMMAND, \
+    CREATED_TICKET_CONTEXT_GET_TASKS_FOR_CO_COMMAND
 
 import demistomock as demisto
 from urllib.parse import urlencode
+
+
+def util_load_json(path):
+    with io.open(path, mode='r', encoding='utf-8') as f:
+        return json.loads(f.read())
 
 
 def test_get_server_url():
@@ -88,8 +103,8 @@ def test_generate_body():
 
 
 def test_split_fields():
-    expected_dict_fields = {'a': 'b', 'c': 'd'}
-    assert expected_dict_fields == split_fields('a=b;c=d')
+    expected_dict_fields = {'a': 'b', 'c': 'd', 'e': ''}
+    assert expected_dict_fields == split_fields('a=b;c=d;e=')
 
     expected_custom_field = {'u_customfield': "<a href=\'https://google.com\'>Link text</a>"}
     assert expected_custom_field == split_fields("u_customfield=<a href=\'https://google.com\'>Link text</a>")
@@ -213,9 +228,9 @@ def test_commands(command, args, response, expected_result, expected_auto_extrac
     - create the context
     validate the entry context
     """
-    client = Client('server_url', 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
-                    'sysparm_query', 'sysparm_limit', 'timestamp_field', 'ticket_type', 'get_attachments',
-                    'incident_name')
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
+                    'verify', 'fetch_time', 'sysparm_query', 'sysparm_limit', 'timestamp_field',
+                    'ticket_type', 'get_attachments', 'incident_name')
     mocker.patch.object(client, 'send_request', return_value=response)
     result = command(client, args)
     assert expected_result == result[1]  # entry context is found in the 2nd place in the result of the command
@@ -243,15 +258,16 @@ def test_no_ec_commands(command, args, response, expected_hr, expected_auto_extr
     - create the context
     validate the human readable
     """
-    client = Client('server_url', 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
-                    'sysparm_query', 'sysparm_limit', 'timestamp_field', 'ticket_type', 'get_attachments',
-                    'incident_name')
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
+                    'verify', 'fetch_time', 'sysparm_query', 'sysparm_limit', 'timestamp_field',
+                    'ticket_type', 'get_attachments', 'incident_name')
     mocker.patch.object(client, 'send_request', return_value=response)
     result = command(client, args)
     assert expected_hr in result[0]  # HR is found in the 1st place in the result of the command
     assert expected_auto_extract == result[3]  # ignore_auto_extract is in the 4th place in the result of the command
 
 
+@freeze_time('2022-05-01 12:52:29')
 def test_fetch_incidents(mocker):
     """Unit test
     Given
@@ -265,16 +281,22 @@ def test_fetch_incidents(mocker):
     - run the fetch incidents command using the Client
     Validate The length of the results.
     """
-    mocker.patch('ServiceNowv2.parse_date_range', return_value=("2019-02-23 08:14:21", 'never mind'))
-    client = Client('server_url', 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
-                    'sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
-                    ticket_type='incident', get_attachments=False, incident_name='number')
+    RESPONSE_FETCH['result'][0]['opened_at'] = (datetime.utcnow() - timedelta(minutes=15)).strftime('%Y-%m-%d %H:%M:%S')
+    RESPONSE_FETCH['result'][1]['opened_at'] = (datetime.utcnow() - timedelta(minutes=8)).strftime('%Y-%m-%d %H:%M:%S')
+    mocker.patch(
+        'CommonServerPython.get_fetch_run_time_range', return_value=('2022-05-01 01:05:07', '2022-05-01 12:08:29')
+    )
+    mocker.patch('ServiceNowv2.parse_dict_ticket_fields', return_value=RESPONSE_FETCH['result'])
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
+                    'verify', '2 days', 'sysparm_query', sysparm_limit=10,
+                    timestamp_field='opened_at', ticket_type='incident', get_attachments=False, incident_name='number')
     mocker.patch.object(client, 'send_request', return_value=RESPONSE_FETCH)
     incidents = fetch_incidents(client)
     assert len(incidents) == 2
     assert incidents[0].get('name') == 'ServiceNow Incident INC0000040'
 
 
+@freeze_time('2022-05-01 12:52:29')
 def test_fetch_incidents_with_attachments(mocker):
     """Unit test
     Given
@@ -289,10 +311,17 @@ def test_fetch_incidents_with_attachments(mocker):
     - run the fetch incidents command using the Client
     Validate The length of the results and the attachment content.
     """
-    mocker.patch('ServiceNowv2.parse_date_range', return_value=("2016-10-10 15:19:57", 'never mind'))
-    client = Client('server_url', 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
-                    'sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
-                    ticket_type='incident', get_attachments=True, incident_name='number')
+    RESPONSE_FETCH_ATTACHMENTS_TICKET['result'][0]['opened_at'] = (
+        datetime.utcnow() - timedelta(minutes=15)
+    ).strftime('%Y-%m-%d %H:%M:%S')
+    mocker.patch(
+        'CommonServerPython.get_fetch_run_time_range', return_value=('2022-05-01 01:05:07', '2022-05-01 12:08:29')
+    )
+    mocker.patch('ServiceNowv2.parse_dict_ticket_fields', return_value=RESPONSE_FETCH['result'])
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
+                    'verify', '2 days', 'sysparm_query', sysparm_limit=10,
+                    timestamp_field='opened_at', ticket_type='incident', get_attachments=True,
+                    incident_name='number')
     mocker.patch.object(client, 'send_request', return_value=RESPONSE_FETCH_ATTACHMENTS_TICKET)
     mocker.patch.object(client, 'get_ticket_attachment_entries', return_value=RESPONSE_FETCH_ATTACHMENTS_FILE)
 
@@ -303,6 +332,7 @@ def test_fetch_incidents_with_attachments(mocker):
     assert incidents[0].get('attachment')[0]['path'] == 'file_id'
 
 
+@freeze_time('2022-05-01 12:52:29')
 def test_fetch_incidents_with_incident_name(mocker):
     """Unit test
     Given
@@ -316,13 +346,351 @@ def test_fetch_incidents_with_incident_name(mocker):
     - run the fetch incidents command using the Client
     Validate The length of the results.
     """
-    mocker.patch('ServiceNowv2.parse_date_range', return_value=("2019-02-23 08:14:21", 'never mind'))
-    client = Client('server_url', 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
-                    'sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
-                    ticket_type='incident', get_attachments=False, incident_name='description')
+    RESPONSE_FETCH['result'][0]['opened_at'] = (datetime.utcnow() - timedelta(minutes=15)).strftime('%Y-%m-%d %H:%M:%S')
+    RESPONSE_FETCH['result'][1]['opened_at'] = (datetime.utcnow() - timedelta(minutes=8)).strftime('%Y-%m-%d %H:%M:%S')
+    mocker.patch('ServiceNowv2.parse_dict_ticket_fields', return_value=RESPONSE_FETCH['result'])
+    mocker.patch(
+        'CommonServerPython.get_fetch_run_time_range', return_value=('2022-05-01 01:05:07', '2022-05-01 12:08:29')
+    )
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
+                    'verify', '2 days', 'sysparm_query', sysparm_limit=10,
+                    timestamp_field='opened_at', ticket_type='incident',
+                    get_attachments=False, incident_name='description')
     mocker.patch.object(client, 'send_request', return_value=RESPONSE_FETCH)
     incidents = fetch_incidents(client)
     assert incidents[0].get('name') == 'ServiceNow Incident Unable to access Oregon mail server. Is it down?'
+
+
+def start_freeze_time(timestamp):
+    _start_freeze_time = freeze_time(timestamp)
+    _start_freeze_time.start()
+    return datetime.now()
+
+
+class TestFetchIncidentsWithLookBack:
+    LAST_RUN = {}
+
+    API_TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
+    FREEZE_TIMESTAMP = '2022-05-01 12:52:29'
+
+    def set_last_run(self, new_last_run):
+        self.LAST_RUN = new_last_run
+
+    @pytest.mark.parametrize(
+        'start_incidents, phase2_incident, phase3_incident, look_back',
+        [
+            (
+                {
+                    'result': [
+                        {
+                            'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=10)
+                            ).strftime(API_TIME_FORMAT),
+                            'severity': '2',
+                            'number': '2',
+                        },
+                        {
+                            'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=5)
+                            ).strftime(API_TIME_FORMAT),
+                            'severity': '1',
+                            'number': '4'
+                        },
+                        {
+                            'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=2)
+                            ).strftime(API_TIME_FORMAT),
+                            'severity': '2',
+                            'number': '5'
+                        }
+                    ]
+                },
+                {
+                    'opened_at': (
+                        start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=8)
+                    ).strftime(API_TIME_FORMAT),
+                    'severity': '1',
+                    'number': '3',
+                },
+                {
+                    'opened_at': (
+                        start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=11)
+                    ).strftime(API_TIME_FORMAT),
+                    'severity': '1',
+                    'number': '1',
+                },
+                15
+            ),
+            (
+                {
+                    'result': [
+                        {
+                            'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=3, minutes=20)
+                            ).strftime(API_TIME_FORMAT),
+                            'severity': '2',
+                            'number': '2',
+                        },
+                        {
+                            'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=2, minutes=26)
+                            ).strftime(API_TIME_FORMAT),
+                            'severity': '1',
+                            'number': '4'
+                        },
+                        {
+                            'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=1, minutes=20)
+                            ).strftime(API_TIME_FORMAT),
+                            'severity': '2',
+                            'number': '5'
+                        }
+                    ]
+                },
+                {
+                    'opened_at': (
+                        start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=2, minutes=45)
+                    ).strftime(API_TIME_FORMAT),
+                    'severity': '1',
+                    'number': '3',
+                },
+                {
+                    'opened_at': (
+                        start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=3, minutes=50)
+                    ).strftime(API_TIME_FORMAT),
+                    'severity': '1',
+                    'number': '1',
+                },
+                1000
+            )
+        ]
+    )
+    def test_fetch_incidents_with_look_back_greater_than_zero(
+        self, mocker, start_incidents, phase2_incident, phase3_incident, look_back
+    ):
+        """
+        Given
+        - fetch incidents parameters including look back according to their opened time.
+        - first scenario - fetching with minutes when look_back=60 minutes
+        - second scenario - fetching with hours when look_back=1000 minutes
+
+        When
+        - trying to fetch incidents for 3 rounds.
+
+        Then
+        - first fetch - should fetch incidents 2, 4, 5 (because only them match the query)
+        - second fetch - should fetch incident 3 (because now incident 2, 4, 5, 3 matches the query too)
+        - third fetch - should fetch incident 1 (because now incident 2, 4, 5, 3, 1 matches the query too)
+        - fourth fetch - should fetch nothing as there are not new incidents who match the query
+        - make sure that incidents who were already fetched would not be fetched again.
+        """
+        client = Client(
+            server_url='', sc_server_url='', cr_server_url='', username='', password='', verify=False,
+            fetch_time='6 hours', sysparm_query='stateNOT IN6,7^assignment_group=123', sysparm_limit=10,
+            timestamp_field='opened_at', ticket_type='incident', get_attachments=False, incident_name='number',
+            look_back=look_back
+        )
+
+        # reset last run
+        self.LAST_RUN = {}
+
+        mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
+        mocker.patch.object(demisto, 'setLastRun', side_effect=self.set_last_run)
+
+        mocker.patch.object(client, 'send_request', return_value=start_incidents)
+
+        # first fetch
+        tickets = fetch_incidents(client=client)
+        assert len(tickets) == 3
+        for expected_incident_id, ticket in zip(['2', '4', '5'], tickets):
+            assert ticket.get('name') == f'ServiceNow Incident {expected_incident_id}'
+
+        # second fetch preparation
+        start_incidents.get('result').append(phase2_incident)
+
+        # second fetch
+        tickets = fetch_incidents(client=client)
+        assert len(tickets) == 1
+        assert tickets[0].get('name') == 'ServiceNow Incident 3'
+
+        # third fetch preparation
+        start_incidents.get('result').append(phase3_incident)
+
+        # third fetch
+        tickets = fetch_incidents(client=client)
+        assert len(tickets) == 1
+        assert tickets[0].get('name') == 'ServiceNow Incident 1'
+
+        # forth fetch
+        tickets = fetch_incidents(client=client)
+        assert len(tickets) == 0
+
+    @pytest.mark.parametrize(
+        'incidents, phase2_incident, phase3_incident',
+        [
+            (
+                {
+                    'result': [
+                        {
+                            'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=10)
+                            ).strftime(API_TIME_FORMAT),
+                            'severity': '2',
+                            'number': '1',
+                        },
+                        {
+                            'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=8)
+                            ).strftime(API_TIME_FORMAT),
+                            'severity': '1',
+                            'number': '2'
+                        },
+                        {
+                            'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=7)
+                            ).strftime(API_TIME_FORMAT),
+                            'severity': '2',
+                            'number': '3'
+                        }
+                    ]
+                },
+                {
+                    'result': [
+                        {
+                            'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=5)
+                            ).strftime(API_TIME_FORMAT),
+                            'severity': '1',
+                            'number': '4',
+                        }
+                    ]
+                },
+                {
+                    'result': [
+                        {
+                            'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(minutes=4)
+                            ).strftime(API_TIME_FORMAT),
+                            'severity': '1',
+                            'number': '5',
+                        }
+                    ]
+                },
+            ),
+            (
+                {
+                    'result': [
+                        {
+                            'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=8, minutes=51)
+                            ).strftime(API_TIME_FORMAT),
+                            'severity': '2',
+                            'number': '1',
+                        },
+                        {
+                            'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=7, minutes=45)
+                            ).strftime(API_TIME_FORMAT),
+                            'severity': '1',
+                            'number': '2'
+                        },
+                        {
+                            'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=7, minutes=44)
+                            ).strftime(API_TIME_FORMAT),
+                            'severity': '2',
+                            'number': '3'
+                        }
+                    ]
+                },
+                {
+                    'result': [
+                        {
+                            'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=7, minutes=44)
+                            ).strftime(API_TIME_FORMAT),
+                            'severity': '1',
+                            'number': '4',
+                        }
+                    ]
+                },
+                {
+                    'result': [
+                        {
+                            'opened_at': (
+                                start_freeze_time(FREEZE_TIMESTAMP) - timedelta(hours=1, minutes=34)
+                            ).strftime(API_TIME_FORMAT),
+                            'severity': '1',
+                            'number': '5',
+                        }
+                    ]
+                }
+            )
+        ]
+    )
+    def test_fetch_incidents_with_look_back_equals_zero(
+        self, mocker, incidents, phase2_incident, phase3_incident
+    ):
+        """
+        Given
+        - fetch incidents parameters with any look back according to their opened time (normal fetch incidents).
+        - first scenario - fetching with minutes when look_back=0
+        - second scenario - fetching with hours when look_back=0
+
+        When
+        - trying to fetch incidents for 3 rounds.
+
+        Then
+        - first fetch - should fetch incidents 1, 2, 3 (because only them match the query)
+        - second fetch - should fetch incident 4
+        - third fetch - should fetch incident 5
+        - fourth fetch - should fetch nothing as there are not new incidents who match the query
+        """
+        client = Client(
+            server_url='', sc_server_url='', cr_server_url='', username='', password='', verify=False,
+            fetch_time='12 hours', sysparm_query='stateNOT IN6,7^assignment_group=123', sysparm_limit=10,
+            timestamp_field='opened_at', ticket_type='incident', get_attachments=False, incident_name='number',
+            look_back=0
+        )
+
+        # reset last fetch and tickets
+        self.LAST_RUN = {}
+
+        mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
+        mocker.patch.object(demisto, 'setLastRun', side_effect=self.set_last_run)
+        mocker.patch.object(client, 'send_request', return_value=incidents)
+
+        # first fetch
+        tickets = fetch_incidents(client=client)
+        assert len(tickets) == 3
+        for expected_incident_id, ticket in zip(['1', '2', '3'], tickets):
+            assert ticket.get('name') == f'ServiceNow Incident {expected_incident_id}'
+
+        # second fetch preparation
+        incidents = phase2_incident
+        mocker.patch.object(client, 'send_request', return_value=incidents)
+
+        # second fetch
+        tickets = fetch_incidents(client=client)
+        assert len(tickets) == 1
+        assert tickets[0].get('name') == 'ServiceNow Incident 4'
+
+        # third fetch preparation
+        incidents = phase3_incident
+        mocker.patch.object(client, 'send_request', return_value=incidents)
+
+        # third fetch
+        tickets = fetch_incidents(client=client)
+        assert len(tickets) == 1
+        assert tickets[0].get('name') == 'ServiceNow Incident 5'
+
+        # forth fetch preparation
+        incidents = {'result': []}
+        mocker.patch.object(client, 'send_request', return_value=incidents)
+
+        # forth fetch
+        tickets = fetch_incidents(client=client)
+        assert len(tickets) == 0
 
 
 def test_incident_name_is_initialized(mocker, requests_mock):
@@ -382,9 +750,9 @@ def test_not_authenticated_retry_positive(requests_mock, mocker):
     - Ensure the send_request function runs successfully without exceptions
     """
     mocker.patch.object(demisto, 'debug')
-    client = Client('http://server_url', 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
-                    'sysparm_query', 'sysparm_limit', 'timestamp_field', 'ticket_type', 'get_attachments',
-                    'incident_name')
+    client = Client('http://server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
+                    'verify', 'fetch_time', 'sysparm_query', 'sysparm_limit', 'timestamp_field',
+                    'ticket_type', 'get_attachments', 'incident_name')
     requests_mock.get('http://server_url', [
         {
             'status_code': 401,
@@ -427,9 +795,9 @@ def test_not_authenticated_retry_negative(requests_mock, mocker):
     - Ensure the send_request function fails and raises expected error message
     """
     mocker.patch.object(demisto, 'debug')
-    client = Client('http://server_url', 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
-                    'sysparm_query', 'sysparm_limit', 'timestamp_field', 'ticket_type', 'get_attachments',
-                    'incident_name')
+    client = Client('http://server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
+                    'verify', 'fetch_time', 'sysparm_query', 'sysparm_limit', 'timestamp_field',
+                    'ticket_type', 'get_attachments', 'incident_name')
     requests_mock.get('http://server_url', [
         {
             'status_code': 401,
@@ -528,14 +896,14 @@ def test_test_module(mocker):
         Validate that an error is returned, indicating that the `Test` button can't be used when using OAuth 2.0.
     """
     mocker.patch('ServiceNowv2.parse_date_range', return_value=("2019-02-23 08:14:21", 'never mind'))
-    client = Client('server_url', 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
                     'sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
                     ticket_type='incident', get_attachments=False, incident_name='description')
     mocker.patch.object(client, 'send_request', return_value=RESPONSE_FETCH)
     result = module(client)
     assert result[0] == 'ok'
 
-    client = Client('server_url', 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
                     'sysparm_query', sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
                     get_attachments=False, incident_name='description', oauth_params=OAUTH_PARAMS)
 
@@ -560,7 +928,7 @@ def test_oauth_test_module(mocker):
     - (b) Validate that the instance was configured successfully.
     """
     mocker.patch('ServiceNowv2.parse_date_range', return_value=("2019-02-23 08:14:21", 'never mind'))
-    client = Client('server_url', 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
                     'sysparm_query', sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
                     get_attachments=False, incident_name='description')
     try:
@@ -568,7 +936,7 @@ def test_oauth_test_module(mocker):
     except Exception as e:
         assert 'command should be used only when using OAuth 2.0 authorization.' in e.args[0]
 
-    client = Client('server_url', 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
                     'sysparm_query', sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
                     get_attachments=False, incident_name='description', oauth_params=OAUTH_PARAMS)
     mocker.patch.object(client, 'send_request', return_value=RESPONSE_FETCH)
@@ -590,7 +958,7 @@ def test_oauth_login_command(mocker):
     - (b) Validate that the login was successful.
     """
     mocker.patch('ServiceNowv2.ServiceNowClient.login')
-    client = Client('server_url', 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
                     'sysparm_query', sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
                     get_attachments=False, incident_name='description')
     try:
@@ -598,7 +966,7 @@ def test_oauth_login_command(mocker):
     except Exception as e:
         assert '!servicenow-oauth-login command can be used only when using OAuth 2.0 authorization' in e.args[0]
 
-    client = Client('server_url', 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
                     'sysparm_query', sysparm_limit=10, timestamp_field='opened_at', ticket_type='incident',
                     get_attachments=False, incident_name='description', oauth_params=OAUTH_PARAMS)
     mocker.patch.object(client, 'send_request', return_value=RESPONSE_FETCH)
@@ -619,8 +987,8 @@ def test_sysparm_input_display_value(mocker, requests_mock):
     Validate that the sysparm_input_display_value parameter has the correct value
     """
 
-    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url', username='username',
-                    password='password', verify=False, fetch_time='fetch_time',
+    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url', cr_server_url='cr_server_url',
+                    username='username', password='password', verify=False, fetch_time='fetch_time',
                     sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
                     ticket_type='incident', get_attachments=False, incident_name='description')
 
@@ -655,8 +1023,8 @@ def test_get_mapping_fields():
     Then
         - the result fits the expected mapping.
     """
-    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url', username='username',
-                    password='password', verify=False, fetch_time='fetch_time',
+    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url', cr_server_url='cr_server_url',
+                    username='username', password='password', verify=False, fetch_time='fetch_time',
                     sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
                     ticket_type='incident', get_attachments=False, incident_name='description')
     res = get_mapping_fields_command(client)
@@ -675,7 +1043,8 @@ def test_get_remote_data(mocker):
         - The ticket was updated with the entries.
     """
 
-    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url', username='username',
+    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url',
+                    cr_server_url='cr_server_url', username='username',
                     password='password', verify=False, fetch_time='fetch_time',
                     sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
                     ticket_type='incident', get_attachments=False, incident_name='description')
@@ -690,7 +1059,47 @@ def test_get_remote_data(mocker):
     res = get_remote_data_command(client, args, params)
 
     assert res[1]['File'] == 'test.txt'
-    assert res[2]['Contents'] == 'This is a comment'
+    assert res[2]['Contents'] == 'Type: comments\nCreated By: admin\nCreated On: 2020-08-17 06:31:49\nThis is a comment'
+
+
+def test_assigned_to_field_no_user():
+    """
+    Given:
+        -  Client class
+        -  Assigned_to field for user that doesn't exist in SNOW
+    When
+        - run check_assigned_to_field command
+    Then
+        - Check that assign_to value is empty
+    """
+    class Client:
+        def get(self, table, value):
+            return {'results': {}}
+
+    assigned_to = {'link': 'https://test.service-now.com/api/now/table/sys_user/oscar@example.com',
+                   'value': 'oscar@example.com'}
+    res = check_assigned_to_field(Client(), assigned_to)
+    assert res == ''
+
+
+def test_assigned_to_field_user_exists():
+    """
+    Given:
+        -  Client class
+        -  Assigned_to field for user that does exist in SNOW
+    When
+        - run check_assigned_to_field command
+    Then
+        - Check that assign_to value is filled with the right email
+    """
+    class Client:
+        def get(self, table, value):
+            return USER_RESPONSE
+
+    assigned_to = {'link': 'https://test.service-now.com/api/now/table/sys_user/oscar@example.com',
+                   'value': 'oscar@example.com'}
+    res = check_assigned_to_field(Client(), assigned_to)
+    assert res == 'oscar@example.com'
 
 
 CLOSING_RESPONSE = {'dbotIncidentClose': True, 'closeReason': 'From ServiceNow: Test'}
@@ -710,7 +1119,8 @@ def test_get_remote_data_closing_incident(mocker):
         - Closed notes exists.
     """
 
-    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url', username='username',
+    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url',
+                    cr_server_url="cr_server_url", username='username',
                     password='password', verify=False, fetch_time='fetch_time',
                     sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
                     ticket_type='sc_task', get_attachments=False, incident_name='description')
@@ -738,7 +1148,8 @@ def test_get_remote_data_no_attachment(mocker):
         - The ticket was updated with no attachment.
     """
 
-    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url', username='username',
+    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url',
+                    cr_server_url="cr_server_url", username='username',
                     password='password', verify=False, fetch_time='fetch_time',
                     sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
                     ticket_type='incident', get_attachments=False, incident_name='description')
@@ -752,7 +1163,7 @@ def test_get_remote_data_no_attachment(mocker):
     mocker.patch.object(client, 'get', return_value=RESPONSE_ASSIGNMENT_GROUP)
 
     res = get_remote_data_command(client, args, params)
-    assert res[1]['Contents'] == 'This is a comment'
+    assert res[1]['Contents'] == 'Type: comments\nCreated By: admin\nCreated On: 2020-08-17 06:31:49\nThis is a comment'
     assert len(res) == 2
 
 
@@ -769,7 +1180,8 @@ def test_get_remote_data_no_entries(mocker):
         - The checked entries was not returned.
     """
 
-    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url', username='username',
+    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url',
+                    cr_server_url='cr_server_url', username='username',
                     password='password', verify=False, fetch_time='fetch_time',
                     sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
                     ticket_type='incident', get_attachments=False, incident_name='description')
@@ -807,7 +1219,8 @@ def test_upload_entries_update_remote_system_command(mocker, mirror_entries):
     Then
         - The checked entries was sent as expected with suffix.
     """
-    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url', username='username',
+    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url',
+                    cr_server_url='cr_server_url', username='username',
                     password='password', verify=False, fetch_time='fetch_time',
                     sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
                     ticket_type='incident', get_attachments=False, incident_name='description')
@@ -861,7 +1274,8 @@ def test_update_remote_data_sc_task_sc_req_item(mocker, ticket_type):
         - The state is changed to 3 (closed) after update for sc_task and sc_req_item.
         - The state is changed to 7 (closed) after update for incident.
     """
-    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url', username='username',
+    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url',
+                    cr_server_url='cr_server_url', username='username',
                     password='password', verify=False, fetch_time='fetch_time',
                     sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
                     ticket_type=ticket_type, get_attachments=False, incident_name='description')
@@ -911,9 +1325,9 @@ def test_multiple_query_params(requests_mock, command, args):
      - Verify the right request is called with '&' distinguishing different arguments.
     """
     url = 'https://test.service-now.com/api/now/v2/'
-    client = Client(url, 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
-                    'sysparm_query', 'sysparm_limit', 'timestamp_field', 'ticket_type', 'get_attachments',
-                    'incident_name')
+    client = Client(url, 'sc_server_url', 'cr_server_url', 'username', 'password',
+                    'verify', 'fetch_time', 'sysparm_query', 'sysparm_limit', 'timestamp_field',
+                    'ticket_type', 'get_attachments', 'incident_name')
     requests_mock.request('GET', f'{url}table/sc_task?sysparm_limit=50&sysparm_offset=0&'
                                  'sysparm_query=assigned_to%3D123&sysparm_query=active%3Dtrue',
                           json=RESPONSE_TICKET_ASSIGNED)
@@ -941,7 +1355,7 @@ def test_get_modified_remote_data(requests_mock, mocker, api_response):
     """
     mocker.patch.object(demisto, 'debug')
     url = 'https://test.service-now.com/api/now/v2/'
-    client = Client(url, 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
+    client = Client(url, 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
                     'sysparm_query', 'sysparm_limit', 'timestamp_field', 'ticket_type', 'get_attachments',
                     'incident_name')
     last_update = '2020-11-18T13:16:52.005381+02:00'
@@ -981,10 +1395,204 @@ def test_get_ticket_attachments(mocker, sys_created_on, expected):
         - Case A+B: Ensure that the query parameters do not include ^sys_created_on>
         - Case C: Ensure that the query parameters include ^sys_created_on>
     """
-    client = Client("url", 'sc_server_url', 'username', 'password', 'verify', 'fetch_time',
+    client = Client("url", 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
                     'sysparm_query', 'sysparm_limit', 'timestamp_field', 'ticket_type', 'get_attachments',
                     'incident_name')
     mocker.patch.object(client, 'send_request', return_value=[])
 
     client.get_ticket_attachments('id', sys_created_on)
     client.send_request.assert_called_with('attachment', 'GET', params={'sysparm_query': f'{expected}'})
+
+
+@pytest.mark.parametrize('args,expected_ticket_fields', [
+    ({'clear_fields': 'assigned_to,severity'}, {'assigned_to': '', 'severity': ''}),
+    ({'clear_fields': 'assigned_to,severity', 'assigned_to': 'assigned@to.com'}, {'assigned_to': '', 'severity': ''}),
+    ({}, {}),
+])
+def test_clear_fields_in_get_ticket_fields(args, expected_ticket_fields):
+    if 'assigned_to' in args:
+        with pytest.raises(DemistoException) as e:
+            res = get_ticket_fields(args)
+        assert str(e.value) == "Could not set a value for the argument 'assigned_to' and add it to the clear_fields. \
+                You can either set or clear the field value."
+    else:
+        res = get_ticket_fields(args)
+        assert res == expected_ticket_fields
+
+
+def test_query_table_with_fields(mocker):
+    """
+    Given:
+        - Fields for query table
+
+    When:
+        - Run query table command
+
+    Then:
+        - Validate the fields was sent as params in the request and sys_id appear in fields
+    """
+
+    # prepare
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
+                    'sysparm_query', 'sysparm_limit', 'timestamp_field', 'ticket_type', 'get_attachments',
+                    'incident_name')
+
+    mocker.patch.object(client, 'send_request', return_value={
+        "result": [
+            {
+                "sys_id": "test_id",
+                "sys_updated_by": "test_updated_name",
+                "opened_by.name": "test_opened_name"
+            }
+        ]})
+    fields = "sys_updated_by,opened_by.name"
+    fields_with_sys_id = f'{fields},sys_id'
+    args = {'table_name': "alm_asset", 'fields': fields,
+            'query': "display_nameCONTAINSMacBook", 'limit': 3}
+
+    # run
+    result = query_table_command(client, args)
+
+    # validate
+    assert client.send_request.call_args[1]['params']['sysparm_fields'] == fields_with_sys_id
+    # validate that the '.' in the key was replaced to '_'
+    assert result[1]['ServiceNow.Record(val.ID===obj.ID)'][0]['opened_by_name'] == 'test_opened_name'
+
+
+def test_create_co_from_template_command(mocker):
+    """
+    Given:
+        - template to create change request from it.
+
+    When:
+        - Using servicenow-create-co-from-template command.
+
+    Then:
+        - Validate the output is correct.
+    """
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
+                    'sysparm_query', 'sysparm_limit', 'timestamp_field', 'ticket_type', 'get_attachments',
+                    'incident_name')
+
+    args = {"template": "Add network switch to datacenter cabinet"}
+    mocker.patch.object(client,
+                        'send_request',
+                        return_value=util_load_json('test_data/create_co_from_template_result.json'))
+    result = ServiceNowv2.create_co_from_template_command(client, args)
+    assert result.outputs_prefix == "ServiceNow.Ticket"
+    assert result.outputs == {
+        'Ticket(val.ID===obj.ID)': CREATED_TICKET_CONTEXT_CREATE_CO_FROM_TEMPLATE_COMMAND,
+        'ServiceNow.Ticket(val.ID===obj.ID)': CREATED_TICKET_CONTEXT_CREATE_CO_FROM_TEMPLATE_COMMAND
+    }
+    assert result.raw_response == util_load_json('test_data/create_co_from_template_result.json')
+
+
+def test_get_tasks_for_co_command(mocker):
+    """
+    Given:
+        - id to get tasks from it.
+
+    When:
+        - Using servicenow-get-tasks-for-co command.
+
+    Then:
+        - Validate the output is correct.
+    """
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
+                    'sysparm_query', 'sysparm_limit', 'timestamp_field', 'problem', 'get_attachments', 'incident_name')
+
+    args = {"id": "a9e9c33dc61122760072455df62663d2"}
+    mocker.patch.object(client,
+                        'send_request',
+                        return_value=util_load_json('test_data/get_tasks_for_co_command.json'))
+    result = ServiceNowv2.get_tasks_for_co_command(client, args)
+    assert result.outputs_prefix == "ServiceNow.Tasks"
+    assert result.outputs == {
+        'ServiceNow.Tasks(val.ID===obj.ID)': CREATED_TICKET_CONTEXT_GET_TASKS_FOR_CO_COMMAND
+    }
+    assert result.raw_response == util_load_json('test_data/get_tasks_for_co_command.json')
+
+
+def test_get_ticket_attachment_entries_with_oauth_token(mocker):
+    """
+    The purpose of this test is to verify that it is possible to get a file attachment of a ServiceNow ticket by using
+    an OAuth 2.0 client.
+
+    Given:
+        - A client with 'oauth_params' - i.e a client that is configured with an OAuth 2.0 Authorization.
+        - Mock responses for 'get_ticket_attachments', 'get_access_token' and 'requests.get' functions.
+
+    When:
+        - Running the 'client.get_ticket_attachment_entries' function.
+
+    Then:
+        - Verify that the 'requests.get' function's arguments are arguments of a call with OAuth 2.0 Authorization.
+    """
+    # Preparations and mocking:
+    client = Client("url", 'sc_server_url', 'cr_server_url', 'username', 'password', 'verify', 'fetch_time',
+                    'sysparm_query', 'sysparm_limit', 'timestamp_field', 'ticket_type', 'get_attachments',
+                    'incident_name', oauth_params={'oauth_params': ''})
+
+    mock_res_for_get_ticket_attachments = \
+        {'result': [
+            {
+                'file_name': 'attachment for test.txt',
+                'download_link': 'https://ven03941.service-now.com/api/now/attachment/12b7ea411b15cd10042611b4bd4/file'
+            }]}
+
+    mock_res_for_get_access_token = 'access_token'
+
+    mocker.patch.object(client, 'get_ticket_attachments', return_value=mock_res_for_get_ticket_attachments)
+    mocker.patch.object(client.snow_client, 'get_access_token', return_value=mock_res_for_get_access_token)
+    requests_get_mocker = mocker.patch('requests.get', return_value=None)
+
+    # Running get_ticket_attachment_entries function:
+    client.get_ticket_attachment_entries(ticket_id='id')
+
+    # Validate Results are as expected:
+    assert requests_get_mocker.call_args.kwargs.get('auth') is None,\
+        "When An OAuth 2.0 client is configured the 'auth' argument shouldn't be passed to 'requests.get' function"
+    assert requests_get_mocker.call_args.kwargs.get('headers').get('Authorization') == \
+           f"Bearer {mock_res_for_get_access_token}", "When An OAuth 2.0 client is configured the 'Authorization'" \
+                                                      " Header argument should be passed to 'requests.get' function"
+
+
+@pytest.mark.parametrize(
+    'command, args, response',
+    [
+        (generic_api_call_command,
+         {"method": "GET",
+          "path": "table/sn_si_incident?sysparam_limit=1&sysparam_query=active=true^ORDERBYDESCnumber",
+          "body": {},
+          "headers": {},
+          },
+         RESPONSE_GENERIC_TICKET)
+    ])
+def test_generic_api_call_command(command, args, response, mocker):
+    """test case for `generic_api_call_command`"""
+
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
+                    'verify', 'fetch_time', 'sysparm_query', 'sysparm_limit', 'timestamp_field',
+                    'ticket_type', 'get_attachments', 'incident_name')
+
+    mocker.patch.object(client, 'send_request', return_value=response)
+    result = command(client, args)
+    assert result.outputs == response
+
+
+@pytest.mark.parametrize('file_type , expected',
+                         [(EntryType.FILE, True),
+                          (3, True),
+                          (EntryType.IMAGE, True),
+                          (EntryType.NOTE, False),
+                          (15, False)])
+def test_is_entry_type_mirror_supported(file_type, expected):
+    """
+    Given:
+        - an entry file type
+    When:
+        - running the update_remote_system_command checking if the entry supports mirroring
+    Then:
+        - return True if the file entry type supports mirroring else return False
+    """
+    assert ServiceNowv2.is_entry_type_mirror_supported(file_type) == expected

@@ -52,7 +52,9 @@ def form_incindents(logs):
 
 
 def fetch_incidents(client):
-    timefrom = dateparser.parse(demisto.params().get('fetch_time')).strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3]
+    fetch_time = dateparser.parse(demisto.params().get('fetch_time'))
+    assert fetch_time is not None, f"could not parse {demisto.params().get('fetch_time')}"
+    timefrom = fetch_time.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3]
     timefrom += 'Z'
     incidentquery = demisto.params().get('fetch_query')
     last_run = demisto.getLastRun()

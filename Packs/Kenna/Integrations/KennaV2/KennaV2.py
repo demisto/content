@@ -420,13 +420,17 @@ def search_assets(client: Client, args: dict) -> Tuple[str, Dict[str, Any], List
     limit: int = int(args.get('limit', 500))
     to_context = args.get('to_context')
     context: Dict[str, Any] = {}
+    hostnames = args.get('hostname')
     if args.get('tags'):
         tags = argToList(args.get('tags'))
     else:
         tags = args.get('tags')
+
+    hostnames_query = f'hostname:({hostnames.replace(",", " ")})' if hostnames else hostnames
+
     params = {
         'id[]': argToList(args.get('id')),
-        'hostname[]': argToList(args.get('hostname')),
+        'q': hostnames_query,
         'min_risk_meter_score': args.get('min-score'),
         'tags[]': tags
     }

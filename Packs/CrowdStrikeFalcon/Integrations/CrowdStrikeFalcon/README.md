@@ -6,21 +6,53 @@ The CrowdStrike Falcon OAuth 2 API integration (formerly Falcon Firehose API), e
 2. Search for CrowdstrikeFalcon.
 3. Click **Add instance** to create and configure a new integration instance.
 
-| **Parameter** | **Description** | **Required** |
-| --- | --- | --- |
-| url | Server URL \(e.g., https://api.crowdstrike.com\) | True |
-| client_id | Client ID | True |
-| secret | Secret | True |
-| fetch_time | First fetch timestamp \(`<number>` `<time unit>`, e.g., 12 hours, 7 days\) | False |
-| incidents_per_fetch | Max incidents per fetch | False |
-| fetch_query | Fetch query | False |
-| isFetch | Fetch incidents | False |
-| incidentType | Incident type | False |
-| insecure | Trust any certificate \(not secure\) | False |
-| proxy | Use system proxy settings | False |
-| fetch_incidents_or_detections | Fetch types | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Server URL (e.g., https://api.crowdstrike.com) |  | True |
+    | Client ID |  | True |
+    | Secret |  | True |
+    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+    | Max incidents per fetch |  | False |
+    | Detections fetch query |  | False |
+    | Incidents fetch query |  | False |
+    | Fetch incidents |  | False |
+    | Incident type |  | False |
+    | Mirroring Direction | Choose the direction to mirror the detection: Incoming \(from CrowdStrike Falcon to XSOAR\), Outgoing \(from XSOAR to CrowdStrike Falcon\), or Incoming and Outgoing \(to/from CrowdStrike Falcon and XSOAR\). | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
+    | Close Mirrored XSOAR Incident | When selected, closes the CrowdStrike Falcon incident or detection, which is mirrored in Cortex XSOAR. | False |
+    | Close Mirrored CrowdStrike Falcon Incident or Detection | When selected, closes the XSOAR incident, which is mirrored in CrowdStrike Falcon. | False |
+    | Fetch types | Choose what to fetch - incidents, detections, or both. | False |
 
 4.  Click **Test** to validate the URLs, token, and connection.
+
+### Incident Mirroring
+ 
+You can enable incident mirroring between Cortex XSOAR incidents and CrowdStrike Falcon incidents or detections (available from Cortex XSOAR version 6.0.0).
+
+To setup the mirroring follow these instructions:
+1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
+2. Search for **CrowdStrike Falcon** and select your integration instance.
+3. Enable **Fetches incidents**.
+4. In the *Fetch types* integration parameter, select what to mirror - incidents or detections or both.
+5. Optional: You can go to the *Incidents fetch query* or *Detections fetch query* parameter and select the query to fetch the incidents or detections from CrowdStrike Falcon.
+6. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
+    - Incoming - Any changes in CrowdStrike Falcon incidents (`state`, `status`, `tactics`, `techniques`, `objectives`, `tags`, `hosts.hostname`)
+      or detections (`status`, `severity`, `behaviors.tactic`, `behaviors.scenario`, `behaviors.objective`, `behaviors.technique`, `device.hostname`) 
+      will be reflected in XSOAR incidents.
+    - Outgoing - Any changes in XSOAR incidents will be reflected in CrowdStrike Falcon incidents (`tags`, `status`) or detections (`status`).
+    - Incoming And Outgoing - Changes in XSOAR incidents and CrowdStrike Falcon incidents or detections will be reflected in both directions.
+    - None - Turns off incident mirroring.
+7. Optional: Check the *Close Mirrored XSOAR Incident* integration parameter to close the Cortex XSOAR incident when the corresponding incident or detection is closed in CrowdStrike Falcon.
+8. Optional: Check the *Close Mirrored CrowdStrike Falcon Incident or Detection* integration parameter to close the CrowdStrike Falcon incident or detection when the corresponding Cortex XSOAR incident is closed.
+
+Newly fetched incidents or detections will be mirrored in the chosen direction.  However, this selection does not affect existing incidents.
+
+**Important Notes**
+ - To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in XSOAR and CrowdStrike Falcon.
+ - When *mirroring in* incidents from CrowdStrike Falcon to XSOAR:
+   - For the `tags` field, tags can only be added from the remote system.
+   - When enabling the *Close Mirrored XSOAR Incident* integration parameter, the field in CrowdStrike Falcon that determines whether the incident was closed is the `status` field.
 
 ### 1. Search for a device
 
@@ -436,6 +468,7 @@ There is no context output for this command.
 ### 7. cs-falcon-run-command
 ---
 Sends commands to hosts.
+
 #### Base Command
 
 `cs-falcon-run-command`
@@ -446,7 +479,7 @@ Sends commands to hosts.
 | host_ids | A comma-separated list of host agent IDs for which to run commands. (Can be retrieved by running the 'cs-falcon-search-device' command.) | Required | 
 | command_type | The type of command to run. | Required | 
 | full_command | The full command to run. | Required | 
-| scope | The scope for which to run the command. Possible values are: "read", "write", and "admin". Default is "read". | Optional | 
+| scope | The scope for which to run the command. Possible values are: "read", "write", and "admin". Default is "read". (NOTE: In order to run the CrowdStrike RTR `put` command, it is necessary to pass `scope=admin`.) | Optional | 
 | target | The target for which to run the command. Possible values are: "single" and "batch". Default is "batch". | Optional | 
 
 
@@ -3097,23 +3130,46 @@ Returns a list of your uploaded IOCs that match the search criteria.
 | CrowdStrike.IOC.ModifiedBy | string | The identity of the user/process who last updated the IOC. | 
 
 
-#### Command Example
-```!cs-falcon-search-custom-iocs types="domain"```
-
+#### Command example
+```!cs-falcon-search-custom-iocs limit=2```
 #### Context Example
 ```json
 {
     "CrowdStrike": {
         "IOC": [
             {
-                "CreatedTime": "2020-09-30T10:59:37Z",
-                "Expiration": "2020-10-30T00:00:00Z",
-                "ID": "4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r",
-                "ModifiedTime": "2020-09-30T10:59:37Z",
-                "Severity": "high",
-                "Action": "prevent",
-                "Type": "domain",
-                "Value": "value"
+                "Action": "no_action",
+                "CreatedBy": "2bf188d347e44e08946f2e61ef590c24",
+                "CreatedTime": "2022-02-16T17:17:25.992164453Z",
+                "Description": "test",
+                "Expiration": "2022-02-17T13:47:57Z",
+                "ID": "04b48fadfacbd68a397904ea164955be605c76694aa652a548f5d773095e4ec1",
+                "ModifiedBy": "2bf188d347e44e08946f2e61ef590c24",
+                "ModifiedTime": "2022-02-16T17:17:25.992164453Z",
+                "Platforms": [
+                    "mac"
+                ],
+                "Severity": "informational",
+                "Source": "Cortex XSOAR",
+                "Type": "ipv4",
+                "Value": "1.1.8.9"
+            },
+            {
+                "Action": "no_action",
+                "CreatedBy": "2bf188d347e44e08946f2e61ef590c24",
+                "CreatedTime": "2022-02-16T17:16:44.514398876Z",
+                "Description": "test",
+                "Expiration": "2022-02-17T13:47:57Z",
+                "ID": "54f12e3a1ef5af0612714f6acea8f34f18c5dc6be117ade949974633f949f412",
+                "ModifiedBy": "2bf188d347e44e08946f2e61ef590c24",
+                "ModifiedTime": "2022-02-16T17:16:44.514398876Z",
+                "Platforms": [
+                    "mac"
+                ],
+                "Severity": "informational",
+                "Source": "Cortex XSOAR",
+                "Type": "ipv4",
+                "Value": "4.1.8.9"
             }
         ]
     }
@@ -3123,9 +3179,10 @@ Returns a list of your uploaded IOCs that match the search criteria.
 #### Human Readable Output
 
 >### Indicators of Compromise
->|CreatedTime|Expiration|ID|ModifiedTime|Severity|Action|Type|Value|
->|---|---|---|---|---|---|---|---|
->| 2020-09-30T10:59:37Z | 2020-10-30T00:00:00Z | 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | 2020-09-30T10:59:37Z | high | prevent | domain | value |
+>|ID|Action|Severity|Type|Value|Expiration|CreatedBy|CreatedTime|Description|ModifiedBy|ModifiedTime|Platforms|Policy|ShareLevel|Source|Tags|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 04b48fadfacbd68a397904ea164955be605c76694aa652a548f5d773095e4ec1 | no_action | informational | ipv4 | 1.1.8.9 | 2022-02-17T13:47:57Z | 2bf188d347e44e08946f2e61ef590c24 | 2022-02-16T17:17:25.992164453Z | test | 2bf188d347e44e08946f2e61ef590c24 | 2022-02-16T17:17:25.992164453Z | mac |  |  | Cortex XSOAR |  |
+>| 54f12e3a1ef5af0612714f6acea8f34f18c5dc6be117ade949974633f949f412 | no_action | informational | ipv4 | 4.1.8.9 | 2022-02-17T13:47:57Z | 2bf188d347e44e08946f2e61ef590c24 | 2022-02-16T17:16:44.514398876Z | test | 2bf188d347e44e08946f2e61ef590c24 | 2022-02-16T17:16:44.514398876Z | mac |  |  | Cortex XSOAR |  |
 
 ### cs-falcon-get-custom-ioc
 ***
@@ -3162,26 +3219,32 @@ Gets the full definition of one or more indicators that you are watching.
 | CrowdStrike.IOC.ModifiedBy | string | The identity of the user/process who last updated the IOC. | 
 
 
-#### Command Example
-```!cs-falcon-get-custom-ioc type="domain" value="test.domain.com"```
-
+#### Command example
+```!cs-falcon-get-custom-ioc type=ipv4 value=7.5.9.8```
 #### Context Example
 ```json
 {
     "CrowdStrike": {
-        "IOC": [
-            {
-                "CreatedTime": "2020-09-30T10:59:37Z",
-                "Expiration": "2020-10-30T00:00:00Z",
-                "ID": "4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r",
-                "ModifiedTime": "2020-09-30T10:59:37Z",
-                "Severity": "high",
-                "Action": "prevent",
-                "Source": "Demisto playbook",
-                "Type": "domain",
-                "Value": "test.domain.com"
-            }
-        ]
+        "IOC": {
+            "Action": "no_action",
+            "CreatedBy": "2bf188d347e44e08946f2e61ef590c24",
+            "CreatedTime": "2022-02-16T14:25:22.968603813Z",
+            "Expiration": "2022-02-17T17:55:09Z",
+            "ID": "04b48fadfacbd68a397904ea164955be605c76694aa652a548f5d773095e4e12",
+            "ModifiedBy": "2bf188d347e44e08946f2e61ef590c24",
+            "ModifiedTime": "2022-02-16T14:25:22.968603813Z",
+            "Platforms": [
+                "linux"
+            ],
+            "Severity": "informational",
+            "Source": "cortex xsoar",
+            "Tags": [
+                "test",
+                "test1"
+            ],
+            "Type": "ipv4",
+            "Value": "7.5.9.8"
+        }
     }
 }
 ```
@@ -3189,9 +3252,9 @@ Gets the full definition of one or more indicators that you are watching.
 #### Human Readable Output
 
 >### Indicator of Compromise
->|CreatedTime|Description|Expiration|ID|ModifiedTime|Severity|Action|Source|Type|Value|
->|---|---|---|---|---|---|---|---|---|---|
->| 2020-10-02T13:55:26Z | Test ioc | 2020-11-01T00:00:00Z | 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | 2020-10-02T13:55:26Z | high | prevent | Demisto playbook | domain | test.domain.com |
+>|ID|Action|Severity|Type|Value|Expiration|CreatedBy|CreatedTime|Description|ModifiedBy|ModifiedTime|Platforms|Policy|ShareLevel|Source|Tags|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 04b48fadfacbd68a397904ea164955be605c76694aa652a548f5d773095e4e12 | no_action | informational | ipv4 | 7.5.9.8 | 2022-02-17T17:55:09Z | 2bf188d347e44e08946f2e61ef590c24 | 2022-02-16T14:25:22.968603813Z |  | 2bf188d347e44e08946f2e61ef590c24 | 2022-02-16T14:25:22.968603813Z | linux |  |  | cortex xsoar | test,<br/>test1 |
 
 ### cs-falcon-upload-custom-ioc
 ***
@@ -3206,14 +3269,16 @@ Uploads an indicator for CrowdStrike to monitor.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ioc_type | The type of the indicator. Possible values are: "sha256", "md5", "domain", "ipv4", and "ipv6". | Required | 
-| value | The string representation of the indicator. | Required | 
+| value | A comma separated list of indicators. More than one value can be supplied in order to upload multiple IOCs of the same type but with different values. Note that the uploaded IOCs will have the same properties (as supplied in other arguments). | Required | 
 | action | Action to take when a host observes the custom IOC. Possible values are: no_action - Save the indicator for future use, but take no action. No severity required. allow - Applies to hashes only. Allow the indicator and do not detect it. Severity does not apply and should not be provided. prevent_no_ui - Applies to hashes only. Block and detect the indicator, but hide it from Activity > Detections. Has a default severity value. prevent - Applies to hashes only. Block the indicator and show it as a detection at the selected severity. detect - Enable detections for the indicator at the selected severity. | Required | 
 | platforms | The platforms that the indicator applies to. You can enter multiple platform names, separated by commas. Possible values are: mac, windows and linux. | Required | 
 | severity | The severity level to apply to this indicator. Possible values are: informational, low, medium, high and critical. | Required for the prevent and detect actions. Optional for no_action. | 
 | expiration | The date on which the indicator will become inactive (ISO 8601 format, i.e. YYYY-MM-DDThh:mm:ssZ). | Optional | 
 | source | The source where this indicator originated. This can be used for tracking where this indicator was defined. Limited to 200 characters. | Optional | 
 | description | A meaningful description of the indicator. Limited to 200 characters. | Optional | 
-
+| applied_globally | Whether the indicator is applied globally. Either applied_globally or host_groups must be provided. Possible values are: true, false. | Optional | 
+| host_groups | List of host group IDs that the indicator applies to. Can be retrieved by running the cs-falcon-list-host-groups command. Either applied_globally or host_groups must be provided. | Optional | 
+| tags | List of tags to apply to the indicator. | Optional | 
 
 #### Context Output
 
@@ -3231,7 +3296,8 @@ Uploads an indicator for CrowdStrike to monitor.
 | CrowdStrike.IOC.CreatedBy | string | The identity of the user/process who created the IOC. | 
 | CrowdStrike.IOC.ModifiedTime | date | The datetime the indicator was last modified. | 
 | CrowdStrike.IOC.ModifiedBy | string | The identity of the user/process who last updated the IOC. | 
-
+| CrowdStrike.IOC.Tags | Unknown | The tags of the IOC. | 
+| CrowdStrike.IOC.Platforms | Unknown | The platforms of the IOC. | 
 
 #### Command Example
 ```!cs-falcon-upload-custom-ioc ioc_type="domain" value="test.domain.com" action="prevent" severity="high" source="Demisto playbook" description="Test ioc" platforms="mac"```
@@ -3250,7 +3316,8 @@ Uploads an indicator for CrowdStrike to monitor.
             "Severity": "high",
             "Source": "Demisto playbook",
             "Type": "domain",
-            "Value": "test.domain.com"
+            "Value": "test.domain.com",
+            "Platforms": ["mac"]
         }
     }
 }
@@ -3359,3 +3426,520 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Custom IOC 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r was successfully deleted.
+
+### cs-falcon-batch-upload-custom-ioc
+***
+Uploads a batch of indicators.
+
+
+#### Base Command
+
+`cs-falcon-batch-upload-custom-ioc`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| multiple_indicators_json | A JSON object with list of CS Falcon indicators to upload. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.IOC.Type | string | The type of the IOC. | 
+| CrowdStrike.IOC.Value | string | The string representation of the indicator. | 
+| CrowdStrike.IOC.ID | string | The full ID of the indicator. | 
+| CrowdStrike.IOC.Severity | string | The severity level to apply to this indicator. | 
+| CrowdStrike.IOC.Source | string | The source of the IOC. | 
+| CrowdStrike.IOC.Action | string | Action to take when a host observes the custom IOC. | 
+| CrowdStrike.IOC.Expiration | string | The datetime when the indicator will expire. | 
+| CrowdStrike.IOC.Description | string | The description of the IOC. | 
+| CrowdStrike.IOC.CreatedTime | date | The datetime the IOC was created. | 
+| CrowdStrike.IOC.CreatedBy | string | The identity of the user/process who created the IOC. | 
+| CrowdStrike.IOC.ModifiedTime | date | The datetime the indicator was last modified. | 
+| CrowdStrike.IOC.ModifiedBy | string | The identity of the user/process who last updated the IOC. | 
+| CrowdStrike.IOC.Tags | Unknown | The tags of the IOC. | 
+| CrowdStrike.IOC.Platforms | Unknown | The platforms of the IOC. | 
+
+#### Command example
+```!cs-falcon-batch-upload-custom-ioc multiple_indicators_json=`[{"description": "test", "expiration": "2022-02-17T13:47:57Z", "type": "ipv4", "severity": "Informational", "value": "1.1.8.9", "action": "no_action", "platforms": ["mac"], "source": "Cortex XSOAR", "applied_globally": true}]` ```
+#### Context Example
+```json
+{
+    "CrowdStrike": {
+        "IOC": {
+            "Action": "no_action",
+            "CreatedBy": "2bf188d347e44e08946f2e61ef590c24",
+            "CreatedTime": "2022-02-16T17:17:25.992164453Z",
+            "Description": "test",
+            "Expiration": "2022-02-17T13:47:57Z",
+            "ID": "04b48fadfacbd68a397904ea164955be605c76694aa652a548f5d773095e4e12",
+            "ModifiedBy": "2bf188d347e44e08946f2e61ef590c24",
+            "ModifiedTime": "2022-02-16T17:17:25.992164453Z",
+            "Platforms": [
+                "mac"
+            ],
+            "Severity": "informational",
+            "Source": "Cortex XSOAR",
+            "Type": "ipv4",
+            "Value": "1.1.8.9"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Custom IOC 1.1.8.9 was created successfully
+>|Action|CreatedBy|CreatedTime|Description|Expiration|ID|ModifiedBy|ModifiedTime|Platforms|Severity|Source|Type|Value|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| no_action | 2bf188d347e44e08946f2e61ef590c24 | 2022-02-16T17:17:25.992164453Z | test | 2022-02-17T13:47:57Z | "04b48fadfacbd68a397904ea164955be605c76694aa652a548f5d773095e4e12 | 2bf188d347e44e08946f2e61ef590c24 | 2022-02-16T17:17:25.992164453Z | mac | informational | Cortex XSOAR | ipv4 | 1.1.8.9 |
+
+### cs-falcon-rtr-kill-process
+
+***
+Execute an active responder kill command on a single host.
+
+#### Base Command
+
+`cs-falcon-rtr-kill-process`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_id | The host ID in which you would like to kill the given process. | Required | 
+| process_ids | A comma-separated list of process IDs to kill. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.Command.kill.ProcessID | String | The process ID that was killed. | 
+| CrowdStrike.Command.kill.Error | String | The error message raised if the command was failed. | 
+| CrowdStrike.Command.kill.HostID | String | The host ID. | 
+
+#### Command example
+
+```!cs-falcon-rtr-kill-process host_id=15dbb9d8f06b45fe9f61eb46e829d986 process_ids=5260,123```
+
+#### Context Example
+
+```json
+{
+  "CrowdStrike": {
+    "Command": {
+      "kill": [
+        {
+          "Error": "Cannot find a process with the process identifier 123.",
+          "HostID": "15dbb9d8f06b45fe9f61eb46e829d986",
+          "ProcessID": "123"
+        },
+        {
+          "Error": "Success",
+          "HostID": "15dbb9d8f06b45fe9f61eb46e829d986",
+          "ProcessID": "5260"
+        }
+      ]
+    }
+  }
+}
+```
+
+#### Human Readable Output
+
+> ### CrowdStrike Falcon kill command on host 15dbb9d8f06b45fe9f61eb46e829d986:
+>|ProcessID|Error|
+>|---|---|
+>| 123 | Cannot find a process with the process identifier 123. |
+>| 5260 | Success |
+>Note: you don't see the following IDs in the results as the request was failed for them.
+> ID 123 failed as it was not found.
+
+### cs-falcon-rtr-remove-file
+
+***
+Batch executes an RTR active-responder remove file across the hosts mapped to the given batch ID.
+
+#### Base Command
+
+`cs-falcon-rtr-remove-file`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_ids | A comma-separated list of the hosts IDs in which you would like to remove the file. | Required | 
+| file_path | The path to a file or a directoty that you would like to remove. | Required | 
+| os | The operatin system of the hosts given. As the revome command is different in each operatin system, you can choose only one operating system. Possible values are: Windows, Linux, Mac. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.Command.rm.HostID | String | The host ID. | 
+| CrowdStrike.Command.rm.Error | String | The error message raised if the command was failed. | 
+
+#### Command example
+
+```!cs-falcon-rtr-remove-file file_path="c:\\testfolder" host_ids=15dbb9d8f06b45fe9f61eb46e829d986 os=Windows```
+
+#### Context Example
+
+```json
+{
+  "CrowdStrike": {
+    "Command": {
+      "rm": {
+        "Error": "Success",
+        "HostID": "15dbb9d8f06b45fe9f61eb46e829d986"
+      }
+    }
+  }
+}
+```
+
+#### Human Readable Output
+
+> ### CrowdStrike Falcon rm over the file: c:\testfolder
+>|HostID|Error|
+>|---|---|
+>| 15dbb9d8f06b45fe9f61eb46e829d986 | Success |
+
+### cs-falcon-rtr-list-processes
+
+***
+Executes an RTR active-responder ps command to get a list of active processes across the given host.
+
+#### Base Command
+
+`cs-falcon-rtr-list-processes`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_id | The host ID in which you would like to get the processes list from. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.Command.ps.Filename | String | The the name of the result file to be returned. | 
+
+#### Command example
+
+```!cs-falcon-rtr-list-processes host_id=15dbb9d8f06b45fe9f61eb46e829d986```
+
+#### Context Example
+
+```json
+{
+  "CrowdStrike": {
+    "Command": {
+      "ps": {
+        "Filename": "ps-15dbb9d8f06b45fe9f61eb46e829d986"
+      }
+    }
+  },
+  "File": {
+    "EntryID": "1792@5e02fcd0-37ad-4124-836d-7e769ba0ae86",
+    "Info": "text/plain",
+    "MD5": "366bb9678c128d5091edfc1654b59efb",
+    "Name": "ps-15dbb9d8f06b45fe9f61eb46e829d986",
+    "SHA1": "73ee9b28b6705e0c818f3421d6220f2615919af3",
+    "SHA256": "a1fc102bd7c2f20eae6dc2060c615bffe8d88d255fb6df7a0ceacbb87e9f12cf",
+    "SHA512": "782f435f827fd1ebaf87a5536cc4cc51e28ed0bf4fcb5eb1dd957489bebebcb57fe01ea77bb31ea9e813b50fa7b2340d7813d7dfa18ca1c043f617dc9adf6871",
+    "SSDeep": "768:4jcAkTBaZ61QUEcDBdMoFwIxVvroYrohrbY2akHLnsa5fbqFEJtPNObzVj0ff+3K:4IraZ61QUEcDBdMoFwIxRJEbY2akHLnr",
+    "Size": 30798,
+    "Type": "ASCII text"
+  }
+}
+```
+
+#### Human Readable Output
+
+> ### CrowdStrike Falcon ps command on host 15dbb9d8f06b45fe9f61eb46e829d986:
+>|Stdout|
+>|---|
+>|TOO MUCH INFO TO DISPLAY|
+
+### cs-falcon-rtr-list-network-stats
+
+***
+Executes an RTR active-responder netstat command to get a list of network status and protocol statistics across the given
+host.
+
+#### Base Command
+
+`cs-falcon-rtr-list-network-stats`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_id | The host ID in which you would like to get the network status and protocol statistics list from. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.Command.netstat.Filename | String | The the name of the result file to be returned. | 
+
+#### Command example
+
+```!cs-falcon-rtr-list-network-stats host_id=15dbb9d8f06b45fe9f61eb46e829d986```
+
+#### Context Example
+
+```json
+{
+  "CrowdStrike": {
+    "Command": {
+      "netstat": {
+        "Filename": "netstat-15dbb9d8f06b45fe9f61eb46e829d986"
+      }
+    }
+  },
+  "File": {
+    "EntryID": "1797@5e02fcd0-37ad-4124-836d-7e769ba0ae86",
+    "Info": "text/plain",
+    "MD5": "fb013c14d8562a9cb8722319399ff617",
+    "Name": "netstat-15dbb9d8f06b45fe9f61eb46e829d986",
+    "SHA1": "e140104e7739b1dc5fa4072088bfbe4a864ce595",
+    "SHA256": "418d920ff2b44de1efa6658bec8412cbccae52b2983976a2922690ab99ab74c6",
+    "SHA512": "3a57c5c673ee10fd01433a2888a69bc2989f6e060bccca81459275514e33edb4be2ac193131f736c719a2170cb1bc5a890e2563a61403e1b169692b448a76a48",
+    "SSDeep": "48:XSvprPoeCfd8saowYL8zjt6yjjRchg24OI58RtTLvWptl6TtCla5n1lEtClMw/u:CRQeCxRmxVpIHUchCIvsCo",
+    "Size": 4987,
+    "Type": "ASCII text, with CRLF line terminators"
+  }
+}
+```
+
+#### Human Readable Output
+
+> ### CrowdStrike Falcon netstat command on host 15dbb9d8f06b45fe9f61eb46e829d986:
+>|Stdout|
+>|---|
+>|TOO MUCH INFO TO DISPLAY|
+
+### cs-falcon-rtr-read-registry
+
+***
+Executes an RTR active-responder read registry keys command across the given hosts. This command is valid only for
+Windows hosts.
+
+#### Base Command
+
+`cs-falcon-rtr-read-registry`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_ids | A comma-separated list of the hosts IDs in which you would like to get the registry keys from. | Required | 
+| registry_keys | A comma-separated list of the registy keys, subkeys or value to get. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!cs-falcon-rtr-read-registry host_ids=15dbb9d8f06b45fe9f61eb46e829d986 registry_keys=`
+HKEY_LOCAL_MACHINE,HKEY_USERS````
+
+#### Context Example
+
+```json
+{
+  "File": [
+    {
+      "EntryID": "1806@5e02fcd0-37ad-4124-836d-7e769ba0ae86",
+      "Info": "text/plain",
+      "MD5": "df38aa69dd1f46299b82983d56255433",
+      "Name": "reg-15dbb9d8f06b45fe9f61eb46e829d986HKEY_USERS",
+      "SHA1": "4211347d6d1593593bb1a47925048ce439dd0333",
+      "SHA256": "9bbb0e60ae5fe3c59c1eea9f3c97ce424ab7f7c57c562255bfebdaa75e855c54",
+      "SHA512": "67569a073dfc7c6098c081256710d2e58b365a29428a1a276a890e6cf8d6a716a586983d1965e11979e6ed24e9b7aa74c61a5e5953e154c39555b883b6a0360f",
+      "SSDeep": "12:uSn3PtdoI1pZI2WUNI2e6NI2vboI2vbP3I2zd:uSQIpZIII1aIUMIUjIcd",
+      "Size": 656,
+      "Type": "ASCII text, with CRLF, LF line terminators"
+    },
+    {
+      "EntryID": "1807@5e02fcd0-37ad-4124-836d-7e769ba0ae86",
+      "Info": "text/plain",
+      "MD5": "ff089d21c7289844a93d6d7173db76d2",
+      "Name": "reg-15dbb9d8f06b45fe9f61eb46e829d986HKEY_LOCAL_MACHINE",
+      "SHA1": "a37c792a78872565b013c1b246fbe4d28e3b4919",
+      "SHA256": "ea50a7fc75e8d2579dd4a89701bdf8e2c1263ea56d85ea6a9c4c0828770184bc",
+      "SHA512": "826467ac3afae2ebaaa9ea53d7fd4fb26fdce5bf6dfb45f215bfbbee4b2b6faae0a4266c5994b47b1898c409a73d4344d5faad8057c3494eae2300b1d7803568",
+      "SSDeep": "6:zYuSugMQEYPtdWCMwdiwf2Jai2FU42DGE25/:zYuSnMQXPtd9/eJqy7yfh",
+      "Size": 320,
+      "Type": "ASCII text, with CRLF, LF line terminators"
+    }
+  ]
+}
+```
+
+#### Human Readable Output
+
+> ### CrowdStrike Falcon reg command on hosts ['15dbb9d8f06b45fe9f61eb46e829d986']:
+>|FileName| Stdout                    |
+>|---------------------------|---|
+>| reg-15dbb9d8f06b45fe9f61eb46e829d986HKEY_USERS | TOO MUCH INFO TO DISPLAY  |
+>| reg-15dbb9d8f06b45fe9f61eb46e829d986HKEY_LOCAL_MACHINE | TOO MUCH INFO TO DISPLAY  |
+
+### cs-falcon-rtr-list-scheduled-tasks
+
+***
+Executes an RTR active-responder netstat command to get a list of scheduled tasks across the given host. This command is
+valid only for Windows hosts.
+
+#### Base Command
+
+`cs-falcon-rtr-list-scheduled-tasks`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_ids | A comma-separated list of the hosts IDs in which you would like to get the list of scheduled tasks from. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+
+```!cs-falcon-rtr-list-scheduled-tasks host_ids=15dbb9d8f06b45fe9f61eb46e829d986```
+
+#### Context Example
+
+```json
+{
+  "CrowdStrike": {
+    "Command": {
+      "runscript": {
+        "Filename": "runscript-15dbb9d8f06b45fe9f61eb46e829d986"
+      }
+    }
+  },
+  "File": {
+    "EntryID": "1812@5e02fcd0-37ad-4124-836d-7e769ba0ae86",
+    "Info": "text/plain",
+    "MD5": "d853562a2ca7f7ffe02be92542c6735b",
+    "Name": "runscript-15dbb9d8f06b45fe9f61eb46e829d986",
+    "SHA1": "ec16f99efa4d66157bc02c90fe92ae0cc589bf80",
+    "SHA256": "76c37df75416c65faf403faceb3fe0aa1d49890a38af37420c09fc7f006bd32a",
+    "SHA512": "6284197b398952b455f4243216e829cbe04cab2838aac2bc9464f3b7798ad37e1369767b8d772e58e45a2eda763a7880b22d999f8eec46ca2d9509690540a5ae",
+    "SSDeep": "3072:zjQ3/3YHGa8dbXbpbItbo4W444ibNb9MTf2Wat4cuuEqk4W4ybmF54c4eEEEjX6f:EXN8Nbw",
+    "Size": 299252,
+    "Type": "ASCII text"
+  }
+}
+```
+
+#### Human Readable Output
+
+> ### CrowdStrike Falcon runscript command on host 15dbb9d8f06b45fe9f61eb46e829d986:
+>| Stdout                    |
+---------------------------|---|
+>| TOO MUCH INFO TO DISPLAY  |
+
+### cs-falcon-rtr-retrieve-file
+
+***
+Gets the RTR extracted file contents for the specified file path.
+
+#### Base Command
+
+`cs-falcon-rtr-retrieve-file`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_ids | A comma-separated list of the hosts IDs in which you would like to get file from. | Required | 
+| file_path | The file path of the required file to extract. | Required | 
+| filename | The filename to use for the archive name and the file within the archive. | Optional | 
+| interval_in_seconds | interval between polling. Default is 60 seconds. Must be higher than 10. | Optional | 
+| hosts_and_requests_ids | This is an internal argument used for the polling process, not to be used by the user. | Optional | 
+| SHA256 | This is an internal argument used for the polling process, not to be used by the user. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.File.FileName | String | The file name. | 
+| CrowdStrike.File.HostID | String | The hosd ID. | 
+| File.Size | Number | The size of the file. | 
+| File.SHA1 | String | The SHA1 hash of the file. | 
+| File.SHA256 | String | The SHA256 hash of the file. | 
+| File.SHA512 | String | The SHA512 hash of the file. | 
+| File.Name | String | The name of the file. | 
+| File.SSDeep | String | The SSDeep hash of the file. | 
+| File.EntryID | String | EntryID of the file | 
+| File.Info | String | Information about the file. | 
+| File.Type | String | The file type. | 
+| File.MD5 | String | The MD5 hash of the file. | 
+| File.Extension | String | The extension of the file. | 
+
+#### Command example
+
+```!cs-falcon-rtr-retrieve-file file_path=`C:\Windows\System32\Windows.Media.FaceAnalysis.dll` host_ids=15dbb9d8f06b45fe9f61eb46e829d986,046761c46ec84f40b27b6f79ce7cd32c```
+
+#### Human Readable Output
+
+> Waiting for the polling execution
+
+### cs-falcon-get-detections-for-incident
+***
+Gets the detections for a specific incident.
+
+
+#### Base Command
+
+`cs-falcon-get-detections-for-incident`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | The incident's id to get detections for. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.IncidentDetection.incident_id | String | The incident id. | 
+| CrowdStrike.IncidentDetection.behavior_id | String | The behavior id connected to the incident. | 
+| CrowdStrike.IncidentDetection.detection_ids | String | A list of detection ids connected to the incident. | 
+
+#### Command example
+```!cs-falcon-get-detections-for-incident incident_id=`inc:0bde2c4645294245aca522971ccc44c4:1a1eb17d1f9e4d82a9e8ba73d1095593````
+#### Context Example
+```json
+{
+    "CrowdStrike": {
+        "IncidentDetection": {
+            "behavior_id": "ind:0bde2c4645294245aca522971ccc44c4:162589633341-10303-6705920",
+            "detection_ids": [
+                "ldt:0bde2c4645294245aca522971ccc44c4:38655034604"
+            ],
+            "incident_id": "inc:0bde2c4645294245aca522971ccc44c4:1a1eb17d1f9e4d82a9e8ba73d1095593"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Detection For Incident
+>|behavior_id|detection_ids|incident_id|
+>|---|---|---|
+>| ind:0bde2c4645294245aca522971ccc44c4:162590282130-10303-6707968 | ldt:0bde2c4645294245aca522971ccc44c4:38656254663 | inc:0bde2c4645294245aca522971ccc44c4:1a1eb17d1f9e4d82a9e8ba73d1095593 |
+>| ind:0bde2c4645294245aca522971ccc44c4:162596456872-10303-6710016 | ldt:0bde2c4645294245aca522971ccc44c4:38657629548 | inc:0bde2c4645294245aca522971ccc44c4:1a1eb17d1f9e4d82a9e8ba73d1095593 |
+>| ind:0bde2c4645294245aca522971ccc44c4:162597577534-10305-6712576 | ldt:0bde2c4645294245aca522971ccc44c4:38658614774 | inc:0bde2c4645294245aca522971ccc44c4:1a1eb17d1f9e4d82a9e8ba73d1095593 |
+>| ind:0bde2c4645294245aca522971ccc44c4:162589633341-10303-6705920 | ldt:0bde2c4645294245aca522971ccc44c4:38655034604 | inc:0bde2c4645294245aca522971ccc44c4:1a1eb17d1f9e4d82a9e8ba73d1095593 |
+

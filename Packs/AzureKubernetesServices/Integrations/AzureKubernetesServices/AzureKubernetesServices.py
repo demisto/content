@@ -6,7 +6,7 @@ import urllib3
 
 urllib3.disable_warnings()
 
-API_VERSION = '2020-09-01'
+API_VERSION = '2021-09-01'
 
 
 class AKSClient:
@@ -178,7 +178,7 @@ def main() -> None:
             return_results(complete_auth(client))
         elif command == 'azure-ks-auth-test':
             return_results(test_connection(client))
-        elif command == 'azure-ks-reset':
+        elif command == 'azure-ks-auth-reset':
             return_results(reset_auth())
         elif command == 'azure-ks-clusters-list':
             return_results(clusters_list(client))

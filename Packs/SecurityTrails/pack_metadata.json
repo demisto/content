@@ -2,7 +2,7 @@
     "name": "SecurityTrails",
     "description": "Integration for the SecurityTrails platform.",
     "support": "community",
-    "currentVersion": "1.1.0",
+    "currentVersion": "1.1.2",
     "author": "Adam Burt",
     "url": "",
     "email": "",
@@ -15,5 +15,9 @@
     "keywords": [],
     "githubUser": [
         "aburt-demisto"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

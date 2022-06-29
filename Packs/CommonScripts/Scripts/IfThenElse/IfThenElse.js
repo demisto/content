@@ -134,8 +134,10 @@ const [lhs_name, lhs] = getValue(args, condition, options, true);
 const [rhs_name, rhs] = getValue(args, condition, options, false);
 const operator = getOperator(lhs_name, rhs_name, condition);
 
+var ret;
 if (evaluate(operator, lhs, rhs, options)) {
-    return convertValue(args, options["input_data_type:then"], args.then);
+    ret = convertValue(args, options["input_data_type:then"], args.then);
 } else {
-    return convertValue(args, options["input_data_type:else"], args.else);
+    ret = convertValue(args, options["input_data_type:else"], args.else);
 }
+return ret === null ? "" : ret;

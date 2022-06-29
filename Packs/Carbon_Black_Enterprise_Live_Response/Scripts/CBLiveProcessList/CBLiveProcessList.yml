@@ -1,0 +1,26 @@
+commonfields:
+  id: CBLiveProcessList
+  version: -1
+name: CBLiveProcessList
+script: ''
+type: javascript
+tags:
+- carbon-black
+- endpoint
+deprecated: true
+comment: "Deprecated. No available replacement."
+system: true
+args:
+- name: sessionid
+  required: true
+  default: true
+  description: ID of an active Carbon Black session
+scripttarget: 0
+dependson:
+  must:
+  - cb-command-create
+  - cb-command-info
+timeout: 0s
+fromversion: 5.0.0
+tests:
+- No tests

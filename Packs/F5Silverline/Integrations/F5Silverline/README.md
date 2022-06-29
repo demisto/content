@@ -132,7 +132,7 @@ Adds a new particular threatening IP address object by its IP address.
 | --- | --- | --- |
 | list_type | The dynamic lists type of threatening IP addresses. The type can be "allowlist" or "denylist". Note: Allowlists are named DDOS IP Allowlists in the F5 Silverline portal. Possible values are: allowlist, denylist. | Required | 
 | list_target | This argument can be supplied to target either the proxy or routed denylist. If list_target is not specifiedm it will assume both proxy and routed are requested (i.e., proxy-routed). Possible values are: "proxy", "routed", or "proxy-routed". This argument limits the denylist type but is ignored for allowlist. Possible values are: proxy, routed, proxy-routed. | Optional | 
-| cidr_range | The CIDR range address of a new particular threatening IP address object (i.e IP address/ mask). For example, "1.2.3.4/32". In case only IP address is given, the default mask is 32. | Required | 
+| cidr_range | The CIDR range of a potentially threatening IP address. object (i.e IP address/ mask) in CSV format. For example, "1.2.3.4/32,2.3.4.5". In case only IP address is given, the default mask is 32. | Required | 
 | duration | The duration (in seconds) of a new particular threatening IP address object where the list type is 'denylist'. Setting the duration to 0 (default) means the new IP address object will never expire. This feature has been removed for allowlist. | Optional | 
 | note | The note of a new particular threatening IP address object. Default is empty. | Optional | 
 | tags | A comma-separated list of tags of a new particular threatening IP address object. | Optional | 

@@ -27,8 +27,10 @@ class Email(object):
         except UnicodeDecodeError as e:
             demisto.info(f'Failed parsing mail from bytes: [{e}]\n{traceback.format_exc()}.'
                          '\nWill replace backslash and try to parse again')
-            message_bytes = message_bytes.replace(b'\\U', b'\\\\U').replace(b'\\u', b'\\\\u')
+
+            message_bytes = self.handle_message_slashes(message_bytes)
             email_object = parse_from_bytes(message_bytes)
+
         self.id = id_
         self.to = [mail_addresses for _, mail_addresses in email_object.to]
         self.cc = [mail_addresses for _, mail_addresses in email_object.cc]
@@ -42,10 +44,41 @@ class Email(object):
         self.headers = email_object.headers
         self.raw_body = email_object.body if include_raw_body else None
         # According to the mailparser documentation the datetime object is in utc
-        self.date = email_object.date.replace(tzinfo=timezone.utc)
+        self.date = email_object.date.replace(tzinfo=timezone.utc) if email_object.date else None
         self.raw_json = self.generate_raw_json()
         self.save_eml_file = save_file
         self.labels = self._generate_labels()
+        self.message_id = email_object.message_id
+
+    @staticmethod
+    def handle_message_slashes(message_bytes: bytes) -> bytes:
+        """
+        Handles the case where message bytes containing backslashes  which needs escaping
+        Returns:
+            The message bytes after escaping
+        """
+
+        #   Input example # 1:
+        #       message_bytes = b'\\U'
+        #   Output example # 1 (added escaping for the slash):
+        #       b'\\\\U'
+        #
+        #   Input example # 2:
+        #       message_bytes = b'\\\\U'
+        #   Output example # 2 (no need to add escaping since the number of slashes is even):
+        #       b'\\\\U'
+
+        regex = re.compile(rb'\\+U', flags=re.IGNORECASE)
+
+        def escape_message_bytes(m):
+            s = m.group(0)
+            if len(s) % 2 == 0:
+                # The number of slashes prior to 'u' is odd - need to add one backslash
+                s = b'\\' + s
+            return s
+
+        message_bytes = regex.sub(escape_message_bytes, message_bytes)
+        return message_bytes
 
     def _generate_labels(self) -> List[Dict[str, str]]:
         """
@@ -199,6 +232,7 @@ def fetch_incidents(client: IMAPClient,
         next_run: This will be last_run in the next fetch-incidents
         incidents: Incidents that will be created in Demisto
     """
+    logger(fetch_incidents)
     uid_to_fetch_from = last_run.get('last_uid', 1)
     time_to_fetch_from = parse(last_run.get('last_fetch', f'{first_fetch_time} UTC'), settings={'TIMEZONE': 'UTC'})
     mails_fetched, messages, uid_to_fetch_from = fetch_mails(
@@ -277,10 +311,13 @@ def fetch_mails(client: IMAPClient,
         if not message_bytes:
             continue
         email_message_object = Email(message_bytes, include_raw_body, save_file, mail_id)
-        if (not time_to_fetch_from or time_to_fetch_from < email_message_object.date) and \
+        if (not time_to_fetch_from or (email_message_object.date and time_to_fetch_from < email_message_object.date)) and \
                 int(email_message_object.id) > int(uid_to_fetch_from):
             mails_fetched.append(email_message_object)
             messages_fetched.append(email_message_object.id)
+        elif email_message_object.date is None:
+            demisto.error(f"Skipping email with ID {email_message_object.message_id},"
+                          f" it doesn't include a date field that shows when was it received.")
         else:
             demisto.debug(f'Skipping {email_message_object.id} with date {email_message_object.date}. '
                           f'uid_to_fetch_from: {uid_to_fetch_from}, first_fetch_time: {time_to_fetch_from}')
@@ -308,10 +345,10 @@ def generate_search_query(time_to_fetch_from: Optional[datetime],
         ['OR',
          'HEADER',
          'FROM',
-         'test1@mail.com',
+         'test1.com',
          'HEADER',
          'FROM',
-         'test1.com',
+         'test1@mail.com',
          'SINCE',
          datetime.datetime(2020, 8, 7, 12, 14, 32, 918634, tzinfo=datetime.timezone.utc)]
     Input example #2:
@@ -322,9 +359,9 @@ def generate_search_query(time_to_fetch_from: Optional[datetime],
     output example #2:
         ['OR',
          'FROM',
-         'test1@mail.com',
-         'FROM',
          'test1.com',
+         'FROM',
+         'test1@mail.com',
          'SINCE',
          datetime.datetime(2020, 8, 7, 12, 14, 32, 918634, tzinfo=datetime.timezone.utc)]
     Args:
@@ -337,6 +374,7 @@ def generate_search_query(time_to_fetch_from: Optional[datetime],
     Returns:
         A list with arguments for the email search query
     """
+    logger(generate_search_query)
     permitted_from_addresses_list = argToList(permitted_from_addresses)
     permitted_from_domains_list = argToList(permitted_from_domains)
     messages_query = ''

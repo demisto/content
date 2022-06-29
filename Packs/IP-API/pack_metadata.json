@@ -13,5 +13,9 @@
     "keywords": [],
     "githubUser": [
         "mwareman"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

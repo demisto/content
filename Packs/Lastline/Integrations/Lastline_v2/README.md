@@ -195,7 +195,8 @@ Submission Time: 2020-02-24 07:05:33
 
 ### Upload a file for analysis
 ---
-Submits a file for analysis.
+Submits a file for analysis.\
+Note: Due to a limitation in Lastline's API, EML files are not supported.
 ##### Base Command
 
 `lastline-upload-file`

@@ -1,0 +1,29 @@
+{
+  "memberships": [
+    {
+      "name": "groups/group-3-name/memberships/membership-1",
+      "preferredMemberKey": {
+        "id": "user-2@xsoar.com"
+      },
+      "roles": [
+        {
+          "name": "MEMBER"
+        }
+      ]
+    },
+    {
+      "name": "groups/group-3-name/memberships/membership-2",
+      "preferredMemberKey": {
+        "id": "service-account-1@project-id-1.iam.gserviceaccount.com"
+      },
+      "roles": [
+        {
+          "name": "OWNER"
+        },
+        {
+          "name": "MEMBER"
+        }
+      ]
+    }
+  ]
+}

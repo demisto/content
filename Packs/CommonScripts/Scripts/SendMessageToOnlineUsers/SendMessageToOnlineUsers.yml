@@ -1,0 +1,28 @@
+commonfields:
+  id: SendMessageToOnlineUsers
+  version: -1
+name: SendMessageToOnlineUsers
+script: ''
+type: javascript
+tags: []
+comment: Send message to Demisto online users over Email, Slack, Mattermost or all.
+enabled: true
+args:
+- name: medium
+  auto: PREDEFINED
+  predefined:
+  - Slack
+  - Mattermost
+  - Email
+  - All
+  description: Medium to send message over (Slack, Mattermost, Email).
+  defaultValue: Email
+- name: message
+  required: true
+  default: true
+  description: Message to send
+scripttarget: 0
+runonce: false
+tests:
+- No test
+fromversion: 5.0.0

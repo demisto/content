@@ -1,0 +1,21 @@
+commonfields:
+  id: DemistoLeaveAllInvestigations
+  version: -1
+name: DemistoLeaveAllInvestigations
+script: ''
+type: javascript
+tags:
+- DemistoAPI
+comment: Leaves all investigations that the user is part of (clears out the incidents
+  in the left pane). Incidents that the user owns will remain in the left pane. Requires
+  Demisto REST API integration to be configured for the server.
+enabled: true
+scripttarget: 0
+runonce: false
+runas: DBotWeakRole
+dependson:
+  must:
+  - demisto-api-post
+tests:
+- No test
+fromversion: 5.0.0

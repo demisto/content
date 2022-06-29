@@ -1,2 +1,5 @@
-[file:integration-mcafeeDam.yml]
+[file:McAfeeDAM.yml]
 ignore=IN126
+
+[file:McAfeeDAM_image.png]
+ignore=IM111

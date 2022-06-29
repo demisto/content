@@ -191,14 +191,26 @@ def list_objects_command(args, aws_client):
         role_session_duration=args.get('roleSessionDuration'),
     )
     data = []
-    response = client.list_objects(Bucket=args.get('bucket'))
-    if response.get('Contents', None):
-        for key in response['Contents']:
-            data.append({
-                'Key': key['Key'],
-                'Size': convert_size(key['Size']),
-                'LastModified': datetime.strftime(key['LastModified'], '%Y-%m-%dT%H:%M:%S')
-            })
+    kwargs = {
+        'Bucket': args.get('bucket')
+    }
+    if args.get('delimiter') is not None:
+        kwargs.update({'Delimiter': args.get('delimiter')})
+    if args.get('prefix') is not None:
+        kwargs.update({'Prefix': args.get('prefix')})
+
+    client.list_objects(**kwargs)
+    paginator = client.get_paginator('list_objects')
+    for response in paginator.paginate(**kwargs):
+        if response.get('Contents', None):
+            for key in response['Contents']:
+                data.append({
+                    'Key': key['Key'],
+                    'Size': convert_size(key['Size']),
+                    'LastModified': datetime.strftime(key['LastModified'], '%Y-%m-%dT%H:%M:%S')
+                })
+
+    if len(data) > 0:
         ec = {'AWS.S3.Buckets(val.BucketName === args.get("bucket")).Objects': data}
         human_readable = tableToMarkdown('AWS S3 Bucket Objects', data)
         return_outputs(human_readable, ec)
@@ -228,6 +240,54 @@ def upload_file_command(args, aws_client):
                 file=args.get('key'), bucket=args.get('bucket')))
     except (OSError, IOError) as e:
         return_error("Could not read file: {path}\n {msg}".format(path=path, msg=e.message))
+
+
+def get_public_access_block(args, aws_client):
+    client = aws_client.aws_session(
+        service=SERVICE,
+        region=args.get('region'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
+    )
+    response = client.get_public_access_block(Bucket=args.get('bucket'))
+    public_access_block_configuration = response.get('PublicAccessBlockConfiguration')
+    data = {
+        'BucketName': args.get('bucket'),
+        'PublicAccessBlockConfiguration': {
+            'BlockPublicAcls': public_access_block_configuration.get('BlockPublicAcls'),
+            'IgnorePublicAcls': public_access_block_configuration.get('IgnorePublicAcls'),
+            'BlockPublicPolicy': public_access_block_configuration.get('BlockPublicPolicy'),
+            'RestrictPublicBuckets': public_access_block_configuration.get('RestrictPublicBuckets'),
+        }
+    }
+    ec = {'AWS.S3.Buckets(val.BucketName === obj.BucketName)': data}
+    human_readable = tableToMarkdown('AWS S3 Bucket Public Access Block', data)
+    return_outputs(human_readable, ec)
+
+
+def put_public_access_block(args, aws_client):
+    client = aws_client.aws_session(
+        service=SERVICE,
+        region=args.get('region'),
+        role_arn=args.get('roleArn'),
+        role_session_name=args.get('roleSessionName'),
+        role_session_duration=args.get('roleSessionDuration'),
+    )
+    kwargs = {
+        'Bucket': args.get('bucket'),
+        'PublicAccessBlockConfiguration': {
+            'BlockPublicAcls': argToBoolean(args.get('BlockPublicAcls')),
+            'IgnorePublicAcls': argToBoolean(args.get('IgnorePublicAcls')),
+            'BlockPublicPolicy': argToBoolean(args.get('BlockPublicPolicy')),
+            'RestrictPublicBuckets': argToBoolean(args.get('RestrictPublicBuckets'))
+        }
+    }
+    response = client.put_public_access_block(**kwargs)
+
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+        demisto.results('Successfully applied public access block to the {bucket} bucket'.format(
+            bucket=args.get('bucket')))
 
 
 def main():
@@ -287,6 +347,12 @@ def main():
 
         elif command == 'aws-s3-upload-file':
             upload_file_command(args, aws_client)
+
+        elif command == 'aws-s3-get-public-access-block':
+            get_public_access_block(args, aws_client)
+
+        elif command == 'aws-s3-put-public-access-block':
+            put_public_access_block(args, aws_client)
 
     except Exception as e:
         return_error('Error has occurred in the AWS S3 Integration: {error}\n {message}'.format(

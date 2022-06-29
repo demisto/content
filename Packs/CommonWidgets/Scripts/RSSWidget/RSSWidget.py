@@ -57,7 +57,7 @@ def collect_entries_data_from_response(parsed_feed_data: FeedParserDict, limit: 
     if not limit:
         return entries_data
 
-    for entry in reversed(parsed_feed_data.entries):
+    for entry in parsed_feed_data.entries:
         if entry:
             published = email.utils.parsedate(entry.published)
             if not published:

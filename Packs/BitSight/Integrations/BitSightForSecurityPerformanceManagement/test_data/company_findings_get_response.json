@@ -1,0 +1,236 @@
+{
+  "raw_response": {
+    "links": {
+      "next": null,
+      "previous": null
+    },
+    "count": 2,
+    "results": [
+      {
+        "temporary_id": "1001",
+        "affects_rating": false,
+        "assets": [
+          {
+            "asset": "X.X.X.X",
+            "identifier": null,
+            "category": "",
+            "importance": 0.0,
+            "is_ip": true
+          }
+        ],
+        "details": {
+          "check_pass": "",
+          "diligence_annotations": {
+            "message": "Detected service: HTTP  (Open Webcam)",
+            "CPE": [],
+            "Product": "D-Link/Airlink IP webcam http config",
+            "Version": "1.0",
+            "transport": "tcp",
+            "close-seen": "2021-07-28 16:35:28",
+            "Status": "HTTP/1.0 200 OK",
+            "Server": "Camera Web Server/1.0"
+          },
+          "final_location": "X.X.X.X:82",
+          "geo_ip_location": "US",
+          "country": "United States",
+          "grade": null,
+          "remediations": [],
+          "screenshot": "/screenshot/1001%3D%3D/",
+          "vulnerabilities": [],
+          "dest_port": 82,
+          "rollup_end_date": "2021-07-22",
+          "rollup_start_date": "2021-07-15",
+          "searchable_details": "Detected service: HTTP  (Open Webcam),tcp,D-Link/Airlink IP webcam http config"
+        },
+        "evidence_key": "X.X.X.X:82",
+        "first_seen": "2021-07-15",
+        "last_seen": "2021-07-22",
+        "related_findings": [],
+        "risk_category": "Diligence",
+        "risk_vector": "open_ports",
+        "risk_vector_label": "Open Ports",
+        "rolledup_observation_id": "",
+        "severity": 10.0,
+        "severity_category": "severe",
+        "tags": [],
+        "remediation_history": {
+          "last_requested_refresh_date": null,
+          "last_refresh_status_date": null,
+          "last_refresh_status_label": null,
+          "last_refresh_reason_code": null
+        },
+        "asset_overrides": [],
+        "duration": null,
+        "comments": null,
+        "remaining_decay": null
+      },
+      {
+        "temporary_id": "1002",
+        "affects_rating": false,
+        "assets": [
+          {
+            "asset": "X.X.X.X",
+            "identifier": null,
+            "category": "low",
+            "importance": 0.0,
+            "is_ip": true
+          },
+          {
+            "asset": "X.X.X.Y",
+            "identifier": null,
+            "category": "critical",
+            "importance": 0.0,
+            "is_ip": true
+          }
+        ],
+        "details": {
+          "check_pass": "",
+          "diligence_annotations": {
+            "message": "Detected service: HTTP  (Open Webcam)",
+            "CPE": [],
+            "Product": "D-Link/Airlink IP webcam http config",
+            "Version": "1.0",
+            "transport": "tcp",
+            "close-seen": "2021-07-28 16:35:28",
+            "Status": "HTTP/1.0 200 OK",
+            "Server": "Camera Web Server/1.0"
+          },
+          "final_location": "X.X.X.X:82",
+          "geo_ip_location": "US",
+          "country": "United States",
+          "grade": "BAD",
+          "remediations": [],
+          "screenshot": "/screenshot/1001%3D%3D/",
+          "vulnerabilities": [],
+          "dest_port": 82,
+          "rollup_end_date": "2021-07-22",
+          "rollup_start_date": "2021-07-15",
+          "searchable_details": "Detected service: HTTP  (Open Webcam),tcp,D-Link/Airlink IP webcam http config"
+        },
+        "evidence_key": "X.X.X.X:82",
+        "first_seen": "2021-07-11",
+        "last_seen": "2021-07-22",
+        "related_findings": [],
+        "risk_category": "Diligence",
+        "risk_vector": "open_ports",
+        "risk_vector_label": "Open Ports",
+        "rolledup_observation_id": "",
+        "severity": 10.0,
+        "severity_category": "severe",
+        "tags": [],
+        "remediation_history": {
+          "last_requested_refresh_date": null,
+          "last_refresh_status_date": null,
+          "last_refresh_status_label": null,
+          "last_refresh_reason_code": null
+        },
+        "asset_overrides": [],
+        "duration": null,
+        "comments": null,
+        "remaining_decay": null
+      }
+    ]
+  },
+  "outputs": {
+    "BitSight.Company(val.guid == obj.guid)": {
+      "guid": "123",
+      "CompanyFinding": [
+        {
+          "temporaryId": "1001",
+          "affectsRating": false,
+          "assets": [
+            {
+              "asset": "X.X.X.X",
+              "category": "",
+              "importance": 0.0,
+              "isIp": true
+            }
+          ],
+          "details": {
+            "checkPass": "",
+            "diligenceAnnotations": {
+              "message": "Detected service: HTTP  (Open Webcam)",
+              "product": "D-Link/Airlink IP webcam http config",
+              "version": "1.0",
+              "transport": "tcp",
+              "close-seen": "2021-07-28 16:35:28",
+              "status": "HTTP/1.0 200 OK",
+              "server": "Camera Web Server/1.0"
+            },
+            "finalLocation": "X.X.X.X:82",
+            "geoIpLocation": "US",
+            "country": "United States",
+            "screenshot": "/screenshot/1001%3D%3D/",
+            "destPort": 82,
+            "rollupEndDate": "2021-07-22",
+            "rollupStartDate": "2021-07-15",
+            "searchableDetails": "Detected service: HTTP  (Open Webcam),tcp,D-Link/Airlink IP webcam http config"
+          },
+          "evidenceKey": "X.X.X.X:82",
+          "firstSeen": "2021-07-15",
+          "lastSeen": "2021-07-22",
+          "riskCategory": "Diligence",
+          "riskVector": "open_ports",
+          "riskVectorLabel": "Open Ports",
+          "rolledupObservationId": "",
+          "severity": 10.0,
+          "severityCategory": "severe"
+        },
+        {
+          "temporaryId": "1002",
+          "affectsRating": false,
+          "assets": [
+            {
+              "asset": "X.X.X.X",
+              "category": "low",
+              "importance": 0.0,
+              "isIp": true
+            },
+            {
+              "asset": "X.X.X.Y",
+              "category": "critical",
+              "importance": 0.0,
+              "isIp": true
+            }
+          ],
+          "details": {
+            "checkPass": "",
+            "diligenceAnnotations": {
+              "message": "Detected service: HTTP  (Open Webcam)",
+              "product": "D-Link/Airlink IP webcam http config",
+              "version": "1.0",
+              "transport": "tcp",
+              "close-seen": "2021-07-28 16:35:28",
+              "status": "HTTP/1.0 200 OK",
+              "server": "Camera Web Server/1.0"
+            },
+            "finalLocation": "X.X.X.X:82",
+            "geoIpLocation": "US",
+            "country": "United States",
+            "grade": "BAD",
+            "screenshot": "/screenshot/1001%3D%3D/",
+            "destPort": 82,
+            "rollupEndDate": "2021-07-22",
+            "rollupStartDate": "2021-07-15",
+            "searchableDetails": "Detected service: HTTP  (Open Webcam),tcp,D-Link/Airlink IP webcam http config"
+          },
+          "evidenceKey": "X.X.X.X:82",
+          "firstSeen": "2021-07-11",
+          "lastSeen": "2021-07-22",
+          "riskCategory": "Diligence",
+          "riskVector": "open_ports",
+          "riskVectorLabel": "Open Ports",
+          "rolledupObservationId": "",
+          "severity": 10.0,
+          "severityCategory": "severe"
+        }
+      ]
+    },
+    "BitSight.Page(val.name == obj.name)": {
+      "name": "bitsight-company-findings-get",
+      "next": null,
+      "previous": null,
+      "count": 2
+    }
+  }
+}

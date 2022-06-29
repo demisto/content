@@ -1,0 +1,356 @@
+id: Azure-DevOps-Pipeline-Run
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Azure-DevOps-Pipeline-Run
+description: This playbook runs a pipeline on the Azure DevOps Environment.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 230a5fa5-ffb2-4d27-857f-647083ec27dc
+    type: start
+    task:
+      id: 230a5fa5-ffb2-4d27-857f-647083ec27dc
+      version: -1
+      name: ""
+      description: Start of playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: c8c1d796-08f6-428d-8c85-71634d0db775
+    type: regular
+    task:
+      id: c8c1d796-08f6-428d-8c85-71634d0db775
+      version: -1
+      name: Azure DevOps Pipeline run
+      description: Run a pipeline.
+      script: '|||azure-devops-pipeline-run'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      branch_name:
+        complex:
+          root: inputs.Branch Name
+      pipeline_id:
+        complex:
+          root: inputs.Pipeline ID
+      project:
+        complex:
+          root: inputs.Project Name
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 30368ad5-36da-4472-8a60-527a45685005
+    type: regular
+    task:
+      id: 30368ad5-36da-4472-8a60-527a45685005
+      version: -1
+      name: Azure DevOps Pipeline Run Get
+      description: Retrieve pipeline run information.
+      script: '|||azure-devops-pipeline-run-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      pipeline_id:
+        complex:
+          root: inputs.Pipeline ID
+      project:
+        complex:
+          root: inputs.Project Name
+      run_id:
+        complex:
+          root: AzureDevOps.PipelineRun
+          accessor: run_id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: c2ca1354-c0f9-43be-8316-a97e90103594
+    type: playbook
+    task:
+      id: c2ca1354-c0f9-43be-8316-a97e90103594
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      AdditionalPollingCommandArgNames:
+        simple: project,pipeline_id
+      AdditionalPollingCommandArgValues:
+        simple: ${inputs.Project Name},${inputs.Pipeline ID}
+      Ids:
+        complex:
+          root: AzureDevOps.PipelineRun
+          accessor: run_id
+      Interval:
+        complex:
+          root: inputs.interval
+      PollingCommandArgName:
+        simple: run_id
+      PollingCommandName:
+        simple: azure-devops-pipeline-run-get
+      Timeout:
+        complex:
+          root: inputs.Timeout
+      dt:
+        simple: AzureDevOps.PipelineRun(val.state!=='completed').run_id
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 28edb4ce-1718-4e2f-80fa-0fbac12fec8d
+    type: regular
+    task:
+      id: 28edb4ce-1718-4e2f-80fa-0fbac12fec8d
+      version: -1
+      name: Azure DevOps pipeline run get
+      description: Retrieve pipeline run information.
+      script: '|||azure-devops-pipeline-run-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      pipeline_id:
+        complex:
+          root: inputs.Pipeline ID
+      project:
+        complex:
+          root: inputs.Project Name
+      run_id:
+        complex:
+          root: AzureDevOps.PipelineRun
+          accessor: run_id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 172877e1-d636-4b2a-8b3e-70dddf7ea585
+    type: title
+    task:
+      id: 172877e1-d636-4b2a-8b3e-70dddf7ea585
+      version: -1
+      name: Done
+      description: Playbook is done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: df1cb9bf-f569-40c6-8bda-fc4ec11ebe26
+    type: condition
+    task:
+      id: df1cb9bf-f569-40c6-8bda-fc4ec11ebe26
+      version: -1
+      name: Is search completed?
+      description: Checks whether the search is completed
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: AzureDevOps.PipelineRun
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: completed
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1085,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Project Name
+  value:
+    simple: xsoar
+  required: true
+  description: The name of the pipeline project.
+  playbookInputQuery:
+- key: Pipeline ID
+  value:
+    simple: "1"
+  required: true
+  description: The ID of the pipeline.
+  playbookInputQuery:
+- key: Branch Name
+  value:
+    simple: main
+  required: true
+  description: The name of the repository branch which runs the pipeline.
+  playbookInputQuery:
+- key: interval
+  value:
+    simple: "1"
+  required: true
+  description: Indicates how long to wait between each poll.
+  playbookInputQuery:
+- key: Timeout
+  value:
+    simple: "60"
+  required: true
+  description: The amount of time until the playbook stops waiting for the process
+    to finish. After this time has passed, the playbook finishes its run, even if
+    it didn't receive confirmation that the remote process completed.
+  playbookInputQuery:
+outputs:
+- contextPath: AzureDevOps.Project
+  description: The result of the search
+- contextPath: AzureDevOps.Project.Pipeline
+  description: AzureDevOps Pipeline Object
+  type: unknown
+- contextPath: AzureDevOps.Project.Pipeline.Run
+  description: AzureDevOps Pipeling Run
+  type: unknown
+tests:
+- playbook-AzureDevOps-Test
+fromversion: 6.0.0

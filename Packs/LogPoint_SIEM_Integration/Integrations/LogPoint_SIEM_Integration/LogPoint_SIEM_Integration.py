@@ -803,6 +803,7 @@ def main():
     first_fetch_dt = dateparser.parse(first_fetch_param, settings={'TIMEZONE': 'UTC'})
     if first_fetch_param and not first_fetch_dt:
         return_error(f"First fetch input '{first_fetch_param}' is invalid. Valid format eg.:1 day")
+    assert first_fetch_dt is not None
     first_fetch = first_fetch_dt.timestamp()
     max_fetch = params.get('max_fetch')
     max_fetch = int(params.get('max_fetch')) if (max_fetch and max_fetch.isdigit()) else 50

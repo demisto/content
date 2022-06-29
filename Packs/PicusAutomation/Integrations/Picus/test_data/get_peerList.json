@@ -1,0 +1,148 @@
+{
+    "data": {
+        "peers": [
+            {
+                "is_alive": true,
+                "latest_attack": "2021-12-07T16:42:14.897844",
+                "name": "Picus_Attacker_1",
+                "registered_ip": "x.x.x.x",
+                "type": "Network"
+            },
+            {
+                "is_alive": true,
+                "latest_attack": "2021-12-07T16:42:13.642406",
+                "name": "Picus_Attacker_2",
+                "registered_ip": "x.x.x.x",
+                "type": "Network"
+            },
+            {
+                "is_alive": true,
+                "latest_attack": "2021-12-07T16:42:13.335908",
+                "name": "Win10-Det2",
+                "registered_ip": "x.x.x.x",
+                "type": "Endpoint"
+            },
+            {
+                "is_alive": true,
+                "latest_attack": "2021-12-07T16:42:14.898221",
+                "name": "Win10-Det1",
+                "registered_ip": "x.x.x.x",
+                "type": "Endpoint"
+            },
+            {
+                "is_alive": true,
+                "latest_attack": "2021-12-07T16:42:09.254201",
+                "name": "Win10-Det4",
+                "registered_ip": "x.x.x.x",
+                "type": "Endpoint"
+            },
+            {
+                "is_alive": true,
+                "latest_attack": "2021-12-07T16:42:10.343702",
+                "name": "Picus_Attacker_3",
+                "registered_ip": "x.x.x.x",
+                "type": "Network"
+            },
+            {
+                "is_alive": false,
+                "latest_attack": "2021-08-06T13:52:25.322088",
+                "name": "Win10-Det5",
+                "registered_ip": "x.x.x.x",
+                "type": "Endpoint"
+            },
+            {
+                "is_alive": true,
+                "latest_attack": "2021-12-07T16:42:07.878813",
+                "name": "Picus_Attacker_5",
+                "registered_ip": "x.x.x.x",
+                "type": "Network"
+            },
+            {
+                "is_alive": true,
+                "latest_attack": "2021-12-07T16:42:14.89641",
+                "name": "net1-det1",
+                "registered_ip": "x.x.x.x",
+                "type": "Network"
+            },
+            {
+                "is_alive": true,
+                "latest_attack": "2021-12-07T16:42:15.07077",
+                "name": "Mail-Det1",
+                "registered_ip": "x.x.x.x",
+                "type": "Email"
+            },
+            {
+                "is_alive": true,
+                "latest_attack": "2021-12-07T16:42:07.878845",
+                "name": "Mail-Det2",
+                "registered_ip": "x.x.x.x",
+                "type": "Email"
+            },
+            {
+                "is_alive": true,
+                "latest_attack": "2021-12-07T16:42:14.898071",
+                "name": "Picus_Attacker_1-Internal",
+                "registered_ip": "x.x.x.x",
+                "type": "Network"
+            },
+            {
+                "is_alive": true,
+                "latest_attack": "2021-12-07T16:42:14.895562",
+                "name": "net1-det1-Internal",
+                "registered_ip": "x.x.x.x",
+                "type": "Network"
+            },
+            {
+                "is_alive": true,
+                "latest_attack": "2021-12-07T16:42:13.337292",
+                "name": "Win10-Det3",
+                "registered_ip": "x.x.x.x",
+                "type": "Endpoint"
+            },
+            {
+                "is_alive": true,
+                "latest_attack": "2021-12-07T16:42:14.898128",
+                "name": "Win10-Det6",
+                "registered_ip": "x.x.x.x",
+                "type": "Endpoint"
+            },
+            {
+                "is_alive": false,
+                "latest_attack": "",
+                "name": "test",
+                "registered_ip": "",
+                "type": "Email"
+            },
+            {
+                "is_alive": false,
+                "latest_attack": "",
+                "name": "x.x.x.x",
+                "registered_ip": "",
+                "type": "Email"
+            },
+            {
+                "is_alive": false,
+                "latest_attack": "",
+                "name": "x.x.x.x",
+                "registered_ip": "",
+                "type": "Email"
+            },
+            {
+                "is_alive": true,
+                "latest_attack": "2021-12-07T16:42:06.644135",
+                "name": "Mail-Det3",
+                "registered_ip": "x.x.x.x",
+                "type": "Email"
+            },
+            {
+                "is_alive": true,
+                "latest_attack": "2021-12-07T16:42:05.265367",
+                "name": "Mail-Det4",
+                "registered_ip": "x.x.x.x",
+                "type": "Email"
+            }
+        ],
+        "total_count": 20
+    },
+    "success": true
+}

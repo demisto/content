@@ -39,7 +39,7 @@ tasks:
     nexttasks:
       '#default#':
       - '19'
-      yes:
+      'yes':
       - '6'
     scriptarguments:
       value:
@@ -49,7 +49,7 @@ tasks:
     continueonerror: true
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
@@ -76,7 +76,7 @@ tasks:
     nexttasks:
       '#default#':
       - '19'
-      yes:
+      'yes':
       - '20'
     scriptarguments:
       value:
@@ -86,7 +86,7 @@ tasks:
     continueonerror: true
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
@@ -156,7 +156,7 @@ tasks:
     nexttasks:
       '#default#':
       - '19'
-      yes:
+      'yes':
       - '17'
     scriptarguments:
       value:
@@ -181,7 +181,7 @@ tasks:
                   simple: active
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: isExists
           left:

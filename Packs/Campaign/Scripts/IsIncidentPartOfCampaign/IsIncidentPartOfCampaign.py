@@ -17,41 +17,20 @@ def get_incidents_ids_by_type(incident_type: str) -> Iterable[str]:
         List of ids as strings.
     """
     search_args = {
-        'type': incident_type,
-        'page': 0,
+        'query': f'type:"{incident_type}"',
         'sort': {
             'field': 'occurred',
             'asc': False,
         },
     }
+    incidents = execute_command("GetIncidentsByQuery", search_args)
+    demisto.debug(f"Incidents getting from response: {incidents}")
 
-    incidents = execute_command("getIncidents", search_args)['data']
-    while incidents:
-        demisto.debug(f'Searching for incidents: {search_args}')
-        for incident in incidents:
-            # for type name with more than one word getIncidents returns also incidents with the type name of that
-            # is part of the original type name (Ex. Phishing Campaign will also return incidents of Phishing).
-            if incident.get('type') == incident_type:
-                yield incident.get('id')
+    incidents = json.loads(incidents)
+    campaign_ids = [incident.get('id') for incident in incidents]
+    demisto.debug(f"Found campaing incident ids: {campaign_ids}")
 
-        search_args['page'] += 1  # type: ignore
-
-        incidents = execute_command("getIncidents", search_args)['data']
-
-
-def arg_to_set(arg: str) -> Set[str]:
-    """
-    Convert given comma separated string to set.
-    Args:
-        arg (str): list as comma separated string.
-
-    Returns: Set
-
-    """
-    if not isinstance(arg, str):
-        return set()
-    arg_list = arg.split(',')
-    return set(arg_list)
+    return campaign_ids
 
 
 ''' COMMAND FUNCTION '''
@@ -86,18 +65,22 @@ def main():
     try:
         args = demisto.args()
         campaign_type = args.get('CampaignIncidentType', 'Phishing Campaign')
-        incidents_ids_set = arg_to_set(args.get('IncidentIDs', ''))
+        incidents_ids_set = set(argToList(args.get('IncidentIDs', '')))
         campaign_id = None
 
-        for campaign_id in get_incidents_ids_by_type(campaign_type):
+        campaigns_ids_list = get_incidents_ids_by_type(campaign_type)
+
+        for campaign_id in campaigns_ids_list:
             if check_incidents_ids_in_campaign(campaign_id, incidents_ids_set):
                 readable = f"Found campaign with ID - {campaign_id}"
                 break
         else:
             # did not find a relevant campaign
+            campaign_id = None
             readable = "No campaign has found"
 
-        return CommandResults(readable_output=readable, outputs={"ExistingCampaignID": campaign_id})
+        return CommandResults(readable_output=readable, outputs={"ExistingCampaignID": campaign_id},
+                              raw_response=readable)
 
     except Exception as ex:  # pylint: disable=broad-except  pragma: no cover
         demisto.error(traceback.format_exc())  # print the traceback

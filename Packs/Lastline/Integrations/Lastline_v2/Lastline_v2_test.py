@@ -146,3 +146,30 @@ def test_test_module_wrong_credentials(mocker, params):
     client = Client(base_url=params.get('url'), api_params=api_params, credentials=params.get('credentials'))
     with pytest.raises(DemistoException, match='Authentication Error.'):
         client.test_module_command()
+
+
+def test_upload_file_with_csv_type(mocker):
+    """
+    Given:
+        - Valid params and a csv file to upload
+
+    When:
+        - Running the integration upload-file command
+
+    Then:
+        - Validating that the login API endpoint was called
+    """
+    params = {
+        'url': 'testurl.com',
+        'credentials': {
+            'identifier': 'identifier',
+            'password': 'password'
+        }
+    }
+
+    client = Client(base_url=params.get('url'), credentials=params.get('credentials'), api_params={'EntryID': '1234@'})
+    mocker.patch.object(demisto, 'getFilePath', return_value={'id': id, 'path': 'test/test.csv', 'name': 'test.csv'})
+    post_mock = mocker.patch.object(requests.Session, 'post')
+    mocker.patch('builtins.open')
+    client.upload_file()
+    assert 'papi/login' in post_mock.call_args_list[0][0][0]

@@ -1,0 +1,16 @@
+{
+ "name": "OTSecurity API Classifier v1",
+ "id": "OTSecurity_API_Classifier_v1",
+ "description": "Sample API classifier of OT incidents, this classifier is included to help you test the playbook by triggering a new incident using XSOAR API, if the json payload of your request to XSOAR API includes a 'category' key with value equal to 'Rogue Device Found Incident', the classifier matches that and creates a new incident with type 'OTSecurity Rogue Device Found'",
+ "feed": false,
+ "fromVersion": "6.0.0",
+ "keyTypeMap": {
+  "Rogue Device Found Incident": "OTSecurity Rogue Device Found"
+ },
+ "transformer": {
+  "complex": null,
+  "simple": "category"
+ },
+ "type": "classification",
+ "version": -1
+}

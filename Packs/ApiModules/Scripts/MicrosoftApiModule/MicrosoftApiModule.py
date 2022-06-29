@@ -28,17 +28,38 @@ REFRESH_TOKEN = 'refresh_token'  # guardrails-disable-line
 DEVICE_CODE = 'urn:ietf:params:oauth:grant-type:device_code'
 REGEX_SEARCH_URL = r'(?P<url>https?://[^\s]+)'
 SESSION_STATE = 'session_state'
+TOKEN_RETRIEVAL_ENDPOINTS = {
+    'com': 'https://login.microsoftonline.com',
+    'gcc-high': 'https://login.microsoftonline.us',
+    'dod': 'https://login.microsoftonline.us',
+    'de': 'https://login.microsoftonline.de',
+    'cn': 'https://login.chinacloudapi.cn',
+}
+GRAPH_ENDPOINTS = {
+    'com': 'https://graph.microsoft.com',
+    'gcc-high': 'https://graph.microsoft.us',
+    'dod': 'https://dod-graph.microsoft.us',
+    'de': 'https://graph.microsoft.de',
+    'cn': 'https://microsoftgraph.chinacloudapi.cn'
+}
+GRAPH_BASE_ENDPOINTS = {
+    'https://graph.microsoft.com': 'com',
+    'https://graph.microsoft.us': 'gcc-high',
+    'https://dod-graph.microsoft.us': 'dod',
+    'https://graph.microsoft.de': 'de',
+    'https://microsoftgraph.chinacloudapi.cn': 'cn'
+}
 
 
 class MicrosoftClient(BaseClient):
     def __init__(self, tenant_id: str = '',
                  auth_id: str = '',
-                 enc_key: str = '',
-                 token_retrieval_url: str = 'https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token',
+                 enc_key: Optional[str] = '',
+                 token_retrieval_url: str = '{endpoint}/{tenant_id}/oauth2/v2.0/token',
                  app_name: str = '',
                  refresh_token: str = '',
                  auth_code: str = '',
-                 scope: str = 'https://graph.microsoft.com/.default',
+                 scope: str = '{graph_endpoint}/.default',
                  grant_type: str = CLIENT_CREDENTIALS,
                  redirect_uri: str = 'https://localhost/myapp',
                  resource: Optional[str] = '',
@@ -46,8 +67,11 @@ class MicrosoftClient(BaseClient):
                  resources: List[str] = None,
                  verify: bool = True,
                  self_deployed: bool = False,
-                 azure_ad_endpoint: str = 'https://login.microsoftonline.com',
                  timeout: Optional[int] = None,
+                 azure_ad_endpoint: str = '{endpoint}',
+                 endpoint: str = 'com',
+                 certificate_thumbprint: Optional[str] = None,
+                 private_key: Optional[str] = None,
                  *args, **kwargs):
         """
         Microsoft Client class that implements logic to authenticate with oproxy or self deployed applications.
@@ -63,8 +87,11 @@ class MicrosoftClient(BaseClient):
             resources: Resources of the application (for multi-resource mode)
             verify: Demisto insecure parameter
             self_deployed: Indicates whether the integration mode is self deployed or oproxy
+            certificate_thumbprint: Certificate's thumbprint that's associated to the app
+            private_key: Private key of the certificate
         """
         super().__init__(verify=verify, *args, **kwargs)  # type: ignore[misc]
+        self.endpoint = endpoint
         if not self_deployed:
             auth_id_and_token_retrieval_url = auth_id.split('@')
             auth_id = auth_id_and_token_retrieval_url[0]
@@ -80,20 +107,33 @@ class MicrosoftClient(BaseClient):
             self.refresh_token = refresh_token
 
         else:
-            self.token_retrieval_url = token_retrieval_url.format(tenant_id=tenant_id)
+            self.token_retrieval_url = token_retrieval_url.format(tenant_id=tenant_id,
+                                                                  endpoint=TOKEN_RETRIEVAL_ENDPOINTS[self.endpoint])
             self.client_id = auth_id
             self.client_secret = enc_key
             self.tenant_id = tenant_id
             self.auth_code = auth_code
             self.grant_type = grant_type
             self.resource = resource
-            self.scope = scope
+            self.scope = scope.format(graph_endpoint=GRAPH_ENDPOINTS[self.endpoint])
             self.redirect_uri = redirect_uri
+            if certificate_thumbprint and private_key:
+                try:
+                    import msal  # pylint: disable=E0401
+                    self.jwt = msal.oauth2cli.assertion.JwtAssertionCreator(
+                        private_key,
+                        'RS256',
+                        certificate_thumbprint
+                    ).create_normal_assertion(audience=self.token_retrieval_url, issuer=self.client_id)
+                except ModuleNotFoundError:
+                    raise DemistoException('Unable to use certificate authentication because `msal` is missing.')
+            else:
+                self.jwt = None
 
         self.auth_type = SELF_DEPLOYED_AUTH_TYPE if self_deployed else OPROXY_AUTH_TYPE
         self.verify = verify
-        self.azure_ad_endpoint = azure_ad_endpoint
-        self.timeout = timeout
+        self.azure_ad_endpoint = azure_ad_endpoint.format(endpoint=TOKEN_RETRIEVAL_ENDPOINTS[self.endpoint])
+        self.timeout = timeout  # type: ignore
 
         self.multi_resource = multi_resource
         if self.multi_resource:
@@ -305,15 +345,23 @@ class MicrosoftClient(BaseClient):
             return self._get_token_device_code(refresh_token, scope, integration_context)
         else:
             # by default, grant_type is CLIENT_CREDENTIALS
+            if self.multi_resource:
+                expires_in = -1  # init variable as an int
+                for resource in self.resources:
+                    access_token, expires_in, refresh_token = self._get_self_deployed_token_client_credentials(
+                        resource=resource)
+                    self.resource_to_access_token[resource] = access_token
+                return '', expires_in, refresh_token
             return self._get_self_deployed_token_client_credentials(scope=scope)
 
-    def _get_self_deployed_token_client_credentials(self, scope: Optional[str] = None) -> Tuple[str, int, str]:
+    def _get_self_deployed_token_client_credentials(self, scope: Optional[str] = None,
+                                                    resource: Optional[str] = None) -> Tuple[str, int, str]:
         """
         Gets a token by authorizing a self deployed Azure application in client credentials grant type.
 
         Args:
-            scope; A scope to add to the headers. Else will get self.scope.
-
+            scope: A scope to add to the headers. Else will get self.scope.
+            resource: A resource to add to the headers. Else will get self.resource.
         Returns:
             tuple: An access token and its expiry.
         """
@@ -323,12 +371,17 @@ class MicrosoftClient(BaseClient):
             'grant_type': CLIENT_CREDENTIALS
         }
 
+        if self.jwt:
+            data.pop('client_secret', None)
+            data['client_assertion_type'] = "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"
+            data['client_assertion'] = self.jwt
+
         # Set scope.
         if self.scope or scope:
             data['scope'] = scope if scope else self.scope
 
-        if self.resource:
-            data['resource'] = self.resource
+        if self.resource or resource:
+            data['resource'] = resource or self.resource  # type: ignore
 
         response_json: dict = {}
         try:
@@ -358,6 +411,11 @@ class MicrosoftClient(BaseClient):
             resource=self.resource if not resource else resource,
             redirect_uri=self.redirect_uri
         )
+
+        if self.jwt:
+            data.pop('client_secret', None)
+            data['client_assertion_type'] = "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"
+            data['client_assertion'] = self.jwt
 
         if scope:
             data['scope'] = scope
@@ -483,7 +541,7 @@ class MicrosoftClient(BaseClient):
         return datetime.utcfromtimestamp(_time)
 
     @staticmethod
-    def get_encrypted(content: str, key: str) -> str:
+    def get_encrypted(content: str, key: Optional[str]) -> str:
         """
         Encrypts content with encryption key.
         Args:

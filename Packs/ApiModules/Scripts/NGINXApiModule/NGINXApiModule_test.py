@@ -1,12 +1,15 @@
+from CommonServerPython import DemistoException
 import pytest
 import requests
 import demistomock as demisto
 from pathlib import Path
 import os
+from pytest import raises
 from pytest_mock import MockerFixture
 from time import sleep
 import subprocess
 from typing import Optional
+
 
 SSL_TEST_KEY = '''-----BEGIN PRIVATE KEY-----
 MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDd5FcvCKgtXjkY
@@ -62,13 +65,27 @@ C/t/GFcoOUze68WuI/BqMAiWhPJ1ioL7RI2ZPvI=
 '''
 
 
-def test_nginx_conf(tmp_path: Path):
+def test_nginx_conf(tmp_path: Path, mocker):
     from NGINXApiModule import create_nginx_server_conf
     conf_file = str(tmp_path / "nginx-test-server.conf")
+    mocker.patch.object(demisto, 'callingContext', return_value={'context': {}})
     create_nginx_server_conf(conf_file, 12345, params={})
     with open(conf_file, 'rt') as f:
         conf = f.read()
         assert 'listen 12345 default_server' in conf
+
+
+def test_nginx_conf_taxii2(tmp_path: Path, mocker):
+    from NGINXApiModule import create_nginx_server_conf
+    mocker.patch.object(demisto, 'callingContext', {'context': {'IntegrationBrand': 'TAXII2 Server'}})
+    conf_file = str(tmp_path / "nginx-test-server.conf")
+    create_nginx_server_conf(conf_file, 12345, params={'version': '2.0', 'credentials': {'identifier': 'identifier'}})
+    with open(conf_file, 'rt') as f:
+        conf = f.read()
+        assert '$http_authorization' in conf
+        assert '$http_accept' in conf
+        assert 'proxy_set_header Range $http_range;' in conf
+        assert '$http_range' in conf
 
 
 NGINX_PROCESS: Optional[subprocess.Popen] = None
@@ -107,11 +124,12 @@ def test_nginx_start_fail(mocker: MockerFixture, nginx_cleanup):
 
 
 @docker_only
-def test_nginx_start_fail_directive(nginx_cleanup):
+def test_nginx_start_fail_directive(nginx_cleanup, mocker):
     """Test that nginx fails when invalid global directive is passed
     """
     import NGINXApiModule as module
     try:
+        mocker.patch.object(demisto, 'callingContext', return_value={'context': {}})
         module.start_nginx_server(12345, {'nginx_global_directives': 'bad_directive test;'})
         pytest.fail('nginx start should fail')
     except ValueError as e:
@@ -124,8 +142,9 @@ def test_nginx_start_fail_directive(nginx_cleanup):
     {},
     {'certificate': SSL_TEST_CRT, 'key': SSL_TEST_KEY},
 ])
-def test_nginx_test_start_valid(nginx_cleanup, params):
+def test_nginx_test_start_valid(nginx_cleanup, params, mocker):
     import NGINXApiModule as module
+    mocker.patch.object(demisto, 'callingContext', return_value={'context': {}})
     module.test_nginx_server(11300, params)
     # check that nginx process is not up
     sleep(0.5)
@@ -140,6 +159,7 @@ def test_nginx_log_process(nginx_cleanup, mocker: MockerFixture):
     Path(module.NGINX_SERVER_ACCESS_LOG).unlink(missing_ok=True)
     Path(module.NGINX_SERVER_ERROR_LOG).unlink(missing_ok=True)
     global NGINX_PROCESS
+    mocker.patch.object(demisto, 'callingContext', return_value={'context': {}})
     NGINX_PROCESS = module.start_nginx_server(12345, {})
     sleep(0.5)  # give nginx time to start
     # create a request to get a log line
@@ -161,3 +181,21 @@ def test_nginx_log_process(nginx_cleanup, mocker: MockerFixture):
     # make sure log was rolled over files should be of size 0
     assert not Path(module.NGINX_SERVER_ACCESS_LOG).stat().st_size
     assert not Path(module.NGINX_SERVER_ERROR_LOG).stat().st_size
+
+
+def test_nginx_web_server_is_down(requests_mock, capfd):
+    import NGINXApiModule as module
+    with capfd.disabled():
+        requests_mock.get('http://localhost:9009/nginx-test', status_code=404)
+        with raises(DemistoException,
+                    match='Testing nginx server: 404 Client Error: None for url: http://localhost:9009/nginx-test'):
+            module.test_nginx_web_server(9009, {})
+
+
+def test_nginx_web_server_is_up_running(requests_mock):
+    import NGINXApiModule as module
+    requests_mock.get('http://localhost:9009/nginx-test', status_code=200, text='Welcome to nginx')
+    try:
+        module.test_nginx_web_server(9009, {})
+    except DemistoException as ex:
+        assert False, f'Raised an exception unexpectedly. {ex}'

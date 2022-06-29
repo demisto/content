@@ -1,6 +1,6 @@
 {
     "name": "Windows Defender Advanced Threat Protection (Deprecated)",
-    "description": "Deprected - Use the Microsoft Defender Advanced Threat Protection pack instead. Windows Defender Advanced Threat Protection (ATP) is a unified platform for preventative protection, post-breach detection, automated investigation, and response.",
+    "description": "Deprecated. Use the Microsoft Defender Advanced Threat Protection pack instead.",
     "support": "xsoar",
     "currentVersion": "1.0.3",
     "author": "Cortex XSOAR",
@@ -12,5 +12,9 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

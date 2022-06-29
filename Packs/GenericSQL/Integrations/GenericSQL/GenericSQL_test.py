@@ -87,12 +87,25 @@ RAW2 = [{'Host': '%',
          'Password_require_current': None,
          'User_attributes': None}]
 
+HEADER1 = ['Name']
+
+HEADER2 = ['Host', 'User', 'Select_priv', 'Insert_priv', 'Update_priv', 'Delete_priv', 'Create_priv', 'Drop_priv',
+           'Reload_priv', 'Shutdown_priv', 'Process_priv', 'File_priv', 'Grant_priv', 'References_priv', 'Index_priv',
+           'Alter_priv', 'Show_db_priv', 'Super_priv', 'Create_tmp_table_priv', 'Lock_tables_priv', 'Execute_priv',
+           'Repl_slave_priv', 'Repl_client_priv', 'Create_view_priv', 'Show_view_priv', 'Create_routine_priv',
+           'Alter_routine_priv', 'Create_user_priv', 'Event_priv', 'Trigger_priv', 'Create_tablespace_priv', 'ssl_type',
+           'ssl_cipher', 'x509_issuer', 'x509_subject', 'max_questions', 'max_updates', 'max_connections',
+           'max_user_connections', 'plugin', 'authentication_string', 'password_expired', 'password_last_changed',
+           'password_lifetime', 'account_locked', 'Create_role_priv', 'Drop_role_priv', 'Password_reuse_history',
+           'Password_reuse_time', 'Password_require_current', 'User_attributes']
+
 EXPECTED_OUTPUT1 = {
     'GenericSQL(val.Query && val.Query === obj.Query)':
         {'GenericSQL': {'Result': [{'Name': 'Kabul'},
                                    {'Name': 'Qandahar'},
                                    {'Name': 'Herat'},
                                    {'Name': 'Mazar-e-Sharif'}],
+                        'Headers': HEADER1,
                         'Query': 'select Name from city',
                         'InstanceName': 'sql_dialect_database'}}
 }
@@ -150,26 +163,16 @@ EXPECTED_OUTPUT2 = \
         'Password_reuse_time': 'None',
         'Password_require_current': 'None',
         'User_attributes': 'None',
-    }], 'Query': 'select * from mysql.user',
+    }], 'Headers': HEADER2,
+        'Query': 'select * from mysql.user',
         'InstanceName': 'sql_dialect_database'}}}
-
-HEADER1 = ['Name']
-
-HEADER2 = ['Host', 'User', 'Select_priv', 'Insert_priv', 'Update_priv', 'Delete_priv', 'Create_priv', 'Drop_priv',
-           'Reload_priv', 'Shutdown_priv', 'Process_priv', 'File_priv', 'Grant_priv', 'References_priv', 'Index_priv',
-           'Alter_priv', 'Show_db_priv', 'Super_priv', 'Create_tmp_table_priv', 'Lock_tables_priv', 'Execute_priv',
-           'Repl_slave_priv', 'Repl_client_priv', 'Create_view_priv', 'Show_view_priv', 'Create_routine_priv',
-           'Alter_routine_priv', 'Create_user_priv', 'Event_priv', 'Trigger_priv', 'Create_tablespace_priv', 'ssl_type',
-           'ssl_cipher', 'x509_issuer', 'x509_subject', 'max_questions', 'max_updates', 'max_connections',
-           'max_user_connections', 'plugin', 'authentication_string', 'password_expired', 'password_last_changed',
-           'password_lifetime', 'account_locked', 'Create_role_priv', 'Drop_role_priv', 'Password_reuse_history',
-           'Password_reuse_time', 'Password_require_current', 'User_attributes']
 
 EMPTY_OUTPUT = {
     'GenericSQL(val.Query && val.Query === obj.Query)': {
         'GenericSQL':
             {
                 'Result': [],
+                'Headers': [],
                 'Query': 'select Name from city where 1=2',
                 'InstanceName': 'sql_dialect_database'
             }

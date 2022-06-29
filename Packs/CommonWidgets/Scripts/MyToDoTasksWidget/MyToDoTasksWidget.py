@@ -20,7 +20,7 @@ def get_open_to_do_tasks_of_current_user() -> List[Dict]:
 
     if todo_tasks_query_res.get('statusCode') == 200:
         todo_tasks = json.loads(todo_tasks_query_res.get('body', '{}'))
-        todo_tasks_data = todo_tasks.get('data', [])
+        todo_tasks_data = todo_tasks.get('data') or []
         for task in todo_tasks_data:
             if task.get('status', '') == 'open':  # table includes only open tasks
                 title = task.get('title', '')
@@ -30,6 +30,7 @@ def get_open_to_do_tasks_of_current_user() -> List[Dict]:
                 clickable_incident_id = f'[{incident_id}]({os.path.join("#/Custom/caseinfoid", incident_id)})'
                 if sla := task.get('dueDate', ''):
                     sla_dt = parse(sla)
+                    assert sla_dt is not None, f'could not parse {sla}'
                     sla = sla_dt.strftime('%Y-%m-%d %H:%M:%S%z')
                 opened_by = task.get('dbotCreatedBy', '')
                 table.append({

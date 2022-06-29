@@ -780,7 +780,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: ID of the user to add to the team. Can be retrieved by running
+      description: Email address or ID of the user to add to the team. The ID can be retrieved by running
         the microsoft-teams-members-list command.
       isArray: false
       name: user_id
@@ -1035,7 +1035,7 @@ script:
     - contextPath: MicrosoftTeams.Team.description
       description: An optional description for the group.
       type: String
-  dockerimage: demisto/crypto:1.0.0.17856
+  dockerimage: demisto/crypto:1.0.0.30286
   feed: false
   isfetch: false
   longRunning: false

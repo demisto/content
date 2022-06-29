@@ -1501,8 +1501,20 @@ function Main {
     $insecure = (ConvertTo-Boolean $integration_params.insecure)
 
     try {
+        $Demisto.Debug("Command being called is $Command")
+
         # Creating Compliance and search client
         $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($insecure, $no_proxy)
+
+        # Executing oauth2 commands
+        switch ($command) {
+            "$script:COMMAND_PREFIX-auth-start" {
+                ($human_readable, $entry_context, $raw_response) = StartAuthCommand $oauth2_client
+            }
+            "$script:COMMAND_PREFIX-auth-complete" {
+                ($human_readable, $entry_context, $raw_response) = CompleteAuthCommand $oauth2_client
+            }
+        }
 
         # Refreshing tokens if expired
         $oauth2_client.RefreshTokenIfExpired()
@@ -1510,16 +1522,9 @@ function Main {
         $cs_client = [SecurityAndComplianceClient]::new($integration_params.url, $integration_params.credentials.identifier,
                                                         $integration_params.credentials.password, $oauth2_client.access_token, $insecure, $no_proxy)
         # Executing command
-        $Demisto.Debug("Command being called is $Command")
         switch ($command) {
             "test-module" {
                 ($human_readable, $entry_context, $raw_response) = TestModuleCommand $oauth2_client $cs_client
-            }
-            "$script:COMMAND_PREFIX-auth-start" {
-                ($human_readable, $entry_context, $raw_response) = StartAuthCommand $oauth2_client
-            }
-            "$script:COMMAND_PREFIX-auth-complete" {
-                ($human_readable, $entry_context, $raw_response) = CompleteAuthCommand $oauth2_client
             }
             "$script:COMMAND_PREFIX-auth-test" {
                 ($human_readable, $entry_context, $raw_response) = TestAuthCommand $oauth2_client $cs_client

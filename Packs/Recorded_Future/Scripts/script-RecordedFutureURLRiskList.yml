@@ -84,7 +84,7 @@ type: python
 subtype: python2
 tags:
 - RecordedFuture
-comment: Extracts the URL risk list from Recorded Future and creates indicators accordingly.
+comment: Deprecated. Use Recorded Future v2 instead.
 enabled: true
 args:
 - name: list
@@ -128,4 +128,5 @@ runonce: false
 tests:
 - No test - fetches indicators
 fromversion: 5.0.0
-dockerimage: demisto/python:2.7.18.24066
+deprecated: true
+dockerimage: demisto/python:2.7.18.24398

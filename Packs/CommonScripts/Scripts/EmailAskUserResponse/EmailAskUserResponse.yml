@@ -1,0 +1,21 @@
+commonfields:
+  id: EmailAskUserResponse
+  version: -1
+name: EmailAskUserResponse
+script: ''
+type: javascript
+tags:
+- Condition
+comment: Extract user's response from EmailAskUser reply. Returns the first textual
+  response line of the provided entry that contains the reply body. Use ${lastCompletedTaskEntries}
+  to analyze the previous playbook task containing the user's reply.
+enabled: true
+args:
+- name: responseEntryId
+  required: true
+  default: true
+  description: Entry ID where EmailAskUser will complete when user replies
+scripttarget: 0
+fromversion: 5.0.0
+tests:
+- No test

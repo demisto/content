@@ -1,0 +1,32 @@
+commonfields:
+  id: DemistoLinkIncidents
+  version: -1
+name: DemistoLinkIncidents
+script: ''
+type: javascript
+tags:
+- DemistoAPI
+comment: Link two or more incidents
+enabled: true
+args:
+- name: masterID
+  required: true
+  default: true
+  description: Incident ID used for linking to other incidents
+- name: otherIDs
+  required: true
+  description: Incidet IDs to link
+- name: unlink
+  auto: PREDEFINED
+  predefined:
+  - "yes"
+  - "no"
+  description: Unlink incidents (default 'no')
+  defaultValue: "no"
+scripttarget: 0
+dependson:
+  must:
+  - demisto-api-post
+fromversion: 5.0.0
+tests:
+- no test

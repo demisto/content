@@ -1,0 +1,155 @@
+[MODEL: dataset=msft_azure_raw, model=Endpoint]
+filter category in (
+        "AdvancedHunting-DeviceEvents", "AdvancedHunting-DeviceRegistryEvents", 
+        "AdvancedHunting-DeviceProcessEvents", "AdvancedHunting-DeviceImageLoadEvents")
+|alter 
+        //XDM.Endpoint.Actor.host.user.domain = json_extract_scalar(properties, "$.AccountDomain"),
+        //XDM.Endpoint.Actor.host.user.identifier = json_extract_scalar(properties, "$.AccountSid"),
+        //XDM.Endpoint.Actor.host.user.username = json_extract_scalar(properties, "$.AccountName"),
+        XDM.Endpoint.event_timestamp = parse_timestamp("%Y-%m-%dT%H:%M:%E*SZ", json_extract_scalar(properties, "$.Timestamp")),
+        XDM.Endpoint.Actor.host.hostname = json_extract_scalar(properties, "$.RemoteDeviceName"),
+        XDM.Endpoint.Actor.host.ipv4_addresses = if(json_extract_scalar(properties, "$.LocalIP") != null, arraycreate(json_extract_scalar(properties, "$.LocalIP")), null),
+        XDM.Endpoint.Actor.process.command_line = coalesce(json_extract_scalar(properties, "$.InitiatingProcessCommandLine"), json_extract_scalar(properties, "$.ProcessCommandLine")),
+        XDM.Endpoint.Actor.process.executable.directory = json_extract_scalar(properties, "$.InitiatingProcessFolderPath"),
+        XDM.Endpoint.Actor.process.executable.filename = json_extract_scalar(properties, "$.InitiatingProcessFileName"),
+        XDM.Endpoint.Actor.process.executable.md5 = json_extract_scalar(properties, "$.InitiatingProcessMD5"),
+        XDM.Endpoint.Actor.process.executable.sha256 = json_extract_scalar(properties, "$.InitiatingProcessSHA256"),
+        XDM.Endpoint.Actor.process.executable.signer = json_extract_scalar(properties, "$.InitiatingProcessVersionInfoCompanyName"),
+        XDM.Endpoint.Actor.process.integrity_level = to_integer(json_extract_scalar(properties, "$.InitiatingProcessIntegrityLevel")),
+        XDM.Endpoint.Actor.process.parent_id = json_extract_scalar(properties, "$.InitiatingProcessParentId"),
+        XDM.Endpoint.Actor.process.pid = to_integer(json_extract_scalar(properties, "$.InitiatingProcessId")),
+        XDM.Endpoint.Actor.user.domain = coalesce(json_extract_scalar(properties, "$.InitiatingProcessAccountDomain"), json_extract_scalar(properties, "$.InitiatingProcessCreationTime")),
+        XDM.Endpoint.Actor.user.identifier = coalesce(json_extract_scalar(properties, "$.InitiatingProcessAccountName"), json_extract_scalar(properties, "$.InitiatingProcessAccountSid")),
+        XDM.Endpoint.Actor.user.username = coalesce(json_extract_scalar(properties, "$.InitiatingProcessAccountDomain"), json_extract_scalar(properties, "$.InitiatingProcessAccountName")),
+        XDM.Endpoint.operation = json_extract_scalar(properties, "$.ActionType"),
+        XDM.Endpoint.original_event_id = json_extract_scalar(properties, "$.ReportId"),
+        XDM.Endpoint.original_event_sub_type = json_extract_scalar(properties, "$.ActionType"),
+        XDM.Endpoint.Target.file.directory = json_extract_scalar(properties, "$.FolderPath"),
+        XDM.Endpoint.Target.file.filename = json_extract_scalar(properties, "$.FileName"),
+        XDM.Endpoint.Target.file.md5 = json_extract_scalar(properties, "$.MD5"),
+        XDM.Endpoint.Target.file.path = json_extract_scalar(properties, "$.FolderPath"),
+        XDM.Endpoint.Target.file.sha256 = json_extract_scalar(properties, "$.SHA256"),
+        XDM.Endpoint.Target.file.signer = json_extract_scalar(properties, "$.ProcessVersionInfoCompanyName"),
+        XDM.Endpoint.Target.host.device_id = json_extract_scalar(properties, "$.DeviceId"),
+        XDM.Endpoint.Target.host.fqdn = json_extract_scalar(properties, "$.DeviceName"),
+        XDM.Endpoint.Target.host.ipv4_addresses = if(json_extract_scalar(properties, "$.RemoteIP") != null, arraycreate(json_extract_scalar(properties, "$.RemoteIP")), null),
+        XDM.Endpoint.Target.process.integrity_level = to_integer(json_extract_scalar(properties, "$.ProcessIntegrityLevel")),
+        XDM.Endpoint.Target.process.pid = to_integer(json_extract_scalar(properties, "$.ProcessId")),
+        XDM.Endpoint.Target.registry.data = json_extract_scalar(properties, "$.RegistryValueData"),
+        XDM.Endpoint.Target.registry.key = json_extract_scalar(properties, "$.RegistryKey"),
+        XDM.Endpoint.Target.registry.value = coalesce(json_extract_scalar(properties, "$.RegistryValueData"), json_extract_scalar(properties, "$.RegistryValueName")),
+        XDM.Endpoint.Target.registry.value_type = json_extract_scalar(properties, "$.RegistryValueType"),
+        XDM.Endpoint.Target.registry_before.data = json_extract_scalar(properties, "$.PreviousRegistryValueData"),
+        XDM.Endpoint.Target.registry_before.key = json_extract_scalar(properties, "$.PreviousRegistryKey"),
+        XDM.Endpoint.Target.registry_before.value = json_extract_scalar(properties, "$.PreviousRegistryValueName");
+
+
+[MODEL: dataset=msft_azure_raw, model=Network]
+filter category in (
+        "AdvancedHunting-DeviceEvents", "AdvancedHunting-DeviceLogonEvents", 
+        "AdvancedHunting-DeviceNetworkEvents", "AdvancedHunting-EmailUrlInfo")
+|alter 
+    XDM.Network.event_timestamp = parse_timestamp("%Y-%m-%dT%H:%M:%E*SZ", json_extract_scalar(properties, "$.Timestamp")),
+    XDM.Network.Destination.ipv4 = json_extract_scalar(properties, "$.RemoteIP"),
+    XDM.Network.Destination.port = to_integer(coalesce(json_extract_scalar(properties, "$.RemoteIPType"), json_extract_scalar(properties, "$.RemotePort"))),
+    XDM.Network.http.domain = json_extract_scalar(properties, "$.UrlDomain"),
+    XDM.Network.http.url = coalesce(json_extract_scalar(properties, "$.RemoteUrl"), json_extract_scalar(properties, "$.Url")),
+    XDM.Network.ip_protocol = json_extract_scalar(properties, "$.Protocol"),
+    XDM.Network.original_event_id = json_extract_scalar(properties, "$.ReportId"),
+    XDM.Network.original_event_sub_type = json_extract_scalar(properties, "$.ActionType"),
+    XDM.Network.session_context_id = json_extract_scalar(properties, "$.NetworkMessageId"),
+    XDM.Network.Source.host.device_id = json_extract_scalar(properties, "$.DeviceId"),
+    XDM.Network.Source.host.fqdn = json_extract_scalar(properties, "$.DeviceName"),
+    XDM.Network.Source.host.ipv4_addresses = if(json_extract_scalar(properties, "$.FileOriginIP") != null, arraycreate(json_extract_scalar(properties, "$.FileOriginIP")), null),
+    XDM.Network.Source.ipv4 = json_extract_scalar(properties, "$.LocalIP"),
+    XDM.Network.Source.port = to_integer(json_extract_scalar(properties, "$.LocalPort")),
+    XDM.Network.Source.process.command_line = json_extract_scalar(properties, "$.InitiatingProcessCommandLine"),
+    XDM.Network.Source.process.executable.directory = json_extract_scalar(properties, "$.InitiatingProcessFolderPath"),
+    XDM.Network.Source.process.executable.filename = json_extract_scalar(properties, "$.InitiatingProcessFileName"),
+    XDM.Network.Source.process.executable.md5 = json_extract_scalar(properties, "$.InitiatingProcessMD5"),
+    XDM.Network.Source.process.executable.sha256 = json_extract_scalar(properties, "$.InitiatingProcessSHA256"),
+    XDM.Network.Source.process.executable.signer = json_extract_scalar(properties, "$.InitiatingProcessVersionInfoCompanyName"),
+    XDM.Network.Source.process.integrity_level = to_integer(json_extract_scalar(properties, "$.InitiatingProcessIntegrityLevel")),
+    XDM.Network.Source.process.parent_id = json_extract_scalar(properties, "$.InitiatingProcessParentId"),
+    XDM.Network.Source.process.pid = to_integer(json_extract_scalar(properties, "$.InitiatingProcessId")),
+    XDM.Network.Source.user.domain = json_extract_scalar(properties, "$.InitiatingProcessAccountDomain"),
+    XDM.Network.Source.user.identifier = json_extract_scalar(properties, "$.InitiatingProcessAccountSid");
+
+
+[MODEL: dataset=msft_azure_raw, model=Auth]
+filter category in (
+                "AdvancedHunting-DeviceLogonEvents"
+                ,"AdvancedHunting-DeviceProcessEvents"
+                ,"AdvancedHunting-IdentityLogonEvents")
+| alter
+        XDM.Auth.event_timestamp = parse_timestamp("%Y-%m-%dT%H:%M:%E*SZ", json_extract_scalar(properties, "$.Timestamp")),
+        XDM.Auth.application_protocol = json_extract_scalar(properties, "$.Protocol"),
+        XDM.Auth.Client.application.name = json_extract_scalar(properties, "$.Application"),
+        XDM.Auth.Client.host.device_category = json_extract_scalar(properties, "$.DeviceType"),
+        XDM.Auth.Client.host.hostname = coalesce(json_extract_scalar(properties, "$.RemoteDeviceName"), json_extract_scalar(properties, "$.DeviceName")),
+        XDM.Auth.Client.host.os = json_extract_scalar(properties, "$.OSPlatform"),
+        XDM.Auth.Client.ipv4 = json_extract_scalar(properties, "$.IPAddress"),
+        XDM.Auth.Client.location.country = json_extract_scalar(properties, "$.Location"),
+        XDM.Auth.Client.port = to_integer(json_extract_scalar(properties, "$.Port")),
+        XDM.Auth.Client.process.command_line = json_extract_scalar(properties, "$.InitiatingProcessCommandLine"),
+        XDM.Auth.Client.process.executable.directory = json_extract_scalar(properties, "$.InitiatingProcessFolderPath"),
+        XDM.Auth.Client.process.executable.filename = json_extract_scalar(properties, "$.InitiatingProcessFileName"),
+        XDM.Auth.Client.process.executable.md5 = json_extract_scalar(properties, "$.InitiatingProcessMD5"),
+        XDM.Auth.Client.process.executable.sha256 = json_extract_scalar(properties, "$.InitiatingProcessSHA256"),
+        XDM.Auth.Client.process.executable.signer = json_extract_scalar(properties, "$.InitiatingProcessVersionInfoCompanyName"),
+        XDM.Auth.Client.process.integrity_level = to_integer(json_extract_scalar(properties, "$.InitiatingProcessIntegrityLevel")),
+        XDM.Auth.Client.process.parent_id = json_extract_scalar(properties, "$.InitiatingProcessParentId"),
+        XDM.Auth.Client.process.pid = to_integer(json_extract_scalar(properties, "$.InitiatingProcessId")),
+        XDM.Auth.Client.user.domain = coalesce(json_extract_scalar(properties, "$.InitiatingProcessAccountDomain"), json_extract_scalar(properties, "$.AccountDomain")),
+        XDM.Auth.Client.user.identifier = coalesce(json_extract_scalar(properties, "$.AccountSid"), json_extract_scalar(properties, "$.InitiatingProcessAccountSid")),
+        XDM.Auth.Client.user.username = coalesce(json_extract_scalar(properties, "$.InitiatingProcessAccountName"), json_extract_scalar(properties, "$.AccountName")),
+        XDM.Auth.logon.is_elevated = to_boolean(json_extract_scalar(properties, "$.IsLocalAdmin")),
+        XDM.Auth.logon.type = json_extract_scalar(properties, "$.LogonType"),
+        XDM.Auth.original_event_id = json_extract_scalar(properties, "$.ReportId"),
+        XDM.Auth.original_event_sub_type = json_extract_scalar(properties, "$.ActionType"),
+        XDM.Auth.reason = json_extract_scalar(properties, "$.FailureReason"),
+        XDM.Auth.Target.host.device_id = json_extract_scalar(properties, "$.DeviceId"),
+        XDM.Auth.Target.host.fqdn = coalesce(json_extract_scalar(properties, "$.TargetDeviceName"), json_extract_scalar(properties, "$.DeviceName")),
+        XDM.Auth.Target.host.hostname = json_extract_scalar(properties, "$.DestinationDeviceName"),
+        XDM.Auth.Target.host.ipv4_addresses = if(json_extract_scalar(properties, "$.RemoteIP") != null, arraycreate(json_extract_scalar(properties, "$.RemoteIP")), null),
+        XDM.Auth.Target.ipv4 = json_extract_scalar(properties, "$.DestinationIPAddress"),
+        XDM.Auth.Target.port = to_integer(json_extract_scalar(properties, "$.DestinationPort")),
+        XDM.Auth.Target.user.domain = json_extract_scalar(properties, "$.AccountDomain"),
+        XDM.Auth.Target.user.identifier = json_extract_scalar(properties, "$.AccountSid"),
+        XDM.Auth.Target.user.username = coalesce(json_extract_scalar(properties, "$.AccountName"), json_extract_scalar(properties, "$.TargetAccountDisplayName"));
+
+
+[MODEL: dataset=msft_azure_raw, model=Email]
+filter category = "AdvancedHunting-EmailEvents"
+|alter 
+        XDM.Email.event_timestamp = parse_timestamp("%Y-%m-%dT%H:%M:%E*SZ", json_extract_scalar(properties, "$.Timestamp")),
+        XDM.Email.message_id = json_extract_scalar(properties, "$.InternetMessageId"),
+        XDM.Email.recipients = if(json_extract_scalar(properties, "$.RecipientEmailAddress") != null, arraycreate(json_extract_scalar(properties, "$.RecipientEmailAddress")), null),
+        XDM.Email.return_path = json_extract_scalar(properties, "$.SenderMailFromAddress"),
+        XDM.Email.sender = json_extract_scalar(properties, "$.SenderFromAddress"),
+        XDM.Email.Server.host.fqdn = json_extract_scalar(properties, "$.SenderMailFromDomain"),
+        XDM.Email.Server.host.ipv4_addresses = if(json_extract_scalar(properties, "$.SenderIPv4") != null, arraycreate(json_extract_scalar(properties, "$.SenderIPv4")), null),
+        XDM.Email.Server.host.ipv6_addresses = if(json_extract_scalar(properties, "$.SenderIPv6") != null, arraycreate(json_extract_scalar(properties, "$.SenderIPv6")), null), 
+        XDM.Email.session_context_id = json_extract_scalar(properties, "$.NetworkMessageId"),
+        XDM.Email.subject = json_extract_scalar(properties, "$.Subject"),
+        XDM.Email.threat.category = json_extract_scalar(properties, "$.ThreatTypes"),
+        XDM.Email.threat.name = json_extract_scalar(properties, "$.ThreatNames");
+
+
+[MODEL: dataset=msft_azure_raw, model=Audit]
+filter category = "AdvancedHunting-CloudAppEvents"
+|alter 
+        XDM.Audit.event_timestamp = parse_timestamp("%Y-%m-%dT%H:%M:%E*SZ", json_extract_scalar(properties, "$.Timestamp")),
+        XDM.Audit.identity.name = json_extract_scalar(properties, "$.ObjectId"),
+        XDM.Audit.operation = json_extract_scalar(properties, "$.ActionType"),
+        XDM.Audit.operation_type = json_extract_scalar(properties, "$.ActivityType"),
+        XDM.Audit.original_event_id = json_extract_scalar(properties, "$.ReportId"),
+        XDM.Audit.outcome = json_extract_scalar(properties, "$.RawEventData.ResultStatus"),
+        XDM.Audit.TriggeredBy.agent.identifier = json_extract_scalar(properties, "$.UserAgent"),
+        XDM.Audit.TriggeredBy.identity.name = json_extract_scalar(properties, "$.RawEventData.UserId"),
+        XDM.Audit.TriggeredBy.ipv4 = json_extract_scalar(properties, "$.IPAddress"),
+        XDM.Audit.TriggeredBy.location.city = json_extract_scalar(properties, "$.City"),
+        XDM.Audit.TriggeredBy.location.country = json_extract_scalar(properties, "$.CountryCode");
+
+
+

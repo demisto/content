@@ -1,7 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 
-from typing import Tuple, Union
+from typing import Optional, Tuple, Union
 from datetime import datetime, timedelta
 import json
 import requests
@@ -538,9 +538,18 @@ def get_events_command(client, args):
     )
 
 
-def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threat_type, threat_status,
-                    limit=DEFAULT_LIMIT, integration_context=None):
-    incidents: list = []
+def fetch_incidents(
+    client,
+    last_run,
+    first_fetch_time,
+    event_type_filter,
+    threat_type,
+    threat_status,
+    limit=DEFAULT_LIMIT,
+    integration_context=None,
+    raw_json_encoding: Optional[str] = None,
+) -> Tuple[dict, list, list]:
+    incidents = []
     end_query_time = ''
     # check if there're incidents saved in context
     if integration_context:
@@ -565,9 +574,13 @@ def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threa
         for raw_event in message_delivered:
             raw_event["type"] = "messages delivered"
             event_guid = raw_event.get("GUID", "")
+            if raw_json_encoding:
+                raw_json = json.dumps(raw_event, ensure_ascii=False).encode(raw_json_encoding).decode()
+            else:
+                raw_json = json.dumps(raw_event)
             incident = {
                 "name": "Proofpoint - Message Delivered - {}".format(event_guid),
-                "rawJSON": json.dumps(raw_event),
+                "rawJSON": raw_json,
                 "occurred": raw_event["messageTime"]
             }
             incidents.append(incident)
@@ -576,9 +589,13 @@ def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threa
         for raw_event in message_blocked:
             raw_event["type"] = "messages blocked"
             event_guid = raw_event.get("GUID", "")
+            if raw_json_encoding:
+                raw_json = json.dumps(raw_event, ensure_ascii=False).encode(raw_json_encoding).decode()
+            else:
+                raw_json = json.dumps(raw_event)
             incident = {
                 "name": "Proofpoint - Message Blocked - {}".format(event_guid),
-                "rawJSON": json.dumps(raw_event),
+                "rawJSON": raw_json,
                 "occured": raw_event["messageTime"],
             }
             incidents.append(incident)
@@ -587,9 +604,13 @@ def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threa
         for raw_event in clicks_permitted:
             raw_event["type"] = "clicks permitted"
             event_guid = raw_event.get("GUID", "")
+            if raw_json_encoding:
+                raw_json = json.dumps(raw_event, ensure_ascii=False).encode(raw_json_encoding).decode()
+            else:
+                raw_json = json.dumps(raw_event)
             incident = {
                 "name": "Proofpoint - Click Permitted - {}".format(event_guid),
-                "rawJSON": json.dumps(raw_event),
+                "rawJSON": raw_json,
                 "occurred": raw_event["clickTime"] if raw_event["clickTime"] > raw_event["threatTime"] else raw_event[
                     "threatTime"]
             }
@@ -599,9 +620,13 @@ def fetch_incidents(client, last_run, first_fetch_time, event_type_filter, threa
         for raw_event in clicks_blocked:
             raw_event["type"] = "clicks blocked"
             event_guid = raw_event.get("GUID", "")
+            if raw_json_encoding:
+                raw_json = json.dumps(raw_event, ensure_ascii=False).encode(raw_json_encoding).decode()
+            else:
+                raw_json = json.dumps(raw_event)
             incident = {
                 "name": "Proofpoint - Click Blocked - {}".format(event_guid),
-                "rawJSON": json.dumps(raw_event),
+                "rawJSON": raw_json,
                 "occurred": raw_event["clickTime"] if raw_event["clickTime"] > raw_event["threatTime"] else raw_event[
                     "threatTime"]
             }
@@ -665,14 +690,14 @@ def get_clicks_command(client: Client, is_blocked: bool, interval: str = None, t
         raise Exception('Must provide interval or time_range.')
     if interval and time_range:
         raise Exception('Must provide only one of the arguments interval or time_range.')
-    if time_range and dateparser.parse("7 days") > dateparser.parse(time_range):
+    if time_range and dateparser.parse("7 days") > dateparser.parse(time_range):  # type: ignore
         raise Exception('The maximum time range is 7 days')
-    if time_range and dateparser.parse("30 seconds") < dateparser.parse(time_range):
+    if time_range and dateparser.parse("30 seconds") < dateparser.parse(time_range):  # type: ignore
         raise Exception('The minimum time range is thirty seconds.')
 
-    if time_range and dateparser.parse("1 hour") < dateparser.parse(time_range):
+    if time_range and dateparser.parse("1 hour") < dateparser.parse(time_range):  # type: ignore
         end = datetime.utcnow().strftime(DATE_FORMAT)
-        start = dateparser.parse(time_range).strftime(DATE_FORMAT)
+        start = dateparser.parse(time_range).strftime(DATE_FORMAT)  # type: ignore
         intervals = [f'{start}/{end}']
     else:
         intervals = handle_interval(dateparser.parse(time_range)) if time_range else [interval]  # type: ignore
@@ -774,14 +799,14 @@ def get_messages_command(client: Client, is_blocked: bool, interval: str = None,
         raise Exception('Must provide interval or time_range.')
     if interval and time_range:
         raise Exception('Must provide only one of the arguments interval or time_range.')
-    if time_range and dateparser.parse("7 days") > dateparser.parse(time_range):
+    if time_range and dateparser.parse("7 days") > dateparser.parse(time_range):  # type: ignore
         raise Exception('The maximum time range is 7 days')
-    if time_range and dateparser.parse("30 seconds") < dateparser.parse(time_range):
+    if time_range and dateparser.parse("30 seconds") < dateparser.parse(time_range):  # type: ignore
         raise Exception('The minimum time range is thirty seconds.')
 
-    if time_range and dateparser.parse("1 hour") < dateparser.parse(time_range):
+    if time_range and dateparser.parse("1 hour") < dateparser.parse(time_range):  # type: ignore
         end = datetime.utcnow().strftime(DATE_FORMAT)
-        start = dateparser.parse(time_range).strftime(DATE_FORMAT)
+        start = dateparser.parse(time_range).strftime(DATE_FORMAT)  # type: ignore
         intervals = [f'{start}/{end}']
     else:
         intervals = handle_interval(dateparser.parse(time_range)) if time_range else [interval]  # type: ignore
@@ -840,17 +865,18 @@ def list_campaigns_command(client: Client, interval: str = None, limit: str = No
         raise Exception('Must provide interval or time_range.')
     if interval and time_range:
         raise Exception('Must provide only one of the arguments interval or time_range.')
-    if time_range and dateparser.parse("7 days") > dateparser.parse(time_range):
+    if time_range and dateparser.parse("7 days") > dateparser.parse(time_range):  # type: ignore
         raise Exception('The maximum time range is 7 days')
-    if time_range and dateparser.parse("30 seconds") < dateparser.parse(time_range):
+    if time_range and dateparser.parse("30 seconds") < dateparser.parse(time_range):  # type: ignore
         raise Exception('The minimum time range is thirty seconds.')
 
-    if time_range and dateparser.parse("1 hour") < dateparser.parse(time_range):
+    if time_range and dateparser.parse("1 hour") < dateparser.parse(time_range):  # type: ignore
         end = datetime.utcnow().strftime(DATE_FORMAT)
-        start = dateparser.parse(time_range).strftime(DATE_FORMAT)
+        start = dateparser.parse(time_range).strftime(DATE_FORMAT)  # type: ignore
         intervals = [f'{start}/{end}']
     else:
-        intervals = handle_interval(dateparser.parse(time_range), is_days_interval=True) if time_range else [
+        intervals = handle_interval(dateparser.parse(time_range),  # type: ignore
+                                    is_days_interval=True) if time_range else [  # type: ignore
             interval]  # type: ignore
 
     outputs = []
@@ -1083,14 +1109,14 @@ def list_issues_command(client: Client, interval: str = None, threat_status: str
         raise Exception('Must provide interval or time_range.')
     if interval and time_range:
         raise Exception('Must provide only one of the arguments interval or time_range.')
-    if time_range and dateparser.parse("7 days") > dateparser.parse(time_range):
+    if time_range and dateparser.parse("7 days") > dateparser.parse(time_range):  # type: ignore
         raise Exception('The maximum time range is 7 days')
-    if time_range and dateparser.parse("30 seconds") < dateparser.parse(time_range):
+    if time_range and dateparser.parse("30 seconds") < dateparser.parse(time_range):  # type: ignore
         raise Exception('The minimum time range is thirty seconds.')
 
-    if time_range and dateparser.parse("1 hour") < dateparser.parse(time_range):
+    if time_range and dateparser.parse("1 hour") < dateparser.parse(time_range):  # type: ignore
         end = datetime.utcnow().strftime(DATE_FORMAT)
-        start = dateparser.parse(time_range).strftime(DATE_FORMAT)
+        start = dateparser.parse(time_range).strftime(DATE_FORMAT)  # type: ignore
         intervals = [f'{start}/{end}']
     else:
         intervals = handle_interval(dateparser.parse(time_range)) if time_range else [interval]  # type: ignore
@@ -1182,6 +1208,8 @@ def main():
 
     event_type_filter = params.get('events_type')
 
+    raw_json_encoding = params.get('raw_json_encoding')
+
     fetch_limit = 50
     # Remove proxy if not set to true in params
     proxies = handle_proxy()
@@ -1209,7 +1237,8 @@ def main():
                 threat_status=threat_status,
                 threat_type=threat_type,
                 limit=fetch_limit,
-                integration_context=integration_context
+                integration_context=integration_context,
+                raw_json_encoding=raw_json_encoding,
             )
             # Save last_run, incidents, remained incidents into integration
             demisto.setLastRun(next_run)

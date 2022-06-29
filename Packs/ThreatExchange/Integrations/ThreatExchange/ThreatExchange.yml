@@ -1,0 +1,223 @@
+commonfields:
+  id: ThreatExchange
+  version: -1
+name: ThreatExchange
+display: ThreatExchange (Deprecated)
+deprecated: true
+fromversion: 5.0.0
+category: Data Enrichment & Threat Intelligence
+description: Deprecated. Use the ThreatExchange v2 integration instead.
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: Server
+  defaultvalue: https://graph.facebook.com
+  type: 0
+  required: true
+- display: App ID
+  name: appID
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: App Secret
+  name: appSecret
+  defaultvalue: ""
+  type: 4
+  required: true
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: C - Fairly reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- display: Use system proxy settings
+  name: useproxy
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Api version
+  name: apiVersion
+  defaultvalue: v2.8
+  type: 0
+  required: true
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: file
+    arguments:
+    - name: file
+      required: true
+      default: true
+      description: Hash of the file to query. Supports MD5, SHA1 and SHA256 hashes.
+    - name: limit
+      description: The maximum number of results per page. The maximum is 1000. Default
+        is 20.
+      defaultValue: "20"
+    - name: headers
+      description: 'A comma-separated list of headers to display in human-readable
+        format. For example: header1,header2,header3'
+    - name: since
+      description: 'The start timestamp for collecting malware, format: 1391813489'
+    - name: until
+      description: 'The end timestamp for collecting malware, format: 1391813489'
+    outputs:
+    - contextPath: File.MD5
+      description: Bad MD5 hash found.
+    - contextPath: File.SHA1
+      description: Bad SHA1 hash found.
+    - contextPath: File.SHA256
+      description: Bad SHA256 hash found.
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+    - contextPath: DBotScore.Score
+      description: The actual score.
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason that the vendor made the decision.
+    - contextPath: File.Malicious.Score
+      description: For malicious files, the score from the vendor.
+    description: Checks the file reputation of the given hash.
+  - name: ip
+    arguments:
+    - name: ip
+      required: true
+      default: true
+      description: IP address to check.
+    - name: headers
+      description: 'A comma-separated list of headers to display in human-readable
+        format. For example: header1,header2,header3.'
+    outputs:
+    - contextPath: IP.Address
+      description: Bad IP address found.
+    - contextPath: IP.Malicious.Vendor
+      description: For malicious IPs addresse, the vendor that made the decision.
+    - contextPath: IP.Malicious.Description
+      description: For malicious IP addresses, the reason that the vendor made the
+        decision.
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+    - contextPath: DBotScore.Score
+      description: The actual score.
+    - contextPath: IP.Malicious.Score
+      description: For malicious IP addresses, the score from the vendor.
+    description: Checks the reputation of the given IP address.
+  - name: url
+    arguments:
+    - name: url
+      required: true
+      description: URL to be checked
+    - name: limit
+      description: The maximum number of results per page. The maximum is 1000. Default
+        is 20.
+      defaultValue: "20"
+    - name: headers
+      description: 'Headers to display in Human readable format, comma separated format,
+        for example: header1,header2,header3'
+    - name: since
+      description: 'The start timestamp for collecting malware, format: 1391813489'
+    - name: until
+      description: 'The end timestamp for collecting malware, format: 1391813489'
+    outputs:
+    - contextPath: URL.Data
+      description: Bad URLs found
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+    - contextPath: DBotScore.Score
+      description: The actual score.
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious URLs, the vendor that made the decision
+    - contextPath: URL.Malicious.Description
+      description: For malicious URLs, the reason for the vendor to make the decision
+    - contextPath: URL.Malicious.Score
+      description: For malicious URLs, the score from the vendor
+    description: Check URL Reputation
+  - name: domain
+    arguments:
+    - name: domain
+      required: true
+      default: true
+      description: Domain name to check reputation
+    - name: limit
+      description: The maximum number of results per page. The maximum is 1000. Default
+        is 20.
+      defaultValue: "20"
+    - name: headers
+      description: 'Headers to display in Human readable format, comma separated format,
+        for example: header1,header2,header3'
+    - name: since
+      description: 'The start timestamp for collecting malware, format: 1391813489'
+    - name: until
+      description: 'The end timestamp for collecting malware, format: 1391813489'
+    outputs:
+    - contextPath: Domain.Name
+      description: Bad domain found
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+    - contextPath: DBotScore.Score
+      description: The actual score.
+    - contextPath: Domain.Malicious.Vendor
+      description: For malicious domains, the vendor that made the decision
+    - contextPath: Domain.Malicious.Description
+      description: For malicious domains, the reason that the vendor made the decision.
+    description: Check domain reputation
+  - name: threatexchange-query
+    arguments:
+    - name: text
+      default: true
+      description: Free-form text field with a value to search for. This can be a
+        file hash or a string found in other fields of the objects.
+    - name: type
+      description: 'The type of descriptor to search for. For more information see:
+        https://developers.facebook.com/docs/threat-exchange/reference/apis/indicator-type/v2.9'
+    - name: limit
+      description: The maximum number of results per page. The maximum is 1000. Default
+        is 20.
+      defaultValue: "20"
+    - name: headers
+      description: 'Headers to display in Human readable format, comma separated format,
+        for example: header1,header2,header3'
+    - name: since
+      description: 'The start timestamp for collecting malware, format: 1391813489'
+    - name: until
+      description: 'The end timestamp for collecting malware, format: 1391813489'
+    description: ' Searches for subjective opinions on indicators of compromise stored
+      in ThreatExchange'
+  - name: threatexchange-members
+    arguments: []
+    description: Returns a list of current members of the ThreatExchange, alphabetized
+      by application name. Each application may also include an optional contact email
+      address. You can set this address, if desired, under the settings panel for
+      your application
+hidden: false
+tests:
+- ThreatExchange-test

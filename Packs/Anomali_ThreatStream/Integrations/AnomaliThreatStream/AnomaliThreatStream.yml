@@ -1,0 +1,356 @@
+commonfields:
+  id: Anomali ThreatStream
+  version: -1
+name: Anomali ThreatStream
+display: Anomali ThreatStream (Deprecated)
+category: Data Enrichment & Threat Intelligence
+description: Deprecated. Use Anomali ThreatStream v3 instead. Use Anomali ThreatStream to query and submit threats
+deprecated: true
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: server
+  defaultvalue: https://api.threatstream.com
+  type: 0
+  required: true
+- display: Username
+  name: username
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: API Key
+  name: apikey
+  defaultvalue: ""
+  type: 4
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: threatstream-intelligence
+    arguments:
+    - name: limit
+      description: limit the amount of records in response
+      defaultValue: "20"
+    - name: asn
+      description: Autonomous System (AS) number associated with the indicator
+    - name: confidence
+      description: Confidence value assigned to the indicator
+    - name: country
+      description: Country associated with the indicator
+    - name: created_ts
+      description: When the indicator was first seen on the ThreatStream cloud platform.
+        For example, 2014-10-02T20:44:35
+    - name: expiration_ts
+      description: Time stamp of when intelligence will expire on ThreatStream, in
+        UTC time
+    - name: feed_id
+      description: Numeric ID of the threat feed that generated the indicator
+    - name: id
+      description: Unique ID for the indicator
+    - name: import_session_ id
+      description: ID of import session in which the indicator was imported
+    - name: ip
+      description: The IP address associated with the indicator if the imported indicator
+        is a domain or a URL
+    - name: is_public
+      description: Classification of the indicator—public or private
+    - name: itype
+      description: Indicator type
+    - name: latitude
+      description: Latitude associated with the Geo location of the IP
+    - name: longitude
+      description: Longitude associated with the Geo location of the IP
+    - name: meta.detail
+      description: A string that contains a tag associated with the indicator; the
+        tag can be used to search for related indicators
+    - name: meta.detail2
+      description: Additional details associated with state of an indicator. For example,
+        details such as why is an indicator marked false positive
+    - name: meta.maltype
+      description: Tag that specifies the malware associated with an indicator
+    - name: meta.severity
+      description: Severity assigned to the indicator through machine-learning algorithms
+        ThreatStream deploys
+    - name: modified_ts
+      description: When the indicator was last updated on the ThreatStream cloud platform
+    - name: org
+      description: Registered owner (organization) of the IP address associated with
+        the indicator
+    - name: owner_ organization_id
+      description: ID of the (ThreatStream)organization that brought in the indicator,
+        either through a threat feed or through the import process
+    - name: rdns
+      description: Domain name (obtained through reverse domain name lookup) associated
+        with the IP address that is associated with the indicator
+    - name: source_reported_ confidence
+      description: A risk score from 0 to 100, provided by the source of the indicator
+    - name: status
+      description: Status assigned to the indicator
+    - name: tags.name
+      description: Tag assigned to the indicator
+    - name: threat_type
+      description: Summarized threat type of the indicator. For example, malware,
+        compromised, apt, c2, and so on
+    - name: trusted_circle_ids
+      description: IDs of the trusted circles with which the indicator is shared
+    - name: type
+      description: Type of indicator—domain, email, ip, md5, string, url
+    - name: update_id
+      description: An incrementing numeric identifier associated with each update
+        to intelligence on ThreatStream
+    - name: value
+      description: Value of the indicator
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The tested indicator
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator type
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    description: To retrieve threat intelligence from the ThreatStream cloud
+  - name: domain
+    arguments:
+    - name: domain
+      required: true
+      description: The domain name to check
+    - name: threshold
+      description: If ThreatScore is greater or equal than the threshold, then domain
+        will be considered malicious
+      defaultValue: "3"
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The tested indicator
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator type
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: Domain.DNS
+      description: Domain IP Address
+    - contextPath: Domain.Name
+      description: Domain name
+    - contextPath: Domain.Score
+      description: A value assigned to the indicator through machine-learning algorithms
+        ThreatStream deploys. Higher the threatscore, higher the risk. Threatscore
+        ranges from 0-100, in increasing order of risk.
+    - contextPath: IP.Address
+      description: Domain IP Address
+    - contextPath: IP.Geo.Country
+      description: Country associated with the indicator.
+    - contextPath: IP.Geo.Location
+      description: Longitude and Latitude of the IP address
+    - contextPath: IP.Geo.Organization
+      description: Registered owner (organization) of the IP address associated with
+        the indicator.
+    - contextPath: IP.Hostname
+      description: Domain name (obtained through reverse domain name lookup) associated
+        with the IP address that is associated with the indicator.
+    - contextPath: IP.Malicious.Vendor
+      description: Usually an obfuscated description of the source of the indicator;
+        the description may not be obfuscated if the user belongs to your organization.
+    - contextPath: IP.Score
+      description: A value assigned to the indicator through machine-learning algorithms
+        ThreatStream deploys. Higher the threatscore, higher the risk. Threatscore
+        ranges from 0-100, in increasing order of risk.
+    description: Checks the reputation of the given IP or domain name
+  - name: file
+    arguments:
+    - name: file
+      required: true
+      description: The checksum to check
+    - name: threshold
+      description: If ThreatScore is greater or equal than the threshold, then file
+        will be considered malicious
+      defaultValue: "3"
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The tested indicator
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator type
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: File.MD5
+      description: File MD5
+    - contextPath: File.Malicious.Vendor
+      description: Usually an obfuscated description of the source of the indicator;
+        the description may not be obfuscated if the user belongs to your organization.
+    - contextPath: File.Score
+      description: A value assigned to the indicator through machine-learning algorithms
+        ThreatStream deploys. Higher the threatscore, higher the risk. Threatscore
+        ranges from 0-100, in increasing order of risk.
+    description: Checks the reputation of the given checksum
+  - name: threatstream-email-reputation
+    arguments:
+    - name: email
+      required: true
+      description: The email address to check
+    - name: threshold
+      description: If ThreatScore is greater or equal than the threshold, then email
+        will be considered malicious
+      defaultValue: "3"
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The tested indicator
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator type
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: ThreatStream.EmailReputation.Itype
+      description: The indicator type.
+    - contextPath: ThreatStream.EmailReputation.Created
+      description: When the indicator was first seen on the ThreatStream cloud platform.
+        For example, 2014-10-02T20:44:35
+    - contextPath: ThreatStream.EmailReputation.Modified
+      description: When the indicator was last updated on the ThreatStream cloud platform
+    - contextPath: ThreatStream.EmailReputation.Confidence
+      description: Confidence value assigned to the indicator. Confidence score can
+        range from 0-100, in increasing order of confidence.
+    - contextPath: ThreatStream.EmailReputation.Details1
+      description: A string that contains a tag associated with the indicator; the
+        tag can be used to search for related indicators.
+    - contextPath: ThreatStream.EmailReputation.Details2
+      description: Additional details associated with state of an indicator. For example,
+        details such as why is an indicator marked false positive.
+    - contextPath: ThreatStream.EmailReputation.Status
+      description: Status assigned to the indicator
+    - contextPath: ThreatStream.EmailReputation.ThreatScore
+      description: A value assigned to the indicator through machine-learning algorithms
+        ThreatStream deploys. Higher the threatscore, higher the risk. Threatscore
+        ranges from 0-100, in increasing order of risk.
+    - contextPath: ThreatStream.EmailReputation.Email
+      description: The email address
+    - contextPath: ThreatStream.EmailReputation.Severity
+      description: 'Severity assigned to the indicator through machine-learning algorithms
+        ThreatStream deploys. Possible values: low, medium, high, very high'
+    description: Checks the reputation of the given email
+  - name: ip
+    arguments:
+    - name: ip
+      required: true
+      description: The IP to check
+    - name: threshold
+      description: If ThreatScore is greater or equal than the threshold, then ip
+        will be considered malicious
+      defaultValue: "3"
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The tested indicator
+      type: string
+    - contextPath: DBotScore.Type
+      description: The indicator type
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: IP.ASN
+      description: Autonomous System (AS) number associated with the indicator
+    - contextPath: IP.Address
+      description: IP Address
+    - contextPath: IP.Geo.Country
+      description: Country associated with the indicator.
+    - contextPath: IP.Geo.Organization
+      description: Registered owner (organization) of the IP address associated with
+        the indicator.
+    - contextPath: IP.Geo.Location
+      description: Longitude and Latitude of the IP address
+    - contextPath: IP.Malicious.Vendor
+      description: Usually an obfuscated description of the source of the indicator;
+        the description may not be obfuscated if the user belongs to your organization.
+    - contextPath: IP.Score
+      description: A value assigned to the indicator through machine-learning algorithms
+        ThreatStream deploys. Higher the threatscore, higher the risk. Threatscore
+        ranges from 0-100, in increasing order of risk.
+    - contextPath: IP.Hostname
+      description: Domain name (obtained through reverse domain name lookup) associated
+        with the IP address that is associated with the indicator.
+    description: Checks the reputation of the given IP
+  - name: threatstream-push-indicator
+    arguments:
+    - name: confidenceWeight
+      required: true
+      description: To use your source's confidence entirely, set source_confidence_
+        weight to 100.
+      defaultValue: "100"
+    - name: indicator
+      required: true
+      description: indicator value (1.2.3.4/google.com etc)
+    - name: indicatorType
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - srcip
+      - domain
+      - url
+      - email
+      - md5
+      description: type of indicator to insert
+    - name: itype
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - bot_ip
+      - mal_domain
+      - mal_url
+      - compromised_email
+      - apt_md5
+      description: indicator type (internal by threat stream, complete list can be
+        found in API docs)
+    - name: classification
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - public
+      - private
+      description: Classification of the indicator—public or private
+      defaultValue: private
+    - name: confidence
+      required: true
+      description: Level of certainty that an observable is of the reported indicator
+        type. Confidence score can range from 0-100, in increasing order of confidence
+      defaultValue: "100"
+    - name: severity
+      required: true
+      description: 'Severity you want to assign to the indicator when it is imported.
+        Possible values: low, medium, high, very-high'
+      defaultValue: "100"
+    description: Push indicator into ThreatStream
+  runonce: false
+tests:
+- Anomali_ThreatStream_Test
+fromversion: 5.0.0

@@ -62,7 +62,7 @@ script:
   subtype: python3
   isFetchSamples: true
   isfetch: true
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.10.4.28442
   commands:
   - name: securityscorecard-portfolios-list
     description: List all Portfolios
@@ -90,8 +90,7 @@ script:
     description: Lists all companies in Portfolio.
     arguments:
     - name: portfolio_id
-      description: Portfolio ID. The Portfolio ID can be retrieved using the
-        'securityscorecard-portfolios-list' command.
+      description: Portfolio ID. The Portfolio ID can be retrieved using the 'securityscorecard-portfolios-list' command.
       required: true
       default: false
     - name: grade
@@ -126,32 +125,11 @@ script:
       required: false
       default: false
     - name: issue_type
-      description: "Comma-separated list of issue types. Possible values are: 
-        adware_installation_trail, adware_installation, alleged_breach_incident, chatter, anonymous_proxy, service_cassandra, service_couchdb, 
-        attack_detected, attack_feed, new_booter_shell, spa_browser, cdn_hosting, tlscert_expired, tlscert_revoked, tlscert_self_signed, tlscert_excessive_expiration, 
-        tlscert_weak_signature, tlscert_no_revocation, service_cloud_provider, csp_no_policy_v2, csp_unsafe_policy_v2, csp_too_broad_v2, 
-        marketing_site, cookie_missing_secure_attribute, short_term_lending_site, leaked_credentials, leaked_credentials_info, service_dns, 
-        new_defacement, ransomware_victim, domain_uses_hsts_preloading, service_elasticsearch, employee_satisfaction, service_end_of_life, service_end_of_service, 
-        exposed_personal_information, exposed_personal_information_info, admin_subdomain_v2, tlscert_extended_validation, service_ftp, 
-        patching_cadence_high, web_vuln_host_high, service_vuln_host_high, service_imap, iot_camera, industrial_control_device, 
-        insecure_https_redirect_pattern_v2, service_ldap, service_ldap_anonymous, social_network_issues, patching_cadence_low, 
-        web_vuln_host_low, service_vuln_host_low, spf_record_malformed, malware_controller, malware_1_day, malware_30_day, 
-        malware_365_day, malware_infection, malware_infection_trail, patching_cadence_medium, web_vuln_host_medium, service_vuln_host_medium, 
-        service_microsoft_sql, minecraft_server, service_mongodb, no_browser_policy, service_mysql, service_neo4j, service_networking, 
-        object_storage_bucket_with_risky_acl, open_resolver, exposed_ports, service_open_vpn, service_oracle_db, outdated_os, 
-        outdated_browser, non_malware_events_last_month, service_pop3, service_pptp, phishing, typosquat, service_postgresql, 
-        exploited_product, public_text_credit_cards, public_text_database_dump, public_text_hashes, public_text_mention, public_text_password_dump, 
-        service_pulse_vpn, service_rdp, ransomware_association, redirect_chain_contains_http_v2, service_redis, remote_access, service_smb, mail_server_unusual_port, 
-        service_soap, spf_record_wildcard, spf_record_softfail, spf_record_missing, ssh_weak_protocol, ssh_weak_cipher, ssh_weak_mac, tls_weak_protocol, 
-        github_information_leak_disclosure, google_information_leak_disclosure, cookie_missing_http_only, domain_missing_https_v2, suspicious_traffic, tls_ocsp_stapling, 
-        tls_weak_cipher, telephony, service_telnet, tor_node_events_last_month, upnp_accessible, unsafe_sri_v2, uce, service_vnc, dnssec_detected, waf_detected_v2, 
-        hsts_incorrect_v2, hosted_on_object_storage_v2, references_object_storage_v2, x_content_type_options_incorrect_v2, x_frame_options_incorrect_v2, 
-        x_xss_protection_incorrect_v2, service_rsync"
+      description: "Comma-separated list of issue types. Possible values are: adware_installation_trail, adware_installation, alleged_breach_incident, chatter, anonymous_proxy, service_cassandra, service_couchdb, attack_detected, attack_feed, new_booter_shell, spa_browser, cdn_hosting, tlscert_expired, tlscert_revoked, tlscert_self_signed, tlscert_excessive_expiration, tlscert_weak_signature, tlscert_no_revocation, service_cloud_provider, csp_no_policy_v2, csp_unsafe_policy_v2, csp_too_broad_v2, marketing_site, cookie_missing_secure_attribute, short_term_lending_site, leaked_credentials, leaked_credentials_info, service_dns, new_defacement, ransomware_victim, domain_uses_hsts_preloading, service_elasticsearch, employee_satisfaction, service_end_of_life, service_end_of_service, exposed_personal_information, exposed_personal_information_info, admin_subdomain_v2, tlscert_extended_validation, service_ftp, patching_cadence_high, web_vuln_host_high, service_vuln_host_high, service_imap, iot_camera, industrial_control_device, insecure_https_redirect_pattern_v2, service_ldap, service_ldap_anonymous, social_network_issues, patching_cadence_low, web_vuln_host_low, service_vuln_host_low, spf_record_malformed, malware_controller, malware_1_day, malware_30_day, malware_365_day, malware_infection, malware_infection_trail, patching_cadence_medium, web_vuln_host_medium, service_vuln_host_medium, service_microsoft_sql, minecraft_server, service_mongodb, no_browser_policy, service_mysql, service_neo4j, service_networking, object_storage_bucket_with_risky_acl, open_resolver, exposed_ports, service_open_vpn, service_oracle_db, outdated_os, outdated_browser, non_malware_events_last_month, service_pop3, service_pptp, phishing, typosquat, service_postgresql, exploited_product, public_text_credit_cards, public_text_database_dump, public_text_hashes, public_text_mention, public_text_password_dump, service_pulse_vpn, service_rdp, ransomware_association, redirect_chain_contains_http_v2, service_redis, remote_access, service_smb, mail_server_unusual_port, service_soap, spf_record_wildcard, spf_record_softfail, spf_record_missing, ssh_weak_protocol, ssh_weak_cipher, ssh_weak_mac, tls_weak_protocol, github_information_leak_disclosure, google_information_leak_disclosure, cookie_missing_http_only, domain_missing_https_v2, suspicious_traffic, tls_ocsp_stapling, tls_weak_cipher, telephony, service_telnet, tor_node_events_last_month, upnp_accessible, unsafe_sri_v2, uce, service_vnc, dnssec_detected, waf_detected_v2, hsts_incorrect_v2, hosted_on_object_storage_v2, references_object_storage_v2, x_content_type_options_incorrect_v2, x_frame_options_incorrect_v2, x_xss_protection_incorrect_v2, service_rsync"
       required: false
       default: false
     - name: had_breach_within_last_days
-      description: Domains with breaches in the last X days. Possible values are numbers,
-        e.g. 1000.
+      description: Domains with breaches in the last X days. Possible values are numbers, e.g. 1000.
       required: false
       default: false
     outputs:
@@ -189,8 +167,7 @@ script:
     description: Retrieve company overall score.
     arguments:
     - name: domain
-      description: Company domain, e.g. google.com. The company must first be added
-        to a Portfolio in order to be able to get its score.
+      description: Company domain, e.g. google.com. The company must first be added to a Portfolio in order to be able to get its score.
       required: true
       default: false
     outputs:
@@ -300,8 +277,7 @@ script:
       description: Initial date for historical data. Value should be in format 'YYYY-MM-DD'
       default: false
     - name: timing
-      description: Timing granularity.
-        or "monthly"
+      description: Timing granularity. or "monthly"
       required: false
       auto: PREDEFINED
       predefined:
@@ -333,14 +309,10 @@ script:
       - "drops"
     - name: score_types
       isArray: true
-      description: Comma-separated list of risk factors to monitor. Possible values are 'overall',
-        'any_factor_score', 'network_security', 'dns_health', 'patching_cadence',
-        'endpoint_security', 'ip_reputation', 'application_security', 'cubit_score',
-        'hacker_chatter', 'leaked_information', 'social_engineering'.
+      description: Comma-separated list of risk factors to monitor. Possible values are 'overall', 'any_factor_score', 'network_security', 'dns_health', 'patching_cadence', 'endpoint_security', 'ip_reputation', 'application_security', 'cubit_score', 'hacker_chatter', 'leaked_information', 'social_engineering'.
       required: true
     - name: target
-      description: What do you want to monitor with this alert. This argument is required 
-        if the `portfolios` argument is not specified.
+      description: What do you want to monitor with this alert. This argument is required if the `portfolios` argument is not specified.
       auto: PREDEFINED
       predefined:
       - "my_scorecard"
@@ -348,9 +320,7 @@ script:
       required: false
     - name: portfolios
       isArray: true
-      description: A comma-separated list of Portfolios.
-        to use as a target for the alert. This argument is require if the `target`
-        argument is not specified. You can get a list of portfolios by running `!securityscorecard-portfolios-list`
+      description: A comma-separated list of Portfolios. to use as a target for the alert. This argument is require if the `target` argument is not specified. You can get a list of portfolios by running `!securityscorecard-portfolios-list`
       required: false
     outputs:
     - contextPath: SecurityScorecard.Alerts.GradeChangeAlert.id
@@ -371,15 +341,10 @@ script:
       required: true
     - name: score_types
       isArray: true
-      description: Comma separated list of risk factors to monitor. Possible values are 'overall',
-        'any_factor_score', 'network_security', 'dns_health', 'patching_cadence',
-        'endpoint_security', 'ip_reputation', 'application_security', 'cubit_score',
-        'hacker_chatter', 'leaked_information', 'social_engineering'. For multiple
-        factors, provide comma-separated list, i.e. leaked_information,social_engineering.
+      description: Comma separated list of risk factors to monitor. Possible values are 'overall', 'any_factor_score', 'network_security', 'dns_health', 'patching_cadence', 'endpoint_security', 'ip_reputation', 'application_security', 'cubit_score', 'hacker_chatter', 'leaked_information', 'social_engineering'. For multiple factors, provide comma-separated list, i.e. leaked_information,social_engineering.
       required: true
     - name: target
-      description: What do you want to monitor with this alert. This argument is required
-        if the `portfolios` argument is not specified.
+      description: What do you want to monitor with this alert. This argument is required if the `portfolios` argument is not specified.
       required: false
       auto: PREDEFINED
       predefined:
@@ -387,9 +352,7 @@ script:
       - "any_followed_company"
     - name: portfolios
       isArray: true
-      description: A comma-separated list of Portfolios.
-        to use as a target for the alert. This argument is require if the `target`
-        argument is not specified. You can get a list of portfolios by running `!securityscorecard-portfolios-list`
+      description: A comma-separated list of Portfolios. to use as a target for the alert. This argument is require if the `target` argument is not specified. You can get a list of portfolios by running `!securityscorecard-portfolios-list`
       required: false
     outputs:
     - contextPath: SecurityScorecard.Alerts.ScoreThresholdAlert.id
@@ -434,10 +397,7 @@ script:
       description: Alert Portfolio ID
       type: array
     - contextPath: SecurityScorecard.Alerts.Alert.my_scorecard
-      description: Whether the alert was triggered on private scorecard. This depends
-        on whether 'my_scorecard' was added to the optional argument 'target' when
-        creating alerts using the 'securityscorecard-alert-score-threshold-create'
-        and 'securityscorecard-alert-grade-change-create' commands.
+      description: Whether the alert was triggered on private scorecard. This depends on whether 'my_scorecard' was added to the optional argument 'target' when creating alerts using the 'securityscorecard-alert-score-threshold-create' and 'securityscorecard-alert-grade-change-create' commands.
       type: Boolean
     - contextPath: SecurityScorecard.Alerts.Alert.created_at
       description: Timestamp of when the alert was triggered
@@ -453,8 +413,7 @@ script:
       description: Vendor domain, e.g. Google, Amazon
       type: String
     - contextPath: SecurityScorecard.Service.client_domain
-      description: Client domain. This value is identical to the input of the domain
-        argument
+      description: Client domain. This value is identical to the input of the domain argument
       type: String
     - contextPath: SecurityScorecard.Service.categories
       description: Vendor service provider, e.g. mail_provider, nameserver_provider

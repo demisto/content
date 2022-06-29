@@ -33,5 +33,8 @@
 	"unsearchable": false,
 	"useAsKpi": true,
 	"validationRegex": "",
-	"version": -1
+	"version": -1,
+	"marketplaces": [
+       "xsoar"
+    ]
 }

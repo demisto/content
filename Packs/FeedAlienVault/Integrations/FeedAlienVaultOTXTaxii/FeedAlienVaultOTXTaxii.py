@@ -13,7 +13,7 @@ import pytz
 import dateutil.parser
 from bs4 import BeautifulSoup
 from netaddr import IPAddress, iprange_to_cidrs, IPNetwork
-from six import string_types
+from six import string_types  # type: ignore
 from typing import Dict, List, Optional
 
 # Disable insecure warnings

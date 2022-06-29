@@ -1,0 +1,36 @@
+commonfields:
+  id: StringContains
+  version: -1
+name: StringContains
+script: ''
+type: javascript
+tags:
+- Condition
+- Utility
+comment: Deprecated. No available replacement. Checks whether substring is within
+  string. Returns - yes - string contains substring. no - string does not contain
+  substring. If stringSeperator is provided, the substring will be split using the
+  separator, and each item will be checked. If one of the items will be found in the
+  string, the srcipt will return yes. This script is deprecated. The StringContainsArray
+  filter implements the exact functionality.
+enabled: true
+deprecated: true
+args:
+- name: string
+  required: true
+  default: true
+  description: String to check in (haystack)
+- name: substring
+  required: true
+  description: String to see if inside of string arg (needle)
+- name: substringSeperator
+  description: Seperator for splitting the substring (needle) and search each item
+outputs:
+- contextPath: yes
+  description: if string contains substring
+- contextPath: no
+  description: if string does not contain substring
+scripttarget: 0
+tests:
+- No test - deprecated, didn't have a test prior
+fromversion: 5.0.0

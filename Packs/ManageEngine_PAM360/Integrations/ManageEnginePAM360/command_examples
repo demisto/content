@@ -1,0 +1,10 @@
+!pam360-create-resource resource_name="SOUTH-FIN-WINSERQA-09" resource_type="Windows" resource_url="https://remote-win-serv:8285/adminhome" domain_name="SOUTH-FIN-WINSERQA-09" resourcegroup_name="Remote Windows Servers" owner_name="admin" location="Plaza - South Wing" dnsname="SOUTH-FIN-WINSERQA-09" department="Finance" resource_description="Windows server resources reserved for testing API" notes="Windows server resources reserved for testing API" account_name="administrator" password="QA!K>35Hgg(x" resource_password_policy="Strong" account_password_policy="Strong"
+!pam360-create-account resource_id=1 account_name="admin" password="t8BRq)<6h9g1" notes="Windows server resources reserved for testing API" account_password_policy="Strong"
+!pam360-update-resource resource_id=1 resource_name="SOUTH-FIN-WINSERQA-09" resource_type="Windows" resource_url="https://remote-win-serv:8285/adminhome" resource_description="Windows server resources reserved for testing API" resource_password_policy="Strong" location="Plaza - South Wing" department="Finance" dnsname="SOUTH-FIN-WINSERQA-09" owner_name="admin"
+!pam360-update-account resource_id=1 account_id=1 account_name="admin" owner_name="admin" notes="Windows server resources reserved for testing API" account_password_policy="Strong"
+!pam360-list-all-resources
+!pam360-list-all-accounts resource_id=1
+!pam360-fetch-account-details resource_id=1 account_id=1
+!pam360-fetch-resource-account-id resource_name=1 account_name=1
+!pam360-fetch-password resource_id=1 account_id=1 reason="Need the password to log in to the Windows Server for testing purposes." ticket_id=7
+!pam360-update-account-password resource_id=1 account_id=1 new_password="A8>ne3J&0Z" reset_type="local" reason="Password Expired" ticket_id=7

@@ -1,7 +1,7 @@
 {
   "id": "my-mean-time-to-remediation-sla",
   "version": -1,
-  "fromVersion": "5.5",
+  "fromVersion": "5.5.0",
   "name": "My Mean Time to Remediation (Remediation SLA)",
   "dataType": "incidents",
   "widgetType": "duration",

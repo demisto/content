@@ -309,6 +309,7 @@ def options_handler():
                         help="CircleCi branch of current build", required=True)
     parser.add_argument('-pbp', '--production_base_path', help="Production base path of the directory to upload to.",
                         required=False)
+    parser.add_argument('-mp', '--marketplace', help='marketplace version.', default='xsoar')
     # disable-secrets-detection-end
     return parser.parse_args()
 
@@ -325,6 +326,7 @@ def main():
     circle_branch = options.circle_branch
     production_base_path = options.production_base_path
     target_packs = options.pack_names
+    marketplace = options.marketplace
 
     # Google cloud storage client initialized
     storage_client = init_storage_client(service_account)
@@ -332,7 +334,7 @@ def main():
     build_bucket = storage_client.bucket(build_bucket_name)
 
     # Initialize build and prod base paths
-    build_bucket_path = os.path.join(GCPConfig.BUILD_PATH_PREFIX, circle_branch, build_number)
+    build_bucket_path = os.path.join(GCPConfig.BUILD_PATH_PREFIX, circle_branch, build_number, marketplace)
     build_bucket_base_path = os.path.join(build_bucket_path, GCPConfig.CONTENT_PACKS_PATH)
 
     # Relevant when triggering test upload flow
@@ -363,18 +365,29 @@ def main():
     packs_list = [Pack(pack_name, os.path.join(extract_destination_path, pack_name)) for pack_name in pack_names
                   if os.path.exists(os.path.join(extract_destination_path, pack_name))]
 
-    # Starting iteration over packs
+    packs_for_current_marketplace = []
+
     for pack in packs_list:
+        task_status = pack.load_user_metadata()
+        if not task_status:
+            pack.status = PackStatus.FAILED_LOADING_USER_METADATA.value
+            pack.cleanup()
+            continue
+
+        if marketplace not in pack.marketplaces:
+            logging.warning(f"Skipping {pack.name} pack as it is not supported in the current marketplace.")
+            pack.status = PackStatus.NOT_RELEVANT_FOR_MARKETPLACE.name
+            pack.cleanup()
+            continue
+
+        packs_for_current_marketplace.append(pack)
+
+    # Starting iteration over packs
+    for pack in packs_for_current_marketplace:
         # Indicates whether a pack has failed to upload on Prepare Content step
         task_status, pack_status = pack.is_failed_to_upload(pc_failed_packs_dict)
         if task_status:
             pack.status = pack_status
-            pack.cleanup()
-            continue
-
-        task_status = pack.load_user_metadata()
-        if not task_status:
-            pack.status = PackStatus.FAILED_LOADING_USER_METADATA.name
             pack.cleanup()
             continue
 

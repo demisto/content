@@ -25,8 +25,7 @@ configuration:
   name: verbose
   required: false
   type: 8
-- defaultvalue: ''
-  display: Use system proxy settings
+- display: Use system proxy settings
   name: proxy
   required: false
   type: 8
@@ -495,10 +494,11 @@ script:
       - pcap
       - pdf
       - xml
+      - iocjson
       required: false
       secret: false
     deprecated: false
-    description: Download a resource belonging to a report. This can be the full report, dropped binaries, etc.
+    description: Download a resource belonging to a report. This can be the full report, dropped binaries, etc. See integration README for the full supported report types.
     execution: false
     name: joe-download-report
     outputs:
@@ -734,7 +734,7 @@ script:
   script: '-'
   type: python
   subtype: python2
-  dockerimage: demisto/python:2.7.18.24398
+  dockerimage: demisto/python:2.7.18.27799
 tests:
 - JoeSecurityTestPlaybook
 - JoeSecurityTestDetonation

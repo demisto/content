@@ -1,0 +1,21 @@
+{
+    "name": "Get Fields",
+    "description": "Retrieves fields from an object using dot notation",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Omar Salim Ahmed",
+    "url": "",
+    "email": "",
+    "created": "2021-12-25T22:15:54Z",
+    "categories": ["Utilities"],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "os-groot"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

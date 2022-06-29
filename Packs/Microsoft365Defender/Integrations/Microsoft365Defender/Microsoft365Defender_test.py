@@ -14,7 +14,7 @@ import io
 import pytest
 
 import demistomock as demisto
-from Microsoft365Defender import Client, fetch_incidents, _query_set_limit
+from Microsoft365Defender import Client, fetch_incidents, _query_set_limit, main
 
 
 def util_load_json(path):
@@ -66,6 +66,14 @@ def test_microsoft_365_defender_incident_update_command(mocker):
             'determination': 'Other'}
     results = microsoft_365_defender_incident_update_command(client, args)
     check_api_response(results, util_load_json('./test_data/incident_update_results.json'))
+
+
+def test_microsoft_365_defender_incident_get_command(mocker):
+    from Microsoft365Defender import microsoft_365_defender_incident_get_command
+    client = mock_client(mocker, 'get_incident', util_load_json('./test_data/incident_get_response.json'))
+    args = {'id': '263'}
+    results = microsoft_365_defender_incident_get_command(client, args)
+    check_api_response(results, util_load_json('./test_data/incident_get_results.json'))
 
 
 def test_microsoft_365_defender_advanced_hunting_command(mocker):
@@ -122,3 +130,22 @@ def test_fetch_incidents(mocker):
                                                   ])
 def test_query_set_limit(query: str, limit: int, result: str):
     assert _query_set_limit(query, limit) == result
+
+
+def test_params(mocker):
+    """
+    Given:
+      - Configuration parameters
+    When:
+      - The required parameter app_id is missed.
+    Then:
+      - Ensure the exception message as expected.
+    """
+
+    mocker.patch.object(demisto, 'params', return_value={'_tenant_id': '_tenant_id', 'credentials': {'password': '1234'}})
+    mocker.patch.object(demisto, 'error')
+    return_error_mock = mocker.patch('Microsoft365Defender.return_error')
+
+    main()
+
+    assert 'Application ID must be provided.' in return_error_mock.call_args[0][0]

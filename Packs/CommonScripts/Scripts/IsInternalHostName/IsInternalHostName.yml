@@ -37,4 +37,4 @@ runonce: false
 runas: DBotWeakRole
 tests:
 - IsInternalHostName Test
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.9.8.24399

@@ -130,12 +130,14 @@ def get_current_table(grid_id: str) -> pd.DataFrame:
     Returns:
         DataFrame: Existing grid data.
     """
-    current_table: Optional[List[dict]] = demisto.incidents()[0].get("CustomFields", {}).get(grid_id)
-    if current_table is None:
+    custom_fields = demisto.incident().get("CustomFields", {})
+    if grid_id not in custom_fields:
         raise ValueError(f"The following grid id was not found: {grid_id}. Please make sure you entered the correct "
                          f"incident type with the \"Machine name\" as it appears in the incident field editor in "
                          f"Settings->Advanced ->Fields (Incident). Also make sure that this value appears in the "
                          f"incident Context Data under incident - if not then please consult with support.")
+
+    current_table: Optional[List[dict]] = custom_fields.get(grid_id)
 
     return pd.DataFrame(current_table)
 

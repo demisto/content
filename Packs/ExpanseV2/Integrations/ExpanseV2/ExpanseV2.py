@@ -7,7 +7,6 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 
 import requests
-import traceback
 import copy
 import json
 import base64
@@ -109,7 +108,7 @@ IPRANGE_INCLUDE_OPTIONS = ["none", "annotations", "severityCounts", "attribution
                            "relatedRegistrationInformation", "locationInformation"]
 
 POC_EMAIL_PATTERN = r"^\S+@\S+$"
-
+DEPRECATED_COMMANDS = {"expanse-get-risky-flows", "expanse-list-risk-rules"}
 """ CLIENT CLASS """
 
 
@@ -123,7 +122,7 @@ class Client(BaseClient):
         hdr = {
             "Content-Type": "application/json",
             "Accept": "application/json",
-            "User-Agent": "Expanse_XSOAR/1.7.0",
+            "User-Agent": "Expanse_XSOAR/1.10.0",
         }
         super().__init__(base_url, verify=verify, proxy=proxy, headers=hdr, **kwargs)
 
@@ -526,31 +525,6 @@ class Client(BaseClient):
             raise e
         return result
 
-    def list_risk_rules(self, params: Dict[str, Any]) -> Iterator[Any]:
-        return self._paginate(
-            method='GET',
-            url_suffix='/v1/behavior/risk-rules',
-            params=params
-        )
-
-    def get_risky_flows(self, limit: int, created_before: Optional[str], created_after: Optional[str],
-                        internal_ip_range: Optional[str], risk_rule: Optional[str], tag_names: Optional[str]) -> \
-            Iterator[Any]:
-
-        params = {
-            "page[limit]": limit,
-            "filter[created-before]": created_before,
-            "filter[created-after]": created_after,
-            "filter[internal-ip-range]": internal_ip_range,
-            "filter[risk-rule]": risk_rule,
-            "filter[tag-names]": tag_names
-        }
-        return self._paginate(
-            method='GET',
-            url_suffix='/v1/behavior/risky-flows',
-            params=params
-        )
-
     def parse_asset_data(self, issue: Dict[str, Any],
                          fetch_details: Optional[bool] = False) -> Tuple[List[Dict[str, Any]], List[str], bool]:
         assets: List[Dict[str, Any]] = []
@@ -610,7 +584,8 @@ class Client(BaseClient):
                             and (re := rri[0].get('registryEntities'))
                             and isinstance(re, list)
                     ):
-                        ml_feature_list.extend(set(r['formattedName'] for r in re if 'formattedName' in r))
+                        ml_feature_list.extend(set(r['formattedName']
+                                                   for r in re if 'formattedName' in r))  # pylint: disable=E1133
 
                 elif a.get('assetType') == "Certificate":
                     # for Certificate collect issuerOrg, issuerName,
@@ -653,6 +628,13 @@ class Client(BaseClient):
         if len(ml_feature_list) > 0:
             changed = True
         return assets, ml_feature_list, changed
+
+
+class DeprecatedCommandException(BaseException):
+    def __init__(self):
+        super().__init__(
+            f'The {demisto.command()} command is no longer supported by the Xpanse API, and has been deprecated.'
+        )
 
 
 """ HELPER FUNCTIONS """
@@ -753,6 +735,7 @@ def convert_priority_to_xsoar_severity(priority: str) -> int:
 
 def datestring_to_timestamp_us(ds: str) -> int:
     dt = parse(ds)
+    assert dt is not None
     ts = int(dt.timestamp()) * 1000000 + dt.microsecond
     return ts
 
@@ -849,7 +832,7 @@ def format_domain_data(domains: List[Dict[str, Any]]) -> List[CommandResults]:
                 updated_date=whois.get('updatedDate'),
                 expiration_date=whois.get('registryExpiryDate'),
                 name_servers=whois.get('nameServers'),
-                domain_status=domain_statuses[0],
+                domain_status=domain_statuses[0] if domain_statuses else [],
                 organization=admin.get('organization'),
                 admin_name=admin.get('name'),
                 admin_email=admin.get('emailAddress'),
@@ -1099,16 +1082,16 @@ def get_issues_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     sort = ','.join(arg_list)
 
     d = args.get('created_before', None)
-    created_before = parse(d).strftime(DATE_FORMAT) if d else None
+    created_before = parse(d).strftime(DATE_FORMAT) if d else None  # type: ignore
 
     d = args.get('created_after', None)
-    created_after = parse(d).strftime(DATE_FORMAT) if d else None
+    created_after = parse(d).strftime(DATE_FORMAT) if d else None  # type: ignore
 
     d = args.get('modified_before', None)
-    modified_before = parse(d).strftime(DATE_FORMAT) if d else None
+    modified_before = parse(d).strftime(DATE_FORMAT) if d else None  # type: ignore
 
     d = args.get('modified_after', None)
-    modified_after = parse(d).strftime(DATE_FORMAT) if d else None
+    modified_after = parse(d).strftime(DATE_FORMAT) if d else None  # type: ignore
 
     issues = list(
         islice(
@@ -1281,7 +1264,7 @@ def get_issue_updates_command(client: Client, args: Dict[str, Any]) -> CommandRe
         raise ValueError(f'Invalid update_type: {update_types}. Must include: {",".join(ISSUE_UPDATE_TYPES.keys())}')
 
     d = args.get('created_after')
-    created_after = parse(d).strftime(DATE_FORMAT) if d else None
+    created_after = parse(d).strftime(DATE_FORMAT) if d else None  # type: ignore
 
     issue_updates = [
         {**u, "issueId": issue_id}  # this adds the issue id to the resulting dict
@@ -1311,7 +1294,7 @@ def get_issue_comments_command(client: Client, args: Dict[str, Any]) -> CommandR
         raise ValueError('issue_id not specified')
 
     d = args.get('created_after')
-    created_after = parse(d).strftime(DATE_FORMAT) if d else None
+    created_after = parse(d).strftime(DATE_FORMAT) if d else None  # type: ignore
 
     issue_comments = [
         {**u, "issueId": issue_id}  # this adds the issue id to the resulting dict
@@ -1527,6 +1510,7 @@ def get_modified_remote_data_command(client: Client, args: Dict[str, Any]) -> Ge
     demisto.debug(f'Performing get-modified-remote-data command. Last update is: {last_update}')
 
     last_update_utc = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})
+    assert last_update_utc is not None, f'could not parse {last_update}'
     modified_after = last_update_utc.strftime(DATE_FORMAT)
 
     modified_incidents = client.get_issues(
@@ -1557,7 +1541,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], sync_owners: b
             ),
             MAX_UPDATES
         ),
-        key=lambda k: k.get('created')
+        key=lambda k: k.get('created')  # type: ignore
     )
 
     new_entries: List = []
@@ -2483,56 +2467,12 @@ def cidr_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
     return format_cidr_data(cidr_data)
 
 
-def list_risk_rules_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    total_results, max_page_size = calculate_limits(args.get('limit'))
-
-    params = {
-        "page[limit]": max_page_size
-    }
-    risk_rules = list(
-        islice(
-            client.list_risk_rules(params),
-            total_results
-        )
-    )
-
-    return CommandResults(
-        outputs_prefix="Expanse.RiskRule",
-        outputs_key_field="id",
-        readable_output="## No Risk Rules found" if len(risk_rules) == 0 else None,
-        outputs=risk_rules if len(risk_rules) > 0 else None
-    )
+def list_risk_rules_command(client: Client, args: Dict[str, Any]):
+    raise DeprecatedCommandException()
 
 
-def get_risky_flows_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    total_results, max_page_size = calculate_limits(args.get('limit'))
-
-    d = args.get('created_before')
-    created_before = parse(d).strftime(DATE_FORMAT) if d else None
-
-    d = args.get('created_after')
-    created_after = parse(d).strftime(DATE_FORMAT) if d else None
-
-    internal_ip_range = args.get('internal_ip_range')
-    risk_rule = args.get('risk_rule', None)
-
-    tags = argToList(args.get('tag_names'))
-    tag_names: Optional[str] = ','.join(tags) if tags else None
-
-    risky_flows = list(
-        islice(
-            client.get_risky_flows(limit=max_page_size, created_before=created_before, created_after=created_after,
-                                   internal_ip_range=internal_ip_range, risk_rule=risk_rule, tag_names=tag_names),
-            total_results
-        )
-    )
-
-    return CommandResults(
-        outputs_prefix="Expanse.RiskyFlow",
-        outputs_key_field="id",
-        readable_output="## No Risky Flows found" if len(risky_flows) == 0 else None,
-        outputs=risky_flows if len(risky_flows) > 0 else None
-    )
+def get_risky_flows_command(client: Client, args: Dict[str, Any]):
+    raise DeprecatedCommandException()
 
 
 def domains_for_certificate_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -2540,7 +2480,7 @@ def domains_for_certificate_command(client: Client, args: Dict[str, Any]) -> Com
     Returns all domains that have resolved to IP addresses a certificate has been seen on. There is no direct way to
     correlate between certificates and domains in Expanse this does so indirectly.
     """
-    search = args['common_name']
+    search = args.get('common_name')
     params = {
         "commonNameSearch": search
     }
@@ -2779,10 +2719,10 @@ def main() -> None:
             return_results(get_cloud_resource_command(client, args))
 
         elif command == "expanse-get-risky-flows":
-            return_results(get_risky_flows_command(client, args))
+            get_risky_flows_command(client, args)  # deprecated
 
         elif command == "expanse-list-risk-rules":
-            return_results(list_risk_rules_command(client, args))
+            list_risk_rules_command(client, args)  # deprecated
 
         elif command == "expanse-get-services":
             return_results(get_services_command(client, args))
@@ -2845,7 +2785,6 @@ def main() -> None:
         #  To be compatible with 6.1
         if 'not implemented' in str(e):
             raise e
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(
             f"Failed to execute {command} command.\nError:\n{str(e)}"
         )

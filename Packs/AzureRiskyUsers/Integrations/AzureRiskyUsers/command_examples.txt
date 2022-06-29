@@ -1,0 +1,8 @@
+!azure-risky-users-auth-complete
+!azure-risky-users-auth-test
+!azure-risky-users-list limit=2
+!azure-risky-user-get id=XXX
+!azure-risky-users-risk-detections-list limit=2
+!azure-risky-users-risk-detection-get id=XXXX
+!azure-risky-users-auth-reset
+!azure-risky-users-auth-start

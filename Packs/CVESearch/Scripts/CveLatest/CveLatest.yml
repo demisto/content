@@ -1,0 +1,19 @@
+commonfields:
+  id: 5d44a5d9-d91a-4420-801f-755f26b60c47
+  version: -1
+name: cveLatest
+script: ''
+type: javascript
+tags:
+- cve
+comment: Deprecated. No available replacement. Displays the latest updated CVE entries.
+system: true
+deprecated: true
+scripttarget: 0
+dependson:
+  must:
+  - cve-latest
+timeout: 0s
+tests:
+- No tests (auto formatted)
+fromversion: 5.0.0

@@ -1,0 +1,443 @@
+id: playbook-AzureStorageFileShare-Test
+version: -1
+name: playbook-AzureStorageFileShare-Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4b64c354-e7a2-49d3-8d56-c0c71e1064bd
+    type: start
+    task:
+      id: 4b64c354-e7a2-49d3-8d56-c0c71e1064bd
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 9f7c3550-6c5a-4a10-8ce9-b72c01eba646
+    type: regular
+    task:
+      id: 9f7c3550-6c5a-4a10-8ce9-b72c01eba646
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 5d9a5fc3-448e-4cb0-8769-411562e04aa0
+    type: regular
+    task:
+      id: 5d9a5fc3-448e-4cb0-8769-411562e04aa0
+      version: -1
+      name: azure-storage-fileshare-create
+      script: '|||azure-storage-fileshare-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      share_name:
+        simple: xsoar
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 3e4c4254-a7c3-4e1f-8777-3e4151b736b0
+    type: regular
+    task:
+      id: 3e4c4254-a7c3-4e1f-8777-3e4151b736b0
+      version: -1
+      name: azure-storage-fileshare-delete
+      script: '|||azure-storage-fileshare-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      share_name:
+        simple: xsoar
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 18c85680-3333-4be9-8400-2d5ff9929e11
+    type: regular
+    task:
+      id: 18c85680-3333-4be9-8400-2d5ff9929e11
+      version: -1
+      name: azure-storage-fileshare-list
+      script: '|||azure-storage-fileshare-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 75b6fc7a-4772-43e9-8e27-aaddabca1f01
+    type: condition
+    task:
+      id: 75b6fc7a-4772-43e9-8e27-aaddabca1f01
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageFileShare.Share.Name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: d62299f0-5e9d-4a05-89f0-d961523a5336
+    type: regular
+    task:
+      id: d62299f0-5e9d-4a05-89f0-d961523a5336
+      version: -1
+      name: azure-storage-fileshare-content-list
+      script: '|||azure-storage-fileshare-content-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      directory_path: {}
+      limit: {}
+      page: {}
+      prefix: {}
+      share_name:
+        simple: xsoar
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: f0c1c854-ec10-43f2-8b6b-929a82ea605a
+    type: condition
+    task:
+      id: f0c1c854-ec10-43f2-8b6b-929a82ea605a
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageFileShare.Share.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageFileShare.Share.Content.DirectoryId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageFileShare.Share.Content.Directory.FileId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageFileShare.Share.Content.Directory.FileId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageFileShare.Share.Content.Directory.Property.CreationTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageFileShare.Share.Content.Directory.Property.LastAccessTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageFileShare.Share.Content.Directory.Property.LastWriteTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageFileShare.Share.Content.Directory.Property.ChangeTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageFileShare.Share.Content.Directory.Property.Last-Modified
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AzureStorageFileShare.Share.Content.Directory.Name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: bb85f3c7-9591-4de3-8aaa-95b1ecb2875f
+    type: regular
+    task:
+      id: bb85f3c7-9591-4de3-8aaa-95b1ecb2875f
+      version: -1
+      name: azure-storage-fileshare-directory-create
+      script: '|||azure-storage-fileshare-directory-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      directory_name:
+        simple: xsoar-directory
+      directory_path: {}
+      share_name:
+        simple: xsoar
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 30c08e0a-f4ec-4b81-814b-e19e96240f20
+    type: regular
+    task:
+      id: 30c08e0a-f4ec-4b81-814b-e19e96240f20
+      version: -1
+      name: azure-storage-fileshare-directory-delete
+      script: '|||azure-storage-fileshare-directory-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      directory_name:
+        simple: xsoar-directory
+      directory_path: {}
+      share_name:
+        simple: xsoar
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: d5874e1c-13ff-4e55-8921-bbae29d0bda6
+    type: title
+    task:
+      id: d5874e1c-13ff-4e55-8921-bbae29d0bda6
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 0adb1258-d688-4a0a-8a4e-c9c0bdca1b2e
+    type: regular
+    task:
+      id: 0adb1258-d688-4a0a-8a4e-c9c0bdca1b2e
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2195,
+        "width": 380,
+        "x": 50,
+        "y": 160
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.0.0
+description: ''

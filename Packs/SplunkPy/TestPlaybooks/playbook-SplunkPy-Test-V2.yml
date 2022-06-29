@@ -553,7 +553,7 @@ tasks:
       version: -1
       name: splunk-job-status
       description: checking the status of a job
-      script: SplunkPy|||splunk-job-status
+      script: '|||splunk-job-status'
       type: regular
       iscommand: true
       brand: SplunkPy

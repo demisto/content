@@ -1,4 +1,4 @@
-Monitor the progress of a Rubrik Radar anamoly event and use Rubrik Sonar to check for data classification hits.
+Monitor the progress of a Rubrik Radar anomaly event and use Rubrik Sonar to check for data classification hits.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -13,9 +13,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any scripts.
 
 ### Commands
+* rubrik-event-list
 * rubrik-sonar-sensitive-hits
+* rubrik-cdm-cluster-connection-state
+* rubrik-cdm-cluster-location
 * setIncident
-* rubrik-radar-analysis-status
 
 ## Playbook Inputs
 ---
@@ -24,3 +26,7 @@ There are no inputs for this playbook.
 ## Playbook Outputs
 ---
 There are no outputs for this playbook.
+
+## Playbook Image
+---
+![Rubrik Polaris - Anomaly Analysis](../doc_files/Rubrik_Polaris_-_Anomaly_Analysis.png)

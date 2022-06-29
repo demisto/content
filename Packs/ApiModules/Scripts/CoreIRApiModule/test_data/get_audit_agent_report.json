@@ -1,0 +1,49 @@
+{
+    "reply": {
+        "result_count": 3,
+        "data": [
+            {
+                "TIMESTAMP": 1575795968414.4631,
+                "RECEIVEDTIME": 1575795979802.379,
+                "ENDPOINTID": "1111",
+                "ENDPOINTNAME": "1111.eu-central-1",
+                "DOMAIN": "",
+                "TRAPSVERSION": "7.0.0.1915",
+                "CATEGORY": "Agent Service",
+                "TYPE": "Agent Status",
+                "SUBTYPE": "Kernel Driver Initialization",
+                "RESULT": null,
+                "REASON": null,
+                "DESCRIPTION": "Kernel driver initialization failed on 1111.eu-central-1"
+            },
+            {
+                "TIMESTAMP": 1575795969079.378,
+                "RECEIVEDTIME": 1575795980592.126,
+                "ENDPOINTID": "1111",
+                "ENDPOINTNAME": "1111.eu-central-1",
+                "DOMAIN": "",
+                "TRAPSVERSION": "7.0.0.1915",
+                "CATEGORY": "Audit",
+                "TYPE": "Installation",
+                "SUBTYPE": "Install",
+                "RESULT": "Success",
+                "REASON": null,
+                "DESCRIPTION": "XDR Agent version 7.0.0.1915 installed on 1111.eu-central-1"
+            },
+            {
+                "TIMESTAMP": 1575795969080.663,
+                "RECEIVEDTIME": 1575795981095.772,
+                "ENDPOINTID": "1111",
+                "ENDPOINTNAME": "1111.eu-central-1",
+                "DOMAIN": "",
+                "TRAPSVERSION": "7.0.0.1915",
+                "CATEGORY": "Status",
+                "TYPE": "Agent Status",
+                "SUBTYPE": "Fully Protected",
+                "RESULT": null,
+                "REASON": null,
+                "DESCRIPTION": "1111.eu-central-1 is fully protected"
+            }
+        ]
+    }
+}

@@ -36,9 +36,9 @@ script: >
 
   demisto.results(results[search(demisto.context(), path.split('.'), value)])
 type: python
-subtype: python2
+subtype: python3
 tags: []
-comment: "This script searches for a value in a context path."
+comment: This script searches for a value in a context path.
 enabled: true
 args:
 - name: path
@@ -49,6 +49,6 @@ args:
   description: Value to search
 scripttarget: 0
 fromversion: 5.0.0
-dockerimage: demisto/python:2.7.18.24066
+dockerimage: demisto/python3:3.10.4.29342
 tests:
 - No tests (auto formatted)

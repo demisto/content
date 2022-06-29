@@ -1,0 +1,863 @@
+id: PANW NGFW TS Agent Deployment
+fromversion: 6.0.0
+description: Deploy the PANW NGFW TS Agent to a Windows server
+inputs:
+- description: 'The host to perform the deployment on '
+  key: Host
+  playbookInputQuery:
+  required: false
+  value:
+    simple: x.x.x.x
+- description: The path to the TS Agent msi installer
+  key: Path
+  playbookInputQuery:
+  required: false
+  value:
+    simple: http://x.x.x.x:8000/TaInstall64.x64-10.0.4-23.msi
+- description: The name of the TS Agent in NGFW console
+  key: Name
+  playbookInputQuery:
+  required: false
+  value:
+    simple: Windows VDI Agent
+- description: The agent StartSize
+  key: StartSize
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "300"
+- description: The agent MaxSize
+  key: MaxSize
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "2000"
+- description: The agent StartPort
+  key: StartPort
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "20001"
+- description: The agent EndPort
+  key: EndPort
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "39999"
+- description: The agent FreePortBlockDelay
+  key: FreePortBlockDelay
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "245"
+- description: The agent EnableTws
+  key: EnableTws
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "1"
+- description: The agent TSAgentDomain
+  key: TSAgentDomain
+  playbookInputQuery:
+  required: false
+  value:
+    simple: pm.local
+- description: The agent OverrideDomainEnable
+  key: OverrideDomainEnable
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "1"
+- description: The agent ReservedPorts
+  key: ReservedPorts
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: The agent BlockSystemPort
+  key: BlockSystemPort
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "1"
+- description: The agent HonorSrcPortRequest
+  key: HonorSrcPortRequest
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "0"
+name: PANW NGFW TS Agent Deployment
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9e6227ed-8156-4480-88d9-40aac4044d71
+      description: start
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 9e6227ed-8156-4480-88d9-40aac4044d71
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      data:
+        simple: ${inputs.StartSize}
+      host:
+        simple: ${inputs.Host}
+      name:
+        simple: StartSize
+      path:
+        simple: HKLM:\Software\Palo Alto Networks\TS Agent\Conf
+      type:
+        simple: dword
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Add, change, or remove registry keys and values
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_regedit_module.html
+      id: 9010ab5c-2ecc-4ef6-87a3-f811893102bc
+      iscommand: true
+      name: Set Allocated Port Amount
+      script: '|||win-regedit'
+      type: regular
+      version: -1
+    taskid: 9010ab5c-2ecc-4ef6-87a3-f811893102bc
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 660
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      expected_return_code:
+        simple: "0"
+      host:
+        simple: ${inputs.Host}
+      path:
+        simple: ${inputs.Path}
+      product_id:
+        simple: PAN Terminal Server Agent
+      state:
+        simple: present
+      validate_certs:
+        simple: "No"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Installs/uninstalls an installable package
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_package_module.html
+      id: 1f1eb9ee-0bf1-47b9-8db2-8d6b4e7f38d2
+      iscommand: true
+      name: Install the TS Agent
+      script: '|||win-package'
+      type: regular
+      version: -1
+    taskid: 1f1eb9ee-0bf1-47b9-8db2-8d6b4e7f38d2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: set
+      element:
+        simple: <host>${inputs.Host}</host><port>5009</port>
+      type:
+        simple: config
+      xpath:
+        simple: /config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='vsys1']/ts-agent/entry[@name='${inputs.Name}']
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Run any command supported in the API.
+      id: 0193639e-b400-4a75-8c32-8111e0d41e2d
+      iscommand: true
+      name: Register TS Agent in NGFW
+      script: '|||panorama'
+      type: regular
+      version: -1
+    taskid: 0193639e-b400-4a75-8c32-8111e0d41e2d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2905
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 346692fd-75ac-4e16-8755-c841ae7b3dd3
+      iscommand: false
+      name: PAN-OS Commit Configuration
+      playbookId: PAN-OS Commit Configuration
+      type: playbook
+      description: Commit changes onto the firewall
+      version: -1
+    taskid: 346692fd-75ac-4e16-8755-c841ae7b3dd3
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3080
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      host:
+        simple: ${inputs.Host}
+      name:
+        simple: PAN Terminal Server Agent
+      state:
+        simple: restarted
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Manage and query Windows services
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_service_module.html
+      id: 8d15e701-6eb6-4188-86f2-a8ee7e228a64
+      iscommand: true
+      name: Restart the Agent
+      script: '|||win-service'
+      type: regular
+      version: -1
+    taskid: 8d15e701-6eb6-4188-86f2-a8ee7e228a64
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2585
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 731b6917-203d-449d-80af-f5eb1fa64936
+      iscommand: false
+      name: Agent Install
+      type: title
+      description: Install the TS Agent
+      version: -1
+    taskid: 731b6917-203d-449d-80af-f5eb1fa64936
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1c0e1061-34b0-4363-83d3-1b434fa1805e
+      iscommand: false
+      name: Firewall Registration
+      description: Register the TS agent on the firewall
+      type: title
+      version: -1
+    taskid: 1c0e1061-34b0-4363-83d3-1b434fa1805e
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2760
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      data:
+        simple: ${inputs.MaxSize}
+      host:
+        simple: ${inputs.Host}
+      name:
+        simple: MaxSize
+      path:
+        simple: HKLM:\Software\Palo Alto Networks\TS Agent\Conf
+      type:
+        simple: dword
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Add, change, or remove registry keys and values
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_regedit_module.html
+      id: 4658ecbf-f906-4284-84d6-83f2c8ad5129
+      iscommand: true
+      name: Set the Max Size
+      script: '|||win-regedit'
+      type: regular
+      version: -1
+    taskid: 4658ecbf-f906-4284-84d6-83f2c8ad5129
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 835
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      data:
+        simple: ${inputs.StartPort}
+      host:
+        simple: ${inputs.Host}
+      name:
+        simple: StartPort
+      path:
+        simple: HKLM:\Software\Palo Alto Networks\TS Agent\Conf
+      type:
+        simple: dword
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Add, change, or remove registry keys and values
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_regedit_module.html
+      id: 9ba1b841-03f4-4375-8da0-9f36c48a4391
+      iscommand: true
+      name: Set the Start Port
+      script: '|||win-regedit'
+      type: regular
+      version: -1
+    taskid: 9ba1b841-03f4-4375-8da0-9f36c48a4391
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1010
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      data:
+        simple: ${inputs.EndPort}
+      host:
+        simple: ${inputs.Host}
+      name:
+        simple: EndPort
+      path:
+        simple: HKLM:\Software\Palo Alto Networks\TS Agent\Conf
+      type:
+        simple: dword
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Add, change, or remove registry keys and values
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_regedit_module.html
+      id: 2b36aff8-ab43-43b0-817d-bf86c9e45427
+      iscommand: true
+      name: Set the End Port
+      script: '|||win-regedit'
+      type: regular
+      version: -1
+    taskid: 2b36aff8-ab43-43b0-817d-bf86c9e45427
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1185
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      data:
+        simple: ${inputs.FreePortBlockDelay}
+      host:
+        simple: ${inputs.Host}
+      name:
+        simple: FreePortBlockDelay
+      path:
+        simple: HKLM:\Software\Palo Alto Networks\TS Agent\Conf
+      type:
+        simple: dword
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Add, change, or remove registry keys and values
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_regedit_module.html
+      id: c4a74830-03c2-401d-87db-a1e97dd0402a
+      iscommand: true
+      name: Set the FreePortBlockDelay
+      script: '|||win-regedit'
+      type: regular
+      version: -1
+    taskid: c4a74830-03c2-401d-87db-a1e97dd0402a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1360
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      data:
+        simple: ${inputs.EnableTws}
+      host:
+        simple: ${inputs.Host}
+      name:
+        simple: EnableTws
+      path:
+        simple: HKLM:\Software\Palo Alto Networks\TS Agent\Conf
+      type:
+        simple: dword
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Add, change, or remove registry keys and values
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_regedit_module.html
+      id: 6fd18b2f-8298-47f8-8725-2ff7a3e2b2df
+      iscommand: true
+      name: Set the EnableTws
+      script: '|||win-regedit'
+      type: regular
+      version: -1
+    taskid: 6fd18b2f-8298-47f8-8725-2ff7a3e2b2df
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1535
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      data:
+        simple: ${inputs.TSAgentDomain}
+      host:
+        simple: ${inputs.Host}
+      name:
+        simple: TSAgentDomain
+      path:
+        simple: HKLM:\Software\Palo Alto Networks\TS Agent\Conf
+      type:
+        simple: string
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Add, change, or remove registry keys and values
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_regedit_module.html
+      id: 69090ea3-9c7e-4afc-8f47-d4d4e4d3fc33
+      iscommand: true
+      name: Set the TSAgentDomain
+      script: '|||win-regedit'
+      type: regular
+      version: -1
+    taskid: 69090ea3-9c7e-4afc-8f47-d4d4e4d3fc33
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1710
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      data:
+        simple: ${inputs.OverrideDomainEnable}
+      host:
+        simple: ${inputs.Host}
+      name:
+        simple: OverrideDomainEnable
+      path:
+        simple: HKLM:\Software\Palo Alto Networks\TS Agent\Conf
+      type:
+        simple: dword
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Add, change, or remove registry keys and values
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_regedit_module.html
+      id: 95f940d1-a03b-43ab-8a82-5768425843c3
+      iscommand: true
+      name: Set the OverrideDomainEnable
+      script: '|||win-regedit'
+      type: regular
+      version: -1
+    taskid: 95f940d1-a03b-43ab-8a82-5768425843c3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1885
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      data:
+        simple: $[inputs.ReservedPorts}
+      host:
+        simple: ${inputs.Host}
+      name:
+        simple: ReservedPorts
+      path:
+        simple: HKLM:\Software\Palo Alto Networks\TS Agent\Conf
+      type:
+        simple: string
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Add, change, or remove registry keys and values
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_regedit_module.html
+      id: d8f721e5-eba4-4cc5-8b9e-f5cd429e4162
+      iscommand: true
+      name: Set the ReservedPorts
+      script: '|||win-regedit'
+      type: regular
+      version: -1
+    taskid: d8f721e5-eba4-4cc5-8b9e-f5cd429e4162
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2060
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      data:
+        simple: ${inputs.BlockSystemPort}
+      host:
+        simple: ${inputs.Host}
+      name:
+        simple: BlockSystemPort
+      path:
+        simple: HKLM:\Software\Palo Alto Networks\TS Agent\Conf
+      type:
+        simple: dword
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Add, change, or remove registry keys and values
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_regedit_module.html
+      id: 991d9386-9e59-4910-8714-ac86883e59da
+      iscommand: true
+      name: Set the BlockSystemPort
+      script: '|||win-regedit'
+      type: regular
+      version: -1
+    taskid: 991d9386-9e59-4910-8714-ac86883e59da
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2235
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      data:
+        simple: ${inputs.HonorSrcPortRequest}
+      host:
+        simple: ${inputs.Host}
+      name:
+        simple: HonorSrcPortRequest
+      path:
+        simple: HKLM:\Software\Palo Alto Networks\TS Agent\Conf
+      type:
+        simple: dword
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Add, change, or remove registry keys and values
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/win_regedit_module.html
+      id: 283e2b26-ffba-40d7-83a2-600442d564ec
+      iscommand: true
+      name: Set the HonorSrcPortRequest
+      script: '|||win-regedit'
+      type: regular
+      version: -1
+    taskid: 283e2b26-ffba-40d7-83a2-600442d564ec
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2410
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1259815b-8104-4dd7-8345-b17eec68dc7b
+      iscommand: false
+      name: Agent Settings
+      description: Define the agent settings
+      type: title
+      version: -1
+    taskid: 1259815b-8104-4dd7-8345-b17eec68dc7b
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3125,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)

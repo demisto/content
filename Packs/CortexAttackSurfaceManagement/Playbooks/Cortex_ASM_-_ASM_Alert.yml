@@ -1,0 +1,245 @@
+id: Cortex ASM - ASM Alert
+version: -1
+name: Cortex ASM - ASM Alert
+description: This playbook aims to provide enrichment of ASM alerts by searching for mentions of associated IP addresses within other security and IT tools.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: f942d7ac-a9f3-420b-8a36-b1c9ed41e2ae
+    type: start
+    task:
+      id: f942d7ac-a9f3-420b-8a36-b1c9ed41e2ae
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: c38b00d2-bdfd-4dff-8e97-e4a6ac36fec2
+    type: playbook
+    task:
+      id: c38b00d2-bdfd-4dff-8e97-e4a6ac36fec2
+      version: -1
+      name: Cortex ASM - Extract IP Indicator
+      description: Identifies IPv4 Address associated with Alert and creates a new Indicator.
+      playbookName: Cortex ASM - Extract IP Indicator
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      AlertName:
+        complex:
+          root: alert
+          accessor: alertname
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: d29c2fe9-103e-4e00-88b4-46ae3f516cd6
+    type: condition
+    task:
+      id: d29c2fe9-103e-4e00-88b4-46ae3f516cd6
+      version: -1
+      name: IP exists for Alert?
+      description: Check if a given value exists in the context. Will return 'no' for empty empty arrays. To be used mostly with DQ and selectors.
+      scriptName: Exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "4"
+      "yes":
+      - "3"
+      - "5"
+    scriptarguments:
+      value:
+        complex:
+          root: ExtractedIndicators
+          accessor: IP
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 95d6a918-58aa-4d2d-8ddb-34accccbbf81
+    type: playbook
+    task:
+      id: 95d6a918-58aa-4d2d-8ddb-34accccbbf81
+      version: -1
+      name: Cortex ASM - CMDB Enrichment
+      description: This playbook will look up a CI in ServiceNow CMDB by IP.
+      playbookName: Cortex ASM - CMDB Enrichment
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      IP:
+        complex:
+          root: ExtractedIndicators
+          accessor: IP
+      ServiceNowCMDBClass:
+        simple: cmdb_ci_ip_address
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 201bf808-1747-44ab-8e0d-5beec961e6c2
+    type: title
+    task:
+      id: 201bf808-1747-44ab-8e0d-5beec961e6c2
+      version: -1
+      name: Complete
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: e6142186-b7d5-4dcf-8b84-3cbaff6e0a7c
+    type: playbook
+    task:
+      id: e6142186-b7d5-4dcf-8b84-3cbaff6e0a7c
+      version: -1
+      name: Cortex ASM - Vulnerability Management Enrichment
+      description: This playbook will look up an IP address in Tenable.io or Rapid7 InsightVM.
+      playbookName: Cortex ASM - Vulnerability Management Enrichment
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      DaysPast:
+        simple: "30"
+      IP:
+        complex:
+          root: ExtractedIndicators
+          accessor: IP
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1065,
+        "width": 1080,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests
+fromversion: 6.5.0

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<EnumerationResults ServiceEndpoint="https://test.file.core.windows.net/" ShareName="myfileshare"
+                    DirectoryPath="mydirectorytest">
+    <DirectoryId>16140971433240035328</DirectoryId>
+    <Entries>
+        <File>
+            <Name>AzureStorage_image.png</Name>
+            <FileId>XXXXX</FileId>
+            <Properties>
+                <Content-Length>3523</Content-Length>
+                <CreationTime>2021-08-15T07:08:38.1303424Z</CreationTime>
+                <LastAccessTime>2021-08-15T07:08:38.1303424Z</LastAccessTime>
+                <LastWriteTime>2021-08-15T07:08:38.1303424Z</LastWriteTime>
+                <ChangeTime>2021-08-15T07:08:38.1303424Z</ChangeTime>
+                <Last-Modified>Sun, 15 Aug 2021 07:08:38 GMT</Last-Modified>
+            </Properties>
+        </File>
+        <Directory>
+            <Name>test-directory</Name>
+            <FileId>XXXXX</FileId>
+            <Properties>
+                <CreationTime>2021-08-08T06:18:27.0870926Z</CreationTime>
+                <LastAccessTime>2021-08-08T06:18:27.0870926Z</LastAccessTime>
+                <LastWriteTime>2021-08-08T06:18:27.0870926Z</LastWriteTime>
+                <ChangeTime>2021-08-08T06:18:27.0870926Z</ChangeTime>
+                <Last-Modified>Sun, 08 Aug 2021 06:18:27 GMT</Last-Modified>
+            </Properties>
+        </Directory>
+    </Entries>
+    <NextMarker/>
+</EnumerationResults>

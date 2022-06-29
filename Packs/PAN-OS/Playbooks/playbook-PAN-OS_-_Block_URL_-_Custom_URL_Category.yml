@@ -133,7 +133,7 @@ tasks:
       version: -1
       name: PAN-OS - Create Custom URL Category
       description: Creates a custom URL category
-      script: '|||panorama-create-custom-url-category'
+      script: '|||pan-os-create-custom-url-category'
       type: regular
       iscommand: true
       brand: ""
@@ -184,7 +184,7 @@ tasks:
       version: -1
       name: PAN-OS - Block Malicious URL Category
       description: Creates a custom block policy rule to block communication to URLs in this category.
-      script: '|||panorama-custom-block-rule'
+      script: '|||pan-os-custom-block-rule'
       type: regular
       iscommand: true
       brand: ""
@@ -260,7 +260,7 @@ tasks:
       version: -1
       name: PAN-OS - Get Custom URL Category
       description: Returns information for a specified custom URL category
-      script: '|||panorama-get-custom-url-category'
+      script: '|||pan-os-get-custom-url-category'
       type: regular
       iscommand: true
       brand: ""
@@ -370,7 +370,7 @@ tasks:
       version: -1
       name: PAN-OS - Add malicious URLs to Custom URL Category
       description: Add sites to, or remove sites from, a custom URL category
-      script: '|||panorama-edit-custom-url-category'
+      script: '|||pan-os-edit-custom-url-category'
       type: regular
       iscommand: true
       brand: ""
@@ -601,7 +601,7 @@ tasks:
       version: -1
       name: PAN-OS - Block Malicious URL Category
       description: Creates a custom block policy rule to block communication to URLs in this category.
-      script: '|||panorama-custom-block-rule'
+      script: '|||pan-os-custom-block-rule'
       type: regular
       iscommand: true
       brand: ""

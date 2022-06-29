@@ -106,11 +106,11 @@ tasks:
       brand: ''
       description: ''
     nexttasks:
-      yes:
+      'yes':
       - '1'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: inList
           left:
@@ -139,11 +139,11 @@ tasks:
       brand: ''
       description: ''
     nexttasks:
-      yes:
+      'yes':
       - '5'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: inList
           left:

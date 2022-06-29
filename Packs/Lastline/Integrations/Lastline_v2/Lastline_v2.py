@@ -94,11 +94,28 @@ class Client(BaseClient):
         entry_id = self.command_params.get('EntryID')
         self.command_params['push_to_portal'] = True
         file_params = demisto.getFilePath(entry_id)
+        file_type = os.path.splitext(file_params['name'])[1]
         self.command_params['md5'] = file_hash(file_params.get('path'))
-        result = self.http_request('/analysis/submit/file',
-                                   file_to_upload=file_params.get('path'))
+        # csv files requires different approach
+        if file_type == '.csv':
+            result = self.handle_csv(file_params)
+        else:
+            result = self.http_request('/analysis/submit/file',
+                                       file_to_upload=file_params.get('path'))
+
         human_readable, context_entry = report_generator(result, self.threshold)
         return human_readable, context_entry, result
+
+    def handle_csv(self, file_params):
+        self._session.post(self._base_url + '/papi/login', data=self.credentials, verify=self._verify)
+        with open(file_params['path'], 'rb') as file_:
+            result = self._session.post(self._base_url + '/papi/analysis/submit_file',
+                                        data={'filename': file_params['name']},
+                                        files={'file': (file_params.get('path'), file_.read())},
+                                        verify=self._verify).json()
+
+        lastline_exception_handler(result)
+        return result
 
     def upload_url(self):
         result = self.http_request('/analysis/submit/url')
@@ -283,7 +300,8 @@ def get_report_context(result: Dict, threshold=None) -> Dict:
             context_entry['Lastline'] = lastline
             context_entry[key] = data
 
-        if key == 'File' and dbotscore_list[0]['Score'] != 0:
+        # in case of a file indicator
+        if dbotscore_list and dbotscore_list[0]['Score'] != 0:
             context_entry['DBotScore'] = dbotscore_list
 
         if key == 'URL' and dbotscore['Score'] != 0:
@@ -293,7 +311,7 @@ def get_report_context(result: Dict, threshold=None) -> Dict:
 
 def file_hash(path: str) -> str:
     block_size = 65536
-    file_hasher = hashlib.md5()
+    file_hasher = hashlib.md5()  # nosec
     with open(path, 'rb') as file_obj:
         buf = file_obj.read(block_size)
         while len(buf) > 0:
@@ -309,8 +327,8 @@ def main():
     proxy = params.get('proxy')
     credentials = params.get('credentials')
     api_params = {
-        'key': params.get('api_key'),
-        'api_token': params.get('api_token')
+        'key': params.get('api_key') or params.get('creds_key_and_token').get('identifier', ''),
+        'api_token': params.get('api_token') or params.get('creds_key_and_token').get('password', '')
     }
     api_params.update(demisto.args())
     threshold = int(api_params.get('threshold', params.get('threshold', 70)))
@@ -318,7 +336,10 @@ def main():
     if not credentials or not credentials.get('identifier') or not credentials.get('password'):
         credentials = {}
 
-    if not ((params.get('api_key') and params.get('api_token')) or credentials):
+    if not (api_params.get('key') or api_params.get('api_token')):
+        api_params = {}
+
+    if not (api_params or credentials):
         raise DemistoException('Please fill the credentials in the integration params'
                                ' - api key and token or username and password')
 

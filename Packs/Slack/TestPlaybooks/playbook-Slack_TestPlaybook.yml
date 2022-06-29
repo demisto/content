@@ -1,28 +1,22 @@
 id: Slack Test Playbook
-inputs: []
+version: -1
 name: Slack Test Playbook
-outputs: []
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    ignoreworker: false
+    taskid: 106df09a-e664-40e7-8cce-c551e62af5cc
+    type: start
+    task:
+      id: 106df09a-e664-40e7-8cce-c551e62af5cc
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "9"
-    note: false
-    quietmode: 0
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      id: d36973f6-abf3-4fb1-883c-52afcfecb0f6
-      iscommand: false
-      name: ""
-      version: -1
-    taskid: d36973f6-abf3-4fb1-883c-52afcfecb0f6
-    timertriggers: []
-    type: start
     view: |-
       {
         "position": {
@@ -30,38 +24,35 @@ tasks:
           "y": 50
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    ignoreworker: false
+    taskid: 610d5498-a60f-4570-87bf-5f50caa39d5c
+    type: regular
+    task:
+      id: 610d5498-a60f-4570-87bf-5f50caa39d5c
+      version: -1
+      name: Mirror investigation
+      description: Mirrors the investigation between Slack and the Demisto War Room.
+      script: SlackV2|||mirror-investigation
+      type: regular
+      iscommand: true
+      brand: SlackV2
     nexttasks:
       '#none#':
       - "2"
-    note: false
-    quietmode: 0
     scriptarguments:
-      autoclose: {}
       channelName:
         simple: ${TimeNowUnix}
-      channelTopic: {}
       direction:
         simple: FromDemisto
-      kickAdmin: {}
-      mirrorTo: {}
-      type: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: SlackV2
-      description: Mirrors the investigation between Slack and the Demisto War Room.
-      id: f31b17d0-2c21-467d-87cd-516086ba55fb
-      iscommand: true
-      name: Mirror investigation
-      script: SlackV2|||mirror-investigation
-      type: regular
-      version: -1
-    taskid: f31b17d0-2c21-467d-87cd-516086ba55fb
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -69,36 +60,36 @@ tasks:
           "y": 545
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    ignoreworker: false
+    taskid: 7140977a-5fe6-468c-8673-f5c3129e2504
+    type: regular
+    task:
+      id: 7140977a-5fe6-468c-8673-f5c3129e2504
+      version: -1
+      name: Send a message
+      description: Sends a message to a user, group, or channel.
+      script: SlackV2|||send-notification
+      type: regular
+      iscommand: true
+      brand: SlackV2
     nexttasks:
       '#none#':
       - "21"
-    note: false
-    quietmode: 0
     scriptarguments:
       channel:
-        simple: incident-${incident.id}
-      entry: {}
-      ignoreAddURL: {}
-      message: {}
-      threadID: {}
-      to: {}
+        complex:
+          root: ${TimeNowUnix}
+          transformers:
+          - operator: Stringify
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: SlackV2
-      description: Sends a message to a user, group, or channel.
-      id: c26a6d9f-1f37-4e78-8d86-2a90702b2736
-      iscommand: true
-      name: Send a message
-      script: SlackV2|||send-notification
-      type: regular
-      version: -1
-    taskid: c26a6d9f-1f37-4e78-8d86-2a90702b2736
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -106,35 +97,36 @@ tasks:
           "y": 720
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    ignoreworker: false
+    taskid: b1573a0d-65a9-496d-8ab3-ca5b134836f0
+    type: regular
+    task:
+      id: b1573a0d-65a9-496d-8ab3-ca5b134836f0
+      version: -1
+      name: FileCreateAndUpload
+      description: |
+        Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "4"
-    note: false
-    quietmode: 0
     scriptarguments:
       data:
         simple: this is a test
-      entryId: {}
       filename:
         simple: test
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: |
-        Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
-      id: 89e8cfeb-f75c-48c8-8b25-00898b94bffe
-      iscommand: false
-      name: FileCreateAndUpload
-      script: FileCreateAndUpload
-      type: regular
-      version: -1
-    taskid: 89e8cfeb-f75c-48c8-8b25-00898b94bffe
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -142,36 +134,40 @@ tasks:
           "y": 1245
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    ignoreworker: false
+    taskid: a275b932-02c4-4983-8248-22d30c6a6632
+    type: regular
+    task:
+      id: a275b932-02c4-4983-8248-22d30c6a6632
+      version: -1
+      name: Send a file
+      description: Sends a file in Slack to a user, channel, or group. If a user,
+        channel, or group is not specified, the file is sent to the mirrored investigation
+        channel (if it exists).
+      script: SlackV2|||slack-send-file
+      type: regular
+      iscommand: true
+      brand: SlackV2
     nexttasks:
       '#none#':
       - "7"
-    note: false
-    quietmode: 0
     scriptarguments:
-      channel: {}
-      comment: {}
+      channel:
+        complex:
+          root: ${TimeNowUnix}
+          transformers:
+          - operator: Stringify
       file:
         simple: ${File.EntryID}
-      group: {}
-      threadID: {}
-      to: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: SlackV2
-      description: Sends a file in Slack to a user, channel, or group. If a user, channel, or group is not specified, the file is sent to the mirrored investigation channel (if it exists).
-      id: 220e18f2-753e-486f-8362-21eda1347743
-      iscommand: true
-      name: Send a file
-      script: SlackV2|||slack-send-file
-      type: regular
-      version: -1
-    taskid: 220e18f2-753e-486f-8362-21eda1347743
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -179,28 +175,36 @@ tasks:
           "y": 1420
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    ignoreworker: false
+    taskid: 3b422b1c-c245-4f08-8b0d-ebadbc445cdc
+    type: regular
+    task:
+      id: 3b422b1c-c245-4f08-8b0d-ebadbc445cdc
+      version: -1
+      name: Close the channel
+      description: Archives the mirrored channel for this incident.
+      script: SlackV2|||close-channel
+      type: regular
+      iscommand: true
+      brand: SlackV2
     nexttasks:
       '#none#':
       - "13"
-    note: false
-    quietmode: 0
+    scriptarguments:
+      channel:
+        complex:
+          root: ${TimeNowUnix}
+          transformers:
+          - operator: Stringify
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: SlackV2
-      description: Archives the mirrored channel for this incident.
-      id: 553bc6f5-7b0d-454c-8460-ab31726fcf6d
-      iscommand: true
-      name: Close the channel
-      script: SlackV2|||close-channel
-      type: regular
-      version: -1
-    taskid: 553bc6f5-7b0d-454c-8460-ab31726fcf6d
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -208,33 +212,35 @@ tasks:
           "y": 1770
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    ignoreworker: false
+    taskid: 77836b46-b5bb-4cc5-83be-7b85df5bd696
+    type: regular
+    task:
+      id: 77836b46-b5bb-4cc5-83be-7b85df5bd696
+      version: -1
+      name: VerifyHumanReadableContains
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "3"
-    note: false
-    quietmode: 0
     scriptarguments:
       humanReadableEntryId:
         simple: ${lastCompletedTaskEntries}
       substring:
         simple: Message sent to Slack successfully
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Verify given entry contains a string
-      id: 5541f553-1497-493e-84c3-179470944ca7
-      iscommand: false
-      name: VerifyHumanReadableContains
-      script: VerifyHumanReadableContains
-      type: regular
-      version: -1
-    taskid: 5541f553-1497-493e-84c3-179470944ca7
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -242,33 +248,35 @@ tasks:
           "y": 1070
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    ignoreworker: false
+    taskid: d00eba55-fb39-4d8f-8e14-804ee6a60b2b
+    type: regular
+    task:
+      id: d00eba55-fb39-4d8f-8e14-804ee6a60b2b
+      version: -1
+      name: VerifyHumanReadableContains
+      description: Verify given entry contains a string
+      scriptName: VerifyHumanReadableContains
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "5"
-    note: false
-    quietmode: 0
     scriptarguments:
       humanReadableEntryId:
         simple: ${lastCompletedTaskEntries}
       substring:
         simple: File sent to Slack successfully.
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Verify given entry contains a string
-      id: 35967fb3-db88-404f-8992-121958df1255
-      iscommand: false
-      name: VerifyHumanReadableContains
-      script: VerifyHumanReadableContains
-      type: regular
-      version: -1
-    taskid: 35967fb3-db88-404f-8992-121958df1255
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -276,36 +284,31 @@ tasks:
           "y": 1595
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    ignoreworker: false
+    taskid: 3f58679c-099d-4f5a-85d7-f7eac986c30d
+    type: regular
+    task:
+      id: 3f58679c-099d-4f5a-85d7-f7eac986c30d
+      version: -1
+      name: GetTime
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "1"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      contextKey: {}
-      date: {}
-      dateFormat: {}
-      hoursAgo: {}
-      minutesAgo: {}
-      monthsAgo: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: |
-        Retrieves the current date and time.
-      id: a7de0ad7-eefa-4c0a-8e4b-e971e9d4d509
-      iscommand: false
-      name: GetTime
-      script: GetTime
-      type: regular
-      version: -1
-    taskid: a7de0ad7-eefa-4c0a-8e4b-e971e9d4d509
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -313,35 +316,33 @@ tasks:
           "y": 370
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    ignoreworker: false
+    taskid: 517f8571-8407-4e1c-8c68-41a80f740e89
+    type: regular
+    task:
+      id: 517f8571-8407-4e1c-8c68-41a80f740e89
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "8"
-    note: false
-    quietmode: 0
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Delete field from context
-      id: d51f3e08-2c3f-4cdd-8aeb-24cde2f9cbff
-      iscommand: false
-      name: DeleteContext
-      script: DeleteContext
-      type: regular
-      version: -1
-    taskid: d51f3e08-2c3f-4cdd-8aeb-24cde2f9cbff
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -349,36 +350,31 @@ tasks:
           "y": 195
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    ignoreworker: false
+    taskid: 33c24b4c-7783-4399-8cde-d96f18875be2
+    type: regular
+    task:
+      id: 33c24b4c-7783-4399-8cde-d96f18875be2
+      version: -1
+      name: GetTime
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "11"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      contextKey: {}
-      date: {}
-      dateFormat: {}
-      hoursAgo: {}
-      minutesAgo: {}
-      monthsAgo: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: |
-        Retrieves the current date and time.
-      id: e3195b07-39f9-4a82-892d-d55a6ee71317
-      iscommand: false
-      name: GetTime
-      script: GetTime
-      type: regular
-      version: -1
-    taskid: e3195b07-39f9-4a82-892d-d55a6ee71317
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -386,36 +382,40 @@ tasks:
           "y": 2120
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    ignoreworker: false
+    taskid: 283c0a28-5d01-4a78-8f1d-5154aefa651b
+    type: regular
+    task:
+      id: 283c0a28-5d01-4a78-8f1d-5154aefa651b
+      version: -1
+      name: Create a channel
+      description: Create a channel in Slack.
+      script: SlackV2|||slack-create-channel
+      type: regular
+      iscommand: true
+      brand: SlackV2
     nexttasks:
       '#none#':
       - "19"
-    note: false
-    quietmode: 0
     scriptarguments:
       name:
-        simple: ${TimeNowUnix}
+        complex:
+          root: ${TimeNowUnix}
+          transformers:
+          - operator: Stringify
       topic:
         simple: sade
-      type: {}
       users:
         simple: cortex_xsoar
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: SlackV2
-      description: Create a channel in Slack.
-      id: 71cf6ec0-fb62-4b86-889a-09a3f84cab18
-      iscommand: true
-      name: Create a channel
-      script: SlackV2|||slack-create-channel
-      type: regular
-      version: -1
-    taskid: 71cf6ec0-fb62-4b86-889a-09a3f84cab18
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -423,11 +423,26 @@ tasks:
           "y": 2295
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    ignoreworker: false
-    note: false
-    quietmode: 0
+    taskid: 98d49d1c-1491-45f4-8a19-8cea14a895ba
+    type: regular
+    task:
+      id: 98d49d1c-1491-45f4-8a19-8cea14a895ba
+      version: -1
+      name: Close the channel
+      description: Archives the mirrored channel for this incident.
+      script: SlackV2|||close-channel
+      type: regular
+      iscommand: true
+      brand: SlackV2
     scriptarguments:
       channel:
         complex:
@@ -435,19 +450,6 @@ tasks:
           transformers:
           - operator: Stringify
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: SlackV2
-      description: Archives the mirrored channel for this incident.
-      id: cba5caeb-3827-47d6-80dc-7a2150420ba9
-      iscommand: true
-      name: Close the channel
-      script: SlackV2|||close-channel
-      type: regular
-      version: -1
-    taskid: cba5caeb-3827-47d6-80dc-7a2150420ba9
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -455,35 +457,33 @@ tasks:
           "y": 3890
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    ignoreworker: false
+    taskid: 083aaea8-909e-4584-8342-811445a34133
+    type: regular
+    task:
+      id: 083aaea8-909e-4584-8342-811445a34133
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "10"
-    note: false
-    quietmode: 0
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Delete field from context
-      id: 5c319dca-6c11-4539-8014-4e5b3e7fac7e
-      iscommand: false
-      name: DeleteContext
-      script: DeleteContext
-      type: regular
-      version: -1
-    taskid: 5c319dca-6c11-4539-8014-4e5b3e7fac7e
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -491,14 +491,29 @@ tasks:
           "y": 1945
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    ignoreworker: false
+    taskid: 34d74760-05df-49a3-8287-9804667dba6b
+    type: regular
+    task:
+      id: 34d74760-05df-49a3-8287-9804667dba6b
+      version: -1
+      name: Invite to the channel
+      description: Invite a user to a channel in Slack.
+      script: SlackV2|||slack-invite-to-channel
+      type: regular
+      iscommand: true
+      brand: SlackV2
     nexttasks:
       '#none#':
       - "17"
-    note: false
-    quietmode: 0
     scriptarguments:
       channel:
         complex:
@@ -508,19 +523,6 @@ tasks:
       users:
         simple: ${Slack.User.Username}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: SlackV2
-      description: Invite a user to a channel in Slack.
-      id: 02e9f38c-f54b-43b3-8147-b427e6ca46f7
-      iscommand: true
-      name: Invite to the channel
-      script: SlackV2|||slack-invite-to-channel
-      type: regular
-      version: -1
-    taskid: 02e9f38c-f54b-43b3-8147-b427e6ca46f7
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -528,14 +530,29 @@ tasks:
           "y": 2645
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    ignoreworker: false
+    taskid: 311f0f96-3221-4508-8d6b-49d2d769bc57
+    type: regular
+    task:
+      id: 311f0f96-3221-4508-8d6b-49d2d769bc57
+      version: -1
+      name: Kick from the channel
+      description: KIck a user from a channel in Slack.
+      script: SlackV2|||slack-kick-from-channel
+      type: regular
+      iscommand: true
+      brand: SlackV2
     nexttasks:
       '#none#':
       - "22"
-    note: false
-    quietmode: 0
     scriptarguments:
       channel:
         complex:
@@ -545,19 +562,6 @@ tasks:
       users:
         simple: dbot by Demisto
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: SlackV2
-      description: KIck a user from a channel in Slack.
-      id: 7dc3e763-3e06-47d3-8c47-00f6e5f794c2
-      iscommand: true
-      name: Kick from the channel
-      script: SlackV2|||slack-kick-from-channel
-      type: regular
-      version: -1
-    taskid: 7dc3e763-3e06-47d3-8c47-00f6e5f794c2
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -565,37 +569,34 @@ tasks:
           "y": 3345
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    ignoreworker: false
+    taskid: 8d97d075-327d-4ae1-83e9-745e7b3325c1
+    type: regular
+    task:
+      id: 8d97d075-327d-4ae1-83e9-745e7b3325c1
+      version: -1
+      name: GetTime
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
       - "18"
-    note: false
-    quietmode: 0
     scriptarguments:
       contextKey:
         simple: TimeNow2
-      date: {}
-      dateFormat: {}
-      hoursAgo: {}
-      minutesAgo: {}
-      monthsAgo: {}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: |
-        Retrieves the current date and time.
-      id: c323bb87-787c-45a1-8dab-f07fe5e00f42
-      iscommand: false
-      name: GetTime
-      script: GetTime
-      type: regular
-      version: -1
-    taskid: c323bb87-787c-45a1-8dab-f07fe5e00f42
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -603,14 +604,29 @@ tasks:
           "y": 2820
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    ignoreworker: false
+    taskid: 1537748b-72c0-4f34-85fb-90d6e284e592
+    type: regular
+    task:
+      id: 1537748b-72c0-4f34-85fb-90d6e284e592
+      version: -1
+      name: Rename the channel
+      description: Rename a channel in Slack.
+      script: SlackV2|||slack-rename-channel
+      type: regular
+      iscommand: true
+      brand: SlackV2
     nexttasks:
       '#none#':
       - "20"
-    note: false
-    quietmode: 0
     scriptarguments:
       channel:
         complex:
@@ -623,19 +639,6 @@ tasks:
           transformers:
           - operator: Stringify
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: SlackV2
-      description: Rename a channel in Slack.
-      id: a9d9d60e-8b53-46e8-889a-22f970ec191f
-      iscommand: true
-      name: Rename the channel
-      script: SlackV2|||slack-rename-channel
-      type: regular
-      version: -1
-    taskid: a9d9d60e-8b53-46e8-889a-22f970ec191f
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -643,31 +646,33 @@ tasks:
           "y": 2995
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    ignoreworker: false
+    taskid: d26f39fc-b799-4c50-8ce5-454ead19c3c6
+    type: regular
+    task:
+      id: d26f39fc-b799-4c50-8ce5-454ead19c3c6
+      version: -1
+      name: Get user
+      description: Get details for a given Slack user.
+      script: SlackV2|||slack-get-user-details
+      type: regular
+      iscommand: true
+      brand: SlackV2
     nexttasks:
       '#none#':
       - "14"
-    note: false
-    quietmode: 0
     scriptarguments:
       user:
         simple: cortex_xsoar
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: SlackV2
-      description: Get details for a given Slack user.
-      id: 0d149eb9-3f1e-409e-820d-ffaff1c298cb
-      iscommand: true
-      name: Get user
-      script: SlackV2|||slack-get-user-details
-      type: regular
-      version: -1
-    taskid: 0d149eb9-3f1e-409e-820d-ffaff1c298cb
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -675,14 +680,29 @@ tasks:
           "y": 2470
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    ignoreworker: false
+    taskid: 954b80cd-1009-4710-8a33-5ca4fed1cf8a
+    type: regular
+    task:
+      id: 954b80cd-1009-4710-8a33-5ca4fed1cf8a
+      version: -1
+      name: Invite to the channel
+      description: Invite a user to a channel in Slack.
+      script: SlackV2|||slack-invite-to-channel
+      type: regular
+      iscommand: true
+      brand: SlackV2
     nexttasks:
       '#none#':
       - "15"
-    note: false
-    quietmode: 0
     scriptarguments:
       channel:
         complex:
@@ -692,19 +712,6 @@ tasks:
       users:
         simple: dbot by Demisto
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: SlackV2
-      description: Invite a user to a channel in Slack.
-      id: c65cb63f-f3c9-40c1-8d9b-b43e83afbb49
-      iscommand: true
-      name: Invite to the channel
-      script: SlackV2|||slack-invite-to-channel
-      type: regular
-      version: -1
-    taskid: c65cb63f-f3c9-40c1-8d9b-b43e83afbb49
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -712,38 +719,42 @@ tasks:
           "y": 3170
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    ignoreworker: false
+    taskid: 546fdd6c-e2b5-47ac-8cff-70f8f479c9de
+    type: regular
+    task:
+      id: 546fdd6c-e2b5-47ac-8cff-70f8f479c9de
+      version: -1
+      name: Send a message with blocks
+      description: Sends a message to a user, group, or channel.
+      script: SlackV2|||send-notification
+      type: regular
+      iscommand: true
+      brand: SlackV2
     nexttasks:
       '#none#':
       - "6"
-    note: false
-    quietmode: 0
     scriptarguments:
       blocks:
-        simple: "[\n\t\t{\n\t\t\t\"type\": \"section\",\n\t\t\t\"text\": {\n\t\t\t\t\"type\": \"mrkdwn\",\n\t\t\t\t\"text\": \"This is a test. \"\n\t\t\t},\n\t\t\t\"accessory\": {\n\t\t\t\t\"type\": \"button\",\n\t\t\t\t\"text\": {\n\t\t\t\t\t\"type\": \"plain_text\",\n\t\t\t\t\t\"text\": \"Button\",\n\t\t\t\t\t\"emoji\": true\n\t\t\t\t},\n\t\t\t\t\"value\": \"testing\"\n\t\t\t}\n\t\t}\n\t]"
+        simple: "[\n\t\t{\n\t\t\t\"type\": \"section\",\n\t\t\t\"text\": {\n\t\t\t\t\"type\":
+          \"mrkdwn\",\n\t\t\t\t\"text\": \"This is a test. \"\n\t\t\t},\n\t\t\t\"accessory\":
+          {\n\t\t\t\t\"type\": \"button\",\n\t\t\t\t\"text\": {\n\t\t\t\t\t\"type\":
+          \"plain_text\",\n\t\t\t\t\t\"text\": \"Button\",\n\t\t\t\t\t\"emoji\": true\n\t\t\t\t},\n\t\t\t\t\"value\":
+          \"testing\"\n\t\t\t}\n\t\t}\n\t]"
       channel:
-        simple: incident-${incident.id}
-      entry: {}
-      ignoreAddURL: {}
-      message: {}
-      threadID: {}
-      to: {}
+        complex:
+          root: ${TimeNowUnix}
+          transformers:
+          - operator: Stringify
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: SlackV2
-      description: Sends a message to a user, group, or channel.
-      id: 5e7ca4b4-fdc8-478b-8166-607d65fa8f78
-      iscommand: true
-      name: Send a message with blocks
-      script: SlackV2|||send-notification
-      type: regular
-      version: -1
-    taskid: 5e7ca4b4-fdc8-478b-8166-607d65fa8f78
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -751,12 +762,19 @@ tasks:
           "y": 895
         }
       }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 4599b43c-2ac7-46b6-8698-cfcea7138e16
+    taskid: 6ebf9ccf-2945-48f6-8f96-79ce97d95b1a
     type: regular
     task:
-      id: 4599b43c-2ac7-46b6-8698-cfcea7138e16
+      id: 6ebf9ccf-2945-48f6-8f96-79ce97d95b1a
       version: -1
       name: Channels filter
       description: Returns a list of channels matching criteria
@@ -790,10 +808,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 3315188f-2b77-4ba8-87b6-0370b12362c5
+    taskid: e27e0513-aca6-423d-8fcc-1416010d3480
     type: condition
     task:
-      id: 3315188f-2b77-4ba8-87b6-0370b12362c5
+      id: e27e0513-aca6-423d-8fcc-1416010d3480
       version: -1
       name: Verify filtered channel
       type: condition
@@ -832,17 +850,18 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-version: -1
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3565,
+        "height": 3935,
         "width": 380,
         "x": 50,
         "y": 50
       }
     }
   }
+inputs: []
+outputs: []
 fromversion: 5.0.0

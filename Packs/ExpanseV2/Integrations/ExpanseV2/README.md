@@ -4300,7 +4300,7 @@ Retrieve a specified cloud resource from Expanse.
 
 ### expanse-get-risky-flows
 ***
-Retrieve risky flows detected by Expanse Behavior.
+(Deprecated) Retrieve risky flows detected by Expanse Behavior.
 
 
 #### Base Command
@@ -4405,7 +4405,7 @@ Retrieve risky flows detected by Expanse Behavior.
 
 ### expanse-list-risk-rules
 ***
-List risk rules from Expanse Behavior.
+(Deprecated) List risk rules from Expanse Behavior
 
 
 #### Base Command

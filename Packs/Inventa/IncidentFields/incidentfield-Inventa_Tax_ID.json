@@ -1,0 +1,30 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "iDSAR"
+    ],
+    "caseInsensitive": true,
+    "cliName": "inventataxid",
+    "closeForm": false,
+    "content": true,
+    "description": "Tax Id for the PII. Can be used as a constraint",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_inventataxid",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Inventa Tax ID",
+    "neverSetAsRequired": false,
+    "ownerOnly": true,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

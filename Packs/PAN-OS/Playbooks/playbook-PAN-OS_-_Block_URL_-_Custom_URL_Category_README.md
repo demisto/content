@@ -14,10 +14,10 @@ This playbook does not use any integrations.
 This playbook does not use any scripts.
 
 ### Commands
-* panorama-edit-custom-url-category
-* panorama-custom-block-rule
-* panorama-get-custom-url-category
-* panorama-create-custom-url-category
+* pan-os-edit-custom-url-category
+* pan-os-custom-block-rule
+* pan-os-get-custom-url-category
+* pan-os-create-custom-url-category
 
 ## Playbook Inputs
 ---

@@ -1,5 +1,5 @@
 <!-- HTML_DOC -->
-<p>Use the LogRhythm integration to manage your alarm systems.</p>
+<p>Deprecated - version 7.3.2 is not supported by the vendor anymore. Use the LogRhythmRest v2 integration instead.</p>
 <p>This integration was integrated and tested with LogRhythm v7.3.2 / UI 18.5.1.</p>
 <h2>Use Cases</h2>
 <ul>

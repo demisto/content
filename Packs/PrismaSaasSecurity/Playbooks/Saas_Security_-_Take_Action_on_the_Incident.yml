@@ -40,9 +40,9 @@ tasks:
     type: collection
     task:
       id: c3c29db4-4a98-460a-8614-93884d9021dc
-      description: Send questionaire to Prisma Saas admin to select remediation action.
+      description: Send remediation action options to SaaS Security admin.
       version: -1
-      name: Send Ask Question Email
+      name: Send Remediation Action Request Email
       type: collection
       iscommand: false
       brand: ""
@@ -94,9 +94,8 @@ tasks:
         placeholder: ""
         tooltip: ""
         readonly: false
-      title: Prisma Saas Incident
-      description: Admin can select remediation action taken on the risky asset from
-        questionnaire.
+      title: SaaS Security Incident
+      description: Admin can select remediation action to be taken from the options below.
       sender: Your SOC team
       expired: false
       totalanswers: 0
@@ -130,7 +129,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: Prisma Saas Incident.Answers.0
+              simple: SaaS Security Incident.Answers.0
             iscontext: true
           right:
             value:
@@ -140,7 +139,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: Prisma Saas Incident.Answers.0
+              simple: SaaS Security Incident.Answers.0
             iscontext: true
           right:
             value:
@@ -150,7 +149,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: Prisma Saas Incident.Answers.0
+              simple: SaaS Security Incident.Answers.0
             iscontext: true
           right:
             value:
@@ -325,17 +324,17 @@ inputs:
 - key: incident_id
   value: {}
   required: false
-  description: "Prisma Saas Incident Id"
+  description: "SaaS Security Incident Id"
   playbookInputQuery:
 - key: asset_id
   value: {}
   required: false
-  description: "Prisma Saas Asset Id"
+  description: "SaaS Security Asset Id"
   playbookInputQuery:
 - key: asset_name
   value: {}
   required: false
-  description: "Prisma Saas Asset Name"
+  description: "SaaS Security Asset Name"
   playbookInputQuery:
 outputs: []
 

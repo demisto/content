@@ -1,0 +1,2025 @@
+id: Spring Core and Cloud Function SpEL RCEs
+version: -1
+name: Spring Core and Cloud Function SpEL RCEs
+description: |
+  On March 29, 2022, information about a 0-day vulnerability in the popular Java library Spring Core appeared on Twitter.
+
+  Spring Framework is an extremely popular framework used by Java developers to build modern applications. If you rely on the Java stack, it is very likely that your development teams use Spring. In some cases, a single specially crafted request is enough to exploit the vulnerability.
+
+  Later, it was discovered that these are two separate vulnerabilities, one in Spring Core and the other in Spring Cloud Function:
+
+  **CVE-2022-22965 - RCE in "Spring Core" is a severe vulnerability, aka Spring4Shell**
+
+  **CVE-2022-22963 - RCE in "Spring Cloud Function SpEL"**
+
+  **CVE-2022-22947 - RCE in "Spring Cloud Gateway"**
+
+  **Spring Core vulnerability requirements:**
+
+  * JDK 9 or higher
+  * Apache Tomcat as the Servlet container
+  * Packaged as WAR
+  * spring-webmvc or spring-webflux dependency
+  * Spring Framework versions 5.3.0 to 5.3.17, 5.2.0 to 5.2.19, and older versions
+
+  **Spring Cloud Function unaffected versions:**
+
+  * 3.1.7
+  * 3.2.3
+
+  **This playbook will provide you with a first response kit which includes:**
+
+  * Hunting
+      * Panorama
+      * Prisma Cloud Compute
+      * XDR XQL queries - set the playbook input **RunXQLHuntingQueries** to 'True' if you would like the XQL to be executed via the playbook.
+      * XDR Alerts - Search for new incidents including one or more of Spring RCEs dedicated Cortex XDR signatures
+  * Remediation
+  * Mitigations
+
+  **Note:** You can execute this playbook using the Incidents view by creating a new incident or by using a dedicated job to schedule the playbook execution.
+
+  **Additional resources:**
+
+  [Spring Framework RCE](https://spring.io/blog/2022/03/31/spring-framework-rce-early-announcement)
+
+  [CVE-2022-22965: Spring Core Remote Code Execution Vulnerability Exploited In the Wild
+  ](https://unit42.paloaltonetworks.com/cve-2022-22965-springshell/)
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 70692e95-51b3-4af3-8953-4d3f8b9ce806
+    type: start
+    task:
+      id: 70692e95-51b3-4af3-8953-4d3f8b9ce806
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+      - "4"
+      - "26"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": -1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: a182bb7c-4d2e-4bfc-835d-9c2c61ad7bb1
+    type: title
+    task:
+      id: a182bb7c-4d2e-4bfc-835d-9c2c61ad7bb1
+      version: -1
+      name: Collect Detection Rules
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -350,
+          "y": -910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 64846e62-ce6b-45c8-8115-30ec50b080b3
+    type: regular
+    task:
+      id: 64846e62-ce6b-45c8-8115-30ec50b080b3
+      version: -1
+      name: Download Yara Rules
+      description: |-
+        Download Yara Rules.
+
+        [Provided by Neo23x0 aka Florian Roth](https://github.com/Neo23x0)
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      filename:
+        simple: expl_spring4shell.yar
+      method:
+        simple: GET
+      saveAsFile:
+        simple: "yes"
+      url:
+        simple: https://raw.githubusercontent.com/Neo23x0/signature-base/master/yara/expl_spring4shell.yar
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -350,
+          "y": -780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: de41e4a3-1a50-4d27-8110-222e850071b9
+    type: title
+    task:
+      id: de41e4a3-1a50-4d27-8110-222e850071b9
+      version: -1
+      name: Tag, Link and Enrich CVE
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": -910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 745e217f-905a-4f0d-89c3-a746ebd74dd5
+    type: regular
+    task:
+      id: 745e217f-905a-4f0d-89c3-a746ebd74dd5
+      version: -1
+      name: Tag CVE indicators
+      description: commands.local.cmd.new.indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "2"
+      tags:
+        simple: Spring4shell
+      type:
+        simple: CVE
+      value:
+        complex:
+          root: inputs.RelatedCVEs
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ', '
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": -780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: e8420b34-8b7e-44ad-876d-022a6035a3ae
+    type: playbook
+    task:
+      id: e8420b34-8b7e-44ad-876d-022a6035a3ae
+      version: -1
+      name: Rapid Breach Response - Set Incident Info
+      description: This playbook is responsible for setting up the Rapid Breach Response Incident Info tab in the layout.
+      playbookName: Rapid Breach Response - Set Incident Info
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      SourceOfIndicators:
+        complex:
+          root: http.parsedBlog
+          accessor: sourceLink
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: '"No Indicators"'
+      countTotalIndicators:
+        simple: "0"
+      playbookDescription:
+        complex:
+          root: inputs.PlaybookDescription
+    separatecontext: true
+    loop:
+      iscommand: false
+      scriptArguments:
+        SourceOfIndicators:
+          complex:
+            root: http.parsedBlog
+            accessor: sourceLink
+        countTotalIndicators:
+          complex:
+            root: ExtractedIndicators
+            accessor: Domain
+            transformers:
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: ExtractedIndicators.IP
+                  iscontext: true
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: ExtractedIndicators.URL
+                  iscontext: true
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: ExtractedIndicators.File
+                  iscontext: true
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: ExtractedIndicators.CVE
+                  iscontext: true
+            - operator: uniq
+            - operator: count
+        playbookDescription:
+          complex:
+            root: inputs.PlaybookDescription
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": -325
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: d785ce1c-ea70-4911-86d7-5d8c7127fbd5
+    type: title
+    task:
+      id: d785ce1c-ea70-4911-86d7-5d8c7127fbd5
+      version: -1
+      name: Handle Rapid Breach Response Layout
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": -450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 6606d25d-7b89-4529-8ddc-834e29661be3
+    type: title
+    task:
+      id: 6606d25d-7b89-4529-8ddc-834e29661be3
+      version: -1
+      name: Threat Hunting
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "36"
+      - "31"
+      - "37"
+      - "43"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": -170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 0de86ba8-be25-42d9-8572-dcf3089dd3bf
+    type: playbook
+    task:
+      id: 0de86ba8-be25-42d9-8572-dcf3089dd3bf
+      version: -1
+      name: Panorama Query Logs
+      description: 'Query Panorama Logs of types: traffic, threat, url, data-filtering and wildfire.'
+      playbookName: Panorama Query Logs
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      log_type:
+        simple: threat
+      query:
+        simple: (threatid eq 92389) or (threatid eq 92393) or (threatid eq 92394)
+          or (threatid eq 83239)
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 2254287b-867f-41ae-8a60-bd61f19e633b
+    type: title
+    task:
+      id: 2254287b-867f-41ae-8a60-bd61f19e633b
+      version: -1
+      name: Mitigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "11"
+      - "12"
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 1490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 8f2c331e-3a20-4048-8337-45d148086db9
+    type: title
+    task:
+      id: 8f2c331e-3a20-4048-8337-45d148086db9
+      version: -1
+      name: Deploy Detection Rules
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 1630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: ade00830-892e-4166-87af-b0256829080a
+    type: title
+    task:
+      id: ade00830-892e-4166-87af-b0256829080a
+      version: -1
+      name: Patch Vulnerability
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "13"
+      - "30"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 1630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: ef9afb1a-3df3-4a46-84fa-152ec6401452
+    type: regular
+    task:
+      id: ef9afb1a-3df3-4a46-84fa-152ec6401452
+      version: -1
+      name: Install Spring Cloud Function unaffected version
+      description: |-
+        For CVE-2022-22963, please patch with one of the following versions:
+
+        [Spring Cloud Function 3.1.7](https://repo.maven.apache.org/maven2/org/springframework/cloud/spring-cloud-function-context/3.1.7/)
+        [Spring Cloud Function 3.2.3](https://repo.maven.apache.org/maven2/org/springframework/cloud/spring-cloud-function-context/3.2.3/)
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -120,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 478d5a29-593f-45fa-801e-9b4f8d16c3bc
+    type: regular
+    task:
+      id: 478d5a29-593f-45fa-801e-9b4f8d16c3bc
+      version: -1
+      name: Deploy Yara rules
+      description: The Yara rules file has been downloaded and saved as expl_spring4shell.yar. The file is available for download directly via XSOAR.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 790,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 1c86b2bc-7c0c-4853-8ed0-5b365ef4a6d1
+    type: condition
+    task:
+      id: 1c86b2bc-7c0c-4853-8ed0-5b365ef4a6d1
+      version: -1
+      name: Analysis resolution - Should continue with the investigation?
+      description: Check with the analyst whether to continue with the investigation.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoCloseIncident
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 2080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: bf4500e6-4a9b-4ba2-8a5a-4826e259d973
+    type: title
+    task:
+      id: bf4500e6-4a9b-4ba2-8a5a-4826e259d973
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 2460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 3346cb1c-fa95-4592-8df2-dfa113c5322f
+    type: regular
+    task:
+      id: 3346cb1c-fa95-4592-8df2-dfa113c5322f
+      version: -1
+      name: Investigate Further
+      description: Manual investigation.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -340,
+          "y": 2290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 9808fb1e-b4c3-424a-89f5-ecf9d9502885
+    type: regular
+    task:
+      id: 9808fb1e-b4c3-424a-89f5-ecf9d9502885
+      version: -1
+      name: Close Investigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      closeReason:
+        simple: No further actions are required.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 2290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: a47484e0-4b70-42fe-8a68-275d8e57f0e5
+    type: title
+    task:
+      id: a47484e0-4b70-42fe-8a68-275d8e57f0e5
+      version: -1
+      name: Resolution
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 1940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 0cc1d5bc-c68f-4bd3-8736-590d4cc538e4
+    type: title
+    task:
+      id: 0cc1d5bc-c68f-4bd3-8736-590d4cc538e4
+      version: -1
+      name: Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 4f82322f-a589-452c-8bfd-6e14dcfb7735
+    type: condition
+    task:
+      id: 4f82322f-a589-452c-8bfd-6e14dcfb7735
+      version: -1
+      name: Block indicators automatically?
+      description: Checks whether IOCs associated with the incident can be blocked automatically.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.BlockIndicatorsAutomatically
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 1140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 8621793a-e2cd-45e3-8bf4-2222eefde256
+    type: regular
+    task:
+      id: 8621793a-e2cd-45e3-8bf4-2222eefde256
+      version: -1
+      name: Block indicators manually
+      description: Manually block the IOCs in the relevant systems.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -340,
+          "y": 1320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 3d69d718-30ce-4c4b-8c76-8ac91c85c821
+    type: playbook
+    task:
+      id: 3d69d718-30ce-4c4b-8c76-8ac91c85c821
+      version: -1
+      name: Block IP - Generic v3
+      description: "This playbook blocks malicious IP addresses using all integrations that are enabled. The direction of the traffic that will be blocked is determined by the XSOAR user (and set by default to outgoing)\nNote the following:\n-  some of those integrations require specific parameters to run, which are based on the playbook inputs. Also, certain integrations use FW rules or appended network objects.\n- Note that the appended network objects should be specified in blocking rules inside the system later on. \n\n\nSupported integrations for this playbook [Network security products such as FW/WAF/IPs/etc.]: \n\n* Check Point Firewall\n* Palo Alto Networks PAN-OS\n* Zscaler\n* FortiGate\n* Aria Packet Intelligence\n* Cisco Firepower \n* Cisco Secure Cloud Analytics\n* Cisco ASA\n* Akamai WAF\n* F5 SilverLine\n* ThreatX\n* Signal Sciences WAF\n* Sophos Firewall\n\n"
+      playbookName: Block IP - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      AutoCommit:
+        simple: "No"
+      CustomBlockRule:
+        simple: "True"
+      IP:
+        complex:
+          root: Panorama.Monitor.Logs
+          accessor: SourceAddress
+      InputEnrichment:
+        simple: "False"
+      RuleDirection:
+        simple: inbound
+      RuleName:
+        simple: XSOAR - Block IP playbook - ${incident.id}
+      UserVerification:
+        simple: "False"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 1320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 168b77f3-e704-48fa-8360-e6dac03a99f3
+    type: playbook
+    task:
+      id: 168b77f3-e704-48fa-8360-e6dac03a99f3
+      version: -1
+      name: CVE Enrichment - Generic v2
+      description: |-
+        This playbook performs CVE Enrichment using the following integrations:
+        - VulnDB
+        - CVE Search
+        - IBM X-Force Exchange
+      playbookName: CVE Enrichment - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      cve_id:
+        complex:
+          root: CVE
+          accessor: ID
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": -620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 288c9d5c-bd93-4a44-82d3-645a225e4e9c
+    type: playbook
+    task:
+      id: 288c9d5c-bd93-4a44-82d3-645a225e4e9c
+      version: -1
+      name: Search Endpoint by CVE - Generic
+      description: Hunt for assets with a given CVE using available tools
+      playbookName: Search Endpoint by CVE - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      CVE_ID:
+        complex:
+          root: inputs.RelatedCVEs
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 0a39cfcf-8912-464e-82b7-834890be6014
+    type: title
+    task:
+      id: 0a39cfcf-8912-464e-82b7-834890be6014
+      version: -1
+      name: Spring4Shell Scanner
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": -910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 52eb3b78-ad21-4ebc-8503-df04631dca42
+    type: regular
+    task:
+      id: 52eb3b78-ad21-4ebc-8503-df04631dca42
+      version: -1
+      name: Download Spring scanner
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      filename:
+        simple: scan_spring.py
+      method:
+        simple: GET
+      saveAsFile:
+        simple: "yes"
+      url:
+        simple: https://github.com/jfrog/jfrog-spring-tools/blob/main/scan_spring.py
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 570,
+          "y": -780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 775f9f96-74f2-433d-85d7-b4fcd133cb52
+    type: regular
+    task:
+      id: 775f9f96-74f2-433d-85d7-b4fcd133cb52
+      version: -1
+      name: Scan your applications
+      description: |-
+        Use the scan_spring.py tool provided by JFrog to locate vulnerable applications for Spring Core RCE.
+        The tool is available for direct download via XSOAR.
+
+        Additional inforamtion on how to use this tool can be found in the link below:
+
+        [JFrog_Spring_Tools](https://github.com/jfrog/jfrog-spring-tools/blob/main/scan_spring.py)
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -570,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 0fbce8b7-9248-4497-8af8-a365f7642436
+    type: title
+    task:
+      id: 0fbce8b7-9248-4497-8af8-a365f7642436
+      version: -1
+      name: Spring Core RCE Scanner
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -570,
+          "y": 1630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: d4f544b5-40c6-4338-8634-a12e1615dc3c
+    type: regular
+    task:
+      id: d4f544b5-40c6-4338-8634-a12e1615dc3c
+      version: -1
+      name: Install Spring Framework and Boot unaffected versions
+      description: |-
+        For CVE-2022-22965, please patch with one of the following versions:
+
+        [Spring Framework 5.3.18](https://github.com/spring-projects/spring-framework/releases/tag/v5.3.18)
+        [Spring Framework 5.2.20](https://github.com/spring-projects/spring-framework/releases/tag/v5.2.20.RELEASE)
+
+        [Spring Boot 2.6.6](https://github.com/spring-projects/spring-boot/releases/tag/v2.6.6) and [Spring Boot 2.5.12](https://github.com/spring-projects/spring-boot/releases/tag/v2.5.12) that depend on Spring Framework 5.3.18 have also been released.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: f2c60bc6-03ad-4990-8604-af27053ea8f0
+    type: title
+    task:
+      id: f2c60bc6-03ad-4990-8604-af27053ea8f0
+      version: -1
+      name: Prisma Cloud
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "32"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": 10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: b6299b9a-a471-4fd8-8370-b39dce7c0bde
+    type: condition
+    task:
+      id: b6299b9a-a471-4fd8-8370-b39dce7c0bde
+      version: -1
+      name: Is Prisma Cloud enabled?
+      description: Checks if Prisma Cloud instance is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "33"
+      - "51"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: RedLock
+                    ignorecase: true
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 1010,
+          "y": 150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: e1b1bbb6-17e7-4cb5-8206-e70fbb85ece3
+    type: regular
+    task:
+      id: e1b1bbb6-17e7-4cb5-8206-e70fbb85ece3
+      version: -1
+      name: Search for possible vulnerable servers
+      description: Runs an RQL query on the Prisma Cloud.
+      script: '|||redlock-get-rql-response'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      limit:
+        simple: "10"
+      rql:
+        simple: config from cloud.resource where finding.type = 'Host Vulnerability' AND protection.finding.name IN ('CVE-2022-22963', 'CVE-2022-22965')
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: d9d5009c-bd8f-4533-8941-175e0965207f
+    type: regular
+    task:
+      id: d9d5009c-bd8f-4533-8941-175e0965207f
+      version: -1
+      name: 'Review possible vulnerable servers '
+      description: "In this case users can utilize the Prisma platform's capabilities to isolate assets with vulnerabilities and also prioritize it further by looking for internet exposed assets receiving traffic. \n\nThe hosts in your cloud that has one of the Spring framework vulnerabilities are:\n${Redlock.RQL.Response.Data.NetworkInterfaces.PrivateIpAddress}"
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1630,
+          "y": 670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 03757630-f1b8-4671-8809-5fcb9a0f10c1
+    type: condition
+    task:
+      id: 03757630-f1b8-4671-8809-5fcb9a0f10c1
+      version: -1
+      name: Found servers using Prisma Cloud?
+      description: Checks if Prisma Clooud found vulnerable server
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Redlock.RQL.Response.Data.NetworkInterfaces
+                accessor: PrivateIpAddress
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 495
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 923e1935-f60f-4d62-8612-be3a556db633
+    type: title
+    task:
+      id: 923e1935-f60f-4d62-8612-be3a556db633
+      version: -1
+      name: Palo Alto Networks Hunting
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 110,
+          "y": 10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 1c805064-2b3f-4875-8830-0c5723b19ede
+    type: title
+    task:
+      id: 1c805064-2b3f-4875-8830-0c5723b19ede
+      version: -1
+      name: CVE Hunt
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "25"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: acbc1584-64cc-49e1-874a-2830f351a593
+    type: title
+    task:
+      id: acbc1584-64cc-49e1-874a-2830f351a593
+      version: -1
+      name: 'XQL Hunting Queries '
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "39"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -370,
+          "y": 165
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 3bcddcb6-3c9e-40c3-8b80-71a0f91d7e67
+    type: condition
+    task:
+      id: 3bcddcb6-3c9e-40c3-8b80-71a0f91d7e67
+      version: -1
+      name: Should run XQL hunting queries?
+      description: Checks whether to execute XDR shell script for exploitation hunting.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.RunXQLHuntingQueries
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": -370,
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: eb222ab5-23e6-4644-83ee-900182d81ed9
+    type: condition
+    task:
+      id: eb222ab5-23e6-4644-83ee-900182d81ed9
+      version: -1
+      name: Check if Cortex XDR - XQL Query Engine is Enabled
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "20"
+      "yes":
+      - "41"
+      - "42"
+    scriptarguments:
+      brandname:
+        simple: Cortex XDR - XQL Query Engine
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -370,
+          "y": 485
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: bfde7236-f58f-4f37-8a64-56aac1469cab
+    type: regular
+    task:
+      id: bfde7236-f58f-4f37-8a64-56aac1469cab
+      version: -1
+      name: Detect Spring4shell POC usage
+      description: |-
+        Execute an XQL query and retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.
+        When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file,
+        unless the argument 'parse_result_file_to_context' is set to true and then the results will be extracted to the context.
+      script: '|||xdr-xql-generic-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      query:
+        simple: |-
+          dataset = xdr_data
+          | filter event_type = ENUM.FILE and event_sub_type in (ENUM.FILE_CREATE_NEW, ENUM.FILE_WRITE) and (lowercase(action_file_name) contains “tomcatwar” or lowercase(action_file_name) contains “shell”) and
+                  action_file_extension = “jsp” and
+                  (action_file_path contains “webapps” or action_file_path contains “localhost”)
+          | fields agent_hostname, actor_process_image_name, actor_effective_username, actor_process_command_line, action_file_path, action_file_name, action_file_extension, action_file_sha256, event_type, event_sub_type
+      query_name:
+        simple: Spring4shell_POC_Usage
+      time_frame:
+        complex:
+          root: inputs.XQLTimeFrame
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -600,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 476f1992-c2b1-4b43-8203-069c5c69679c
+    type: regular
+    task:
+      id: 476f1992-c2b1-4b43-8203-069c5c69679c
+      version: -1
+      name: Detect suspicious processes spawned by Java or Apache
+      description: |-
+        Execute an XQL query and retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.
+        When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file,
+        unless the argument 'parse_result_file_to_context' is set to true and then the results will be extracted to the context.
+      script: '|||xdr-xql-generic-query'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      query:
+        simple: "config case_sensitive = false |\ndataset = xdr_data \n| alter ct\
+          \ = current_time() \n| alter diff = timestamp_diff(ct, _time, \"DAY\")\n\
+          | filter event_type = PROCESS\nand (\nactor_process_image_name contains\
+          \ \"apache\" \nor actor_process_image_name contains \"java\"\n)\n//and diff\
+          \ < 2\n| dedup action_process_image_command_line, agent_hostname, actor_process_image_name\
+          \ \n| fields action_process_image_name ,action_process_image_command_line,\
+          \ agent_hostname, actor_process_image_name\n\n\n| join conflict_strategy\
+          \ = left type = left \n    (\n        dataset = xdr_data\n           | filter\
+          \ event_type = PROCESS                      \n            and (\nactor_process_image_name\
+          \ contains \"apache\" \nor actor_process_image_name contains \"java\"\n\
+          )            \n            | comp count(action_process_image_name) as Action_Proc_Days_count\
+          \ by actor_process_image_name   \n    )  as Three_Months_Action_Process\
+          \ (Three_Months_Action_Process.actor_process_image_name = actor_process_image_name)\n\
+          \n| join conflict_strategy = left type = left \n    (\n        dataset =\
+          \ xdr_data\n           | filter event_type = PROCESS        \n         \
+          \   and (\nactor_process_image_name contains \"apache\" \nor actor_process_image_name\
+          \ contains \"java\"\n)        \n            | comp count(action_process_image_command_line)\
+          \ as Commandline_Days_count by  actor_process_image_name, action_process_image_command_line\
+          \ \n    )  as Three_Months_CommandLine (Three_Months_CommandLine.action_process_image_command_line\
+          \ = action_process_image_command_line )\n\n| dedup agent_hostname ,actor_process_image_name\
+          \ , action_process_image_name\n| sort asc Commandline_Days_count , asc Action_Proc_Days_count\
+          \ \n| filter Commandline_Days_count < 5 and Action_Proc_Days_count < 5"
+      query_name:
+        simple: Spring4shell_POC_Usage
+      time_frame:
+        complex:
+          root: inputs.XQLTimeFrame
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 1c8ed2eb-774a-4626-8905-997b83d98458
+    type: title
+    task:
+      id: 1c8ed2eb-774a-4626-8905-997b83d98458
+      version: -1
+      name: Cortex XDR
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "38"
+      - "44"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -730,
+          "y": 10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: aab0a164-a376-462f-8d21-a508aeadb3c2
+    type: title
+    task:
+      id: aab0a164-a376-462f-8d21-a508aeadb3c2
+      version: -1
+      name: XDR Alerts
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "46"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1090,
+          "y": 165
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 981cbeac-3edd-4f21-8c36-661a1fa48411
+    type: condition
+    task:
+      id: 981cbeac-3edd-4f21-8c36-661a1fa48411
+      version: -1
+      name: Is Cortex XDR Investigation & Response enabled?
+      description: Checks if Cortex XDR Investigation & Response instance is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "47"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Cortex XDR - IR
+                    ignorecase: true
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": -1090,
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: a66c88c5-b048-4089-8302-4f8f83acb406
+    type: regular
+    task:
+      id: a66c88c5-b048-4089-8302-4f8f83acb406
+      version: -1
+      name: Search XDR incidents for Spring RCEs activity
+      description: |-
+        Searches Demisto incidents.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SearchIncidentsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      query:
+        simple: xdralerts.name:"Process execution with a suspicious command line indicative
+          of the Spring4Shell exploit" or xdralerts.name:"Suspicious HTTP Request
+          to a vulnerable Java class"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1240,
+          "y": 485
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 94a7cb3c-104d-4f23-8569-3c8d1258e805
+    type: condition
+    task:
+      id: 94a7cb3c-104d-4f23-8569-3c8d1258e805
+      version: -1
+      name: Check if related incidents were found
+      description: Checks for results from the XDR alerts query.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "49"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: foundIncidents
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -1240,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: aba33faa-644e-4aaa-8dc0-89ec0ac142b9
+    type: regular
+    task:
+      id: aba33faa-644e-4aaa-8dc0-89ec0ac142b9
+      version: -1
+      name: Manual review affected endpoints
+      description: Manual review the affected endpoints found using the SearchIncidentsV2
+        command.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1430,
+          "y": 840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 1e87e36b-6876-473c-8288-48373310dbb5
+    type: regular
+    task:
+      id: 1e87e36b-6876-473c-8288-48373310dbb5
+      version: -1
+      name: Search for internet exposed vulnerable hosts that are receiving traffic
+      description: Runs an RQL query on the Prisma Cloud.
+      script: '|||redlock-get-rql-response'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      limit:
+        simple: "10"
+      rql:
+        simple: network from vpc.flow_record where bytes > 0 AND destination.resource
+          IN ( resource where finding.type IN ( 'Host Vulnerability' ) AND finding.source
+          IN ( 'Prisma Cloud' ) AND finding.name IN ('CVE-2022-22963', 'CVE-2022-22965')
+          ) AND source.publicnetwork IN ('Internet IPs', 'Suspicious IPs')
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1630,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {
+      "15_17_#default#": 0.64,
+      "15_18_yes": 0.61,
+      "21_22_#default#": 0.62,
+      "21_23_yes": 0.37,
+      "32_20_#default#": 0.27,
+      "32_33_yes": 0.44,
+      "32_51_yes": 0.71,
+      "35_20_#default#": 0.4,
+      "35_34_yes": 0.48,
+      "39_20_#default#": 0.38,
+      "39_40_yes": 0.53,
+      "40_20_no": 0.1,
+      "46_20_#default#": 0.11,
+      "46_47_yes": 0.48,
+      "48_49_yes": 0.42
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3575,
+        "width": 3440,
+        "x": -1430,
+        "y": -1050
+      }
+    }
+  }
+inputs:
+- key: RelatedCVEs
+  value:
+    simple: CVE-2022-22963,CVE-2022-22965,cve-2022-22947
+  required: false
+  description: The vulnerability assigned CVE.
+  playbookInputQuery:
+- key: PlaybookDescription
+  value:
+    simple: |-
+      On March 29, 2022, information about a 0-day vulnerability in the popular Java library Spring Core appeared on Twitter.
+
+      Spring Framework is an extremely popular framework used by Java developers to build modern applications. If you rely on the Java stack, it is very likely that your development teams use Spring. In some cases, a single specially crafted request is enough to exploit the vulnerability.
+
+      Later, it was discovered that these are two separate vulnerabilities, one in Spring Core and the other in Spring Cloud Function:
+
+      **CVE-2022-22965 - RCE in "Spring Core" is a severe vulnerability, aka Spring4Shell**
+
+      **CVE-2022-22963 - RCE in "Spring Cloud Function SpEL"**
+
+      **CVE-2022-22947 - RCE in "Spring Cloud Gateway"**
+
+      **Spring Core vulnerability requirements:**
+
+      * JDK 9 or higher
+      * Apache Tomcat as the Servlet container
+      * Packaged as WAR
+      * spring-webmvc or spring-webflux dependency
+      * Spring Framework versions 5.3.0 to 5.3.17, 5.2.0 to 5.2.19, and older versions
+
+      **Spring Cloud Function unaffected versions:**
+
+      * 3.1.7
+      * 3.2.3
+
+      **This playbook will provide you with a first response kit which includes:**
+
+      * Hunting
+          * Panorama
+          * Prisma Cloud Compute
+          * XDR XQL queries - set the playbook input **RunXQLHuntingQueries** to 'True' if you would like the XQL to be executed via the playbook.
+          * XDR Alerts - Search for new incidents including one or more of Spring RCEs dedicated Cortex XDR signatures
+      * Remediation
+      * Mitigations
+
+      **Note:** You can execute this playbook using the Incidents view by creating a new incident or by using a dedicated job to schedule the playbook execution.
+  required: false
+  description: The playbook description. Will be used in the Rapid Breach Response - Set Incident Info sub-playbook.
+  playbookInputQuery:
+- key: AutoCloseIncident
+  value:
+    simple: "true"
+  required: false
+  description: Whether to close the incident automatically or continue with manual investigation.
+  playbookInputQuery:
+- key: BlockIndicatorsAutomatically
+  value:
+    simple: "true"
+  required: false
+  description: Whether to block the indicators automatically.
+  playbookInputQuery:
+- key: RunXQLHuntingQueries
+  value:
+    simple: "false"
+  required: false
+  description: Whether to hunt using XQL queries.
+  playbookInputQuery:
+- key: XQLTimeFrame
+  value:
+    simple: 7 days
+  required: false
+  description: |-
+    The XQL search time frame.
+
+    Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00").
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

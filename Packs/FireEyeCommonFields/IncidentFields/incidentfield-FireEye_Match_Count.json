@@ -2,6 +2,7 @@
     "associatedToAll": false,
     "associatedTypes": [
         "FireEye EX Alert",
+        "FireEye HX Alert",
         "FireEye NX Alert",
         "FireEye NX IPS Event"
     ],

@@ -1,0 +1,30 @@
+commonfields:
+  id: Volatility
+  version: -1
+name: Volatility
+script: ''
+type: javascript
+tags:
+- memory
+- forensics
+- volatility
+- server
+comment: Execute volatility with command and return tabular output. Incase where proper
+  json output is not supported, scripts returns error. User should use raw command.
+system: true
+args:
+- name: cmd
+  required: true
+  description: The volatility command/module you want to use
+- name: memdump
+  required: true
+  description: Path to memory dump file on the system being used
+- name: system
+  required: true
+  description: System with Volatility installed to be used for the analysis
+- name: profile
+  description: Volatility profile to use
+scripttarget: 0
+dependson: {}
+timeout: 0s
+fromversion: 5.0.0

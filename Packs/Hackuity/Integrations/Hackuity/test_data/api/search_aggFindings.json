@@ -1,0 +1,100 @@
+{
+  "~~~NOTE~~~": "unknown data should be ignored",
+  "count": 2,
+  "kind": "hy#searchAggFindingList",
+  "limit": 2,
+  "offset": 0,
+  "searchAggFindings": [
+    {
+      "~~~NOTE~~~": "unknown data should be ignored",
+      "aggExtAttribute": {
+        "firstDeliveredAt": "2020-06-18T12:49:44.210Z",
+        "sharedDetailsLocal": {
+          "title": "Duis mollis aliquet velit, eu."
+        },
+        "vulnTypeIds": ["123"]
+      },
+      "id": "ro6jTF10fy6uECqy4j7gQ3",
+      "nodeStatus": {
+        "total": {
+          "environmental": { "max": 9.4, "min": 9.2 },
+          "hyScore": { "max": 999, "min": 904 },
+          "nb": 4
+        },
+        "unIgnoredClosed": {
+          "subStates": {
+            "FIXED": {
+              "environmental": { "max": 9.3, "min": 9.2 },
+              "hyScore": { "max": 930, "min": 905 },
+              "nb": 2
+            }
+          },
+          "total": {
+            "environmental": { "max": 9.4, "min": 9.2 },
+            "hyScore": { "max": 999, "min": 904 },
+            "nb": 2
+          }
+        },
+        "unIgnoredOpen": {
+          "subStates": {
+            "POTENTIAL": {
+              "environmental": { "max": 9.4, "min": 9.2 },
+              "hyScore": { "max": 999, "min": 904 },
+              "nb": 1
+            },
+            "CONFIRMED": {
+              "environmental": { "max": 9.3, "min": 9.2 },
+              "hyScore": { "max": 930, "min": 905 },
+              "nb": 1
+            }
+          },
+          "total": {
+            "environmental": { "max": 9.4, "min": 9.2 },
+            "hyScore": { "max": 999, "min": 904 },
+            "nb": 2
+          }
+        }
+      }
+    },
+    {
+      "aggExtAttribute": {
+        "firstDeliveredAt": "2020-11-18T14:05:16.919Z",
+        "sharedDetailsLocal": {
+          "aggFindingAttributes": [
+            { "key": "cve_id", "value": "CVE-2019-10098" }
+          ],
+          "title": "Duis rhoncus massa ac velit."
+        },
+        "vulnTypeIds": ["456"]
+      },
+      "id": "4zHJBJtipvheIADodIJ3fU",
+      "nodeStatus": {
+        "ignored": {
+          "environmental": { "max": 5.2, "min": 5.2 },
+          "hyScore": { "max": 437, "min": 437 },
+          "nb": 10
+        },
+        "total": {
+          "environmental": { "max": 5.2, "min": 5.2 },
+          "hyScore": { "max": 437, "min": 437 },
+          "nb": 20
+        },
+        "unIgnoredOpen": {
+          "subStates": {
+            "POTENTIAL": {
+              "environmental": { "max": 5.2, "min": 5.2 },
+              "hyScore": { "max": 437, "min": 437 },
+              "nb": 10
+            }
+          },
+          "total": {
+            "environmental": { "max": 5.2, "min": 5.2 },
+            "hyScore": { "max": 437, "min": 437 },
+            "nb": 10
+          }
+        }
+      }
+    }
+  ],
+  "total": 100
+}

@@ -1,0 +1,30 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "System Diagnostics and Health Check"
+    ],
+    "caseInsensitive": true,
+    "cliName": "healthchecknumberofdroppedincidents",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_healthchecknumberofdroppedincidents",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Health Check Number Of Dropped Incidents",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "number",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

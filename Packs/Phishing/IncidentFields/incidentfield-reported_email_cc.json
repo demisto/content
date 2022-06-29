@@ -1,0 +1,32 @@
+{
+    "id": "incident_reportedemailcc",
+    "version": -1,
+    "modified": "2021-11-16T13:46:18.742905482Z",
+    "name": "Reported Email CC",
+    "ownerOnly": false,
+    "description": "",
+    "cliName": "reportedemailcc",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Phishing"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

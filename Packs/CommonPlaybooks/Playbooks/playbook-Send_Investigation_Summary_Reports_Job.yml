@@ -136,3 +136,5 @@ inputs: []
 outputs: []
 tests:
 - No Tests - Wrapper playbook for job only
+marketplaces:
+  - xsoar

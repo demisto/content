@@ -11,6 +11,12 @@ For more details about the authentication used in this integration, see <a href=
 <li>User.ReadWrite.All - Application</li>
 <li>User.Read - Delegated</li>
 
+<h3>Authorize Cortex XSOAR for Azure Active Directory Users (Self deployed Azure App)</h3>
+<p>There are two different authentication methods for a self-deployed configuration: <li><a href="https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-client-creds-grant-flow"> Client Credentials flow</a></li><li><a href="https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow"> Authorization Code flow</a></li> We recommend using the Client Credentials flow.</p>
+<p>In order to use the  <strong>msgraph-user-change-password</strong> command, you must configure with the Authorization Code flow.
+
+Note: When using the Authorization Code flow, make sure the user you authenticate with has the correct roles in Azure AD in order to use the command.</p>
+
 <div class="cl-preview-section">
 <h2 id="configure-microsoft-graph-user-on-demisto">Configure Azure Active Directory Users on Cortex XSOAR</h2>
 </div>
@@ -25,6 +31,8 @@ For more details about the authentication used in this integration, see <a href=
 <li><strong>Host URL (e.g., <a href="https://graph.microsoft.com/">https://graph.microsoft.com</a>)</strong></li>
 <li><strong>ID you received from the admin consent</strong></li>
 <li><strong>Key you received from the admin consent</strong></li>
+<li><strong>Certificate Thumbprint</strong></li>
+<li><strong>Private Key</strong></li>
 <li><strong>Token you received from the admin consent</strong></li>
 <li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy settings</strong></li>
@@ -42,7 +50,7 @@ For more details about the authentication used in this integration, see <a href=
 </div>
 <div class="cl-preview-section">
 <ol>
-<li><a href="#terminate-a-user-session" target="_self">Terminate a user session: msgraph-user-terminate-session</a></li>
+<li><a href="#terminate-a-user-session" target="_self">(Deprecated) Terminate a user session: msgraph-user-terminate-session</a></li>
 <li><a href="#unblock-a-user" target="_self">Unblock a user: msgraph-user-unblock</a></li>
 <li><a href="#update-properties-of-a-user-object" target="_self">Update properties of a user object: msgraph-user-update</a></li>
 <li><a href="#delete-a-user" target="_self">Delete a user: msgraph-user-delete</a></li>
@@ -54,14 +62,16 @@ For more details about the authentication used in this integration, see <a href=
 <li><a href="#get-direct-reports" target="_self">Get the direct reports of a user: msgraph-direct-reports</a></li>
 <li><a href="#user-get-manager" target="_self">Get the manager of a user: msgraph-user-get-manager</a></li>
 <li><a href="#user-assign-manager" target="_self">Assign a manager to a user: msgraph-user-assign-manager</a></li>
+<li><a href="#user-account-disable" target="_self">Disable a user account: msgraph-user-account-disable</a></li>
+<li><a href="#user-revoke-session" target="_self">Revoke a user session: msgraph-user-session-revoke</a></li>
 </ol>
 </div>
 <div class="cl-preview-section">
-<h3 id="terminate-a-user-session">1. Terminate a user session</h3>
+<h3 id="terminate-a-user-session">1. (Deprecated) Terminate a user session</h3>
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
-<p>Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables user, but does not terminate an existing session. Supported only in a self deployed app flow with the Permission: Directory.AccessAsUser.All(Delegated)</p>
+<p>Deprecated. Use the msgraph-user-account-disable command instead. Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables user, but does not terminate an existing session. Supported only in a self deployed app flow with the Permission: Directory.AccessAsUser.All(Delegated)</p>
 </div>
 <div class="cl-preview-section">
 <h5 id="base-command">Base Command</h5>
@@ -109,7 +119,7 @@ For more details about the authentication used in this integration, see <a href=
 <h5 id="human-readable-output">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p>user: <a href="mailto:%22oren@demistodev.onmicrosoft.com">"oren@demistodev.onmicrosoft.com</a>" session has been terminated successfully</p>
+<p>user: <a href="mailto:%22oren@demistodev.onmicrosoft.com">"oren@demistodev.onmicrosoft.com</a>" account has been disabled successfully</p>
 </div>
 <div class="cl-preview-section">
 <h3 id="unblock-a-user">2. Unblock a user</h3>
@@ -1123,7 +1133,7 @@ For more details about the authentication used in this integration, see <a href=
 </div>
 <p> </p>
 <div class="cl-preview-section">
-<h3 id="get-direct-reports">9. Get the direct reports of a user.</h3>
+<h3 id="get-direct-reports">10. Get the direct reports of a user.</h3>
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
@@ -1303,7 +1313,7 @@ For more details about the authentication used in this integration, see <a href=
 </div>
 <p> </p>
 <div class="cl-preview-section">
-<h3 id="user-get-manager">10. Get the manager of a user.</h3>
+<h3 id="user-get-manager">11. Get the manager of a user.</h3>
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
@@ -1486,7 +1496,7 @@ For more details about the authentication used in this integration, see <a href=
 </div>
 <p> </p>
 <div class="cl-preview-section">
-<h3 id="user-assign-manager">11. Assign a manager to a user.</h3>
+<h3 id="user-assign-manager">12. Assign a manager to a user.</h3>
 </div>
 <div class="cl-preview-section"><hr></div>
 <div class="cl-preview-section">
@@ -1597,3 +1607,128 @@ For more details about the authentication used in this integration, see <a href=
 </div>
 </div>
 </div>
+<div class="cl-preview-section">
+<h3 id="user-account-disable">13. Disable a user account</h3>
+</div>
+<div class="cl-preview-section"><hr></div>
+<div class="cl-preview-section">
+<p>Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables user, but does not terminate an existing session. Supported only in a self deployed app flow with the Permission: Directory.AccessAsUser.All(Delegated)</p>
+</div>
+<div class="cl-preview-section">
+<h5 id="base-command">Base Command</h5>
+</div>
+<div class="cl-preview-section">
+<p><code>msgraph-user-account-disable</code></p>
+</div>
+<div class="cl-preview-section">
+<h5 id="input">Input</h5>
+</div>
+<div class="cl-preview-section">
+<div class="table-wrapper">
+<table style="width: 749px;">
+<thead>
+<tr>
+<th style="width: 243px;"><strong>Argument Name</strong></th>
+<th style="width: 367px;"><strong>Description</strong></th>
+<th style="width: 130px;"><strong>Required</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 243px;">user</td>
+<td style="width: 367px;">User ID or userPrincipalName.</td>
+<td style="width: 130px;">Required</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p> </p>
+<div class="cl-preview-section">
+<h5 id="context-output">Context Output</h5>
+</div>
+<div class="cl-preview-section">
+<p>There is no context output for this command.</p>
+</div>
+<div class="cl-preview-section">
+<h5 id="command-example">Command Example</h5>
+</div>
+<div class="cl-preview-section">
+<pre>msgraph-user-account-disable user="test@demistodev.onmicrosoft.com"</pre>
+</div>
+<div class="cl-preview-section">
+<h5 id="human-readable-output">Human Readable Output</h5>
+</div>
+<div class="cl-preview-section">
+<p>user: <a href="mailto:%22test@demistodev.onmicrosoft.com">"test@demistodev.onmicrosoft.com</a>" account has been disabled successfully</p>
+</div>
+<div class="cl-preview-section">
+<h3 id="user-revoke-session">14. Revoke a user session</h3>
+</div>
+<div class="cl-preview-section"><hr></div>
+<div class="cl-preview-section">
+<p>Revoke a user session- Invalidates all the refresh tokens issued to applications for a user. Permission: Directory.AccessAsUser.All(Delegated)</div>
+<li><strong>API URL (<a href="https://docs.microsoft.com/en-us/graph/api/user-revokesigninsessions?view=graph-rest-1.0&tabs=http">https://docs.microsoft.com/en-us/graph/api/user-revokesigninsessions?view=graph-rest-1.0&tabs=http</a>)</strong></li>
+<div class="cl-preview-section">
+<h5 id="base-command">Base Command</h5>
+</div>
+<div class="cl-preview-section">
+<p><code>msgraph-user-session-revoke</code></p>
+</div>
+<div class="cl-preview-section">
+<h5 id="input">Input</h5>
+</div>
+<div class="cl-preview-section">
+<div class="table-wrapper">
+<table style="width: 749px;">
+<thead>
+<tr>
+<th style="width: 243px;"><strong>Argument Name</strong></th>
+<th style="width: 367px;"><strong>Description</strong></th>
+<th style="width: 130px;"><strong>Required</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 243px;">user</td>
+<td style="width: 367px;">User ID or userPrincipalName.</td>
+<td style="width: 130px;">Required</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p> </p>
+<div class="cl-preview-section">
+<h5 id="context-output">Context Output</h5>
+</div>
+<div class="cl-preview-section">
+<p>There is no context output for this command.</p>
+</div>
+<div class="cl-preview-section">
+<h5 id="command-example">Command Example</h5>
+</div>
+<div class="cl-preview-section">
+<pre>msgraph-user-session-revoke user="test@demistodev.onmicrosoft.com"</pre>
+</div>
+<div class="cl-preview-section">
+<h5 id="human-readable-output">Human Readable Output</h5>
+</div>
+<div class="cl-preview-section">
+<p>user: <a href="mailto:%22test@demistodev.onmicrosoft.com">"test@demistodev.onmicrosoft.com</a>" session has been revoked successfully</p>
+</div>
+### msgraph-user-test
+***
+Tests connectivity to Microsoft Graph User.
+
+
+#### Base Command
+
+`msgraph-user-test`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.

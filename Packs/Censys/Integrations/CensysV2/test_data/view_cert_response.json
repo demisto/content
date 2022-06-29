@@ -1,0 +1,248 @@
+{
+    "ct": {
+        "digicert_ct1": {
+            "added_to_ct_at": "2015-09-29T19:55:46.232Z",
+            "ct_to_censys_at": "2018-07-30T04:49:40.404877527Z",
+            "index": 165790
+        },
+        "google_aviator": {
+            "added_to_ct_at": "1970-01-01T00:00:00Z",
+            "ct_to_censys_at": "1970-01-01T00:00:00Z",
+            "index": 8713649
+        },
+        "google_pilot": {
+            "added_to_ct_at": "2015-09-29T19:55:45.785Z",
+            "ct_to_censys_at": "2018-07-30T15:23:48.617288146Z",
+            "index": 9498499
+        },
+        "google_rocketeer": {
+            "added_to_ct_at": "2015-09-29T19:55:45.704Z",
+            "ct_to_censys_at": "2018-07-30T15:17:12.304312851Z",
+            "index": 6663198
+        },
+        "nordu_ct_plausible": {
+            "added_to_ct_at": "2015-10-19T23:17:33.123Z",
+            "ct_to_censys_at": "2018-07-30T19:53:59.431410229Z",
+            "index": 5744025
+        },
+        "symantec_ws_ct": {
+            "added_to_ct_at": "2015-09-29T19:55:46.004Z",
+            "ct_to_censys_at": "2018-07-30T04:22:53.736190633Z",
+            "index": 6913
+        }
+    },
+    "fingerprint_sha256": "9d3b51a6b80daf76e074730f19dc01e643ca0c3127d8f48be64cf3302f612345",
+    "metadata": {
+        "added_at": "1970-01-01T00:00:00Z",
+        "parse_status": "success",
+        "parse_version": 1,
+        "post_processed": true,
+        "post_processed_at": "2021-06-22T01:40:32Z",
+        "seen_in_scan": true,
+        "source": "scan",
+        "updated_at": "2021-06-22T03:28:34Z"
+    },
+    "parent_spki_subject_fingerprint": "ec0c72ce7689150e4f62d04f51f0f19713f77cf27ff43cab4035e9e54e812345",
+    "parsed": {
+        "extensions": {
+            "authority_info_access": {
+                "issuer_urls": [
+                    "http://pki.google.com/GIAG2.crt"
+                ],
+                "ocsp_urls": [
+                    "http://clients1.google.com/ocsp"
+                ]
+            },
+            "authority_key_id": "4add06161bbcf668b576f581b6bb621aba5a1234",
+            "basic_constraints": {
+                "is_ca": false
+            },
+            "certificate_policies": [
+                {
+                    "id": "1.2.3.4.4.1.11129.2.5.1"
+                },
+                {
+                    "id": "2.3.4.1.2.2"
+                }
+            ],
+            "crl_distribution_points": [
+                "http://pki.google.com/GIAG2.crl"
+            ],
+            "extended_key_usage": {
+                "client_auth": true,
+                "server_auth": true
+            },
+            "key_usage": {
+                "digital_signature": true,
+                "value": 1
+            },
+            "subject_alt_name": {
+                "dns_names": [
+                    "*.google.com",
+                    "*.android.com"
+                ],
+                "redacted": false,
+                "serial_number": "5878999135690490607",
+                "signature": {
+                    "self_signed": false,
+                    "signature_algorithm": {
+                        "name": "SHA256-RSA",
+                        "oid": "1.2.840.113549.1.1.11"
+                    },
+                    "valid": false,
+                    "value": "Value"
+                },
+                "signature_algorithm": {
+                    "name": "SHA256-RSA",
+                    "oid": "1.2.840.113549.1.1.11"
+                },
+                "spki_subject_fingerprint": "5eb06b1c29ced84998d3d35a80fa17d3d39e4de96d25539485aecd6360f12345",
+                "subject": {
+                    "common_name": [
+                        "*.google.com"
+                    ],
+                    "country": [
+                        "US"
+                    ],
+                    "locality": [
+                        "Mountain View"
+                    ],
+                    "organization": [
+                        "Google Inc"
+                    ],
+                    "province": [
+                        "California"
+                    ]
+                },
+                "subject_dn": "C=US, ST=California, L=Mountain View, O=Google Inc, CN=*.google.com",
+                "subject_key_info": {
+                    "ecdsa_public_key": {},
+                    "fingerprint_sha256": "3d4a4bd778be7965e90a13ac361e1ed7836d24c15cd5c093f9cc7e7857f51234",
+                    "key_algorithm": {
+                        "name": "ECDSA"
+                    }
+                },
+                "tbs_fingerprint": "1661b59eb7d8cda44f800fabc9ef69ba01506309eedf027f2270105afd11234",
+                "tbs_noct_fingerprint": "1661b59eb7d8cda44f800fabc9ef69ba01506309eedf027f2270105afd11234",
+                "validation_level": "OV",
+                "validity": {
+                    "end": "2015-12-28T00:00:00Z",
+                    "length": 7708840,
+                    "start": "2015-09-29T18:39:20Z"
+                },
+                "version": 3
+            },
+            "precert": false,
+            "raw": "veryLongString",
+            "tags": [
+                "ct",
+                "expired",
+                "was-trusted",
+                "ov"
+            ],
+            "validation": {
+                "apple": {
+                    "blacklisted": false,
+                    "had_trusted_path": true,
+                    "in_revocation_set": false,
+                    "parents": [
+                        "c3f697a92a293d86f9a3ee7ccb970e20e0050b8728cc83ed1b996ce9005d4c36",
+                        "9f630426df1d8abfd80ace98871ba833ab9742cb34838de2b5285ed54c0c7dcc"
+                    ],
+                    "paths": [
+                        [
+                            "9d3b51a6b80daf76e074730f19dc01e643ca0c3127d8f48be64cf3302f6622cc",
+                            "a4124fdaf9cac7baee1cab32e3225d746500c09f3cf3ebb253ef3fbb088afd34",
+                            "ff856a2d251dcd88d36656f450126798cfabaade40799c722de4d2b5db36a73a"
+                        ],
+                        [
+                            "9d3b51a6b80daf76e074730f19dc01e643ca0c3127d8f48be64cf3302f6622cc",
+                            "44336eb05c6c783dc177217a9f6fef75f4524e98045b390803ae9de69eb42b08",
+                            "ff856a2d251dcd88d36656f450126798cfabaade40799c722de4d2b5db36a73a"
+                        ]
+                    ],
+                    "trusted_path": false,
+                    "type": "leaf",
+                    "valid": false,
+                    "was_valid": true,
+                    "whitelisted": false
+                },
+                "google_ct_primary": {
+                    "blacklisted": false,
+                    "had_trusted_path": true,
+                    "in_revocation_set": false,
+                    "parents": [
+                        "c3f697a92a293d86f9a3ee7ccb970e20e0050b8728cc83ed1b996ce9005d4c36",
+                        "9f630426df1d8abfd80ace98871ba833ab9742cb34838de2b5285ed54c0c7dcc"
+                    ],
+                    "paths": [
+                        [
+                            "9d3b51a6b80daf76e074730f19dc01e643ca0c3127d8f48be64cf3302f6622cc",
+                            "a4124fdaf9cac7baee1cab32e3225d746500c09f3cf3ebb253ef3fbb088afd34",
+                            "ff856a2d251dcd88d36656f450126798cfabaade40799c722de4d2b5db36a73a"
+                        ],
+                        [
+                            "9d3b51a6b80daf76e074730f19dc01e643ca0c3127d8f48be64cf3302f6622cc",
+                            "44336eb05c6c783dc177217a9f6fef75f4524e98045b390803ae9de69eb42b08",
+                            "ff856a2d251dcd88d36656f450126798cfabaade40799c722de4d2b5db36a73a"
+                        ]
+                    ],
+                    "trusted_path": false,
+                    "type": "leaf",
+                    "valid": false,
+                    "was_valid": true,
+                    "whitelisted": false
+                },
+                "microsoft": {
+                    "blacklisted": false,
+                    "had_trusted_path": true,
+                    "in_revocation_set": false,
+                    "parents": [
+                        "c3f697a92a293d86f9a3ee7ccb970e20e0050b8728cc83ed1b996ce9005d4c36",
+                        "9f630426df1d8abfd80ace98871ba833ab9742cb34838de2b5285ed54c0c7dcc"
+                    ],
+                    "paths": [
+                        [
+                            "9d3b51a6b80daf76e074730f19dc01e643ca0c3127d8f48be64cf3302f6622cc",
+                            "a4124fdaf9cac7baee1cab32e3225d746500c09f3cf3ebb253ef3fbb088afd34",
+                            "ff856a2d251dcd88d36656f450126798cfabaade40799c722de4d2b5db36a73a"
+                        ],
+                        [
+                            "9d3b51a6b80daf76e074730f19dc01e643ca0c3127d8f48be64cf3302f6622cc",
+                            "44336eb05c6c783dc177217a9f6fef75f4524e98045b390803ae9de69eb42b08",
+                            "ff856a2d251dcd88d36656f450126798cfabaade40799c722de4d2b5db36a73a"
+                        ]
+                    ],
+                    "trusted_path": false,
+                    "type": "leaf",
+                    "valid": false,
+                    "was_valid": true,
+                    "whitelisted": false
+                },
+                "nss": {
+                    "blacklisted": false,
+                    "had_trusted_path": false,
+                    "in_revocation_set": false,
+                    "paths": [],
+                    "trusted_path": false,
+                    "type": "unknown",
+                    "valid": false,
+                    "was_valid": false,
+                    "whitelisted": false
+                },
+                "revoked": false
+            },
+            "zlint": {
+                "errors_present": false,
+                "fatals_present": false,
+                "lints": {
+                    "n_subject_common_name_included": true,
+                    "w_ext_key_usage_not_critical": true
+                },
+                "notices_present": true,
+                "version": 3,
+                "warnings_present": true
+            }
+        }
+    }
+}

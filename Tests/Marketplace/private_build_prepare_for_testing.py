@@ -53,7 +53,7 @@ def option_handler():
 
 def upload_premium_pack_to_private_testing_bucket(premium_pack, private_testing_repo_client, extract_destination_path,
                                                   storage_base_path):
-    _, zip_pack_path = premium_pack.zip_pack(extract_destination_path, premium_pack._pack_name, False, '')
+    _, zip_pack_path = premium_pack.zip_pack(extract_destination_path, False, '')
     premium_pack.upload_to_storage(zip_pack_path, premium_pack.latest_version, private_testing_repo_client,
                                    storage_base_path, True, True)
 

@@ -131,8 +131,9 @@ def test_convert_to_xsoar_incident_without_occurred():
     assert xsoar_incident == expected
 
 
+@pytest.mark.parametrize('last_run', ('2018-10-01T20:22:35.000Z', None))
 @freeze_time("2021-08-24 18:04:00")
-def test_fetch_incidents(mocker, client, requests_mock, demisto_mocker):
+def test_fetch_incidents(mocker, client, requests_mock, demisto_mocker, last_run):
     """
     Configures mocker instance, requests_mock, uses the demisto_mocker fixture.
         Given:
@@ -140,23 +141,27 @@ def test_fetch_incidents(mocker, client, requests_mock, demisto_mocker):
         When:
             - Fetching incidents
         Then:
-            - Returns list of xsoar incident
+            - Returns list of xsoar incidents and filter by created time
     """
     from SaasSecurity import main
 
     get_incidents = util_load_json('test_data/get-incidents.json')
     incidents_for_fetch = util_load_json('test_data/fech_incident_data.json')
     mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
+    mocker.patch.object(demisto, 'getLastRun', return_value={'last_run_time': last_run})
     requests_mock.get('http://base_url/incident/api/incidents/delta', json=get_incidents)
 
     main()
 
     assert demisto.incidents.call_count == 1
     incidents = demisto.incidents.call_args[0][0]
-    assert len(incidents) == 8
-    assert incidents[0]['occurred'] == '2021-08-03T20:25:13Z'
-    assert incidents[1]['occurred'] == '2021-08-03T20:25:15Z'
-    assert incidents_for_fetch == incidents
+    if last_run:
+        assert len(incidents) == 8
+        assert incidents[0]['occurred'] == '2021-08-03T20:25:13Z'
+        assert incidents[1]['occurred'] == '2021-08-03T20:25:15Z'
+        assert incidents_for_fetch == incidents
+    else:
+        assert not incidents
 
 
 def test_get_incidents_command(client, requests_mock):
@@ -299,6 +304,33 @@ def test_get_remote_data_command(client, requests_mock, mocker, close_incident,
         'lastUpdate': '2021-08-24T07:44:21.608Z'
     }
     incident = util_load_json('test_data/get-incident-by-id.json')
+    requests_mock.get('http://base_url/incident/api/incidents/1', json=incident)
+    mocker.patch.object(demisto, 'params', return_value={'close_incident': close_incident})
+
+    result = get_remote_data_command(client, args)
+
+    assert result.mirrored_object == expected_mirrored_object
+    assert result.entries == expected_entries
+
+
+@pytest.mark.parametrize('close_incident,expected_mirrored_object,expected_entries', [
+    (True, {'category': 'business_justified', 'status': 'Closed-Business Justified', 'resolved_by': 'api',
+            'state': 'Closed', 'asset_sha256': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'}, [
+        {'Type': EntryType.NOTE, 'ContentsFormat': EntryFormat.JSON,
+         'Contents': {'dbotIncidentClose': True, 'closeReason': 'From SaasSecurity: business_justified'}}
+    ])
+])
+def test_get_remote_data_closed_status_uppercase(client, requests_mock, mocker, close_incident,
+                                                 expected_mirrored_object, expected_entries):
+    from SaasSecurity import get_remote_data_command
+
+    args = {
+        'id': 1,
+        'lastUpdate': '2021-08-24T07:44:21.608Z'
+    }
+    incident = util_load_json('test_data/get-incident-by-id.json')
+    incident['state'] = 'Closed'
+
     requests_mock.get('http://base_url/incident/api/incidents/1', json=incident)
     mocker.patch.object(demisto, 'params', return_value={'close_incident': close_incident})
 

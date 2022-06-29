@@ -1,0 +1,385 @@
+id: KafkaV3 Test
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+fromversion: 5.0.0
+name: KafkaV3 Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0430acc0-a855-4e3b-807e-020ea5eab109
+    type: start
+    task:
+      id: 0430acc0-a855-4e3b-807e-020ea5eab109
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 4c25e55d-dfca-41e4-8301-2d75ec224bd5
+    type: regular
+    task:
+      id: 4c25e55d-dfca-41e4-8301-2d75ec224bd5
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 83e2a6b6-f2d6-4965-8bf8-5c42835b4591
+    type: regular
+    task:
+      id: 83e2a6b6-f2d6-4965-8bf8-5c42835b4591
+      version: -1
+      name: kafka-print-topics
+      script: Kafka v3|||kafka-print-topics
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: e1f7c776-a112-472d-82e1-54b691c9f425
+    type: condition
+    task:
+      id: e1f7c776-a112-472d-82e1-54b691c9f425
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Kafka.Topic.[0].Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Kafka.Topic.[0].Partitions.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 994659d3-dccf-49e0-859b-78be52dae0ae
+    type: regular
+    task:
+      id: 994659d3-dccf-49e0-859b-78be52dae0ae
+      version: -1
+      name: kafka-publish-msg
+      script: Kafka v3|||kafka-publish-msg
+      type: regular
+      iscommand: true
+      brand: Kafka v3
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      partitioning_key:
+        simple: "0"
+      topic:
+        simple: playbook-test-topic
+      value:
+        simple: the_value
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 4b1daeb0-bfb3-4a3a-83d4-8475c0995a8b
+    type: regular
+    task:
+      id: 4b1daeb0-bfb3-4a3a-83d4-8475c0995a8b
+      version: -1
+      name: kafka-consume-msg
+      script: Kafka v3|||kafka-consume-msg
+      type: regular
+      iscommand: true
+      brand: Kafka v3
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      offset:
+        simple: latest
+      partition:
+        simple: "0"
+      topic:
+        simple: playbook-test-topic
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: c54a75e0-0500-467c-818b-921eb2b6fd59
+    type: condition
+    task:
+      id: c54a75e0-0500-467c-818b-921eb2b6fd59
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Kafka.Topic.Name
+            iscontext: true
+          right:
+            value:
+              simple: playbook-test-topic
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Kafka.Topic.Message.Value
+            iscontext: true
+          right:
+            value:
+              simple: the_value
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Kafka.Topic.Message.Offset
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 65d8a5cb-18a1-4d47-8ec3-728c1c85c4e9
+    type: regular
+    task:
+      id: 65d8a5cb-18a1-4d47-8ec3-728c1c85c4e9
+      version: -1
+      name: kafka-fetch-partitions
+      script: Kafka v3|||kafka-fetch-partitions
+      type: regular
+      iscommand: true
+      brand: Kafka v3
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      topic:
+        simple: playbook-test-topic
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: de2380aa-1e4d-4efd-83c2-4ebcd2fef4ac
+    type: condition
+    task:
+      id: de2380aa-1e4d-4efd-83c2-4ebcd2fef4ac
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Kafka.Topic.Name
+            iscontext: true
+          right:
+            value:
+              simple: playbook-test-topic
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Kafka.Topic.Partition
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: f4c3b6cd-ad3f-4808-8692-93bb9f7c8a55
+    type: title
+    task:
+      id: f4c3b6cd-ad3f-4808-8692-93bb9f7c8a55
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1610,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

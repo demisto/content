@@ -1,0 +1,4 @@
+Name, Risk, RiskString, EvidenceDetails
+http://www.test.duckdns.org/, 72, 4/24, {'EvidenceDetails': []}
+http://www.test.duckdns.ORG/,72, 4/24, {'EvidenceDetails': []}
+http://www.test.duckdns.org/, 72, 4/24, {'EvidenceDetails': []}

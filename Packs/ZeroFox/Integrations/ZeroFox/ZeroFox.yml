@@ -848,7 +848,7 @@ script:
     description: Shows a table of all policy type names and IDs in the War Room.
     execution: false
     name: zerofox-get-policy-types
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.9.8.24399
   isfetch: true
   longRunning: false
   longRunningPort: false

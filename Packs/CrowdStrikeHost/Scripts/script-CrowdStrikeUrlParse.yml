@@ -2,6 +2,7 @@ commonfields:
   id: CrowdStrikeUrlParse
   version: -1
 name: CrowdStrikeUrlParse
+deprecated: true
 script: >-
   import re
 
@@ -69,10 +70,7 @@ type: python
 subtype: python2
 tags:
 - crowdstrike
-comment: |-
-  This will parse a CrowdStrike alert URL and pull out the Agent ID. Useful for passing to the cs-device-details command to return device details.
-
-  It also returns the detection ID for the specific alert. Used for modifying the state of the alert for CrowdStrike.
+comment: Deprecated. Use CrowdStrike Falcon instead.
 enabled: true
 args:
 - name: url
@@ -87,6 +85,6 @@ outputs:
 scripttarget: 0
 runonce: false
 fromversion: 5.0.0
-dockerimage: demisto/python:2.7.18.24066
+dockerimage: demisto/python:2.7.18.24398
 tests:
 - No tests (auto formatted)

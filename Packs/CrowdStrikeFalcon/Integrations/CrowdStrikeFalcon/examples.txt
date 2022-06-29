@@ -1,0 +1,8 @@
+cs-falcon-rtr-kill-process host_id=15dbb9d8f06b45fe9f61eb46e829d986 process_ids=5260,123
+cs-falcon-rtr-list-processes host_id=15dbb9d8f06b45fe9f61eb46e829d986
+cs-falcon-rtr-list-network-stats host_id=15dbb9d8f06b45fe9f61eb46e829d986
+cs-falcon-rtr-remove-file file_path="c:\\testfolder" host_ids=15dbb9d8f06b45fe9f61eb46e829d986 os=Windows
+cs-falcon-rtr-read-registry host_ids=15dbb9d8f06b45fe9f61eb46e829d986 registry_keys=`HKEY_LOCAL_MACHINE,HKEY_USERS`
+cs-falcon-rtr-list-scheduled-tasks host_ids=15dbb9d8f06b45fe9f61eb46e829d986
+cs-falcon-rtr-retrieve-file file_path=`C:\Windows\System32\Windows.Media.FaceAnalysis.dll` host_ids=15dbb9d8f06b45fe9f61eb46e829d986,046761c46ec84f40b27b6f79ce7cd32c
+cs-falcon-get-detections-for-incident incident_id=`inc:0bde2c4645294245aca522971ccc44c4:1a1eb17d1f9e4d82a9e8ba73d1095593`

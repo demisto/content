@@ -5,8 +5,8 @@ import io
 import ssl
 from datetime import timedelta, datetime
 
-import dateparser
-import pytz
+import dateparser  # type: ignore
+import pytz  # type: ignore[import]
 import requests
 import splunklib.client as client
 import splunklib.results as results
@@ -130,7 +130,7 @@ def create_incident_custom_id(incident):
 
     extensive_log('[SplunkPyPreRelease] ID after all fields were added: {}'.format(incident_custom_id))
 
-    unique_id = hashlib.md5(incident_custom_id).hexdigest()
+    unique_id = hashlib.md5(incident_custom_id).hexdigest()  # nosec
     extensive_log('[SplunkPyPreRelease] Found incident ID is: {}'.format(unique_id))
     return unique_id
 
@@ -485,7 +485,8 @@ class Notable:
             if isParseNotableEventsRaw:
                 rawDict = rawToDict(notable_data['_raw'])
                 for rawKey in rawDict:
-                    labels.append({'type': rawKey, 'value': rawDict[rawKey]})
+                    val = rawDict[rawKey] if isinstance(rawDict[rawKey], str) else convert_to_str(rawDict[rawKey])
+                    labels.append({'type': rawKey, 'value': val})
         if demisto.get(notable_data, 'security_domain'):
             labels.append({'type': 'security_domain', 'value': notable_data["security_domain"]})
         incident['labels'] = labels
@@ -549,7 +550,7 @@ class Notable:
             return self.id
 
         notable_raw_data = self.data.get('_raw', '')
-        raw_hash = hashlib.md5(notable_raw_data).hexdigest()
+        raw_hash = hashlib.md5(notable_raw_data).hexdigest()    # nosec
 
         if self.time_is_missing and self.index_time:
             notable_custom_id = '{}_{}'.format(self.index_time, raw_hash)  # index_time stays in epoch to differentiate
@@ -1852,7 +1853,7 @@ def requests_handler(url, message, **kwargs):
     }
 
 
-def build_search_kwargs(args):
+def build_search_kwargs(args, polling=False):
     t = datetime.utcnow() - timedelta(days=7)
     time_str = t.strftime(SPLUNK_TIME_FORMAT)
 
@@ -1866,6 +1867,12 @@ def build_search_kwargs(args):
         kwargs_normalsearch['latest_time'] = args['latest_time']
     if demisto.get(args, 'app'):
         kwargs_normalsearch['app'] = args['app']
+    if polling:
+        kwargs_normalsearch['exec_mode'] = "normal"
+    else:
+        # A blocking search runs synchronously, and returns a job when it's finished.
+        # It will be added just if it's not a polling command.
+        kwargs_normalsearch['exec_mode'] = "blocking"
     return kwargs_normalsearch
 
 
@@ -1877,14 +1884,28 @@ def build_search_query(args):
     return query
 
 
-def create_entry_context(args, parsed_search_results, dbot_scores):
+def create_entry_context(args, parsed_search_results, dbot_scores, status_res):
     ec = {}
 
     if args.get('update_context', "true") == "true":
         ec['Splunk.Result'] = parsed_search_results
         if len(dbot_scores) > 0:
             ec['DBotScore'] = dbot_scores
+        if status_res:
+            ec['Splunk.JobStatus(val.SID && val.SID === obj.SID)'] = status_res.outputs
     return ec
+
+
+def schedule_polling_command(command, args, interval_in_secs):
+    """
+    Returns a ScheduledCommand object which contain the needed arguments for schedule the polling command.
+    """
+    return ScheduledCommand(
+        command=command,
+        next_run_in_seconds=interval_in_secs,
+        args=args,
+        timeout_in_seconds=600
+    )
 
 
 def build_search_human_readable(args, parsed_search_results):
@@ -1893,14 +1914,26 @@ def build_search_human_readable(args, parsed_search_results):
         if not isinstance(parsed_search_results[0], dict):
             headers = "results"
         else:
-            search_for_table_args = re.search(r' table (?P<table>.*)(\|)?', args.get('query', ''))
-            if search_for_table_args:
-                table_args = search_for_table_args.group('table')
-                table_args = table_args if '|' not in table_args else table_args.split(' |')[0]
-                chosen_fields = [field.strip('"')
-                                 for field in re.findall(r'((?:".*?")|(?:[^\s,]+))', table_args) if field]
+            query = args.get('query', '')
+            table_args = re.findall(r' {} (?P<{}>[^|]*)'.format('table', 'table'), query)
+            rename_args = re.findall(r' {} (?P<{}>[^|]*)'.format('rename', 'rename'), query)
 
-                headers = update_headers_from_field_names(parsed_search_results, chosen_fields)
+            chosen_fields = []
+            for arg_string in table_args:
+                for field in re.findall(r'((?:".*?")|(?:[^\s,]+))', arg_string):
+                    if field:
+                        chosen_fields.append(field.strip('"'))
+
+            rename_dict = {}
+            for arg_string in rename_args:
+                for field in re.findall(r'((?:".*?")|(?:[^\s,]+))( AS )((?:".*?")|(?:[^\s,]+))', arg_string):
+                    if field:
+                        rename_dict[field[0].strip('"')] = field[-1].strip('"')
+
+            # replace renamed fields
+            chosen_fields = [rename_dict.get(field, field) for field in chosen_fields]
+
+            headers = update_headers_from_field_names(parsed_search_results, chosen_fields)
 
     query = args['query'].replace('`', r'\`')
     human_readable = tableToMarkdown("Splunk Search results for query: {}".format(query),
@@ -1910,7 +1943,7 @@ def build_search_human_readable(args, parsed_search_results):
 
 def update_headers_from_field_names(search_result, chosen_fields):
     headers = []
-    search_result_keys = search_result[0].keys()
+    search_result_keys = set().union(*(d.keys() for d in search_result))  # type: Set
     for field in chosen_fields:
         if field[-1] == '*':
             temp_field = field.replace('*', '.*')
@@ -1962,15 +1995,39 @@ def splunk_search_command(service):
     args = demisto.args()
 
     query = build_search_query(args)
-    search_kwargs = build_search_kwargs(args)
-    search_job = service.jobs.create(query, **search_kwargs)  # type: ignore
-    num_of_results_from_query = search_job["resultCount"]
+    polling = argToBoolean(args.get("polling", False))
+    search_kwargs = build_search_kwargs(args, polling)
+    job_sid = args.get("sid")
+    search_job = None
+    interval_in_secs = int(args.get('interval_in_seconds', 30))
 
-    results_limit = float(demisto.args().get("event_limit", 100))
+    if not job_sid or not polling:
+        # create a new job to search the query.
+        search_job = service.jobs.create(query, **search_kwargs)  # type: ignore
+        job_sid = search_job["sid"]
+        args['sid'] = job_sid
+
+    status_cmd_result = None
+    if polling:
+        status_cmd_result = splunk_job_status(service, args)
+        status = status_cmd_result.outputs['Status']
+        if status.lower() != 'done':
+            # Job is still running, schedule the next run of the command.
+            scheduled_command = schedule_polling_command("splunk-search", args, interval_in_secs)
+            status_cmd_result.scheduled_command = scheduled_command
+            status_cmd_result.readable_output = 'Job is still running, it may take a little while...'
+            return status_cmd_result
+        else:
+            # Get the job by its SID.
+            search_job = service.job(job_sid)
+
+    num_of_results_from_query = search_job["resultCount"] if search_job else None
+
+    results_limit = float(args.get("event_limit", 100))
     if results_limit == 0.0:
         # In Splunk, a result limit of 0 means no limit.
         results_limit = float("inf")
-    batch_size = int(demisto.args().get("batch_limit", 25000))
+    batch_size = int(args.get("batch_limit", 25000))
 
     results_offset = 0
     total_parsed_results = []  # type: List[Dict[str,Any]]
@@ -1986,16 +2043,14 @@ def splunk_search_command(service):
 
         results_offset += batch_size
 
-    entry_context = create_entry_context(args, total_parsed_results, dbot_scores)
+    entry_context = create_entry_context(args, total_parsed_results, dbot_scores, status_cmd_result)
     human_readable = build_search_human_readable(args, total_parsed_results)
 
-    demisto.results({
-        "Type": 1,
-        "Contents": total_parsed_results,
-        "ContentsFormat": "json",
-        "EntryContext": entry_context,
-        "HumanReadable": human_readable
-    })
+    return CommandResults(
+        outputs=entry_context,
+        raw_response=total_parsed_results,
+        readable_output=human_readable
+    )
 
 
 def splunk_job_create_command(service):
@@ -2143,6 +2198,7 @@ def splunk_submit_event_hec_command():
 
 def splunk_edit_notable_event_command(service, auth_token):
     params = demisto.params()
+
     base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
     sessionKey = service.token if not auth_token else None
 
@@ -2167,8 +2223,8 @@ def splunk_edit_notable_event_command(service, auth_token):
     demisto.results('Splunk ES Notable events: ' + response_info.get('message'))
 
 
-def splunk_job_status(service):
-    sid = demisto.args().get('sid')
+def splunk_job_status(service, args):
+    sid = args.get('sid')
     try:
         job = service.job(sid)
     except HTTPError as error:
@@ -2182,15 +2238,13 @@ def splunk_job_status(service):
             'SID': sid,
             'Status': status
         }
-        context = {'Splunk.JobStatus(val.SID && val.SID === obj.SID)': entry_context}
         human_readable = tableToMarkdown('Splunk Job Status', entry_context)
-        demisto.results({
-            "Type": entryTypes['note'],
-            "Contents": entry_context,
-            "ContentsFormat": formats["json"],
-            "EntryContext": context,
-            "HumanReadable": human_readable
-        })
+        return CommandResults(
+            outputs=entry_context,
+            readable_output=human_readable,
+            outputs_prefix="Splunk.JobStatus",
+            outputs_key_field="SID"
+        )
 
 
 def splunk_parse_raw_command():
@@ -2495,7 +2549,7 @@ def main():
     elif command == 'splunk-reset-enriching-fetch-mechanism':
         reset_enriching_fetch_mechanism()
     elif command == 'splunk-search':
-        splunk_search_command(service)
+        return_results(splunk_search_command(service))
     elif command == 'splunk-job-create':
         splunk_job_create_command(service)
     elif command == 'splunk-results':
@@ -2511,7 +2565,7 @@ def main():
     elif command == 'splunk-submit-event-hec':
         splunk_submit_event_hec_command()
     elif command == 'splunk-job-status':
-        splunk_job_status(service)
+        return_results(splunk_job_status(service, demisto.args()))
     elif command.startswith('splunk-kv-') and service is not None:
         args = demisto.args()
         app = args.get('app_name', 'search')

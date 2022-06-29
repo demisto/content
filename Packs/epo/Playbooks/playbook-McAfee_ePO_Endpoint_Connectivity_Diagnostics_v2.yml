@@ -3,10 +3,10 @@ version: -1
 name: McAfee ePO Endpoint Connectivity Diagnostics Playbook v2
 description: Perform a check on ePO endpoints to see if any endpoints are unmanaged
   or lost connectivity with ePO and take steps to return to a valid state.
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 0e3fe5d5-d93f-4ce9-8b62-685427fb9e5a
     type: start
     task:
@@ -15,83 +15,65 @@ tasks:
       name: start_task
       type: start
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 416,
-          "y": -227
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 416,\n    \"y\": -227\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: 9c37c208-6466-4564-87db-2ebcdf47c9ad
     type: condition
     task:
       id: 9c37c208-6466-4564-87db-2ebcdf47c9ad
       version: -1
       name: 'Are any endpoints in ePO listed as unmanaged? '
-      description: Place the list of non-communicating endpoints in the 
-        epoUnmanagedEndpoints incident label.
+      description: Place the list of non-communicating endpoints in the epoUnmanagedEndpoints
+        incident label.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "No":
-      - "4"
-      "Yes":
-      - "2"
+      'No':
+      - '4'
+      'Yes':
+      - '2'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 416,
-          "y": -80
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 416,\n    \"y\": -80\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: 956874f3-ed9f-4e74-850b-4e98a76e2ce7
     type: regular
     task:
       id: 956874f3-ed9f-4e74-850b-4e98a76e2ce7
       version: -1
       name: Check if unmanaged endpoints are in special excluded list.
-      description: |-
-        Most organizations have some excluded servers, either legacy OS or being managed by a different security solution, etc.
-        Usually this list is managed in Active Directory and this task is accomplished by checking whether any computers in the unmanaged list are a member of this group.
-
-        Enter a comma-separated list of the system names that need to be addressed.
+      description: "Most organizations have some excluded servers, either legacy OS\
+        \ or being managed by a different security solution, etc.\nUsually this list\
+        \ is managed in Active Directory and this task is accomplished by checking\
+        \ whether any computers in the unmanaged list are a member of this group.\n\
+        \nEnter a comma-separated list of the system names that need to be addressed."
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "10"
+      - '10'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 731,
-          "y": 94
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 731,\n    \"y\": 94\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     taskid: 9ad35b01-206f-452c-8a9e-8b66a2a7f368
     type: regular
     task:
@@ -100,7 +82,7 @@ tasks:
       name: Open ServiceNow ticket for admin to install agents
       description: |-
         This script is used to wrap the generic create-record command in ServiceNow.
-        You can add fields that you want to create the record with as script arguments or in the
+        You can add fields that you want to create the record with, as script arguments or in the
         code and work with the records easily.
       scriptName: ServiceNowCreateIncident
       type: regular
@@ -108,7 +90,7 @@ tasks:
       brand: ServiceNow
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     scriptarguments:
       assigned_group: {}
       assignee: {}
@@ -116,18 +98,12 @@ tasks:
         simple: Unmanaged endpoints - need to install McAfee Agent
       severity: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 731,
-          "y": 428
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 731,\n    \"y\": 428\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     taskid: 1d99f9b9-166a-4248-84f6-b90c15951e33
     type: condition
     task:
@@ -135,29 +111,23 @@ tasks:
       version: -1
       name: Check if there are agents which haven't communicated with ePO in the past
         3 days
-      description: Enter a comma-separated list of the system names that need to be addressed.
-
+      description: Enter a comma-separated list of the system names that need to be
+        addressed.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "Yes":
-      - "11"
-      "no":
-      - "5"
+      'Yes':
+      - '11'
+      'No':
+      - '5'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 416,
-          "y": 601
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 416,\n    \"y\": 601\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     taskid: 581bbf42-f8ba-437b-8b9a-56d764e0a51c
     type: regular
     task:
@@ -178,18 +148,12 @@ tasks:
       id: {}
       phishingsubtype: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 116,
-          "y": 774
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 116,\n    \"y\": 774\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     taskid: 4a32bb9b-8d01-48f5-8685-c754b5067c09
     type: regular
     task:
@@ -199,29 +163,23 @@ tasks:
       scriptName: Ping
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
       description: Check connectivity for each endpoint using ping.
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
     scriptarguments:
       address:
         simple: ${epoNonCommunicatingEndpoint}
       contextKey: {}
       verbose: {}
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 731,
-          "y": 945
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 731,\n    \"y\": 945\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-  "7":
-    id: "7"
+  '7':
+    id: '7'
     taskid: b5a87844-2303-4da8-8b3f-9824047aa547
     type: regular
     task:
@@ -230,24 +188,18 @@ tasks:
       name: Remotely check that McAfee Agent is installed and running.
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
       description: Remotely check that McAfee Agent is installed and running.
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 731,
-          "y": 1134
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 731,\n    \"y\": 1134\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-  "8":
-    id: "8"
+  '8':
+    id: '8'
     taskid: 2c6c6764-94f8-4777-836b-649ef7b51b98
     type: regular
     task:
@@ -256,24 +208,18 @@ tasks:
       name: Remotely execute cmdagent commandline utility to force communication with
         ePO.
       iscommand: false
-      brand: ""
-      description: force communication with ePO
+      brand: ''
+      description: Force communication with ePO.
     nexttasks:
       '#none#':
-      - "9"
+      - '9'
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 731,
-          "y": 1321
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 731,\n    \"y\": 1321\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-  "9":
-    id: "9"
+  '9':
+    id: '9'
     taskid: 70cbf053-e249-48eb-823e-10c903391df5
     type: regular
     task:
@@ -282,21 +228,15 @@ tasks:
       name: Retrieve McAfee Agent logs from non-communicating endpoints.
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
       description: Retrieve McAfee Agent logs from non-communicating endpoints.
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 731,
-          "y": 1508
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 731,\n    \"y\": 1508\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-  "10":
-    id: "10"
+  '10':
+    id: '10'
     taskid: b5f717be-a4a8-4ba2-86ca-6f6e4024236c
     type: regular
     task:
@@ -310,10 +250,10 @@ tasks:
       scriptName: commentsToContext
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     scriptarguments:
       contextKey:
         simple: epoUnmanagedEndpoint
@@ -322,18 +262,12 @@ tasks:
       listSeperator:
         simple: ','
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 731,
-          "y": 271
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 731,\n    \"y\": 271\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-  "11":
-    id: "11"
+  '11':
+    id: '11'
     taskid: 3da5d5ef-6d6a-4099-8d83-d5a33d6ef515
     type: regular
     task:
@@ -347,10 +281,10 @@ tasks:
       scriptName: commentsToContext
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
     scriptarguments:
       contextKey:
         simple: epoNonCommunicatingEndpoint
@@ -360,28 +294,13 @@ tasks:
       listSeperator:
         simple: ','
     separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 731,
-          "y": 774
-        }
-      }
+    view: "{\n  \"position\": {\n    \"x\": 731,\n    \"y\": 774\n  }\n}"
     note: false
     timertriggers: []
     ignoreworker: false
-view: |-
-  {
-    "linkLabelsPosition": {},
-    "paper": {
-      "dimensions": {
-        "height": 1830,
-        "width": 995,
-        "x": 116,
-        "y": -227
-      }
-    }
-  }
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n \
+  \     \"height\": 1830,\n      \"width\": 995,\n      \"x\": 116,\n      \"y\":\
+  \ -227\n    }\n  }\n}"
 inputs: []
 outputs: []
 fromversion: 5.0.0

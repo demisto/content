@@ -2,7 +2,7 @@
     "name": "CiscoWSA",
     "description": "To reterive and modify Cisco Web Security Gateway feautres (e.g. policies, etc).",
     "support": "community",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Nader El-Gohary",
     "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
     "email": "",
@@ -15,5 +15,9 @@
     "devEmail": [
         "ngohary@paloaltonetworks.com"
     ],
-    "githubUser": []
+    "githubUser": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

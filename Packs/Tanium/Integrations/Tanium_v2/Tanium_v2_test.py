@@ -1,6 +1,11 @@
 import pytest
-from Tanium_v2 import Client, get_question_result
+from Tanium_v2 import Client, get_question_result, get_action_result
 import json
+
+
+def get_fetch_data():
+    with open('test_data/action_results.json', 'r') as f:
+        return json.loads(f.read())
 
 
 BASE_URL = 'https://test.com/'
@@ -240,7 +245,7 @@ QUESTION_RESULTS = [{"ComputerName": "host-name", "IPv4Address": "127.0.0.1", "C
 def test_create_action_body_by_target_group_name(requests_mock):
     client = Client(BASE_URL, 'username', 'password', 'domain')
 
-    requests_mock.get(BASE_URL + 'session/login', json={'data': {'session': 'SESSION-ID'}})
+    requests_mock.post(BASE_URL + 'session/login', json={'data': {'session': 'SESSION-ID'}})
     requests_mock.get(BASE_URL + 'packages/by-name/package-name', json={'data': {'id': 12345, 'expire_seconds': 360}})
 
     body = client.build_create_action_body(False, 'action-name', '', package_name='package-name',
@@ -255,7 +260,7 @@ def test_create_action_body_by_target_group_name(requests_mock):
 def test_create_action_body_by_host(requests_mock):
     client = Client(BASE_URL, 'username', 'password', 'domain')
 
-    requests_mock.get(BASE_URL + 'session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + 'session/login', json={'data': {'session': 'session-id'}})
     requests_mock.get(BASE_URL + 'packages/20', json={'data': {'id': 12345, 'expire_seconds': 360}})
     requests_mock.post(BASE_URL + 'parse_question', json=parse_question_res)
 
@@ -270,7 +275,7 @@ def test_create_action_body_by_host(requests_mock):
 def test_create_action_body_with_parameters(requests_mock):
     client = Client(BASE_URL, 'username', 'password', 'domain')
 
-    requests_mock.get(BASE_URL + 'session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + 'session/login', json={'data': {'session': 'session-id'}})
     requests_mock.get(BASE_URL + 'packages/by-name/package-name', json={'data': {'id': 12345, 'expire_seconds': 360}})
 
     body = client.build_create_action_body(False, 'action-name', '$1=true;$2=value;$3=otherValue',
@@ -291,7 +296,7 @@ def test_parse_question_results():
 
 def test_parse_question(requests_mock):
     client = Client(BASE_URL, 'username', 'password', 'domain')
-    requests_mock.get(BASE_URL + 'session/login', json={'data': {'session': 'session-id'}})
+    requests_mock.post(BASE_URL + 'session/login', json={'data': {'session': 'session-id'}})
     requests_mock.post(BASE_URL + 'parse_question', json=parse_question_Folder_Contents_res)
     requests_mock.get(BASE_URL + 'sensors/by-name/Folder-Contents', json=sensor_res)
 
@@ -366,3 +371,25 @@ def test_update_session(mocker):
     client = Client(BASE_URL, username='', password='', domain='domain', api_token='oauth authentication')
     client.update_session()
     assert client.session == 'oauth authentication'
+
+
+def test_get_action_result(mocker):
+    """
+    Tests the get action result method.
+    Given:
+        - Action ID to get information on.
+    When:
+        - calling the get_action_result() function.
+    Then:
+        - Verify that the human_readable was created as expected.
+        - Verify that the outputs was created as expected.
+        - Verify that the raw_response was created as expected.
+    """
+    client = Client(BASE_URL, 'username', 'password', 'domain')
+    data_args = {'id': '350385'}
+    action_res = get_fetch_data()
+    mocker.patch.object(Client, 'do_request', return_value=action_res['action_raw_response'])
+    human_readable, outputs, action_res_outputs = get_action_result(client, data_args)
+    assert action_res_outputs == action_res['action_output']
+    assert outputs == action_res['action_output_res']
+    assert '### Device Statuses' in human_readable

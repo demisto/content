@@ -132,7 +132,7 @@
    }
 }
 </pre>
-<p>Each var name can either be provided with a value or a context key to retrieve the value from.</p>
+<p>Each var name can either be provided with a value or a context key to retrieve the value from. Note that only context data is accessible for this argument, while incident fields are not.</p>
 </td>
 </tr>
 <tr>

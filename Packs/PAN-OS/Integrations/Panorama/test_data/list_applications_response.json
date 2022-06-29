@@ -1,0 +1,19 @@
+{
+   "response":{
+      "@status":"success",
+      "@code":"19",
+      "result":{
+         "@total-count":"1",
+         "@count":"1",
+         "entry":{
+            "@name":"test-playbook-app",
+            "@loc":"Lab-Devices",
+            "subcategory":"infrastructure",
+            "category":"networking",
+            "technology":"client-server",
+            "description":"test-playbook-application-do-not-delete",
+            "risk":"1"
+         }
+      }
+   }
+}

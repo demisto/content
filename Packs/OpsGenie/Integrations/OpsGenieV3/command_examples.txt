@@ -27,3 +27,4 @@ opsgenie-add-tag-incident incident_id=b15c7555-d685-4a96-8798-46320618004e tags=
 opsgenie-remove-tag-incident incident_id=b15c7555-d685-4a96-8798-46320618004e tags=1,2
 opsgenie-get-teams
 opsgenie-get-teams team_id=51d69df8-c40b-439e-9808-e1a78e54f91b
+opsgenie-get-request request_id=b79800b2-4378-4249-8677-0bf2332b8a1f request_type=alerts

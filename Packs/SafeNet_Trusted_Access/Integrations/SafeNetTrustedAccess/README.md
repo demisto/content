@@ -1,4 +1,4 @@
-This integration enables you to process alerts from SafeNet Trusted Access (STA) indicating security risks to end user accounts, and apply security remediation actions on SafeNet Trusted Access through security orchestration playbooks. For information about the configuration steps, visit our [Help Documentation](https://thalesdocs.com/sta/Content/STA/SecurityInt/CortexXSOAR_PaloAltoNetworks.htm).
+This integration enables you to process alerts from SafeNet Trusted Access (STA) indicating security risks to end user accounts, and apply security remediation actions on SafeNet Trusted Access through security orchestration playbooks. For information about the configuration steps, visit our [Help Documentation](https://thalesdocs.com/sta/operator/security_integrations/cortex_xsoar_palo_alto_networks/index.html).
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.

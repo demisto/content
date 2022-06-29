@@ -1,0 +1,17 @@
+commonfields:
+  id: D2Processes
+  version: -1
+name: D2Processes
+script: ''
+type: javascript
+tags:
+- agent
+- endpoint
+comment: Show running processes
+system: true
+scripttarget: 1
+dependson: {}
+timeout: 0s
+fromversion: 5.0.0
+tests:
+- no test

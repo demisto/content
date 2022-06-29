@@ -638,6 +638,149 @@ def send_mail(args: dict, sg_from_email: str, sg_sender_name: str, sg):
         return "Failed to send email " + response.status_code
 
 
+def get_all_lists(args: dict, sg):
+    params = {}
+    pageSize = args.get('page_size')
+    if pageSize:
+        params['page_size'] = int(pageSize)
+    pageToken = args.get('page_token')
+    if pageToken:
+        params['page_token'] = pageToken
+    headers = args.get('headers')
+
+    response = sg.client.marketing.lists.get(query_params=params)
+    if response.status_code == 200:
+        rBody = response.body
+        body = json.loads(rBody.decode("utf-8"))
+        ec = {'Sendgrid.Lists.Result': body['result'], 'Sendgrid.Lists.Metadata': body['_metadata']}
+        if headers:
+            if isinstance(headers, str):
+                headers = headers.split(",")
+        md = tableToMarkdown('Lists information was fetched successfully: ', body['result'], headers)
+        return {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': body,
+            'HumanReadable': md,
+            'EntryContext': ec
+        }
+    else:
+        return 'Failed to fetch lists information: ' + str(response.body)
+
+
+def get_list_by_id(args: dict, sg):
+    listID = args.get('list_id')
+    params = {}
+    contactSample = args.get('contact_sample')
+    if contactSample:
+        params['contact_sample'] = False if contactSample == 'False' else True
+
+    response = sg.client.marketing.lists._(listID).get(query_params=params)
+    if response.status_code == 200:
+        rBody = response.body
+        body = json.loads(rBody.decode("utf-8"))
+        ec = {'Sendgrid.List': body}
+        md = tableToMarkdown('List details ', body)
+        return {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': body,
+            'HumanReadable': md,
+            'EntryContext': ec
+        }
+    else:
+        return 'Failed to retrieve list information: ' + str(response.body)
+
+
+def create_list(args: dict, sg):
+    listName = args.get('list_name')
+    data = {"name": listName}
+
+    response = sg.client.marketing.lists.post(request_body=data)
+    if response.status_code == 201:
+        rBody = response.body
+        body = json.loads(rBody.decode("utf-8"))
+        ec = {'Sendgrid.NewList': body}
+        md = tableToMarkdown('New List has been successfully created ', body)
+        return {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': body,
+            'HumanReadable': md,
+            'EntryContext': ec
+        }
+    else:
+        return 'Failed to create new list: ' + str(response.body)
+
+
+def get_list_contact_count_by_id(args: dict, sg):
+    listID = args.get('list_id')
+    response = sg.client.marketing.lists._(listID).contacts.count.get()
+    if response.status_code == 200:
+        rBody = response.body
+        body = json.loads(rBody.decode("utf-8"))
+        ec = {'Sendgrid.ListCount': body}
+        md = tableToMarkdown('List contact count details ', body)
+        return {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': body,
+            'HumanReadable': md,
+            'EntryContext': ec
+        }
+    else:
+        return 'Failed to retrieve contact list count information: ' + str(response.body)
+
+
+def update_list_name(args: dict, sg):
+    listID = args.get('list_id')
+    listName = args.get('updated_list_name')
+    data = {"name": listName}
+
+    response = sg.client.marketing.lists._(listID).patch(request_body=data)
+    if response.status_code == 200:
+        rBody = response.body
+        body = json.loads(rBody.decode("utf-8"))
+        ec = {'Sendgrid.updatedList': body}
+        md = tableToMarkdown('List Name has been updated successfully ', body)
+        return {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': body,
+            'HumanReadable': md,
+            'EntryContext': ec
+        }
+    else:
+        return 'Failed to update list name: ' + str(response.body)
+
+
+def delete_list(args: dict, sg):
+    listID = args.get('list_id')
+    params = {}
+    deleteContacts = args.get('delete_contacts')
+    if deleteContacts:
+        params['delete_contacts'] = False if deleteContacts == 'False' else True
+
+    response = sg.client.marketing.lists._(listID).delete(query_params=params)
+    if response.status_code == 200:
+        rBody = response.body
+        body = json.loads(rBody.decode("utf-8"))
+        ec = {'Sendgrid.DeleteListJobId': body['job_id']}
+        md = tableToMarkdown('The delete has been accepted and is processing. \
+                You can check the status using the Job ID: ', body['job_id'])
+        return {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': body,
+            'HumanReadable': md,
+            'EntryContext': ec
+        }
+    elif response.status_code == 204:
+        return 'Deletion completed successfully'
+    else:
+        return 'Failed to delete list: ' + str(response.body)
+
+
 def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
@@ -692,6 +835,24 @@ def main():
 
         elif demisto.command() == 'sg-get-email-activity-list':
             result = get_email_activity_list(args, sg)
+
+        elif demisto.command() == 'sg-get-all-lists':
+            result = get_all_lists(args, sg)
+
+        elif demisto.command() == 'sg-get-list-by-id':
+            result = get_list_by_id(args, sg)
+
+        elif demisto.command() == 'sg-create-list':
+            result = create_list(args, sg)
+
+        elif demisto.command() == 'sg-get-list-contact-count-by-id':
+            result = get_list_contact_count_by_id(args, sg)
+
+        elif demisto.command() == 'sg-update-list-name':
+            result = update_list_name(args, sg)
+
+        elif demisto.command() == 'sg-delete-list':
+            result = delete_list(args, sg)
 
         demisto.results(result)
 

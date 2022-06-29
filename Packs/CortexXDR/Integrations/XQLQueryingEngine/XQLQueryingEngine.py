@@ -298,21 +298,34 @@ def get_process_causality_network_activity_query(endpoint_ids: str, args: dict) 
 # =========================================== Helper Functions ===========================================#
 
 
-def convert_relative_time_to_milliseconds(time_to_convert: str) -> int:
-    """Convert a relative time string to its Unix timestamp representation in milliseconds.
+def convert_timeframe_string_to_json(time_to_convert: str) -> Dict[str, int]:
+    """Convert a timeframe string to a json requred for XQL queries.
 
     Args:
-        time_to_convert (str): The relative time to convert (supports seconds, minutes, hours, days, months, years).
+        time_to_convert (str): The time frame string to convert (supports seconds, minutes, hours, days, months, years, between).
 
     Returns:
-        int: The Unix timestamp representation in milliseconds.
+        dict: The timeframe parameters in JSON.
     """
     try:
-        relative = dateparser.parse(time_to_convert, settings={'TIMEZONE': 'UTC'})
-        return int((datetime.utcnow() - relative).total_seconds()) * 1000
+        time_to_convert_lower = time_to_convert.strip().lower()
+        if time_to_convert_lower.startswith('between '):
+            tokens = time_to_convert_lower[len('between '):].split(' and ')
+            if len(tokens) == 2:
+                time_from = dateparser.parse(tokens[0], settings={'TIMEZONE': 'UTC'})
+                time_to = dateparser.parse(tokens[1], settings={'TIMEZONE': 'UTC'})
+                assert time_from is not None and time_to is not None
+                return {'from': int(time_from.timestamp()) * 1000, 'to': int(time_to.timestamp()) * 1000}
+        else:
+            relative = dateparser.parse(time_to_convert, settings={'TIMEZONE': 'UTC'})
+            now_date = datetime.utcnow()
+            assert now_date is not None and relative is not None
+            return {'relativeTime': int((now_date - relative).total_seconds()) * 1000}
+
+        raise ValueError(f'Invalid timeframe: {time_to_convert}')
     except Exception as exc:
         raise DemistoException(f'Please enter a valid time frame (seconds, minutes, hours, days, weeks, months, '
-                               f'years).\n{str(exc)}')
+                               f'years, between).\n{str(exc)}')
 
 
 def start_xql_query(client: Client, args: Dict[str, Any]) -> str:
@@ -328,11 +341,9 @@ def start_xql_query(client: Client, args: Dict[str, Any]) -> str:
     query = args.get('query', '')
     if not query:
         raise ValueError('query is not specified')
-    if '//' in query:
-        raise DemistoException('Please remove notes (//) from query')
 
     if 'limit' not in query:  # if user did not provide a limit in the query, we will use the default one.
-        query = f'{query} | limit {str(DEFAULT_LIMIT)}'
+        query = f'{query} \n| limit {str(DEFAULT_LIMIT)}'
     data: Dict[str, Any] = {
         'request_data': {
             'query': query,
@@ -340,8 +351,7 @@ def start_xql_query(client: Client, args: Dict[str, Any]) -> str:
     }
     time_frame = args.get('time_frame')
     if time_frame:
-        converted_time = convert_relative_time_to_milliseconds(time_frame)
-        data['request_data']['timeframe'] = {'relativeTime': converted_time}
+        data['request_data']['timeframe'] = convert_timeframe_string_to_json(time_frame)
     tenant_ids = argToList(args.get('tenant_ids'))
     if tenant_ids:
         data['request_data']['tenants'] = tenant_ids
@@ -635,11 +645,12 @@ def get_xql_query_results_polling_command(client: Client, args: dict) -> Union[C
     outputs_prefix = get_outputs_prefix(command_name)
     command_results = CommandResults(outputs_prefix=outputs_prefix, outputs_key_field='execution_id', outputs=outputs,
                                      raw_response=copy.deepcopy(outputs))
-    # if there are more then 1000 results
+    # if there are more than 1000 results
     if file_data:
         if not parse_result_file_to_context:
             #  Extracts the results into a file only
             file = fileResult(filename="results.gz", data=file_data)
+            command_results.readable_output = 'More than 1000 results were retrieved, see the compressed gzipped file below.'
             remove_query_id_from_integration_context(query_id)
             return [file, command_results]
         else:

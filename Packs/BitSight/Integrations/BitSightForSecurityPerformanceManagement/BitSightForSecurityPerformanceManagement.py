@@ -1,25 +1,78 @@
+"""Main file for BitSightForSecurityPerformanceManagement Integration."""
+import requests
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-''' IMPORTS '''
-import traceback
-import requests
-
-
 '''CONSTANTS'''
-BitSight_date_time_format = '%Y-%m-%d'
+BITSIGHT_DATE_TIME_FORMAT = '%Y-%m-%d'
+DEFAULT_FIRST_FETCH_DAYS = 3
+DEFAULT_FETCH_LIMIT = 25
+MAX_FETCH_LIMIT = 200
+BASE_URL = "https://api.bitsighttech.com"
+MAX_LIMIT = 1000
+DEFAULT_LIMIT = 100
+DEFAULT_OFFSET = 0
+
+ERROR_MESSAGES = {
+    "GUID_REQUIRED": "Must provide a GUID.",
+    "GUID_NOT_FETCHED": "Unable to fetch GUID.",
+    "GUID_NOT_AVAILABLE": "Provided 'Company's GUID' is not available/valid."
+                          " Please input a GUID retrieved using the command \"bitsight-companies-guid-get\".",
+    "INVALID_SELECT": "'{}' is an invalid value for '{}'. Value must be in {}.",
+    "INVALID_MAX_FETCH": f"Parameter 'Max Fetch' is not a valid number."
+                         f" Please provide a number in range 1 to {MAX_FETCH_LIMIT}.",
+    "NEGATIVE_FIRST_FETCH": "Parameter 'First fetch time in days' should be a number greater than or equal to 0.",
+    "LIMIT_GREATER_THAN_ALLOWED": f"Argument 'limit' should be a number less than or equal to {MAX_LIMIT}."
+}
+
+SEVERITY_MAPPING = {
+    'minor': 1,
+    'moderate': 4,
+    'material': 7,
+    'severe': 9
+}
+
+ASSET_CATEGORY_MAPPING = {
+    'low': 'low,medium,high,critical',
+    'medium': 'medium,high,critical',
+    'high': 'high,critical',
+    'critical': 'critical'
+}
+
+RISK_VECTOR_MAPPING = {
+    'web application headers': 'application_security',
+    'botnet infections': 'botnet_infections',
+    'breaches': 'data_breaches',
+    'desktop software': 'desktop_software',
+    'dkim': 'dkim',
+    'dnssec': 'dnssec',
+    'file sharing': 'file_sharing',
+    'insecure systems': 'insecure_systems',
+    'malware servers': 'malware_servers',
+    'mobile app publications': 'mobile_app_publications',
+    'mobile application security': 'mobile_application_security',
+    'mobile software': 'mobile_software',
+    'open ports': 'open_ports',
+    'patching cadence': 'patching_cadence',
+    'potentially exploited': 'potentially_exploited',
+    'server software': 'server_software',
+    'spam propagation': 'spam_propagation',
+    'spf': 'SPF',
+    'ssl certificates': 'ssl_certificates',
+    'ssl configurations': 'ssl_configurations',
+    'unsolicited communications': 'unsolicited_comm'
+}
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
 
 class Client(BaseClient):
-    """
-    Client will implement the service API, should not contain Cortex XSOAR logic.
-    Should do requests and return data
-    """
+    """Client will implement the service API, should not contain Cortex XSOAR logic. \
+    Should do requests and return data."""
 
     def get_companies_guid(self):
+        """Retrieve subscribed company details."""
         uri = 'v1/companies'
         return self._http_request(
             method='GET',
@@ -27,32 +80,37 @@ class Client(BaseClient):
         )
 
     def get_company_detail(self, guid):
+        """
+        Retrieve company details based on its Guid.
+
+        :param guid: guid of the company whose details need to be retrieved
+        """
         uri = f'v1/companies/{encode_string_results(guid)}'
         return self._http_request(
             method='GET',
             url_suffix=uri
         )
 
-    def get_company_findings(self, guid, first_seen, last_seen, severity_gte, grade_gt, asset_category, risk_vector):
+    def get_company_findings(self, guid, first_seen, last_seen, optional_params=None):
+        """
+        Retrieve company findings based on its Guid.
+
+        :param guid: guid of the company whose findings need to be retrieved
+        :param first_seen: first seen date (YYYY-MM-DD) of the findings
+        :param last_seen: last seen date (YYYY-MM-DD) of the findings
+        :param optional_params: params to be passed to the findings endpoint
+        """
         uri = f'v1/companies/{encode_string_results(guid)}/findings'
 
         params = {
             'first_seen_gte': first_seen,
             'last_seen_lte': last_seen,
-            'unsampled': 'true'
+            'unsampled': 'true',
+            'expand': 'attributed_companies'
         }
-
-        if severity_gte:
-            params['severity_gte'] = severity_gte
-
-        if grade_gt:
-            params['details.grade'] = grade_gt
-
-        if asset_category:
-            params['assets.category'] = asset_category
-
-        if risk_vector:
-            params['risk_vector'] = risk_vector
+        if optional_params:
+            params.update(optional_params)
+        remove_nulls_from_dictionary(params)
 
         return self._http_request(
             method='GET',
@@ -64,54 +122,161 @@ class Client(BaseClient):
 '''HELPER FUNCTIONS'''
 
 
-def get_time_elapsed(fetch_time, last_run, first_fetch):
-    today = datetime.today()
-    now = datetime.now()
-    if 'time' in last_run:
-        # Get Last run and parse to date format. Bitsight report will be pulled from last run date to Yesterday's date
-        last_run_time = last_run['time']
-        last_run = datetime.strptime(last_run_time, '%Y-%m-%dT%H:%M:%SZ')
-        last_run_time = last_run.strftime(BitSight_date_time_format)
-        time_elapsed_in_minutes = (now - last_run).total_seconds() / 60
-    else:
-        # If last run time is not set, data will be pulled using fetch_time
-        # i.e. last 10min if fetch events is set to 10min
-        last_run_time = (today - timedelta(days=first_fetch)).strftime(
-            BitSight_date_time_format)
-        time_elapsed_in_minutes = fetch_time
+def trim_spaces_from_args(args):
+    """
+    Trim spaces from values of the args dict.
 
-    return time_elapsed_in_minutes, last_run_time
+    :param args: Dict to trim spaces from
+    :type args: dict
+    :return:
+    """
+    for key, val in args.items():
+        if isinstance(val, str):
+            args[key] = val.strip()
+
+    return args
+
+
+def camelize_strings_with_underscore(string: str):
+    """
+    Wrap CommonServerPython's camelize_string to also convert Pascal strings.
+
+    :param string: string to convert to camel case
+    """
+    if string.find("_") == -1:
+        return string[0].lower() + string[1:]
+    else:
+        return camelize_string(string, upper_camel=False)
+
+
+def camelize_dict_recursively(src):
+    """
+    Camelize all the keys in a dictionary with nested dictionaries and lists.
+
+    :param src: the dictionary to camelize
+    """
+    destination = {}
+    for key, value in src.items():
+        if isinstance(value, dict):
+            destination[camelize_strings_with_underscore(key)] = camelize_dict_recursively(value)
+        elif isinstance(value, list):
+            if value and isinstance(value[0], dict):
+                destination[camelize_strings_with_underscore(key)] = [camelize_dict_recursively(list_value) for
+                                                                      list_value in value]
+            else:
+                destination[camelize_strings_with_underscore(key)] = value
+        else:
+            destination[camelize_strings_with_underscore(key)] = value
+    return destination
+
+
+def prepare_and_validate_company_findings_get_filter_args(risk_vector_list, severity, asset_category):
+    """
+    Prepare and validate arguments for bitsight-company-findings-get.
+
+    :param risk_vector_list: input from argument risk_vector_label
+    :param severity: input from argument severity
+    :param asset_category: input from argument asset_category
+    """
+    risk_vector = ''
+    for vector in risk_vector_list:
+        if vector.lower() in RISK_VECTOR_MAPPING:
+            risk_vector += RISK_VECTOR_MAPPING[vector.lower()] + ','
+        else:
+            raise ValueError(ERROR_MESSAGES["INVALID_SELECT"].format(vector.lower(), 'risk_vector_label',
+                                                                     ", ".join(RISK_VECTOR_MAPPING.keys())))
+
+    risk_vector = risk_vector[:-1]
+
+    severity_gte = None
+    if severity:
+        if severity in SEVERITY_MAPPING:
+            severity_gte = SEVERITY_MAPPING[severity]
+        else:
+            raise ValueError(ERROR_MESSAGES["INVALID_SELECT"].format(severity, 'severity',
+                                                                     ", ".join(SEVERITY_MAPPING.keys())))
+
+    asset_category_eq = None
+    if asset_category:
+        if asset_category in ASSET_CATEGORY_MAPPING:
+            asset_category_eq = ASSET_CATEGORY_MAPPING[asset_category]
+        else:
+            raise ValueError(ERROR_MESSAGES["INVALID_SELECT"].format(asset_category, 'asset_category',
+                                                                     ", ".join(ASSET_CATEGORY_MAPPING.keys())))
+    return risk_vector, severity_gte, asset_category_eq
+
+
+def prepare_and_validate_fetch_findings_args(client, args):
+    """
+    Prepare and validate arguments for company_findings_get_command when fetch_incidents is true.
+
+    :param client: client to use
+    :param args: arguments obtained from demisto.args()
+    """
+    guid = args.get('guid', None)
+    if not guid:
+        res = client.get_companies_guid()
+        if res.status_code == 200:
+            res_json = res.json()
+            guid = res_json.get('my_company', {}).get('guid')
+        else:
+            raise DemistoException(ERROR_MESSAGES["GUID_NOT_FETCHED"])
+    severity = args.get('findings_min_severity', None)
+    if severity:
+        severity = severity.lower()
+    grade = args.get('findings_grade', None)
+    asset_category = args.get('findings_min_asset_category', None)
+    if asset_category:
+        asset_category = asset_category.lower()
+    risk_vector_list = argToList(args.get('risk_vector'))
+    if 'All' in risk_vector_list:
+        risk_vector_list = []
+    limit = arg_to_number(args.get('max_fetch', DEFAULT_FETCH_LIMIT), 'Max Fetch', True)
+    if limit and (limit < 1 or limit > MAX_FETCH_LIMIT):  # type: ignore
+        raise ValueError(ERROR_MESSAGES["INVALID_MAX_FETCH"])
+
+    return guid, severity, grade, asset_category, risk_vector_list, limit
 
 
 '''COMMAND FUNCTIONS'''
 
 
 def fetch_incidents(client, last_run, params):
+    """
+    Fetch BitSight Findings.
+
+    :param client: client to use
+    :param last_run: last run object obtained from demisto.getLastRun()
+    :param params: arguments obtained from demisto.params()
+    """
     events = []
-    minuets_in_day = 1440
-
     try:
-        # If there is no fetch time configured, it will be set to 0 and no events will be pulled
-        first_fetch = int(params.get('first_fetch', 1))
-        fetch_time = params.get('fetch_time', '00:01')
-        current_time = datetime.now().strftime('%H:%M')
-        time_elapsed_in_minutes, last_run_date = get_time_elapsed(minuets_in_day, last_run, first_fetch)
+        if "offset" in last_run:
+            params["offset"] = last_run["offset"]
+            last_run_date = last_run["first_fetch"]
+        else:
+            first_fetch = arg_to_number(params.get('first_fetch', DEFAULT_FIRST_FETCH_DAYS), 'First fetch time in days',
+                                        True)
+            if first_fetch < 0:  # type: ignore
+                raise ValueError(ERROR_MESSAGES["NEGATIVE_FIRST_FETCH"])
+            today = datetime.now()
+            last_run_date = (today - timedelta(days=first_fetch)).strftime(BITSIGHT_DATE_TIME_FORMAT)  # type: ignore
 
-        if (time_elapsed_in_minutes >= minuets_in_day) and (current_time >= fetch_time):
-            report_entries = []
-            findings_res = get_company_findings_command(client, params, last_run_date, True)
-            report_entries.extend(findings_res.get('results', []))
+        report_entries = []
+        findings_res = company_findings_get_command(client, params, last_run_date, True)
+        report_entries.extend(findings_res.get('results', []))
 
-            for entry in report_entries:
-                # Set the Raw JSON to the event. Mapping will be done at the classification and mapping
-                event = {
-                    "name": "BitSight Finding - " + entry.get('temporary_id'),
-                    'occurred': entry.get('first_seen') + 'T00:00:00Z',
-                    "rawJSON": json.dumps(entry)}
-                events.append(event)
-            last_run_time = datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
+        for entry in report_entries:
+            # Set the Raw JSON to the event. Mapping will be done at the classification and mapping
+            event = {
+                "name": "BitSight Finding - " + entry.get('temporary_id'),
+                'occurred': entry.get('first_seen') + 'T00:00:00Z',
+                "rawJSON": json.dumps(entry)}
+            events.append(event)
 
-            last_run = {'time': last_run_time}
+        last_run = {'first_fetch': last_run_date,
+                    "offset": params["offset"] + len(report_entries) if params.get("offset") else len(report_entries)}
+
     except Exception as e:
         demisto.error('Failed to fetch events.')
         raise e
@@ -119,97 +284,77 @@ def fetch_incidents(client, last_run, params):
     return last_run, events
 
 
-def test_module(client):
+def test_module(client, params):
     """
-    Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
-    Anything else will fail the test.
+    Returning 'ok' indicates that the integration works like it is supposed to. \
+    Connection to the service is successful. Anything else will fail the test.
+
+    :param client: client to use
+    :param params: parameters obtained from demisto.params()
     """
     res = client.get_companies_guid()
 
-    available_guids = {c["guid"] for c in res["companies"]}
-    requested_guid = demisto.params().get("guid", None)
+    if params.get("isFetch", False):
+        available_guids = {c["guid"] for c in res["companies"]}
+        requested_guid = params.get("guid")
 
-    if requested_guid is None:
-        raise Exception("Must provide a GUID ")
+        if not requested_guid:
+            raise ValueError(ERROR_MESSAGES["GUID_REQUIRED"])
 
-    if requested_guid in available_guids:
-        return 'ok', None, None
-    else:
-        raise Exception(f"Failed to execute test_module "
-                        f"Response: {res}")
+        if requested_guid not in available_guids:
+            raise ValueError(ERROR_MESSAGES["GUID_NOT_AVAILABLE"])
+        fetch_incidents(client, {}, params)
+    return 'ok'
 
 
-def get_companies_guid_command(client):
-    generic_iam_context_data_list = []
+def companies_guid_get_command(client, *args):
+    """
+    Retrieve subscribed company details.
+
+    :param client: client to use
+    """
     res_json = client.get_companies_guid()
-
-    generic_iam_context = {
-        'companyName': 'my_company',
-        'shortName': 'my_company',
-        'guid': res_json.get('my_company', {}).get('guid')
-    }
-    generic_iam_context_data_list.append(generic_iam_context)
-    companies_list = res_json.get('companies', [])
+    outputs = camelize_dict_recursively(remove_empty_elements(res_json))
+    context_output = {'BitSight.Company(val.guid == obj.guid)': outputs.get('companies', []),
+                      'BitSight.MyCompany(val.guid == obj.guid)': outputs.get('myCompany', {})}
+    hr = []
+    companies_list = outputs.get('companies', [])
     for company in companies_list:
-        generic_iam_context = {
-            'companyName': company.get('name'),
-            'shortName': company.get('shortname'),
-            'guid': company.get('guid')
-        }
-        generic_iam_context_data_list.append(generic_iam_context)
+        hr.append({
+            'Company Name': company.get('name'),
+            'Company Short Name': company.get('shortname'),
+            'GUID': company.get('guid'),
+            'Rating': company.get('rating')
+        })
 
-    readable_output = tableToMarkdown(name='Get Companies GUID:',
-                                      t=generic_iam_context_data_list,
-                                      headers=["companyName", "shortName", "guid"],
+    readable_output = tableToMarkdown(name='Companies:',
+                                      metadata=f"My Company: {outputs.get('myCompany', {}).get('guid')}",
+                                      t=hr,
+                                      headers=["Company Name", "Company Short Name", "GUID", "Rating"],
                                       removeNull=True
                                       )
 
-    return readable_output, generic_iam_context_data_list, res_json
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=context_output,
+        raw_response=outputs
+    )
 
 
-def get_company_details_command(client, args):
+def company_details_get_command(client, args):
+    """
+    Retrieve company details based on its Guid.
+
+    :param client: client to use
+    :param args: arguments obtained from demisto.args()
+    """
     guid = args.get('guid')
     res_json = client.get_company_detail(guid)
 
-    generic_iam_context = {
-        'guid': res_json.get('guid'),
-        'customId': res_json.get('custom_id'),
-        'name': res_json.get('name'),
-        'description': res_json.get('description'),
-        'ipv4Count': res_json.get('ipv4_count'),
-        'peopleCount': res_json.get('people_count'),
-        'shortName': res_json.get('shortname'),
-        'industry': res_json.get('industry'),
-        'industrySlug': res_json.get('industry_slug'),
-        'subIndustry': res_json.get('sub_industry'),
-        'subIndustrySlug': res_json.get('sub_industry_slug'),
-        'homePage': res_json.get('homepage'),
-        'primaryDomain': res_json.get('primary_domain'),
-        'type': res_json.get('type'),
-        'displayURL': res_json.get('display_url'),
-        'ratingDetails': res_json.get('rating_details'),
-        'ratings': res_json.get('ratings'),
-        'searchCount': res_json.get('search_count'),
-        'subscriptionType': res_json.get('subscription_type'),
-        'sparkline': res_json.get('sparkline'),
-        'subscriptionTypeKey': res_json.get('subscription_type_key'),
-        'subscriptionEndDate': res_json.get('subscription_end_date'),
-        'bulkEmailSenderStatus': res_json.get('bulk_email_sender_status'),
-        'serviceProvider': res_json.get('service_provider'),
-        'customerMonitoringCount': res_json.get('customer_monitoring_count'),
-        'availableUpgradeTypes': res_json.get('available_upgrade_types'),
-        'hasCompanyTree': res_json.get('has_company_tree'),
-        'hasPreferredContact': res_json.get('has_preferred_contact'),
-        'isBundle': res_json.get('is_bundle'),
-        'ratingIndustryMedian': res_json.get('rating_industry_median'),
-        'primaryCompany': res_json.get('primary_company'),
-        'permissions': res_json.get('permissions'),
-        'isPrimary': res_json.get('is_primary'),
-        'securityGrade': res_json.get('security_grade'),
-        'inSpmPortfolio': res_json.get('in_spm_portfolio'),
-        'isMycompMysubsBundle': res_json.get('is_mycomp_mysubs_bundle'),
-        'companyFeatures': res_json.get('company_features')
-    }
+    outputs = camelize_dict_recursively(remove_empty_elements(res_json))
+
+    outputs["ratingDetails"] = [value for _, value in outputs.get("ratingDetails", {}).items()]
+
     company_info = {
         'guid': res_json.get('guid'),
         'customId': res_json.get('custom_id'),
@@ -253,174 +398,115 @@ def get_company_details_command(client, args):
         'Rating Details': rating_details
     }
 
-    readable_output = tableToMarkdown(name='Get Company Details:',
+    readable_output = tableToMarkdown(name='Company Details:',
                                       t=readable,
                                       headers=["Company Info", "Ratings", "Rating Details"],
                                       removeNull=True
                                       )
-    return readable_output, generic_iam_context, res_json
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='BitSight.Company',
+        outputs=outputs,
+        outputs_key_field='guid',
+        raw_response=res_json
+    )
 
 
-def get_company_findings_command(client, args, first_seen=None, fetch_incidents=False):
+def company_findings_get_command(client, args, first_seen=None, fetch_incidents=False):
+    """
+    Retrieve company findings based on its Guid.
+
+    :param client: client to use
+    :param args: arguments obtained from demisto.args()
+    :param first_seen: first seen of the finding
+    :param fetch_incidents: whether the command is called from fetch_incidents
+    """
+    last_seen = None
     if fetch_incidents:
-        guid = args.get('guid', None)
-        if not guid:
-            res = client.get_companies_guid()
-            if res.status_code == 200:
-                res_json = res.json()
-                guid = res_json.get('my_company', {}).get('guid')
-            else:
-                raise Exception('Unable to fetch GUID')
-        severity = args.get('findings_min_severity', None)
-        if severity:
-            severity = severity.lower()
-        grade = args.get('findings_grade', None)
-        if type(grade) is list:
-            grade = ','.join(grade)
-        asset_category = args.get('findings_asset_category', None)
-        if asset_category:
-            asset_category = asset_category.lower()
-        risk_vector_list = args.get('risk_vector')
-        if not isinstance(risk_vector_list, list):
-            risk_vector_list = risk_vector_list.split(',')
-        if 'All' in risk_vector_list:
-            risk_vector_list = []
-        first_seen = first_seen
-        last_seen = (datetime.today() - timedelta(days=1)).strftime(BitSight_date_time_format)
+        guid, severity, grade, asset_category, risk_vector_list, limit = prepare_and_validate_fetch_findings_args(
+            client, args)
+        offset = arg_to_number(args.get('offset', DEFAULT_OFFSET), 'offset')
     else:
         guid = args.get('guid')
         severity = args.get('severity', None)
         grade = args.get('grade', None)
         asset_category = args.get('asset_category', None)
+        limit = arg_to_number(args.get('limit', DEFAULT_LIMIT), 'limit')
+        if limit and limit > MAX_LIMIT:  # type: ignore
+            raise ValueError(ERROR_MESSAGES["LIMIT_GREATER_THAN_ALLOWED"])
+        offset = arg_to_number(args.get('offset', DEFAULT_OFFSET), 'offset')
         if severity:
             severity = severity.lower()
         if grade:
             grade = grade.lower()
         if asset_category:
             asset_category = asset_category.lower()
-        risk_vector_list = args.get('risk_vector_label', None)
-        if risk_vector_list:
-            risk_vector_list = risk_vector_list.split(',')
-        else:
-            risk_vector_list = []
+        risk_vector_list = argToList(args.get('risk_vector_label', []))
         first_seen = args.get('first_seen')
         last_seen = args.get('last_seen')
 
-    severity_mapping = {
-        'minor': 1,
-        'moderate': 2,
-        'material': 3,
-        'severe': 4
-    }
+    risk_vector, severity_gte, asset_category_eq = prepare_and_validate_company_findings_get_filter_args(
+        risk_vector_list,
+        severity,
+        asset_category)
+    res_json = client.get_company_findings(guid, first_seen, last_seen,
+                                           {"severity_gte": severity_gte, "details.grade": grade,
+                                            "assets.category": asset_category_eq,
+                                            "risk_vector": risk_vector, "limit": limit,
+                                            "offset": offset})
 
-    asset_category_mapping = {
-        'low': 'low,medium,high,critical',
-        'medium': 'medium,high,critical',
-        'high': 'high,critical',
-        'critical': 'critical'
-    }
-
-    risk_vector_mapping = {
-        'web application headers': 'application_security',
-        'botnet infections': 'botnet_infections',
-        'breaches': 'data_breaches',
-        'desktop software': 'desktop_software',
-        'dkim': 'dkim',
-        'dnssec': 'dnssec',
-        'file sharing': 'file_sharing',
-        'insecure systems': 'insecure_systems',
-        'malware servers': 'malware_servers',
-        'mobile app publications': 'mobile_app_publications',
-        'mobile application security': 'mobile_application_security',
-        'mobile software': 'mobile_software',
-        'open ports': 'open_ports',
-        'patching cadence': 'patching_cadence',
-        'potentially exploited': 'potentially_exploited',
-        'server software': 'server_software',
-        'spam propagation': 'spam_propagation',
-        'spf': 'SPF',
-        'ssl certificates': 'ssl_certificates',
-        'ssl configurations': 'ssl_configurations',
-        'unsolicited communications': 'unsolicited_comm'
-    }
-
-    risk_vector = ''
-    for vector in risk_vector_list:
-        risk_vector += risk_vector_mapping[vector.lower()] + ','
-
-    risk_vector = risk_vector[:-1]
-
-    severity_gte = None
-    if severity:
-        severity_gte = severity_mapping[severity]
-
-    asset_category_eq = None
-    if asset_category:
-        asset_category_eq = asset_category_mapping[asset_category]
-
-    res_json = client.get_company_findings(guid, first_seen, last_seen, severity_gte, grade, asset_category_eq,
-                                           risk_vector)
-
-    if not fetch_incidents:
-        generic_iam_context_data_list = []
-        readable_list = []
-        results = res_json.get('results')
-        if results:
-            for result in results:
-                generic_iam_context = {
-                    'temporaryId': result.get('temporary_id'),
-                    'affectsRating': result.get('affects_rating'),
-                    'assets': result.get('assets'),
-                    'details': result.get('details'),
-                    'evidenceKey': result.get('evidence_key'),
-                    'firstSeen': result.get('first_seen'),
-                    'lastSeen': result.get('last_seen'),
-                    'relatedFindings': result.get('related_findings'),
-                    'riskCategory': result.get('risk_category'),
-                    'riskVector': result.get('risk_vector'),
-                    'riskVectorLabel': result.get('risk_vector_label'),
-                    'rolledupObservationId': result.get('rolledup_observation_id'),
-                    'severity': result.get('severity'),
-                    'severityCategory': result.get('severity_category'),
-                    'tags': result.get('tags'),
-                    'duration': result.get('duration'),
-                    'comments': result.get('comments'),
-                    'remainingDecay': result.get('remaining_decay')
-                }
-
-                generic_iam_context_data_list.append(generic_iam_context)
-                readable = {
-                    'Evidence Key': result.get('evidence_key'),
-                    'Risk Vector Label': result.get('risk_vector_label'),
-                    'First Seen': result.get('first_seen'),
-                    'Last Seen': result.get('last_seen'),
-                    'ID': result.get('temporary_id'),
-                    'Risk Category': result.get('risk_category'),
-                    'Severity': result.get('severity_category'),
-                }
-                readable_list.append(readable)
-        else:
-            generic_iam_context_data_list.append({})
-            readable_list.append({})
-
-        readable_output = tableToMarkdown(name='Get Company findings:',
-                                          t=readable_list,
-                                          headers=["Evidence Key", "Risk Vector Label", "First Seen", "Last Seen",
-                                                   "ID", "Risk Category", "Severity"],
-                                          removeNull=True
-                                          )
-        return readable_output, generic_iam_context_data_list, res_json
-    else:
+    if fetch_incidents:
         return res_json
+    res_json_cleaned = camelize_dict_recursively(remove_empty_elements(res_json))
+    readable_list = []
+    outputs = None
+    if res_json_cleaned.get("results", []):
+        for finding in res_json_cleaned.get("results", []):
+            readable = {
+                'Evidence Key': finding.get('evidenceKey'),
+                'Risk Vector Label': finding.get('riskVectorLabel'),
+                'First Seen': finding.get('firstSeen'),
+                'Last Seen': finding.get('lastSeen'),
+                'ID': finding.get('temporaryId'),
+                'Risk Category': finding.get('riskCategory'),
+                'Severity': finding.get('severityCategory'),
+                'Asset Category': "\n".join(
+                    [f"{asset.get('asset')}: {asset.get('category', '').title()}" for asset
+                     in finding.get('assets', [])]),
+                'Finding Grade': finding.get('details', {}).get('grade', '').title()
+            }
+            readable_list.append(readable)
+        outputs = {
+            "BitSight.Company(val.guid == obj.guid)": {
+                "guid": guid.lower(),
+                "CompanyFinding": res_json_cleaned.get("results", [])
+            },
+            "BitSight.Page(val.name == obj.name)": {
+                "name": "bitsight-company-findings-get",
+                "next": res_json_cleaned.get("links", {}).get("next"),
+                "previous": res_json_cleaned.get("links", {}).get("previous"),
+                "count": res_json_cleaned.get("count")
+            }}
+
+    readable_output = tableToMarkdown(name='Company findings:',
+                                      t=readable_list,
+                                      metadata=f"Total Findings: {res_json_cleaned.get('count')}",
+                                      headers=["Evidence Key", "Risk Vector Label", "First Seen", "Last Seen",
+                                               "ID", "Risk Category", "Severity", "Asset Category",
+                                               "Finding Grade"],
+                                      removeNull=True
+                                      )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=outputs,
+        raw_response=res_json
+    )
 
 
 def main():
+    """PARSE AND VALIDATE INTEGRATION PARAMS."""
     command = demisto.command()
     params = demisto.params()
-    """
-        PARSE AND VALIDATE INTEGRATION PARAMS
-    """
-    base_url = params.get('url')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     api_key = params.get('apikey', {})
@@ -428,7 +514,7 @@ def main():
     demisto.info(f'Command being called is {command}')
 
     client = Client(
-        base_url=base_url,
+        base_url=BASE_URL,
         verify=verify_certificate,
         proxy=proxy,
         ok_codes=[200],
@@ -437,53 +523,32 @@ def main():
 
     try:
         '''EXECUTION CODE'''
-        if command == 'bitsight-get-company-details':
-            readable_output, context, res_json = get_company_details_command(client, demisto.args())
-            results = CommandResults(
-                readable_output=readable_output,
-                outputs_prefix='BitSight.Company',
-                outputs=context,
-                outputs_key_field='guid',
-                raw_response=res_json
-            )
-            return_results(results)
-        elif command == 'bitsight-get-company-findings':
-            readable_output, context, res_json = get_company_findings_command(client, demisto.args())
-            results = CommandResults(
-                readable_output=readable_output,
-                outputs_prefix='BitSight.Finding',
-                outputs=context,
-                outputs_key_field='guid',
-                raw_response=res_json
-            )
-            return_results(results)
-        elif command == 'test-module':
-            human_readable, outputs, raw_response = test_module(client)
-            return_outputs(readable_output=human_readable, outputs=outputs, raw_response=raw_response)
-        elif command == 'bitsight-get-companies-guid':
-            readable_output, context, res_json = get_companies_guid_command(client)
-            results = CommandResults(
-                readable_output=readable_output,
-                outputs_prefix='BitSight.GUID',
-                outputs=context,
-                outputs_key_field='temporary_id',
-                raw_response=res_json
-            )
-            return_results(results)
-        elif command == 'fetch-incidents':
+        if demisto.command() == 'test-module':
+            # This is the call made when pressing the integration Test button.
+            return_results(test_module(client, params))
+        elif demisto.command() == 'fetch-incidents':
             last_run = demisto.getLastRun()
-
             last_run_curr, events = fetch_incidents(client, last_run, params)
 
-            if last_run != last_run_curr:
-                demisto.setLastRun({'time': last_run_curr['time']})
-                demisto.incidents(events)
+            demisto.setLastRun(last_run_curr)
+            demisto.incidents(events)
+        else:
+            COMMAND_TO_FUNCTION = {
+                'bitsight-company-details-get': company_details_get_command,
+                "bitsight-company-findings-get": company_findings_get_command,
+                "bitsight-companies-guid-get": companies_guid_get_command,
+            }
+            if COMMAND_TO_FUNCTION.get(demisto.command()):
+                args = demisto.args()
+                remove_nulls_from_dictionary(trim_spaces_from_args(args))
+
+                return_results(COMMAND_TO_FUNCTION[demisto.command()](client, args))  # type: ignore
             else:
-                demisto.incidents([])
+                raise NotImplementedError(f'Command {demisto.command()} is not implemented')
 
     # Log exceptions
-    except Exception:
-        return_error(f'Failed to execute {demisto.command()} command. Traceback: {traceback.format_exc()}')
+    except Exception as e:
+        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{e}')
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:

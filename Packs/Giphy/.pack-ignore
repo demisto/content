@@ -1,2 +1,5 @@
-[file:integration-Giphy.yml]
-ignore=IN145
+[file:Giphy.yml]
+ignore=IN145,IN153
+
+[file:Giphy_image.png]
+ignore=IM111

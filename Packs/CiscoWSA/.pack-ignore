@@ -1,0 +1,5 @@
+[file:CiscoWSA_image.png]
+ignore=IM111
+
+[file:CiscoWSA.yml]
+ignore=IN153

@@ -262,7 +262,7 @@ tasks:
       '#none#':
       - "9"
       - "17"
-      - "29"
+      - "44"
     separatecontext: false
     view: |-
       {
@@ -323,7 +323,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -180,
+          "x": -190,
           "y": 2025
         }
       }
@@ -362,8 +362,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 230,
-          "y": 2415
+          "x": 80,
+          "y": 2550
         }
       }
     note: false
@@ -562,8 +562,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 660,
-          "y": 2025
+          "x": 1030,
+          "y": 2020
         }
       }
     note: false
@@ -589,8 +589,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 230,
-          "y": 2780
+          "x": -190,
+          "y": 2880
         }
       }
     note: false
@@ -651,8 +651,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1560,
-          "y": 2415
+          "x": 1950,
+          "y": 2360
         }
       }
     note: false
@@ -714,8 +714,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -650,
-          "y": 2640
+          "x": -660,
+          "y": 2735
         }
       }
     note: false
@@ -815,7 +815,7 @@ tasks:
     task:
       id: 94e599f9-c3db-4452-8db3-17033ecda3af
       version: -1
-      name: Check user AWS login profile
+      name: Check for AWS user login profile
       description: "Check the user AWS login profile configuration.\nIf a login profile\
         \ is configured, it needs to be deleted. \n\nThe user login profile configuration\
         \ can be found under https://console.aws.amazon.com/iam/home#/users/[username]\
@@ -824,16 +824,26 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      Delete Profile:
-      - "10"
-      No profile:
+      '#default#':
       - "19"
+      Delete profile:
+      - "45"
     separatecontext: false
+    conditions:
+    - label: Delete profile
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: AWS.IAM.Users
+                accessor: LoginProfile
+            iscontext: true
     view: |-
       {
         "position": {
           "x": 230,
-          "y": 2025
+          "y": 2205
         }
       }
     note: false
@@ -1032,8 +1042,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2000,
-          "y": 260
+          "x": 2260,
+          "y": 95
         }
       }
     note: false
@@ -1062,8 +1072,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2000,
-          "y": 2640
+          "x": 2260,
+          "y": 2735
         }
       }
     note: false
@@ -1116,8 +1126,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 660,
-          "y": 2415
+          "x": 1030,
+          "y": 2360
         }
       }
     note: false
@@ -1160,8 +1170,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 940,
-          "y": 2215
+          "x": 1720,
+          "y": 2190
         }
       }
     note: false
@@ -1190,8 +1200,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1120,
-          "y": 2415
+          "x": 1480,
+          "y": 2360
         }
       }
     note: false
@@ -1232,8 +1242,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -180,
-          "y": 2215
+          "x": -190,
+          "y": 2205
         }
       }
     note: false
@@ -1279,8 +1289,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
-          "y": 2590
+          "x": 1730,
+          "y": 2530
         }
       }
     note: false
@@ -1319,8 +1329,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 230,
-          "y": 2590
+          "x": 80,
+          "y": 2705
         }
       }
     note: false
@@ -1364,6 +1374,120 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 26a9e1e8-787c-4528-8a78-b164a059d66b
+    type: regular
+    task:
+      id: 26a9e1e8-787c-4528-8a78-b164a059d66b
+      version: -1
+      name: AWS IAM - Get user profile
+      description: Retrieves the user login profile information for AWS management
+        consle
+      script: '|||aws-iam-get-user-login-profile'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      userName:
+        complex:
+          root: AWS.IAM.Users.AccessKeys
+          accessor: UserName
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 2025
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 9ca18516-0441-4744-8535-c85fd0aac122
+    type: condition
+    task:
+      id: 9ca18516-0441-4744-8535-c85fd0aac122
+      version: -1
+      name: Automatically delete user login profile?
+      description: Do you want XSOAR to automatically delete the user login profile?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "46"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoDeleteProfile
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 2380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 378287be-05c1-47ee-8207-a58e864a7c03
+    type: regular
+    task:
+      id: 378287be-05c1-47ee-8207-a58e864a7c03
+      version: -1
+      name: Delete user login profile - Manual
+      description: "Delete the user login profile manually."
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 530,
+          "y": 2550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1374,8 +1498,7 @@ view: |-
       "23_16_yes": 0.76,
       "23_26_#default#": 0.47,
       "23_6_yes": 0.62,
-      "29_10_Delete Profile": 0.69,
-      "29_19_No profile": 0.26,
+      "29_19_#default#": 0.11,
       "31_15_#default#": 0.18,
       "34_35_#default#": 0.16,
       "34_43_yes": 0.66,
@@ -1384,9 +1507,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 3595,
-        "width": 3030,
-        "x": -650,
+        "height": 3695,
+        "width": 3300,
+        "x": -660,
         "y": -750
       }
     }
@@ -1412,7 +1535,13 @@ inputs:
     simple: "False"
   required: false
   description: 'True/False to initiate block IP playbook automatically '
-  playbookInputQuery:
+  playbookInputQuery: null
+- key: AutoDeleteProfile
+  value:
+    simple: "False"
+  required: false
+  description: True/False to automatically delete the user login profile if it exists.
+  playbookInputQuery: null
 outputs: []
 tests:
 - No tests

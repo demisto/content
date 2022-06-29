@@ -380,7 +380,7 @@
 </tr>
 <tr>
 <td style="width: 140px;">ip</td>
-<td style="width: 529px;">The IP address to add to the site’s allow list.</td>
+<td style="width: 529px;">The IP address to add to the site’s allow list in CSV format.</td>
 <td style="width: 71px;">Required</td>
 </tr>
 <tr>
@@ -533,7 +533,7 @@
 </tr>
 <tr>
 <td style="width: 141px;">ip</td>
-<td style="width: 528px;">The IP address to add to the site’s block list.</td>
+<td style="width: 528px;">The IP address to add to the site’s block list in CSV format.</td>
 <td style="width: 71px;">Required</td>
 </tr>
 <tr>
@@ -3498,3 +3498,48 @@
 </table>
 </div>
 </div>
+
+
+### sigsci-get-events
+***
+Fetches events from Signal Sciences.
+
+
+#### Base Command
+
+`sigsci-get-events`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| siteName | The name of the site to fetch events from. | Required | 
+| from_time | The POSIX Unix time to start. | Optional | 
+| until_time |  The POSIX Unix time to end. . | Optional | 
+| sort | The sort order ("asc" or "desc"). Possible values are: asc, desc. | Optional | 
+| since_id | The ID of the first object in the set. | Optional | 
+| max_id |  The ID of the last object in the set. . | Optional | 
+| limit | The maximum number of entries to return. | Optional | 
+| page | The page of the results. | Optional | 
+| action |  The action to filter by ('flagged' or 'info'). . Possible values are: flagged, info. | Optional | 
+| tag | The tag to filter by. Must be a valid tag name. | Optional | 
+| ip | The ID to filter by. | Optional | 
+| status | The status to filter by ("active" or "expired"). Possible values are: active, expired. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SigSciences.Corp.Site.Event.ID | string | The unique ID of the event. | 
+| SigSciences.Corp.Site.Event.Timestamp | date |  The timestamp of the event \(RFC3339 format\). | 
+| SigSciences.Corp.Site.Event.Source | string | The source information, for example, "IP". | 
+| SigSciences.Corp.Site.Event.RemoteCountryCode | string | The country code. | 
+| SigSciences.Corp.Site.Event.RemoteHostname | string | The remote hostname. | 
+| SigSciences.Corp.Site.Event.UserAgents | unknown | An array of user agents. | 
+| SigSciences.Corp.Site.Event.Action | unknown | If "flagged", the IP address is flagged and subsequent malicious requests will be blocked. If "info", the IP address is flagged and subsequent requests will be logged. | 
+| SigSciences.Corp.Site.Event.Reasons | unknown | The reason the event was triggered. | 
+| SigSciences.Corp.Site.Event.RequestCount | number | The total number of requests. | 
+| SigSciences.Corp.Site.Event.TagCount | number | The total number of tags. | 
+| SigSciences.Corp.Site.Event.Window | number | The time window \(in seconds\) when the items were detected. | 
+| SigSciences.Corp.Site.Event.DateExpires | string | The date the event expires \(RFC3339 format\). | 
+| SigSciences.Corp.Site.Event.ExpiredBy | string | The email address of the user that expired the event \(if the event is expired manually\). | 

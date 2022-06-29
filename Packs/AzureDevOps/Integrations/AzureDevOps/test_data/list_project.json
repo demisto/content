@@ -1,0 +1,14 @@
+{
+  "count": 1,
+  "value": [
+    {
+      "id": "xsoar-project",
+      "name": "xsoar",
+      "url": "https://dev.azure.com/xsoar/_apis/projects/xsoar-project",
+      "state": "wellFormed",
+      "revision": 11,
+      "visibility": "private",
+      "lastUpdateTime": "2021-10-27T08:38:28.187Z"
+    }
+  ]
+}

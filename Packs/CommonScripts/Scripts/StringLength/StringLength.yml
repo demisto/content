@@ -1,0 +1,21 @@
+commonfields:
+  id: StringLength
+  version: -1
+name: StringLength
+script: ''
+type: javascript
+tags:
+- Utility
+comment: Returns the length of  the string passed as argument
+enabled: true
+args:
+- name: str
+  required: true
+  description: The string to evaluate
+outputs:
+- contextPath: StringLength.Result
+  description: The length of the string passed as argument
+scripttarget: 0
+fromversion: 5.0.0
+tests:
+- No tests

@@ -2,7 +2,7 @@
     "name": "Thycotic Secret Server",
     "description": "Secure privileges for service, application, root and administrator accounts across your enterprise.",
     "support": "partner",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.2",
     "author": "Thycotic, Inc",
     "url": "https://thycotic.force.com/support/s/login",
     "email": "support@thycotic.com",
@@ -24,5 +24,9 @@
     },
     "displayedImages": [
         "CommonScripts"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

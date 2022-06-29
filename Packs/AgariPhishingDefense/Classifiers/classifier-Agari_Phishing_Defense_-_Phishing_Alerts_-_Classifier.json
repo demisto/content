@@ -1,0 +1,16 @@
+{
+    "defaultIncidentType": "Agari Phishing Defense Policy Event",
+    "description": "Classifies Agari Phishing Defense alerts as Phishing Alerts incident type.",
+    "feed": false,
+    "id": "f2b5dfe0-6c36-4edc-86c2-1b23e0798c19",
+    "keyTypeMap": {
+        "Agari Phishing Defense Policy Event": "Phishing Alerts"
+    },
+    "name": "Agari Phishing Defense - Phishing Alerts - Classifier",
+    "transformer": {
+        "simple": ".=\"Agari Phishing Defense Policy Event\""
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

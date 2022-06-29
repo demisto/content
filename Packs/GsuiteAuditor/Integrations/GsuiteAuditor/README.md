@@ -1,10 +1,17 @@
 G Suite Auditor is an integration that receives audit logs from G Suite's different applications - admin, drive, calendar, and more.
 
-###For more information about the integration arguments:
+## Required Permissions:
+In order to use the integration you will need:
+* Admin email address.
+* Service Account with access to the following scope - https://www.googleapis.com/auth/admin.reports.audit.readonly .
+
+For more information, see the integrations description.
+
+### For more information about the integration arguments:
 * [Command arguments documentation](https://developers.google.com/admin-sdk/reports/reference/rest/v1/activities/list?apix_params=%7B%22userKey%22%3A%22all%22%2C%22applicationName%22%3A%22admin%22%2C%22eventName%22%3A%22DELETE_USER%22%2C%22filters%22%3A%22USER_EMAIL%3D%3Dxsoar11%40demistodev.com%22%7D#query-parameters) in Google's API.
 * [Application to event names table](https://developers.google.com/admin-sdk/reports/reference/rest/v1/activities/list#applicationname) by Google's API.
 
-##Google's lag time information
+## Google's lag time information
 This integration relies on Google's audit logs which are prone to some data delays. Some results may be partial if data had not arrived due to lag times. The lag time changes depending on the used audit log (from near real-time up to 3 days).
 For more information - https://support.google.com/a/answer/7061566?hl=en
 

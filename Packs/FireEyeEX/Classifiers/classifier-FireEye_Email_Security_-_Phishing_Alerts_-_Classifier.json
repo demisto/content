@@ -1,0 +1,15 @@
+{
+    "description": "Classifies FireEye Email Security Alerts as Phishing Alerts incident type.",
+    "feed": false,
+    "id": "6a1583db-6ded-460c-8079-ce7f33905928",
+    "keyTypeMap": {
+        "EMAIL_MPS": "Phishing Alerts"
+    },
+    "name": "FireEye Email Security - Phishing Alerts - Classifier",
+    "transformer": {
+        "simple": "product"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

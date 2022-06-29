@@ -12,11 +12,6 @@ if [ -n "$DEMISTO_SDK_NIGHTLY" ]; then
     exit 0
 fi
 
-if [ -n "$BUCKET_UPLOAD" ]; then
-    echo "BUCKET_UPLOAD env var is set: $BUCKET_UPLOAD"
-    exit 0
-fi
-
 if [ -z "$CI_COMMIT_BRANCH" ]; then
     # simply compare against origin/master. Local testing case..
     DIFF_COMPARE=origin/master
@@ -39,7 +34,7 @@ fi
 
 # test if any of the lint libraries has been updated
 
-DIFF_RES=$(git diff  "$DIFF_COMPARE" -- dev-requirements-py*  | grep -E '\+(flake8|mypy|demisto-sdk|bandit|vulture)' )
+DIFF_RES=$(git diff  "$DIFF_COMPARE" -- poetry.lock)
 
 if [[ -n "$DIFF_RES" ]]; then
     echo -e "Found modified dependency packages:\n$DIFF_RES"
@@ -61,9 +56,9 @@ if [[ -n "$DIFF_RES" ]]; then
 fi
 
 # test if CommonServer has been modified
-DIFF_RES=$(git diff  "$DIFF_COMPARE" -- Packs/Base/Scripts/script-CommonServer.yml)
+DIFF_RES=$(git diff  "$DIFF_COMPARE" -- Packs/Base/Scripts/CommonServer/CommonServer.js)
 if [[ -n "$DIFF_RES" ]]; then
-    echo -e "CommonServer.yml has been modified"
+    echo -e "CommonServer.js has been modified"
     exit 0
 fi
 

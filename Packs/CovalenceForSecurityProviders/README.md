@@ -1,5 +1,3 @@
-Note: This is a beta pack, which lets you implement and test pre-release software. Since the pack is beta, it might contain bugs. Updates to the pack during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the pack to help us identify issues, fix them, and continually improve.   
-
 Threats can come from many sources, both externally and internally, and are often the result of vulnerable software, improperly configured devices and systems, or human error. To achieve maximum protection, you need to consider your vulnerabilities, monitor across the entire threat surface, and apply an attacker's mindset in order to create a proactive security posture rather than a solely reactive one.   
 
 Covalence monitors across your customers endpoints, cloud and network, correlating information across all three, identifying threats, and helping you protect them from attacks and vulnerabilities.   

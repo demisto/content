@@ -1,4 +1,7 @@
 Generates a Palo Alto Networks WildFire PDF report.
+
+This integration is set up by default on Cortex XSOAR versions 6.5+ with the Threat Intel Module (TIM). It is designed for internal use with the TIM Sample Analysis feature. To run ad hoc CLI commands to generate WildFire reports, use the Palo Alto Networks WildFire v2 integration instead.
+
 This integration was created and tested with version 10.1 of WildFire.
 
 ## Configure Palo Alto Networks WildFire Reports on Cortex XSOAR

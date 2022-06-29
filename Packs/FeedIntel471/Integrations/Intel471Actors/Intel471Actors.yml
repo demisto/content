@@ -1,4 +1,5 @@
 category: Data Enrichment & Threat Intelligence
+deprecated: true
 commonfields:
   id: Intel471 Actors Feed
   version: -1
@@ -100,11 +101,8 @@ configuration:
   name: insecure
   required: false
   type: 8
-description: |-
-  "Intel 471's Actors feed is an actor-centric intelligence feature.
-  It combines both a field-based intelligence collection and a headquartered-based intelligence analysis component.
-  This feed allows getting data out of closed sources (typically referred to as the deep and dark web) where threat actors collaborate, communicate, and plan cyber attacks."
-display: Intel471 Actors Feed
+description: Deprecated. To be replaced by use case centric functionality. No available replacement.
+display: Intel471 Actors Feed (Deprecated)
 name: Intel471 Actors Feed
 script:
   commands:
@@ -120,7 +118,7 @@ script:
     description: Gets the feed indicators.
     execution: false
     name: intel471-actors-get-indicators
-  dockerimage: demisto/jmespath:1.0.0.23980
+  dockerimage: demisto/py3-tools:0.0.1.26536
   feed: true
   isfetch: false
   longRunning: false
