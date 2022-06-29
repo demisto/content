@@ -1,8 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-register_module_line('Okta v2', 'start', __line__())
-
 
 # IMPORTS
 # Disable insecure warnings
@@ -238,7 +236,7 @@ class Client(BaseClient):
                 'EventOutcome': log.get('outcome', {}).get('result') + (
                     f": {log.get('outcome', {}).get('reason')}" if log.get('outcome', {}).get('reason') else ''),
                 'EventSeverity': log.get('severity'),
-                'Client': f"{browser} on {os} {device}",
+                'Client': f"{browser} on {os} {device}" if browser else "Unknown client",
                 'RequestIP': log.get('client', {}).get('ipAddress'),
                 'ChainIP': [ip_chain.get('ip') for ip_chain in log.get('request', {}).get('ipChain', [])],
                 'Targets': targets or '-',
@@ -1320,5 +1318,3 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-
-register_module_line('Okta v2', 'end', __line__())
