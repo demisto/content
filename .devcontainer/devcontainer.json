@@ -14,7 +14,7 @@
 				"path": "/bin/zsh"
 			}
 		},
-		"python.defaultInterpreterPath": "${containerEnv:POETRY_VENV_PATH}/bin/python",
+		"python.defaultInterpreterPath": "${containerEnv:POETRY_VENV_PATH}",
 		"python.venvFolders": ["~/.cache/pypoetry/virtualenvs"],
 		"python.linting.enabled": true,
 		"python.linting.flake8Enabled": true,
