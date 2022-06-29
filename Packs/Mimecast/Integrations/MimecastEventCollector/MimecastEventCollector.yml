@@ -7,7 +7,7 @@ configuration:
   name: base_url
   required: true
   type: 0
-- display: Application Id
+- display: Application ID
   displaypassword: Application key
   name: credentials_app
   type: 9
@@ -25,7 +25,7 @@ configuration:
 - display: First fetch timestamp (<number> <time unit>, for example, 12 hours, 7 days,
     3 months, 1 year)
   name: after
-  additionalinfo: This parameter is used only for the Audit logs configuration. Siem logs always set to "7 days ago". for additional information please review the pack README.
+  additionalinfo: This parameter is used only for the Audit logs configuration. SIEM logs are always set to "7 days ago". For additional information, review the pack README.
   type: 0
   required: true
   defaultvalue: 7 days
@@ -47,7 +47,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: 'False'
-      description: Set this argument to True in order to create events, otherwise the command will only display them.
+      description: Set to True in order to create events, otherwise the command will only display them.
       isArray: false
       name: should_push_events
       predefined:
