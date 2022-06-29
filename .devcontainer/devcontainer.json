@@ -6,7 +6,6 @@
 			"IMAGENAME": "devdemisto/content-env:1.0.0."
 		}
 	},
-	"initializeCommand": "docker pull devdemisto/content-env:1.0.0.",
 	"containerUser": "root",
 	"settings": {
 		"terminal.integrated.defaultProfile.linux": "zsh",
@@ -70,5 +69,5 @@
 		"github-cli": "latest"
 	},
 	// init ApiModule env variable to pythonpath
-	"onCreateCommand": "echo 'export PYTHONPATH=$(printf '%s: ' ${containerWorkspaceFolder}/Packs/ApiModules/Scripts/*):$PYTHONPATH' >> ~/.zshrc && echo 'export MYPYPATH=$(printf '%s: ' ${containerWorkspaceFolder}/Packs/ApiModules/Scripts/*):$MYPYPATH' >> ~/.zshrc"
+	"onCreateCommand": "poetry install && echo 'export PYTHONPATH=$(printf '%s: ' ${containerWorkspaceFolder}/Packs/ApiModules/Scripts/*):$PYTHONPATH' >> ~/.zshrc && echo 'export MYPYPATH=$(printf '%s: ' ${containerWorkspaceFolder}/Packs/ApiModules/Scripts/*):$MYPYPATH' >> ~/.zshrc"
 }
