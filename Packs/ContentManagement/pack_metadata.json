@@ -12,6 +12,9 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
+    "itemPrefix": [
+        "CICD"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
