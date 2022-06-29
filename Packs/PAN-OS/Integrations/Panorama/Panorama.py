@@ -10847,8 +10847,7 @@ def pan_os_get_running_config(args: dict):
         params["target"] = args.get("target")
 
     result = http_request(URL, 'POST', params=params, is_xml=True)
-    file = fileResult("running_config", result)
-    return_results(file)
+    return fileResult("running_config", result)
 
 
 def pan_os_get_merged_config(args: dict):
@@ -10865,12 +10864,9 @@ def pan_os_get_merged_config(args: dict):
     if args.get("target"):
         params["target"] = args.get("target")
 
-
     result = http_request(URL, 'POST', params=params, is_xml=True)
 
-    file = fileResult("merged_config", result)
-    return_results(file)
-
+    return fileResult("merged_config", result)
 
 
 def main():
@@ -11502,9 +11498,9 @@ def main():
             # This just returns a fileResult object directly.
             return_results(get_device_state(topology, **demisto.args()))
         elif command == 'pan-os-get-merged-config':
-            pan_os_get_merged_config(args)
+            return_results(pan_os_get_merged_config(args))
         elif command == 'pan-os-get-running-config':
-            pan_os_get_running_config(args)
+            return_results(pan_os_get_running_config(args))
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
     except Exception as err:
