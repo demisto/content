@@ -4,6 +4,7 @@ import string
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
+from itertools import zip_longest
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -348,6 +349,39 @@ class Client(CoreClient):
             modified_incidents_context[incident_id] = incident.get('modification_time')
 
         set_integration_context({'modified_incidents': modified_incidents_context})
+
+    def get_contributing_event_by_alert_id(self, alert_id: int) -> dict:
+        request_data = {
+            "request_data": {
+                "alert_id": alert_id,
+            }
+        }
+
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/alerts/get_correlation_alert_data/',
+            json_data=request_data,
+            timeout=self.timeout,
+        )
+
+        return reply.get('reply', {})
+
+    def replace_featured_field(self, field_type: str, fields: list[dict]) -> dict:
+        request_data = {
+            'request_data': {
+                'fields': fields
+            }
+        }
+
+        reply = self._http_request(
+            method='POST',
+            url_suffix=f'/featured_fields/replace_{field_type}',
+            json_data=request_data,
+            timeout=self.timeout,
+            raise_on_status=True
+        )
+
+        return reply.get('reply')
 
 
 def get_incidents_command(client, args):
@@ -958,6 +992,74 @@ def get_endpoints_by_status_command(client: Client, args: Dict) -> CommandResult
         raw_response=raw_res)
 
 
+def get_contributing_event_command(client: Client, args: Dict) -> CommandResults:
+
+    if alert_ids := argToList(args.get('alert_ids')):
+        alerts = []
+
+        for alert_id in alert_ids:
+            if alert := client.get_contributing_event_by_alert_id(int(alert_id)):
+                page_number = max(int(args.get('page_number', 1)), 1) - 1  # Min & default zero (First page)
+                page_size = max(int(args.get('page_size', 50)), 0)  # Min zero & default 50
+                offset = page_number * page_size
+                limit = max(int(args.get('limit', 0)), 0) or offset + page_size
+
+                alert_with_events = {
+                    'alertID': str(alert_id),
+                    'events': alert.get('events', [])[offset:limit],
+                }
+                alerts.append(alert_with_events)
+
+        readable_output = tableToMarkdown(
+            'Contributing events', alerts, headerTransform=pascalToSpace, removeNull=True, is_auto_json_transform=True
+        )
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ContributingEvent',
+            outputs_key_field='alertID',
+            outputs=alerts,
+            raw_response=alerts
+        )
+
+    else:
+        return CommandResults(readable_output='The alert_ids argument cannot be empty.')
+
+
+def replace_featured_field_command(client: Client, args: Dict) -> CommandResults:
+    field_type = args.get('field_type', '')
+    values = argToList(args.get('values'))
+    len_values = len(values)
+    comments = argToList(args.get('comments'))[:len_values]
+    ad_type = argToList(args.get('ad_type', 'group'))[:len_values]
+
+    if field_type == 'ad_groups':
+        fields = [
+            {
+                'value': field[0], 'comment': field[1], 'type': field[2]
+            } for field in zip_longest(values, comments, ad_type, fillvalue='')
+        ]
+    else:
+        fields = [
+            {'value': field[0], 'comment': field[1]} for field in zip_longest(values, comments, fillvalue='')
+        ]
+
+    client.replace_featured_field(field_type, fields)
+
+    result = {'fieldType': field_type, 'fields': fields}
+
+    readable_output = tableToMarkdown(
+        f'Replaced featured: {result.get("fieldType")}', result.get('fields'), headerTransform=pascalToSpace
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.FeaturedField',
+        outputs_key_field='fieldType',
+        outputs=result,
+        raw_response=result
+    )
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -1330,6 +1432,12 @@ def main():  # pragma: no cover
 
         elif command == 'xdr-remove-allowlist-files':
             return_results(remove_allowlist_files_command(client, args))
+
+        elif command == 'xdr-get-contributing-event':
+            return_results(get_contributing_event_command(client, args))
+
+        elif command == 'xdr-replace-featured-field':
+            return_results(replace_featured_field_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
