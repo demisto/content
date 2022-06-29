@@ -13,7 +13,7 @@
         "Microsoft Defender For Endpoint",
         "OpsGenie Incident",
         "OpsGenie Alert",
-		"MVision CASB Alert",
+        "MVision CASB Alert",
         "MVision CASB Threat"
     ],
     "breachScript": "",

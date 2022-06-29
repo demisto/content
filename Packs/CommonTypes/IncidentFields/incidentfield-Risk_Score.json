@@ -11,7 +11,7 @@
 		"Trend Micro CAS Event",
 		"Netwitness Incident",
 		"MVision CASB Alert",
-	    "MVision CASB Threat"
+		"MVision CASB Threat"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,

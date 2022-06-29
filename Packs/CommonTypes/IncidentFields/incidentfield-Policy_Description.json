@@ -6,9 +6,9 @@
 		"AWS CloudTrail Misconfiguration",
 		"AWS IAM Policy Misconfiguration",
 		"AWS EC2 Instance Misconfiguration",
-        "Microsoft CAS Alert",
+		"Microsoft CAS Alert",
 		"Tripwire File Change",
-    	"MVision CASB Alert",
+		"MVision CASB Alert",
 	    "MVision CASB Threat"
 	],
 	"breachScript": "",
