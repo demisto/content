@@ -1,0 +1,633 @@
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: d8df7137-eebd-477e-8930-1d6abf4e797f
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: "This playbook performs the same action as SlackAsk, but leverages `send-notification`
+  and Slack Blocks to send fully customized questions and buttons, including customized
+  responses to inquiries. Automatically creates a Slack channel with the responding
+  user and assigned incident handler in the event of a response indicating that activity
+  is unexpected. \n\nAssumes a binary Expected (Known/Trusted activity) and Unexpected
+  (Unknown/Untrusted activity) response from the end user.\n\nRecommended Playbook
+  Customizations:\n- Incident Channel name\n- Context Message to Incident Channel\n-
+  Slack Block wrapper text (in Send Slack Blocks task)\n\nRequired Inputs:\n- slack_user
+  (username of the individual to be contacted in Slack)\n- event_details (describe
+  the event that is being investigated)\n- event_data (event data to be included to
+  give the user context)\n\nOptional inputs:\n- green_button_text  - text on the button
+  which follows the Expected path\n--- also green_button_response\n- red_button_text
+  - text on the button which follows the Unexpected path\n--- also red_button_response"
+id: 2bd54594-60d2-4b69-882d-9158a3d3394e
+inputs:
+- description: Username of the user associated with the activity
+  key: slack_user
+  playbookInputQuery: null
+  required: true
+  value: {}
+- description: 'Describe the details of the event. '
+  key: event_details
+  playbookInputQuery: null
+  required: true
+  value: {}
+- description: |-
+    Provide event data that can create context for the user. You can use \n to create line breaks.
+
+    Example: data_element_1:value_1\n data_element_2:value_2\n
+  key: event_data
+  playbookInputQuery: null
+  required: true
+  value: {}
+- description: Supports emoji
+  key: green_button_text
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: 'Yes, this was me. :not-sus:'
+- description: Supports emoji
+  key: red_button_text
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: 'No, this was not me. :not-sus:'
+- description: Supports emoji
+  key: green_button_response
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: 'Thanks - we appreciate you! :burrwave:'
+- description: Supports emoji
+  key: red_button_response
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: Oh no! Thanks for letting us know; we're moving to a private channel to
+      discuss further `${incident.id}-aws-security-group-ingress-rule`.
+name: 2-button Slack Ask
+outputs: []
+sourceplaybookid: fbecbae2-d680-4226-853f-35a39f2516e9
+starttaskid: "0"
+tags:
+- Slack
+- Empathetic Investigations
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4c4b993f-cabc-4f3f-8ca3-284dc89073bf
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 4c4b993f-cabc-4f3f-8ca3-284dc89073bf
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      extend-context:
+        simple: EntitlementString=.
+      persistent:
+        simple: "false"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.addEntitlement
+      id: d6681a03-dd97-43e9-8ea3-170edf9442fd
+      iscommand: true
+      name: Create Entitlement String
+      script: Builtin|||addEntitlement
+      type: regular
+      version: -1
+    taskid: d6681a03-dd97-43e9-8ea3-170edf9442fd
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 195
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      name:
+        simple: tmp-sec-${incident.id}
+      type:
+        simple: private
+      users:
+        simple: ${incident.username},${incident.owner}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: SlackV3
+      description: Creates a channel in Slack.
+      id: 08eadedc-2fc0-4de0-820b-72967af51b90
+      iscommand: true
+      name: Create Incident Channel
+      script: SlackV3|||slack-create-channel
+      type: regular
+      version: -1
+    taskid: 08eadedc-2fc0-4de0-820b-72967af51b90
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 1285
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "10"
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      blocks:
+        simple: "[\n\t\t{\n\t\t\t\"type\": \"section\",\n\t\t\t\"text\": {\n\t\t\t\t\"type\":
+          \"mrkdwn\",\n\t\t\t\t\"text\": \"Hello! :wave:\\nI am reaching out today
+          because a security alert was triggered that appears to be associated with
+          your account.\\n\\nEvent Description:\\n${inputs.event_details}\\n\\nEvent
+          Data:\\n```${inputs.event_data}```\\n\\nFor security reasons, please confirm
+          this activity is intentional and expected.\"\n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"type\":
+          \"divider\"\n\t\t},\n\t\t{\n\t\t\t\"type\": \"actions\",\n\t\t\t\"elements\":
+          [\n\t\t\t\t{\n\t\t\t\t\t\"type\": \"button\",\n\t\t\t\t\t\"text\": {\n\t\t\t\t\t\t\"type\":
+          \"plain_text\",\n\t\t\t\t\t\t\"text\": \"${inputs.green_button_text}\",\n\t\t\t\t\t\t\"emoji\":
+          true\n\t\t\t\t\t},\n\t\t\t\t\t\"value\": \"{\\\"entitlement\\\": \\\"${EntitlementString}@${incident.id}|expected\\\",\\\"reply\\\":
+          \\\"${inputs.green_button_response}\\\"}\",\n\t\t\t\t\t\"action_id\": \"actionId-0\",\n\t\t\t\t\t\"style\":
+          \"primary\"\n\t\t\t\t}\n\t\t\t]\n\t\t},\n\t\t{\n\t\t\t\"type\": \"actions\",\n\t\t\t\"elements\":
+          [\n\t\t\t\t{\n\t\t\t\t\t\"type\": \"button\",\n\t\t\t\t\t\"text\": {\n\t\t\t\t\t\t\"type\":
+          \"plain_text\",\n\t\t\t\t\t\t\"text\": \"${inputs.red_button_text}\",\n\t\t\t\t\t\t\"emoji\":
+          true\n\t\t\t\t\t},\n\t\t\t\t\t\"value\": \"{\\\"entitlement\\\": \\\"${EntitlementString}@${incident.id}|unexpected\\\",\\\"reply\\\":
+          \\\"${inputs.red_button_response}\\\"}\",\n\t\t\t\t\t\"action_id\": \"actionId-0\",\n\t\t\t\t\t\"style\":
+          \"danger\"\n\t\t\t\t}\n\t\t\t]\n\t\t}\n\t]"
+      ignoreAddURL:
+        simple: "true"
+      to:
+        simple: ${inputs.slack_user}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: SlackV3
+      description: Sends a message to a user, group, or channel.
+      id: 8c18bb10-b963-4ba3-8be9-5221dda82d3a
+      iscommand: true
+      name: Send Slack Blocks
+      script: SlackV3|||send-notification
+      type: regular
+      version: -1
+    taskid: 8c18bb10-b963-4ba3-8be9-5221dda82d3a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 370
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: expected
+      value:
+        simple: "True"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 9ec72dad-3648-44cd-8fed-7f216cd01af2
+      iscommand: false
+      name: Set expected to True
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 9ec72dad-3648-44cd-8fed-7f216cd01af2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 940
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: expected
+      value:
+        simple: "False"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: a088d124-de20-4a51-8ce5-7f0026a7ba72
+      iscommand: false
+      name: Set expected to False
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: a088d124-de20-4a51-8ce5-7f0026a7ba72
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 940
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9afdf19e-736a-48be-8122-cfb6efba3a21
+      iscommand: false
+      name: Playbook Complete
+      type: title
+      version: -1
+    taskid: 9afdf19e-736a-48be-8122-cfb6efba3a21
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1805
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7e136762-ff2f-44a4-8dba-277c6af3873e
+      iscommand: false
+      name: Expected (Known/Trusted Activity)
+      tags:
+      - expected
+      type: regular
+      version: -1
+    taskid: 7e136762-ff2f-44a4-8dba-277c6af3873e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 575
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d90d5518-2ec8-4122-8efb-8401d54d805c
+      iscommand: false
+      name: Unexpected (Unknown/Untrusted Activity)
+      tags:
+      - unexpected
+      type: regular
+      version: -1
+    taskid: d90d5518-2ec8-4122-8efb-8401d54d805c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 575
+        }
+      }
+  "13":
+    continueonerror: true
+    id: "13"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      id:
+        simple: unexpected
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.task.complete
+      id: 5a30bcc2-9540-45e8-8ab7-545b9e1e4626
+      iscommand: true
+      name: Complete "Unexpected" Task
+      script: Builtin|||taskComplete
+      type: regular
+      version: -1
+    taskid: 5a30bcc2-9540-45e8-8ab7-545b9e1e4626
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 1620
+        }
+      }
+  "14":
+    continueonerror: true
+    id: "14"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      channel:
+        simple: ${incident.id}-admda-account-used
+      ignoreAddURL:
+        simple: "true"
+      message:
+        simple: "Thank you so much for letting us know about this unexpected activity.
+          \n\nWe have notified an analyst and they are reviewing the situation and
+          will contact you via this channel with any additional questions they may
+          have. \n\nThank you, again -- \n\nSec42 :sec42: :welcome-to-the-internet:"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: SlackV3
+      description: Sends a message to a user, group, or channel.
+      id: 37998850-24df-43ab-8ed6-56c734c2ba32
+      iscommand: true
+      name: Send Context Message to Channel
+      script: SlackV3|||send-notification
+      type: regular
+      version: -1
+    taskid: 37998850-24df-43ab-8ed6-56c734c2ba32
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 1460
+        }
+      }
+  "15":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: expected
+          operator: isExists
+          right:
+            value: {}
+      label: EXPECTED ALREADY SET
+    id: "15"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "6"
+      EXPECTED ALREADY SET:
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 27a69f83-ec77-4f0d-8987-1818ca761e6d
+      iscommand: false
+      name: Check if exepected is Defined
+      type: condition
+      version: -1
+    taskid: 27a69f83-ec77-4f0d-8987-1818ca761e6d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 30,
+          "y": 740
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      seconds:
+        simple: "2"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sleep for X seconds
+      id: 1fe2d585-f5aa-446a-8802-5080be403895
+      iscommand: false
+      name: Wait two seconds - Robots Are Fast and Humans Like Space
+      scriptName: Sleep
+      type: regular
+      version: -1
+    taskid: 1fe2d585-f5aa-446a-8802-5080be403895
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 1110
+        }
+      }
+  "17":
+    continueonerror: true
+    id: "17"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      id:
+        simple: expected
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.task.complete
+      id: 8d41b7dc-c015-44e0-88ee-8885315d7ce6
+      iscommand: true
+      name: Complete "Expected" Task
+      script: Builtin|||taskComplete
+      type: regular
+      version: -1
+    taskid: 8d41b7dc-c015-44e0-88ee-8885315d7ce6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 1630
+        }
+      }
+  "18":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: expected
+          operator: isExists
+          right:
+            value: {}
+      label: EXPECTED ALREADY SET
+    id: "18"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "7"
+      EXPECTED ALREADY SET:
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8329709b-cf0f-4895-8e1c-7d10a6b7e5dd
+      iscommand: false
+      name: Check if exepected is Defined
+      type: condition
+      version: -1
+    taskid: 8329709b-cf0f-4895-8e1c-7d10a6b7e5dd
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 590,
+          "y": 740
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1820,
+        "width": 950,
+        "x": 30,
+        "y": 50
+      }
+    }
+  }

@@ -1,0 +1,17 @@
+{
+    "name": "Slack Ask but with More Buttons",
+    "description": "The playbook in this content pack provides a two button version of a playbook that emulates SlackAsk, but can be flexibly modified to add more buttons or simply have greater customization of the two button SlackAsk interaction. It also adds a response capability in which a slack user and analyst will be put into contact in the event that a user responds that an event is unexpected. ",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Laura Farvour",
+    "url": "",
+    "email": "",
+    "created": "2022-06-29T21:30:40Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "lfarvour"
+    ]
+}
