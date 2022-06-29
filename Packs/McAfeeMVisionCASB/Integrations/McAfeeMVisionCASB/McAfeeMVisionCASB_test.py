@@ -3,7 +3,7 @@ import io
 import requests_mock
 from freezegun import freeze_time
 import demistomock as demisto
-from McAfeeMVisionCASB import main
+from McAfeeMVisionCASB import main, Client
 
 
 def util_load_json(path):
@@ -17,10 +17,9 @@ def test_incident_query_command(mocker):
         - An app client object
         - Relevant arguments
     When:
-        - arkime-session-list command is executed
+        - mvision-casb-incident-query command is executed
     Then:
-        - The http request is called with the right arguments
-        - Ensure the readable output is a list of sessions in the correct format
+        - Ensure the output is a list of incidents in the correct format
     """
     mocker.patch.object(demisto, 'params', return_value={'url': 'https://www.example.com/', 'insecure': True})
     mocker.patch.object(demisto, 'args', return_value={'limit': 3})
@@ -32,11 +31,20 @@ def test_incident_query_command(mocker):
                json=util_load_json('test_data/incidents.json'))
         main()
 
-    assert len(response.call_args[0][0]['Contents']) == 3
+    assert len(response.call_args[0][0]['Contents']) > 0
     assert response.call_args[0][0]['Contents'][0]['incidentId'] == 'CAP-1111'
 
 
 def test_status_update_command(mocker):
+    """
+    Given:
+        - An app client object
+        - Relevant arguments
+    When:
+        - mvision-casb-incident-status-update command is executed
+    Then:
+        - Ensure the readable output is in the correct format
+    """
     mocker.patch.object(demisto, 'params', return_value={'url': 'https://www.example.com/', 'insecure': True})
     mocker.patch.object(demisto, 'args', return_value={'incident_ids': 'CAP-1111', 'status': 'archived'})
     mocker.patch.object(demisto, 'command', return_value='mvision-casb-incident-status-update')
@@ -50,6 +58,15 @@ def test_status_update_command(mocker):
 
 
 def test_anomaly_activity_list_command(mocker):
+    """
+    Given:
+        - An app client object
+        - Relevant arguments
+    When:
+        - mvision-casb-anomaly-activity-list command is executed
+    Then:
+        - Ensure the readable output is in the correct format
+    """
     mocker.patch.object(demisto, 'params', return_value={'url': 'https://www.example.com/', 'insecure': True})
     mocker.patch.object(demisto, 'args', return_value={'anomaly_id': '1111'})
     mocker.patch.object(demisto, 'command', return_value='mvision-casb-anomaly-activity-list')
@@ -63,6 +80,15 @@ def test_anomaly_activity_list_command(mocker):
 
 
 def test_policy_dictionary_list_command(mocker):
+    """
+    Given:
+        - An app client object
+        - Relevant arguments
+    When:
+        - mvision-casb-policy-dictionary-list command is executed
+    Then:
+        - Ensure the output is a list of policies in the correct format
+    """
     mocker.patch.object(demisto, 'params', return_value={'url': 'https://www.example.com/', 'insecure': True})
     mocker.patch.object(demisto, 'args', return_value={'limit': 3})
     mocker.patch.object(demisto, 'command', return_value='mvision-casb-policy-dictionary-list')
@@ -77,6 +103,15 @@ def test_policy_dictionary_list_command(mocker):
 
 
 def test_policy_dictionary_update_command(mocker):
+    """
+    Given:
+        - An app client object
+        - Relevant arguments
+    When:
+        - mvision-casb-policy-dictionary-update command is executed
+    Then:
+        - Ensure the readable output is in the correct format
+    """
     mocker.patch.object(demisto, 'params', return_value={'url': 'https://www.example.com/', 'insecure': True})
     mocker.patch.object(demisto, 'args', return_value={
         'dictionary_id': '1111', 'name': '(Default) Internal Domains', 'content': 'gmail.com, outlook.com'
@@ -100,6 +135,15 @@ def mock_incident_query(limit, start_time):
 
 @freeze_time('2022/06/20 00:00:00')
 def test_fetch_incidents(mocker):
+    """
+    Given:
+        - An app client object
+    When:
+        - fetch-incidents command is executed
+    Then:
+        - Ensure the output in the first interval is a list of 3 (max_fetch) incidents
+        - Ensure the output of the second interval is a list of 0 incidents
+    """
     from McAfeeMVisionCASB import Client, fetch_incidents
 
     client = Client(base_url='https://www.example.com/', verify=False)
