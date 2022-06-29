@@ -3,7 +3,7 @@
 	"build": {
 		"dockerfile": "Dockerfile",
 		"args": {
-			"IMAGENAME": "devdemisto/content-env:1.0.0.31164",
+			"IMAGENAME": "devdemisto/content-env:1.0.0.31164"
 		}
 	},
 	"containerUser": "root",
@@ -51,9 +51,8 @@
 		"shd101wyy.markdown-preview-enhanced",
 		"KevinRose.vsc-python-indent",
 		"Gruntfuggly.todo-tree",
-		"redhat.vscode-yaml",
-		"GitHub.copilot"
-	],
+		"redhat.vscode-yaml"
+		],
 	"containerEnv": {
 		"LOCAL_WORKSPACE_PATH": "${localWorkspaceFolder}",
 		"CONTENT": "${containerWorkspaceFolder}",
@@ -66,7 +65,6 @@
 	},
 	"features": {
 		"docker-in-docker": "latest",
-		"docker-from-docker": "latest",
 		"git": "os-provided",
 		"github-cli": "latest"
 	},
