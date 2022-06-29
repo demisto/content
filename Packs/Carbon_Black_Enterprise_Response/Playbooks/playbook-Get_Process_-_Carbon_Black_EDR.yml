@@ -1,22 +1,22 @@
 id: Carbon Black EDR - Enrich Process
 version: -1
 name: Carbon Black EDR - Enrich Process
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 88be698c-1313-4c4f-80de-4b0513c220fe
     type: start
     task:
       id: 88be698c-1313-4c4f-80de-4b0513c220fe
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     separatecontext: false
     view: |-
       {
@@ -30,8 +30,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     taskid: ac928890-ed94-4fd1-8327-4e695992eccf
     type: condition
     task:
@@ -40,16 +40,16 @@ tasks:
       name: Is instance valid?
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#default#':
-      - "4"
-      "yes":
-      - "3"
+      - '4'
+      yes:
+      - '3'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -82,8 +82,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     taskid: 6257b06f-4b2a-4b5e-82a0-f41e18fb0cca
     type: regular
     task:
@@ -94,10 +94,10 @@ tasks:
       script: '|||cb-edr-process-get'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     scriptarguments:
       get_related:
         simple: ${inputs.Enrich with related processes?}
@@ -118,8 +118,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     taskid: 9b0191cf-a91a-4d71-89c2-3e495608591d
     type: title
     task:
@@ -128,7 +128,7 @@ tasks:
       name: Done.
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     separatecontext: false
     view: |-
@@ -170,10 +170,9 @@ inputs:
   playbookInputQuery:
 - key: Enrich with related processes?
   value:
-    simple: "false"
+    simple: 'false'
   required: true
-  description: Whether the data fetched should include related processes (parent, sibling
-    and child processes) if available?
+  description: Whether the data fetched should include related processes (parent, sibling and child processes) if available?
   playbookInputQuery:
 outputs: []
 tests:

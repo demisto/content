@@ -1,24 +1,24 @@
-id: block_endpoint_-_carbon_black_response
+id: Block Endpoint - Carbon Black Response
 version: -1
 name: Block Endpoint - Carbon Black Response
-fromversion: "5.0.0"
+fromversion: 6.2.0
 description: Carbon Black Response - isolate an endpoint, given a hostname.
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 73040a0e-cca5-4197-8089-f46650317040
     type: start
     task:
       id: 73040a0e-cca5-4197-8089-f46650317040
       version: -1
-      description: ""
-      name: ""
+      description: ''
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     separatecontext: false
     view: |-
       {
@@ -27,8 +27,8 @@ tasks:
           "y": 50
         }
       }
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     taskid: 81cfb3e4-cb04-4c91-8bc7-d23980939d7e
     type: regular
     task:
@@ -42,7 +42,7 @@ tasks:
       brand: carbonblack
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     scriptarguments:
       groupid: {}
       hostname:
@@ -57,8 +57,8 @@ tasks:
           "y": 380
         }
       }
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     taskid: 36d3a39d-ae26-4db6-8ed5-228172276852
     type: regular
     task:
@@ -72,7 +72,7 @@ tasks:
       brand: carbonblack
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
     scriptarguments:
       sensor:
         simple: ${CbResponse.Sensors.CbSensorID}
@@ -84,18 +84,18 @@ tasks:
           "y": 585
         }
       }
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     taskid: d35be2d6-6709-40d0-846e-dc9aef142e30
     type: title
     task:
       id: d35be2d6-6709-40d0-846e-dc9aef142e30
       version: -1
-      description: ""
+      description: ''
       name: Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
     separatecontext: false
     view: |-
       {
@@ -104,8 +104,8 @@ tasks:
           "y": 960
         }
       }
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     taskid: 27405cc3-bf4c-4879-87ad-880b99941e9a
     type: condition
     task:
@@ -115,15 +115,15 @@ tasks:
       description: Check if Carbon black active in the system.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "4"
-      "yes":
-      - "2"
+      - '4'
+      yes:
+      - '2'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: general.isExists
           left:
@@ -160,8 +160,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     taskid: 5c297191-5859-4f5a-8d26-f5f1818c00aa
     type: regular
     task:
@@ -175,7 +175,7 @@ tasks:
       brand: carbonblack
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     scriptarguments:
       groupid: {}
       hostname:
