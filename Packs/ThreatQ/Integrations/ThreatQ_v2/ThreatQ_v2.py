@@ -19,7 +19,6 @@ EMAIL = demisto.getParam('credentials').get('identifier')
 PASSWORD = demisto.getParam('credentials').get('password')
 USE_SSL = not demisto.params().get('insecure', False)
 THRESHOLD = int(demisto.params().get('threshold', '0'))
-TLP = demisto.params().get('tlp_color')
 if THRESHOLD:
     THRESHOLD = int(THRESHOLD)
 
@@ -161,14 +160,18 @@ def get_tlp_from_indicator(sources):
     for source in sources:
         try:
             tlp = int(source.get('TLP')) if int(source.get('TLP')) > tlp else tlp
+            demisto.debug(f'TLP FOR {source.get("NAME")} AND {source.get("ID")} -> {source.get("TLP")}')
         except:
+            demisto.debug(f'TLP FOR {source.get("NAME")} AND {source.get("ID")} -> {source.get("TLP")}')
             continue
 
     return TABLE_TLP.get(tlp)
 
 
 def get_generic_context(indicator, generic_context=None):
+    demisto.debug(f'GENERIC CONTEXT FOR THE INDICATOR -> ID={indicator.get("ID")} TYPE={indicator.get("Type")} VALUE={indicator.get("Value")}')
     tlp = get_tlp_from_indicator(indicator.get('Source'))
+    demisto.debug(f'TLP FOR THE INDICATOR -> {tlp}')
     if tlp:
         if generic_context:
             generic_context['TrafficLightProtocol'] = tlp
@@ -714,6 +717,7 @@ def aggregate_search_results(indicators, default_indicator_type, generic_context
     entry_context = []
     for i in indicators:
         generic_context = get_generic_context(i, generic_context)
+        demisto.debug(f'GENERIC CONTEXT FOR {i.get("Value")} -> {generic_context}')
         entry_context.append(set_indicator_entry_context(
             indicator_type=i.get('Type') or default_indicator_type,
             indicator=i,
