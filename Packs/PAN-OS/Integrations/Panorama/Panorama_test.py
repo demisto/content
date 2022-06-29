@@ -2552,10 +2552,10 @@ class TestObjectFunctions:
 
 
 def test_pan_os_get_running_config(mocker):
-    """ 
+    """
     Given -
         A target serial number
-    When - 
+    When -
         Returning the running config
     Then - 
         File returned should be called 'running_config'
@@ -2565,19 +2565,19 @@ def test_pan_os_get_running_config(mocker):
 
     return_mock = """
     <response status='error' code='13'><msg><line>SOME_SERIAL_NUMBER not connected</line></msg></response>
-    """ 
+    """
     mocker.patch("Panorama.http_request", return_value=return_mock)
     created_file = pan_os_get_running_config({"target": "SOME_SERIAL_NUMBER"})
     assert created_file['File'] == 'running_config'
 
 
 def test_pan_os_get_merged_config(mocker):
-    """ 
+    """
     Given -
         A target serial number
-    When - 
+    When -
         Returning the merged config
-    Then - 
+    Then -
         File returned should be called 'merged_config'
         The contents should be XML and not JSON
     """
@@ -2585,7 +2585,7 @@ def test_pan_os_get_merged_config(mocker):
 
     return_mock = """
     <response status='error' code='13'><msg><line>SOME_SERIAL_NUMBER not connected</line></msg></response>
-    """ 
+    """
     mocker.patch("Panorama.http_request", return_value=return_mock)
     created_file = pan_os_get_merged_config({"target": "SOME_SERIAL_NUMBER"})
     assert created_file['File'] == 'merged_config'
