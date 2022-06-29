@@ -43,7 +43,7 @@ INCIDENT_CONTEXT_MAPPER = {
     'Description': 'Summary',
     'Contact Sensitivity': 'ContactSensitivity',
     'Last Modified Date': 'LastModifiedDate',
-    'Detailed Decription': 'Details',  #The product has typo in the response
+    'Detailed Decription': 'Details',  # The product has typo in the response
     'Contact Sensitivity': 'ContactSensitivity',
     'VIP': 'VIP',
     'Service Type': 'SubType',
@@ -72,7 +72,7 @@ PROBLEM_INVESTIGATION_CONTEXT_MAPPER = {
     'Description': 'Summary',
     'Last Modified Date': 'LastModifiedDate',
     'Target Resolution Date': 'TargetResolutionDate',
-    'Detailed Decription': 'Details',  #The product has typo in the response
+    'Detailed Decription': 'Details',  # The product has typo in the response
     "Investigation Justification": "InvestigationJustification",
     "Investigation Driver": "Investigation Driver",
     "Temporary Workaround": "TemporaryWorkaround"
@@ -86,7 +86,7 @@ KNOWN_ERROR_CONTEXT_MAPPER = {
     'Description': 'Summary',
     'Last Modified Date': 'LastModifiedDate',
     'Target Resolution Date': 'TargetResolutionDate',
-    'Detailed Decription': 'Details',  #The product has typo in the response
+    'Detailed Decription': 'Details',  # The product has typo in the response
     "Investigation Justification": "InvestigationJustification",
     "Investigation Driver": "InvestigationDriver",
     "Temporary Workaround": "TemporaryWorkaround",
@@ -214,6 +214,7 @@ class Client(BaseClient):
     """
     BmcITSM API Client
     """
+
     def __init__(self, server_url, username, password, verify, proxy):
         """initializing a client instance with authentication header"""
         super().__init__(base_url=f'{server_url}/api', verify=verify, proxy=proxy)
@@ -1393,7 +1394,7 @@ def incident_create_command(client: Client, args: Dict[str, Any]) -> CommandResu
         **additional_fields)
 
     incident_request_id = extract_ticket_request_id_following_create(
-        client, INCIDENT, response)  #The right request ID is not retrieved by the create endpoint.
+        client, INCIDENT, response)  # The right request ID is not retrieved by the create endpoint.
     outputs = format_create_ticket_outputs(response.get('values'))
     outputs['RequestID'] = incident_request_id
 
@@ -1814,7 +1815,7 @@ def problem_investigation_create_command(client: Client, args: Dict[str, Any]) -
 
     incident_request_id = extract_ticket_request_id_following_create(
         client, PROBLEM_INVESTIGATION,
-        response)  #The right request ID is not retrieved by the create endpoint.
+        response)  # The right request ID is not retrieved by the create endpoint.
     outputs = format_create_ticket_outputs(response.get('values'))
     outputs['RequestID'] = incident_request_id
 
@@ -1914,8 +1915,7 @@ def problem_investigation_update_command(client: Client, args: Dict[str, Any]) -
         **additional_fields)
 
     command_results = CommandResults(
-        readable_output=
-        f'Problem Investigation: {problem_investigation_id} was successfully updated.')
+        readable_output=f'Problem Investigation: {problem_investigation_id} was successfully updated.')
 
     return command_results
 
@@ -1988,7 +1988,7 @@ def known_error_create_command(client: Client, args: Dict[str, Any]) -> CommandR
 
     known_error_id = extract_ticket_request_id_following_create(
         client, KNOWN_ERROR,
-        response)  #The right request ID is not retrieved by the create endpoint.
+        response)  # The right request ID is not retrieved by the create endpoint.
     outputs = format_create_ticket_outputs(response.get('values'))
     outputs['RequestID'] = known_error_id
 
@@ -2139,7 +2139,7 @@ def get_paginated_records_with_hr(
         to_index = min(from_index + page_size, rows_count)
         relevant_raw_data = raw_data[from_index:to_index]
         header = f'Showing page {page} out of {total_pages} total pages.' \
-                           f' Current page size: {page_size}.'
+            f' Current page size: {page_size}.'
     else:
         relevant_raw_data = raw_data[:min(rows_count, limit)]
         header = f'Showing {len(relevant_raw_data)} records out of {rows_count}.'
@@ -2423,7 +2423,7 @@ def fetch_relevant_tickets(client: Client, ticket_types: List[str], max_fetch: i
     Fetch the relevant tickets according to the provided filter arguments.
     The Tickets are fetched Iteratively, by their ticket type until the capacity
     of the tickets (max_fetch) is fullfiled or no more tickets left to fetch.   
-    
+
 
     Args:
         client (Client): BMC ITSM API Client. 

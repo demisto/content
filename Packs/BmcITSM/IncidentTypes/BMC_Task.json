@@ -1,1 +1,29 @@
-{"id":"BMC Task","version":1,"cacheVersn":0,"modified":"2022-06-23T10:57:54.4844431+03:00","packID":"","packName":"","itemVersion":"","fromServerVersion":"","toServerVersion":"","propagationLabels":["all"],"definitionId":"","vcShouldIgnore":false,"vcShouldKeepItemLegacyProdMachine":false,"commitMessage":"","shouldCommit":false,"locked":false,"name":"BMC Task","prevName":"BMC Task","color":"#BA68C8","hours":0,"days":0,"weeks":0,"hoursR":0,"daysR":0,"weeksR":0,"system":false,"readonly":false,"default":false,"autorun":false,"preProcessingScript":"","closureScript":"","disabled":false,"reputationCalc":0,"onChangeRepAlg":0,"layout":"e9a69a76-dd78-452a-88a2-4c08261a14b7","detached":false,"extractSettings":{"mode":"Specific","fieldCliNameToExtractSettings":{}}}
+{
+    "id": "BMC Task",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "BMC Task",
+    "prevName": "BMC Task",
+    "color": "#BA68C8",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "layout": "BMC ITSM Layout",
+    "detached": false,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {}
+    },
+    "fromVersion": "6.2.0"
+}

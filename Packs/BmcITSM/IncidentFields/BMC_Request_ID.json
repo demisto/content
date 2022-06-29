@@ -1,1 +1,39 @@
-{"id":"incident_bmcrequestid","version":1,"cacheVersn":0,"modified":"2022-06-23T10:31:07.854659201+03:00","packID":"","packName":"","itemVersion":"","fromServerVersion":"","toServerVersion":"","propagationLabels":["all"],"definitionId":"incident","vcShouldIgnore":false,"vcShouldKeepItemLegacyProdMachine":false,"commitMessage":"","shouldCommit":false,"name":"BMC Request ID","prevName":"BMC Request ID","ownerOnly":false,"placeholder":"","template":"","description":"","cliName":"bmcrequestid","type":"shortText","orgType":"shortText","closeForm":false,"editForm":true,"required":false,"script":"","runScriptAfterUpdate":false,"fieldCalcScript":"","neverSetAsRequired":false,"isReadOnly":false,"selectValues":null,"autoCompleteTags":null,"validationRegex":"","x2_fields":"","useAsKpi":false,"locked":false,"system":false,"content":false,"group":0,"mergeStrategy":"","hidden":false,"openEnded":false,"associatedTypes":["BMC Change-Request","BMC Incident","BMC Problem Investigation incident","BMC Problem \u2013 Known Error","BMC Service Request","BMC Task"],"systemAssociatedTypes":null,"associatedToAll":false,"unmapped":false,"unsearchable":false,"caseInsensitive":true,"columns":null,"defaultRows":null,"sla":0,"threshold":72,"breachScript":"","validatedError":"","aliases":null,"aliasTo":""}
+{
+    "id": "incident_bmcrequestid",
+    "version": -1,
+    "modified": "2022-06-23T10:31:07.854659201+03:00",
+    "propagationLabels": [
+        "all"
+    ],
+    "name": "BMC Request ID",
+    "ownerOnly": false,
+    "cliName": "bmcrequestid",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "BMC Change-Request",
+        "BMC Incident",
+        "BMC Problem Investigation incident",
+        "BMC Problem – Known Error",
+        "BMC Service Request",
+        "BMC Task"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.2.0"
+}
