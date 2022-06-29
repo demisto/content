@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: https://www.myshn.net/
-  display: Your server URL
+  display: Base URL (e.g., https://www.myshn.net)
   name: url
   required: true
   type: 0
@@ -358,4 +358,4 @@ script:
   type: python
 tests:
 - No tests (auto formatted)
-fromversion: 6.0.0
+fromversion: 6.5.0

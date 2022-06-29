@@ -421,4 +421,4 @@ inputs:
   description: ""
   playbookInputQuery: null
 outputs: []
-fromversion: 6.0.0
+fromversion: 6.5.0

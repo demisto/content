@@ -107,7 +107,7 @@ def test_module(client: Client) -> str:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):
             message = 'Authorization Error: make sure API Key is correctly set'
         else:
-            raise e
+            raise
     return message
 
 
@@ -187,7 +187,6 @@ def incident_query_command(client: Client, args: Dict) -> CommandResults:
                 'Policy Name': incident.get('policyName'),
             })
 
-        demisto.debug(f'This is the output: {readable_dict}')
         readable_output = tableToMarkdown(
             'MVISION CASB Incidents', readable_dict, headerTransform=pascalToSpace, removeNull=True
         )
@@ -286,9 +285,10 @@ def main() -> None:
     :rtype:
     """
 
-    base_url = urljoin(demisto.params()['url'].removesuffix('/'), '/shnapi/rest')
-    verify_certificate = not demisto.params().get('insecure', False)
-    credentials = demisto.params().get('credentials', {})
+    params = demisto.params()
+    base_url = urljoin(params['url'].removesuffix('/'), '/shnapi/rest')
+    verify_certificate = not params.get('insecure', False)
+    credentials = params.get('credentials', {})
     handle_proxy()
     command = demisto.command()
 
@@ -314,7 +314,7 @@ def main() -> None:
             return_results(result)
 
         if command == 'fetch-incidents':
-            last_run, incidents = fetch_incidents(client, demisto.params())
+            last_run, incidents = fetch_incidents(client, params)
             demisto.setLastRun(last_run)
             demisto.incidents(incidents)
 

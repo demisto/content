@@ -11,6 +11,7 @@
     "useCases": ["Suspicious User Activity", "Handle incidents from MVision"],
     "keywords": [],
     "marketplaces": [
-        "xsoar"
+        "xsoar",
+        "marketplacev2"
     ]
 }

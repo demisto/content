@@ -9,10 +9,10 @@
                 "McAfee MVision CASB Activity Names": {
                     "simple": "activityNames"
                 },
-                "McAfee MVision CASB Actor Id": {
+                "McAfee MVision CASB Actor ID": {
                     "simple": "actorId"
                 },
-                "McAfee MVision CASB Actor Id Type": {
+                "McAfee MVision CASB Actor ID Type": {
                     "simple": "actorIdType"
                 },
                 "McAfee MVision CASB Alert Category": {
@@ -48,7 +48,7 @@
                 "McAfee MVision CASB Anomaly Count": {
                     "simple": "information.anomalyCount"
                 },
-                "McAfee MVision CASB Anomaly Ids": {
+                "McAfee MVision CASB Anomaly IDs": {
                     "simple": "information.anomalyIds"
                 },
                 "McAfee MVision CASB Device External IP": {
@@ -81,5 +81,5 @@
     "name": "MVision CASB Threat Incoming Mapper",
     "type": "mapping-incoming",
     "version": -1,
-    "fromVersion": "6.2.0"
+    "fromVersion": "6.5.0"
 }

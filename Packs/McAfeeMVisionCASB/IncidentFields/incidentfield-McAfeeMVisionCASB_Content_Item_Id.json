@@ -21,7 +21,7 @@
     "id": "incident_mcafeemvisioncasbcontentitemid",
     "isReadOnly": false,
     "locked": false,
-    "name": "McAfee MVision CASB Content Item Id",
+    "name": "McAfee MVision CASB Content Item ID",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "placeholder": "",

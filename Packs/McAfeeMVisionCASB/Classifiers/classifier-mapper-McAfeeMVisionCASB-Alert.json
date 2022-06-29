@@ -15,10 +15,10 @@
                 "McAfee MVision CASB Activity Names": {
                     "simple": "activityNames"
                 },
-                "McAfee MVision CASB Actor Id": {
+                "McAfee MVision CASB Actor ID": {
                     "simple": "actorId"
                 },
-                "McAfee MVision CASB Actor Id Type": {
+                "McAfee MVision CASB Actor ID Type": {
                     "simple": "actorIdType"
                 },
                 "McAfee MVision CASB Alert Action": {
@@ -48,7 +48,7 @@
                 "McAfee MVision CASB Content Item Hierarchy": {
                     "simple": "information.Content Item Created On"
                 },
-                "McAfee MVision CASB Content Item Id": {
+                "McAfee MVision CASB Content Item ID": {
                     "simple": "information.contentItemId"
                 },
                 "McAfee MVision CASB Content Item Name": {
@@ -177,5 +177,5 @@
     "name": "MVision CASB Alert Incoming Mapper",
     "type": "mapping-incoming",
     "version": -1,
-    "fromVersion": "6.2.0"
+    "fromVersion": "6.5.0"
 }

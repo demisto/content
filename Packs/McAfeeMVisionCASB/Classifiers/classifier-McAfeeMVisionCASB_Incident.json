@@ -1,7 +1,7 @@
 {
     "description": "",
     "feed": false,
-    "id": "5ec43e8f-c69b-4b0b-8bf1-1fbb8b44bc70",
+    "id": "McAfee Mvision Casb Incident",
     "keyTypeMap": {
         "Alert": "McAfee MVision CASB Alert",
         "Threat": "McAfee MVision CASB Threat"
@@ -40,5 +40,5 @@
     },
     "type": "classification",
     "version": -1,
-    "fromVersion": "6.2.0"
+    "fromVersion": "6.5.0"
 }

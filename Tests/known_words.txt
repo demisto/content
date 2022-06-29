@@ -186,3 +186,5 @@ dbotMirrorDirection
 dbotMirrorId
 dbotMirrorInstance
 dbotMirrorTags
+MVision
+CASB

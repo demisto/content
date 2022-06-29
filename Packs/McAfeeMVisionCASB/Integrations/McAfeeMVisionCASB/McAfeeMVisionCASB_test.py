@@ -12,6 +12,16 @@ def util_load_json(path):
 
 
 def test_incident_query_command(mocker):
+    """
+    Given:
+        - An app client object
+        - Relevant arguments
+    When:
+        - arkime-session-list command is executed
+    Then:
+        - The http request is called with the right arguments
+        - Ensure the readable output is a list of sessions in the correct format
+    """
     mocker.patch.object(demisto, 'params', return_value={'url': 'https://www.example.com/', 'insecure': True})
     mocker.patch.object(demisto, 'args', return_value={'limit': 3})
     mocker.patch.object(demisto, 'command', return_value='mvision-casb-incident-query')

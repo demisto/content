@@ -32,7 +32,7 @@
     "system": false,
     "systemAssociatedTypes": null,
     "threshold": 72,
-    "type": "shortText",
+    "type": "boolean",
     "unmapped": false,
     "unsearchable": true,
     "useAsKpi": false,
