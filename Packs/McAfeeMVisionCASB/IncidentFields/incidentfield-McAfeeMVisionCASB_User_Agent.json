@@ -21,7 +21,7 @@
     "id": "incident_mcafeemvisioncasbuseragent",
     "isReadOnly": false,
     "locked": false,
-    "name": "McAfee Mvision Casb User Agent",
+    "name": "McAfeeMvisionCasb User Agent",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "placeholder": "",

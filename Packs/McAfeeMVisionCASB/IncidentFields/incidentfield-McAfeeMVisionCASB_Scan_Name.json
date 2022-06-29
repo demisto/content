@@ -21,7 +21,7 @@
     "id": "incident_mcafeemvisioncasbscanname",
     "isReadOnly": false,
     "locked": false,
-    "name": "McAfee Mvision Casb Scan Name",
+    "name": "McAfeeMvisionCasb Scan Name",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "placeholder": "",

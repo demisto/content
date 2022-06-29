@@ -21,7 +21,7 @@
     "id": "incident_mcafeemvisioncasbmatchcount",
     "isReadOnly": false,
     "locked": false,
-    "name": "McAfee Mvision Casb Match Count",
+    "name": "McAfeeMvisionCasb Match Count",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "placeholder": "",

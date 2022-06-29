@@ -21,7 +21,7 @@
     "id": "incident_mcafeemvisioncasbactoridtype",
     "isReadOnly": false,
     "locked": false,
-    "name": "McAfee Mvision Casb Actor Id Type",
+    "name": "McAfeeMvisionCasb Actor Id Type",
     "neverSetAsRequired": false,
     "ownerOnly": false,
     "placeholder": "",
