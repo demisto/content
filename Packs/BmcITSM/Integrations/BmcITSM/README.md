@@ -1,5 +1,5 @@
 BmcITSM integration allows customers to manage service request, incident, change request, task, problem investigation and known error tickets.
-This integration was integrated and tested with version 21.02 of BmcITSM
+This integration was integrated and tested with version 21.02 of BmcITSM.
 
 ## Configure BmcITSM on Cortex XSOAR
 
