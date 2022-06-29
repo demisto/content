@@ -104,6 +104,32 @@ description: This integration provides TAXII2 Services for system indicators (Ou
 display: TAXII2 Server
 name: TAXII2 Server
 script:
+  commands:
+  - deprecated: false
+    description: Returns an intel document object based on ID.
+    execution: false
+    name: taxii-server-list-collections
+    outputs:
+    - contextPath: TAXIIServer.Collection.id
+      description: The collection list
+      type: String
+  - deprecated: false
+    description: Returns an intel document object based on ID.
+    execution: false
+    name: taxii-server-info
+    outputs:
+    - contextPath: TAXIIServer.Info.title
+      description: The collection list
+      type: String
+    - contextPath: TAXIIServer.Info.api_roots
+      description: The collection list
+      type: Unknown
+    - contextPath: TAXIIServer.Info.default
+      description: The collection list
+      type: String
+    - contextPath: TAXIIServer.Info.description
+      description: The collection list
+      type: String
   dockerimage: demisto/flask-nginx:1.0.0.29338
   feed: false
   isfetch: false
