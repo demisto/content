@@ -127,7 +127,6 @@ def execute_reply_mail(incident_id, email_subject, email_to, reply_body, service
             "attachIDs": ",".join(entry_id_list),
             "replyTo": service_mail
         }
-    print(reply_body)
     return demisto.executeCommand("reply-mail", mail_content)
 
 
@@ -739,8 +738,8 @@ def multi_thread_new(new_email_subject, new_email_recipients, new_email_body, in
 
         html_body = format_body(new_email_body, sign_only, sign_and_encrypt)
 
-        result = send_new_email(incident_id, new_email_subject, new_email_recipients, new_email_body,
-                                service_mail, add_cc, add_bcc, html_body, entry_id_list,
+        result = send_new_email(incident_id, new_email_subject, new_email_recipients, new_email_body, service_mail,
+                                add_cc, add_bcc, html_body, entry_id_list,
                                 thread_code, mail_sender_instance, new_attachment_names)
         return_results(result)
 

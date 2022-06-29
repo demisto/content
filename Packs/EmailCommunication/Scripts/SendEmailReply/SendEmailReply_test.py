@@ -740,7 +740,7 @@ def test_multi_thread_reply(scenario, mocker):
                         'EmailAttachments': 'None', 'MessageDirection': 'outbound', 'MessageID': '',
                         'MessageTime': '2022-02-04T20:56:53UTC'}, 1, '', '', 'Email body',
                     'cc_user@company.com', 'bcc_user@company.com', 'soc_sender@company.com',
-                    'soc_sender@company.com', '',  False, False)
+                    'soc_sender@company.com', '', False, False)
         resend_first_contact_call_args = resend_first_contact_mocker.call_args
         assert resend_first_contact_call_args.args == expected
         assert reset_fields_mocker.called is True
