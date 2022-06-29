@@ -301,8 +301,25 @@
                 "Agent Version": {
                     "simple": "device.agent_version"
                 },
-                "Agents ID": {
-                    "simple": "device.device_id"
+				"Agents ID": {
+					"complex": {
+						"accessor": "device_id",
+						"filters": [],
+						"root": "device",
+						"transformers": [
+							{
+								"args": {
+									"item": {
+										"isContext": true,
+										"value": {
+											"simple": "hosts.device_id"
+										}
+									}
+								},
+								"operator": "append"
+							}
+						]
+					}
                 },
                 "Behavior": {
                     "simple": "behaviors"
