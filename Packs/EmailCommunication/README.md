@@ -26,9 +26,3 @@ This pack includes, out of the box, a full layout, scripts, and incident fields.
 _For more information about the pack, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/packs/email-communication)
 
 ![Email_Communication_layout](https://raw.githubusercontent.com/demisto/content/master/Packs/EmailCommunication/doc_files/Email_Communication_layout.png)
-### Pack Contributors:
-
----
- - Mike Rizzo
-
-Contributions are welcome and appreciated. For more info, visit our [Contribution Guide](https://xsoar.pan.dev/docs/contributing/contributing).
