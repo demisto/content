@@ -1408,6 +1408,7 @@ def test_fetch_all_incidents(requests_mock):
     incidents, next_run = TaniumThreatResponseV2.fetch_incidents(
         MOCK_CLIENT,
         alerts_states_to_retrieve,
+        '',
         last_run,
         fetch_time,
         max_fetch
@@ -1451,6 +1452,7 @@ def test_fetch_new_incidents(requests_mock):
     incidents, next_run = TaniumThreatResponseV2.fetch_incidents(
         MOCK_CLIENT,
         alerts_states_to_retrieve,
+        '',
         last_run,
         fetch_time,
         max_fetch
