@@ -19,6 +19,17 @@ This integration was integrated and tested with version xx of Mimecast Event Col
     | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+## General information 
+This integration is collecting events from 2 end points. 
+* ### audit events
+    All events are fetched at once when activating the integration from **first fetch timestamp** until now.
+    after that the fetch mechanism will call every 1 minute to update the audit events from mimecast
+* ### siem logs 
+    The logs will **always be fetched from 7 days ago**. Once the integration is activated the logs will 
+    stream in batches of 350 logs per fetch.
+    when all logs available are retrieved the fetch mechanism will call every 1 minute to update the siem logs from mimecast.  
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
