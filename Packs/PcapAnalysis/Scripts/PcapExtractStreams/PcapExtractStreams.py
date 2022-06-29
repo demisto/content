@@ -517,13 +517,13 @@ def main():
                 raise ValueError(f'Invalid port range: {range_str}')
 
         proc = MainProcess(pcap_type=pcap_type,
-                        rsa_decrypt_key=base64.b64decode(rsa_decrypt_key_base64.encode()),
-                        wpa_password=wpa_password,
-                        pcap_filter=pcap_filter,
-                        bin2txt_mode=bin2txt_mode,
-                        filter_keys=filter_keys,
-                        error_action=error_action,
-                        server_ports=server_ports)
+                           rsa_decrypt_key=base64.b64decode(rsa_decrypt_key_base64.encode()),
+                           wpa_password=wpa_password,
+                           pcap_filter=pcap_filter,
+                           bin2txt_mode=bin2txt_mode,
+                           filter_keys=filter_keys,
+                           error_action=error_action,
+                           server_ports=server_ports)
 
         if path:
             key_tree, repl_name = split_context_path(path)
@@ -532,9 +532,10 @@ def main():
             value = proc.make_streams(value)
 
         return_results(value)
-    
+
     except Exception as e:
         return_error(f'Failed to extract streams. Error: {str(e)}')
+
 
 if __name__ in ('__main__', 'builtin', 'builtins'):
     main()
