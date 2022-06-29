@@ -143,7 +143,7 @@ def main():
         args = demisto.args()
 
         if command == 'test-module':
-            result = test_module(client)
+            test_module(client)
         elif command in commands:
             commands[command](client, args)
 
@@ -154,5 +154,3 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-
-register_module_line('Drift', 'end', __line__())
