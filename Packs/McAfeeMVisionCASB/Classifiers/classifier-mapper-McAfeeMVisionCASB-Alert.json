@@ -165,9 +165,6 @@
                 "McAfee Mvision Casb User Attributes": {
                     "simple": "information.userAttributes"
                 },
-                "McAfee Mvision Casb Vulnerability Category": {
-                    "simple": "information.Vulnerabilities"
-                },
                 "McAfee Mvision Casb content Item Created On": {
                     "simple": "information.contentItemCreatedOn"
                 },
