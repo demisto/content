@@ -1,3 +1,4 @@
+from typing import *  # noqa: F401
 from time import sleep
 
 import demistomock as demisto  # noqa: F401
@@ -18,7 +19,7 @@ for eid in eventIDs:
     if remaining:
         remaining -= 1
     else:
-        sleep(waitSeconds) # pylint: disable=sleep-exists
+        sleep(waitSeconds)  # pylint: disable=sleep-exists
         remaining = burstSize
     resCmd = demisto.executeCommand("protectwise-event-pcap-download", dArgs)
     try:
