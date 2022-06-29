@@ -1,7 +1,6 @@
 import pytest
 from Silverfort import get_user_entity_risk_command, get_resource_entity_risk_command,\
     update_user_entity_risk_command, update_resource_entity_risk_command, get_jwt_token
-API_KEY = "APP_USER_ID:APP_USER_SECRET"
 
 
 @pytest.fixture(autouse=True)
@@ -167,8 +166,6 @@ class TestSiverfort(object):
 
 
 def test_get_jwt_token(api_key, current_time, expected_jwt_token):
-    import time
-
     app_user_id, app_user_secret = api_key.split(":")
     jwt_token = get_jwt_token(app_user_id, app_user_secret, current_time)
 
