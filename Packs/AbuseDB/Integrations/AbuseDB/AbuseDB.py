@@ -299,7 +299,7 @@ def get_categories_command():
 
 
 try:
-    demisto.log("demisto.log for testing")  # type: ignore[demisto.log-exist]
+    demisto.log("demisto.log for testing")  # type: ignore
     reliability = demisto.params().get('integrationReliability', 'C - Fairly reliable')
 
     if DBotScoreReliability.is_valid_type(reliability):
