@@ -215,7 +215,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "packname",
+                                "fieldId": "CICDpackname",
                                 "height": 22,
                                 "id": "3a092310-f532-11ec-b713-e337ea771c3f",
                                 "index": 0,
@@ -224,7 +224,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "branch",
+                                "fieldId": "CICDbranch",
                                 "height": 22,
                                 "id": "02014010-efdd-11ec-ad08-d9ee2c4fe212",
                                 "index": 1,
@@ -233,7 +233,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "pullrequestlink",
+                                "fieldId": "CICDpullrequestlink",
                                 "height": 22,
                                 "id": "35fb1120-efdd-11ec-ad08-d9ee2c4fe212",
                                 "index": 1,
@@ -333,15 +333,15 @@
                 "description": "To update existing pull request - Upload the zip content pack to the **Pull Request Attachment** and set the **Pull Request Branch** field.",
                 "fields": [
                     {
-                        "fieldId": "incident_pullrequestattachment",
+                        "fieldId": "incident_CICDpullrequestattachment",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_pullrequestbranch",
+                        "fieldId": "incident_CICDpullrequestbranch",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_branch",
+                        "fieldId": "incident_CICDbranch",
                         "isVisible": true
                     }
                 ],

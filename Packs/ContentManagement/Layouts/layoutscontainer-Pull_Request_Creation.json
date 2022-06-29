@@ -210,7 +210,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "pullrequesttitle",
+                                "fieldId": "CICDpullrequesttitle",
                                 "height": 22,
                                 "id": "a7c14eb0-efdc-11ec-ad08-d9ee2c4fe212",
                                 "index": 0,
@@ -219,7 +219,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "branch",
+                                "fieldId": "CICDbranch",
                                 "height": 22,
                                 "id": "02014010-efdd-11ec-ad08-d9ee2c4fe212",
                                 "index": 1,
@@ -228,7 +228,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "packname",
+                                "fieldId": "CICDpackname",
                                 "height": 22,
                                 "id": "2a6cdc30-f532-11ec-ae86-87e01168a572",
                                 "index": 2,
@@ -237,7 +237,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "pullrequestlink",
+                                "fieldId": "CICDpullrequestlink",
                                 "height": 22,
                                 "id": "35fb1120-efdd-11ec-ad08-d9ee2c4fe212",
                                 "index": 2,
@@ -246,7 +246,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "pullrequestcomment",
+                                "fieldId": "CICDpullrequestcomment",
                                 "height": 44,
                                 "id": "71cacdd0-efdd-11ec-ad08-d9ee2c4fe212",
                                 "index": 3,
@@ -345,23 +345,23 @@
                 "description": "To create a new pull request - Upload the zip content pack to the **Pull Request Attachment** and set the **Pull Request Title** field. The other fields are optional",
                 "fields": [
                     {
-                        "fieldId": "incident_pullrequestattachment",
+                        "fieldId": "incident_CICDpullrequestattachment",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_pullrequesttitle",
+                        "fieldId": "incident_CICDpullrequesttitle",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_branch",
+                        "fieldId": "incident_CICDbranch",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_reviewer",
+                        "fieldId": "incident_CICDreviewer",
                         "isVisible": true
                     },
                     {
-                        "fieldId": "incident_pullrequestcomment",
+                        "fieldId": "incident_CICDpullrequestcomment",
                         "isVisible": true
                     }
                 ],
