@@ -8,7 +8,7 @@ tags:
 - polling
 - UrlScan
 deprecated: true
-comment: "Deprecated. Due to the usage of multiple deprecated integration commands. No available replacement."
+comment: "Deprecated. No available replacement."
 enabled: true
 args:
 - name: url
