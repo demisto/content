@@ -1274,6 +1274,13 @@ Searches for Gmail records of a specified Google user.
 ***
 Searches the Gmail records for all Google users.
 
+#### Troubleshooting
+The command iterates over all available **accounts**, and downloads **messages** matching the query for each account. For organizations with many accounts, this can take longer than the default 5 minutes. To overcome this issue increase the [execution-timeout](https://xsoar.pan.dev/docs/playbooks/playbooks-field-reference#advanced-fields) from 300 to a higher value.
+To determine what value should be used, take a look at the logs after a failed execution of the command. The command prints to the logs *info* messages detailing the status of the search for every 100 accounts it successfully searched.
+```
+2022-06-27 09:56:05.1588 info (Gmail_instance_Gmail_gmail-search-all-mailboxes) Still searching. Searched 40% of total accounts (400 / 1000), and found 30 results so far (source: /Users/darbel/dev/go/src/github.com/demisto/server/services/automation/dockercoderunner.go:955)
+```
+Inspecting these messages should allow you to determine what percent the search was able to finish before timing out. Take the given timeout and divide it with the last percent you see in the logs - the new timeout value should be greater than this. Fine tune the correct **execution-timeout**.
 
 #### Base Command
 
