@@ -4,25 +4,18 @@ commonfields:
 name: BmcITSM
 display: BmcITSM
 category: Utilities
-description: BmcITSM integration allows customers to manage service request,
-  incident, change request, task, problem investigation and known error tickets.
+description: BmcITSM integration allows customers to manage service request, incident, change request, task, problem investigation and known error tickets.
 configuration:
-  - name: isFetch
-    display: Fetch incidents
-    required: false
-    defaultvalue: "true"
-    type: 8
-    additionalinfo: null
   - name: url
     display: Server URL
     required: true
-    defaultvalue: http://localhost:8008
+    defaultvalue: https://localhost:8008
     type: 0
-    additionalinfo: "For Example: http://localhost:8008"
+    additionalinfo: "For Example: https://localhost:8008"
   - name: credentials
     display: Username
     required: true
-    defaultvalue: null
+    defaultvalue:
     type: 9
     additionalinfo: ""
     displaypassword: Password
@@ -58,9 +51,7 @@ configuration:
     required: false
     defaultvalue: All
     type: 16
-    additionalinfo:
-      The status of the tickets to fetch. Since Each ticket type has it's own unique status pool,
-      consider to select only those who match to the selected ticket types.
+    additionalinfo: The status of the tickets to fetch. Since Each ticket type has it's own unique status pool, consider to select only those who match to the selected ticket types.
     options:
       - Draft
       - In Cart
@@ -122,37 +113,37 @@ configuration:
   - name: query
     display: Fetch By Query
     required: false
-    defaultvalue: null
+    defaultvalue:
     type: 0
-    additionalinfo:
-      'Search qualification to fetch tickets. For example: Status = "Draft"
-      AND Impact = "1-Extensive/Widespread". The query will be used as an addition to the existing params.
-      You can Review the BMC documentation for how to Build search qualifications:
-      https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html'
+    additionalinfo: 'Search qualification to fetch tickets. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query will be used as an addition to the existing params. You can Review the BMC documentation for how to Build search qualifications: https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html'
   - name: proxy
     display: Use system proxy settings
     required: false
-    defaultvalue: "true"
+    defaultvalue: "false"
     type: 8
-    additionalinfo: null
+    additionalinfo:
   - name: insecure
     display: Trust any certificate (not secure)
     required: false
-    defaultvalue: "true"
+    defaultvalue: "false"
     type: 8
-    additionalinfo: null
+    additionalinfo:
+  - display: Incident type
+    name: incidentType
+    required: false
+    type: 13
+  - display: Fetch incidents
+    name: isFetch
+    required: false
+    type: 8
 script:
   script: ""
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.4.29342
+  dockerimage: demisto/python3:3.10.4.30607
   commands:
     - name: bmc-itsm-user-list
-      description:
-        List users profile in BMC Helix ITSM. The records are retrieved
-        according to a constraint determined either by the query argument or by
-        the filtering arguments. When using filtering arguments, Each one
-        defines a 'LIKE' operation and 'AND' operator is used between them.
+      description: List users profile in BMC Helix ITSM. The records are retrieved according to a constraint determined either by the query argument or by the filtering arguments. When using filtering arguments, Each one defines a 'LIKE' operation and 'AND' operator is used between them.
       outputs:
         - contextPath: BmcITSM.User.Id
           description: user ID.
@@ -172,11 +163,7 @@ script:
           predefined:
             - ""
         - name: query
-          description:
-            'Search qualification to list by. For example: Status = "Draft" AND
-            Impact = "1-Extensive/Widespread". The query will be used as an addition to the existing args. Review the BMC documentation for
-            how to Build search qualifications:
-            https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html'
+          description: 'Search qualification to list by. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query will be used as an addition to the existing args. Review the BMC documentation for how to Build search qualifications: https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html'
           required: false
           isArray: false
           defaultValue: ""
@@ -239,10 +226,7 @@ script:
           predefined:
             - ""
     - name: bmc-itsm-company-list
-      description: List companies in BMC Helix ITSM. The records are retrieved
-        according to a constraint determined either by the query argument or by
-        the filtering arguments. When using filtering arguments, Each one
-        defines a 'LIKE' operation and 'AND' operator is used between them.
+      description: List companies in BMC Helix ITSM. The records are retrieved according to a constraint determined either by the query argument or by the filtering arguments. When using filtering arguments, Each one defines a 'LIKE' operation and 'AND' operator is used between them.
       outputs:
         - type: String
           contextPath: BmcITSM.Company.Id
@@ -262,11 +246,7 @@ script:
           predefined:
             - ""
         - name: query
-          description:
-            'Search qualification to list by.For example: Status = "Draft" AND
-            Impact = "1-Extensive/Widespread". The query will be used as an addition to the existing args. Review the BMC documentation for
-            how to Build search qualifications:
-            https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html'
+          description: 'Search qualification to list by.For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query will be used as an addition to the existing args. Review the BMC documentation for how to Build search qualifications: https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html'
           required: false
           isArray: false
           defaultValue: ""
@@ -308,10 +288,7 @@ script:
           predefined:
             - ""
     - name: bmc-itsm-service-request-definition-list
-      description: List service request definitions. The records are retrieved
-        according to a constraint determined either by the query argument or by
-        the filtering arguments. When using filtering arguments, Each one
-        defines a 'LIKE' operation and 'AND' operator is used between them.
+      description: List service request definitions. The records are retrieved according to a constraint determined either by the query argument or by the filtering arguments. When using filtering arguments, Each one defines a 'LIKE' operation and 'AND' operator is used between them.
       outputs:
         - type: String
           contextPath: BmcITSM.ServiceRequestDefinition.Id
@@ -324,20 +301,14 @@ script:
           description: Service Request Instance ID. Useful for creating Service Request.
       arguments:
         - name: srd_ids
-          description:
-            Comma separated list of service request defintion ID. Filtering
-            argument.
+          description: Comma separated list of service request defintion ID. Filtering argument.
           required: false
           isArray: true
           defaultValue: ""
           predefined:
             - ""
         - name: query
-          description:
-            'Search qualification to list by.For example: Status = "Draft" AND
-            Impact = "1-Extensive/Widespread". The query will be used as an addition to the existing args. Review the BMC documentation for
-            how to Build search qualifications:
-            https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html'
+          description: 'Search qualification to list by.For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query will be used as an addition to the existing args. Review the BMC documentation for how to Build search qualifications: https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html'
           required: false
           isArray: false
           defaultValue: ""
@@ -372,11 +343,7 @@ script:
           predefined:
             - ""
     - name: bmc-itsm-ticket-list
-      description:
-        "List BMC Helix ITSM tickets.The records are retrieved according to
-        a constraint determined either by the query argument or by the filtering
-        arguments. When using filtering arguments, Each one defines a 'LIKE'
-        operation and 'AND' operator is used between them. "
+      description: "List BMC Helix ITSM tickets.The records are retrieved according to a constraint determined either by the query argument or by the filtering arguments. When using filtering arguments, Each one defines a 'LIKE' operation and 'AND' operator is used between them. "
       deprecated: false
       arguments:
         - name: ticket_type
@@ -393,11 +360,7 @@ script:
             - problem investigation
             - known error
         - name: query
-          description:
-            'Search qualification to list by.For example: Status = "Draft" AND
-            Impact = "1-Extensive/Widespread". The query will be used as an addition to the existing args. Review the BMC documentation for
-            how to Build search qualifications:
-            https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html'
+          description: 'Search qualification to list by.For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query will be used as an addition to the existing args. Review the BMC documentation for how to Build search qualifications: https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html'
           required: false
           isArray: false
           defaultValue: ""
@@ -432,9 +395,7 @@ script:
           predefined:
             - ""
         - name: status
-          description:
-            Ticket status. Since Each ticket type has it's own unique status pool,
-            consider to select only those who match to the selected ticket types. Filtering argument.
+          description: Ticket status. Since Each ticket type has it's own unique status pool, consider to select only those who match to the selected ticket types. Filtering argument.
           required: false
           isArray: false
           defaultValue: ""
@@ -517,9 +478,7 @@ script:
             - Risk Level 3
             - Risk Level 4
         - name: change_type
-          description:
-            Ticket change type level. Relevant only to change reqiest ticket
-            type. Filtering argument.
+          description: Ticket change type level. Relevant only to change reqiest ticket type. Filtering argument.
           required: false
           isArray: false
           defaultValue: ""
@@ -597,50 +556,31 @@ script:
           description: Ticket last update time in UTC.
           type: Date
     - name: bmc-itsm-service-request-create
-      description:
-        Create a new service request. A service request is the request
-        record that is generated from the service request definition to manage
-        and track the execution. In order to create it, you need to provide the
-        srd_instance_id argument which can be retrieved by by executing
-        "bmc-itsm-service-request-definition-list" command and extracting the
-        instanceID field. User and company related arguments can be retrieved
-        from fields retrived by executing the "bmc-itsm-user-list" and
-        "bmc-itsm-company-list"
+      description: Create a new service request. A service request is the request record that is generated from the service request definition to manage and track the execution. In order to create it, you need to provide the srd_instance_id argument which can be retrieved by by executing "bmc-itsm-service-request-definition-list" command and extracting the instanceID field. User and company related arguments can be retrieved from fields retrived by executing the "bmc-itsm-user-list" and "bmc-itsm-company-list"
       arguments:
         - name: srd_instance_id
-          description:
-            "The instance ID of the requested service. It can be retrieved by
-            executing bmc-itsm-service-request-definition-list command. "
+          description: "The instance ID of the requested service. It can be retrieved by executing bmc-itsm-service-request-definition-list command. "
           required: true
           isArray: false
           defaultValue: ""
           predefined:
             - ""
         - name: first_name
-          description:
-            Requester first name. By default is determined by the logged in
-            user. If provided, login_id, first_name and last_name arguments must
-            be provided together.
+          description: Requester first name. By default is determined by the logged in user. If provided, login_id, first_name and last_name arguments must be provided together.
           required: false
           isArray: false
           defaultValue: ""
           predefined:
             - ""
         - name: last_name
-          description:
-            "Requester last name. Requester last name. By default is determined
-            by the logged in user. If provided, login_id, first_name and
-            last_name arguments must be provided together. "
+          description: "Requester last name. Requester last name. By default is determined by the logged in user. If provided, login_id, first_name and last_name arguments must be provided together. "
           required: false
           isArray: false
           defaultValue: ""
           predefined:
             - ""
         - name: login_id
-          description:
-            Requester login ID. By default is determined by the logged in user.
-            If provided, login_id, first_name and last_name arguments must be
-            provided together.
+          description: Requester login ID. By default is determined by the logged in user. If provided, login_id, first_name and last_name arguments must be provided together.
           required: false
           isArray: false
           defaultValue: ""
@@ -673,9 +613,7 @@ script:
             - Cancelled
             - Closed
         - name: urgency
-          description:
-            Incident Request urgency. Required when the creation is without a
-            template.
+          description: Incident Request urgency. Required when the creation is without a template.
           required: false
           isArray: false
           defaultValue: ""
@@ -686,9 +624,7 @@ script:
             - 3-Medium
             - 4-Low
         - name: impact
-          description:
-            Incident Request impact. Required when the creation is without a
-            template.
+          description: Incident Request impact. Required when the creation is without a template.
           required: false
           isArray: false
           defaultValue: ""
@@ -699,11 +635,7 @@ script:
             - 3-Moderate/Limited
             - 4-Minor/Localized
         - name: additional_fields
-          description:
-            'The fields which are not present in the current argument list can
-            be added here in the format
-            "fieldname1=value;fieldname2=value".Possible fields: Assigned Group,
-            Assignee or any other custom field.'
+          description: 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value".Possible fields: Assigned Group, Assignee or any other custom field.'
           required: false
           isArray: false
           defaultValue: ""
@@ -720,10 +652,7 @@ script:
           description: Service Request Create time in UTC.
           type: Date
     - name: bmc-itsm-service-request-update
-      description:
-        Update the details of an service request for a given request ID.
-        User and company related arguments can be retrieved from fields retrived
-        by executing the "bmc-itsm-user-list" and "bmc-itsm-company-list".
+      description: Update the details of an service request for a given request ID. User and company related arguments can be retrieved from fields retrived by executing the "bmc-itsm-user-list" and "bmc-itsm-company-list".
       arguments:
         - name: service_request_id
           description: Unique identifier of the service request to update.
@@ -733,18 +662,14 @@ script:
           predefined:
             - ""
         - name: customer_first_name
-          description:
-            "Customer First name. By default is determined by the logged in
-            user. "
+          description: "Customer First name. By default is determined by the logged in user. "
           required: false
           isArray: false
           defaultValue: ""
           predefined:
             - ""
         - name: customer_last_name
-          description:
-            "Customer last name. By default is determined by the logged in
-            user. "
+          description: "Customer last name. By default is determined by the logged in user. "
           required: false
           isArray: false
           defaultValue: ""
@@ -770,9 +695,7 @@ script:
             - Cancelled
             - Closed
         - name: urgency
-          description:
-            Incident Request urgency. Required when the creation is without a
-            template.
+          description: Incident Request urgency. Required when the creation is without a template.
           required: false
           isArray: false
           defaultValue: ""
@@ -783,9 +706,7 @@ script:
             - 3-Medium
             - 4-Low
         - name: impact
-          description:
-            Incident Request impact. Required when the creation is without a
-            template.
+          description: Incident Request impact. Required when the creation is without a template.
           required: false
           isArray: false
           defaultValue: ""
@@ -796,9 +717,7 @@ script:
             - 3-Moderate/Limited
             - 4-Minor/Localized
         - name: status_reason
-          description:
-            "The reason for updaing the status. Required only if status
-            argument is provided. "
+          description: "The reason for updaing the status. Required only if status argument is provided. "
           required: false
           isArray: false
           defaultValue: ""
@@ -845,20 +764,14 @@ script:
           predefined:
             - ""
         - name: assignee
-          description:
-            The full name of the staff member to whom the ticket will be assigned to.
-            It can be retrieved by using the 'bmc-itsm-user-list' command.
+          description: The full name of the staff member to whom the ticket will be assigned to. It can be retrieved by using the 'bmc-itsm-user-list' command.
           required: false
           isArray: false
           defaultValue: ""
           predefined:
             - ""
         - name: additional_fields
-          description:
-            'The fields which are not present in the current argument list can
-            be added here in the format "fieldname1=value;fieldname2=value".
-            Possible fields: Assigned Group, Assignee or any other custom
-            field.'
+          description: 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assigned Group, Assignee or any other custom field.'
           required: false
           isArray: false
           defaultValue: ""
@@ -910,9 +823,7 @@ script:
             - Infrastructure Event
             - Security Incident
         - name: urgency
-          description:
-            Incident Request urgency. Required when the creation is without a
-            template.
+          description: Incident Request urgency. Required when the creation is without a template.
           required: false
           isArray: false
           defaultValue: ""
@@ -923,9 +834,7 @@ script:
             - 3-Medium
             - 4-Low
         - name: impact
-          description:
-            Incident Request impact. Required when the creation is without a
-            template.
+          description: Incident Request impact. Required when the creation is without a template.
           required: false
           isArray: false
           defaultValue: ""
@@ -968,19 +877,12 @@ script:
             - Other
             - BMC Impact Manager Event
         - name: additional_fields
-          description:
-            'The fields which are not present in the current argument list can
-            be added here in the format "fieldname1=value;fieldname2=value".
-            Possible fields: Assigned Group, Assignee or any other custom
-            field.'
+          description: 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assigned Group, Assignee or any other custom field.'
           required: false
           isArray: false
           defaultValue: ""
           predefined:
-            - 'The fields which are not present in the current argument list can
-              be added here in the format
-              "fieldname1=value;fieldname2=value".Possible fields: Assigned
-              Group, Assignee or any other custom field.'
+            - 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value".Possible fields: Assigned Group, Assignee or any other custom field.'
         - name: detailed_description
           description: Incident summary
           required: false
@@ -989,51 +891,35 @@ script:
           predefined:
             - ""
         - name: company
-          description:
-            Company associated with the Requester. By default is determined by
-            the logged in user.
+          description: Company associated with the Requester. By default is determined by the logged in user.
           required: false
           isArray: false
           defaultValue: ""
           predefined:
             - ""
         - name: assigned_support_company
-          description:
-            This is the Company for the Assignee’s Support Organization.  This
-            Company is part of the Assignee’s Support Organization data
-            structure  It makes up the 1st tier of the Assignee’s Support
-            Organization data structure.
+          description: This is the Company for the Assignee’s Support Organization.  This Company is part of the Assignee’s Support Organization data structure  It makes up the 1st tier of the Assignee’s Support Organization data structure.
           required: false
           isArray: false
           defaultValue: ""
           predefined:
             - ""
         - name: assigned_support_organization
-          description:
-            This is the Company for the Assignee’s Support Organization.  This
-            Company is part of the Assignee’s Support Organization data
-            structure  It makes up the second tier of the Assignee’s Support
-            Organization data structure.
+          description: This is the Company for the Assignee’s Support Organization.  This Company is part of the Assignee’s Support Organization data structure  It makes up the second tier of the Assignee’s Support Organization data structure.
           required: false
           isArray: false
           defaultValue: ""
           predefined:
             - ""
         - name: assigned_group
-          description:
-            This is the Company for the Assignee’s Support Organization.  This
-            Company is part of the Assignee’s Support Organization data
-            structure  It makes up the third tier of the Assignee’s Support
-            Organization data structure.
+          description: This is the Company for the Assignee’s Support Organization.  This Company is part of the Assignee’s Support Organization data structure  It makes up the third tier of the Assignee’s Support Organization data structure.
           required: false
           isArray: false
           defaultValue: ""
           predefined:
             - ""
         - name: assignee
-          description:
-            The full name of the staff member to whom the ticket will be assigned to.
-            It can be retrieved by using the 'bmc-itsm-user-list' command.
+          description: The full name of the staff member to whom the ticket will be assigned to. It can be retrieved by using the 'bmc-itsm-user-list' command.
           required: false
           isArray: false
           defaultValue: ""
@@ -1047,9 +933,7 @@ script:
           predefined:
             - ""
         - name: region
-          description:
-            It makes up the second tier of the Customer’s Business Organization
-            data structure.
+          description: It makes up the second tier of the Customer’s Business Organization data structure.
           required: false
           isArray: false
           defaultValue: ""
@@ -1070,9 +954,7 @@ script:
           predefined:
             - ""
         - name: status_reason
-          description:
-            The reason for updating the ticket status. Required when status is
-            provided.
+          description: The reason for updating the ticket status. Required when status is provided.
           required: false
           isArray: false
           auto: PREDEFINED
@@ -1100,14 +982,13 @@ script:
             - Pending Causal Incident Resolution
             - Resolved by Causal Incident
         - name: resolution
-          description: Ticket resolution description. Required when status is
-            provided.
+          description: Ticket resolution description. Required when status is provided.
           required: false
           isArray: false
           defaultValue: ""
       outputs: []
     - name: bmc-itsm-ticket-delete
-      description: "Delete ticket by it's request ID. Only admin users can perform this command."
+      description: Delete ticket by it's request ID. Only admin users can perform this command.
       deprecated: false
       arguments:
         - name: ticket_ids
@@ -1130,10 +1011,7 @@ script:
             - known error
       outputs: []
     - name: bmc-itsm-incident-create
-      description:
-        "Create a new incident ticket. An incident is any event that is not
-        part of the standard operation of a service and that causes an
-        interruption to or a reduction in the quality of that service. "
+      description: "Create a new incident ticket. An incident is any event that is not part of the standard operation of a service and that causes an interruption to or a reduction in the quality of that service. "
       deprecated: false
       arguments:
         - name: first_name
@@ -1151,11 +1029,7 @@ script:
           predefined:
             - ""
         - name: template_instance_id
-          description:
-            The instance ID of the template to use. Required only when the
-            ticket attributes should be based on the template's
-            fields. The instance ID can be retrieved by executing
-            bmc-itsm-incident-template-list commad.
+          description: The instance ID of the template to use. Required only when the ticket attributes should be based on the template's fields. The instance ID can be retrieved by executing bmc-itsm-incident-template-list commad.
           required: false
           isArray: false
           defaultValue: ""
@@ -1169,7 +1043,7 @@ script:
           predefined:
             - ""
         - name: service_type
-          description: "The type of the incident. Required when template_instance_id argument is not provided"
+          description: The type of the incident. Required when template_instance_id argument is not provided
           required: false
           isArray: false
           defaultValue: ""
@@ -1181,9 +1055,7 @@ script:
             - Infrastructure Event
             - Security Incident
         - name: urgency
-          description:
-            Incident Request urgency. Required when the creation is without a
-            template.
+          description: Incident Request urgency. Required when the creation is without a template.
           required: true
           isArray: false
           defaultValue: ""
@@ -1194,9 +1066,7 @@ script:
             - 3-Medium
             - 4-Low
         - name: impact
-          description:
-            Incident Request impact. Required when the creation is without a
-            template.
+          description: Incident Request impact. Required when the creation is without a template.
           required: true
           isArray: false
           defaultValue: ""
@@ -1221,7 +1091,7 @@ script:
             - Closed
             - Cancelled
         - name: reported_source
-          description: "Incident reported source.  Required when template_instance_id argument is not provided."
+          description: Incident reported source.  Required when template_instance_id argument is not provided.
           required: false
           isArray: false
           defaultValue: ""
@@ -1239,19 +1109,12 @@ script:
             - Other
             - BMC Impact Manager Event
         - name: additional_fields
-          description:
-            'The fields which are not present in the current argument list can
-            be added here in the format "fieldname1=value;fieldname2=value".
-            Possible fields: Assigned Group, Assignee or any other custom
-            field.'
+          description: 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assigned Group, Assignee or any other custom field.'
           required: false
           isArray: false
           defaultValue: ""
           predefined:
-            - 'The fields which are not present in the current argument list can
-              be added here in the format
-              "fieldname1=value;fieldname2=value".Possible fields: Assigned
-              Group, Assignee or any other custom field.'
+            - 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value".Possible fields: Assigned Group, Assignee or any other custom field.'
         - name: details
           description: Incident detailed description.
           required: false
@@ -1260,51 +1123,35 @@ script:
           predefined:
             - ""
         - name: company
-          description:
-            Company associated with the Requester. By default is determined by
-            the logged in user.
+          description: Company associated with the Requester. By default is determined by the logged in user.
           required: false
           isArray: false
           defaultValue: ""
           predefined:
             - ""
         - name: assigned_support_company
-          description:
-            This is the Company for the Assignee’s Support Organization.  This
-            Company is part of the Assignee’s Support Organization data
-            structure  It makes up the 1st tier of the Assignee’s Support
-            Organization data structure.
+          description: This is the Company for the Assignee’s Support Organization.  This Company is part of the Assignee’s Support Organization data structure  It makes up the 1st tier of the Assignee’s Support Organization data structure.
           required: false
           isArray: false
           defaultValue: ""
           predefined:
             - ""
         - name: assigned_support_organization
-          description:
-            This is the Company for the Assignee’s Support Organization.  This
-            Company is part of the Assignee’s Support Organization data
-            structure  It makes up the second tier of the Assignee’s Support
-            Organization data structure.
+          description: This is the Company for the Assignee’s Support Organization.  This Company is part of the Assignee’s Support Organization data structure  It makes up the second tier of the Assignee’s Support Organization data structure.
           required: false
           isArray: false
           defaultValue: ""
           predefined:
             - ""
         - name: assigned_group
-          description:
-            This is the Company for the Assignee’s Support Organization.  This
-            Company is part of the Assignee’s Support Organization data
-            structure  It makes up the third tier of the Assignee’s Support
-            Organization data structure.
+          description: This is the Company for the Assignee’s Support Organization.  This Company is part of the Assignee’s Support Organization data structure  It makes up the third tier of the Assignee’s Support Organization data structure.
           required: false
           isArray: false
           defaultValue: ""
           predefined:
             - ""
         - name: assignee
-          description:
-            The full name of the staff member to whom the ticket will be assigned to. The assignee and assignee_login_id arguments must be provided together.
-            It can be retrieved by using the 'bmc-itsm-user-list' command.
+          description: The full name of the staff member to whom the ticket will be assigned to. The assignee and assignee_login_id arguments must be provided together. It can be retrieved by using the 'bmc-itsm-user-list' command.
           required: false
           isArray: false
           defaultValue: ""
@@ -1349,8 +1196,7 @@ script:
           description: "Incident create time in UTC. "
           type: Date
     - name: bmc-itsm-change-request-create
-      description: Create Change Request ticket in BMC Helix ITSM.The ticket is
-        created by using a template or from scratch.
+      description: Create Change Request ticket in BMC Helix ITSM.The ticket is created by using a template or from scratch.
       deprecated: false
       arguments:
         - name: first_name
@@ -1389,20 +1235,14 @@ script:
           predefined:
             - ""
         - name: template_id
-          description:
-            "The instance ID of the template to use. Required only when the ticket
-            attributes should be based on the template's fields. The ID caan be
-            retrieved by executing bmc-itsm-change-request-template-list commad.
-            "
+          description: "The instance ID of the template to use. Required only when the ticket attributes should be based on the template's fields. The ID caan be retrieved by executing bmc-itsm-change-request-template-list commad. "
           required: false
           isArray: false
           defaultValue: ""
           predefined:
             - ""
         - name: change_type
-          description:
-            Change request type. Required when the creation is without a
-            template.
+          description: Change request type. Required when the creation is without a template.
           required: false
           isArray: false
           defaultValue: ""
@@ -1417,9 +1257,7 @@ script:
             - Purchase Requisition
             - Asset Maintenance
         - name: change_timing
-          description:
-            "The class of the change request which best describes your
-            scenario. "
+          description: "The class of the change request which best describes your scenario. "
           required: false
           isArray: false
           defaultValue: ""
@@ -1432,9 +1270,7 @@ script:
             - No Impact
             - Standard
         - name: impact
-          description:
-            Change Request impact. Required when the creation is without a
-            template.
+          description: Change Request impact. Required when the creation is without a template.
           required: false
           isArray: false
           defaultValue: ""
@@ -1445,9 +1281,7 @@ script:
             - 3-Moderate/Limited
             - 4-Minor/Localized
         - name: urgency
-          description:
-            Change Request urgency. Required when the creation is without a
-            template.
+          description: Change Request urgency. Required when the creation is without a template.
           required: false
           isArray: false
           defaultValue: ""
@@ -1458,9 +1292,7 @@ script:
             - 3-Medium
             - 4-Low
         - name: risk_level
-          description:
-            Change Request risk level. Required when the creation is without a
-            template.
+          description: Change Request risk level. Required when the creation is without a template.
           required: false
           isArray: false
           defaultValue: ""
@@ -1472,9 +1304,7 @@ script:
             - Risk Level 4
             - Risk Level 5
         - name: status
-          description:
-            Change Request status. Required when the creation is without a
-            template.
+          description: Change Request status. Required when the creation is without a template.
           required: false
           isArray: false
           defaultValue: ""
@@ -1496,15 +1326,11 @@ script:
           description: Company associated with CR process. Required when template ID argument is not provided.
           required: false
           isArray: false
-          defaultValue: null
+          defaultValue:
           predefined:
             - ""
         - name: additional_fields
-          description:
-            'The fields which are not present in the current argument list can
-            be added here in the format "fieldname1=value;fieldname2=value".
-            Possible fields: Assigned Group, Assignee or any other custom
-            field.'
+          description: 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assigned Group, Assignee or any other custom field.'
           required: false
           isArray: false
           defaultValue: ""
@@ -1564,9 +1390,7 @@ script:
             - Purchase Requisition
             - Asset Maintenance
         - name: change_timing
-          description:
-            "The class of the change request which best describes your
-            scenario. "
+          description: "The class of the change request which best describes your scenario. "
           required: false
           isArray: false
           defaultValue: ""
@@ -1632,20 +1456,14 @@ script:
             - Closed
             - Cancelled
         - name: additional_fields
-          description:
-            'The fields which are not present in the current argument list can
-            be added here in the format "fieldname1=value;fieldname2=value".
-            Possible fields: Assigned Group, Assignee or any other custom
-            field.'
+          description: 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assigned Group, Assignee or any other custom field.'
           required: false
           isArray: false
           defaultValue: ""
           predefined:
             - ""
         - name: company
-          description:
-            Company associated with the Requester. By default is determined by
-            the logged in user.
+          description: Company associated with the Requester. By default is determined by the logged in user.
           required: false
           isArray: false
           defaultValue: ""
@@ -1669,7 +1487,7 @@ script:
           description: Company associated with CR process.
           required: false
           isArray: false
-          defaultValue: null
+          defaultValue:
           predefined:
             - ""
         - name: region
@@ -1694,27 +1512,21 @@ script:
           predefined:
             - ""
         - name: support_organization
-          description:
-            It makes up the second tier of the Change Manager’s Support
-            Organization data structure.
+          description: It makes up the second tier of the Change Manager’s Support Organization data structure.
           required: false
           isArray: false
           defaultValue: ""
           predefined:
             - ""
         - name: support_group_name
-          description:
-            It makes up the third tier of the Change Manager’s Support
-            Organization data structure.
+          description: It makes up the third tier of the Change Manager’s Support Organization data structure.
           required: false
           isArray: false
           defaultValue: ""
           predefined:
             - ""
         - name: status_reason
-          description:
-            "The reason for updating the ticket status. Required when status is
-            provided. "
+          description: "The reason for updating the ticket status. Required when status is provided. "
           required: false
           isArray: false
           defaultValue: ""
@@ -1760,16 +1572,11 @@ script:
             - ""
       outputs: []
     - name: bmc-itsm-task-create
-      description:
-        "Create a new task ticket. You can create and manage tasks to resolve cases. Tasks are child records of cases that enable you to
-        split the cases into individual assignments so that you can focus on one assignment at a time and achieve the required results efficiently.
-        Task ticket type can be attached only to the following types:change request,incident,problem investigation and known error."
+      description: Create a new task ticket. You can create and manage tasks to resolve cases. Tasks are child records of cases that enable you to split the cases into individual assignments so that you can focus on one assignment at a time and achieve the required results efficiently. Task ticket type can be attached only to the following types:change request,incident,problem investigation and known error.
       deprecated: false
       arguments:
         - name: template_id
-          description:
-            The instance ID of the template to use. The ID can be retrieved by executing
-            'bmc-itsm-task-template-list' commad.
+          description: The instance ID of the template to use. The ID can be retrieved by executing 'bmc-itsm-task-template-list' commad.
           required: false
           isArray: false
           defaultValue: ""
@@ -1790,7 +1597,7 @@ script:
           predefined:
             - ""
         - name: root_ticket_type
-          description: "Parent ticket type"
+          description: Parent ticket type
           required: true
           isArray: false
           defaultValue: ""
@@ -1801,9 +1608,7 @@ script:
             - problem investigation
             - known error
         - name: root_request_id
-          description:
-            "The request ID of the parent ticket. Can be found in the context
-            output of ticket bmc-itsm-ticket-list command. "
+          description: "The request ID of the parent ticket. Can be found in the context output of ticket bmc-itsm-ticket-list command. "
           required: true
           isArray: false
           defaultValue: ""
@@ -1840,7 +1645,7 @@ script:
             - Closed
             - Bypassed
         - name: task_type
-          description: "Whether it is a manual Task or an automatic one."
+          description: Whether it is a manual Task or an automatic one.
           required: false
           isArray: false
           defaultValue: ""
@@ -1849,17 +1654,12 @@ script:
             - Automatic
             - Manual
         - name: additional_fields
-          description:
-            'The fields which are not present in the current argument list can
-            be added here in the format "fieldname1=value;fieldname2=value".
-            Possible fields: Assignee or any other custom field.'
+          description: 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assignee or any other custom field.'
           required: false
           isArray: false
           defaultValue: ""
           predefined:
-            - 'The fields which are not present in the current argument list can
-              be added here in the format
-              "fieldname1=value;fieldname2=value".Possible fields: Assignee or any other custom field.'
+            - 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value".Possible fields: Assignee or any other custom field.'
         - name: priority
           description: Task priority.
           required: true
@@ -1886,18 +1686,14 @@ script:
           predefined:
             - ""
         - name: assigned_support_organization
-          description: It makes up the second tier of the Task's Support
-            Organization data structure. The arguments assigned_support_organization,assigned_group,support_company
-            Should be provided together.
+          description: It makes up the second tier of the Task's Support Organization data structure. The arguments assigned_support_organization,assigned_group,support_company Should be provided together.
           required: false
           isArray: false
-          defaultValue: null
+          defaultValue:
           predefined:
             - ""
         - name: assigned_support_group
-          description: It makes up the third tier of the Task’s Support
-            Organization data structure. The arguments assigned_support_organization,assigned_group,support_company
-            Should be provided together.
+          description: It makes up the third tier of the Task’s Support Organization data structure. The arguments assigned_support_organization,assigned_group,support_company Should be provided together.
           required: false
           isArray: false
           defaultValue: ""
@@ -1926,9 +1722,7 @@ script:
             - 3-Medium
             - 4-Low
         - name: assignee
-          description:
-            The full name of the staff member to whom the ticket will be assigned to.
-            It can be retrieved by using the 'bmc-itsm-user-list' command.
+          description: The full name of the staff member to whom the ticket will be assigned to. It can be retrieved by using the 'bmc-itsm-user-list' command.
           required: false
           isArray: false
           defaultValue: ""
@@ -2008,9 +1802,7 @@ script:
             - Closed
             - Bypassed
         - name: status_reason
-          description:
-            "The reason for changing the status. Required when the status is
-            changed. "
+          description: "The reason for changing the status. Required when the status is changed. "
           required: false
           isArray: false
           defaultValue: ""
@@ -2028,9 +1820,7 @@ script:
             - Completion
             - Error
         - name: company
-          description:
-            Company associated with the Requester. By default is determined by
-            the logged in user.
+          description: Company associated with the Requester. By default is determined by the logged in user.
           required: false
           isArray: false
           defaultValue: ""
@@ -2051,29 +1841,21 @@ script:
           predefined:
             - ""
         - name: assignee
-          description:
-            The full name of the staff member to whom the ticket will be assigned to.
-            It can be retrieved by using the 'bmc-itsm-user-list' command.
+          description: The full name of the staff member to whom the ticket will be assigned to. It can be retrieved by using the 'bmc-itsm-user-list' command.
           required: false
           isArray: false
           defaultValue: ""
           predefined:
             - ""
         - name: assigned_support_organization
-          description:
-            It makes up the second tier of the Problem Assignee’s Support
-            Organization data structure. The arguments assigned_support_organization,assigned_group,assigned_support_company
-            Should be provided together.
+          description: It makes up the second tier of the Problem Assignee’s Support Organization data structure. The arguments assigned_support_organization,assigned_group,assigned_support_company Should be provided together.
           required: false
           isArray: false
-          defaultValue: null
+          defaultValue:
           predefined:
             - ""
         - name: assigned_group
-          description:
-            It makes up the third tier of the Problem Assignee’s Support
-            Organization data structure. The arguments assigned_support_organization,assigned_group,assigned_support_company
-            Should be provided together.
+          description: It makes up the third tier of the Problem Assignee’s Support Organization data structure. The arguments assigned_support_organization,assigned_group,assigned_support_company Should be provided together.
           required: false
           isArray: false
           defaultValue: ""
@@ -2089,17 +1871,12 @@ script:
             - Automatic
             - Manual
         - name: additional_fields
-          description:
-            'The fields which are not present in the current argument list can
-            be added here in the format "fieldname1=value;fieldname2=value".
-            Possible fields: Assignee or any other custom field.'
+          description: 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assignee or any other custom field.'
           required: false
           isArray: false
           defaultValue: ""
           predefined:
-            - 'The fields which are not present in the current argument list can
-              be added here in the format
-              "fieldname1=value;fieldname2=value".Possible fields: Assignee or any other custom field.'
+            - 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value".Possible fields: Assignee or any other custom field.'
         - name: scedulded_start_date
           description: Task schedulded Future start date. For example, in 12 hours, in 7 days.
           required: false
@@ -2205,9 +1982,7 @@ script:
           predefined:
             - ""
         - name: company
-          description:
-            Company associated with the Requester. By default is determined by
-            the logged in user.
+          description: Company associated with the Requester. By default is determined by the logged in user.
           required: false
           isArray: false
           defaultValue: ""
@@ -2235,78 +2010,56 @@ script:
           predefined:
             - ""
         - name: assignee
-          description:
-            The full name of the staff member to whom the ticket will be assigned to.
-            It can be retrieved by using the 'bmc-itsm-user-list' command.
+          description: The full name of the staff member to whom the ticket will be assigned to. It can be retrieved by using the 'bmc-itsm-user-list' command.
           required: false
           isArray: false
           defaultValue: ""
           predefined:
             - ""
         - name: assignee_pbm_mgr
-          description:
-            The full name of the staff member to whom the ticket will be assign to as the problem coordinator.
-            It can be retrieved by using the 'bmc-itsm-user-list' command.
+          description: The full name of the staff member to whom the ticket will be assign to as the problem coordinator. It can be retrieved by using the 'bmc-itsm-user-list' command.
           required: false
           isArray: false
           defaultValue: ""
           predefined:
             - ""
         - name: assigned_group_pbm_mgr
-          description:
-            It makes up the third tier of the Problem Coordinator’s Support
-            Organization data structure. The arguments support_organization_pbm_mgr,assigned_group_pbm_mgr,support_company_pbm_mgr
-            Should be provided together.
+          description: It makes up the third tier of the Problem Coordinator’s Support Organization data structure. The arguments support_organization_pbm_mgr,assigned_group_pbm_mgr,support_company_pbm_mgr Should be provided together.
           required: false
           isArray: false
           defaultValue: ""
           predefined:
             - ""
         - name: support_company_pbm_mgr
-          description:
-            "the Company for the Problem Coordinator’s Support Organization. It
-            makes up the first tier of it. The arguments support_organization_pbm_mgr,assigned_group_pbm_mgr,support_company_pbm_mgr
-            Should be provided together."
+          description: the Company for the Problem Coordinator’s Support Organization. It makes up the first tier of it. The arguments support_organization_pbm_mgr,assigned_group_pbm_mgr,support_company_pbm_mgr Should be provided together.
           required: false
           isArray: false
           defaultValue: ""
           predefined:
             - ""
         - name: support_organization_pbm_mgr
-          description:
-            It makes up the second tier of the Problem Coordinator’s Support
-            Organization data structure. The arguments support_organization_pbm_mgr,assigned_group_pbm_mgr,support_company_pbm_mgr
-            Should be provided together.
+          description: It makes up the second tier of the Problem Coordinator’s Support Organization data structure. The arguments support_organization_pbm_mgr,assigned_group_pbm_mgr,support_company_pbm_mgr Should be provided together.
           required: false
           isArray: false
           defaultValue: ""
           predefined:
             - ""
         - name: assigned_support_company
-          description: " This is the Company for the Problem Assignee’s Support
-            Organization. It makes up the first tier of the Problem Assignee’s
-            Support Organization data structure. The arguments assigned_support_organization,assigned_group,assigned_support_company
-            Should be provided together."
+          description: " This is the Company for the Problem Assignee’s Support Organization. It makes up the first tier of the Problem Assignee’s Support Organization data structure. The arguments assigned_support_organization,assigned_group,assigned_support_company Should be provided together."
           required: false
           isArray: false
           defaultValue: ""
           predefined:
             - ""
         - name: assigned_support_organization
-          description:
-            It makes up the second tier of the Problem Assignee’s Support
-            Organization data structure. The arguments assigned_support_organization,assigned_group,assigned_support_company
-            Should be provided together.
+          description: It makes up the second tier of the Problem Assignee’s Support Organization data structure. The arguments assigned_support_organization,assigned_group,assigned_support_company Should be provided together.
           required: false
           isArray: false
-          defaultValue: null
+          defaultValue:
           predefined:
             - ""
         - name: assigned_group
-          description:
-            It makes up the third tier of the Problem Assignee’s Support
-            Organization data structure. The arguments assigned_support_organization,assigned_group,assigned_support_company
-            Should be provided together.
+          description: It makes up the third tier of the Problem Assignee’s Support Organization data structure. The arguments assigned_support_organization,assigned_group,assigned_support_company Should be provided together.
           required: false
           isArray: false
           defaultValue: ""
@@ -2334,11 +2087,7 @@ script:
           predefined:
             - ""
         - name: additional_fields
-          description:
-            'The fields which are not present in the current argument list can
-            be added here in the format "fieldname1=value;fieldname2=value".
-            Possible fields: Assigned Group, Assignee or any other custom
-            field.'
+          description: 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assigned Group, Assignee or any other custom field.'
           required: false
           isArray: false
           defaultValue: ""
@@ -2436,9 +2185,7 @@ script:
           predefined:
             - ""
         - name: company
-          description:
-            Company associated with the Requester. By default is determined by
-            the logged in user.
+          description: Company associated with the Requester. By default is determined by the logged in user.
           required: false
           isArray: false
           defaultValue: ""
@@ -2473,60 +2220,42 @@ script:
           predefined:
             - ""
         - name: assigned_group_pbm_mgr
-          description:
-            It makes up the third tier of the Problem Coordinator’s Support
-            Organization data structure. The arguments support_organization_pbm_mgr,assigned_group_pbm_mgr,support_company_pbm_mgr
-            Should be provided together.
+          description: It makes up the third tier of the Problem Coordinator’s Support Organization data structure. The arguments support_organization_pbm_mgr,assigned_group_pbm_mgr,support_company_pbm_mgr Should be provided together.
           required: false
           isArray: false
           defaultValue: ""
           predefined:
             - ""
         - name: support_company_pbm_mgr
-          description:
-            "the Company for the Problem Coordinator’s Support Organization. It
-            makes up the first tier of it. The arguments support_organization_pbm_mgr,assigned_group_pbm_mgr,support_company_pbm_mgr
-            Should be provided together."
+          description: the Company for the Problem Coordinator’s Support Organization. It makes up the first tier of it. The arguments support_organization_pbm_mgr,assigned_group_pbm_mgr,support_company_pbm_mgr Should be provided together.
           required: false
           isArray: false
           defaultValue: ""
           predefined:
             - ""
         - name: support_organization_pbm_mgr
-          description:
-            It makes up the second tier of the Problem Coordinator’s Support
-            Organization data structure. The arguments support_organization_pbm_mgr,assigned_group_pbm_mgr,support_company_pbm_mgr
-            Should be provided together.
+          description: It makes up the second tier of the Problem Coordinator’s Support Organization data structure. The arguments support_organization_pbm_mgr,assigned_group_pbm_mgr,support_company_pbm_mgr Should be provided together.
           required: false
           isArray: false
           defaultValue: ""
           predefined:
             - ""
         - name: assigned_support_company
-          description: " This is the Company for the Problem Assignee’s Support
-            Organization. It makes up the first tier of the Problem Assignee’s
-            Support Organization data structure. The arguments assigned_support_organization,assigned_group,assigned_support_company
-            Should be provided together."
+          description: " This is the Company for the Problem Assignee’s Support Organization. It makes up the first tier of the Problem Assignee’s Support Organization data structure. The arguments assigned_support_organization,assigned_group,assigned_support_company Should be provided together."
           required: false
           isArray: false
           defaultValue: ""
           predefined:
             - ""
         - name: assigned_support_organization
-          description:
-            It makes up the second tier of the Problem Assignee’s Support
-            Organization data structure. The arguments assigned_support_organization,assigned_group,assigned_support_company
-            Should be provided together.
+          description: It makes up the second tier of the Problem Assignee’s Support Organization data structure. The arguments assigned_support_organization,assigned_group,assigned_support_company Should be provided together.
           required: false
           isArray: false
-          defaultValue: null
+          defaultValue:
           predefined:
             - ""
         - name: assigned_group
-          description:
-            It makes up the third tier of the Problem Assignee’s Support
-            Organization data structure. The arguments assigned_support_organization,assigned_group,assigned_support_company
-            Should be provided together.
+          description: It makes up the third tier of the Problem Assignee’s Support Organization data structure. The arguments assigned_support_organization,assigned_group,assigned_support_company Should be provided together.
           required: false
           isArray: false
           defaultValue: ""
@@ -2554,9 +2283,7 @@ script:
           predefined:
             - ""
         - name: status_reason
-          description:
-            The reason for changing the status. Required when the status
-            argument provided.
+          description: The reason for changing the status. Required when the status argument provided.
           required: false
           isArray: false
           defaultValue: ""
@@ -2651,54 +2378,42 @@ script:
           predefined:
             - ""
         - name: assigned_group_pbm_mgr
-          description:
-            It makes up the third tier of the Problem Coordinator’s Support
-            Organization data structure
+          description: It makes up the third tier of the Problem Coordinator’s Support Organization data structure
           required: false
           isArray: false
           defaultValue: ""
           predefined:
             - ""
         - name: support_company_pbm_mgr
-          description:
-            "the Company for the Problem Coordinator’s Support Organization. It
-            makes up the first tier of it. "
+          description: "the Company for the Problem Coordinator’s Support Organization. It makes up the first tier of it. "
           required: false
           isArray: false
           defaultValue: ""
           predefined:
             - ""
         - name: support_organization_pbm_mgr
-          description:
-            It makes up the second tier of the Problem Coordinator’s Support
-            Organization data structure.
+          description: It makes up the second tier of the Problem Coordinator’s Support Organization data structure.
           required: false
           isArray: false
           defaultValue: ""
           predefined:
             - ""
         - name: assigned_support_company
-          description: " This is the Company for the Problem Assignee’s Support
-            Organization. It makes up the first tier of the Problem Assignee’s
-            Support Organization data structure."
+          description: " This is the Company for the Problem Assignee’s Support Organization. It makes up the first tier of the Problem Assignee’s Support Organization data structure."
           required: false
           isArray: false
           defaultValue: ""
           predefined:
             - ""
         - name: assigned_support_organization
-          description:
-            It makes up the second tier of the Problem Assignee’s Support
-            Organization data structure.
+          description: It makes up the second tier of the Problem Assignee’s Support Organization data structure.
           required: false
           isArray: false
-          defaultValue: null
+          defaultValue:
           predefined:
             - ""
         - name: assigned_group
-          description:
-            It makes up the third tier of the Problem Assignee’s Support
-            Organization data structure.
+          description: It makes up the third tier of the Problem Assignee’s Support Organization data structure.
           required: false
           isArray: false
           defaultValue: ""
@@ -2712,18 +2427,14 @@ script:
           predefined:
             - ""
         - name: assignee
-          description:
-            The full name of the staff member to whom the ticket will be assigned to.
-            It can be retrieved by using the 'bmc-itsm-user-list' command.
+          description: The full name of the staff member to whom the ticket will be assigned to. It can be retrieved by using the 'bmc-itsm-user-list' command.
           required: false
           isArray: false
           defaultValue: ""
           predefined:
             - ""
         - name: assignee_pbm_mgr
-          description:
-            The full name of the staff member to whom the ticket will be assign to as the problem coordinator.
-            It can be retrieved by using the 'bmc-itsm-user-list' command.
+          description: The full name of the staff member to whom the ticket will be assign to as the problem coordinator. It can be retrieved by using the 'bmc-itsm-user-list' command.
           required: false
           isArray: false
           defaultValue: ""
@@ -2737,11 +2448,7 @@ script:
           predefined:
             - ""
         - name: additional_fields
-          description:
-            'The fields which are not present in the current argument list can
-            be added here in the format "fieldname1=value;fieldname2=value".
-            Possible fields: Assigned Group, Assignee or any other custom
-            field.'
+          description: 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assigned Group, Assignee or any other custom field.'
           required: false
           isArray: false
           defaultValue: ""
@@ -2828,9 +2535,7 @@ script:
             - Public
             - Internal
         - name: company
-          description:
-            Company associated with the Requester. By default is determined by
-            the logged in user.
+          description: Company associated with the Requester. By default is determined by the logged in user.
           required: false
           isArray: false
           defaultValue: ""
@@ -2851,54 +2556,42 @@ script:
           predefined:
             - ""
         - name: assigned_group_pbm_mgr
-          description:
-            It makes up the third tier of the Problem Coordinator’s Support
-            Organization data structure
+          description: It makes up the third tier of the Problem Coordinator’s Support Organization data structure
           required: false
           isArray: false
           defaultValue: ""
           predefined:
             - ""
         - name: support_company_pbm_mgr
-          description:
-            "the Company for the Problem Coordinator’s Support Organization. It
-            makes up the first tier of it. "
+          description: "the Company for the Problem Coordinator’s Support Organization. It makes up the first tier of it. "
           required: false
           isArray: false
           defaultValue: ""
           predefined:
             - ""
         - name: support_organization_pbm_mgr
-          description:
-            It makes up the second tier of the Problem Coordinator’s Support
-            Organization data structure.
+          description: It makes up the second tier of the Problem Coordinator’s Support Organization data structure.
           required: false
           isArray: false
           defaultValue: ""
           predefined:
             - ""
         - name: assigned_support_company
-          description: " This is the Company for the Problem Assignee’s Support
-            Organization. It makes up the first tier of the Problem Assignee’s
-            Support Organization data structure."
+          description: " This is the Company for the Problem Assignee’s Support Organization. It makes up the first tier of the Problem Assignee’s Support Organization data structure."
           required: false
           isArray: false
           defaultValue: ""
           predefined:
             - ""
         - name: assigned_support_organization
-          description:
-            It makes up the second tier of the Problem Assignee’s Support
-            Organization data structure.
+          description: It makes up the second tier of the Problem Assignee’s Support Organization data structure.
           required: false
           isArray: false
-          defaultValue: null
+          defaultValue:
           predefined:
             - ""
         - name: assigned_group
-          description:
-            It makes up the third tier of the Problem Assignee’s Support
-            Organization data structure.
+          description: It makes up the third tier of the Problem Assignee’s Support Organization data structure.
           required: false
           isArray: false
           defaultValue: ""
@@ -2912,9 +2605,7 @@ script:
           predefined:
             - ""
         - name: status_reason
-          description:
-            "The reason for changing the status. Required when the status
-            provided. "
+          description: "The reason for changing the status. Required when the status provided. "
           required: false
           isArray: false
           defaultValue: ""
@@ -2927,29 +2618,21 @@ script:
             - Pending Infrastructure Change
             - Pending Third Party Vendor
         - name: assignee
-          description:
-            The full name of the staff member to whom the ticket will be assigned to.
-            It can be retrieved by using the 'bmc-itsm-user-list' command.
+          description: The full name of the staff member to whom the ticket will be assigned to. It can be retrieved by using the 'bmc-itsm-user-list' command.
           required: false
           isArray: false
           defaultValue: ""
           predefined:
             - ""
         - name: assignee_pbm_mgr
-          description:
-            The full name of the staff member to whom the ticket will be assign to as the problem coordinator.
-            It can be retrieved by using the 'bmc-itsm-user-list' command.
+          description: The full name of the staff member to whom the ticket will be assign to as the problem coordinator. It can be retrieved by using the 'bmc-itsm-user-list' command.
           required: false
           isArray: false
           defaultValue: ""
           predefined:
             - ""
         - name: additional_fields
-          description:
-            'The fields which are not present in the current argument list can
-            be added here in the format "fieldname1=value;fieldname2=value".
-            Possible fields: Assigned Group, Assignee or any other custom
-            field.'
+          description: 'The fields which are not present in the current argument list can be added here in the format "fieldname1=value;fieldname2=value". Possible fields: Assigned Group, Assignee or any other custom field.'
           required: false
           isArray: false
           defaultValue: ""
@@ -2957,29 +2640,18 @@ script:
             - ""
       outputs: []
     - name: bmc-itsm-change-request-template-list
-      description:
-        List all change requests ticket templates. Useful for create change
-        request ticket. The records are retrieved according to a constraint
-        determined either by the query argument or by the filtering arguments.
-        When using filtering arguments, Each one defines a 'LIKE' operation and
-        'AND' operator is used between them.
+      description: List all change requests ticket templates. Useful for create change request ticket. The records are retrieved according to a constraint determined either by the query argument or by the filtering arguments. When using filtering arguments, Each one defines a 'LIKE' operation and 'AND' operator is used between them.
       deprecated: false
       arguments:
         - name: template_ids
-          description:
-            Comma separated list of change request template ID. Filtering
-            argument.
+          description: Comma separated list of change request template ID. Filtering argument.
           required: false
           isArray: true
           defaultValue: ""
           predefined:
             - ""
         - name: query
-          description:
-            'Search qualification to list by.For example: Status = "Draft" AND
-            Impact = "1-Extensive/Widespread". The query will be used as an addition to the existing args. Review the BMC documentation for
-            how to Build search qualifications:
-            https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html'
+          description: 'Search qualification to list by.For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query will be used as an addition to the existing args. Review the BMC documentation for how to Build search qualifications: https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html'
           required: false
           isArray: false
           defaultValue: ""
@@ -3024,20 +2696,11 @@ script:
           contextPath: BmcITSM.ChangeRequestTemplate.InstanceID
           description: ChangeRequestTemplate ID. Useful for creating change Request.
     - name: bmc-itsm-incident-template-list
-      description:
-        List all incident requests ticket templates. Useful for create
-        incident ticket. The records are retrieved according to a constraint
-        determined either by the query argument or by the filtering arguments.
-        When using filtering arguments, Each one defines a 'LIKE' operation and
-        'AND' operator is used between them.
+      description: List all incident requests ticket templates. Useful for create incident ticket. The records are retrieved according to a constraint determined either by the query argument or by the filtering arguments. When using filtering arguments, Each one defines a 'LIKE' operation and 'AND' operator is used between them.
       deprecated: false
       arguments:
         - name: query
-          description:
-            'Search qualification to list by.For example: Status = "Draft" AND
-            Impact = "1-Extensive/Widespread". The query will be used as an addition to the existing args. Review the BMC documentation for
-            how to Build search qualifications:
-            https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html'
+          description: 'Search qualification to list by.For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query will be used as an addition to the existing args. Review the BMC documentation for how to Build search qualifications: https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html'
           required: false
           isArray: false
           defaultValue: ""
@@ -3089,20 +2752,11 @@ script:
           contextPath: BmcITSM.IncidentTemplate.InstanceID
           description: Incident Template ID. Useful for creating change Request.
     - name: bmc-itsm-task-template-list
-      description:
-        List all task ticket templates. Useful for create task ticket. The
-        records are retrieved according to a constraint determined either by the
-        query argument or by the filtering arguments. When using filtering
-        arguments, Each one defines a 'LIKE' operation and 'AND' operator is
-        used between them.
+      description: List all task ticket templates. Useful for create task ticket. The records are retrieved according to a constraint determined either by the query argument or by the filtering arguments. When using filtering arguments, Each one defines a 'LIKE' operation and 'AND' operator is used between them.
       deprecated: false
       arguments:
         - name: query
-          description:
-            'Search qualification to list by.For example: Status = "Draft" AND
-            Impact = "1-Extensive/Widespread". The query will be used as an addition to the existing args. Review the BMC documentation for
-            how to Build search qualifications:
-            https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html'
+          description: 'Search qualification to list by.For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query will be used as an addition to the existing args. Review the BMC documentation for how to Build search qualifications: https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html'
           required: false
           isArray: false
           defaultValue: ""
