@@ -8,7 +8,6 @@ description: Drift integration to fetch, modify, create and delete contacts with
 configuration:
 - display: Access Token
   name: access_token
-  defaultvalue: cHd3yaEcbMhjGyT0ff8cvqvlabasscwG
   type: 4
   required: true
   additionalinfo: API Access Token
