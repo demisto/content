@@ -18,7 +18,7 @@
     "fieldCalcScript": "",
     "group": 0,
     "hidden": false,
-    "id": "incident_mvisionuserattributes",
+    "id": "incident_mcafeemvisioncasbuserattributes",
     "isReadOnly": false,
     "locked": false,
     "name": "McAfee Mvision Casb User Attributes",
