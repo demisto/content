@@ -15,7 +15,7 @@ def main():
 
         incidents_from_query = json.loads(res[0]['Contents'])
         for incident in incidents_from_query:
-            branch = incident.get('CustomFields', {}).get('CICDbranch')
+            branch = incident.get('CustomFields', {}).get('cicdbranch')
             if branch:
                 branches.append(branch)
 

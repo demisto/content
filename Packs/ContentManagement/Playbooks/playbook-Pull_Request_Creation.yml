@@ -168,7 +168,7 @@ tasks:
           root: BranchName
       comment:
         complex:
-          accessor: CICDpullrequestcomment
+          accessor: cicdpullrequestcomment
           root: incident
       files:
         complex:
@@ -225,7 +225,7 @@ tasks:
           root: BranchName
       title:
         complex:
-          accessor: CICDpullrequesttitle
+          accessor: cicdpullrequesttitle
           root: incident
     separatecontext: false
     skipunavailable: false
@@ -266,7 +266,7 @@ tasks:
           root: GitHub.PR
       reviewers:
         complex:
-          accessor: CICDreviewer
+          accessor: cicdreviewer
           root: incident
     separatecontext: false
     skipunavailable: false
@@ -295,7 +295,7 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: incident.CICDreviewer
+              simple: incident.cicdreviewer
           operator: isNotEmpty
           right:
             value: {}
@@ -677,7 +677,7 @@ tasks:
         simple: BranchName
       value:
         complex:
-          accessor: CICDbranch
+          accessor: cicdbranch
           root: incident
     separatecontext: false
     skipunavailable: false
@@ -706,7 +706,7 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: incident.CICDbranch
+              simple: incident.cicdbranch
           operator: isNotEmpty
           right:
             value: {}
@@ -820,7 +820,7 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: incident.CICDpullrequestbranch
+              simple: incident.cicdpullrequestbranch
           operator: isNotEmpty
           right:
             value: {}
@@ -871,7 +871,7 @@ tasks:
         simple: BranchName
       value:
         complex:
-          accessor: CICDpullrequestbranch
+          accessor: cicdpullrequestbranch
           root: incident
     separatecontext: false
     skipunavailable: false
@@ -940,13 +940,13 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
-      CICDbranch:
+      cicdbranch:
         complex:
           root: BranchName
-      CICDpackname:
+      cicdpackname:
         complex:
           root: PackName
-      CICDpullrequestlink:
+      cicdpullrequestlink:
         simple: https://github.com/${GitHub.PR.Head.Repo.FullName}/pull/${GitHub.PR.Number}
     separatecontext: false
     skipunavailable: false
