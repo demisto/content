@@ -1,0 +1,171 @@
+commonfields:
+  id: SEKOIAIntelligenceCenter
+  version: -1
+name: SEKOIAIntelligenceCenter
+display: SEKOIAIntelligenceCenter
+category: Data Enrichment & Threat Intelligence
+description: |
+  Fetch Indicator and Observables from SEKOIA.IO Intelligence Center.
+  To use this integration, please create an API Key with the right permissions.
+
+
+configuration:
+- defaultvalue: https://api.sekoia.io/
+  display: Your server URL
+  name: url
+  required: true
+  type: 0
+- displaypassword: API Key
+  additionalinfo: The API Key to use for connection
+  name: apikey
+  required: true
+  hiddenusername: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Indicator value
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    - default: false
+      description: Indicator type
+      isArray: false
+      name: type
+      required: true
+      secret: false
+    deprecated: false
+    description: 'Query SEKOIA.IO Intelligence Center for information about this observable. '
+    execution: false
+    name: GetObservable
+    outputs:
+    - contextPath: GetObservable.Output
+      description: SEKOIA.IO returned data
+      type: String
+  - arguments:
+    - default: false
+      description: Indicator value
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    - default: false
+      description: Indicator type
+      isArray: false
+      name: type
+      required: true
+      secret: false
+    deprecated: false
+    description: Query SEKOIA.IO Intelligence Center for information about this indicator. No information is returned if the value is not a known by SEKOIA.IO as an indicator (IoC).
+    execution: false
+    name: GetIndicator
+    outputs:
+    - contextPath: SEKOIA.Analysis.has_more
+      description: ''
+      type: Boolean
+    - contextPath: SEKOIA.Analysis.items.lang
+      description: ''
+      type: String
+    - contextPath: SEKOIA.Analysis.items.x_ic_is_in_flint
+      description: ''
+      type: Boolean
+    - contextPath: SEKOIA.Analysis.items.kill_chain_phases.kill_chain_name
+      description: ''
+      type: String
+    - contextPath: SEKOIA.Analysis.items.kill_chain_phases.phase_name
+      description: ''
+      type: String
+    - contextPath: SEKOIA.Analysis.items.name
+      description: ''
+      type: String
+    - contextPath: SEKOIA.Analysis.items.valid_until
+      description: ''
+      type: Date
+    - contextPath: SEKOIA.Analysis.items.x_ic_deprecated
+      description: ''
+      type: Boolean
+    - contextPath: SEKOIA.Analysis.items.x_inthreat_sources_refs
+      description: ''
+      type: String
+    - contextPath: SEKOIA.Analysis.items.spec_version
+      description: ''
+      type: String
+    - contextPath: SEKOIA.Analysis.items.description
+      description: ''
+      type: String
+    - contextPath: SEKOIA.Analysis.items.modified
+      description: ''
+      type: Date
+    - contextPath: SEKOIA.Analysis.items.id
+      description: ''
+      type: String
+    - contextPath: SEKOIA.Analysis.items.created_by_ref
+      description: ''
+      type: String
+    - contextPath: SEKOIA.Analysis.items.pattern
+      description: ''
+      type: String
+    - contextPath: SEKOIA.Analysis.items.pattern_type
+      description: ''
+      type: String
+    - contextPath: SEKOIA.Analysis.items.valid_from
+      description: ''
+      type: Date
+    - contextPath: SEKOIA.Analysis.items.x_ic_observable_types
+      description: ''
+      type: String
+    - contextPath: SEKOIA.Analysis.items.type
+      description: ''
+      type: String
+    - contextPath: SEKOIA.Analysis.items.revoked
+      description: ''
+      type: Boolean
+    - contextPath: SEKOIA.Analysis.items.object_marking_refs
+      description: ''
+      type: String
+    - contextPath: SEKOIA.Analysis.items.created
+      description: ''
+      type: Date
+    - contextPath: SEKOIA.Analysis.items.indicator_types
+      description: ''
+      type: String
+  - arguments:
+    - default: false
+      description: Indicator value
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    - default: false
+      description: Indicator type
+      isArray: false
+      name: type
+      required: true
+      secret: false
+    deprecated: false
+    description: Query SEKOIA.IO Intelligence Center for context around this observable
+    execution: false
+    name: GetIndicatorContext
+    outputs:
+    - contextPath: GetIndicatorContext.Output
+      description: '[Enter a description of the data returned in this output.]'
+      type: String
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.4.30607
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)
