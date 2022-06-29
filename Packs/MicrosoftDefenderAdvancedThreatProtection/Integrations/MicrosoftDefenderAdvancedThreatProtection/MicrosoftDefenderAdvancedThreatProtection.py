@@ -1196,7 +1196,7 @@ class MsClient:
         params = {'$filter': filter_req} if filter_req else {}
         if page_size:
             page_size = arg_to_number(page_size)
-            page_size = 10000 if page_size > 10000 else page_size
+            page_size = min(page_size, 10000)
             page_num = arg_to_number(page_num)
             page_num = 0 if not page_num else (page_num - 1)
             skip = page_num * page_size
@@ -4863,7 +4863,6 @@ def main():  # pragma: no cover
             max_fetch=max_alert_to_fetch, certificate_thumbprint=certificate_thumbprint, private_key=private_key
         )
         if command == 'test-module':
-            pass
             test_module(client)
 
         elif command == 'fetch-incidents':
