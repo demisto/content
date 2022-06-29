@@ -9,7 +9,6 @@
     "categories": ["CASB"],
     "tags": ["CASB", "McAfee"],
     "useCases": ["Suspicious User Activity", "Handle incidents from MVision"],
-    "itemPrefix": ["McAfee MVision CASB"],
     "keywords": [],
     "marketplaces": [
         "xsoar"
