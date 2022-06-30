@@ -811,8 +811,6 @@ script:
         C = Less vulnerable
         D = Vulnerable
         F = Highly vulnerable
-
-        Note: This filter does not support IP Range asset type.
       isArray: false
       name: security_rating
       required: false

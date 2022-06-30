@@ -7,7 +7,9 @@
   "url": "",
   "email": "support@cycognito.com",
   "categories": [
-    "Vulnerability Management"
+    "Vulnerability Management",
+    "Data Enrichment & Threat Intelligence",
+    "External Exposure"
   ],
   "tags": [
     "Best Practices",
@@ -16,7 +18,8 @@
     "Security"
   ],
   "useCases": [
-    "Health Check",
+    "Asset Management",
+    "Threat Intelligence Management",
     "Vulnerability Management"
   ],
   "keywords": [

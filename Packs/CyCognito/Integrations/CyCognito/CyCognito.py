@@ -1071,7 +1071,7 @@ def update_remote_system_command(client: CyCognitoClient, args: Dict[str, Any]):
     if parsed_args.delta:
         demisto.debug(
             f'[+] CyCognito: Delta keys for incident {parsed_args.remote_incident_id} are {str(parsed_args.delta)}')
-    if not parsed_args.incident_changed and not parsed_args.delta.get('cycognitoinvestigationstatus'):
+    if not parsed_args.delta.get('cycognitoinvestigationstatus'):
         demisto.debug(f'[+] CyCognito: No Update necessary for incident {parsed_args.remote_incident_id}')
         return parsed_args.remote_incident_id
 
