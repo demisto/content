@@ -14,7 +14,6 @@
 				"path": "/bin/zsh"
 			}
 		},
-		"python.defaultInterpreterPath": "${containerEnv:POETRY_VENV_PATH}",
 		"python.venvFolders": ["~/.cache/pypoetry/virtualenvs"],
 		"python.linting.enabled": true,
 		"python.linting.flake8Enabled": true,
@@ -69,5 +68,5 @@
 		"github-cli": "latest"
 	},
 	// init ApiModule env variable to pythonpath
-	"onCreateCommand": "poetry install && echo 'export PYTHONPATH=$(printf '%s: ' ${containerWorkspaceFolder}/Packs/ApiModules/Scripts/*):$PYTHONPATH' >> ~/.zshrc && echo 'export MYPYPATH=$(printf '%s: ' ${containerWorkspaceFolder}/Packs/ApiModules/Scripts/*):$MYPYPATH' >> ~/.zshrc"
+	"onCreateCommand": "echo 'export PYTHONPATH=$(printf '%s: ' ${containerWorkspaceFolder}/Packs/ApiModules/Scripts/*):$PYTHONPATH' >> ~/.zshrc && echo 'export MYPYPATH=$(printf '%s: ' ${containerWorkspaceFolder}/Packs/ApiModules/Scripts/*):$MYPYPATH' >> ~/.zshrc"
 }

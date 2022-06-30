@@ -46,6 +46,8 @@ requirements.txt
 .env
 .envrc
 Packs/**/report_pytest.json
+Packs/**/Pipfile
+Packs/**/Pipfile.lock
 
 # coverage related
 /coverage_report
