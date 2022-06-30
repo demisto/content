@@ -1588,6 +1588,9 @@ def poll_offense_events_with_retry(client: Client,
     offense_id = offense['id']
     events = []
     for retry in range(max_retries):
+        # check here for reset because this function takes a lot of time
+        if is_reset_triggered():
+            raise DemistoException('Reset triggered, aborting')
         print_debug_msg(f'Polling for events for offense {offense_id}. Retry number {retry+1}/{max_retries}')
         time.sleep(EVENTS_INTERVAL_SECS)
         events, status = poll_offense_events(client, search_id, offense_id, should_get_events=True)
@@ -1735,6 +1738,10 @@ def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int
             demisto.error(
                 f"Error while enriching offenses with events: {str(e)} \n {traceback.format_exc()}")
             update_missing_offenses_from_raw_offenses(raw_offenses, offenses)
+        except DemistoException as e:
+            # if we get this exception it means that reset was triggered
+            print_debug_msg(str(e))
+            return None, None
     else:
         offenses = raw_offenses
     if is_reset_triggered():
