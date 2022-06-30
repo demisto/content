@@ -13,15 +13,18 @@ you are implementing with your integration
 import json
 import io
 from pytest import raises
-# from __future__ import print_function
 from Inventa import main, Client, format_pii_entities, generate_datasubject_payload, validate_incident_inputs_command
-# import pytest
 import demistomock as demisto
-# from CommonServerPython import entryTypes
+
 
 constraints_cmds = [
     "inventa-get-datasubjects",
     "inventa-get-datasubject-id"
+]
+
+datasubjectid_cmds = [
+    "inventa-get-sources",
+    "inventa-get-sources-piis"
 ]
 
 ticket_cmds = [
@@ -41,6 +44,10 @@ reason_cmds = [
 noarg_cmds = [
     "inventa-get-entities"
 ]
+
+mock_arguments_datasubjectid = {
+    "datasubject_id": "TEST_DATASUBJECT_ID"
+}
 
 mock_arguments_constraints = {
     "national_id": "TEST_NATIONAL_ID",
@@ -84,6 +91,8 @@ def mock_params():
 def mock_args(command_name):
     if command_name in constraints_cmds:
         return mock_arguments_constraints
+    if command_name in datasubjectid_cmds:
+        return mock_arguments_datasubjectid
     if command_name in reason_cmds:
         return mock_arguments_reason_dsid
     if command_name in ticket_cmds:
@@ -211,7 +220,15 @@ def test_get_datasubjects_cmd(mocker):
     main()
     assert demisto.results.call_count == 1
     results = demisto.results.call_args[0]
-    assert results[0]["Contents"] == mock_data.get(command_name, "")
+
+    A = results[0]["Contents"]
+    B = mock_data.get(command_name, "")[0]
+
+    assert A["id"] == B["id"]
+    assert "|".join(A["personalInfo"]) == "|".join(B["personalInfo"])
+    assert A["sourceIds"] == B["sourceIds"]
+    assert A["rdaSourceIds"] == B["rdaSourceIds"]
+    assert A["timestamp"] == B["timestamp"]
 
 
 def test_get_datasubject_id_cmd(mocker):
@@ -276,6 +293,53 @@ def test_get_datasubject_id_cmd(mocker):
     assert demisto.results.call_count == 1
     results = demisto.results.call_args[0]
     assert results[0]["Contents"] == mock_data.get(command_name, "")
+
+
+def test_get_sources_cmd(mocker):
+    command_name = 'inventa-get-sources'
+    method_name = 'get_sources'
+
+    mocker_automate(mocker, command_name, [method_name])
+
+    DATASUBJECT_ID = demisto.args().get("datasubject_id", "")
+
+    assert DATASUBJECT_ID == "TEST_DATASUBJECT_ID"
+
+    main()
+    assert demisto.results.call_count == 1
+    results = demisto.results.call_args[0]
+    A = results[0]["Contents"][0]
+    B = mock_data.get(command_name, "")[0]
+    assert A["id"] == B["id"]
+    assert A["applianceName"] == B["applianceName"]
+    assert A["timestamp"] == B["timestamp"]
+    assert A["keyType"] == B["keyType"]
+    assert A["path"] == B["path"]
+    assert A["url"] == B["url"]
+    assert A["hostName"] == B["hostName"]
+    assert A["dbName"] == B["dbName"]
+    assert A["vendor"] == B["vendor"]
+    assert A["type"] == B["type"]
+    assert A["content"] == json.dumps(B["content"])
+    assert A["entityTypes"] == ", ".join(B["entityTypes"])
+
+
+def test_get_sources_piis_cmd(mocker):
+    command_name = 'inventa-get-sources-piis'
+    method_name = 'get_sources'
+
+    mocker_automate(mocker, command_name, [method_name])
+
+    DATASUBJECT_ID = demisto.args().get("datasubject_id", "")
+
+    assert DATASUBJECT_ID == "TEST_DATASUBJECT_ID"
+
+    main()
+    assert demisto.results.call_count == 1
+    results = demisto.results.call_args[0]
+    A = results[0]["Contents"]
+    B = mock_data.get(command_name, "")
+    assert A == B
 
 
 def test_create_ticket_cmd(mocker):
