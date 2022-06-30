@@ -106,29 +106,38 @@ name: TAXII2 Server
 script:
   commands:
   - deprecated: false
-    description: Returns an intel document object based on ID.
+    description: Returns all the collections
     execution: false
     name: taxii-server-list-collections
     outputs:
     - contextPath: TAXIIServer.Collection.id
-      description: The collection list
+      description: The collection id
+      type: String
+    - contextPath: TAXIIServer.Collection.query
+      description: The collection query
+      type: String
+    - contextPath: TAXIIServer.Collection.title
+      description: The collection title
+      type: String
+    - contextPath: TAXIIServer.Collection.description
+      description: The collection description
       type: String
   - deprecated: false
-    description: Returns an intel document object based on ID.
+    description: Returns the TAXII server info, default URL, title, etc.
     execution: false
     name: taxii-server-info
     outputs:
     - contextPath: TAXIIServer.Info.title
-      description: The collection list
+      description: The server title
       type: String
     - contextPath: TAXIIServer.Info.api_roots
-      description: The collection list
+      description: The server api roots urls
       type: Unknown
     - contextPath: TAXIIServer.Info.default
-      description: The collection list
+      description: The default url
       type: String
     - contextPath: TAXIIServer.Info.description
-      description: The collection list
+      description: The server description
       type: String
   dockerimage: demisto/flask-nginx:1.0.0.29338
   feed: false
