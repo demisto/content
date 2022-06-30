@@ -1596,7 +1596,7 @@ def poll_offense_events_with_retry(client: Client,
         events, status = poll_offense_events(client, search_id, offense_id, should_get_events=True)
         if status == QueryStatus.SUCCESS.value:
             if fetch_mode == FetchMode.all_events.value and (events_fetched := get_events_count(events)) < expected_events:
-                print_debug_msg(f'Got  {expected_events}/{events_fetched}. Searching again')
+                print_debug_msg(f'Got {events_fetched}/{expected_events} for Offense {offense_id}. Searching again')
                 search_id = create_search_with_retry(client, fetch_mode, offense, events_columns, events_limit)
                 continue
             return events, ''
