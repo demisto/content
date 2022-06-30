@@ -840,7 +840,7 @@ class MsGraphClient:
             parsed_email['Attachments'] = attachments
 
         parsed_email['Mailbox'] = self._mailbox_to_fetch
-        
+
         body = email.get('bodyPreview', '')
         if not body or self.use_full_email_body:
             body = parsed_email.get('Body')
