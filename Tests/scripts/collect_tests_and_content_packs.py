@@ -499,7 +499,7 @@ def get_api_module_integrations(changed_api_modules, integration_set):
     integration_ids_to_test = set([])
     for integration in integration_set:
         integration_data = list(integration.values())[0]
-        if integration_data.get('api_modules', '') in changed_api_modules:
+        if changed_api_modules & set(integration_data.get('api_modules', [])):
             file_path = integration_data.get('file_path')
             integration_id = tools.get_script_or_integration_id(file_path)
             integration_ids_to_test.add(integration_id)
