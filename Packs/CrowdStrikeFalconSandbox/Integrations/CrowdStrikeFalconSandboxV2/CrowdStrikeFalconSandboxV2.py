@@ -8,7 +8,6 @@ from typing import Dict, Any, Callable
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
-SERVER_URL = demisto.params().get('serverUrl') + '/api/v2'
 SEARCH_TERM_QUERY_ARGS = ('filename', 'filetype', 'filetype_desc', 'env_id', 'country', 'verdict', 'av_detect',
                           'vx_family', 'tag', 'date_from', 'date_to', 'port', 'host', 'domain', 'url', 'similar_to',
                           'context', 'imp_hash', 'ssdeep', 'authentihash')
@@ -464,6 +463,7 @@ def main() -> None:
     args: Dict[str, Any] = demisto.args()
 
     verify_certificate = not params.get('insecure', False)
+    SERVER_URL = params.get('serverUrl', '') + '/api/v2'
 
     proxy = params.get('proxy', False)
 
