@@ -14,7 +14,7 @@ Generates a random string.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| Length | The length of the string |
+| Length | The length of the string. Maximum is 10,000. |
 | Punctuation | Whether the string will include punctuation. |
 | Lowercase | Whether the string will include letters. |
 | Uppercase | Whether uppercase should be included. |
