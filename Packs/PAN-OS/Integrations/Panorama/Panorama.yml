@@ -5335,7 +5335,6 @@ script:
       required: true
     - description: The serial number of the firewall to download the PCAP from.
       name: serialNumber
-      deprecated: true
     - description: The file name for the PCAP type ('dlp-pcap', 'filter-pcap', or 'application-pcap'). Required for 'filter-pcap'.
       name: from
     - description: The new name for the PCAP file after downloading. If this argument
