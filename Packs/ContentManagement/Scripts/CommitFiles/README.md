@@ -1,0 +1,32 @@
+This script gets content files as input from the context, commit the files in the right folder and create the pull request text.
+
+## Script Data
+---
+
+| **Name** | **Description** |
+| --- | --- |
+| Script Type | python3 |
+| Cortex XSOAR Version | 6.0.0 |
+
+## Used In
+---
+This script is used in the following playbooks and scripts.
+* Pull Request Creation
+
+## Inputs
+---
+
+| **Argument Name** | **Description** |
+| --- | --- |
+| files | The files to commit. |
+| branch | The branch name to commit. |
+| pack | The name of the pack. |
+| user | The current user details from the command "getUsers". |
+| comment | Short description to add the pull request text. |
+
+## Outputs
+---
+
+| **Path** | **Description** | **Type** |
+| --- | --- | --- |
+| PR_text | The pull request text. | string |
