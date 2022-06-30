@@ -34,7 +34,7 @@ class Client(BaseClient):
         res = self._http_request('GET', url_suffix='organizations')
         return res
 
-    def fetch_org_dev_inv(self, organization_id: str = None, params: dict = None):
+    def fetch_org_dev_inv(self, organization_id: str = None):
         url_suffix = f'organizations/{organization_id}/devices'
         res = self._http_request('GET', url_suffix=url_suffix)
         return res
@@ -226,7 +226,7 @@ def meraki_search_clients_command(client: Client, args: dict):
     command_results = CommandResults(
         outputs_prefix='Meraki.Search.Clients',
         outputs=res,
-        outputs_key_field='id',
+        outputs_key_field='clientId',
         readable_output=tableToMarkdown(f'Client search (MAC: {mac}):', res)
     )
     return_results(command_results)
@@ -236,11 +236,9 @@ def meraki_get_org_lic_state_command(client: Client, args: dict):
     organization_id = args.get('organizationId')
     network_id = args.get('networkId')
     device_serials = args.get('deviceSerial')
-    state = args.get('state').split(",") if args.get('state') else args.get('state')
     input_params = {
         'network_id': network_id,
-        'deviceSerial': device_serials,
-        'state': state
+        'deviceSerial': device_serials
     }
     send_params = {k: v for k, v in input_params.items() if v}
     res = client.fetch_organization_licenses(organization_id=organization_id, params=send_params)
@@ -271,7 +269,7 @@ def meraki_fetch_network_devices_command(client: Client, args: dict):
     command_results = CommandResults(
         outputs_prefix='Meraki.Devices',
         outputs=res,
-        outputs_key_field='id',
+        outputs_key_field=['mac', 'networkId'],
         readable_output=tableToMarkdown(f'Network ({network_id}) Devices:', res)
     )
     return_results(command_results)
@@ -283,7 +281,7 @@ def meraki_fetch_device_command(client: Client, args: dict):
     command_results = CommandResults(
         outputs_prefix='Meraki.Devices',
         outputs=res,
-        outputs_key_field='id',
+        outputs_key_field=['serial', 'mac'],
         readable_output=tableToMarkdown(f'Device (Serial: {serial}):', res)
     )
     return_results(command_results)
@@ -361,7 +359,7 @@ def meraki_fetch_wireless_firewall_rules_command(client: Client, args: dict):
     command_results = CommandResults(
         outputs_prefix='Meraki.Firewall.Rules',
         outputs=res,
-        outputs_key_field=['policy', 'protocol', 'destPort', 'destCidr'],
+        outputs_key_field=['policy', 'protocol', 'dstPort', 'destCidr'],
         readable_output=tableToMarkdown(f'Firewall Rules for SSID {number} on Network ID {network_id}:', res)
     )
     return_results(command_results)
@@ -373,7 +371,7 @@ def meraki_fetch_appliance_firewall_rules_command(client: Client, args: dict):
     command_results = CommandResults(
         outputs_prefix='Meraki.Firewall.Rules',
         outputs=res,
-        outputs_key_field=['policy', 'protocol', 'destPort', 'destCidr'],
+        outputs_key_field=['policy', 'protocol', 'dstPort', 'destCidr'],
         readable_output=tableToMarkdown(f'Firewall Rules for appliance (Network ID: {network_id}):', res)
     )
     return_results(command_results)
@@ -388,7 +386,7 @@ def meraki_update_wireless_firewall_rules_command(client: Client, args: dict):
     command_results = CommandResults(
         outputs_prefix='Meraki.Firewall.Rules',
         outputs=res,
-        outputs_key_field=['policy', 'protocol', 'destPort', 'destCidr'],
+        outputs_key_field=['policy', 'protocol', 'dstPort', 'destCidr'],
         readable_output=tableToMarkdown(f'Firewall Rules for SSID {number} on Network ID {network_id}:', res)
     )
     return_results(command_results)
@@ -402,7 +400,7 @@ def meraki_update_appliance_firewall_rules_command(client: Client, args: dict):
     command_results = CommandResults(
         outputs_prefix='Meraki.Firewall.Rules',
         outputs=res,
-        outputs_key_field=['policy', 'protocol', 'destPort', 'destCidr'],
+        outputs_key_field=['policy', 'protocol', 'dstPort', 'destCidr'],
         readable_output=tableToMarkdown(f'Firewall Rules for appliance (Network ID: {network_id}):', res)
     )
     return_results(command_results)
@@ -488,25 +486,28 @@ def main() -> None:
         'meraki-fetch-ssids': meraki_fetch_ssids_command
     }
 
-    # try:
-    client = Client(
-        base_url,
-        verify=verify,
-        proxy=proxy,
-        headers=headers
-    )
+    try:
+        client = Client(
+            base_url,
+            verify=verify,
+            proxy=proxy,
+            headers=headers
+        )
 
-    command = demisto.command()
+        command = demisto.command()
 
-    if command == 'test-module':
-        test_module_command(client)
+        if command == 'test-module':
+            test_module_command(client)
 
-    elif command in commands:
-        commands[command](client, args)
+        elif command in commands:
+            commands[command](client, args)
 
-    # except Exception as err:
-    #    demisto.error(traceback.format_exc())  # print the traceback
-    #    return_error(f'Failed to execute {command} command.\nError:\n{str(err)}')
+        else:
+            raise NotImplementedError(f"Command {command} is not implemented.")
+
+    except Exception as err:
+       demisto.error(traceback.format_exc())  # print the traceback
+       return_error(f'Failed to execute {command} command.\nError:\n{str(err)}')
 
 
 ''' ENTRY POINT '''

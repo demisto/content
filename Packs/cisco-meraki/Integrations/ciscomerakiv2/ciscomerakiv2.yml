@@ -184,7 +184,7 @@ script:
     arguments:
     - name: serial
       required: true
-      description: Device serail.
+      description: Device serial.
     outputs:
     - contextPath: Meraki.Devices.name
       description: Device name.
@@ -247,40 +247,40 @@ script:
       required: false
       description: List (CSV) of serial numbers. The returned devices will be filtered to only include these serials.
     outputs:
-    - contextPath: Meraki.Uplink.networkId
+    - contextPath: Meraki.Uplinks.networkId
       description: Network ID
       type: string
-    - contextPath: Meraki.Uplink.serial
+    - contextPath: Meraki.Uplinks.serial
       description: Serial
       type: string
-    - contextPath: Meraki.Uplink.model
+    - contextPath: Meraki.Uplinks.model
       description: Model
       type: string
-    - contextPath: Meraki.Uplink.lastReportedAt
+    - contextPath: Meraki.Uplinks.lastReportedAt
       description: Last reported at
       type: string
-    - contextPath: Meraki.Uplink.uplinks.interface
+    - contextPath: Meraki.Uplinks.uplinks.interface
       description: Interface
       type: string
-    - contextPath: Meraki.Uplink.uplinks.status
+    - contextPath: Meraki.Uplinks.uplinks.status
       description: Status
       type: string
-    - contextPath: Meraki.Uplink.uplinks.ip
+    - contextPath: Meraki.Uplinks.uplinks.ip
       description: IP
       type: string
-    - contextPath: Meraki.Uplink.uplinks.gateway
+    - contextPath: Meraki.Uplinks.uplinks.gateway
       description: Gateway
       type: string
-    - contextPath: Meraki.Uplink.uplinks.publicIp
+    - contextPath: Meraki.Uplinks.uplinks.publicIp
       description: Public IP
       type: string
-    - contextPath: Meraki.Uplink.uplinks.primaryDns
+    - contextPath: Meraki.Uplinks.uplinks.primaryDns
       description: Primary DNS
       type: string
-    - contextPath: Meraki.Uplink.uplinks.secondaryDns
+    - contextPath: Meraki.Uplinks.uplinks.secondaryDns
       description: Secondary DNS
       type: string
-    - contextPath: Meraki.Uplink.uplinks.ipAssignedBy
+    - contextPath: Meraki.Uplinks.uplinks.ipAssignedBy
       description: IP assigned by
       type: string
     description: List the uplink status of every Meraki MX, MG and Z series devices in the organization.
