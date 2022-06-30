@@ -66,7 +66,7 @@ class MsGraphClient:
     def __init__(self, self_deployed, tenant_id, auth_and_token_url, enc_key,
                  app_name, base_url, use_ssl, proxy, ok_codes, mailbox_to_fetch, folder_to_fetch, first_fetch_interval,
                  emails_fetch_limit, timeout=10, endpoint='com', certificate_thumbprint=None, private_key=None,
-                 should_use_body_preview=True):
+                 use_full_email_body=False):
 
         self.ms_client = MicrosoftClient(self_deployed=self_deployed, tenant_id=tenant_id, auth_id=auth_and_token_url,
                                          enc_key=enc_key, app_name=app_name, base_url=base_url, verify=use_ssl,
@@ -77,7 +77,7 @@ class MsGraphClient:
         self._folder_to_fetch = folder_to_fetch
         self._first_fetch_interval = first_fetch_interval
         self._emails_fetch_limit = emails_fetch_limit
-        self.should_use_body_preview = should_use_body_preview  # whether to use body preview for the fetch-incidents
+        self.use_full_email_body = use_full_email_body  # whether to use body preview for the fetch-incidents
 
     def pages_puller(self, response: dict, page_count: int) -> list:
         """ Gets first response from API and returns all pages
@@ -840,9 +840,9 @@ class MsGraphClient:
             parsed_email['Attachments'] = attachments
 
         parsed_email['Mailbox'] = self._mailbox_to_fetch
-
+        
         body = email.get('bodyPreview', '')
-        if not body or not self.should_use_body_preview:
+        if not body or self.use_full_email_body:
             body = parsed_email.get('Body')
 
         incident = {
@@ -1603,13 +1603,13 @@ def main():
     first_fetch_interval = params.get('first_fetch', '15 minutes')
     emails_fetch_limit = int(params.get('fetch_limit', '50'))
     timeout = arg_to_number(params.get('timeout', '10') or '10')
-    should_use_body_preview = params.get("body_preview", True)
+    use_full_email_body = params.get("use_full_email_body", True)
 
     client: MsGraphClient = MsGraphClient(self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url,
                                           use_ssl, proxy, ok_codes, mailbox_to_fetch, folder_to_fetch,
                                           first_fetch_interval, emails_fetch_limit, timeout, endpoint,
                                           certificate_thumbprint=certificate_thumbprint,
-                                          private_key=private_key, should_use_body_preview=should_use_body_preview
+                                          private_key=private_key, use_full_email_body=use_full_email_body
                                           )
 
     command = demisto.command()
