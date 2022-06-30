@@ -1,6 +1,7 @@
 #Usage
 Use this playbook to create or use existing Inventa ticket in order to obtain information on the PII entities for 
 the Data Subject as well as file or database storages which contain information about the Data Subject.
+The incident will be automatically closed if no such datasubject is found within Inventa system.
 
 ####Triggers
 The Inventa's DSAR engine will report all the PII categories and info storages containing information about Data Subject.
@@ -11,8 +12,7 @@ No extra configuration required. However, in case of disruptions or connectivity
 Inventa's API call may fail and will require to be manually restarted.
 
 ####Best practices and suggestions
-It's highly recommended to use existing ticket's ID if the Inventa DSAR Engine already contains relevant DSAR request. 
-That will allow to minimize duplicate tickets within Inventa.
+In case where the incident is automatically closed due to the fact that requested datasubject is not present within Inventa system, it's recommended to recheck whether the inputs have any mistakes and reopen the Incident if the inputs were incorrect.
 
 #Dependencies
 * Builtin
@@ -28,6 +28,7 @@ This playbook is designed to be used in Inventa integration.
 * SearchIncidentsV2
 * linkIncidents
 * SetGridField
+* closeInvestigation
 
 #Playbook inputs
 | **Name** | **Description** | **Default Value** | **Required** |
