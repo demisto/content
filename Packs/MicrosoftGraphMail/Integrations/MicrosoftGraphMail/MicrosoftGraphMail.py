@@ -1603,7 +1603,7 @@ def main():
     first_fetch_interval = params.get('first_fetch', '15 minutes')
     emails_fetch_limit = int(params.get('fetch_limit', '50'))
     timeout = arg_to_number(params.get('timeout', '10') or '10')
-    use_full_email_body = params.get("use_full_email_body", True)
+    use_full_email_body = argToBoolean(params.get("use_full_email_body", False))
 
     client: MsGraphClient = MsGraphClient(self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url,
                                           use_ssl, proxy, ok_codes, mailbox_to_fetch, folder_to_fetch,
