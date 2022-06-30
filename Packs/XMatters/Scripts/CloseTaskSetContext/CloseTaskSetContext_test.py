@@ -5,7 +5,7 @@ import demistomock as demisto
 
 
 def test_close_task_set_context(mocker):
-    demisto.log('stuff')  # pylint: disable=E9012
+    demisto.log('stuff')
 
     def executeCommand(name, args=None):
         if name == 'taskComplete':
