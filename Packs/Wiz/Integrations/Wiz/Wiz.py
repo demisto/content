@@ -64,7 +64,7 @@ def checkAPIerrors(query, variables):
             demisto.error("<p>Wiz-API-Error: %s</p>" % str(e))
             return(e)
         else:
-            demisto.log("Retry")  # pylint: disable=E9012
+            demisto.debug("Retry")
 
     return result.json()
 

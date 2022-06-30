@@ -36,7 +36,7 @@ def get_token():
                     {", ".join(available_customer_names)})
             raise Exception(message)
     except ValueError as exception:
-        demisto.log(exception)  # pylint: disable=E9012
+        demisto.debug(exception)
         raise Exception('Could not parse API response.')
     HEADERS['x-redlock-auth'] = TOKEN
 

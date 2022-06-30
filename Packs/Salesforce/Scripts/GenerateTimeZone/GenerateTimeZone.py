@@ -108,7 +108,7 @@ def main():
         return timezonesidkey
 
     except Exception as e:
-        demisto.log(traceback.format_exc())  # pylint: disable=E9012
+        demisto.debug(traceback.format_exc())
         return_error(str(e))
 
 
