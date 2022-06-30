@@ -77,7 +77,7 @@ class MsGraphClient:
         self._folder_to_fetch = folder_to_fetch
         self._first_fetch_interval = first_fetch_interval
         self._emails_fetch_limit = emails_fetch_limit
-        self.use_full_email_body = use_full_email_body  # whether to use body preview for the fetch-incidents
+        self.use_full_email_body = use_full_email_body  # whether to use the full email body for the fetch-incidents
 
     def pages_puller(self, response: dict, page_count: int) -> list:
         """ Gets first response from API and returns all pages

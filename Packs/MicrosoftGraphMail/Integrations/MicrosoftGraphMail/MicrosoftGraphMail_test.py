@@ -336,6 +336,38 @@ def test_fetch_incidents_detect_initial(mocker, client, emails_data):
 
 
 @pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
+def test_fetch_incidents_with_full_body(mocker, client, emails_data, expected_incident, last_run_data):
+    """
+    Given -
+        a flag to fetch the entire email body
+
+    When -
+        fetching incidents
+
+    Then -
+        Make sure that in the details section, there is the full email body content.
+    """
+    mocker.patch('MicrosoftGraphMail.get_now_utc', return_value='2019-11-12T15:01:00Z')
+    client.use_full_email_body = True
+    mocker.patch.object(client.ms_client, 'http_request', return_value=emails_data)
+    mocker.patch.object(demisto, "info")
+    result_next_run, result_incidents = client.fetch_incidents(last_run_data)
+
+    assert result_next_run.get('LAST_RUN_TIME') == '2019-11-12T15:00:30Z'
+    assert result_next_run.get('LAST_RUN_IDS') == ['dummy_id_1']
+    assert result_next_run.get('LAST_RUN_FOLDER_ID') == 'last_run_dummy_folder_id'
+    assert result_next_run.get('LAST_RUN_FOLDER_PATH') == 'Phishing'
+
+    result_incidents = result_incidents[0]
+    result_raw_json = json.loads(result_incidents.pop('rawJSON'))
+    expected_incident['details'] = emails_data['value'][0]['body']['content']
+    expected_raw_json = expected_incident.pop('rawJSON', None)
+
+    assert result_raw_json == expected_raw_json
+    assert result_incidents == expected_incident
+
+
+@pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
 def test_parse_email_as_label(client):
     assert client._parse_email_as_labels({'ID': 'dummy_id'}) == [{'type': 'Email/ID', 'value': 'dummy_id'}]
     assert client._parse_email_as_labels({'To': ['dummy@recipient.com']}) == [
