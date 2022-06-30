@@ -49,7 +49,7 @@ else:
         else:
             sessionId = str(resSessionCreate[0]['Contents']['id'])
             demisto.debug('[*] Created session ' + sessionId + ' for sensor '
-                        + sensorId + '. Waiting for session to become active.')
+                          + sensorId + '. Waiting for session to become active.')
     else:
         es = existingSessions[0]
         demisto.debug('[*] Found existing %s session %d..' % (es['status'], es['id']))
