@@ -129,7 +129,7 @@ def test_module(client):
         'ok' if test passed, anything else will fail the test.
     """
     result = client.get_status_http_request()
-    if result == "True":
+    if result["status"] == "Active" or result["status"] == "Standby":
         return 'ok'
     else:
         return 'Something went wrong with the risk api checking'
