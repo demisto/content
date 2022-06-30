@@ -30,7 +30,7 @@ else:
             demisto.results(
                 {'Type': entryTypes['error'], 'ContentsFormat': formats['text'], 'Contents': 'Sensor not found.'})
             sys.exit()
-demisto.log('[*] Located sensor ID ' + sensorId)
+demisto.debug('[*] Located sensor ID ' + sensorId)
 # Get a live session to the endpoint
 resSessions = demisto.executeCommand('cb-list-sessions', {})
 if isError(resSessions[0]):

@@ -7857,11 +7857,11 @@ def is_demisto_version_ge(version, build_number=''):
         raise
     except ValueError:
         # dev editions are not comparable
-        demisto.log(
+        demisto.log(  # pylint: disable=E9012
             'is_demisto_version_ge: ValueError. \n '
             'input: server version: {} build number: {}\n'
             'server version: {}'.format(version, build_number, server_version)
-        )  # pylint: disable=E9012
+        )
 
         return True
 
