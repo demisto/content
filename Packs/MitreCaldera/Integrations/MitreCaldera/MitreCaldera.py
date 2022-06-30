@@ -932,15 +932,21 @@ def create_schedule_command(client: Client, args: Dict[str, Any]) -> CommandResu
 def delete_agent_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     paw = args.get('paw')
 
-    response = client.delete_agent(paw)
-    return f"Agent with paw {paw} was deleted successfully."
+    client.delete_agent(paw)
+    command_results = CommandResults(
+        readable_output=f"Agent with paw {paw} was deleted successfully."
+    )
+    return command_results
 
 
 def delete_fact_source_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     fact_source_id = args.get('fact_source_id')
 
-    response = client.delete_fact_source(fact_source_id)
-    return f"Fact Source with ID {fact_source_id} was deleted successfully."
+    client.delete_fact_source(fact_source_id)
+    command_results = CommandResults(
+        readable_output=f"Fact Source with ID {fact_source_id} was deleted successfully."
+    )
+    return command_results
 
 
 def delete_operation_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -948,9 +954,11 @@ def delete_operation_command(client: Client, args: Dict[str, Any]) -> CommandRes
 
     client.delete_operation(operation_id)
 
-    return f"Operation with Id {operation_id} was deleted successfully."
+    command_results = CommandResults(
+        readable_output=f"Operation with Id {operation_id} was deleted successfully."
+    )
+    return command_results
     
-
 
 def delete_facts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     fact_unique = args.get('fact_unique')
@@ -1017,14 +1025,20 @@ def delete_ability_command(client: Client, args: Dict[str, Any]) -> CommandResul
     ability_id = args.get('ability_id')
 
     client.delete_ability(ability_id)
-    return f"Ability with ID {ability_id} was deleted successfully."
+    command_results = CommandResults(
+        readable_output=f"Ability with ID {ability_id} was deleted successfully."
+    )
+    return command_results
 
 
 def delete_adversary_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     adversary_id = args.get('adversary_id')
 
     client.delete_adversary(adversary_id)
-    return f"Adversary with ID {adversary_id} was deleted successfully."
+    command_results = CommandResults(
+        readable_output=f"Adversary with ID {adversary_id} was deleted successfully."
+    )
+    return command_results
 
 
 def delete_schedule_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -1032,7 +1046,10 @@ def delete_schedule_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
     client.delete_schedule(schedule_id)
     
-    return f"Schedule with ID {schedule_id} deleted successfully."
+    command_results = CommandResults(
+        readable_outputs=f"Schedule with ID {schedule_id} deleted successfully."
+    )
+    return command_results
 
 
 def get_abilities_command(client: Client, args: Dict[str, Any]) -> CommandResults:
