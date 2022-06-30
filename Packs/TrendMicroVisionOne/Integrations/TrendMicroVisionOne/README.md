@@ -410,6 +410,3 @@ Note: The URL received from the 'trendmicro-visionone-download-information-for-c
 | VisionOne.Update_Status.response_msg | String | Response message for the request. |
 ---
 [View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/trend-micro-vision-one)
-
-## test
-this is just a test

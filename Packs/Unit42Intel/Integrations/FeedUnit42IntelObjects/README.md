@@ -53,6 +53,3 @@ DarkHotel|	Threat Actor|	publications: {'link': 'https://securelist.com/the-dark
 #### Notes
 Be aware, due to API limitations, `fetch-indicators` fetches only a limited number of indicators for each interval.
 Fetching all the indicators can take up to 13 hours. 
-
-### test
-this is just a test
