@@ -48,11 +48,11 @@ else:
             sys.exit()
         else:
             sessionId = str(resSessionCreate[0]['Contents']['id'])
-            demisto.log('[*] Created session ' + sessionId + ' for sensor '
+            demisto.debug('[*] Created session ' + sessionId + ' for sensor '
                         + sensorId + '. Waiting for session to become active.')
     else:
         es = existingSessions[0]
-        demisto.log('[*] Found existing %s session %d..' % (es['status'], es['id']))
+        demisto.debug('[*] Found existing %s session %d..' % (es['status'], es['id']))
         sessionId = str(es['id'])
 
     session = {'status': 'pending'}
@@ -72,7 +72,7 @@ else:
                                            'Contents': 'Finished polling but session is not in active state.'}])
         sys.exit()
     else:
-        demisto.log('[*] Session ' + sessionId + ' active.')
+        demisto.debug('[*] Session ' + sessionId + ' active.')
 
 # Create async command
 resCreate = demisto.executeCommand(
