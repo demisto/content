@@ -680,7 +680,7 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def get_event_count(events: list[dict]):
+def get_events_count(events: list[dict]):
     return sum(event.get('eventcount', 1) for event in events)
 
 
@@ -1592,7 +1592,7 @@ def poll_offense_events_with_retry(client: Client,
         time.sleep(EVENTS_INTERVAL_SECS)
         events, status = poll_offense_events(client, search_id, offense_id, should_get_events=True)
         if status == QueryStatus.SUCCESS.value:
-            if fetch_mode == FetchMode.all_events.value and (events_fetched := get_event_count(events)) < expected_events:
+            if fetch_mode == FetchMode.all_events.value and (events_fetched := get_events_count(events)) < expected_events:
                 print_debug_msg(f'Got  {expected_events}/{events_fetched}. Searching again')
                 search_id = create_search_with_retry(client, fetch_mode, offense, events_columns, events_limit)
                 continue
@@ -1641,16 +1641,21 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
                                                                  events_columns,
                                                                  events_limit,
                                                                  )
-    events_fetched = get_event_count(events)
+    events_fetched = get_events_count(events)
     print_debug_msg(f'Events fetched for offense {offense_id}: {events_fetched}/{events_count}.')
     offense['events_fetched'] = events_fetched
+    
+    if not events or \
+            (fetch_mode == FetchMode.all_events.value and events_fetched < expected_events):
+        print_debug_msg(f'Not enough events were fetched for offense {offense_id}. '
+                        f'Expecting at least {expected_events} but got {events_fetched}. '
+                        'Adding to mirroring queue to be queried again.')
+
+        context_data[MIRRORED_OFFENSES_QUERIED_CTX_KEY][offense_id] = QueryStatus.WAIT.value
+        safely_update_context_data(context_data, version, offense_ids=[offense_id])
+
     if events:
         offense['events'] = events
-    else:
-        print_debug_msg(f'No events were fetched for offense {offense_id}'
-                        'Adding to mirroring queue to be queried again.')
-        context_data[MIRRORED_OFFENSES_QUERIED_CTX_KEY][offense_id] = search_id
-        safely_update_context_data(context_data, version, offense_ids=[offense_id])
     mirroring_events_message = update_events_mirror_message(mirror_options=MIRROR_OFFENSE_AND_EVENTS,
                                                             events_limit=events_limit,
                                                             fetch_mode=fetch_mode,
@@ -3260,7 +3265,7 @@ def get_remote_data_command(client: Client, params: Dict[str, Any], args: Dict) 
     enriched_offense = enrich_offenses_result(client, offense, ip_enrich, asset_enrich)
 
     final_offense_data = sanitize_outputs(enriched_offense)[0]
-    events_mirrored = sum(int(event.get('eventcount', 1)) for event in final_offense_data.get('events', []))
+    events_mirrored = get_events_count(final_offense_data.get('events', []))
     print_debug_msg(f'Offense {offense_id} mirrored events: {events_mirrored}')
     events_message = update_events_mirror_message(
         mirror_options=mirror_options,
