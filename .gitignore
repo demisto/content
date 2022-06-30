@@ -46,10 +46,8 @@ requirements.txt
 .env
 .envrc
 Packs/**/report_pytest.json
-Scripts/**/Pipfile
-Scripts/**/Pipfile.lock
-Integrations/**/Pipfile
-Integrations/**/Pipfile.lock
+**/Packs/**/Pipfile
+**/Packs/**/Pipfile.lock
 
 
 
