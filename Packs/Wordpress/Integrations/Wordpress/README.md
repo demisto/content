@@ -248,7 +248,7 @@ Update a post
 | sticky | Whether or not the object should be treated as sticky (default is false). Possible values are: true, false. Default is false. | Optional | 
 | template | The theme file to use to display the object. | Optional | 
 | categories | The terms assigned to the object in the category taxonomy (CSV of IDs). | Optional | 
-| tags | The terms assigned to the object in the post_tag taxonomy (CSV). | Optional | 
+| tags | The terms assigned to the object in the post_tag taxonomy (CSV of IDs). | Optional | 
 
 
 #### Context Output
@@ -945,7 +945,7 @@ Create a user
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| status | Locale for the user (default is en_US). Default is en_US. | Optional | 
+| locale | Locale for the user (default is en_US). Default is en_US. | Optional | 
 | username | Login name for the user. | Required | 
 | name | Display name for the user. | Optional | 
 | first_name | First name for the user. | Optional | 
@@ -987,7 +987,7 @@ Update a user
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | User ID. | Required | 
-| status | Locale for the user (default is en_US). Default is en_US. | Optional | 
+| locale | Locale for the user (default is en_US). Default is en_US. | Optional | 
 | username | Login name for the user. | Optional | 
 | name | Display name for the user. | Optional | 
 | first_name | First name for the user. | Optional | 

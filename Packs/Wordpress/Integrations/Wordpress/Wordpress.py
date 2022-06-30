@@ -315,7 +315,9 @@ def create_category_command(client: Client, args: dict):
 
 def get_category_command(client: Client, args: dict):
     category_id = args.get('id')
-    params = {k: v for k, v in args.items() if k != 'id'}
+    params = {
+        "context": args.get('context')
+    }
     response = client.get_category(category_id, params)
     command_results = CommandResults(
         outputs_prefix='Wordpress.Categories',
@@ -372,7 +374,9 @@ def create_tag_command(client: Client, args: dict):
 
 def get_tag_command(client: Client, args: dict):
     tag_id = args.get('id')
-    params = {k: v for k, v in args.items() if k != 'id'}
+    params = {
+        "context": args.get('context')
+    }
     response = client.get_tag(tag_id, params)
     command_results = CommandResults(
         outputs_prefix='Wordpress.Tags',

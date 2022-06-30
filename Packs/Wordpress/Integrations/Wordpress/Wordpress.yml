@@ -717,7 +717,7 @@ script:
       name: categories
       required: false
       secret: false
-    - description: 'The terms assigned to the object in the post_tag taxonomy (CSV).'
+    - description: 'The terms assigned to the object in the post_tag taxonomy (CSV of IDs).'
       isArray: false
       name: tags
       required: false
