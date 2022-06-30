@@ -105,6 +105,10 @@ configuration:
   required: false
   type: 4
   hidden: true
+- display: whether use body preview when fetching incidents or get the entire email body
+  name: body_preview
+  type: 8
+  default: true
 description: Microsoft Graph lets your app get authorized access to a user's Outlook
   mail data in a personal or organization account.
 display: O365 Outlook Mail (Using Graph API)
