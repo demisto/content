@@ -5184,6 +5184,11 @@
             ],
             "playbookID": "Microsoft Defender for Cloud Apps Event Collector-test",
             "fromversion": "6.8.0"
+        },
+        {
+            "integrations": "Arkime",
+            "playbookID": "Arkime Test playbook",
+            "fromversion": "6.2.0"
         }
     ],
     "skipped_tests": {
