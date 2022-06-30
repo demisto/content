@@ -105,7 +105,7 @@ function doReq(method, path, parameters) {
             Headers: {
                 'Content-Type': ['application/x-www-form-urlencoded'],
                 'Accept': ['application/json'],
-                'x-tool': 'CortexVirusTotalV2'
+                'x-tool': ['CortexVirusTotalV2']
             },
             Method: method,
             Body: method == 'POST' ? encodeToURLQuery(parameters).substring(1) : ''

@@ -182,7 +182,6 @@ def main():
             raise NotImplementedError(f'Command {command} is not implemented.')
 
     except Exception as err:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f"Failed to execute {INTEGRATION_NAME} with {command} command.\nError:\n{str(err)}")
 
 

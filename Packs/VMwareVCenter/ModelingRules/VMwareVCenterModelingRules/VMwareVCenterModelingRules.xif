@@ -1,0 +1,88 @@
+[MODEL: dataset ="VMware_vCenter_raw", model=Audit] 
+filter _raw_log contains "| vlsi |" or _raw_log contains "| vim" or _raw_log contains "jointool" or _raw_log contains "heard-" or _raw_log contains "Stats"  or _raw_log contains "localhost" or _raw_log contains "Thread" or _raw_log contains "thread" or _raw_log contains "certificates" or _raw_log contains "DEBUG" or _raw_log contains "INFO" or _raw_log contains "appmgmt" or _raw_log contains "cloudvm" or _raw_log contains "pool" or _raw_log contains "vmon"
+| alter Date = arrayindex(regextract(_raw_log ,"(\d+\-\d+\-\d+).\d+\:\d+\:\d+") ,0)
+| alter Hour = arrayindex(regextract(_raw_log ,"\d+\-\d+\-\d+.(\d+\:\d+\:\d+)") ,0)
+| alter TimeStamp = concat(Date," ",Hour)
+| alter LogLevel = arrayindex(regextract(_raw_log ,"\d+\-\d+\-\d+\w\d+\:\d+\:\d+\.\d+\w+\s\|\s+(\S+)\s\s\|") ,0)
+| alter LogLeve2 = arrayindex(regextract(_raw_log ,"\[\w+\]\[(\w+)"),0)
+| alter LogLeve3 = arrayindex(regextract(_raw_log ,"\[\w+\-\d+\-\w+\-\S+\s(\w+)"),0)
+| alter LogLeve = coalesce(LogLevel ,LogLeve2, LogLeve3 )
+| alter Message0 = arrayindex(regextract(_raw_log ,"\|\s\d+\s\|\s([^\t]+)") ,0)
+| alter Message1 = arrayindex(regextract(_raw_log ,"\]\s([^\t]+)") ,0)
+| alter Message2 = arrayindex(regextract(_raw_log ,"\|\s\S+\s\S+\S\s\<\S+([^\.]+)") ,0)
+| alter Message = coalesce(Message0, Message1,Message2)
+| alter Description1 = arrayindex(regextract(_raw_log ,"\|\s\w+\-\w+\-\d+\s+\|\s([A-Z][^\!]+)") ,0)
+| alter Description2 = arrayindex(regextract(_raw_log ,"\[\d+\][A-Z]+\S+\:([^\!]+)") ,0)
+| alter Description3 = arrayindex(regextract(_raw_log ,"([A-Z]{7}[^\!]+)") ,0)
+| alter Description= coalesce(Description1 ,Description2,Description3 )
+| alter msg = arrayindex(regextract(_raw_log ,"INFO[^\|]+\|\s\S+\s+\|\s\w+\s+\|\s+([^\\]+)") ,0)
+| alter msg2= arrayindex(regextract(_raw_log ,"[endpoint|vmon]\s\-\s\-\s\-\s+([^\@]+)") ,0)
+| alter msg1= concat(msg ,message,LogLeve ,Description,msg2  )
+| alter originator=arrayindex(regextract(_raw_log ,"Originator\@(\d+)") ,0)
+| alter sub = arrayindex(regextract(_raw_log ,"(\w+)\sopID") ,0) 
+| alter opID= arrayindex(regextract(_raw_log ,"opID\=([^\]]+)") ,0)
+| alter XDM.Audit.event_timestamp =parse_timestamp("%Y-%m-%d %H:%M:%E3S",TimeStamp)
+,XDM.Audit.original_event_description= Message
+| alter XDM.Audit.audited_resource.id =opID
+| alter XDM.Audit.TriggeredBy.identity.uuid= originator 
+| alter XDM.Audit.identity.sub_type= sub 
+, XDM.Audit.identity.name = LogLevel;
+
+
+[MODEL: dataset ="VMware_vCenter_raw", model=Auth] 
+filter _raw_log contains "vpxd" or _raw_log contains "[vmafdd]" or _raw_log contains " vmdird "
+| alter Date = arrayindex(regextract(_raw_log ,"(\d+\-\d+\-\d+).\d+\:\d+\:\d+") ,0)
+| alter Hour = arrayindex(regextract(_raw_log ,"\d+\-\d+\-\d+.(\d+\:\d+\:\d+)") ,0)
+| alter TimeStamp = concat(Date," ",Hour)
+| alter Message_vpxd= arrayindex(regextract(_raw_log ,"vpxd\[\d+\](.*)") ,0)
+| alter user0_vpxd= arrayindex(regextract(_raw_log ,"user\s\<([^\>]+)") ,0)
+| alter user1_vpxd= arrayindex(regextract(_raw_log ,"User\:\s'([^'])") ,0)
+| alter Message_vmdrid= arrayindex(regextract(_raw_log ,"@\d+\:\s([^\t]+)") ,0)
+| alter Message_vmafdd= arrayindex(regextract(_raw_log ,"vmafdd.*\]\s[^\:]+\:\s([^\t]+)") ,0)
+| alter eventName_vmafdd = arrayindex(regextract(_raw_log ,"vmafdd.*\]\s([^\:]+)") ,0)
+| alter Message = coalesce(Message_vpxd ,Message_vmdrid ,Message_vmafdd )
+| alter user = coalesce(user0_vpxd , user1_vpxd )
+| alter XDM.Auth.original_event_description = Message
+| alter XDM.Auth.Client.user.identifier  = eventName_vmafdd
+, XDM.Auth.Client.user.username  = user
+| alter XDM.Auth.event_timestamp =parse_timestamp("%Y-%m-%d %H:%M:%E3S",TimeStamp);
+
+[MODEL: dataset ="VMware_vCenter_raw", model=Network] 
+filter _raw_log contains "tomcat" or _raw_log contains "HTTP" 
+| alter Date = arrayindex(regextract(_raw_log ,"(\d+\-\d+\-\d+).\d+\:\d+\:\d+") ,0)
+| alter Hour = arrayindex(regextract(_raw_log ,"\d+\-\d+\-\d+.(\d+\:\d+\:\d+)") ,0)
+| alter TimeStamp = concat(Date," ",Hour)
+| alter Message0 = arrayindex(regextract(_raw_log ,"\|\s\d+\s\|\s([^\t]+)") ,0)
+| alter Message1 = arrayindex(regextract(_raw_log ,"\]\s([^\t]+)") ,0)
+| alter Message2 = arrayindex(regextract(_raw_log ,"\|\s\S+\s\S+\S\s\<\S+([^\.]+)") ,0)
+| alter Message = coalesce(Message0, Message1,Message2)
+| alter Description1 = arrayindex(regextract(_raw_log ,"\|\s\w+\-\w+\-\d+\s+\|\s([A-Z][^\!]+)") ,0)
+| alter Description2 = arrayindex(regextract(_raw_log ,"\[\d+\][A-Z]+\S+\:([^\!]+)") ,0)
+| alter Description3 = arrayindex(regextract(_raw_log ,"([A-Z]{7}[^\!]+)") ,0)
+| alter Description= coalesce(Description1 ,Description2,Description3 )
+| alter msg = arrayindex(regextract(_raw_log ,"INFO[^\|]+\|\s\S+\s+\|\s\w+\s+\|\s+([^\\]+)") ,0)
+| alter msg2= arrayindex(regextract(_raw_log ,"[endpoint|vmon]\s\-\s\-\s\-\s+([^\@]+)") ,0)
+| alter msg1= concat(msg ,message ,Description,msg2  )
+| alter http_method1= arrayindex(regextract(_raw_log ,"\]\s\"(\w+)") ,0)
+| alter http_method2= arrayindex(regextract(_raw_log ,"HTTP\/\w+\.\d+\s(\w+)") ,0)
+| alter http_method= coalesce(http_method1 ,http_method2 )
+| alter source_ip= arrayindex(regextract(_raw_log ,"(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})") ,0)
+| alter source_port= arrayindex(regextract(_raw_log ,"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:(\d+)") ,0)
+| alter destination_port= arrayindex(regextract(_raw_log ,"to\s\w+?\s(\d+)") ,0)
+| alter http_respone_code1= arrayindex(regextract(_raw_log ,"\[Response\]\s(\d+)") ,0)
+| alter http_respone_code2= arrayindex(regextract(_raw_log ,"[A-Z][^\"]+\"\s(\d+)\s") ,0)
+| alter http_respone_code = coalesce(http_respone_code1 ,http_respone_code2 )
+| alter Bytes_size1= arrayindex(regextract(_raw_log ,"[A-Z][^\"]+\"\s\d+\s(\d+)") ,0)
+| alter Bytes_size2= arrayindex(regextract(_raw_log ,"(\d+)\sbytes") ,0)
+| alter bytes_size = coalesce(Bytes_size2 ,Bytes_size1 )
+| alter request= arrayindex(regextract(_raw_log ,"\s\"?([A-Z]+?\s[^\"?\s]+)") ,0)
+| alter User_agent= arrayindex(regextract(_raw_log ,"\d+\s\(([^\)]+)") ,0)
+| alter XDM.Network.original_event_description = message
+| alter XDM.Network.http.method=http_method
+| alter XDM.Network.Source.ipv4 =source_ip
+| alter XDM.Network.Source.port=to_number(source_port)
+| alter XDM.Network.Destination.port=to_number(destination_port)
+| alter XDM.Network.http.response_code= http_respone_code
+| alter XDM.Network.Source.bytes= to_number(bytes_size)
+| alter XDM.Network.event_timestamp =parse_timestamp("%Y-%m-%d %H:%M:%E3C",TimeStamp)
+| alter XDM.Network.http.url =request;
