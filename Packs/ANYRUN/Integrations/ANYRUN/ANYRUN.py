@@ -16,8 +16,11 @@ from base64 import b64encode
 PARAMS = demisto.params()
 USERNAME = PARAMS.get('credentials', {}).get('identifier', '')
 PASSWORD = PARAMS.get('credentials', {}).get('password', '')
-AUTH = (USERNAME + ':' + PASSWORD).encode('utf-8')
-BASIC_AUTH = 'Basic ' + b64encode(AUTH).decode()
+if USERNAME == '_token':
+    AUTHORIZATION = f"API-Key {PASSWORD}"
+else:
+    AUTH = (USERNAME + ':' + PASSWORD).encode('utf-8')
+    AUTHORIZATION = 'Basic ' + b64encode(AUTH).decode()
 # Remove trailing slash to prevent wrong URL path to service
 SERVER = PARAMS.get('url', '')
 SERVER = SERVER[:-1] if (SERVER and SERVER.endswith('/')) else SERVER
@@ -28,7 +31,7 @@ USE_SSL = not PARAMS.get('insecure', False)
 PROXY = PARAMS.get('proxy', False)
 # Headers to be sent in requests
 HEADERS = {
-    'Authorization': BASIC_AUTH
+    'Authorization': AUTHORIZATION
 }
 # Context fields that should always be uppercase
 ALWAYS_UPPER_CASE = {
