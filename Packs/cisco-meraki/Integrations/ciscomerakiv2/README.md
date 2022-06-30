@@ -1,8 +1,8 @@
 Cloud controlled WiFi, routing, and security.
-This integration was integrated and tested with version xx of Cisco Meraki V2
+This integration was integrated and tested with version 1.0 of Cisco Meraki V2
 
 Some changes have been made that might affect your existing content. 
-If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-cisco-meraki-v2).
+If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration---cisco-meraki-v2).
 
 ## Configure Cisco Meraki V2 on Cortex XSOAR
 
@@ -93,7 +93,7 @@ List of devices for an organization.
 | Meraki.Devices.notes | String | Notes | 
 | Meraki.Devices.tags | String | Tags. | 
 | Meraki.Devices.networkID | String | Network ID of the device. | 
-| Meraki.Devices.serial | String | Serail of the device. | 
+| Meraki.Devices.serial | String | Serial of the device. | 
 | Meraki.Devices.model | String | Model of the device. | 
 | Meraki.Devices.mac | String | MAC address of the device. | 
 | Meraki.Devices.lanIp | String | LAN IP of the device. | 
@@ -173,7 +173,7 @@ Fetches a device.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| serial | Device serail. | Required | 
+| serial | Device serial. | Required | 
 
 
 #### Context Output
@@ -586,5 +586,6 @@ In the *commandName* command:
 * *outputPath* - this output was replaced by XXX.
 
 ## Additional Considerations for this version
-%%FILL HERE%%
-* Insert any API changes, any behavioral changes, limitations, or restrictions that would be new to this version.
+
+* Cisco Meraki V0 Dashboard API has [reached the end of its support](https://developer.cisco.com/meraki/api/#!introduction/sunset-notice).
+* This integration supports the V1 Dashboard API.
