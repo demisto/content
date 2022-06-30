@@ -153,8 +153,11 @@ def parse_incident_from_finding(message, parse_body_as_json=False):
 
 
 def fetch_incidents(aws_client, aws_queue_url, max_fetch, parse_body_as_json):
+    # Fetching the messages from the queue and delete them after converting them to incidents,
+    # Saving the `receipt_handles` from each fetch to the next fetch to avoid duplicate incidents.
     try:
         client = aws_client.aws_session(service='sqs')
+        # The 'receipt_handles' of the messages that were received from the last call.
         last_receipt_handles = demisto.getLastRun().get('lastReceiptHandles')
         if last_receipt_handles:
             demisto.debug('last_receipt_handles before fetch occurred" -> {} {}'.format(len(last_receipt_handles),
@@ -179,9 +182,9 @@ def fetch_incidents(aws_client, aws_queue_url, max_fetch, parse_body_as_json):
                 else:
                     break
 
+            # Creating incidents and avoiding creating incidents that were already created previously
             for message in messages["Messages"]:
                 receipt_handles.add(message['ReceiptHandle'])
-                # Checking to avoid duplicates
                 if last_receipt_handles and message['ReceiptHandle'] in last_receipt_handles:
                     continue
                 incidents.append(parse_incident_from_finding(message, parse_body_as_json))
@@ -189,9 +192,13 @@ def fetch_incidents(aws_client, aws_queue_url, max_fetch, parse_body_as_json):
                 if incidents_created == max_fetch:
                     break
 
+        # Save fetch results to context.
+        demisto.incidents(incidents)
+        # The "receipt_handles" of converted messages to the incidents are saved for next fetch
         demisto.setLastRun({"lastReceiptHandles": receipt_handles})
         demisto.debug('last_receipt_handles after fetch occurred" -> {} {}'.format(len(receipt_handles), receipt_handles))
-        demisto.incidents(incidents)
+
+        # try to delete all messages (if not successful, will continue next run)
         for receipt_handle in receipt_handles:
             client.delete_message(QueueUrl=aws_queue_url, ReceiptHandle=receipt_handle)
 
