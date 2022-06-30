@@ -508,8 +508,8 @@ build = ["gsutil (==5.8)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "2f29fc9f7eccf11d5e69e6b3f7303633270b4228"
-resolved_reference = "2f29fc9f7eccf11d5e69e6b3f7303633270b4228"
+reference = "3f45f22ee2607b50245dc4a42a234d857b82d714"
+resolved_reference = "3f45f22ee2607b50245dc4a42a234d857b82d714"
 
 [[package]]
 name = "deprecated"
