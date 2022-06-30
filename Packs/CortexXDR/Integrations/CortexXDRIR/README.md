@@ -385,7 +385,7 @@ Returns additional data for the specified incident, for example, related alerts,
 | PaloAltoNetworksXDR.Incident.file_artifacts.file_signature_status | String | Digital signature status of the file. Valid values are: "SIGNATURE_UNAVAILABLE" "SIGNATURE_SIGNED" "SIGNATURE_INVALID" "SIGNATURE_UNSIGNED" "SIGNATURE_WEAK_HASH" | 
 | PaloAltoNetworksXDR.Incident.file_artifacts.is_process | boolean | Whether the file artifact is related to a process execution. | 
 | PaloAltoNetworksXDR.Incident.file_artifacts.file_name | String | Name of the file. | 
-| PaloAltoNetworksXDR.Incident.file_artifacts.file_wildfire_verdict | String | The file verdict, calculated by Wildfire. Valid values are: "BENIGN" "MALWARE" "GRAYWARE" "PHISING" "UNKNOWN". | 
+| PaloAltoNetworksXDR.Incident.file_artifacts.file_wildfire_verdict | String | The file verdict, calculated by Wildfire. Valid values are: "BENIGN" "MALWARE" "GRAYWARE" "PHISHING" "UNKNOWN". | 
 | PaloAltoNetworksXDR.Incident.file_artifacts.alert_count | number | Number of alerts related to the artifact. | 
 | PaloAltoNetworksXDR.Incident.file_artifacts.is_malicious | boolean | Whether the artifact is malicious, as decided by the Wildfire verdict. | 
 | PaloAltoNetworksXDR.Incident.file_artifacts.is_manual | boolean | Whether the artifact was created by the user \(manually\). | 
@@ -1308,7 +1308,7 @@ Gets agent event reports. You can filter by multiple fields, which will be conca
 | endpoint_ids | A comma-separated list of endpoint IDs. | Optional | 
 | endpoint_names | A comma-separated list of endpoint names. | Optional | 
 | type | The report type. Can be "Installation", "Policy", "Action", "Agent Service", "Agent Modules", or "Agent Status". Possible values are: Installation, Policy, Action, Agent Service, Agent Modules, Agent Status. | Optional | 
-| sub_type | The report subtype. Possible values are: Install, Uninstall, Upgrade, Local Configuration, Content Update, Policy Update, Process Exception, Hash Exception, Scan, File Retrieval, File Scan, Terminate Process, Isolate, Cancel Isolation, Payload Execution, Quarantine, Restore, Stop, Start, Module Initialization, Local Analysis Model, Local Analysis Feature Extraction, Fully Protected, OS Incompatible, Software Incompatible, Kernel Driver Initialization, Kernel Extension Initialization, Proxy Communication, Quota Exceeded, Minimal Content, Reboot Eequired, Missing Disc Access. | Optional | 
+| sub_type | The report subtype. Possible values are: Install, Uninstall, Upgrade, Local Configuration, Content Update, Policy Update, Process Exception, Hash Exception, Scan, File Retrieval, File Scan, Terminate Process, Isolate, Cancel Isolation, Payload Execution, Quarantine, Restore, Stop, Start, Module Initialization, Local Analysis Model, Local Analysis Feature Extraction, Fully Protected, OS Incompatible, Software Incompatible, Kernel Driver Initialization, Kernel Extension Initialization, Proxy Communication, Quota Exceeded, Minimal Content, Reboot Required, Missing Disc Access. | Optional | 
 | result | The result type. Can be "Success" or "Fail". If not passed, returns all event reports. Possible values are: Success, Fail. | Optional | 
 | timestamp_gte | Return logs that their timestamp is greater than 'log_time_after'.<br/>Supported values:<br/>1579039377301 (time in milliseconds)<br/>"3 days" (relative date)<br/>"2019-10-21T23:45:00" (date). | Optional | 
 | timestamp_lte | Return logs for which the timestamp is before the 'timestamp_lte'.<br/><br/>Supported values:<br/>1579039377301 (time in milliseconds)<br/>"3 days" (relative date)<br/>"2019-10-21T23:45:00" (date). | Optional | 
@@ -1800,7 +1800,7 @@ Retrieves files from selected endpoints. You can retrieve up to 20 files, from n
 | windows_file_paths | A comma-separated list of file paths on the Windows platform. | Optional | 
 | linux_file_paths | A comma-separated list of file paths on the Linux platform. | Optional | 
 | mac_file_paths | A comma-separated list of file paths on the Mac platform. | Optional | 
-| generic_file_path | A comma-separated list of file paths in any platform. Can be used instead of the mac/windows/linux file paths. The order of the files path list must be parellel to the endpoints list order, therefore, the first file path in the list is related to the first endpoint and so on. | Optional | 
+| generic_file_path | A comma-separated list of file paths in any platform. Can be used instead of the mac/windows/linux file paths. The order of the files path list must be parallel to the endpoints list order, therefore, the first file path in the list is related to the first endpoint and so on. | Optional | 
 | interval_in_seconds | Interval in seconds between each poll. | Optional | 
 | timeout_in_seconds | Polling timeout in seconds. | Optional | 
 | action_id | For polling use. | Optional | 
@@ -1829,7 +1829,7 @@ Retrieves files from selected endpoints. This command will be deprecated soon, u
 | windows_file_paths | A comma-separated list of file paths on the Windows platform. | Optional | 
 | linux_file_paths | A comma-separated list of file paths on the Linux platform. | Optional | 
 | mac_file_paths | A comma-separated list of file paths on the Mac platform. | Optional | 
-| generic_file_path | A comma-separated list of file paths in any platform. Can be used instead of the mac/windows/linux file paths. The order of the files path list must be parellel to the endpoints list order, therefore, the first file path in the list is related to the first endpoint and so on. | Optional | 
+| generic_file_path | A comma-separated list of file paths in any platform. Can be used instead of the mac/windows/linux file paths. The order of the files path list must be parallel to the endpoints list order, therefore, the first file path in the list is related to the first endpoint and so on. | Optional | 
 
 
 #### Context Output
@@ -2430,7 +2430,7 @@ Returns information about each alert ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PaloAltoNetworksXDR.OriginalAlert.event._time | String | The timestamp of the occurence of the event. | 
+| PaloAltoNetworksXDR.OriginalAlert.event._time | String | The timestamp of the occurrence of the event. | 
 | PaloAltoNetworksXDR.OriginalAlert.event.vendor | String | Vendor name. | 
 | PaloAltoNetworksXDR.OriginalAlert.event.event_timestamp | Number | Event timestamp. | 
 | PaloAltoNetworksXDR.OriginalAlert.event.event_type | Number | Event type \(static 500\). | 
@@ -2536,7 +2536,7 @@ Multiple filter arguments will be concatenated using AND operator, while argumen
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert_id | The unique ID of the alert. | Optional | 
-| severity | The severity of the alert. Possible values are: low, meduim, high. | Optional | 
+| severity | The severity of the alert. Possible values are: low, medium, high. | Optional | 
 | custom_filter | a custom filter, when using this argument, other filter arguments are not relevant except time_frame, start_time and end_time which are used to filter the time. example: <br/>`{<br/>                "OR": [<br/>                    {<br/>                        "SEARCH_FIELD": "actor_process_command_line",<br/>                        "SEARCH_TYPE": "EQ",<br/>                        "SEARCH_VALUE": "path_to_file"<br/>                    }<br/>                ]<br/>            }`. | Optional | 
 | Identity_type | Account type. Possible values are: ANONYMOUS,  APPLICATION,  COMPUTE,  FEDERATED_IDENTITY,  SERVICE,  SERVICE_ACCOUNT,  TEMPORARY_CREDENTIALS,  TOKEN,  UNKNOWN,  USER. | Optional | 
 | agent_id | A unique identifier per agent. | Optional | 
@@ -2577,7 +2577,7 @@ Multiple filter arguments will be concatenated using AND operator, while argumen
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PaloAltoNetworksXDR.Alert.internal_id | String | The unique ID of the alert. | 
-| PaloAltoNetworksXDR.Alert.source_insert_ts | Number | The detection timestam | 
+| PaloAltoNetworksXDR.Alert.source_insert_ts | Number | The detection timestamp. | 
 | PaloAltoNetworksXDR.Alert.alert_name | String | The name of the alert. | 
 | PaloAltoNetworksXDR.Alert.severity | String | The severity of the alert. | 
 | PaloAltoNetworksXDR.Alert.alert_category | String | The category of the alert. | 
@@ -2585,7 +2585,156 @@ Multiple filter arguments will be concatenated using AND operator, while argumen
 | PaloAltoNetworksXDR.Alert.alert_name | String | The alert name. | 
 | PaloAltoNetworksXDR.Alert.alert_description | String | The alert description. | 
 | PaloAltoNetworksXDR.Alert.agent_ip_addresses | String | The host IP | 
-| PaloAltoNetworksXDR.Alert.agent_hostmae | String | The host name | 
+| PaloAltoNetworksXDR.Alert.agent_hostname | String | The host name | 
 | PaloAltoNetworksXDR.Alert.mitre_tactic_id_and_name | String | The MITRE attack tactic. | 
 | PaloAltoNetworksXDR.Alert.mitre_technique_id_and_name | String | The MITRE attack technique. | 
 | PaloAltoNetworksXDR.Alert.starred | Boolean | Whether the alert is starred or not. | 
+
+
+### xdr-get-contributing-event
+***
+Retrieves contributing events for a specific alert.
+
+
+#### Base Command
+
+`xdr-get-contributing-event`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert_ids | The alert ID's from where to retrieve the contributing events. | Required | 
+| limit | The maximum number of contributing events to retrieve. Default is 50. | Optional | 
+| page_number | The page number to retrieve. Default (and minimum) is 1. | Optional | 
+| page_size | The page size. Default is 50. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.ContributingEvent.alertID | String | The alert ID. | 
+| PaloAltoNetworksXDR.ContributingEvent.events | Unknown | Contributing events per alert. | 
+
+#### Command example
+```!xdr-get-contributing-event alert_ids=`[123456 , 123457]````
+
+#### Context Example
+```json
+{
+    "PaloAltoNetworksXDR": {
+        "ContributingEvent": [
+            {
+                "alertID": "123456",
+                "events": [
+                    {
+                        "Domain": "WIN10X64",
+                        "Host_Name": "WIN10X64",
+                        "Logon_Type": "7",
+                        "Process_Name": "C:\\Windows\\System32\\svchost.exe",
+                        "Raw_Message": "An account was successfully logged on.",
+                        "Source_IP": "1.1.1.1",
+                        "User_Name": "xsoar",
+                        "111111": 15,
+                        "222222": 165298280000,
+                        "333333": "abcdef",
+                        "444444": 1,
+                        "555555": "ghijk",
+                        "_is_cardable": true,
+                        "_product": "XDR agent",
+                        "_time": 165298280000,
+                        "_vendor": "PANW",
+                        "insert_timestamp": 165298280001
+                    }
+                ]
+            },
+            {
+                "alert_id": "123457",
+                "events": [
+                    {
+                        "Domain": "WIN10X64",
+                        "Host_Name": "WIN10X64",
+                        "Logon_Type": "7",
+                        "Process_Name": "C:\\Windows\\System32\\svchost.exe",
+                        "Raw_Message": "An account was successfully logged on",
+                        "Source_IP": "1.1.1.1",
+                        "User_Name": "xsoar",
+                        "111111": 15,
+                        "222222": 165298280000,
+                        "333333": "abcdef",
+                        "444444": 1,
+                        "555555": "ghijk",
+                        "_is_cardable": true,
+                        "_product": "XDR agent",
+                        "_time": 165298280000,
+                        "_vendor": "PANW",
+                        "insert_timestamp": 165298280001
+                    }
+                ]
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Contributing events
+>|Alert _ Id|Events|
+>|---|---|
+>| 123456 | **-**	***Logon_Type***: 7<br/>	***User_Name***: xsoar<br/>	***Domain***: WIN10X64<br/>	***Source_IP***: 1.1.1.1<br/>	***Process_Name***: C:\Windows\System32\svchost.exe<br/>	***Host_Name***: WIN10X64<br/>	***Raw_Message***: An account was successfully logged on.	***_time***: 165298280000<br/>	***555555***: a1b2c3d4<br/>	***222222***: 165298280000<br/>	***333333***: abcdef<br/>	***111111***: 15<br/>	***444444***: 1<br/>	***insert_timestamp***: 165298280001<br/>	***_vendor***: PANW<br/>	***_product***: XDR agent<br/>	***_is_cardable***: true |
+>| 123457 | **-**	***Logon_Type***: 7<br/>	***User_Name***: xsoar<br/>	***Domain***: WIN10X64<br/>	***Source_IP***: 1.1.1.1<br/>	***Process_Name***: C:\Windows\System32\svchost.exe<br/>	***Host_Name***: WIN10X64<br/>	***Raw_Message***: An account was successfully logged on.	***_time***: 165298280000<br/>	***555555***: ghijk<br/>	***222222***: 165298280000<br/>	***333333***: abcdef<br/>	***111111***: 15<br/>	***444444***: 1<br/>	***insert_timestamp***: 165298280001<br/>	***_vendor***: PANW<br/>	***_product***: XDR agent<br/>	***_is_cardable***: true |
+
+
+### xdr-replace-featured-field
+***
+Replace the featured hosts\users\ip addresses\active directory groups listed in your environment.
+
+
+#### Base Command
+
+`xdr-replace-featured-field`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| field_type | The field type that should change. Possible values are: hosts, users, ip_addresses, ad_groups. | Required | 
+| values | String value that defines the new field. Maximum length is 256 characters. | Required | 
+| comments | String that represents additional information regarding the featured alert field. | Optional | 
+| ad_type | String value identifying if you want to replace to an active directory group or organizational unit.<br/>Possible values are: group, ou. Default is group. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.FeaturedField.fieldType | String | The field type that changed. | 
+| PaloAltoNetworksXDR.FeaturedField.fields | String | The string value that defines the new field. | 
+
+#### Command example
+```!xdr-replace-featured-field field_type=ip_addresses values=`["1.1.1.1"]` comments=`new ip address````
+
+#### Context Example
+```json
+{
+    "PaloAltoNetworksXDR": {
+        "FeaturedField": {
+            "fieldType": "ip_addresses",
+            "fields": [
+                {
+                    "comment": "new ip address",
+                    "value": "1.1.1.1"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Replaced featured: ip_addresses
+>|Comment|Value|
+>|---|---|
+>| new ip address | 1.1.1.1 |
+
