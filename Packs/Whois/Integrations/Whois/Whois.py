@@ -1,3 +1,4 @@
+from typing import *  # noqa: F401
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -429,7 +430,8 @@ tlds = {
     "aws": {
         "_group": "amazonregistry",
         "_type": "newgtld",
-        "adapter": "none"
+        "adapter": "none",
+        "host": "whois.nic.aws"
     },
     "ax": {
         "host": "whois.ax"
@@ -7245,8 +7247,8 @@ def get_root_server(domain):
                              outputs=context)
             else:
                 return_warning('The domain - {} - is not supported by the Whois service'.format(domain),
-                               exit=True, outputs=context)
-
+                               outputs=context)
+                raise WhoisExceptionWornning('The domain - {} - is not supported by the Whois service'.format(domain))
         return host
 
     else:
@@ -7315,6 +7317,8 @@ states_ca = {}  # type: dict
 class WhoisException(Exception):
     pass
 
+class WhoisExceptionWornning(Exception):
+    pass
 
 def precompile_regexes(source, flags=0):
     return [re.compile(regex, flags) for regex in source]
@@ -8408,7 +8412,10 @@ def prepare_readable_ip_data(response):
 def domain_command(reliability):
     domains = demisto.args().get('domain', [])
     for domain in argToList(domains):
-        whois_result = get_whois(domain)
+        try:
+            whois_result = get_whois(domain)
+        except WhoisExceptionWornning:
+            continue
         md, standard_ec, dbot_score = create_outputs(whois_result, domain, reliability)
         dbot_score.update({Common.Domain.CONTEXT_PATH: standard_ec})
         demisto.results({

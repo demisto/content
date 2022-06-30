@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Whois
+  id: Whois Dev
   version: -1
 configuration:
 - display: Return Errors
@@ -34,8 +34,8 @@ configuration:
   required: true
   type: 15
 description: Provides data enrichment for domains.
-display: Whois
-name: Whois
+display: Whois Dev
+name: Whois Dev
 script:
   commands:
   - arguments:
