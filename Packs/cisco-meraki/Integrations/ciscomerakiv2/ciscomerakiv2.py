@@ -456,7 +456,7 @@ def main() -> None:
     """
     params = demisto.params()
     args = demisto.args()
-    api_key = params.get('apiKey')
+    api_key = params.get('api_key')
 
     verify = not params.get('insecure')
     proxy = params.get('proxy')
