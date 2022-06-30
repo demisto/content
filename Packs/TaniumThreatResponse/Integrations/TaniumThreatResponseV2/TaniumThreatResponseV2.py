@@ -12,8 +12,6 @@ from CommonServerPython import *  # noqa: F401
 from dateutil.parser import parse
 from lxml import etree
 
-
-
 ''' IMPORTS '''
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -385,7 +383,8 @@ def alarm_to_incident(client, alarm):
         intel_doc = raw_response.get('name')
         alarm['intelDocDetails'] = raw_response
         intel_doc_labels = []
-        intel_doc_labels_resp = client.do_request('GET', f'/plugin/products/detect3/api/v1/intels/{intel_doc_id}/labels')
+        intel_doc_labels_resp = client.do_request('GET', f'/plugin/products/detect3/api/v1/intels'
+                                                         f'/{intel_doc_id}/labels')
         for label in intel_doc_labels_resp:
             intel_doc_labels.append(label['name'])
         alarm['labels'] = intel_doc_labels
@@ -2126,4 +2125,3 @@ def main():
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):
     main()
-
