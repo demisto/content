@@ -3506,10 +3506,14 @@ def panorama_get_pcap_command(args: dict):
     serial_no = args.get('serialNo')
     session_id = args.get('sessionID')
     device_name = args.get('deviceName')
-    serial_number = args.get('serialNumber')
 
+    serial_number = args.get('serialNumber')
     if VSYS and serial_number:
         raise Exception('The serialNumber argument can only be used in a Panorama instance configuration')
+    elif DEVICE_GROUP and not serial_number and pcap_type != 'threat-pcap':
+        raise Exception('PCAP listing is only supported on Panorama with the serialNumber argument.')
+    elif serial_number and pcap_type != 'threat-pcap':
+        params['target'] = serial_number
 
     file_name = None
     if pcap_id:
@@ -3529,8 +3533,6 @@ def panorama_get_pcap_command(args: dict):
     if search_time:
         search_time = validate_search_time(search_time)
         params['search-time'] = search_time
-    if serial_number:
-        params['target'] = serial_number
 
     # set file name to the current time if from/to were not specified
     if not file_name:
