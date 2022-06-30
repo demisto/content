@@ -680,6 +680,10 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
+def get_event_count(events: list[dict]):
+    return sum(event.get('eventcount', 1) for event in events)
+
+
 def get_remote_events(client: Client,
                       offense_id: str,
                       context_data: dict,
@@ -1478,7 +1482,7 @@ def fetch_incidents_command() -> List[Dict]:
     return ctx.get('samples', [])
 
 
-def create_search_with_retry(client: Client, fetch_mode: str, offense: Dict, event_columns: str, events_limit: int,
+def create_search_with_retry(client: Client, fetch_mode: str, offense: Dict, events_columns: str, events_limit: int,
                              max_retries: int = EVENTS_SEARCH_FAILURE_LIMIT) -> str:
     """
     Creates a search to retrieve events for an offense.
@@ -1490,7 +1494,7 @@ def create_search_with_retry(client: Client, fetch_mode: str, offense: Dict, eve
         fetch_mode (str): Which enrichment mode was requested.
                           Can be 'Fetch With All Events', 'Fetch Correlation Events Only'
         offense (Dict): Offense ID to enrich with events.
-        event_columns (str): Columns of the events to be extracted from query.
+        events_columns (str): Columns of the events to be extracted from query.
         events_limit (int): Maximum number of events to enrich the offense.
         max_retries (int): Number of retries.
 
@@ -1502,7 +1506,7 @@ def create_search_with_retry(client: Client, fetch_mode: str, offense: Dict, eve
     offense_id = offense['id']
     while num_of_failures <= max_retries:
         try:
-            ret_value = create_events_search(client, fetch_mode, event_columns, events_limit, offense_id)
+            ret_value = create_events_search(client, fetch_mode, events_columns, events_limit, offense_id)
             time.sleep(EVENTS_MODIFIED_SECS)
             return ret_value
         except Exception:
@@ -1518,7 +1522,11 @@ def create_search_with_retry(client: Client, fetch_mode: str, offense: Dict, eve
     return QueryStatus.ERROR.value
 
 
-def poll_offense_events(client: Client, search_id: str, offense_id: int, should_get_events: bool,):
+def poll_offense_events(client: Client,
+                        search_id: str,
+                        offense_id: int,
+                        should_get_events: bool,
+                        ):
     try:
         print_debug_msg(f"Getting search status for {search_id}")
         search_status_response = client.search_status_get(search_id)
@@ -1551,7 +1559,13 @@ def poll_offense_events(client: Client, search_id: str, offense_id: int, should_
         return [], QueryStatus.WAIT.value
 
 
-def poll_offense_events_with_retry(client: Client, search_id: str, offense_id: int,
+def poll_offense_events_with_retry(client: Client,
+                                   search_id: str,
+                                   offense: dict,
+                                   expected_events: int,
+                                   fetch_mode: str,
+                                   events_columns: str,
+                                   events_limit: int,
                                    max_retries: int = DEFAULT_EVENTS_TIMEOUT - 2) -> Tuple[List[Dict], str]:
     """
     Polls QRadar service for search ID given until status returned is within '{'CANCELED', 'ERROR', 'COMPLETED'}'.
@@ -1571,16 +1585,22 @@ def poll_offense_events_with_retry(client: Client, search_id: str, offense_id: i
         (List[Dict], str): List of events returned by query. Returns empty list if number of retries exceeded limit,
                            A failure message in case an error occurred.
     """
+    offense_id = offense['id']
+    events = []
     for retry in range(max_retries):
         print_debug_msg(f'Polling for events for offense {offense_id}. Retry number {retry+1}/{max_retries}')
         time.sleep(EVENTS_INTERVAL_SECS)
         events, status = poll_offense_events(client, search_id, offense_id, should_get_events=True)
         if status == QueryStatus.SUCCESS.value:
+            if fetch_mode == FetchMode.all_events.value and (events_fetched := get_event_count(events)) < expected_events:
+                print_debug_msg(f'Got  {expected_events}/{events_fetched}. Searching again')
+                search_id = create_search_with_retry(client, fetch_mode, offense, events_columns, events_limit)
+                continue
             return events, ''
         elif status == QueryStatus.ERROR.value:
             return [], 'Error while getting events.'
     print_debug_msg(f'Max retries for getting events for offense {offense_id}.')
-    return [], 'Fetching events is in progress'
+    return events, ''
 
 
 def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, events_columns: str, events_limit: int):
@@ -1602,6 +1622,7 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
     """
     offense_id = str(offense['id'])
     events_count = offense.get('event_count', 0)
+    expected_events = min(events_limit, events_count)
     events: List[dict] = []
     failure_message = ''
     search_id = create_search_with_retry(client, fetch_mode, offense, events_columns,
@@ -1612,8 +1633,15 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
         context_data[MIRRORED_OFFENSES_QUERIED_CTX_KEY][offense_id] = search_id
         safely_update_context_data(context_data, version, offense_ids=[offense_id])
     else:
-        events, failure_message = poll_offense_events_with_retry(client, search_id, int(offense_id))
-    events_fetched = sum(int(event.get('eventcount', 1)) for event in events)
+        events, failure_message = poll_offense_events_with_retry(client,
+                                                                 search_id,
+                                                                 offense,
+                                                                 expected_events,
+                                                                 fetch_mode,
+                                                                 events_columns,
+                                                                 events_limit,
+                                                                 )
+    events_fetched = get_event_count(events)
     print_debug_msg(f'Events fetched for offense {offense_id}: {events_fetched}/{events_count}.')
     offense['events_fetched'] = events_fetched
     if events:

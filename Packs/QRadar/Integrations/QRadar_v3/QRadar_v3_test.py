@@ -424,7 +424,7 @@ def test_create_search_with_retry(mocker, search_exception, fetch_mode, search_r
     expected_search_id = search_response['search_id'] if search_response else QueryStatus.ERROR.value
     assert create_search_with_retry(client, fetch_mode=fetch_mode,
                                     offense=offense,
-                                    event_columns=event_columns_default_value, events_limit=20,
+                                    events_columns=event_columns_default_value, events_limit=20,
                                     max_retries=1) == expected_search_id
 
 
