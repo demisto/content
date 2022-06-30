@@ -1586,7 +1586,7 @@ def poll_offense_events_with_retry(client: Client,
                            A failure message in case an error occurred.
     """
     offense_id = offense['id']
-    events = []
+    events_to_return = []
     for retry in range(max_retries):
         # check here for reset because this function takes a lot of time
         if is_reset_triggered():
@@ -1595,15 +1595,16 @@ def poll_offense_events_with_retry(client: Client,
         time.sleep(EVENTS_INTERVAL_SECS)
         events, status = poll_offense_events(client, search_id, offense_id, should_get_events=True)
         if status == QueryStatus.SUCCESS.value:
-            if fetch_mode == FetchMode.all_events.value and (events_fetched := get_events_count(events)) < expected_events:
+            events_to_return = events
+            if fetch_mode == FetchMode.all_events.value and (events_fetched := get_events_count(events) < expected_events):
                 print_debug_msg(f'Got {events_fetched}/{expected_events} for Offense {offense_id}. Searching again')
                 search_id = create_search_with_retry(client, fetch_mode, offense, events_columns, events_limit)
                 continue
-            return events, ''
+            return events_to_return, ''
         elif status == QueryStatus.ERROR.value:
             return [], 'Error while getting events.'
     print_debug_msg(f'Max retries for getting events for offense {offense_id}.')
-    return events, ''
+    return events_to_return, ''
 
 
 def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, events_columns: str, events_limit: int):
