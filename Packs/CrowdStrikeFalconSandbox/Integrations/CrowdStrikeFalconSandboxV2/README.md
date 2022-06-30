@@ -26,6 +26,7 @@ Obtain an API key by:
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
+    | Server URL| The Server URL of the CrowdStrike Falcon Sandbox instance. By default, `https://www.hybrid-analysis.com`| | True |
     | API Key |  | True |
     | Source Reliability | Reliability of the source providing the intelligence data. | True |
     | Trust any certificate (not secure) |  | False |
