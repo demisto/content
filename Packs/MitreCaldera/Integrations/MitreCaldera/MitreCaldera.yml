@@ -3353,10 +3353,10 @@ script:
       isArray: true
     outputs:
     - type: String
-      contextPath: MitreCaldera.PartialSchedule.schedule
+      contextPath: MitreCaldera.Schedules.schedule
       description: ''
     - type: String
-      contextPath: MitreCaldera.PartialSchedule.id
+      contextPath: MitreCaldera.Schedules.id
       description: ''
   - name: caldera-get-sources
     description: Retrieve all Fact Sources with optional Fact Source ID
@@ -3465,6 +3465,9 @@ script:
       isArray: true
     outputs:
     - type: String
+      contextPath: MitreCaldera.Operations.EventLogs.id
+      description: ''
+    - type: String
       contextPath: MitreCaldera.Operations.EventLogs.collected_timestamp
       description: ''
     - type: Unknown
@@ -3523,6 +3526,9 @@ script:
       required: false
       isArray: true
     outputs:
+    - type: String
+      contextPath: MitreCaldera.Operations.OperationReport.id
+      description: ''
     - type: String
       contextPath: MitreCaldera.Operations.OperationReport.start
       description: ''
@@ -3703,79 +3709,79 @@ script:
     description: Replace Schedule
     arguments:
     - name: schedule_id
-      description: UUID of the Schedule to be retrieved.
+      description: UUID of the Schedule to be replaced.
       required: true
       isArray: false
-    - name: partial_schedule2_schedule
+    - name: partial_schedule_schedule
       description: ''
       required: false
       isArray: false
-    - name: partial_schedule2_task_name
-      description: partial_schedule2_task name
+    - name: partial_schedule_task_name
+      description: partial_schedule_task name
       required: false
       isArray: false
-    - name: partial_schedule2_task_autonomous
-      description: partial_schedule2_task autonomous
+    - name: partial_schedule_task_autonomous
+      description: partial_schedule_task autonomous
       required: false
       isArray: false
-    - name: partial_schedule2_task_id
-      description: partial_schedule2_task id
+    - name: partial_schedule_task_id
+      description: partial_schedule_task id
       required: false
       isArray: false
-    - name: partial_schedule2_task_objective
-      description: partial_schedule2_task objective
+    - name: partial_schedule_task_objective
+      description: partial_schedule_task objective
       required: false
       isArray: false
-    - name: partial_schedule2_task_visibility
-      description: partial_schedule2_task visibility
+    - name: partial_schedule_task_visibility
+      description: partial_schedule_task visibility
       required: false
       isArray: false
-    - name: partial_schedule2_task_state
-      description: partial_schedule2_task state
+    - name: partial_schedule_task_state
+      description: partial_schedule_task state
       required: false
       isArray: false
-    - name: partial_schedule2_task_group
-      description: partial_schedule2_task group
+    - name: partial_schedule_task_group
+      description: partial_schedule_task group
       required: false
       isArray: false
-    - name: partial_schedule2_task_host_group
-      description: partial_schedule2_task host_group
+    - name: partial_schedule_task_host_group
+      description: partial_schedule_task host_group
       required: false
       isArray: false
-    - name: partial_schedule2_task_planner
-      description: partial_schedule2_task planner
+    - name: partial_schedule_task_planner
+      description: partial_schedule_task planner
       required: false
       isArray: false
-    - name: partial_schedule2_task_obfuscator
-      description: partial_schedule2_task obfuscator
+    - name: partial_schedule_task_obfuscator
+      description: partial_schedule_task obfuscator
       required: false
       isArray: false
-    - name: partial_schedule2_task_chain
-      description: partial_schedule2_task chain
+    - name: partial_schedule_task_chain
+      description: partial_schedule_task chain
       required: false
       isArray: false
-    - name: partial_schedule2_task_use_learning_parsers
-      description: partial_schedule2_task use_learning_parsers
+    - name: partial_schedule_task_use_learning_parsers
+      description: partial_schedule_task use_learning_parsers
       required: false
       isArray: false
-    - name: partial_schedule2_task_source
-      description: partial_schedule2_task source
+    - name: partial_schedule_task_source
+      description: partial_schedule_task source
       required: false
       isArray: false
-    - name: partial_schedule2_task_jitter
-      description: partial_schedule2_task jitter
+    - name: partial_schedule_task_jitter
+      description: partial_schedule_task jitter
       required: false
       isArray: false
-    - name: partial_schedule2_task_start
-      description: partial_schedule2_task start
+    - name: partial_schedule_task_start
+      description: partial_schedule_task start
       required: false
       isArray: false
-    - name: partial_schedule2_task_adversary
-      description: partial_schedule2_task adversary
+    - name: partial_schedule_task_adversary
+      description: partial_schedule_task adversary
       required: false
       isArray: false
-    - name: partial_schedule2_task_auto_close
-      description: partial_schedule2_task auto_close
+    - name: partial_schedule_task_auto_close
+      description: partial_schedule_task auto_close
       required: false
       isArray: false
     outputs:

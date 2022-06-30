@@ -485,8 +485,8 @@ class Client(BaseClient):
 
         return response
 
-    def replace_schedule(self, id_, partial_schedule2_schedule, partial_schedule2_task):
-        data = assign_params(schedule=partial_schedule2_schedule, task=partial_schedule2_task)
+    def replace_schedule(self, id_, partial_schedule_schedule, partial_schedule_task):
+        data = assign_params(schedule=partial_schedule_schedule, task=partial_schedule_task)
         headers = self._headers
 
         response = self._http_request('put', f'api/v2/schedules/{id_}', json_data=data, headers=headers)
@@ -1471,29 +1471,29 @@ def replace_ability_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
 
 def replace_schedule_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    id_ = args.get('id_')
-    partial_schedule2_schedule = args.get('partial_schedule2_schedule')
-    partial_schedule2_task_name = args.get('partial_schedule2_task_name')
-    partial_schedule2_task_autonomous = args.get('partial_schedule2_task_autonomous')
-    partial_schedule2_task_id = args.get('partial_schedule2_task_id')
-    partial_schedule2_task_objective = args.get('partial_schedule2_task_objective')
-    partial_schedule2_task_visibility = args.get('partial_schedule2_task_visibility')
-    partial_schedule2_task_state = args.get('partial_schedule2_task_state')
-    partial_schedule2_task_group = args.get('partial_schedule2_task_group')
-    partial_schedule2_task_host_group = args.get('partial_schedule2_task_host_group')
-    partial_schedule2_task_planner = args.get('partial_schedule2_task_planner')
-    partial_schedule2_task_obfuscator = args.get('partial_schedule2_task_obfuscator')
-    partial_schedule2_task_chain = args.get('partial_schedule2_task_chain')
-    partial_schedule2_task_use_learning_parsers = argToBoolean(args.get('partial_schedule2_task_use_learning_parsers', False))
-    partial_schedule2_task_source = args.get('partial_schedule2_task_source')
-    partial_schedule2_task_jitter = args.get('partial_schedule2_task_jitter')
-    partial_schedule2_task_start = args.get('partial_schedule2_task_start')
-    partial_schedule2_task_adversary = args.get('partial_schedule2_task_adversary')
-    partial_schedule2_task_auto_close = argToBoolean(args.get('partial_schedule2_task_auto_close', False))
-    partial_schedule2_task = assign_params(name=partial_schedule2_task_name, autonomous=partial_schedule2_task_autonomous, id=partial_schedule2_task_id, objective=partial_schedule2_task_objective, visibility=partial_schedule2_task_visibility, state=partial_schedule2_task_state, group=partial_schedule2_task_group, host_group=partial_schedule2_task_host_group, planner=partial_schedule2_task_planner,
-                                           obfuscator=partial_schedule2_task_obfuscator, chain=partial_schedule2_task_chain, use_learning_parsers=partial_schedule2_task_use_learning_parsers, source=partial_schedule2_task_source, jitter=partial_schedule2_task_jitter, start=partial_schedule2_task_start, adversary=partial_schedule2_task_adversary, auto_close=partial_schedule2_task_auto_close)
+    schedule_id = args.get('schedule_id')
+    partial_schedule_schedule = args.get('partial_schedule_schedule')
+    partial_schedule_task_name = args.get('partial_schedule_task_name')
+    partial_schedule_task_autonomous = args.get('partial_schedule_task_autonomous')
+    partial_schedule_task_id = args.get('partial_schedule_task_id')
+    partial_schedule_task_objective = args.get('partial_schedule_task_objective')
+    partial_schedule_task_visibility = args.get('partial_schedule_task_visibility')
+    partial_schedule_task_state = args.get('partial_schedule_task_state')
+    partial_schedule_task_group = args.get('partial_schedule_task_group')
+    partial_schedule_task_host_group = args.get('partial_schedule_task_host_group')
+    partial_schedule_task_planner = args.get('partial_schedule_task_planner')
+    partial_schedule_task_obfuscator = args.get('partial_schedule_task_obfuscator')
+    partial_schedule_task_chain = args.get('partial_schedule_task_chain')
+    partial_schedule_task_use_learning_parsers = argToBoolean(args.get('partial_schedule_task_use_learning_parsers', False))
+    partial_schedule_task_source = args.get('partial_schedule_task_source')
+    partial_schedule_task_jitter = args.get('partial_schedule_task_jitter')
+    partial_schedule_task_start = args.get('partial_schedule_task_start')
+    partial_schedule_task_adversary = args.get('partial_schedule_task_adversary')
+    partial_schedule_task_auto_close = argToBoolean(args.get('partial_schedule_task_auto_close', False))
+    partial_schedule_task = assign_params(name=partial_schedule_task_name, autonomous=partial_schedule_task_autonomous, id=partial_schedule_task_id, objective=partial_schedule_task_objective, visibility=partial_schedule_task_visibility, state=partial_schedule_task_state, group=partial_schedule_task_group, host_group=partial_schedule_task_host_group, planner=partial_schedule_task_planner,
+                                           obfuscator=partial_schedule_task_obfuscator, chain=partial_schedule_task_chain, use_learning_parsers=partial_schedule_task_use_learning_parsers, source=partial_schedule_task_source, jitter=partial_schedule_task_jitter, start=partial_schedule_task_start, adversary=partial_schedule_task_adversary, auto_close=partial_schedule_task_auto_close)
 
-    response = client.replace_schedule(id_, partial_schedule2_schedule, partial_schedule2_task)
+    response = client.replace_schedule(schedule_id, partial_schedule_schedule, partial_schedule_task)
     command_results = CommandResults(
         outputs_prefix='MitreCaldera.Schedules',
         outputs_key_field='',
