@@ -1,6 +1,5 @@
+"""Flashpoint Main File."""
 from CommonServerPython import *
-
-""" IMPORTS """
 import re
 import ipaddress
 import requests
@@ -11,7 +10,8 @@ from typing import Dict, Tuple, List, Any
 requests.packages.urllib3.disable_warnings()
 
 """ CONSTANTS """
-
+INTEGRATION_VERSION = "v1.3.3"
+INTEGRATION_PLATFORM = "XSOAR Cortex"
 FIRST_FETCH = "3 days"
 MAX_FETCH = 15
 DEFAULT_PAGE_SIZE = 50
@@ -27,6 +27,22 @@ IS_FRESH_VALUES = ['true', 'false']
 SORT_ORDER_VALUES = ['asc', 'desc']
 SORT_DATE_VALUES = ['created_at', 'first_observed_at']
 FILTER_DATE_VALUES = ['created_at', 'first_observed_at']
+
+DATE_OBSERVED = "Date Observed (UTC)"
+STRING_FORMAT = "[{}]({})"
+TIME_OBSERVED = "Observed time (UTC)"
+QUERY = r'+type:("ip-src","ip-dst","ip-dst|port") +value.\*:"'
+HR_TITLE = '### Flashpoint IP address reputation for '
+REPUTATION_MALICIOUS = 'Reputation: Malicious\n\n'
+TABLE_TITLE = 'Events in which this IOC observed'
+ALL_DETAILS_LINK = '\nAll events and details (fp-tools): [{}]({})\n'
+MALICIOUS_DESCRIPTION = 'Found in malicious indicators dataset'
+STIX_ATTACK_PATTERN = 'STIX Attack Pattern'
+REPUTATION_UNKNOWN = 'Reputation: Unknown\n\n'
+FORUM_NAME = 'Forum Name'
+ROOM_TITLE = 'Room Title'
+AUTHOR_NAME = 'Author Name'
+THREAD_TITLE = 'Thread Title'
 
 FLASHPOINT_PATHS = {
     'IP': 'Flashpoint.IP.Event(val.Fpid && val.Fpid == obj.Fpid)',
@@ -83,6 +99,7 @@ MESSAGES = {
 class Client:
     """
     Client to use in integration with powerful http_request.
+
     :type api_key: ``str``
     :param api_key: Use to authenticate request in header
 
@@ -103,6 +120,7 @@ class Client:
     """
 
     def __init__(self, api_key, url, verify, proxies, create_relationships):
+        """Initialize class object."""
         self.url = url
         self.api_key = api_key
         self.verify = verify
@@ -126,7 +144,10 @@ class Client:
             full_url = self.url + url_suffix
 
         headers = {
-            'Authorization': self.api_key
+            'Authorization': f"Bearer {self.api_key}",
+            'X-FP-IntegrationPlatform': INTEGRATION_PLATFORM,
+            'X-FP-IntegrationPlatformVersion': get_demisto_version_as_str(),
+            'X-FP-IntegrationVersion': INTEGRATION_VERSION
         }
 
         resp = requests.request(
@@ -165,7 +186,7 @@ class Client:
 
 
 def get_apikey():
-    """ Get API Key from the command argument"""
+    """Get API Key from the command argument."""
     api_key = demisto.params()["api_key"]
 
     return api_key
@@ -173,7 +194,7 @@ def get_apikey():
 
 def get_url_suffix(query):
     """
-    Create url-suffix using the query value with url encoding
+    Create url-suffix using the query value with url encoding.
 
     :param query: value of query param
     :return: url-encoded url-suffix
@@ -183,7 +204,7 @@ def get_url_suffix(query):
 
 def prepare_args_for_fetch_alerts(max_fetch: int, start_time: str, last_run: dict) -> dict:
     """
-    Function to prepare arguments for fetching alerts
+    Prepare arguments for fetching alerts.
 
     :param max_fetch: Maximum number of incidents per fetch
     :param start_time: Date time to start fetching incidents from
@@ -206,7 +227,7 @@ def prepare_args_for_fetch_alerts(max_fetch: int, start_time: str, last_run: dic
 def prepare_args_for_fetch_compromised_credentials(max_fetch: int, start_time: str, is_fresh: bool,
                                                    last_run: dict) -> dict:
     """
-    Function to prepare arguments for fetching compromised credentials
+    Prepare arguments for fetching compromised credentials.
 
     :param max_fetch: Maximum number of incidents per fetch
     :param start_time: Date time to start fetching incidents from
@@ -261,7 +282,7 @@ def prepare_args_for_fetch_compromised_credentials(max_fetch: int, start_time: s
 
 def validate_fetch_incidents_params(params: dict, last_run: dict) -> Dict:
     """
-    Function to validate the parameter list for fetch incidents
+    Validate the parameter list for fetch incidents.
 
     :param params: Dictionary containing demisto configuration parameters
     :param last_run: last run returned by function demisto.getLastRun
@@ -305,7 +326,7 @@ def validate_fetch_incidents_params(params: dict, last_run: dict) -> Dict:
 
 def parse_indicator_response(indicators):
     """
-    Extract Flashpoint event details and href values from each of the indicator in an indicator list
+    Extract Flashpoint event details and href values from each of the indicator in an indicator list.
 
     :param indicators: list of indicators
     :return: dict containing event details and href
@@ -324,7 +345,7 @@ def parse_indicator_response(indicators):
         observed_time = time.strftime(READABLE_DATE_FORMAT, time.gmtime(float(event['timestamp'])))
 
         events.append({
-            'Date Observed (UTC)': observed_time,
+            DATE_OBSERVED: observed_time,
             'Name': event.get('info', ''),
             'Tags': tags_value,
         })
@@ -334,7 +355,7 @@ def parse_indicator_response(indicators):
 
 def parse_event_response(client, event, fpid, href):
     """
-    Prepare required event json object from event response
+    Prepare required event json object from event response.
 
     :param href: reference link of event
     :param fpid: unique id of event. i.e EventId
@@ -347,7 +368,7 @@ def parse_event_response(client, event, fpid, href):
     uuid = event.get('uuid', '')
     if uuid:
         fp_link = client.url + '/home/technical_data/iocs/items/' + uuid
-        name_str = '[{}]({})'.format(name, fp_link)
+        name_str = STRING_FORMAT.format(name, fp_link)
     else:
         name_str = name
 
@@ -357,7 +378,7 @@ def parse_event_response(client, event, fpid, href):
     event_creator_email = event.get('event_creator_email', '')
 
     event = {
-        'Observed time (UTC)': observed_time,
+        TIME_OBSERVED: observed_time,
         'Name': name_str,
         'Tags': tags_value,
         'EventCreatorEmail': event_creator_email,
@@ -370,7 +391,7 @@ def parse_event_response(client, event, fpid, href):
 
 def parse_forum_response(resp):
     """
-    Prepare forum json object from forum response
+    Prepare forum json object from forum response.
 
     :param resp: forum response
     :return: required forum json object
@@ -392,7 +413,7 @@ def parse_forum_response(resp):
 
 def get_post_context(resp):
     """
-    Prepare context data for forum post
+    Prepare context data for forum post.
 
     :param resp: forum post api response
     :return: dict object
@@ -412,8 +433,7 @@ def get_post_context(resp):
 
 def reputation_operation_command(client, indicator, func, command_results=False):
     """
-    Common method for reputation commands to accept argument as a comma-separated values and converted into list
-    and call specific function for all values.
+    Call specific function for all reputation commands from this common method.
 
     :param client: object of client class
     :param indicator: comma-separated values or single value
@@ -431,7 +451,7 @@ def reputation_operation_command(client, indicator, func, command_results=False)
 
 def replace_key(dictionary, new_key, old_key):
     """
-    This method is used for replace key in dictionary.
+    Replace key in dictionary.
 
     :param dictionary: dictionary object on which we wan to replace key.
     :param new_key: key which will replace in dictionary
@@ -445,11 +465,12 @@ def replace_key(dictionary, new_key, old_key):
 
 def validate_alert_list_args(args: dict) -> dict:
     """
-    Validate arguments for flashpoint-alert-list command, raise ValueError on invalid arguments.
+    Validate arguments for flashpoint-alert-list command.
 
     :param args: The command arguments
 
     :return: Validated dictionary of arguments
+    :raises: ValueError for invalid arguments
     """
     params = {}
 
@@ -475,7 +496,7 @@ def validate_alert_list_args(args: dict) -> dict:
 
 def prepare_hr_for_alerts(alerts: List) -> str:
     """
-    Prepare human readable format for alerts
+    Prepare human readable format for alerts.
 
     :param alerts: List of alerts
 
@@ -535,7 +556,7 @@ def prepare_hr_for_alerts(alerts: List) -> str:
 
 def validate_page_parameters_for_compromised_credentials(args: dict, params: dict) -> None:
     """
-    Function to validate page_size and page_number for flashpoint-compromised-credentials-list command
+    Validate page_size and page_number for flashpoint-compromised-credentials-list command.
 
     :param args: The command arguments
     :param params: Dictionary of parameters
@@ -560,7 +581,7 @@ def validate_page_parameters_for_compromised_credentials(args: dict, params: dic
 
 def validate_date_parameters_for_compromised_credentials(args: dict, params: dict) -> None:
     """
-    Function to validate start_date, end_date, and filter_date for flashpoint-compromised-credentials-list command
+    Validate date params for flashpoint-compromised-credentials-list command.
 
     :param args: The command arguments
     :param params: Dictionary of parameters
@@ -592,7 +613,7 @@ def validate_date_parameters_for_compromised_credentials(args: dict, params: dic
 
 def validate_sort_parameters_for_compromised_credentials(args: dict, params: dict) -> None:
     """
-    Function to validate sort_order and sort_date for flashpoint-compromised-credentials-list command
+    Validate sort_order and sort_date for flashpoint-compromised-credentials-list command.
 
     :param args: The command arguments
     :param params: Dictionary of parameters
@@ -616,11 +637,12 @@ def validate_sort_parameters_for_compromised_credentials(args: dict, params: dic
 
 def validate_compromised_credentials_list_args(args: dict) -> dict:
     """
-    Validate arguments for flashpoint-compromised-credentials-list command, raise ValueError on invalid arguments.
+    Validate arguments for flashpoint-compromised-credentials-list command.
 
     :param args: The command arguments
 
     :return: Validated dictionary of arguments
+    :raises: ValueError on invalid arguments
     """
     params = {'query': '+basetypes:(credential-sighting)'}
 
@@ -643,7 +665,7 @@ def validate_compromised_credentials_list_args(args: dict) -> dict:
 
 def prepare_hr_for_compromised_credentials(hits: list) -> str:
     """
-    Prepare human readable format for compromised credentials
+    Prepare human readable format for compromised credentials.
 
     :param hits: List of compromised credentials
 
@@ -680,7 +702,7 @@ def prepare_hr_for_compromised_credentials(hits: list) -> str:
 
 def remove_duplicate_records(records: List, fetch_type: str, next_run: dict) -> List:
     """
-    Function to check for duplicate records and remove them from the list
+    Check for duplicate records and remove them from the list.
 
     :param records: List of records
     :param fetch_type: Type of the records
@@ -706,21 +728,23 @@ def remove_duplicate_records(records: List, fetch_type: str, next_run: dict) -> 
 
 def update_alert_body(alert: dict) -> None:
     """
-    Function to add highlight to keyword text
+    Add highlight to keyword text.
 
     :param alert: The alert object
 
     :return: None
     """
-    keyword = alert.get("keyword", {}).get("keyword_text", "").replace('\"', "")
+    # Plain text might not contain quotes (and spaces) present in peripherals, thus stripping them
+    keyword = alert.get("keyword", {}).get("keyword_text", "").strip("\" ")
     body = alert.get("source", {}).get("body", {}).get("text/plain")
     if body:
-        alert["source"]["body"]["text/plain"] = re.sub(keyword, f"<mark>{keyword}</mark>", body, flags=re.IGNORECASE)
+        alert["source"]["body"]["text/plain"] = re.sub(re.escape(keyword), f"<mark>{keyword}</mark>", body,
+                                                       flags=re.IGNORECASE)
 
 
 def prepare_context_from_next_href(links: str) -> Dict:
     """
-    Function to prepare context from href
+    Prepare context from href.
 
     :param links: Link with the arguments
 
@@ -733,7 +757,7 @@ def prepare_context_from_next_href(links: str) -> Dict:
 
 def prepare_incidents_from_alerts_data(response: dict, next_run: dict, start_time: str) -> Tuple[dict, list]:
     """
-    Function to prepare incidents from the alerts data
+    Prepare incidents from the alerts data.
 
     :param response: Response from the alerts API
     :param next_run: Dictionary to set in last run
@@ -787,7 +811,7 @@ def prepare_incidents_from_alerts_data(response: dict, next_run: dict, start_tim
 
 def check_value_of_total_records(total: Any, next_run: dict) -> None:
     """
-    Function to check if total number of records are more than the limit or not
+    Check if total number of records are more than the limit or not.
 
     :param total: Total number of records
     :param next_run: Dictionary to set in last run
@@ -802,7 +826,7 @@ def check_value_of_total_records(total: Any, next_run: dict) -> None:
 
 def prepare_checkpoint_and_related_objects(hits: List, hit_ids: List, next_run: dict) -> None:
     """
-    Function to prepare checkpoint and related objects for incidents of type compromised credentials
+    Prepare checkpoint and related objects for incidents of type compromised credentials.
 
     :param hits: List of compromised credentials
     :param hit_ids: List of ids of compromised credentials
@@ -828,7 +852,7 @@ def prepare_checkpoint_and_related_objects(hits: List, hit_ids: List, next_run: 
 
 def prepare_next_run_when_data_is_present(next_run: dict, start_time: str) -> None:
     """
-    Function to prepare next run when data is present
+    Prepare next run when data is present.
 
     :param next_run: Dictionary to set in last run
     :param start_time:  Date time saved of the last fetch
@@ -841,7 +865,7 @@ def prepare_next_run_when_data_is_present(next_run: dict, start_time: str) -> No
 
 def prepare_next_run_when_data_is_empty(next_run: dict, hits: List) -> None:
     """
-    Function to prepare next run when data is present
+    Prepare next run when data is present.
 
     :param next_run: Dictionary to set in last run
     :param hits: List of compromised credentials
@@ -858,7 +882,7 @@ def prepare_next_run_when_data_is_empty(next_run: dict, hits: List) -> None:
 def prepare_incidents_from_compromised_credentials_data(response: dict, next_run: dict,
                                                         start_time: str) -> Tuple[dict, list]:
     """
-    Function to prepare incidents from the compromised credentials data
+    Prepare incidents from the compromised credentials data.
 
     :param response: Response from the compromised credentials API
     :param next_run: Dictionary to set in last run
@@ -897,12 +921,36 @@ def prepare_incidents_from_compromised_credentials_data(response: dict, next_run
     return next_run, incidents
 
 
+def remove_space_from_args(args):
+    """Remove space from args."""
+    for key in args.keys():
+        if isinstance(args[key], str):
+            args[key] = args[key].strip()
+    return args
+
+
+def create_relationships_list(client, events_details, ip):
+    """Create relationships list from given data."""
+    relationships = []
+    if client.create_relationships and events_details.get('attack_ids'):
+        for attack_id in events_details.get('attack_ids'):
+            relationships.append(
+                EntityRelationship(name='indicator-of',
+                                   entity_a=ip,
+                                   entity_a_type=FeedIndicatorType.IP,
+                                   entity_b=attack_id,
+                                   entity_b_type=FeedIndicatorType.indicator_type_by_server_version(
+                                       STIX_ATTACK_PATTERN),
+                                   brand=BRAND))
+    return relationships
+
+
 ''' FUNCTIONS '''
 
 
 def test_module(client: Client, params: Dict) -> None:
     """
-    Tests the Flashpoint instance configuration
+    Test the Flashpoint instance configuration.
 
     :param: client: Object of Client class
     :param: params: Dictionary containing demisto configuration parameters
@@ -916,11 +964,11 @@ def test_module(client: Client, params: Dict) -> None:
 
 def ip_lookup_command(client, ip):
     """
-    'ip' command to lookup a particular ip-address
+    Lookup a particular ip-address.
+
     This command searches for the ip in Flashpoint's IOC Dataset. If found, mark it as Malicious.
     If not found, lookup in Torrents for matching peer ip. If found, mark it as Suspicious.
     If not found, lookup in Forums for matching ip. If found, mark it as Suspicious.
-
 
     :param client: object of client class
     :param ip: ip-address
@@ -929,48 +977,36 @@ def ip_lookup_command(client, ip):
     if not is_ip_valid(ip, True):
         raise ValueError("Invalid ip - " + ip)
 
-    query = r'+type:("ip-src","ip-dst") +value.\*:"' + urllib.parse.quote(ip.encode('utf-8')) + '"'
+    query = QUERY + urllib.parse.quote(ip.encode('utf-8')) + '"'
     resp = client.http_request("GET", url_suffix=get_url_suffix(query))
 
+    indicators = []
     if isinstance(resp, list):
         indicators = resp
-    else:
-        indicators = []
 
     if len(indicators) > 0:
 
-        hr = '### Flashpoint IP address reputation for ' + ip + '\n'
-        hr += 'Reputation: Malicious\n\n'
+        hr = HR_TITLE + ip + '\n'
+        hr += REPUTATION_MALICIOUS
 
         events_details = parse_indicator_response(indicators)
 
-        hr += tableToMarkdown('Events in which this IOC observed', events_details['events'],
-                              ['Date Observed (UTC)', 'Name', 'Tags'])
+        hr += tableToMarkdown(TABLE_TITLE, events_details['events'],
+                              [DATE_OBSERVED, 'Name', 'Tags'])
 
         # Constructing FP Deeplink
-        fp_link = client.url + '/home/search/iocs?group=indicator&ioc_type=ip-dst%2Cip-src&ioc_value=' + ip
-        hr += '\nAll events and details (fp-tools): [{}]({})\n'.format(fp_link, fp_link)
+        fp_link = \
+            client.url + '/home/search/iocs?group=indicator&ioc_type=ip-dst%2Cip-src%2Cip-dst%7Cport&ioc_value=' + ip
+        hr += ALL_DETAILS_LINK.format(fp_link, fp_link)
         dbot_score = Common.DBotScore(
             indicator=ip,
             indicator_type=DBotScoreType.IP,
             integration_name=BRAND,
             score=3,
-            malicious_description='Found in malicious indicators dataset'
+            malicious_description=MALICIOUS_DESCRIPTION
 
         )
-        relationships = []
-        if client.create_relationships:
-            if events_details.get('attack_ids'):
-                for attack_id in events_details.get('attack_ids'):
-                    relationships.append(
-                        EntityRelationship(name='indicator-of',
-                                           entity_a=ip,
-                                           entity_a_type=FeedIndicatorType.IP,
-                                           entity_b=attack_id,
-                                           entity_b_type=FeedIndicatorType.indicator_type_by_server_version(
-                                               'STIX Attack Pattern'),
-                                           brand=BRAND))
-
+        relationships = create_relationships_list(client, events_details, ip)
         ip_ioc = Common.IP(ip=ip, dbot_score=dbot_score, relationships=relationships)
 
         flashpoint_ip_context = []
@@ -1011,7 +1047,7 @@ def ip_lookup_command(client, ip):
         if torrent_result:
             torrent_search_link = client.url + '/home/search/torrents?ip_address=' + ip
 
-            hr = '### Flashpoint IP address reputation for ' + ip + '\n'
+            hr = HR_TITLE + ip + '\n'
             hr += 'Reputation: Suspicious\n\n'
             hr += 'FP tools link to torrent search: [{}]({})\n'.format(torrent_search_link, torrent_search_link)
 
@@ -1041,7 +1077,7 @@ def ip_lookup_command(client, ip):
                 forum_search_link = client.url + '/home/search/visits?exclude_tor_nodes_and_known_proxies=true' \
                                                  '&ip_address=' + ip
 
-                hr = '### Flashpoint IP address reputation for ' + ip + '\n'
+                hr = HR_TITLE + ip + '\n'
                 hr += 'Reputation: Suspicious\n\n'
                 hr += 'FP tools link to Forum-visit search: [{}]({})\n'.format(forum_search_link, forum_search_link)
 
@@ -1062,8 +1098,8 @@ def ip_lookup_command(client, ip):
                     raw_response=resp,
                 )
             else:
-                hr = '### Flashpoint IP address reputation for ' + ip + '\n'
-                hr += 'Reputation: Unknown\n\n'
+                hr = HR_TITLE + ip + '\n'
+                hr += REPUTATION_UNKNOWN
                 ec = {
                     'DBotScore': {
                         'Indicator': ip,
@@ -1083,7 +1119,7 @@ def ip_lookup_command(client, ip):
 
 def domain_lookup_command(client, domain):
     """
-    'domain' command to lookup a particular domain
+    Lookup a particular domain.
 
     :param client: object of client class
     :param domain: domain
@@ -1100,22 +1136,22 @@ def domain_lookup_command(client, domain):
     if len(indicators) > 0:
 
         hr = '### Flashpoint Domain reputation for ' + domain + '\n'
-        hr += 'Reputation: Malicious\n\n'
+        hr += REPUTATION_MALICIOUS
 
         events_details = parse_indicator_response(indicators)
 
-        hr += tableToMarkdown('Events in which this IOC observed', events_details['events'],
-                              ['Date Observed (UTC)', 'Name', 'Tags'])
+        hr += tableToMarkdown(TABLE_TITLE, events_details['events'],
+                              [DATE_OBSERVED, 'Name', 'Tags'])
 
         fp_link = client.url + '/home/search/iocs?group=indicator&ioc_type=domain&ioc_value=' + domain
-        hr += '\nAll events and details (fp-tools): [{}]({})\n'.format(fp_link, fp_link)
+        hr += ALL_DETAILS_LINK.format(fp_link, fp_link)
 
         dbot_score = Common.DBotScore(
             indicator=domain,
             indicator_type=DBotScoreType.DOMAIN,
             integration_name=BRAND,
             score=3,
-            malicious_description='Found in malicious indicators dataset'
+            malicious_description=MALICIOUS_DESCRIPTION
 
         )
         relationships = []
@@ -1128,7 +1164,7 @@ def domain_lookup_command(client, domain):
                                            entity_a_type=FeedIndicatorType.Domain,
                                            entity_b=attack_id,
                                            entity_b_type=FeedIndicatorType.indicator_type_by_server_version(
-                                               'STIX Attack Pattern'),
+                                               STIX_ATTACK_PATTERN),
                                            brand=BRAND))
 
         domain_ioc = Common.Domain(domain=domain, dbot_score=dbot_score, relationships=relationships)
@@ -1162,7 +1198,7 @@ def domain_lookup_command(client, domain):
 
     else:
         hr = '### Flashpoint Domain reputation for ' + domain + '\n'
-        hr += 'Reputation: Unknown\n\n'
+        hr += REPUTATION_UNKNOWN
         ec = {
             'DBotScore': {
                 'Indicator': domain,
@@ -1182,7 +1218,7 @@ def domain_lookup_command(client, domain):
 
 def filename_lookup_command(client, filename):
     """
-    'filename' command to lookup a particular filename
+    Lookup a particular filename.
 
     :param client: object of client class
     :param filename: filename
@@ -1199,16 +1235,16 @@ def filename_lookup_command(client, filename):
     if len(indicators) > 0:
 
         hr = '### Flashpoint Filename reputation for ' + filename + '\n'
-        hr += 'Reputation: Malicious\n\n'
+        hr += REPUTATION_MALICIOUS
 
         events_details = parse_indicator_response(indicators)
 
-        hr += tableToMarkdown('Events in which this IOC observed', events_details['events'],
-                              ['Date Observed (UTC)', 'Name', 'Tags'])
+        hr += tableToMarkdown(TABLE_TITLE, events_details['events'],
+                              [DATE_OBSERVED, 'Name', 'Tags'])
 
-        fp_link = client.url + '/home/search/iocs?group=indicator&ioc_type=filename&ioc_value=' + urllib.parse.quote(
-            filename.replace('\\', '\\\\').encode('utf8'))
-        hr += '\nAll events and details (fp-tools): [{}]({})\n'.format(fp_link, fp_link)
+        fp_link = client.url + '/home/search/iocs?query_i18n=en&query=%22' + urllib.parse.quote(
+            filename.replace('\\', '\\\\').encode('utf8')) + '%22'
+        hr += ALL_DETAILS_LINK.format(fp_link, fp_link)
 
         dbot_context = {
             'Indicator': filename,
@@ -1221,7 +1257,7 @@ def filename_lookup_command(client, filename):
             'Name': filename,
             'Malicious': {
                 'Vendor': 'Flashpoint',
-                'Description': 'Found in malicious indicators dataset'
+                'Description': MALICIOUS_DESCRIPTION
             }
 
         }
@@ -1252,7 +1288,7 @@ def filename_lookup_command(client, filename):
 
     else:
         hr = '### Flashpoint Filename reputation for ' + filename + '\n'
-        hr += 'Reputation: Unknown\n\n'
+        hr += REPUTATION_UNKNOWN
         ec = {
             'DBotScore': {
                 'Indicator': filename,
@@ -1267,7 +1303,7 @@ def filename_lookup_command(client, filename):
 
 def url_lookup_command(client, url):
     """
-    'url' command to lookup a particular url
+    Lookup a particular url.
 
     :param client: object of client class
     :param url: url as indicator
@@ -1275,7 +1311,7 @@ def url_lookup_command(client, url):
     """
     encoded_url = urllib.parse.quote(url.encode('utf8'))
 
-    query = r'+type:("url") +value.\*.keyword:"' + url + '"'
+    query = r'+type:("url") +value.\*:"' + url + '"'
     resp = client.http_request("GET", url_suffix=get_url_suffix(query))
 
     if isinstance(resp, list):
@@ -1286,22 +1322,22 @@ def url_lookup_command(client, url):
     if len(indicators) > 0:
 
         hr = '### Flashpoint URL reputation for ' + url + '\n'
-        hr += 'Reputation: Malicious\n\n'
+        hr += REPUTATION_MALICIOUS
 
         events_details = parse_indicator_response(indicators)
 
-        hr += tableToMarkdown('Events in which this IOC observed', events_details['events'],
-                              ['Date Observed (UTC)', 'Name', 'Tags'])
+        hr += tableToMarkdown(TABLE_TITLE, events_details['events'],
+                              [DATE_OBSERVED, 'Name', 'Tags'])
 
-        fp_link = client.url + '/home/search/iocs?group=indicator&ioc_type=url&ioc_value=' + encoded_url
-        hr += '\nAll events and details (fp-tools): [{}]({})\n'.format(fp_link, fp_link)
+        fp_link = client.url + '/home/search/iocs?query_i18n=en&query=%22' + encoded_url + '%22'
+        hr += ALL_DETAILS_LINK.format(fp_link, fp_link)
 
         dbot_score = Common.DBotScore(
             indicator=url,
             indicator_type=DBotScoreType.URL,
             integration_name=BRAND,
             score=3,
-            malicious_description='Found in malicious indicators dataset'
+            malicious_description=MALICIOUS_DESCRIPTION
         )
 
         relationships = []
@@ -1314,7 +1350,7 @@ def url_lookup_command(client, url):
                                            entity_a_type=FeedIndicatorType.URL,
                                            entity_b=attack_id,
                                            entity_b_type=FeedIndicatorType.indicator_type_by_server_version(
-                                               'STIX Attack Pattern'),
+                                               STIX_ATTACK_PATTERN),
                                            brand=BRAND))
 
         url_ioc = Common.URL(url=url, dbot_score=dbot_score, relationships=relationships)
@@ -1348,7 +1384,7 @@ def url_lookup_command(client, url):
 
     else:
         hr = '### Flashpoint URL reputation for ' + url + '\n'
-        hr += 'Reputation: Unknown\n\n'
+        hr += REPUTATION_UNKNOWN
         ec = {
             'DBotScore': {
                 'Indicator': url,
@@ -1368,56 +1404,53 @@ def url_lookup_command(client, url):
 
 def file_lookup_command(client, file):
     """
-    'file' command to lookup a particular file hash (md5, sha1, sha256, sha512)
+    Lookup a particular file hash (md5, sha1, sha256, sha512).
 
     :param client: object of client class
     :param file: file as indicator
     :return: command output
     """
-
     query = r'+type:("md5", "sha1", "sha256", "sha512") +value.\*.keyword:"' + file + '"'
     resp = client.http_request("GET", url_suffix=get_url_suffix(query))
 
+    indicators = []
     if isinstance(resp, list):
         indicators = resp
-    else:
-        indicators = []
 
     if len(indicators) > 0:
         indicator_type = (indicators[0].get('Attribute', {}).get('type')).upper()
         hr = '### Flashpoint File reputation for ' + file + '\n'
-        hr += 'Reputation: Malicious\n\n'
+        hr += REPUTATION_MALICIOUS
 
         events_details = parse_indicator_response(indicators)
 
-        hr += tableToMarkdown('Events in which this IOC observed', events_details['events'],
-                              ['Date Observed (UTC)', 'Name', 'Tags'])
+        hr += tableToMarkdown(TABLE_TITLE, events_details['events'],
+                              [DATE_OBSERVED, 'Name', 'Tags'])
 
         fp_link = client.url + '/home/search/iocs?group=indicator&ioc_type=md5%2Csha1%2Csha256%2Csha512' \
                                '&ioc_value=' + urllib.parse.quote(file.encode('utf8'))
 
-        hr += '\nAll events and details (fp-tools): [{}]({})\n'.format(fp_link, fp_link)
+        hr += ALL_DETAILS_LINK.format(fp_link, fp_link)
 
         dbot_score = Common.DBotScore(
             indicator=file,
             indicator_type=DBotScoreType.FILE,
             integration_name=BRAND,
             score=3,
-            malicious_description='Found in malicious indicators dataset'
+            malicious_description=MALICIOUS_DESCRIPTION
         )
 
         relationships = []
-        if client.create_relationships:
-            if events_details.get('attack_ids'):
-                for attack_id in events_details.get('attack_ids'):
-                    relationships.append(
-                        EntityRelationship(name='indicator-of',
-                                           entity_a=file,
-                                           entity_a_type=DBotScoreType.FILE,
-                                           entity_b=attack_id,
-                                           entity_b_type=FeedIndicatorType.indicator_type_by_server_version(
-                                               'STIX Attack Pattern'),
-                                           brand=BRAND))
+        if client.create_relationships and events_details.get('attack_ids'):
+            for attack_id in events_details.get('attack_ids'):
+                relationships.append(
+                    EntityRelationship(name='indicator-of',
+                                       entity_a=file,
+                                       entity_a_type=DBotScoreType.FILE,
+                                       entity_b=attack_id,
+                                       entity_b_type=FeedIndicatorType.indicator_type_by_server_version(
+                                           STIX_ATTACK_PATTERN),
+                                       brand=BRAND))
 
         hash_type = get_hash_type(file)  # if file_hash found, has to be md5, sha1 or sha256
         if hash_type == 'md5':
@@ -1456,7 +1489,7 @@ def file_lookup_command(client, file):
 
     else:
         hr = '### Flashpoint File reputation for ' + file + '\n'
-        hr += 'Reputation: Unknown\n\n'
+        hr += REPUTATION_UNKNOWN
         ec = {
             'DBotScore':
                 [
@@ -1485,13 +1518,13 @@ def file_lookup_command(client, file):
 
 def email_lookup_command(client, email):
     """
-    'email' command to lookup a particular email address or subject
+    Lookup a particular email address or subject.
 
     :param client: object of client class
     :param email: email address or subject
     :return: command output
     """
-    query = r'+type:("email-dst", "email-src", "email-src-display-name", "email-subject") +value.\*.keyword:"' \
+    query = r'+type:("email-dst", "email-src", "email-src-display-name", "email-subject", "email") +value.\*.keyword:"' \
             + email + '" '
     resp = client.http_request("GET", url_suffix=get_url_suffix(query))
 
@@ -1503,22 +1536,22 @@ def email_lookup_command(client, email):
     if len(indicators) > 0:
 
         hr = '### Flashpoint Email reputation for ' + email + '\n'
-        hr += 'Reputation: Malicious\n\n'
+        hr += REPUTATION_MALICIOUS
 
         events_details = parse_indicator_response(indicators)
 
-        hr += tableToMarkdown('Events in which this IOC observed', events_details['events'],
-                              ['Date Observed (UTC)', 'Name', 'Tags'])
+        hr += tableToMarkdown(TABLE_TITLE, events_details['events'],
+                              [DATE_OBSERVED, 'Name', 'Tags'])
 
-        fp_link = client.url + '/home/search/iocs?group=indicator&ioc_type=email-dst%2Cemail-src%2Cemail-src' \
-                               '-display-name%2Cemail-subject&ioc_value=' + urllib.parse.quote(email.encode('utf8'))
-        hr += '\nAll events and details (fp-tools): [{}]({})\n'.format(fp_link, fp_link)
+        fp_link = \
+            client.url + '/home/search/iocs?query_i18n=en&query=%22' + urllib.parse.quote(email.encode('utf8')) + '%22'
+        hr += ALL_DETAILS_LINK.format(fp_link, fp_link)
 
         email_context = {
             'Name': email,
             'Malicious': {
                 'Vendor': 'Flashpoint',
-                'Description': 'Found in malicious indicators dataset'
+                'Description': MALICIOUS_DESCRIPTION
             }
         }
 
@@ -1554,7 +1587,7 @@ def email_lookup_command(client, email):
 
     else:
         hr = '### Flashpoint Email reputation for ' + email + '\n'
-        hr += 'Reputation: Unknown\n\n'
+        hr += REPUTATION_UNKNOWN
         ec = {
             'DBotScore': {
                 'Indicator': email,
@@ -1569,7 +1602,7 @@ def email_lookup_command(client, email):
 
 def common_lookup_command(client, indicator_value):
     """
-    Command to lookup all types of the indicators
+    Lookup all types of the indicators.
 
     :param client: object of client class
     :param indicator_value: value of the indicator to lookup
@@ -1579,11 +1612,11 @@ def common_lookup_command(client, indicator_value):
 
     try:
         ipaddress.ip_address(indicator_value)
-        query = r'+type:("ip-src","ip-dst") +value.\*:"' + indicator_value + '"'
+        query = QUERY + indicator_value + '"'
     except ValueError:
         try:
             ipaddress.IPv6Address(indicator_value)
-            query = r'+type:("ip-src","ip-dst") +value.\*:"' + indicator_value + '"'
+            query = QUERY + indicator_value + '"'
         except ValueError:
             query = r'+value.\*.keyword:"' + indicator_value + '"'
 
@@ -1599,15 +1632,15 @@ def common_lookup_command(client, indicator_value):
         indicator_type = indicators[0].get('Attribute', {}).get('type')
 
         hr = '### Flashpoint reputation for ' + indicator_value + '\n'
-        hr += 'Reputation: Malicious\n\n'
+        hr += REPUTATION_MALICIOUS
 
         events_details = parse_indicator_response(indicators)
 
-        hr += tableToMarkdown('Events in which this IOC observed', events_details['events'],
-                              ['Date Observed (UTC)', 'Name', 'Tags'])
+        hr += tableToMarkdown(TABLE_TITLE, events_details['events'],
+                              [DATE_OBSERVED, 'Name', 'Tags'])
 
-        fp_link = client.url + '/home/search/iocs?group=indicator&ioc_value=' + encoded_value
-        hr += '\nAll events and details (fp-tools): [{}]({})\n'.format(fp_link, fp_link)
+        fp_link = client.url + '/home/search/iocs?query_i18n=en&query=%22' + encoded_value + '%22'
+        hr += ALL_DETAILS_LINK.format(fp_link, fp_link)
 
         ec = {'DBotScore': {
             'Indicator': indicator_value,
@@ -1620,20 +1653,21 @@ def common_lookup_command(client, indicator_value):
 
     else:
         hr = '### Flashpoint reputation for ' + indicator_value + '\n'
-        hr += 'Reputation: Unknown\n\n'
+        hr += REPUTATION_UNKNOWN
         ec = {}
 
         return hr, ec, resp
 
 
-def get_reports_command(client, report_search):
+def get_reports_command(client, args):
     """
-    Get reports matching the given search term or query
+    Get reports matching the given search term or query.
 
     :param client: object of client class
-    :param report_search: search term or query
+    :param args: demisto args
     :return: command output
     """
+    report_search = args.get('report_search')
     url_suffix = '/reports/?query=' + urllib.parse.quote(report_search) + '&limit=5'
     resp = client.http_request("GET", url_suffix=url_suffix)
     reports = resp.get("data", [])
@@ -1678,14 +1712,15 @@ def get_reports_command(client, report_search):
     return hr, ec, resp
 
 
-def get_report_by_id_command(client, report_id):
+def get_report_by_id_command(client, args):
     """
-    Get specific report using its fpid
+    Get specific report using its fpid.
 
     :param client: object of client class
-    :param report_id: report's fpid
+    :param args: demisto args
     :return: command output
     """
+    report_id = args.get('report_id')
     url_suffix = '/reports/' + urllib.parse.quote(report_id.encode('utf-8'))
     resp = client.http_request("GET", url_suffix=url_suffix)
     report = resp
@@ -1720,7 +1755,7 @@ def get_report_by_id_command(client, report_id):
             timestamp_str = 'N/A'
 
         report_details = [{
-            'Title': '[{}]({})'.format(report.get('title', 'N/A'), report.get('platform_url', '')),
+            'Title': STRING_FORMAT.format(report.get('title', 'N/A'), report.get('platform_url', '')),
             'Date Published (UTC)': timestamp_str,
             'Summary': report.get('summary', 'N/A'),
             'Tags': tag_string
@@ -1745,14 +1780,15 @@ def get_report_by_id_command(client, report_id):
     return hr, ec, resp
 
 
-def get_related_reports_command(client, report_id):
+def get_related_reports_command(client, args):
     """
-    Get reports related to given report
+    Get reports related to given report.
 
-    :param report_id: report id which is related to other reports
+    :param args: demisto args
     :param client: object of client class
     :return: command output
     """
+    report_id = args.get('report_id')
     url_suffix = '/reports/' + urllib.parse.quote(report_id.encode('utf-8')) + '/related?limit=5'
     resp = client.http_request("GET", url_suffix=url_suffix)
     reports = resp.get("data", [])
@@ -1792,14 +1828,15 @@ def get_related_reports_command(client, report_id):
     return hr, ec, resp
 
 
-def get_event_by_id_command(client, event_id):
+def get_event_by_id_command(client, args):
     """
-    Get specific event using its event id
+    Get specific event using its event id.
 
     :param client: object of client class
-    :param event_id: event's fpid
+    :param args: demisto args
     :return: command output
     """
+    event_id = args.get('event_id')
     url_suffix = '/indicators/event/' + urllib.parse.quote(event_id.encode('utf-8'))
     resp = client.http_request("GET", url_suffix=url_suffix)
 
@@ -1821,13 +1858,13 @@ def get_event_by_id_command(client, event_id):
             event['Malware Description'] = resp[0].get('malware_description', '')
         events.append(event)
         hr += tableToMarkdown('Below are the detail found:', events,
-                              ['Observed time (UTC)', 'Name', 'Tags', 'Malware Description'])
+                              [TIME_OBSERVED, 'Name', 'Tags', 'Malware Description'])
 
         ec[FLASHPOINT_PATHS['Event']] = {
             'EventId': events[0]['EventId'],
             'Name': events[0]['Name'],
             'Tags': events[0]['Tags'],
-            'ObservedTime': events[0]['Observed time (UTC)'],
+            'ObservedTime': events[0][TIME_OBSERVED],
             'EventCreatorEmail': event['EventCreatorEmail'],
             'Href': href
         }
@@ -1838,17 +1875,18 @@ def get_event_by_id_command(client, event_id):
     return hr, ec, resp
 
 
-def get_events_command(client, limit, report_fpid, attack_ids, time_period):
+def get_events_command(client, args):
     """
-    Get events matching the given parameters
+    Get events matching the given parameters.
 
     :param client: object of client class
-    :param limit: limit of the records
-    :param report_fpid: report fpid to fetch events
-    :param attack_ids: array of attack ids of event
-    :param time_period: time period i.e 2M, 3d etc
+    :param args: demisto args
     :return: command output
     """
+    limit = args.get('limit', 10)
+    report_fpid = args.get('report_fpid')
+    attack_ids = args.get('attack_ids')
+    time_period = args.get('time_period')
     url_suffix = '/indicators/event?sort_timestamp=desc&'
     getvars = {}
     if limit:
@@ -1883,16 +1921,16 @@ def get_events_command(client, limit, report_fpid, attack_ids, time_period):
             events.append(event)
 
         hr += tableToMarkdown('Below are the detail found:', events,
-                              ['Observed time (UTC)', 'Name', 'Tags', 'Malware Description'])
+                              [TIME_OBSERVED, 'Name', 'Tags', 'Malware Description'])
 
         fp_link = client.url + '/home/search/iocs'
         if attack_ids:
             fp_link = fp_link + '?attack_ids=' + urllib.parse.quote(attack_ids)
-        hr += '\nAll events and details (fp-tools): [{}]({})\n'.format(fp_link, fp_link)
+        hr += ALL_DETAILS_LINK.format(fp_link, fp_link)
 
         # Replacing the dict keys for ec  to strip any white spaces and special charcters
         for event in events:
-            replace_key(event, 'ObservedTime', 'Observed time (UTC)')
+            replace_key(event, 'ObservedTime', TIME_OBSERVED)
             replace_key(event, 'MalwareDescription', 'Malware Description')
 
         ec[FLASHPOINT_PATHS['Event']] = events
@@ -1903,14 +1941,15 @@ def get_events_command(client, limit, report_fpid, attack_ids, time_period):
     return hr, ec, resp
 
 
-def get_forum_details_by_id_command(client, forum_id):
+def get_forum_details_by_id_command(client, args):
     """
-    Get specific forum details by its fpid
+    Get specific forum details by its fpid.
 
     :param client: object of client class
-    :param forum_id: forum's fpid
+    :param args: demisto args
     :return: command output
     """
+    forum_id = args.get('forum_id')
     url_suffix = '/forums/sites/' + urllib.parse.quote(forum_id.encode('utf-8'))
     resp = client.http_request("GET", url_suffix=url_suffix)
 
@@ -1937,14 +1976,15 @@ def get_forum_details_by_id_command(client, forum_id):
     return hr, ec, resp
 
 
-def get_room_details_by_id_command(client, room_id):
+def get_room_details_by_id_command(client, args):
     """
-    Get room details by its room id
+    Get room details by its room id.
 
     :param client: object of client class
-    :param room_id: room's fpid
+    :param args: demisto args
     :return: command output
     """
+    room_id = args.get('room_id')
     url_suffix = '/forums/rooms/' + urllib.parse.quote(room_id.encode('utf-8')) + '?embed=forum'
     resp = client.http_request("GET", url_suffix=url_suffix)
 
@@ -1957,12 +1997,12 @@ def get_room_details_by_id_command(client, room_id):
         title = resp.get('title', '')
 
         room_details = {
-            'Forum Name': forum_name,
+            FORUM_NAME: forum_name,
             'Title': title,
             'URL': url
         }
 
-        hr += tableToMarkdown('Below are the detail found:', room_details, ['Forum Name', 'Title', 'URL'])
+        hr += tableToMarkdown('Below are the detail found:', room_details, [FORUM_NAME, 'Title', 'URL'])
         hr += '\n'
 
         ec[FLASHPOINT_PATHS['Room']] = {
@@ -1978,14 +2018,15 @@ def get_room_details_by_id_command(client, room_id):
     return hr, ec, resp
 
 
-def get_user_details_by_id_command(client, user_id):
+def get_user_details_by_id_command(client, args):
     """
-    Get user details by user's fpid
+    Get user details by user's fpid.
 
     :param client: object of client class
-    :param user_id: user's fpid
+    :param args: demisto args
     :return: command output
     """
+    user_id = args.get('user_id')
     url_suffix = '/forums/users/' + urllib.parse.quote(user_id.encode('utf-8')) + '?embed=forum'
     resp = client.http_request("GET", url_suffix=url_suffix)
 
@@ -1998,12 +2039,12 @@ def get_user_details_by_id_command(client, user_id):
         name = resp.get('name', '')
 
         user_details = {
-            'Forum Name': forum_name,
+            FORUM_NAME: forum_name,
             'Name': name,
             'URL': url
         }
 
-        hr += tableToMarkdown('Below are the detail found:', user_details, ['Forum Name', 'Name', 'URL'])
+        hr += tableToMarkdown('Below are the detail found:', user_details, [FORUM_NAME, 'Name', 'URL'])
         hr += '\n'
 
         ec[FLASHPOINT_PATHS['User']] = {
@@ -2020,14 +2061,15 @@ def get_user_details_by_id_command(client, user_id):
     return hr, ec, resp
 
 
-def get_post_details_by_id_command(client, post_id):
+def get_post_details_by_id_command(client, args):
     """
-    Get forum post details by post's fpid
+    Get forum post details by post's fpid.
 
     :param client: object of client class
-    :param post_id: fpid of post
+    :param args: demisto args
     :return: command output
     """
+    post_id = args.get('post_id')
     url_suffix = '/forums/posts/' + urllib.parse.quote(
         post_id.encode('utf-8')) + '?body_html=stripped&embed=author,room,forum,thread'
     resp = client.http_request("GET", url_suffix=url_suffix)
@@ -2046,16 +2088,16 @@ def get_post_details_by_id_command(client, post_id):
 
         post_details = {
             'Published at': published_at,
-            'Forum Name': forum_name,
-            'Room Title': room_title,
-            'Author Name': author_name,
-            'Thread Title': thread_title,
+            FORUM_NAME: forum_name,
+            ROOM_TITLE: room_title,
+            AUTHOR_NAME: author_name,
+            THREAD_TITLE: thread_title,
             'URL': url,
             'Platform url': "[{}]({})".format(platform_url, platform_url)
         }
 
         hr += tableToMarkdown('Below are the detail found:', post_details,
-                              ['Published at', 'Forum Name', 'Room Title', 'Author Name', 'Thread Title', 'URL',
+                              ['Published at', FORUM_NAME, ROOM_TITLE, AUTHOR_NAME, THREAD_TITLE, 'URL',
                                'Platform url'])
         hr += '\n'
         post_ec = get_post_context(resp)
@@ -2067,14 +2109,15 @@ def get_post_details_by_id_command(client, post_id):
     return hr, ec, resp
 
 
-def get_forum_sites_command(client, site_search):
+def get_forum_sites_command(client, args):
     """
-    Get forum sites matching search keyword or query
+    Get forum sites matching search keyword or query.
 
     :param client: object of client class
-    :param site_search: site's keyword or query
+    :param args: demisto args
     :return: command output
     """
+    site_search = args.get('site_search')
     url_suffix = '/forums/sites/?query=' + urllib.parse.quote(site_search.encode('utf8')) + '&limit=10'
     resp = client.http_request("GET", url_suffix=url_suffix)
     sites = resp.get("data", [])
@@ -2110,14 +2153,15 @@ def get_forum_sites_command(client, site_search):
     return hr, ec, resp
 
 
-def get_forum_posts_command(client, post_search):
+def get_forum_posts_command(client, args):
     """
-    Get forum posts details matching given keyword or query
+    Get forum posts details matching given keyword or query.
 
     :param client: object of client class
-    :param post_search: keyword or query for search in posts
+    :param args: demisto args
     :return: command output
     """
+    post_search = args.get('post_search')
     url_suffix = '/forums/posts/?query=' + urllib.parse.quote(
         post_search.encode('utf8')) + '&limit=10&embed=forum,room,author,thread'
     resp = client.http_request("GET", url_suffix=url_suffix)
@@ -2136,16 +2180,16 @@ def get_forum_posts_command(client, post_search):
             post_ec = get_post_context(post)
             post_entry_context.append(post_ec)
             post_detail = {
-                'Forum Name': post['embed']['forum']['name'],
-                'Thread Title': thread_title[:30] + '....',
-                'Room Title': post['embed']['room']['title'],
-                'Author Name': post['embed']['author']['name'],
-                'Platform URL': '[{}]({})'.format(platform_url[:30] + '...', platform_url)
+                FORUM_NAME: post['embed']['forum']['name'],
+                THREAD_TITLE: thread_title[:30] + '....',
+                ROOM_TITLE: post['embed']['room']['title'],
+                AUTHOR_NAME: post['embed']['author']['name'],
+                'Platform URL': STRING_FORMAT.format(platform_url[:30] + '...', platform_url)
             }
             post_details.append(post_detail)
 
         hr += tableToMarkdown('Below are the detail found:', post_details,
-                              ['Forum Name', 'Thread Title', 'Room Title', 'Author Name', 'Platform URL'])
+                              [FORUM_NAME, THREAD_TITLE, ROOM_TITLE, AUTHOR_NAME, 'Platform URL'])
         hr += '\n'
 
         fp_url = client.url + '/home/search/forums?query=' + urllib.parse.quote(post_search.encode('utf8'))
@@ -2255,7 +2299,7 @@ def flashpoint_compromised_credentials_list_command(client: Client, args: dict) 
 
 def fetch_incidents(client: Client, last_run: dict, params: dict) -> Tuple[dict, list]:
     """
-    Fetches incidents from Flashpoint.
+    Fetch incidents from Flashpoint.
 
     :param client: Client object
     :param last_run: Last run returned by function demisto.getLastRun
@@ -2288,9 +2332,7 @@ def fetch_incidents(client: Client, last_run: dict, params: dict) -> Tuple[dict,
 
 
 def main():
-    """
-    PARSE AND VALIDATE INTEGRATION PARAMS
-    """
+    """Parse and validate integration params."""
     params = demisto.params()
     api_key = get_apikey()
     url = params["url"]
@@ -2298,22 +2340,29 @@ def main():
     create_relationships = argToBoolean(params.get('create_relationships', True))
     proxies = handle_proxy()
 
-    args = demisto.args()
-    nargs = {}
-    for arg in args:
-        if isinstance(args[arg], str):
-            nargs[arg] = args[arg].strip()
-        else:
-            nargs[arg] = args[arg]
-    args = nargs
+    args = remove_space_from_args(demisto.args())
 
     command = demisto.command()
     try:
         client = Client(api_key, url, verify_certificate, proxies, create_relationships)
 
+        COMMAND_TO_FUNCTION = {
+            'flashpoint-search-intelligence-reports': get_reports_command,
+            'flashpoint-get-single-intelligence-report': get_report_by_id_command,
+            'flashpoint-get-related-reports': get_related_reports_command,
+            'flashpoint-get-single-event': get_event_by_id_command,
+            'flashpoint-get-events': get_events_command,
+            'flashpoint-get-forum-details': get_forum_details_by_id_command,
+            'flashpoint-get-forum-room-details': get_room_details_by_id_command,
+            'flashpoint-get-forum-user-details': get_user_details_by_id_command,
+            'flashpoint-get-forum-post-details': get_post_details_by_id_command,
+            'flashpoint-search-forum-sites': get_forum_sites_command,
+            'flashpoint-search-forum-posts': get_forum_posts_command,
+        }
+
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            test_module(client, params)    # NOSONAR
+            test_module(client, params)  # NOSONAR
             demisto.results('ok')
 
         elif command == 'fetch-incidents':
@@ -2323,86 +2372,44 @@ def main():
             demisto.incidents(incidents)
 
         elif demisto.command() == 'ip':
-            ip = demisto.args()['ip']
+            ip = args.get('ip')
             reputation_operation_command(client, ip, ip_lookup_command, True)
 
         elif demisto.command() == 'domain':
-            domain = demisto.args()['domain']
+            domain = args.get('domain')
             reputation_operation_command(client, domain, domain_lookup_command, True)
 
         elif demisto.command() == 'filename':
-            filename = demisto.args()['filename']
+            filename = args.get('filename')
             reputation_operation_command(client, filename, filename_lookup_command)
 
         elif demisto.command() == 'url':
-            url = demisto.args()['url']
+            url = args.get('url')
             reputation_operation_command(client, url, url_lookup_command, True)
 
         elif demisto.command() == 'file':
-            file = demisto.args()['file']
+            file = args.get('file')
             reputation_operation_command(client, file, file_lookup_command, True)
 
         elif demisto.command() == 'email':
-            email = demisto.args()['email']
+            email = args.get('email')
             reputation_operation_command(client, email, email_lookup_command)
 
         elif demisto.command() == 'flashpoint-common-lookup':
-            indicator_value = demisto.args()['indicator']
+            indicator_value = args.get('indicator')
             reputation_operation_command(client, indicator_value, common_lookup_command)
-
-        elif demisto.command() == 'flashpoint-search-intelligence-reports':
-            report_search = demisto.args()['report_search']
-            return_outputs(*get_reports_command(client, report_search))
-
-        elif demisto.command() == 'flashpoint-get-single-intelligence-report':
-            report_id = demisto.args()['report_id']
-            return_outputs(*get_report_by_id_command(client, report_id))
-
-        elif demisto.command() == 'flashpoint-get-related-reports':
-            report_id = demisto.args()['report_id']
-            return_outputs(*get_related_reports_command(client, report_id))
-
-        elif demisto.command() == 'flashpoint-get-single-event':
-            event_id = demisto.args()['event_id']
-            return_outputs(*get_event_by_id_command(client, event_id))
-
-        elif demisto.command() == 'flashpoint-get-events':
-            args = demisto.args()
-            limit = args.get('limit', 10)
-            report_fpid = args.get('report_fpid')
-            attack_ids = args.get('attack_ids')
-            time_period = args.get('time_period')
-            return_outputs(*get_events_command(client, limit, report_fpid, attack_ids, time_period))
-
-        elif demisto.command() == 'flashpoint-get-forum-details':
-            forum_id = demisto.args()['forum_id']
-            return_outputs(*get_forum_details_by_id_command(client, forum_id))
-
-        elif demisto.command() == 'flashpoint-get-forum-room-details':
-            room_id = demisto.args()['room_id']
-            return_outputs(*get_room_details_by_id_command(client, room_id))
-
-        elif demisto.command() == 'flashpoint-get-forum-user-details':
-            user_id = demisto.args()['user_id']
-            return_outputs(*get_user_details_by_id_command(client, user_id))
-
-        elif demisto.command() == 'flashpoint-get-forum-post-details':
-            post_id = demisto.args()['post_id']
-            return_outputs(*get_post_details_by_id_command(client, post_id))
-
-        elif demisto.command() == 'flashpoint-search-forum-sites':
-            site_search = demisto.args()['site_search']
-            return_outputs(*get_forum_sites_command(client, site_search))
-
-        elif demisto.command() == 'flashpoint-search-forum-posts':
-            post_search = demisto.args()['post_search']
-            return_outputs(*get_forum_posts_command(client, post_search))
 
         elif command == 'flashpoint-alert-list':
             return_results(flashpoint_alert_list_command(client, args))
 
         elif command == 'flashpoint-compromised-credentials-list':
             return_results(flashpoint_compromised_credentials_list_command(client, args))
+
+        elif COMMAND_TO_FUNCTION.get(demisto.command()):
+            return_outputs(*COMMAND_TO_FUNCTION[demisto.command()](client, args))
+
+        else:
+            raise NotImplementedError(f'Command {demisto.command()} is not implemented')
 
     except requests.exceptions.ConnectionError as c:
         """ Caused mostly when URL is altered."""

@@ -263,6 +263,14 @@ script:
       name: hash
       required: true
       secret: false
+    - default: false
+      defaultValue: 'False'
+      description: Return only local classification data for the sample, without falling
+        back to querying TitaniumCloud.
+      isArray: false
+      name: localOnly
+      required: false
+      secret: false
     deprecated: false
     description: Retrieve classification report for a sample
     execution: false
@@ -329,7 +337,7 @@ script:
     - contextPath: ReversingLabs.a1000_advanced_search_report
       description: A1000 classification report
       type: Unknown
-  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.23997
+  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.25193
   feed: false
   isfetch: false
   longRunning: false

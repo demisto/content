@@ -253,7 +253,7 @@ script:
       description: The device group in which the policies were pushed.
       type: String
     - contextPath: Panorama.Push.JobID
-      description: The job ID of the polices that were pushed.
+      description: The job ID of the policies that were pushed.
       type: Number
     - contextPath: Panorama.Push.Status
       description: The push status.
@@ -264,6 +264,77 @@ script:
     - contextPath: Panorama.Push.Errors
       description: The push errors.
       type: String
+  - arguments:
+      - default: true
+        description: The template to push.
+        name: template
+      - auto: PREDEFINED
+        defaultValue: 'false'
+        description: Whether to validate the policy.
+        name: validate-only
+        predefined:
+          - 'true'
+          - 'false'
+      - description: The push description.
+        name: description
+      - description: The serial number for a virtual system commit. If provided, the
+          commit will be a virtual system commit.
+        name: serial_number
+    description: Pushes the given PAN-OS template to the given devices or all devices that belong
+      to the template.
+    name: pan-os-push-to-template
+    outputs:
+      - contextPath: Panorama.Push.Template
+        description: The device group in which the policies were pushed.
+        type: String
+      - contextPath: Panorama.Push.JobID
+        description: The job ID of the policies that were pushed.
+        type: Number
+      - contextPath: Panorama.Push.Status
+        description: The push status.
+        type: String
+      - contextPath: Panorama.Push.Warnings
+        description: The push warnings.
+        type: String
+      - contextPath: Panorama.Push.Errors
+        description: The push errors.
+        type: String
+  - arguments:
+      - default: false
+        description: The template-stack to push.
+        name: template-stack
+        required: true
+      - auto: PREDEFINED
+        defaultValue: 'false'
+        description: Whether to validate the policy.
+        name: validate-only
+        predefined:
+          - 'true'
+          - 'false'
+      - description: The push description.
+        name: description
+      - description: The serial number for a virtual system commit. If provided, the
+          commit will be a virtual system commit.
+        name: serial_number
+    description: Pushes the given PAN-OS template-stack to the given devices or all devices that belong
+      to the template stack.
+    name: pan-os-push-to-template-stack
+    outputs:
+      - contextPath: Panorama.Push.TemplateStack
+        description: The device group in which the policies were pushed.
+        type: String
+      - contextPath: Panorama.Push.JobID
+        description: The job ID of the policies that were pushed.
+        type: Number
+      - contextPath: Panorama.Push.Status
+        description: The push status.
+        type: String
+      - contextPath: Panorama.Push.Warnings
+        description: The push warnings.
+        type: String
+      - contextPath: Panorama.Push.Errors
+        description: The push errors.
+        type: String
   - arguments:
     - description: The device group for which to return addresses (Panorama instances).
       name: device-group
@@ -1121,7 +1192,7 @@ script:
       required: true
     - auto: PREDEFINED
       defaultValue: add
-      description: Adds or removes an element from the Allow List or Block List fields.        
+      description: Adds or removes an element from the Allow List or Block List fields.
       name: add_remove_element
       predefined:
       - add
@@ -3519,8 +3590,8 @@ script:
       type: string
   - arguments:
     - auto: PREDEFINED
-      description: The action to be taken, such as show, get, set, edit, delete, rename,
-        clone, move, override, multi-move, multi-clone, or complete.
+      description: Action to be taken, such as show, get, set, edit, delete, rename, clone, move, override, multi-move, multi-clone, or complete.
+        Documentation - https://docs.paloaltonetworks.com/pan-os/9-1/pan-os-panorama-api/pan-os-xml-api-request-types/configuration-api.
       name: action
       predefined:
       - set
@@ -3538,18 +3609,17 @@ script:
     - description: The category parameter. For example, when exporting a configuration
         file, use "category=configuration".
       name: category
-    - description: The XML structure that defines the command. Used for
-        operation commands.
+    - description: Specifies the XML structure that defines the command. Used for operation commands (op type command). Can be retrieved from the PAN-OS web UI debugger or enabling debugging via the CLI using `debug cli on`.
       name: cmd
     - description: The command to run. For example, command =<show><arp><entry name='all'/></arp></show>
       name: command
     - description: The specified destination.
       name: dst
-    - description: The new value defined for an object.
+    - description: Used to define a new value for an object. Should be an XML object, for example, <static><member>test</member></static>.
       name: element
-    - description: The end time (used when cloning an object).
+    - description: The end time (used only when cloning an object).
       name: to
-    - description: The start time (used when cloning an object).
+    - description: The start time (used only when cloning an object).
       name: from
     - description: The key value to set.
       name: key
@@ -3560,7 +3630,8 @@ script:
       name: where
     - description: The time period, for example period=last-24-hrs
       name: period
-    - description: The xpath location, for example, xpath=/config/predefined/application/entry[@name='hotmail']
+    - description: xpath location. xpath defines the location of the object. For example, xpath=/config/predefined/application/entry[@name='hotmail'].
+        Documentation - https://docs.paloaltonetworks.com/pan-os/9-1/pan-os-panorama-api/about-the-pan-os-xml-api/structure-of-a-pan-os-xml-api-request/xml-and-xpath.
       name: xpath
     - description: The PCAP ID included in the threat log.
       name: pcap-id
@@ -3576,7 +3647,7 @@ script:
     - description: The time the PCAP was received on the firewall. Used for threat
         PCAPs.
       name: search-time
-    - description: The target number of the firewall. Use only on a Panorama instance.
+    - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance. This argument will work only with op type commands.
       name: target
     - description: The job ID.
       name: job-id
@@ -3697,7 +3768,7 @@ script:
       description: The device group in which the policies were pushed.
       type: String
     - contextPath: Panorama.Push.JobID
-      description: The job ID of the polices that were pushed.
+      description: The job ID of the policies that were pushed.
       type: Number
     - contextPath: Panorama.Push.Status
       description: The push status.
@@ -4411,6 +4482,9 @@ script:
       description: The URL to check.
       isArray: true
       name: url
+    - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
+      name: target
+      required: false
     description: Gets a URL category from URL filtering. This command is only available
       on firewall devices.
     name: pan-os-get-url-category
@@ -4573,7 +4647,7 @@ script:
       required: true
     - auto: PREDEFINED
       defaultValue: add
-      description: Adds or remove an element from the Allow List or Block List fields.        
+      description: Adds or remove an element from the Allow List or Block List fields.
       name: add_remove_element
       predefined:
       - add
@@ -5543,6 +5617,9 @@ script:
       name: device-group
     - description: The tag to filter the rules.
       name: tag
+    - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
+      name: target
+      required: false
     description: Returns a list of predefined Security Rules.
     name: pan-os-list-rules
     outputs:
@@ -6108,7 +6185,7 @@ script:
       description: Whether the static route was deleted.
       type: Boolean
   - arguments:
-    - description: The serial number of the target device.
+    - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
       name: target
     description: Show firewall device software version.
     name: pan-os-show-device-version
@@ -6126,7 +6203,7 @@ script:
       description: The version of the PAN-OS.
       type: String
   - arguments:
-    - description: The device to which to download the content update.
+    - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
       name: target
     description: Downloads the latest content update.
     name: pan-os-download-latest-content-update
@@ -6138,8 +6215,9 @@ script:
       description: The content download status.
       type: String
   - arguments:
-    - description: The device to which the content update is downloading.
+    - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
       name: target
+      required: false
     - description: The job ID to check.
       name: job_id
       required: true
@@ -6156,8 +6234,9 @@ script:
       description: The job ID details.
       type: String
   - arguments:
-    - description: The device on which to install the content update.
+    - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
       name: target
+      required: false
     description: Installs the latest content update.
     name: pan-os-install-latest-content-update
     outputs:
@@ -6168,8 +6247,7 @@ script:
       description: The installation status.
       type: String
   - arguments:
-    - description: The device on which to check the installation status of the content
-        update.
+    - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
       name: target
     - description: The job ID of the content installation.
       name: job_id
@@ -6187,12 +6265,15 @@ script:
       description: The content installation status details.
       type: String
   - arguments:
-    - description: The target device from which to get the PAN-OS software version.
+    - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
       name: target
     description: Checks the PAN-OS software version from the repository.
     name: pan-os-check-latest-panos-software
+    outputs:
+      - contextPath: Panorama.LatestVersions
+        description: Latest software versions.
   - arguments:
-    - description: The target device from which to download the PAN-OS software version.
+    - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
       name: target
     - description: The target version number to install.
       name: target_version
@@ -6208,7 +6289,7 @@ script:
       description: The status of the PAN-OS download.
       type: String
   - arguments:
-    - description: The target device from which to get the download status.
+    - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
       name: target
     - description: The job ID to check.
       name: job_id
@@ -6226,8 +6307,7 @@ script:
       description: The PAN-OS download details.
       type: String
   - arguments:
-    - description: The target device on which to install the target PAN-OS software
-        version.
+    - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
       name: target
     - description: The target PAN-OS version to install.
       name: target_version
@@ -6242,7 +6322,7 @@ script:
       description: The status of the PAN-OS installation.
       type: String
   - arguments:
-    - description: The target device from which to get the installation status.
+    - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
       name: target
     - description: The job ID to check.
       name: job_id
@@ -6260,7 +6340,7 @@ script:
       description: The PAN-OS installation details.
       type: String
   - arguments:
-    - description: The target device on which to reboot the firewall.
+    - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
       name: target
     description: Reboots the firewall device.
     name: pan-os-device-reboot
@@ -7710,7 +7790,7 @@ script:
         type: String
   - arguments:
     - default: false
-      description: The string to filter to only check given devices.
+      description: The string by which to filter to only check given devices.
       isArray: false
       name: device_filter_string
       required: false
@@ -8117,7 +8197,99 @@ script:
     - contextPath: PANOS.ConfigurationHygieneFix.name
       description: The affected object name.
       type: String
-  dockerimage: demisto/pan-os-python:1.0.0.29113
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: The type of object to search. See https://pandevice.readthedocs.io/en/latest/module-objects.html.
+      isArray: false
+      name: object_type
+      predefined:
+      - AddressObject
+      - AddressGroup
+      - ServiceGroup
+      - ServiceObject
+      - ApplicationObject
+      - ApplicationGroup
+      - LogForwardingProfile
+      - SecurityProfileGroup
+      - SecurityRule
+      - NatRule
+      required: true
+      secret: false
+    - default: false
+      description: If provided, only objects from the given device are returned.
+      isArray: false
+      name: device_filter_string
+      required: false
+      secret: false
+    - default: false
+      description: The name of the object reference to return if looking for a specific
+        object. Supports regex if "use_regex" is set.
+      isArray: false
+      name: object_name
+      required: false
+      secret: false
+    - default: false
+      description: The parent vsys or device group to search. If not provided, all
+        will be returned.
+      isArray: false
+      name: parent
+      required: false
+      secret: false
+    - default: false
+      description: Enables regex matching on an object name.
+      isArray: false
+      name: use_regex
+      required: false
+      secret: false
+    deprecated: false
+    description: Searches and returns a reference for the given object type and name.
+      If no name is provided, all objects of the given type will be returned. Note this ONLY returns
+      the object name and its location in the configuration hierachy, not the entire object.
+    name: pan-os-config-get-object
+    outputs:
+    - contextPath: PANOS.PanosObject.hostid
+      description: Host ID.
+      type: String
+    - contextPath: PANOS.PanosObject.container_name
+      description: The parent container (DG, Template, VSYS) this object belongs
+        to.
+      type: String
+    - contextPath: PANOS.PanosObject.name
+      description: The PAN-OS object name.
+      type: String
+    - contextPath: PANOS.PanosObject.object_type
+      description: The PAN-OS python object type.
+      type: String
+  - arguments:
+    - default: false
+      description: Serial number of the device from which to fetch the device state.
+      isArray: false
+      name: target
+      required: true
+      secret: false
+    deprecated: false
+    description: Get the device state from the provided device. Note; This will attempt to connect directly to the provided
+      target to get the device state. If the IP address as reported in "show system info" is unreachable, this command will
+      fail.
+    name: pan-os-platform-get-device-state
+    outputs:
+    - contextPath: InfoFile.Name
+      description: Filename.
+      type: String
+    - contextPath: InfoFile.EntryID
+      description: Entry ID.
+      type: String
+    - contextPath: InfoFile.Size
+      description: Size of the file.
+      type: String
+    - contextPath: InfoFile.Type
+      description: Type of the file.
+      type: String
+    - contextPath: InfoFile.Info
+      description: Basic information of the file.
+      type: String
+  dockerimage: demisto/pan-os-python:1.0.0.30307
   feed: false
   isfetch: false
   longRunning: false
