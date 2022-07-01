@@ -331,7 +331,7 @@ def main():
 
     LOG(f'Command being called is {demisto.command()}')
     try:
-        if params.get('initial_interval') and int(params.get('initial_interval')) > 7:
+        if params.get('initial_interval') and int(params.get('initial_interval')) > 7:      # type: ignore
             raise ValueError(
                 f"Retroactive timeline should be within 7 days, given value: {params.get('initial_interval')}")
 
