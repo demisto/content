@@ -4,11 +4,10 @@ from CommonServerUserPython import *
 from typing import Union, Optional
 
 ''' IMPORTS '''
-import base64
 import binascii
 import urllib3
 from urllib.parse import quote
-
+import html2text
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -843,7 +842,7 @@ class MsGraphClient:
 
         body = email.get('bodyPreview', '')
         if not body or self.use_full_email_body:
-            body = parsed_email.get('Body')
+            body = html2text.html2te    xt(parsed_email.get('Body'))
 
         incident = {
             'name': parsed_email['Subject'],
