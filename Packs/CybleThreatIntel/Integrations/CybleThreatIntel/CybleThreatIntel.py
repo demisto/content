@@ -292,7 +292,7 @@ def validate_input(args):
     """
     try:
         # we assume all the params to be non-empty, as cortex ensures it
-        if args.get('limit') and arg_to_number(args.get('limit', '1')) <= 0:
+        if args.get('limit') and int(args.get('limit', '1')) <= 0:
             raise ValueError(f"Limit should be positive, limit: {args.get('limit')}")
 
         try:
@@ -331,7 +331,7 @@ def main():
 
     LOG(f'Command being called is {demisto.command()}')
     try:
-        if arg_to_number(params.get('initial_interval')) > 7:
+        if params.get('initial_interval') and int(params.get('initial_interval')) > 7:
             raise ValueError(
                 f"Retroactive timeline should be within 7 days, given value: {params.get('initial_interval')}")
 
