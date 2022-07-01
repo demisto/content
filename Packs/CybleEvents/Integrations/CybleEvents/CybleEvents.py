@@ -348,7 +348,8 @@ def fetch_alert_details(client, args):
     if offset and offset < 0:
         raise ValueError(f"Parameter having negative value, from: {arg_to_number(args.get('from'))}'")
     if limit and (limit <= 0 or limit > MAX_EVENT_ITEMS):
-        raise ValueError(f"Limit should a positive number up to {MAX_EVENT_ITEMS}, limit: {arg_to_number(args.get('limit', '1'))}")
+        raise ValueError(
+            f"Limit should a positive number up to {MAX_EVENT_ITEMS}, limit: {arg_to_number(args.get('limit', '1'))}")
     if not eventtype:
         raise ValueError('Event Type not specified')
     if not eventid:
@@ -359,7 +360,7 @@ def fetch_alert_details(client, args):
     params = {
         'token': args.get('token', None),
         'from': offset,
-        'limit': limit if limit < LIMIT_EVENT_ITEMS else LIMIT_EVENT_ITEMS, # type: ignore
+        'limit': limit if limit < LIMIT_EVENT_ITEMS else LIMIT_EVENT_ITEMS,     # type: ignore
     }
     curr_fetch = 0
     all_events = []
@@ -370,9 +371,9 @@ def fetch_alert_details(client, args):
             all_events.extend(results['events'])
             params['from'] = curr_fetch
 
-            topull = limit - curr_fetch # type: ignore
+            topull = limit - curr_fetch     # type: ignore
             params['limit'] = topull if topull < LIMIT_EVENT_ITEMS else LIMIT_EVENT_ITEMS
-            if topull <= 0 or curr_fetch >= results.get('total_count'): # type: ignore
+            if topull <= 0 or curr_fetch >= results.get('total_count'):     # type: ignore
                 break
 
     results['events'] = all_events
