@@ -86,6 +86,16 @@ configuration:
   name: object
   required: true
   type: 0
+- additionalinfo: 'Whether to use the LastModifiedDate or CreatedDate to find 
+    new or changed objects.'
+  defaultvalue: LastModifiedDate
+  display: Date Field
+  name: date_field
+  options:
+  - LastModifiedDate
+  - CreatedDate
+  required: true
+  type: 0
 - additionalinfo: 'The name of the field to use as the value of the indicator (example:
     Id)'
   display: Value Field
