@@ -4,9 +4,11 @@ from CommonServerUserPython import *
 from typing import Union, Optional
 
 ''' IMPORTS '''
+import base64
 import binascii
 import urllib3
 from urllib.parse import quote
+
 # Disable insecure warnings
 urllib3.disable_warnings()
 
