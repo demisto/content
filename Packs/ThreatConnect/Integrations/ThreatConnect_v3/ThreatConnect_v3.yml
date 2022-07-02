@@ -444,13 +444,11 @@ script:
       type: Unknown
   - arguments:
     - description: The name of the tag.
-      name: tag
+      name: tags
       required: true
     - description: The indicator to tag. For example, for an IP indicator, "8.8.8.8".
       name: indicator
       required: true
-    - description: A list of indicators filtered by the owner.
-      name: owner
     description: Adds a tag to an existing indicator.
     name: tc-tag-indicator
   - arguments:
@@ -925,18 +923,6 @@ script:
       description: The owner of the fetched incidents.
       type: string
   - arguments:
-    - auto: PREDEFINED
-      description: The type of the indicator. Can be "ADDRESSES", "EMAIL_ADDRESSES",
-        "URLS", "HOSTS", "FILES", or "CUSTOM_INDICATORS".
-      name: indicatorType
-      predefined:
-      - ADDRESSES
-      - EMAIL_ADDRESSES
-      - URLS
-      - HOSTS
-      - FILES
-      - CUSTOM_INDICATORS
-      required: true
     - description: The ID of the incident to which the indicator is associated.
       name: incidentId
       required: true
@@ -944,8 +930,6 @@ script:
       description: The name of the indicator.
       name: indicator
       required: true
-    - description: A list of indicators filtered by the owner.
-      name: owner
     description: Associates an indicator with an existing incident. The indicator
       must exist before running this command. To add an indicator, run the tc-add-indicator
       command.
@@ -1230,10 +1214,18 @@ script:
       name: confidence
     - description: The size of the file of the updated indicator.
       name: size
-    - description: The active DNS indicator (only for hosts).
+    - auto: PREDEFINED
+      description: The active DNS indicator (only for hosts).
       name: dnsActive
-    - description: The active indicator (only for hosts).
+      predefined:
+      - 'True'
+      - 'False'
+    - auto: PREDEFINED
+      description: The active indicator (only for hosts).
       name: whoisActive
+      predefined:
+      - 'True'
+      - 'False'
     - auto: PREDEFINED
       description: The updated indicator set as a false positive. Can be "True" or
         "False".
@@ -1241,8 +1233,6 @@ script:
       predefined:
       - 'True'
       - 'False'
-    - description: The number observations on the updated indicator.
-      name: observations
     - auto: PREDEFINED
       description: The security label applied to the incident. Can be "TLP:RED", "TLP:GREEN",
         "TLP:AMBER", or "TLP:WHITE".
@@ -1252,12 +1242,8 @@ script:
       - TLP:GREEN
       - TLP:AMBER
       - TLP:WHITE
-    - description: Assesses the confidence rating of the indicator.
-      name: threatAssessConfidence
-    - description: Assesses the threat rating of the indicator.
-      name: threatAssessRating
-    - description: The owner of the new incident. The default is the "defaultOrg" parameter.
-      name: owner
+    - description: A comma-seperated list of tags.
+      name: tags
     description: Updates the indicator in ThreatConnect.
     name: tc-update-indicator
     outputs:
@@ -1350,7 +1336,7 @@ script:
       name: indicator
       required: true
     - description: The name of the tag to remove from the indicator.
-      name: tag
+      name: tags
       required: true
     description: Removes a tag from a specified indicator.
     name: tc-delete-indicator-tag
@@ -2356,18 +2342,6 @@ script:
     description: Get Owner for Indicator
     name: tc-get-indicator-owners
   - arguments:
-    - auto: PREDEFINED
-      description: 'The type of the group. Can be: "adversaries", "campaigns", "emails",
-        "incidents", "signatures", or "threats".'
-      name: group_type
-      predefined:
-      - adversaries
-      - campaigns
-      - emails
-      - incidents
-      - signatures
-      - threats
-      required: true
     - description: The ID of the group.
       name: group_id
       required: true
@@ -2404,6 +2378,57 @@ script:
     - contextPath: File.Extension
       description: The extension of the file.
       type: String
+  - arguments:
+    - default: true
+      description: The id of the group.
+      name: id
+      required: true
+    - description: Custom fields for the group.
+      name: custom_field
+    - description: A comma-separated list of The tags applied to the threat.
+      name: tags
+    - auto: PREDEFINED
+      description: The security label applied to the threat. Can be "TLP:RED", "TLP:GREEN",
+        "TLP:AMBER", or "TLP:WHITE".
+      name: security_label
+      predefined:
+      - TLP:RED
+      - TLP:GREEN
+      - TLP:AMBER
+      - TLP:WHITE
+    - description: An ID to accosiate a group by.
+      name: associated_group_id
+    - description: An ID to accosiate an indicator by.
+      name: associated_indicator_id
+    - auto: PREDEFINED
+      description: The type of update to the group metadata(associated indicators, attributes,tags etc...).
+      name: security_label
+      predefined:
+      - append
+      - delete
+      - replace
+    - description: The value of the attribute to associate.
+      name: attribute_value
+    - description: The type of the attribute to associate.
+      name: attribute_type
+    description: Updates a group.
+    name: tc-update-group
+    outputs:
+    - contextPath: TC.Group.Name
+      description: The name of the group.
+      type: string
+    - contextPath: TC.Group.Owner
+      description: The owner of the group.
+      type: string
+    - contextPath: TC.Group.Tag
+      description: The tag of the group.
+      type: string
+    - contextPath: TC.Group.SecurityLevel
+      description: The security label of the group.
+      type: string
+    - contextPath: TC.Group.ID
+      description: The ID of the group.
+      type: string
   dockerimage: demisto/threatconnect-py3-sdk:1.0.0.23423
   runonce: false
   script: ''
