@@ -32,6 +32,10 @@ configuration:
     name: max_fetch
     required: false
     type: 0
+  - display: Fetch query
+    name: fetch_filter_expression
+    required: false
+    type: 0
   - defaultvalue: https://login.microsoftonline.com
     display: Azure AD endpoint
     hidden: false
@@ -559,5 +563,7 @@ script:
   subtype: python3
   dockerimage: demisto/crypto:1.0.0.30286
 fromversion: 5.0.0
+defaultmapperin: Azure Active Directory Identity and Access Incoming Mapper
+defaultclassifier: Azure Active Directory Identity and Access
 tests:
   - Identity & Access test playbook

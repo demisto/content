@@ -1,0 +1,29 @@
+{
+    "id": "incident_azureactivedirectoryidentityandaccessalerttype",
+    "version": -1,
+    "name": "Azure Active Directory Identity and Access Alert Type",
+    "ownerOnly": false,
+    "cliName": "azureactivedirectoryidentityandaccessalerttype",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Azure Active Directory Identity and Access"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}
