@@ -1810,7 +1810,7 @@ Retrieves files from selected endpoints. You can retrieve up to 20 files, from n
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PaloAltoNetworksXDR.RetrievedFiles.action_id | string | ID of the action to retrieve files from selected endpoints. | 
-| PaloAltoNetworksXDR.RetrievedFiles.endpoint_id | string | Endpoint ID. | 
+| PaloAltoNetworksXDR.RetrievedFiles.endpoint_id | string | Endpoint ID. Added only when the operation is successful.| 
 | PaloAltoNetworksXDR.RetrievedFiles.file_link | string | Link to the file. Added only when the operation is successful. | 
 | PaloAltoNetworksXDR.RetrievedFiles.status | string | The action status. Added only when the operation is unsuccessful. | 
 
