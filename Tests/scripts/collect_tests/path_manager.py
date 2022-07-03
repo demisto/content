@@ -6,7 +6,7 @@ from os import getenv
 
 class PathManager:
     """
-    Used for calculating paths of various files and folders, based on the location of the content repo.
+    Used for getting paths of various files and folders during the test collection process.
     """
     ARTIFACTS_PATH = Path(getenv('ARTIFACTS_FOLDER', './artifacts'))
 
@@ -48,6 +48,10 @@ class PathManager:
 
 
 def _calculate_excluded_files(content_path: Path) -> set[Path]:
+    """
+    :param content_path: path to the content root
+    :return: set of Paths that should be excluded from test collection
+    """
     def glob(paths: Iterable[str]):
         result = []
         for partial_path in paths:
