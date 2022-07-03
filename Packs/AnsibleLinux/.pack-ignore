@@ -1,5 +1,6 @@
 [file: README.md]
 ignore=RM100
+ignore=RM113
 
 [file:AnsibleLinux.yml]
 ignore=IN145
