@@ -66,6 +66,5 @@
 		"git": "os-provided",
 		"github-cli": "latest"
 	},
-	// init ApiModule env variable to pythonpath
 	"onCreateCommand": "echo 'export PYTHONPATH=$(printf '%s: ' ${containerWorkspaceFolder}/Packs/ApiModules/Scripts/*):$PYTHONPATH' >> ~/.zshrc && echo 'export MYPYPATH=$(printf '%s: ' ${containerWorkspaceFolder}/Packs/ApiModules/Scripts/*):$MYPYPATH' >> ~/.zshrc"
 }
