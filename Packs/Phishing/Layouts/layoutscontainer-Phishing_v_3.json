@@ -14,6 +14,7 @@
                 "sections": [
                     {
                         "displayType": "CARD",
+                        "description": "Attachments within the reported email. In case the reported email was originally attached, it will show up here as well.",
                         "h": 2,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
@@ -35,7 +36,7 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Email Attachment",
+                        "name": "Email Attachments",
                         "static": false,
                         "w": 1,
                         "x": 2,
