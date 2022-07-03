@@ -621,3 +621,20 @@ def test_warninglist_response(mocker):
         warninglist_expected_output = f.read()
     mocker.patch("pymisp.ExpandedPyMISP.values_in_warninglist", return_value=warninglist_response)
     assert warninglist_command(demisto_args).to_context()['HumanReadable'] == warninglist_expected_output
+
+
+@pytest.mark.parametrize('mock_data, expected_output', [({}, {})])
+def test_add_email_object(mock_data, expected_output, mocker):
+    """
+    Given:
+    - entry & event id
+    When:
+    - Running add_email_object command.
+    Then:
+    - Ensure that the extraction of the information occured correctly.
+    """
+    from MISPV3 import add_email_object
+    from pymisp.tools import EMailObject
+    demisto_args: dict = {'entry_id': "", 'event_id': ""}
+    mocker.patch.object(EMailObject, '__init__', return_value=mock_data)
+    assert expected_output == add_email_object(demisto_args)
