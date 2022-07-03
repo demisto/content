@@ -17,6 +17,7 @@ from Tests.scripts.collect_tests.exceptions import (DeprecatedPackException,
                                                     NotUnderPackException,
                                                     SkippedPackException,
                                                     UnsupportedPackException)
+from Tests.scripts.collect_tests.path_manager import PathManager
 
 
 def find_pack_folder(path: Path) -> Path:
@@ -172,8 +173,8 @@ class ContentItem(DictFileBased):
 class PackManager:
     skipped_packs = {'DeprecatedContent', 'NonSupported', 'ApiModules'}
 
-    def __init__(self, packs_path: Path):
-        self.packs_path = packs_path
+    def __init__(self, path_manager: PathManager):
+        self.packs_path = path_manager.packs_path
         self.pack_name_to_pack_metadata: dict[str, ContentItem] = {}
         self.pack_folder_to_pack_metadata: dict[Path, ContentItem] = {}
         self.deprecated_packs: set[str] = set()

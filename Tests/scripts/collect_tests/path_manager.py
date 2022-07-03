@@ -1,7 +1,7 @@
-from typing import Iterable
-
-from pathlib import Path
+import logging
 from os import getenv
+from pathlib import Path
+from typing import Iterable
 
 
 class PathManager:
@@ -62,7 +62,8 @@ def _calculate_excluded_files(content_path: Path) -> set[Path]:
             elif '*' in path.name:
                 result.extend(path.parent.glob(path.name))
             elif not path.exists():
-                raise FileNotFoundError(path)
+                logging.warning(f'could not find {path} for calculating excluded paths')
+                continue
             else:
                 result.append(path)
         return set(result)

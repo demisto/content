@@ -7,9 +7,9 @@ from enum import Enum
 from pathlib import Path
 from typing import Iterable, Optional
 
-from Tests.scripts.collect_tests.path_manager import PathManager
 from constants import (DEFAULT_MARKETPLACE_WHEN_MISSING,
-                       DEFAULT_REPUTATION_TESTS, ONLY_INSTALL_PACK, SKIPPED_CONTENT_ITEMS, XSOAR_SANITY_TEST_NAMES)
+                       DEFAULT_REPUTATION_TESTS, ONLY_INSTALL_PACK,
+                       SKIPPED_CONTENT_ITEMS, XSOAR_SANITY_TEST_NAMES)
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
 from demisto_sdk.commands.common.tools import (find_type_by_path, run_command,
                                                str2bool)
@@ -23,6 +23,7 @@ from id_set import IdSet
 from logger import logger
 from test_conf import TestConf
 
+from Tests.scripts.collect_tests.path_manager import PathManager
 from utils import (ContentItem, Machine, PackManager, VersionRange,
                    find_pack_folder)
 
@@ -35,7 +36,7 @@ def get_last_commit_from_index(*args, **kwargs):  # todo remove
 
 
 PATHS = PathManager(Path(__file__).absolute().parents[3])
-PACK_MANAGER = PackManager(PATHS.packs_path)
+PACK_MANAGER = PackManager(PATHS)
 COMMIT = 'ds-test-collection'  # todo use arg
 
 
