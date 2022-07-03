@@ -578,18 +578,6 @@ def list_users_accounts_command(client: Client, args: dict):
     )
 
 
-def calculate_fetch_start_time(last_fetch: Optional[str], first_fetch: Optional[str]):
-    if last_fetch is None:
-        if not first_fetch:
-            first_fetch = '3 days'
-        first_fetch_dt = parse(first_fetch).replace(tzinfo=utc)  # type:ignore
-        # Changing 10-digits timestamp to 13-digits by padding with zeroes, since API supports 13-digits
-        first_fetch_time = int(first_fetch_dt.timestamp()) * 1000
-        return first_fetch_time
-    else:
-        return int(last_fetch)
-
-
 def format_fetch_start_time_to_timestamp(fetch_start_time: Optional[str]):
     first_fetch_dt = parse(fetch_start_time).replace(tzinfo=utc)  # type:ignore
     # Changing 10-digits timestamp to 13-digits by padding with zeroes, since API supports 13-digits
@@ -644,6 +632,8 @@ def alerts_to_incidents_and_fetch_start_from(alerts: List[dict], fetch_start_tim
 def fetch_incidents(client: Client, max_results: Optional[str], last_run: dict, first_fetch: Optional[str],
                     filters: dict, look_back: int):
     date_format = '%Y-%m-%dT%H:%M:%S'
+    if not first_fetch:
+        first_fetch = '3 days'
     max_results = int(max_results) if max_results else DEFAULT_INCIDENT_TO_FETCH
     fetch_start_time, fetch_end_time = get_fetch_run_time_range(last_run=last_run, first_fetch=first_fetch,
                                                                 look_back=look_back)
@@ -821,7 +811,7 @@ def main():  # pragma: no cover
     token = params.get('token')
     base_url = f'{params.get("url")}/api/v1'
     verify_certificate = not params.get('insecure', False)
-    first_fetch = params.get('first_fetch', '3 days').strip()
+    first_fetch = params.get('first_fetch')
     max_results = params.get('max_fetch')
     proxy = params.get('proxy', False)
     severity = params.get('severity')
