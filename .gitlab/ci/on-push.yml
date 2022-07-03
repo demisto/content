@@ -50,6 +50,8 @@ run-validations:
 
 # runs in gitlab for the on-push flow, on every new commit pushed to the branch.
 validate-content-conf:
+  tags:
+    - gke
   stage: unittests-and-validations
   needs: []
   extends:
@@ -92,11 +94,11 @@ create-instances:
   stage: create-instances
   script:
     - !reference [.download-demisto-conf]
-    - !reference [.create-id-set]
+    - !reference [.create-id-set-xsoar]
     - !reference [.create-release-notes-and-common-docs]
 
     - section_start "Create Content Artifacts and Update Conf" --collapsed
-    - demisto-sdk create-content-artifacts -a $ARTIFACTS_FOLDER --cpus 8 --content_version $CONTENT_VERSION >> $ARTIFACTS_FOLDER/logs/create_content_artifacts.log
+    - demisto-sdk create-content-artifacts -a $ARTIFACTS_FOLDER --cpus 8 --content_version $CONTENT_VERSION --marketplace "xsoar" -fbi -idp ./Tests/id_set.json >> $ARTIFACTS_FOLDER/logs/create_content_artifacts.log
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY"
     - successful_feature_branch_build=$(gsutil ls "gs://xsoar-ci-artifacts/content/$FEATURE_BRANCH_NAME/*" | tail -n 1 | grep -o -E "content/$FEATURE_BRANCH_NAME/[0-9]*")
     - echo $successful_feature_branch_build
@@ -134,7 +136,6 @@ create-instances:
     - ./Tests/scripts/upload_artifacts.sh
     - section_end "Upload Artifacts to GCP"
 
-
 prepare-testing-bucket-mpv2:
   tags:
     - gke
@@ -156,7 +157,7 @@ prepare-testing-bucket-mpv2:
     - !reference [.create-release-notes-and-common-docs]
 
     - section_start "Create Content Artifacts and Update Conf" --collapsed
-    - demisto-sdk create-content-artifacts -a $ARTIFACTS_FOLDER --cpus 8 --content_version $CONTENT_VERSION --marketplace "marketplacev2" -fbi -idp ./Tests/id_set.json >> $ARTIFACTS_FOLDER/logs/create_content_artifacts.log
+    - demisto-sdk create-content-artifacts -a $ARTIFACTS_FOLDER --cpus 8 --content_version $CONTENT_VERSION --marketplace "marketplacev2" --no-zip -fbi -idp ./Tests/id_set.json >> $ARTIFACTS_FOLDER/logs/create_content_artifacts.log
     - zip -j $ARTIFACTS_FOLDER/uploadable_packs_mpv2.zip $ARTIFACTS_FOLDER/uploadable_packs/* >> $ARTIFACTS_FOLDER/logs/zipping_uploadable_packs.log || echo "failed to zip the uploadable packs, ignoring the failure"
     - rm -rf $ARTIFACTS_FOLDER/uploadable_packs
     - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
@@ -165,6 +166,17 @@ prepare-testing-bucket-mpv2:
     - section_start "Calculate Packs Dependencies" --collapsed
     - demisto-sdk find-dependencies -idp Tests/id_set.json --all-packs-dependencies -o $ARTIFACTS_FOLDER/packs_dependencies.json
     - section_end "Calculate Packs Dependencies"
+
+    - section_start "Replace Cortex XSOAR" --collapsed
+    - pushd "$ARTIFACTS_FOLDER"
+    - find content_packs -type f -not \( -path "*/ReleaseNotes/*" \) -exec sed -i -e 's/Cortex XSOAR/'"$PRODUCT_NAME"'/gI' {} \;
+    - pushd content_packs; zip -r ../content_packs.zip *; popd
+    - pushd all_content; zip -r ../all_content.zip *; popd
+    - pushd content_new; zip -r ../content_new.zip *; popd
+    - pushd content_test; zip -r ../content_test.zip *; popd
+    - rm -rf content_packs all_content content_new content_test
+    - popd
+    - section_end "Replace Cortex XSOAR"
 
     - section_start "Collect Tests and Content Packs"
     - |
