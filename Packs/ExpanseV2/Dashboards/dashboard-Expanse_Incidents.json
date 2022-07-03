@@ -29,6 +29,7 @@
                 "sortValues": null,
                 "packID": "",
                 "itemVersion": "",
+                "fromServerVersion": "",
                 "toServerVersion": "",
                 "propagationLabels": [
                     "all"
@@ -144,6 +145,7 @@
                 "sortValues": null,
                 "packID": "CommonWidgets",
                 "itemVersion": "1.0.4",
+                "fromServerVersion": "",
                 "toServerVersion": "",
                 "propagationLabels": [
 
@@ -261,6 +263,7 @@
                 "sortValues": null,
                 "packID": "CommonWidgets",
                 "itemVersion": "1.0.4",
+                "fromServerVersion": "",
                 "toServerVersion": "",
                 "propagationLabels": [
 
@@ -378,6 +381,7 @@
                 "sortValues": null,
                 "packID": "CommonWidgets",
                 "itemVersion": "1.0.4",
+                "fromServerVersion": "",
                 "toServerVersion": "",
                 "propagationLabels": [
 
@@ -495,6 +499,7 @@
                 "sortValues": null,
                 "packID": "CommonWidgets",
                 "itemVersion": "1.0.4",
+                "fromServerVersion": "",
                 "toServerVersion": "",
                 "propagationLabels": [
 
@@ -612,6 +617,7 @@
                 "sortValues": null,
                 "packID": "CommonWidgets",
                 "itemVersion": "1.0.4",
+                "fromServerVersion": "",
                 "toServerVersion": "",
                 "propagationLabels": [
 
@@ -741,6 +747,7 @@
                 "sortValues": null,
                 "packID": "CommonWidgets",
                 "itemVersion": "1.0.4",
+                "fromServerVersion": "",
                 "toServerVersion": "",
                 "propagationLabels": [
 
@@ -867,6 +874,7 @@
                 "sortValues": null,
                 "packID": "CommonWidgets",
                 "itemVersion": "1.0.4",
+                "fromServerVersion": "",
                 "toServerVersion": "",
                 "propagationLabels": [
 
@@ -990,6 +998,7 @@
                 "sortValues": null,
                 "packID": "",
                 "itemVersion": "",
+                "fromServerVersion": "",
                 "toServerVersion": "",
                 "propagationLabels": [
                     "all"
@@ -1076,6 +1085,7 @@
                 "sortValues": null,
                 "packID": "CommonWidgets",
                 "itemVersion": "1.0.4",
+                "fromServerVersion": "",
                 "toServerVersion": "",
                 "propagationLabels": [
 
@@ -1202,6 +1212,7 @@
                 "sortValues": null,
                 "packID": "",
                 "itemVersion": "",
+                "fromServerVersion": "",
                 "toServerVersion": "",
                 "propagationLabels": [
                     "all"
@@ -1254,6 +1265,7 @@
                 "sortValues": null,
                 "packID": "",
                 "itemVersion": "",
+                "fromServerVersion": "",
                 "toServerVersion": "",
                 "propagationLabels": [
                     "all"
@@ -1331,6 +1343,7 @@
                 "sortValues": null,
                 "packID": "",
                 "itemVersion": "",
+                "fromServerVersion": "",
                 "toServerVersion": "",
                 "propagationLabels": [
                     "all"
@@ -1408,6 +1421,7 @@
                 "sortValues": null,
                 "packID": "",
                 "itemVersion": "",
+                "fromServerVersion": "",
                 "toServerVersion": "",
                 "propagationLabels": [
                     "all"

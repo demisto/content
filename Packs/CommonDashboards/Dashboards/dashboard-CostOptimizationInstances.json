@@ -28,6 +28,7 @@
                     "toDate": "0001-01-01T00:00:00Z"
                 },
                 "description": "Commands executed",
+                "fromServerVersion": "",
                 "id": "number-of-used-commands",
                 "isPredefined": false,
                 "itemVersion": "",
@@ -83,6 +84,7 @@
                     },
                     "toDate": "0001-01-01T00:00:00Z"
                 },
+                "fromServerVersion": "",
                 "id": "least-executed-commands",
                 "isPredefined": false,
                 "itemVersion": "",
@@ -175,6 +177,7 @@
                     "toDate": "0001-01-01T00:00:00Z"
                 },
                 "description": "Top executed Commands",
+                "fromServerVersion": "",
                 "id": "command-execution-count-per-command",
                 "isPredefined": false,
                 "itemVersion": "",
@@ -270,6 +273,7 @@
                     },
                     "toDate": "0001-01-01T00:00:00Z"
                 },
+                "fromServerVersion": "",
                 "id": "least-executed-commands-per-instance",
                 "isPredefined": false,
                 "itemVersion": "",
@@ -361,6 +365,7 @@
                     },
                     "toDate": "0001-01-01T00:00:00Z"
                 },
+                "fromServerVersion": "",
                 "id": "command-executions-per-integration-category",
                 "isPredefined": false,
                 "itemVersion": "",
@@ -457,6 +462,7 @@
                     },
                     "toDate": "0001-01-01T00:00:00Z"
                 },
+                "fromServerVersion": "",
                 "id": "command-executions-per-incident-type",
                 "isPredefined": false,
                 "itemVersion": "",
@@ -515,6 +521,7 @@
                     "toDate": "0001-01-01T00:00:00Z"
                 },
                 "description": "Command execution type",
+                "fromServerVersion": "",
                 "id": "command-count-auto-vs-manual",
                 "isPredefined": false,
                 "itemVersion": "",

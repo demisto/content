@@ -28,6 +28,7 @@
                     "toDate": "0001-01-01T00:00:00Z"
                 },
                 "description": "Playbook runs",
+                "fromServerVersion": "",
                 "id": "number_of_used_playbooks",
                 "isPredefined": false,
                 "itemVersion": "",
@@ -83,6 +84,7 @@
                     },
                     "toDate": "0001-01-01T00:00:00Z"
                 },
+                "fromServerVersion": "",
                 "id": "playbook-runs",
                 "isPredefined": false,
                 "itemVersion": "",
@@ -180,6 +182,7 @@
                     "toDate": "0001-01-01T00:00:00Z"
                 },
                 "description": "Average runtime for Playbooks",
+                "fromServerVersion": "",
                 "id": "total-average-playbook-runtime-in-seconds",
                 "isPredefined": false,
                 "itemVersion": "",
@@ -235,6 +238,7 @@
                     },
                     "toDate": "0001-01-01T00:00:00Z"
                 },
+                "fromServerVersion": "",
                 "id": "top-users-closed-manual-tasks",
                 "isPredefined": false,
                 "itemVersion": "",
@@ -326,6 +330,7 @@
                     },
                     "toDate": "0001-01-01T00:00:00Z"
                 },
+                "fromServerVersion": "",
                 "id": "task-execution-count",
                 "isPredefined": false,
                 "itemVersion": "",
@@ -391,6 +396,7 @@
                     "toDate": "0001-01-01T00:00:00Z"
                 },
                 "description": "Average runtime per Playbook (top 5)",
+                "fromServerVersion": "",
                 "id": "runtime-per-playbook",
                 "isPredefined": false,
                 "itemVersion": "",
@@ -488,6 +494,7 @@
                     },
                     "toDate": "0001-01-01T00:00:00Z"
                 },
+                "fromServerVersion": "",
                 "id": "average-runtime-by-incident-type-per-playbook-top-5",
                 "isPredefined": false,
                 "itemVersion": "",

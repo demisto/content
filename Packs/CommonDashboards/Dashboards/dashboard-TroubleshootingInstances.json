@@ -27,6 +27,7 @@
                     },
                     "toDate": "0001-01-01T00:00:00Z"
                 },
+                "fromServerVersion": "",
                 "id": "failed-automation-executions-per-incident-types-top-5",
                 "isPredefined": false,
                 "itemVersion": "",
@@ -125,6 +126,7 @@
                     "toDate": "0001-01-01T00:00:00Z"
                 },
                 "description": "Failed Manual Commands Run",
+                "fromServerVersion": "",
                 "id": "failed-manual-commands-run",
                 "isPredefined": false,
                 "itemVersion": "",
@@ -186,6 +188,7 @@
                     },
                     "toDate": "0001-01-01T00:00:00Z"
                 },
+                "fromServerVersion": "",
                 "id": "command-execution-errors-per-integration-category",
                 "isPredefined": false,
                 "itemVersion": "",
@@ -249,6 +252,7 @@
                     "toDate": "0001-01-01T00:00:00Z"
                 },
                 "description": "Command executions errors",
+                "fromServerVersion": "",
                 "id": "number-of-failed-commands",
                 "isPredefined": false,
                 "itemVersion": "",
@@ -321,6 +325,7 @@
                     "toDate": "0001-01-01T00:00:00Z"
                 },
                 "description": "Average runtime by Instance per Command (top 5)",
+                "fromServerVersion": "",
                 "id": "runtime-per-command-per-instance",
                 "isPredefined": false,
                 "itemVersion": "",
@@ -420,6 +425,7 @@
                     "toDate": "0001-01-01T00:00:00Z"
                 },
                 "description": "Command average runtime per Instance (top 5)",
+                "fromServerVersion": "",
                 "id": "runtime-per-instance",
                 "isPredefined": false,
                 "itemVersion": "",
@@ -517,6 +523,7 @@
                     "toDate": "0001-01-01T00:00:00Z"
                 },
                 "description": "Command execution errors per Instance",
+                "fromServerVersion": "",
                 "id": "error-count-per-instance",
                 "isPredefined": false,
                 "itemVersion": "",
@@ -613,6 +620,7 @@
                     },
                     "toDate": "0001-01-01T00:00:00Z"
                 },
+                "fromServerVersion": "",
                 "id": "command-execution-errors",
                 "isPredefined": false,
                 "itemVersion": "",
@@ -712,6 +720,7 @@
                     "toDate": "0001-01-01T00:00:00Z"
                 },
                 "description": "Errors by Incident Type per Command (top 5)",
+                "fromServerVersion": "",
                 "id": "error-count-per-command-per-incident-type",
                 "isPredefined": false,
                 "itemVersion": "",
@@ -808,6 +817,7 @@
                     },
                     "toDate": "0001-01-01T00:00:00Z"
                 },
+                "fromServerVersion": "",
                 "id": "average-runtime-per-automation-top-5",
                 "isPredefined": false,
                 "itemVersion": "",

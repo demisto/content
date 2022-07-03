@@ -29,6 +29,7 @@
     "sortValues": null,
     "packID": "CommonWidgets",
     "itemVersion": "1.0.5",
+    "fromServerVersion": "5.0.0",
     "toServerVersion": "",
     "propagationLabels": [
 
@@ -146,6 +147,7 @@
     "sortValues": null,
     "packID": "CommonWidgets",
     "itemVersion": "1.0.5",
+    "fromServerVersion": "5.0.0",
     "toServerVersion": "",
     "propagationLabels": [
 
@@ -263,6 +265,7 @@
     "sortValues": null,
     "packID": "CommonWidgets",
     "itemVersion": "1.0.5",
+    "fromServerVersion": "5.0.0",
     "toServerVersion": "",
     "propagationLabels": [
 

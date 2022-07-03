@@ -27,6 +27,7 @@
                     },
                     "toDate": "0001-01-01T00:00:00Z"
                 },
+                "fromServerVersion": "",
                 "id": "tasks-errors",
                 "isPredefined": false,
                 "itemVersion": "",
@@ -122,6 +123,7 @@
                     "toDate": "0001-01-01T00:00:00Z"
                 },
                 "description": "Failed Playbooks runs",
+                "fromServerVersion": "",
                 "id": "number-of-failed-playbooks",
                 "isPredefined": false,
                 "itemVersion": "",
@@ -193,6 +195,7 @@
                     },
                     "toDate": "0001-01-01T00:00:00Z"
                 },
+                "fromServerVersion": "",
                 "id": "average-runtime-by-incident-type-per-playbook-top-5",
                 "isPredefined": false,
                 "itemVersion": "",
@@ -290,6 +293,7 @@
                     },
                     "toDate": "0001-01-01T00:00:00Z"
                 },
+                "fromServerVersion": "",
                 "id": "number-of-failed-manual-tasks",
                 "isPredefined": false,
                 "itemVersion": "",
@@ -345,6 +349,7 @@
                     "toDate": "0001-01-01T00:00:00Z"
                 },
                 "description": "Playbook run errors",
+                "fromServerVersion": "",
                 "id": "playbooks-with-errors",
                 "isPredefined": false,
                 "itemVersion": "",
@@ -441,6 +446,7 @@
                     },
                     "toDate": "0001-01-01T00:00:00Z"
                 },
+                "fromServerVersion": "",
                 "id": "executions-by-status-per-manual-tasks-top-5",
                 "isPredefined": false,
                 "itemVersion": "",
@@ -535,6 +541,7 @@
                     },
                     "toDate": "0001-01-01T00:00:00Z"
                 },
+                "fromServerVersion": "",
                 "id": "executions-by-status-per-automated-tasks-top-5",
                 "isPredefined": false,
                 "itemVersion": "",
@@ -629,6 +636,7 @@
                     },
                     "toDate": "0001-01-01T00:00:00Z"
                 },
+                "fromServerVersion": "",
                 "id": "Manual_Tasks_count_auto_vs_manual",
                 "isPredefined": false,
                 "itemVersion": "",

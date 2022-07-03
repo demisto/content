@@ -230,6 +230,7 @@
             "widget": {
                 "id": "es-failed-shards",
                 "modified": "2021-01-12T08:00:56.215781Z",
+                "fromServerVersion": "6.1.0",
                 "name": "Unassigned / Failing Shards",
                 "dataType": "system",
                 "widgetType": "number",
@@ -266,6 +267,7 @@
                 "sortValues": null,
                 "packID": "",
                 "itemVersion": "1.0.0",
+                "fromServerVersion": "6.1.0",
                 "toServerVersion": "",
                 "propagationLabels": [
                     "all"
@@ -448,6 +450,7 @@
                 "sortValues": null,
                 "packID": "",
                 "itemVersion": "1.0.0",
+                "fromServerVersion": "6.1.0",
                 "toServerVersion": "",
                 "propagationLabels": [
                     "all"
