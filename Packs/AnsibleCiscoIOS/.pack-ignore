@@ -3,6 +3,3 @@ ignore=IN145
 
 [file:README.md]
 ignore=RM113
-
-[file: README.md]
-ignore=RM113

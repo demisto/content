@@ -65,8 +65,7 @@ ignore=SC106
 ignore=SC106
 
 [file:ReadPDFFileV2.yml]
-ignore=SC106
-ignore=BA119
+ignore=SC106,BA119
 
 [known_words]
 UnzipFile
