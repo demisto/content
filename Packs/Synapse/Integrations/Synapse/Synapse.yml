@@ -46,6 +46,10 @@ configuration:
   name: good_tag
   required: false
   type: 0
+- display: Use Synapse Optic
+  name: use_optic
+  required: false
+  type: 8
 description: Synapse intelligence analysis platform.
 display: Synapse
 name: Synapse
@@ -447,7 +451,7 @@ script:
     - contextPath: Synapse.Model.Valu
       description: The given value of the Synapse object type.
       type: String
-  dockerimage: demisto/aiohttp:1.0.0.13810
+  dockerimage: demisto/py3-tools:1.0.0.31193
   feed: false
   isfetch: false
   longRunning: false
