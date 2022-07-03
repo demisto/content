@@ -1,128 +1,46 @@
-This integration provides TAXII2 Services for system indicators (Outbound feed).
-This integration was integrated and tested with version xx of TAXII2 Server
+![Content logo](xsoar_content_logo.png)
 
-## Configure TAXII2 Server on Cortex XSOAR
+[![CircleCI](https://circleci.com/gh/demisto/content.svg?style=svg)](https://circleci.com/gh/demisto/content)
+[![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/demisto/content.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/demisto/content/context:python)
+[![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/demisto/content)
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for TAXII2 Server.
-3. Click **Add instance** to create and configure a new integration instance.
+# Cortex XSOAR Platform - Content Repository
+#### Demisto is now Cortex XSOAR.
+This repo contains content provided by Demisto to automate and orchestrate your Security Operations. Here we will share our ever-growing list of playbooks, automation scripts, report templates and other useful content.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Long Running Instance |  | False |
-    | TAXII2 Server version |  | True |
-    | Listen Port | Will run the TAXII2 server on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. | True |
-    | Username | Credentials to use for the basic auth. | False |
-    | Password |  | False |
-    | Collection JSON | JSON string of indicator query collections. Dictionary of the collection name as the key and the query as the value. | True |
-    | Cortex XSOAR Extension fields | Comma-separated fields to return in the extension. Leave empty for no extension fields, 'All' for all existing fields. | False |
-    | Response Size | Maximum number of items to return. | True |
-    | Certificate (Required for HTTPS) |  | False |
-    | Private Key (Required for HTTPS) |  | False |
-    | TAXII2 Service URL Address | Full URL address to set in the TAXII2 service response. If not set, the integration will try to auto-detect the URL. | False |
-    | NGINX Global Directives | NGINX global directives to be passed on the command line using the -g option. Each directive should end with \`;\`. For example: \`worker_processes 4; timer_resolution 100ms;\`. Advanced configuration to be used only if instructed by Cortex XSOAR Support. | False |
-    | NGINX Server Conf | NGINX server configuration. To be used instead of the default NGINX_SERVER_CONF used in the integration code. Advanced configuration to be used only if instructed by Cortex XSOAR Support. | False |
-    | STIX types for STIX indicator Domain Object | Choose which STIX Cyber Observable Object provides as STIX Domain Object of 'indicator' | False |
+We security folks love to tinker, keep enhancing and sharpening our toolset and we decided to open up everything and make it a collaborative process for the entire security community. We want to create useful knowledge and build flexible, customizable tools, sharing them with each other as we go along.
 
-4. Click **Test** to validate the URLs, token, and connection.
-## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
-After you successfully execute a command, a DBot message appears in the War Room with the command details.
-### taxii-server-list-collections
-***
-Returns all the collections
+We invite you to use the playbooks and scripts, modify them to suit your needs and see what works for you, get involved in the community discussion and of course remember to give back and contribute so that others can enjoy and learn from your hard work and build upon it to enhance it even further.
+
+## Documentation
+If you wish to develop and contribute Content, make sure to check our Content Developer Portal at: https://xsoar.pan.dev/
+
+## Contributing
+Contributions are welcome and appreciated. For instructions about adding/modifying content please see our [Content Contribution Guide](https://xsoar.pan.dev/docs/contributing/contributing).
 
 
-#### Base Command
+## Playbooks
+The Cortex XSOAR Platform includes a visual playbook editor - you can add and modify tasks, create control flow according to answers returned by your queries, and automate everything with your existing security tools, services and products. You can also export your work to a file in the COPS format, and import playbooks shared by your peers who have done the same.
 
-`taxii-server-list-collections`
-#### Input
+We will be releasing more and more playbooks for interesting scenarios, so stay tuned. If you are working on an interesting playbook of your own, feel free to send us a Pull Request and let's build it together.
 
-There are no input arguments for this command.
+The spec for our open playbook format, COPS, can be found [here](https://github.com/demisto/COPS).
 
-#### Context Output
+## Scripts
+These scripts written in Python or Javascript perform Security Operations tasks.
+The scripts are built to run inside the Cortex XSOAR Platform - they can query or send commands to a long list of existing security products, and react based on the output.
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| TAXIIServer.Collection.id | String | The collection id | 
-| TAXIIServer.Collection.query | String | The collection query | 
-| TAXIIServer.Collection.title | String | The collection title | 
-| TAXIIServer.Collection.description | String | The collection description | 
+You can take your logic and the way you want to work and write your own scripts, allowing for maximum flexibility.
+The services and products you use can be online Cloud-based or on-premises setups, and we have tools to support more complex topologies such as when the product's subnet is firewalled off.
 
-#### Command example
-```!taxii-server-list-collections```
-#### Context Example
-```json
-{
-    "TAXIIServer": {
-        "Collection": {
-            "can_read": true,
-            "can_write": false,
-            "description": "",
-            "id": "2eb7bfae-7739-5863-9b00-1681309c3d8c",
-            "media_types": [
-                "application/stix+json;version=2.1"
-            ],
-            "query": "",
-            "title": "ALL"
-        }
-    }
-}
-```
+## Integrations
+Integrations written in Javascript or Python enable the Cortex XSOAR Platform to orchestrate security and IT products. Each integration provides capabilities in the form of commands and each command usually reflects a product capability (API) and returns both a human readable and computer readable response.
 
-#### Human Readable Output
+## Docker
+We use docker to run python scripts and integrations in a controlled environment. You can configure an existing docker image from the [Cortex XSOAR Docker Hub Organization](https://hub.docker.com/u/demisto/) or create a new docker image to suite your needs. More information about how to use Docker is available [here](https://demisto.pan.dev/docs/docker). 
 
->### Collections
->|id|title|query|description|
->|---|---|---|---|
->| 2eb7bfae-7739-5863-9b00-1681309c3d8c | ALL |  |  |
+## Reports
+Cortex XSOAR Platform support flexible reports written in JSON. All of our standard reports calculating various incident statistics and metrics are stored in this repo.
 
-
-### taxii-server-info
-***
-Returns the TAXII server info, default URL, title, etc.
-
-
-#### Base Command
-
-`taxii-server-info`
-#### Input
-
-There are no input arguments for this command.
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| TAXIIServer.Info.title | String | The server title | 
-| TAXIIServer.Info.api_roots | Unknown | The server api roots urls | 
-| TAXIIServer.Info.default | String | The default url | 
-| TAXIIServer.Info.description | String | The server description | 
-
-#### Command example
-```!taxii-server-info```
-#### Context Example
-```json
-{
-    "TAXIIServer": {
-        "ServerInfo": {
-            "api_roots": [
-                "https://foo.cooo.com/inc/threatintel/"
-            ],
-            "default": "https://foo.cooo.com/inc/threatintel/",
-            "description": "This integration provides TAXII Services for system indicators (Outbound feed).",
-            "title": "Cortex XSOAR TAXII2 Server"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->**In case the default URL is incorrect, you can override it by setting "TAXII2 Service URL Address" field in the integration configuration**
->
->### Server Info
->|api_roots|default|description|title|
->|---|---|---|---|
->| https:<span>//</span>foo.cooo.com/inc/threatintel/ | https:<span>//</span>foo.cooo.com/inc/threatintel/ | This integration provides TAXII Services for system indicators (Outbound feed). | Cortex XSOAR TAXII2 Server |
-
+---
+Enjoy and feel free to reach out to us on the [DFIR Community Slack channel](https://www.demisto.com/community/).
