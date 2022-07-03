@@ -3,7 +3,7 @@
 	"build": {
 		"dockerfile": "Dockerfile",
 		"args": {
-			"IMAGENAME": "devdemisto/content-env:31553"
+			"IMAGENAME": "devdemisto/content-env:31572"
 		}
 	},
 	"containerUser": "root",
@@ -14,6 +14,7 @@
 				"path": "/bin/zsh"
 			}
 		},
+		"python.defaultInterpreterPath": "/usr/local/bin/python",
 		"python.venvFolders": ["~/.cache/pypoetry/virtualenvs"],
 		"python.linting.enabled": true,
 		"python.linting.flake8Enabled": true,
@@ -38,7 +39,6 @@
 		"ms-vscode.PowerShell",
 		"ms-toolsai.jupyter",
 		"timonwong.shellcheck",
-		"PKief.material-icon-theme",
 		"GitHub.vscode-pull-request-github",
 		"eamodio.gitlens",
 		"ms-azuretools.vscode-docker",
@@ -48,7 +48,6 @@
 		"VisualStudioExptTeam.vscodeintellicode",
 		"yzhang.markdown-all-in-one",
 		"shd101wyy.markdown-preview-enhanced",
-		"KevinRose.vsc-python-indent",
 		"Gruntfuggly.todo-tree",
 		"redhat.vscode-yaml"
 		],
