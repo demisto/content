@@ -45,7 +45,8 @@ def parse_rfc_3164_format(log_message: bytes) -> Optional[SyslogMessageExtract]:
     """
     try:
         syslog_message: syslogmp.Message = syslogmp.parse(log_message)
-    except syslogmp.parser.MessageFormatError:
+    except syslogmp.parser.MessageFormatError as e:
+        demisto.debug(f'Could not parse the log message, got MessageFormatError. Error was: {e}')
         return None
     return SyslogMessageExtract(
         app_name=None,
@@ -74,7 +75,8 @@ def parse_rfc_5424_format(log_message: bytes) -> Optional[SyslogMessageExtract]:
     """
     try:
         syslog_message: SyslogMessage = SyslogMessage.parse(log_message.decode('utf-8'))
-    except ParseError:
+    except ParseError as e:
+        demisto.debug(f'Could not parse the log message, got ParseError. Error was: {e}')
         return None
     return SyslogMessageExtract(
         app_name=syslog_message.appname,
@@ -114,7 +116,8 @@ def parse_rfc_6587_format(log_message: bytes) -> Optional[SyslogMessageExtract]:
             extracted_message = format_func(encoded_msg)
             if extracted_message:
                 return extracted_message
-    except ValueError:
+    except ValueError as e:
+        demisto.debug(f'Could not parse the log message, got ValueError. Error was: {e}')
         return None
     return None
 
@@ -205,6 +208,7 @@ def perform_long_running_loop(socket_data: bytes):
     for format_func in format_funcs:
         extracted_message = format_func(socket_data)
         if extracted_message:
+            demisto.debug(f'Succeeded in parsing the message with {format_func}')
             break
     if not extracted_message:
         raise DemistoException(f'Could not parse the following message: {socket_data.decode("utf-8")}')
