@@ -1,28 +1,28 @@
 {
     "description": "",
     "feed": false,
-    "id": "Azure Active Directory Identity and Access Incoming Mapper",
+    "id": "Microsoft Graph Identity and Access Incoming Mapper",
     "mapping": {
-        "Azure Active Directory Identity and Access": {
+        "Microsoft Graph Identity and Access": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Azure Active Directory Identity and Access Alert Type": {
+                "Microsoft Graph Identity and Access Alert Type": {
                     "complex": null,
                     "simple": "riskEventType"
                 },
-                "Azure Active Directory Identity and Access Activity": {
+                "Microsoft Graph Identity and Access Activity": {
                     "complex": null,
                     "simple": "activity"
                 },
-                "Azure Active Directory Identity and Access Detected Date Time": {
+                "Microsoft Graph Identity and Access Detected Date Time": {
                     "complex": null,
                     "simple": "detectedDateTime"
                 },
-                "Azure Active Directory Identity and Access Detection Timing Type": {
+                "Microsoft Graph Identity and Access Detection Timing Type": {
                     "complex": null,
                     "simple": "detectionTimingType"
                 },
-                "Azure Active Directory Identity and Access Token Issuer Type": {
+                "Microsoft Graph Identity and Access Token Issuer Type": {
                     "complex": null,
                     "simple": "tokenIssuerType"
                 },
@@ -66,7 +66,7 @@
             }
         }
     },
-    "name": "Azure Active Directory Identity and Access Incoming Mapper",
+    "name": "Microsoft Graph Identity and Access Incoming Mapper",
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.0.0"

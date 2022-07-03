@@ -424,10 +424,10 @@
         ]
     },
     "group": "incident",
-    "id": "Azure Active Directory Identity and Access Layout",
-    "name": "Azure Active Directory Identity and Access Layout",
+    "id": "Microsoft Graph Identity and Access Layout",
+    "name": "Microsoft Graph Identity and Access Layout",
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",
-    "description": "The Azure Active Directory Identity Protection Layout"
+    "description": "The Microsoft Graph Protection Layout"
 }

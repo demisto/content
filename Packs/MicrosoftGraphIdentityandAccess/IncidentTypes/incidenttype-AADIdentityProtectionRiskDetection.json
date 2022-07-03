@@ -1,10 +1,10 @@
 {
-    "id": "Azure Active Directory Identity and Access",
+    "id": "Microsoft Graph Identity and Access",
     "version": -1,
     "vcShouldIgnore": false,
     "locked": false,
-    "name": "Azure Active Directory Identity and Access",
-    "prevName": "Azure Active Directory Identity and Access",
+    "name": "Microsoft Graph Identity and Access",
+    "prevName": "Microsoft Graph Identity and Access",
     "color": "#4B897A",
     "hours": 0,
     "days": 0,
@@ -19,7 +19,7 @@
     "disabled": false,
     "reputationCalc": 0,
     "onChangeRepAlg": 0,
-    "layout": "Azure Active Directory Identity and Access Layout",
+    "layout": "Microsoft Graph Identity and Access Layout",
     "detached": false,
     "extractSettings": {
         "mode": "Specific",

@@ -561,9 +561,9 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/crypto:1.0.0.30286
+  dockerimage: demisto/crypto:1.0.0.31577
 fromversion: 5.0.0
-defaultmapperin: Azure Active Directory Identity and Access Incoming Mapper
-defaultclassifier: Azure Active Directory Identity and Access
+defaultmapperin: Microsoft Graph Identity and Access Incoming Mapper
+defaultclassifier: Microsoft Graph Identity and Access
 tests:
   - Identity & Access test playbook

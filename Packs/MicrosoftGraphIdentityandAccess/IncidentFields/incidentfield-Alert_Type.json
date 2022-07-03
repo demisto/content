@@ -1,9 +1,9 @@
 {
-    "id": "incident_azureactivedirectoryidentityandaccessalerttype",
+    "id": "incident_microsoftgraphidentityandaccessalerttype",
     "version": -1,
-    "name": "Azure Active Directory Identity and Access Alert Type",
+    "name": "Microsoft Graph Identity and Access Alert Type",
     "ownerOnly": false,
-    "cliName": "azureactivedirectoryidentityandaccessalerttype",
+    "cliName": "microsoftgraphidentityandaccessalerttype",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
@@ -17,7 +17,7 @@
     "group": 0,
     "hidden": false,
     "associatedTypes": [
-        "Azure Active Directory Identity and Access"
+        "Microsoft Graph Identity and Access"
     ],
     "associatedToAll": false,
     "unmapped": false,
