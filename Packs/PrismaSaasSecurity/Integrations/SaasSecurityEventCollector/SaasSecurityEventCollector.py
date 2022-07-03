@@ -2,7 +2,6 @@ import demistomock as demisto
 import urllib3
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
-import traceback
 from typing import Dict, Tuple
 
 # Disable insecure warnings
@@ -165,7 +164,6 @@ def get_events_command(
     should_push_events = argToBoolean(args.get('should_push_events'))
 
     if events := fetch_events_from_saas_security(client=client, max_fetch=max_fetch):
-        demisto.info(f'token: {demisto.getLicenseCustomField("Http_Connector.token")}')
         if should_push_events:
             send_events_to_xsiam(events=events, vendor=vendor, product=product)
         return CommandResults(
@@ -244,7 +242,6 @@ def main() -> None:
         else:
             raise ValueError(f'Command {command} is not implemented in saas-security integration.')
     except Exception as e:
-        demisto.error(traceback.format_exc())
         raise Exception(f'Error in Palo Alto Saas Security Event Collector Integration [{e}]')
 
 
