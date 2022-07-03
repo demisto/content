@@ -153,8 +153,15 @@ def parse_incident_from_finding(message, parse_body_as_json=False):
 
 
 def fetch_incidents(aws_client, aws_queue_url, max_fetch, parse_body_as_json):
-    # Fetching the messages from the queue and delete them after converting them to incidents,
-    # Saving the `receipt_handles` from each fetch to the next fetch to avoid duplicate incidents.
+    """
+    Fetching the messages from the queue by following steps:
+
+    1. fetch.
+    2. create-incidents (while skipping previous fetch).
+    3. save fetch results to context.
+    4. try to delete all messages (if not successful, will continue next run).
+    """
+
     try:
         client = aws_client.aws_session(service='sqs')
         # The 'receipt_handles' of the messages that were received from the last call.
