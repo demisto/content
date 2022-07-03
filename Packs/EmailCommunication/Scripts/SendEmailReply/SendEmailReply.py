@@ -973,7 +973,7 @@ def main():
     email_codes = custom_fields.get('emailgeneratedcodes')  # multi-code field for other incident types
     email_to_str = get_email_recipients(email_to, email_from, service_mail, mailbox)
     files = args.get('files', {})
-    sign_only = args.get('sign_only', True)
+    sign_only = args.get('sign_only', False)
     sign_and_encrypt = args.get('sign_and_encrypt', False)
     attachments = argToList(args.get('attachment', []))
     new_email_attachments = custom_fields.get('emailnewattachment', {})

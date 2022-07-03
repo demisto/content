@@ -594,6 +594,7 @@ class Client:
         Translate the template params if they exist from the context
         """
         actualParams = {}
+        print("param is {}".format(paramsStr))
         if paramsStr:
             try:
                 params = json.loads(paramsStr)
@@ -821,7 +822,8 @@ class Client:
 
     def send_mail(self, emailto, emailfrom, send_as, cc, bcc, subject, body, htmlBody, entry_ids, replyTo, file_names,
                   attach_cid, manualAttachObj,
-                  transientFile, transientFileContent, transientFileCID, additional_headers, templateParams):
+                  transientFile, transientFileContent, transientFileCID, additional_headers,
+                  templateParams, inReplyTo=None, references=None):
 
         templateParams = self.template_params(templateParams)
         if templateParams is not None:
@@ -861,10 +863,10 @@ class Client:
         message['reply-to'] = replyTo
 
         # # The following headers are being used for the reply-mail command.
-        # if inReplyTo:
-        #     message['In-Reply-To'] = header(' '.join(inReplyTo))
-        # if references:
-        #     message['References'] = header(' '.join(references))
+        if inReplyTo:
+            message['In-Reply-To'] = ' '.join(inReplyTo)
+        if references:
+            message['References'] = ' '.join(references)
 
         # if there are any attachments to the mail or both body and htmlBody were given
         if entry_ids or file_names or attach_cid or manualAttachObj or (body and htmlBody):
@@ -912,6 +914,8 @@ class Client:
         Returns:
             dict: the email send response.
         """
+        print("hrhdkua")
+        print(email_from)
         return self.get_service('gmail', 'v1').users().messages().send(userId=email_from, body=body).execute()
 
     def generate_auth_link(self) -> Tuple[str, str]:
@@ -958,6 +962,36 @@ def send_mail_command(client):
                               replyTo, file_names, attchCID, manualAttachObj, transientFile, transientFileContent,
                               transientFileCID, additional_headers, template_param)
     return client.sent_mail_to_entry('Email sent:', [result], emailto, SEND_AS or EMAIL, cc, bcc, htmlBody, body, subject)
+
+
+def reply_mail_command(client):
+    args = demisto.args()
+    emailto = args.get('to')
+    emailfrom = args.get('from')
+    send_as = args.get('send_as')
+    inReplyTo = args.get('inReplyTo')
+    references = argToList(args.get('references'))
+    body = args.get('body')
+    subject = 'Re: ' + args.get('subject')
+    entry_ids = args.get('attachIDs')
+    cc = args.get('cc')
+    bcc = args.get('bcc')
+    htmlBody = args.get('htmlBody')
+    replyTo = args.get('replyTo')
+    file_names = argToList(args.get('attachNames'))
+    attchCID = argToList(args.get('attachCIDs'))
+    transientFile = argToList(args.get('transientFile'))
+    transientFileContent = argToList(args.get('transientFileContent'))
+    transientFileCID = argToList(args.get('transientFileCID'))
+    manualAttachObj = argToList(args.get('manualAttachObj'))  # when send-mail called from within XSOAR (like reports)
+    additional_headers = argToList(args.get('additionalHeader'))
+    template_param = args.get('templateParams')
+
+    result = client.send_mail(emailto, emailfrom, send_as, cc, bcc, subject, body, htmlBody, entry_ids, replyTo, file_names,
+                  attchCID, manualAttachObj,
+                  transientFile, transientFileContent, transientFileCID, additional_headers,
+                  template_param, inReplyTo, references)
+    return client.sent_mail_to_entry('Email sent:', [result], emailto, emailfrom, cc, bcc, htmlBody, body, subject)
 
 
 '''FETCH INCIDENTS'''
@@ -1085,6 +1119,7 @@ def main():
     commands = {
         'test-module': test_module,
         'send-mail': send_mail_command,
+        'reply-mail': reply_mail_command,
         'fetch-incidents': fetch_incidents,
         'gmail-auth-link': auth_link_command,
         'gmail-auth-test': auth_test_command,
@@ -1099,7 +1134,7 @@ def main():
         # Log exceptions
     except Exception as e:
         import traceback
-        return_error('GMAIL: {}'.format(str(e)), traceback.format_exc())
+        return_error('GMAIL: {} {}'.format(str(e), traceback.format_exc()))
 
 
 # python2 uses __builtin__ python3 uses builtins
