@@ -594,7 +594,6 @@ class Client:
         Translate the template params if they exist from the context
         """
         actualParams = {}
-        print("param is {}".format(paramsStr))
         if paramsStr:
             try:
                 params = json.loads(paramsStr)
@@ -914,8 +913,6 @@ class Client:
         Returns:
             dict: the email send response.
         """
-        print("hrhdkua")
-        print(email_from)
         return self.get_service('gmail', 'v1').users().messages().send(userId=email_from, body=body).execute()
 
     def generate_auth_link(self) -> Tuple[str, str]:
@@ -1134,7 +1131,7 @@ def main():
         # Log exceptions
     except Exception as e:
         import traceback
-        return_error('GMAIL: {} {}'.format(str(e), traceback.format_exc()))
+        return_error('GMAIL: {}'.format(str(e)), traceback.format_exc())
 
 
 # python2 uses __builtin__ python3 uses builtins
