@@ -899,6 +899,7 @@ class Client:
                 message[header_name] = self.header(header_value)
         encoded_message = base64.urlsafe_b64encode(message.as_bytes())
         command_args = {'raw': encoded_message.decode()}
+        emailfrom = emailfrom or EMAIL
 
         return self.send_email_request(email_from=emailfrom, body=command_args)
 
