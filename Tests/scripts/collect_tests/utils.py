@@ -217,8 +217,8 @@ class PackManager:
         if pack not in self.pack_names:
             logger.error(f'inexistent pack {pack}')
             raise InexistentPackException(pack)
-        if not (support_level := self[pack].get('support', '')):
-            raise ValueError(f'pack {pack} has no support_level field')  # todo is ok?
+        if not (support_level := self[pack].get('support')):
+            raise ValueError(f'pack {pack} has no support level (`support`) field or value')
         if support_level.lower() != 'xsoar':
             raise UnsupportedPackException(pack)
 

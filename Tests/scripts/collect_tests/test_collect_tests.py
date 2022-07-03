@@ -1,6 +1,6 @@
 from os import chdir, getcwd
 from pathlib import Path
-from typing import Callable
+from typing import Callable, NamedTuple
 
 import collect_tests
 import pytest
@@ -56,16 +56,33 @@ class ChangeCWD:
         chdir(self.current)
 
 
+ExpectedResult = NamedTuple('ExpectedResult', (('test_count', int), ('pack_count', int), ('machine_count', int),))
+
+
+def validate_result(collected: collect_tests.CollectedTests, expected: ExpectedResult):
+    if not collected and not (any((expected.test_count, expected.pack_count, expected.machine_count))):
+        return
+
+    # tried using `assert <condition>, <explanation>`, but pytest refused to cope :\
+    if len(collected.tests) != expected.test_count:
+        raise AssertionError(f'{len(collected.tests)=} != {expected.test_count=}')
+    if len(collected.packs) != expected.pack_count:
+        raise AssertionError(f'{len(collected.tests)=} != {expected.pack_count=}')
+    if len(tuple(collected.machines)) != expected.machine_count:
+        raise AssertionError(f'{len(tuple(collected.machines))=} != {expected.machine_count=}')
+
+
 @pytest.mark.parametrize('run_master', (True, False))
 @pytest.mark.parametrize('run_nightly', (True, False))
 @pytest.mark.parametrize('collector_class', (XSOARNightlyTestCollector, XSIAMNightlyTestCollector))
-@pytest.mark.parametrize('mocker,expected_tests', ((MOCKER__CASE_EMPTY, None), (MOCKER__CASE_ONE, None)))
+@pytest.mark.parametrize('mocker,expected', ((MOCKER__CASE_EMPTY, ExpectedResult(0, 0, 0)),
+                                             (MOCKER__CASE_ONE, ExpectedResult(0, 1, 1))))
 def test_sanity_nightly(mocker: CollectTestsMocker, collector_class: Callable,
-                        expected_tests: tuple, run_nightly: bool, run_master: bool):
+                        expected: ExpectedResult, run_nightly: bool, run_master: bool):
     with mocker:
         collector = collector_class()
         collected = collector.collect(run_nightly, run_master)
-        assert collected == expected_tests
+        validate_result(collected, expected)
 
 #
 # @pytest.mark.parametrize('run_master', (True, False))
