@@ -1,9 +1,5 @@
-from copy import deepcopy
-
 from ThreatConnect_v3 import Client, Method, create_or_query
 from freezegun import freeze_time
-import pytest
-from requests import Response
 
 client = Client('test', 'test', 'test', False)
 
