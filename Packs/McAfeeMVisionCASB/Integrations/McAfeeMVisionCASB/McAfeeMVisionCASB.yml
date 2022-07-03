@@ -17,8 +17,7 @@ configuration:
   name: max_fetch
   required: false
   type: 0
-- display: First fetch in timestamp format (<number> <time unit>, e.g., 12 hours,
-    7 days). Default is 3 days.
+- display: First fetch in timestamp format (<number> <time unit>, e.g., 12 hours, 7 days). Default is 3 days.
   hidden: false
   name: first_fetch
   required: false
@@ -31,8 +30,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Skyhigh CASB is a cloud-based, multi-tenant service that enables Cloud
-  Discovery and Risk Monitoring, Cloud Usage Analytics, Cloud Access and Control.
+description: Skyhigh CASB is a cloud-based, multi-tenant service that enables Cloud Discovery and Risk Monitoring, Cloud Usage Analytics, Cloud Access and Control.
 display: McAfee MVision CASB
 name: McAfee MVision CASB
 script:
@@ -40,9 +38,7 @@ script:
   - arguments:
     - default: true
       defaultValue: '50'
-      description: Maximum number of items that will be returned within a single response.
-        Default is 50 maximum is 500. If value exceeds maximum 500 it will not be
-        flagged as an error but will also not increase results.
+      description: Maximum number of items that will be returned within a single response. Default is 50 maximum is 500. If value exceeds maximum 500 it will not be flagged as an error but will also not increase results.
       isArray: false
       name: limit
       required: false
@@ -54,23 +50,20 @@ script:
       required: false
       secret: false
     - default: false
-      description: Pagination support for use with a big “limit” value. The maximum
-        is 500.
+      description: Pagination support for use with a big “limit” value. The maximum is 500.
       isArray: false
       name: page_size
       required: false
       secret: false
     - default: true
       defaultValue: 3 days
-      description: For time arguments use the ISO-8601 standard - '%Y-%m-%dT%H:%M:%SZ'
-        or relative time (last X days).
+      description: For time arguments use the ISO-8601 standard - '%Y-%m-%dT%H:%M:%SZ' or relative time (last X days).
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: For time arguments use the ISO-8601 standard - '%Y-%m-%dT%H:%M:%SZ'
-        or relative time (last X days).
+      description: For time arguments use the ISO-8601 standard - '%Y-%m-%dT%H:%M:%SZ' or relative time (last X days).
       isArray: false
       name: end_time
       required: false
@@ -99,8 +92,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The categories of the incidents to retrieve. When defining the
-        categories argument the incident_types argument does not affect.
+      description: The categories of the incidents to retrieve. When defining the categories argument the incident_types argument does not affect.
       isArray: true
       name: categories
       predefined:
@@ -121,7 +113,7 @@ script:
     name: mvision-casb-incident-query
     outputs:
     - contextPath: MVisionCASB.Incident
-      description: The incident that wes returned.
+      description: The Incident's metadata.
       type: Unknown
   - arguments:
     - default: false
@@ -154,8 +146,7 @@ script:
     name: mvision-casb-incident-status-update
   - arguments:
     - default: false
-      description: The anomaly id from where to retrieve the activities. Only incident
-        of type anomaly (ANO-123).
+      description: The anomaly id from where to retrieve the activities. Only incident of type anomaly (ANO-123).
       isArray: false
       name: anomaly_id
       required: true
@@ -166,126 +157,125 @@ script:
     name: mvision-casb-anomaly-activity-list
     outputs:
     - contextPath: MVisionCASB.AnomalyActivity.timeStamp
-      description: The timestamp
+      description: The timestamp of the anomaly activity.
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.actionName
-      description: The action name
+      description: The action name.
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.asnName
-      description: ""
+      description: The ASN name of an Activity.
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.city
-      description: ""
+      description: The city where the anomaly activity occurred.
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.collabGroup
-      description: ""
+      description: The collaboration group for the anomaly activity.
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.count
-      description: ""
+      description: The number of anomalies detected.
       type: Number
     - contextPath: MVisionCASB.AnomalyActivity.country
-      description: ""
+      description: The country of the anomaly activity.
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.deviceManaged
-      description: ""
+      description: Whether the anomaly activity is managed by the device or not.
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.directory
-      description: ""
+      description: The directory of the anomaly activity.
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.downloadBytes
-      description: ""
+      description: The number of bytes downloaded by the anomaly activity.
       type: Number
     - contextPath: MVisionCASB.AnomalyActivity.eventCount
-      description: ""
+      description: The number of anomalies detected.
       type: Number
     - contextPath: MVisionCASB.AnomalyActivity.fileFolderPath
-      description: ""
+      description: The file folder path for the anomaly activity.
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.fileName
-      description: ""
+      description: The file name of the anomaly activity.
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.fileSharingEnabled
-      description: ""
+      description: Whether the CASB filesharing is enabled or not
       type: Boolean
     - contextPath: MVisionCASB.AnomalyActivity.fileSize
-      description: ""
+      description: The file size of the anomaly activity.
       type: Number
     - contextPath: MVisionCASB.AnomalyActivity.fileType
-      description: ""
+      description: The file type of the anomaly activity.
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.geoOrgNameV1
-      description: ""
+      description: The geo organization name.
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.httpMethod
-      description: ""
+      description: The HTTP method used by the anomaly activity.
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.instanceId
-      description: ""
+      description: The instance ID for the anomaly activity.
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.isSourceTrusted
-      description: ""
+      description: Whether the anomaly activity source is trusted or not
       type: Boolean
     - contextPath: MVisionCASB.AnomalyActivity.networkType
-      description: ""
+      description: The Network Type for the anomaly.
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.objectType
-      description: ""
+      description: The object type for the anomaly activity.
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.operation
-      description: ""
+      description: The operation type.
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.proxyDescription
-      description: ""
+      description: The proxy description for the anomaly activity.
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.proxyType
-      description: ""
+      description: The proxy type for the anomaly activity.
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.region
-      description: ""
+      description: The Region where the anomaly activity occurred.
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.serviceName
-      description: ""
+      description: The name of the service.
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.siteUrl
-      description: ""
+      description: The URL of the CASB's site
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.sourceIP
-      description: ""
+      description: The IP address of the source IP.
       type: IP
     - contextPath: MVisionCASB.AnomalyActivity.sourceIdentifier
-      description: ""
+      description: The SourceIdentifier for the anomaly activity.
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.targetId
-      description: ""
+      description: The target ID for the anomaly activity.
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.targetType
-      description: ""
+      description: The anomaly activity type.
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.tenantId
-      description: ""
+      description: The tenant ID for the anomaly activity.
       type: Number
     - contextPath: MVisionCASB.AnomalyActivity.threatCategory
-      description: ""
+      description: The threat category for the anomaly activity.
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.trustEntity
-      description: ""
+      description: The trust entity for the anomaly activity.
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.trustReason
-      description: ""
+      description: The trust reason of the anomaly activity.
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.uploadBytes
-      description: ""
+      description: The number of bytes uploaded.
       type: Number
     - contextPath: MVisionCASB.AnomalyActivity.url
-      description: ""
+      description: The URL of the anomaly activity.
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.user
-      description: ""
+      description: The User who triggered the anomaly.
       type: String
   - arguments:
     - default: false
-      description: Maximum number of policies that will be returned within a single
-        response. Default is 50.
+      description: Maximum number of policies that will be returned within a single response. Default is 50.
       isArray: false
       name: limit
       required: false
@@ -314,14 +304,13 @@ script:
     name: mvision-casb-policy-dictionary-list
     outputs:
     - contextPath: MVisionCASB.dictionaries.ID
-      description: The dictionary ID. This is the unique identifier for the target
-        dictionary.
+      description: The ID for the dictionary.
       type: Number
     - contextPath: MVisionCASB.dictionaries.LastModified
-      description: The dictionary last modified time
+      description: The date the dictionary was last modified.
       type: String
     - contextPath: MVisionCASB.dictionaries.Name
-      description: The dictionary name
+      description: The name of the dictionary.
       type: String
   - arguments:
     - default: false
@@ -337,8 +326,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The value to be set in the dictionary for the given key-name. Multiple
-        values can be separated by commas.
+      description: The value to be set in the dictionary for the given key-name. Multiple values can be separated by commas.
       isArray: false
       name: content
       required: true

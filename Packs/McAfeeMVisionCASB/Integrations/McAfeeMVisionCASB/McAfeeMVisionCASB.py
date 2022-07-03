@@ -133,10 +133,10 @@ def fetch_incidents(client: Client, params: dict) -> Tuple[dict, list]:
             if (incident_id := incident.get('incidentId')) not in ids:
                 xsoar_incidents.append(
                     {
-                        'name': f"McAfee MVision CASB Incident {incident_id}",
-                        'occurred': incident.get('timeModified'),
-                        'raw_json': json.dumps(incident),
-                        'dbotMirrorId': incident_id,
+                        "name": f"McAfee MVision CASB Incident {incident_id}",
+                        "occurred": incident.get('timeModified'),
+                        "raw_json": json.dumps(incident),
+                        "dbotMirrorId": incident_id,
                     }
                 )
 

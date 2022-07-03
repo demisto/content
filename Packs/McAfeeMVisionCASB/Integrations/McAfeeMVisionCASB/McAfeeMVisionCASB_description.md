@@ -1,8 +1,11 @@
-## BaseIntegration Help
+## McAfee MVision CASB
 
-Markdown file for integration configuration  help snippet. In this file add:
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
 
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
+### Base URL
+The base url for example https://www.myshn.net
 
+### credentials
+UserName and Password
+
+### Additional information
+The **mvision-casb-anomaly-activity-list** command is LD flagged and must be enabled by engineering. as mentioned [here](https://success.myshn.net/Skyhigh_CASB/Skyhigh_CASB_APIs/Anomalous_Activity_API/About_the_Anomalous_Activity_API)
