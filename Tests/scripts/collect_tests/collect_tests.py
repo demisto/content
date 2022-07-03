@@ -7,7 +7,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Iterable, Optional
 
-from Tests.scripts.collect_tests.constants import _calculate_excluded_files
+from Tests.scripts.collect_tests.path_manager import PathManager
 from constants import (DEFAULT_MARKETPLACE_WHEN_MISSING,
                        DEFAULT_REPUTATION_TESTS, ONLY_INSTALL_PACK, SKIPPED_CONTENT_ITEMS, XSOAR_SANITY_TEST_NAMES)
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
@@ -26,17 +26,7 @@ from test_conf import TestConf
 from utils import (ContentItem, Machine, PackManager, VersionRange,
                    find_pack_folder)
 
-# Constants that are not part of the constants file, to allow unit-testing.
-CONTENT_PATH = Path(__file__).absolute().parents[3]
-PACKS_PATH = CONTENT_PATH / 'Packs'
-ARTIFACTS_PATH = Path(os.getenv('ARTIFACTS_FOLDER', './artifacts'))
-ARTIFACTS_ID_SET_PATH = ARTIFACTS_PATH / 'id_set.json'  # todo use
-ARTIFACTS_CONF_PATH = ARTIFACTS_PATH / 'conf.json'  # todo use
-DEBUG_ID_SET_PATH = CONTENT_PATH / 'Tests' / 'id_set.json'
-DEBUG_CONF_PATH = CONTENT_PATH / 'Tests' / 'conf.json'
-OUTPUT_TESTS_FILE = ARTIFACTS_PATH / 'filter_file.txt'
-OUTPUT_PACKS_FILE = ARTIFACTS_PATH / 'content_packs_to_install.txt'
-EXCLUDED_FILES = _calculate_excluded_files(CONTENT_PATH)
+IS_GITLAB = False  # todo replace
 
 
 # from Tests.Marketplace.marketplace_services import get_last_commit_from_index # todo uncomment
@@ -44,8 +34,8 @@ def get_last_commit_from_index(*args, **kwargs):  # todo remove
     pass
 
 
-IS_GITLAB = False  # todo replace
-PACK_MANAGER = PackManager(PACKS_PATH)
+PATHS = PathManager(Path(__file__).absolute().parents[3])
+PACK_MANAGER = PackManager(PATHS.packs_path)
 COMMIT = 'ds-test-collection'  # todo use arg
 
 
@@ -55,11 +45,11 @@ class CollectionReason(Enum):
     PACK_MARKETPLACE_VERSION_VALUE = 'marketplace version of pack'
     CONTAINED_ITEM_MARKETPLACE_VERSION_VALUE = 'marketplace version of contained item'
     SANITY_TESTS = 'sanity tests by marketplace value'
-    PACK_MATCHES_INTEGRATION = 'pack added as the integration is used in a playbook'
+    PACK_MATCHES_INTEGRATION = 'pack added as the integration is used in a playbook'  # todo is used?
     PACK_MATCHES_TEST = 'pack added as the test playbook was collected earlier'
-    NIGHTLY_ALL_TESTS__ID_SET = 'collecting all id_set test playbooks for nightly'
-    NIGHTLY_ALL_TESTS__TEST_CONF = 'collecting all test_conf tests for nightly'
-    ALL_ID_SET_PACKS = 'collecting all id_set pack_name_to_pack_metadata'
+    NIGHTLY_ALL_TESTS__ID_SET = 'collecting all id_set test playbooks for nightly'  # todo is used?
+    NIGHTLY_ALL_TESTS__TEST_CONF = 'collecting all test_conf tests for nightly'  # todo is used?
+    ALL_ID_SET_PACKS = 'collecting all id_set pack_name_to_pack_metadata'  # todo is used?
     NON_CODE_FILE_CHANGED = 'non-code pack file changed'
     INTEGRATION_CHANGED = 'integration changed, collecting all conf.json tests using it'
     SCRIPT_PLAYBOOK_CHANGED = 'file changed, taking tests from `tests` section in script yml'
@@ -67,7 +57,6 @@ class CollectionReason(Enum):
     TEST_PLAYBOOK_CHANGED = 'test playbook changed'
     MAPPER_CHANGED = 'mapper file changed, configured as incoming_mapper_id in test conf'
     CLASSIFIER_CHANGED = 'classifier file changed, configured as classifier_id in test conf'
-    EMPTY_UNION = 'no tests to union'
     DEFAULT_REPUTATION_TESTS = 'default reputation tests'
 
 
@@ -144,8 +133,8 @@ class CollectedTests:
 class TestCollector(ABC):
     def __init__(self, marketplace: MarketplaceVersions):
         self.marketplace = marketplace
-        self.id_set = IdSet(marketplace, DEBUG_ID_SET_PATH)  # todo change
-        self.conf = TestConf(DEBUG_CONF_PATH)  # todo change
+        self.id_set = IdSet(marketplace, PATHS.debug_id_set_path)  # todo change
+        self.conf = TestConf(PATHS.debug_conf_path)  # todo change
         # todo FAILED_
 
     @property
@@ -251,14 +240,14 @@ class BranchTestCollector(TestCollector):
                  service_account: Optional[str]):
         super().__init__(marketplace)
         self.branch_name = branch_name
-        self.repo = Repo(CONTENT_PATH)
+        self.repo = Repo(PATHS.content_path)
         self.service_account = service_account
 
     def _collect(self) -> Optional[CollectedTests]:
         collected = []
         for path in self._get_changed_files():
             try:
-                collected.append(self._collect_single(CONTENT_PATH / path))
+                collected.append(self._collect_single(PATHS.content_path / path))
             except NothingToCollectException as e:
                 logger.warning(e.message)
 
@@ -320,7 +309,7 @@ class BranchTestCollector(TestCollector):
         except NonDictException:  # for `.py`, `.md`, etc., that are not dictionary-based. Suitable logic follows.
             content_item = None
         except NotUnderPackException:
-            if path.parent == CONTENT_PATH and path.name in EXCLUDED_FILES:
+            if path.parent == PATHS.content_path and path.name in PATHS.excluded_files:
                 raise NothingToCollectException(path, 'not under a pack')  # infrastructure files that are ignored
             raise  # todo is this the expected behavior?
 
@@ -479,7 +468,7 @@ class NightlyTestCollector(TestCollector, ABC):
                 continue
 
             if self.marketplace in item_marketplaces:
-                path = CONTENT_PATH / item.file_path
+                path = PATHS.content_path / item.file_path
                 try:
                     pack_folder = find_pack_folder(path)
                     pack = PACK_MANAGER.get_pack_by_path(pack_folder)
@@ -558,21 +547,17 @@ def ui():  # todo put as real main
     collected = collector.collect(run_nightly=options.nightly, run_master=True)  # todo what to put in master?
     logger.info(f'done collecting, got ({len(collected.tests)} tests and {len(collected.packs)} packs')
 
-    logger.info(f'writing output to {str(OUTPUT_TESTS_FILE)}, {str(OUTPUT_PACKS_FILE)}')
-    OUTPUT_TESTS_FILE.write_text('\n'.join(collected.tests))
-    OUTPUT_PACKS_FILE.write_text('\n'.join(collected.packs))
+    logger.info(f'writing output to {str(PATHS.output_tests_file)}, {str(PATHS.output_packs_file)}')
+    PATHS.output_tests_file.write_text('\n'.join(collected.tests))
+    PATHS.output_packs_file.write_text('\n'.join(collected.packs))
 
 
 def debug():  # todo remove
     # collector = XSIAMNightlyTestCollector()
-    collector = BranchTestCollector(marketplace=MarketplaceVersions.XSOAR, branch_name='master')
+    collector = BranchTestCollector(marketplace=MarketplaceVersions.XSOAR, branch_name='master', service_account=None)
     print(collector.collect(True, True))
 
 
 if __name__ == '__main__':
-    try:
-        sys.path.append(str(CONTENT_PATH))
-
-    except:  # todo remove
-        Repo(CONTENT_PATH).git.checkout('ds-test-collection')  # todo remove
-        raise
+    sys.path.append(str(PATHS.content_path))
+    raise NotImplementedError('see the debug() function instead')

@@ -1,0 +1,82 @@
+from typing import Iterable
+
+from pathlib import Path
+from os import getenv
+
+
+class PathManager:
+    """
+    Used for calculating paths of various files and folders, based on the location of the content repo.
+    """
+    ARTIFACTS_PATH = Path(getenv('ARTIFACTS_FOLDER', './artifacts'))
+
+    def __init__(self, content_path: Path):
+        self.content_path = content_path
+        self.excluded_files = _calculate_excluded_files(self.content_path)
+
+    @property
+    def packs_path(self):
+        return self.content_path / 'Packs'
+
+    @property
+    def artifacts_path(self):
+        return PathManager.ARTIFACTS_PATH
+
+    @property
+    def id_set_path(self):
+        return PathManager.ARTIFACTS_PATH / 'id_set.json'
+
+    @property
+    def artifacts_conf_path(self):
+        return PathManager.ARTIFACTS_PATH / 'conf.json'
+
+    @property
+    def debug_id_set_path(self):
+        return self.content_path / 'Tests' / 'id_set.json'
+
+    @property
+    def debug_conf_path(self):
+        return self.content_path / 'Tests' / 'conf.json'
+
+    @property
+    def output_tests_file(self):
+        return PathManager.ARTIFACTS_PATH / 'filter_file.txt'
+
+    @property
+    def output_packs_file(self):
+        return PathManager.ARTIFACTS_PATH / 'content_packs_to_install.txt'
+
+
+def _calculate_excluded_files(content_path: Path) -> set[Path]:
+    def glob(paths: Iterable[str]):
+        result = []
+        for partial_path in paths:
+            path = content_path / partial_path
+
+            if path.is_dir():
+                result.extend(path.glob('*'))
+            elif '*' in path.name:
+                result.extend(path.parent.glob(path.name))
+            elif not path.exists():
+                raise FileNotFoundError(path)
+            else:
+                result.append(path)
+        return set(result)
+
+    excluded = glob((
+        'Tests',
+        '.gitlab',
+        'Documentation',
+        'dev-requirements*',
+    ))
+    not_excluded = glob((
+        'Tests/scripts/infrastructure_tests',
+        'Tests/Marketplace/Tests',
+        'Tests/tests',
+        'Tests/setup',
+        'Tests/sdknightly',
+        'Tests/known_words.txt',
+        'Tests/secrets_white_list.json',
+    ))
+
+    return excluded - not_excluded
