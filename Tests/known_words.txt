@@ -186,3 +186,4 @@ dbotMirrorDirection
 dbotMirrorId
 dbotMirrorInstance
 dbotMirrorTags
+cs-fx-upload-file
