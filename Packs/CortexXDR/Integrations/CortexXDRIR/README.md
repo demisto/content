@@ -17,7 +17,6 @@ This integration was integrated and tested with version 2.6.5 of Cortex XDR - IR
     | API Key |  | True |
     | Only fetch starred incidents |  | False |
     | Starred incidents fetch window (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days)  |  | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days)__
     | HTTP Timeout | The timeout of the HTTP requests sent to Cortex XDR API \(in seconds\). | False |
     | Maximum number of incidents per fetch | The maximum number of incidents per fetch. Cannot exceed 100. | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
@@ -1811,6 +1810,9 @@ Retrieves files from selected endpoints. You can retrieve up to 20 files, from n
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | PaloAltoNetworksXDR.RetrievedFiles.action_id | string | ID of the action to retrieve files from selected endpoints. | 
+| PaloAltoNetworksXDR.RetrievedFiles.endpoint_id | string | Endpoint ID. Added only when the operation is successful.| 
+| PaloAltoNetworksXDR.RetrievedFiles.file_link | string | Link to the file. Added only when the operation is successful. | 
+| PaloAltoNetworksXDR.RetrievedFiles.status | string | The action status. Added only when the operation is unsuccessful. | 
 
 ### xdr-retrieve-files
 ***
