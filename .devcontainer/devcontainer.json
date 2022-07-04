@@ -3,7 +3,7 @@
 	"build": {
 		"dockerfile": "Dockerfile",
 		"args": {
-			"IMAGENAME": "devdemisto/content-env:31625"
+			"IMAGENAME": "devdemisto/content-env:31652"
 		}
 	},
 	"containerUser": "root",
