@@ -1,6 +1,4 @@
 
-This integration was integrated and tested with version xx of Mimecast Event Collector
-
 ## Configure Mimecast Event Collector on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

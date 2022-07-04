@@ -23,7 +23,7 @@ AUDIT_EVENT_DEDUP_LIST = 'audit_event_dedup_list'
 
 LOCAL_LAST_RUN = {SIEM_LAST_RUN: '',
                   SIEM_EVENTS_FROM_LAST_RUN: '',
-                  AUDIT_LAST_RUN: [],
+                  AUDIT_LAST_RUN: '',
                   AUDIT_EVENT_DEDUP_LIST: []
                   }
 
@@ -493,7 +493,6 @@ def prepare_potential_audit_duplicates_for_next_run(audit_events: list, next_run
     if not audit_events or not next_run_time:
         return []
 
-    # same_time_events = [event.get('id') for event in audit_events if event.get('eventTime', '') == next_run_time]
     same_time_events = []
     for event in audit_events:
         if event.get('eventTime', '') == next_run_time:
