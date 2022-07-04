@@ -16,7 +16,7 @@ def parse_filter_field(filter_str):
     for f in filter_str.split(';'):
         match = regex.match(f)
         if match is None:
-            demisto.log('could not parse filter: %s' % (f,))
+            demisto.debug('could not parse filter: %s' % (f,))
             continue
 
         filters.append({
@@ -33,7 +33,7 @@ def parse_tag_field(tags_str):
     for f in tags_str.split(';'):
         match = regex.match(f)
         if match is None:
-            demisto.log('could not parse field: %s' % (f,))
+            demisto.debug('could not parse field: %s' % (f,))
             continue
 
         tags.append({
@@ -2334,7 +2334,7 @@ def describe_fleet_instances_command(args, aws_client):
         return
 
     for i, item in enumerate(response['ActiveInstances']):
-        demisto.log(str(item))
+        demisto.debug(str(item))
         data.append({
             'InstanceId': item['InstanceId'],
             'InstanceType': item['InstanceType'],
