@@ -388,9 +388,9 @@ Create a Relationship
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| relationship_unique | . | Optional | 
-| relationship_origin | . | Optional | 
-| relationship_edge | . | Optional | 
+| relationship_unique | | Optional | 
+| relationship_origin | | Optional | 
+| relationship_edge | | Optional | 
 | relationship_source_unique | relationship_source unique. | Optional | 
 | relationship_source_name | relationship_source name. | Optional | 
 | relationship_source_links | relationship_source links. | Optional | 
@@ -404,8 +404,8 @@ Create a Relationship
 | relationship_source_score | relationship_source score. | Optional | 
 | relationship_source_value | relationship_source value. | Optional | 
 | relationship_source_collected_by | relationship_source collected_by. | Optional | 
-| relationship_score | . | Optional | 
-| relationship_target | . | Optional | 
+| relationship_score | | Optional | 
+| relationship_target | | Optional | 
 
 
 #### Context Output
@@ -429,22 +429,22 @@ Creates a new ability.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ability_ability_id | . | Optional | 
-| ability_name | . | Optional | 
-| ability_buckets | . | Optional | 
-| ability_technique_id | . | Optional | 
-| ability_delete_payload | . | Optional | 
-| ability_executors | . | Optional | 
-| ability_privilege | . | Optional | 
-| ability_requirements | . | Optional | 
-| ability_plugin | . | Optional | 
-| ability_access | . | Optional | 
-| ability_tactic | . | Optional | 
-| ability_additional_info | . | Optional | 
-| ability_singleton | . | Optional | 
-| ability_technique_name | . | Optional | 
-| ability_repeatable | . | Optional | 
-| ability_description | . | Optional | 
+| ability_ability_id | | Optional | 
+| ability_name | | Optional | 
+| ability_buckets | | Optional | 
+| ability_technique_id | | Optional | 
+| ability_delete_payload | | Optional | 
+| ability_executors | | Optional | 
+| ability_privilege | | Optional | 
+| ability_requirements | | Optional | 
+| ability_plugin | | Optional | 
+| ability_access | | Optional | 
+| ability_tactic | | Optional | 
+| ability_additional_info | | Optional | 
+| ability_singleton | | Optional | 
+| ability_technique_name | | Optional | 
+| ability_repeatable | | Optional | 
+| ability_description | | Optional | 
 
 
 #### Context Output
@@ -490,19 +490,19 @@ Creates a potential Link
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | operation_id | UUID of the operation object for the link to be created on. | Required | 
-| link_relationships | . | Optional | 
-| link_id | . | Optional | 
-| link_collect | . | Optional | 
-| link_pid | . | Optional | 
+| link_relationships | | Optional | 
+| link_id | | Optional | 
+| link_collect | | Optional | 
+| link_pid | | Optional | 
 | link_visibility_adjustments | link_visibility adjustments. | Optional | 
 | link_visibility_score | link_visibility score. | Optional | 
-| link_finish | . | Optional | 
-| link_pin | . | Optional | 
-| link_jitter | . | Optional | 
-| link_agent_reported_time | . | Optional | 
-| link_deadman | . | Optional | 
-| link_used | . | Optional | 
-| link_host | . | Optional | 
+| link_finish | | Optional | 
+| link_pin | | Optional | 
+| link_jitter | | Optional | 
+| link_agent_reported_time | | Optional | 
+| link_deadman | | Optional | 
+| link_used | | Optional | 
+| link_host | | Optional | 
 | link_ability_ability_id | link_ability ability_id. | Optional | 
 | link_ability_name | link_ability name. | Optional | 
 | link_ability_buckets | link_ability buckets. | Optional | 
@@ -519,13 +519,13 @@ Creates a potential Link
 | link_ability_technique_name | link_ability technique_name. | Optional | 
 | link_ability_repeatable | link_ability repeatable. | Optional | 
 | link_ability_description | link_ability description. | Optional | 
-| link_status | . | Optional | 
-| link_score | . | Optional | 
-| link_command | . | Optional | 
-| link_unique | . | Optional | 
-| link_cleanup | . | Optional | 
-| link_decide | . | Optional | 
-| link_facts | . | Optional | 
+| link_status | | Optional | 
+| link_score | | Optional | 
+| link_command | | Optional | 
+| link_unique | | Optional | 
+| link_cleanup | | Optional | 
+| link_decide | | Optional | 
+| link_facts | | Optional | 
 | link_executor_name | link_executor name. | Optional | 
 | link_executor_cleanup | link_executor cleanup. | Optional | 
 | link_executor_platform | link_executor platform. | Optional | 
@@ -539,8 +539,8 @@ Creates a potential Link
 | link_executor_command | link_executor command. | Optional | 
 | link_executor_additional_info | link_executor additional_info. | Optional | 
 | link_executor_code | link_executor code. | Optional | 
-| link_paw | . | Optional | 
-| link_output | . | Optional | 
+| link_paw | | Optional | 
+| link_output | | Optional | 
 
 
 #### Context Output
@@ -597,7 +597,7 @@ Create Schedule
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| schedule_schedule | . | Required | 
+| schedule_schedule | | Required | 
 | schedule_task_name | schedule_task name. | Optional | 
 | schedule_task_autonomous | schedule_task autonomous. | Optional | 
 | schedule_task_id | schedule_task id. | Optional | 
@@ -615,7 +615,7 @@ Create Schedule
 | schedule_task_start | schedule_task start. | Optional | 
 | schedule_task_adversary | schedule_task adversary. | Optional | 
 | schedule_task_auto_close | schedule_task auto_close. | Optional | 
-| schedule_id | . | Optional | 
+| schedule_id | | Optional | 
 
 
 #### Context Output
@@ -789,19 +789,19 @@ Delete One or More Facts
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| fact_unique | . | Optional | 
-| fact_name | . | Optional | 
-| fact_links | . | Optional | 
-| fact_relationships | . | Optional | 
-| fact_origin_type | . | Optional | 
-| fact_created | . | Optional | 
-| fact_limit_count | . | Optional | 
-| fact_technique_id | . | Optional | 
-| fact_trait | . | Optional | 
-| fact_source | . | Optional | 
-| fact_score | . | Optional | 
-| fact_value | . | Optional | 
-| fact_collected_by | . | Optional | 
+| fact_unique | | Optional | 
+| fact_name | | Optional | 
+| fact_links | | Optional | 
+| fact_relationships | | Optional | 
+| fact_origin_type | | Optional | 
+| fact_created | | Optional | 
+| fact_limit_count | | Optional | 
+| fact_technique_id | | Optional | 
+| fact_trait | | Optional | 
+| fact_source | | Optional | 
+| fact_score | | Optional | 
+| fact_value | | Optional | 
+| fact_collected_by | | Optional | 
 
 
 #### Context Output
@@ -829,9 +829,9 @@ Delete One or More Relationships
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| relationship_unique | . | Optional | 
-| relationship_origin | . | Optional | 
-| relationship_edge | . | Optional | 
+| relationship_unique | | Optional | 
+| relationship_origin | | Optional | 
+| relationship_edge | | Optional | 
 | relationship_source_unique | relationship_source unique. | Optional | 
 | relationship_source_name | relationship_source name. | Optional | 
 | relationship_source_links | relationship_source links. | Optional | 
@@ -845,8 +845,8 @@ Delete One or More Relationships
 | relationship_source_score | relationship_source score. | Optional | 
 | relationship_source_value | relationship_source value. | Optional | 
 | relationship_source_collected_by | relationship_source collected_by. | Optional | 
-| relationship_score | . | Optional | 
-| relationship_target | . | Optional | 
+| relationship_score | | Optional | 
+| relationship_target | | Optional | 
 
 
 #### Context Output
@@ -926,8 +926,8 @@ Get all Abilities with optional ability ID.
 | --- | --- | --- |
 | ability_id | Optional UUID of the Ability to be retrieved. | Optional | 
 | sort | Results are sorted if no Ability ID is provided. | Optional | 
-| include | . | Optional | 
-| exclude | . | Optional | 
+| include | | Optional | 
+| exclude | | Optional | 
 
 
 #### Context Output
@@ -974,8 +974,8 @@ Get all Adversaries with optional Adversary ID
 | --- | --- | --- |
 | adversary_id | Optional UUID of the adversary to be retrieved. | Optional | 
 | sort | Results are sorted if no Adversary ID is provided. | Optional | 
-| include | . | Optional | 
-| exclude | . | Optional | 
+| include | | Optional | 
+| exclude | | Optional | 
 
 
 #### Context Output
@@ -1002,9 +1002,9 @@ Retrieves all agents with optional Agent PAW
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | paw | Optioanl PAW ID of the Agent to retrieve information about. | Optional | 
-| sort | . | Optional | 
-| include | . | Optional | 
-| exclude | . | Optional | 
+| sort | | Optional | 
+| include | | Optional | 
+| exclude | | Optional | 
 
 
 #### Context Output
@@ -1155,9 +1155,9 @@ Retrieve Facts with optional Operation ID
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sort | . | Optional | 
-| include | . | Optional | 
-| exclude | . | Optional | 
+| sort | | Optional | 
+| include | | Optional | 
+| exclude | | Optional | 
 | operation_id | Optional Operation ID. | Optional | 
 
 
@@ -1210,9 +1210,9 @@ Retrieve obfuscators with optional name
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | Name of the Obfuscator. | Optional | 
-| sort | . | Optional | 
-| include | . | Optional | 
-| exclude | . | Optional | 
+| sort | | Optional | 
+| include | | Optional | 
+| exclude | | Optional | 
 
 
 #### Context Output
@@ -1236,9 +1236,9 @@ Retrieve objectives with optional Objective ID
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | Optional UUID of the objective to be retrieved. | Optional | 
-| sort | . | Optional | 
-| include | . | Optional | 
-| exclude | . | Optional | 
+| sort | | Optional | 
+| include | | Optional | 
+| exclude | | Optional | 
 
 
 #### Context Output
@@ -1268,9 +1268,9 @@ Retrieve operations
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | Optional UUID of the Operation object to be retrieved. | Optional | 
-| sort | . | Optional | 
-| include | . | Optional | 
-| exclude | . | Optional | 
+| sort | | Optional | 
+| include | | Optional | 
+| exclude | | Optional | 
 
 
 #### Context Output
@@ -1363,11 +1363,11 @@ Get Links from Operation with optional Link ID
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| operation_id | . | Required | 
+| operation_id | | Required | 
 | link_id | Optional UUID of the Link with the operation. | Optional | 
-| sort | . | Optional | 
-| include | . | Optional | 
-| exclude | . | Optional | 
+| sort | | Optional | 
+| include | | Optional | 
+| exclude | | Optional | 
 
 
 #### Context Output
@@ -1426,8 +1426,8 @@ Retrieve the result of a link
 | --- | --- | --- |
 | operation_id | UUID of the operation object to be retrieved. | Required | 
 | link_id | UUID of the link object to retrieve results of. | Required | 
-| include | . | Optional | 
-| exclude | . | Optional | 
+| include | | Optional | 
+| exclude | | Optional | 
 
 
 #### Context Output
@@ -1486,9 +1486,9 @@ Retrieve potential links for an operation with optional PAW.
 | --- | --- | --- |
 | operation_id | UUID of the operation object to retrieve links for. | Required | 
 | paw | Optional Agent paw for the specified operation. | Optional | 
-| sort | . | Optional | 
-| include | . | Optional | 
-| exclude | . | Optional | 
+| sort | | Optional | 
+| include | | Optional | 
+| exclude | | Optional | 
 
 
 #### Context Output
@@ -1546,9 +1546,9 @@ Retrieve planners with optional Planner ID
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | planner_id | UUID of the Planner object to be retrieved. | Optional | 
-| sort | . | Optional | 
-| include | . | Optional | 
-| exclude | . | Optional | 
+| sort | | Optional | 
+| include | | Optional | 
+| exclude | | Optional | 
 
 
 #### Context Output
@@ -1583,9 +1583,9 @@ Retrieve plugins with optional Name
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | The name of the plugin. | Optional | 
-| sort | . | Optional | 
-| include | . | Optional | 
-| exclude | . | Optional | 
+| sort | | Optional | 
+| include | | Optional | 
+| exclude | | Optional | 
 
 
 #### Context Output
@@ -1611,10 +1611,10 @@ Retrieve Relationships with optional Operation ID
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| operation_id | . | Optional | 
-| sort | . | Optional | 
-| include | . | Optional | 
-| exclude | . | Optional | 
+| operation_id | | Optional | 
+| sort | | Optional | 
+| include | | Optional | 
+| exclude | | Optional | 
 
 
 #### Context Output
@@ -1639,9 +1639,9 @@ Retrieve Schedules with optional Schedule ID
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | schedule_id | Optional UUID of the Schedule to be retrieved. | Optional | 
-| sort | . | Optional | 
-| include | . | Optional | 
-| exclude | . | Optional | 
+| sort | | Optional | 
+| include | | Optional | 
+| exclude | | Optional | 
 
 
 #### Context Output
@@ -1664,9 +1664,9 @@ Retrieve all Fact Sources with optional Fact Source ID
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | source_id | The id of the Fact Source. | Optional | 
-| sort | . | Optional | 
-| include | . | Optional | 
-| exclude | . | Optional | 
+| sort | | Optional | 
+| include | | Optional | 
+| exclude | | Optional | 
 
 
 #### Context Output
@@ -1707,10 +1707,10 @@ Get Operation Event Logs
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| operation_id | . | Required | 
+| operation_id | | Required | 
 | enable_agent_output | Whether to enable the agent output. Possible values are: false, true. Default is false. | Optional | 
-| include | . | Optional | 
-| exclude | . | Optional | 
+| include | | Optional | 
+| exclude | | Optional | 
 
 
 #### Context Output
@@ -1742,10 +1742,10 @@ Get Operation Report
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| operation_id | . | Required | 
+| operation_id | | Required | 
 | enable_agent_output | Whether to enable the agent output. Possible values are: false, true. Default is false. | Optional | 
-| include | . | Optional | 
-| exclude | . | Optional | 
+| include | | Optional | 
+| exclude | | Optional | 
 
 
 #### Context Output
@@ -1777,21 +1777,21 @@ Replaces an existing ability.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ability_id | UUID of the Ability to be retrieved. | Required | 
-| ability_name | . | Optional | 
-| ability_buckets | . | Optional | 
-| ability_technique_id | . | Optional | 
-| ability_delete_payload | . | Optional | 
-| ability_executors | . | Optional | 
-| ability_privilege | . | Optional | 
-| ability_requirements | . | Optional | 
-| ability_plugin | . | Optional | 
-| ability_access | . | Optional | 
-| ability_tactic | . | Optional | 
-| ability_additional_info | . | Optional | 
-| ability_singleton | . | Optional | 
-| ability_technique_name | . | Optional | 
-| ability_repeatable | . | Optional | 
-| ability_description | . | Optional | 
+| ability_name | | Optional | 
+| ability_buckets | | Optional | 
+| ability_technique_id | | Optional | 
+| ability_delete_payload | | Optional | 
+| ability_executors | | Optional | 
+| ability_privilege | | Optional | 
+| ability_requirements | | Optional | 
+| ability_plugin | | Optional | 
+| ability_access | | Optional | 
+| ability_tactic | | Optional | 
+| ability_additional_info | | Optional | 
+| ability_singleton | | Optional | 
+| ability_technique_name | | Optional | 
+| ability_repeatable | | Optional | 
+| ability_description | | Optional | 
 
 
 #### Context Output
@@ -1837,7 +1837,7 @@ Replace Schedule
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | schedule_id | UUID of the Schedule to be retrieved. | Required | 
-| partial_schedule2_schedule | . | Optional | 
+| partial_schedule2_schedule | | Optional | 
 | partial_schedule2_task_name | partial_schedule2_task name. | Optional | 
 | partial_schedule2_task_autonomous | partial_schedule2_task autonomous. | Optional | 
 | partial_schedule2_task_id | partial_schedule2_task id. | Optional | 
@@ -1876,14 +1876,14 @@ Update Agent Config
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| watchdog | . | Optional | 
-| sleep_min | . | Optional | 
-| deployments | . | Optional | 
-| deadman_abilities | . | Optional | 
-| untrusted_timer | . | Optional | 
-| bootstrap_abilities | . | Optional | 
-| sleep_max | . | Optional | 
-| implant_name | . | Optional | 
+| watchdog | | Optional | 
+| sleep_min | | Optional | 
+| deployments | | Optional | 
+| deadman_abilities | | Optional | 
+| untrusted_timer | | Optional | 
+| bootstrap_abilities | | Optional | 
+| sleep_max | | Optional | 
+| implant_name | | Optional | 
 
 
 #### Context Output
@@ -1909,13 +1909,13 @@ Update an adversary
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | adversary_id | UUID of the adversary to be updated. | Required | 
-| adversaryname | . | Optional | 
-| adversarytags | . | Optional | 
-| adversaryobjective | . | Optional | 
-| adversaryhas_repeatable_abilities | . | Optional | 
-| adversaryatomic_ordering | . | Optional | 
-| adversaryplugin | . | Optional | 
-| adversarydescription | . | Optional | 
+| adversaryname | | Optional | 
+| adversarytags | | Optional | 
+| adversaryobjective | | Optional | 
+| adversaryhas_repeatable_abilities | | Optional | 
+| adversaryatomic_ordering | | Optional | 
+| adversaryplugin | | Optional | 
+| adversarydescription | | Optional | 
 
 
 #### Context Output
@@ -1942,12 +1942,12 @@ Update an Agent
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | paw | ID of the Agent to update. | Required | 
-| watchdog | . | Optional | 
-| sleep_min | . | Optional | 
-| trusted | . | Optional | 
-| sleep_max | . | Optional | 
-| pending_contact | . | Optional | 
-| group | . | Optional | 
+| watchdog | | Optional | 
+| sleep_min | | Optional | 
+| trusted | | Optional | 
+| sleep_max | | Optional | 
+| pending_contact | | Optional | 
+| group | | Optional | 
 
 
 #### Context Output
@@ -2030,13 +2030,13 @@ Update an existing Fact Source.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | fact_source_id | The id of the Fact Source. | Required | 
-| source_name | . | Optional | 
-| source_adjustments | . | Optional | 
-| source_relationships | . | Optional | 
-| source_id | . | Optional | 
-| source_rules | . | Optional | 
-| source_facts | . | Optional | 
-| source_plugin | . | Optional | 
+| source_name | | Optional | 
+| source_adjustments | | Optional | 
+| source_relationships | | Optional | 
+| source_id | | Optional | 
+| source_rules | | Optional | 
+| source_facts | | Optional | 
+| source_plugin | | Optional | 
 
 
 #### Context Output
@@ -2078,9 +2078,9 @@ Update an objective
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | objective_id | UUID of the Objective to be updated. | Required | 
-| name | . | Optional | 
-| goals | . | Optional | 
-| description | . | Optional | 
+| name | | Optional | 
+| goals | | Optional | 
+| description | | Optional | 
 
 
 #### Context Output
@@ -2110,9 +2110,9 @@ Update fields within an operation
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | operation_id | UUID of the Operation object to be retrieved. | Required | 
-| obfuscator | . | Optional | 
-| autonomous | . | Optional | 
-| state | . | Optional | 
+| obfuscator | | Optional | 
+| autonomous | | Optional | 
+| state | | Optional | 
 
 
 #### Context Output
@@ -2205,8 +2205,8 @@ Update Main Config
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| property | . | Required | 
-| value | . | Required | 
+| property | | Required | 
+| value | | Required | 
 
 
 #### Context Output
@@ -2313,18 +2313,18 @@ Updates an existing ability.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ability_id | UUID of the Ability to be retrieved. | Required | 
-| name | . | Optional | 
-| buckets | . | Optional | 
-| technique_id | . | Optional | 
-| delete_payload | . | Optional | 
-| executors | . | Optional | 
-| privilege | . | Optional | 
-| technique_name | . | Optional | 
-| tactic | . | Optional | 
-| singleton | . | Optional | 
-| plugin | . | Optional | 
-| repeatable | . | Optional | 
-| description | . | Optional | 
+| name | | Optional | 
+| buckets | | Optional | 
+| technique_id | | Optional | 
+| delete_payload | | Optional | 
+| executors | | Optional | 
+| privilege | | Optional | 
+| technique_name | | Optional | 
+| tactic | | Optional | 
+| singleton | | Optional | 
+| plugin | | Optional | 
+| repeatable | | Optional | 
+| description | | Optional | 
 
 
 #### Context Output
@@ -2370,7 +2370,7 @@ Update Schedule
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | schedule_id | UUID of the Schedule to be updated. | Required | 
-| schedule | . | Optional | 
+| schedule | | Optional | 
 | task_obfuscator | task obfuscator. | Optional | 
 | task_autonomous | task autonomous. | Optional | 
 | task_state | task state. | Optional | 
@@ -2397,8 +2397,8 @@ Update the specified link within an operation
 | --- | --- | --- |
 | operation_id | String UUID of the Operation containing desired link. | Required | 
 | link_id | String UUID of the Link with the above operation. | Required | 
-| command | . | Optional | 
-| status | . | Optional | 
+| command | | Optional | 
+| status | | Optional | 
 
 
 #### Context Output

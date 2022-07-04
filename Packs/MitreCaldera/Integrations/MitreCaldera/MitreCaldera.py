@@ -1047,7 +1047,7 @@ def delete_schedule_command(client: Client, args: Dict[str, Any]) -> CommandResu
     client.delete_schedule(schedule_id)
     
     command_results = CommandResults(
-        readable_outputs=f"Schedule with ID {schedule_id} deleted successfully."
+        readable_output=f"Schedule with ID {schedule_id} deleted successfully."
     )
     return command_results
 
@@ -1118,7 +1118,7 @@ def get_config_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     response['name'] = name
     command_results = CommandResults(
         outputs_prefix='MitreCaldera.Config',
-        outputs_key_field='name',
+        outputs_key_field='Name',
         outputs=response,
         raw_response=response
     )
@@ -1427,7 +1427,7 @@ def get_operation_eventlogs_command(client: Client, args: Dict[str, Any]) -> Com
     }
     command_results = CommandResults(
         outputs_prefix='MitreCaldera.Operations',
-        outputs_key_field='id',
+        outputs_key_field='operation_id',
         outputs=output,
         raw_response=response
     )
@@ -1448,7 +1448,7 @@ def get_operation_report_command(client: Client, args: Dict[str, Any]) -> Comman
     }
     command_results = CommandResults(
         outputs_prefix='MitreCaldera.Operations',
-        outputs_key_field='id',
+        outputs_key_field='operation_id',
         outputs=output,
         raw_response=response
     )
@@ -1652,7 +1652,7 @@ def update_main_config_command(client: Client, args: Dict[str, Any]) -> CommandR
     command_results = CommandResults(
         readable_output=f"{property} updated to {value} in main config."
     )
-    return_results(command_results)
+    return command_results
 
 
 def update_facts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
