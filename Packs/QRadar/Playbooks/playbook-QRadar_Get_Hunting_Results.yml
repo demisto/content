@@ -1,6 +1,6 @@
 id: QRadar Get Hunting Results
 version: -1
-description: This playbook is used to to sort the QRadar search results to display
+description: This playbook is used to sort the QRadar search results to display
   the IP addresses, assets, and usernames that the search provided. In addition, the results
   allow you to differentiate between internal and external IP addresses as well as
   query the QRadar assets API in order to get the assets details from the IP addresses.
@@ -58,8 +58,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 610,
-          "y": 1910
+          "x": 670,
+          "y": 1950
         }
       }
     note: false
@@ -150,8 +150,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 610,
-          "y": 2080
+          "x": 670,
+          "y": 2070
         }
       }
     note: false
@@ -240,7 +240,7 @@ tasks:
       {
         "position": {
           "x": 820,
-          "y": 2410
+          "y": 2420
         }
       }
     note: false
@@ -265,7 +265,8 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "11"
+      - "15"
     scriptarguments:
       append:
         simple: "true"
@@ -290,7 +291,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1040,
+          "x": 670,
           "y": 945
         }
       }
@@ -316,7 +317,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "15"
+      - "17"
     scriptarguments:
       append:
         simple: "true"
@@ -341,8 +342,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1040,
-          "y": 1120
+          "x": 1280,
+          "y": 1280
         }
       }
     note: false
@@ -360,8 +361,8 @@ tasks:
       id: 8b6eae0b-939e-4fd8-86ec-62f4b674e7dd
       version: -1
       name: Get hostnames from assets
-      description: List all assets found in the model.
-      script: '|||qradar-get-assets'
+      description: Retrieves assets list.
+      script: '|||qradar-assets-list'
       type: regular
       iscommand: true
       brand: ""
@@ -392,8 +393,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 610,
-          "y": 1520
+          "x": 670,
+          "y": 1630
         }
       }
     note: false
@@ -434,8 +435,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 610,
-          "y": 1720
+          "x": 670,
+          "y": 1790
         }
       }
     note: false
@@ -527,12 +528,13 @@ tasks:
     nexttasks:
       '#none#':
       - "13"
+      - "14"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 610,
-          "y": 600
+          "x": 660,
+          "y": 590
         }
       }
     note: false
@@ -556,7 +558,7 @@ tasks:
       description: ''
     nexttasks:
       '#default#':
-      - "14"
+      - "11"
       "yes":
       - "6"
     separatecontext: false
@@ -571,8 +573,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 610,
-          "y": 740
+          "x": 520,
+          "y": 750
         }
       }
     note: false
@@ -596,7 +598,7 @@ tasks:
       description: ''
     nexttasks:
       '#default#':
-      - "15"
+      - "17"
       "yes":
       - "7"
     separatecontext: false
@@ -611,8 +613,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 610,
-          "y": 945
+          "x": 1280,
+          "y": 750
         }
       }
     note: false
@@ -651,7 +653,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 610,
+          "x": 670,
           "y": 1290
         }
       }
@@ -687,7 +689,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 610,
+          "x": 660,
           "y": 440
         }
       }
@@ -698,13 +700,44 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: e75f0edb-3a58-414c-817f-824d32de9238
+    type: title
+    task:
+      id: e75f0edb-3a58-414c-817f-824d32de9238
+      version: -1
+      name: Done user setting
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1280,
+          "y": 2590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 2655,
-        "width": 1140,
+        "width": 1380,
         "x": 280,
         "y": 140
       }
@@ -759,4 +792,4 @@ outputs:
   type: string
 tests:
 - no test
-fromversion: 6.0.0
+fromversion: 6.2.0

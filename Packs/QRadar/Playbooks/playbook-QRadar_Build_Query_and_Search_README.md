@@ -57,4 +57,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![QRadar Build Query and Search](../doc_files/QRadar_Build_Query_and_Search.png
+![QRadar Build Query and Search](../doc_files/QRadar_Build_Query_and_Search.png)

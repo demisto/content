@@ -29,8 +29,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 110
+          "x": 660,
+          "y": -60
         }
       }
     note: false
@@ -204,11 +204,16 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isNotEmpty
+      - - operator: isEqualString
           left:
             value:
-              simple: QRadar.Search.Result
+              simple: inputs.UseHuntingResults
             iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -240,7 +245,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1210
+          "y": 1190
         }
       }
     note: false
@@ -271,10 +276,10 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.UseHuntingResults
+              simple: QRadar.Search.Result
             iscontext: true
           right:
             value:
@@ -293,15 +298,66 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 0087cb56-87db-48de-88db-818d93628828
+    type: condition
+    task:
+      id: 0087cb56-87db-48de-88db-818d93628828
+      version: -1
+      name: Are there values to search?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.BaseValuesToSearch
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.FirstAdditionalValues
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.SecondAdditionalValues
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1165,
-        "width": 740,
+        "height": 1315,
+        "width": 950,
         "x": 90,
-        "y": 110
+        "y": -60
       }
     }
   }
@@ -403,7 +459,7 @@ inputs:
   required: false
   description: |-
     Time frame as used in AQL.
-    For example: 
+    For example:
     LAST 7 DAYS
     START '2019-09-25 15:51' STOP '2019-09-25 17:51'
     For more examples, see IBM's AQL documentation.
@@ -438,4 +494,4 @@ outputs:
   type: string
 tests:
 - no test
-fromversion: 6.0.0
+fromversion: 6.2.0
