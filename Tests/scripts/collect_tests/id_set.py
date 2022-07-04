@@ -67,7 +67,7 @@ class IdSet(DictFileBased):
         self.test_playbooks_to_pack: dict[str, str] = {test.name: test.pack for test in self.test_playbooks}
 
     @property
-    def artifact_iterator(self) -> Iterable[IdSetItem]:  # todo is used?
+    def artifact_iterator(self) -> Iterable[IdSetItem]:
         """ returns an iterator for all content items EXCLUDING PACKS """
         for content_type, values in self.content.items():
             if isinstance(values, list):

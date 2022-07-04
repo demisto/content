@@ -37,7 +37,6 @@ def get_last_commit_from_index(*args, **kwargs):  # todo remove
 
 PATHS = PathManager(Path(__file__).absolute().parents[3])
 PACK_MANAGER = PackManager(PATHS)
-COMMIT = 'ds-test-collection'  # todo use arg
 
 
 class CollectionReason(Enum):
