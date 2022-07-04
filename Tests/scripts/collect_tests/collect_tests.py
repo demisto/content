@@ -400,7 +400,8 @@ class NightlyTestCollector(TestCollector, ABC):
     def _id_set_tests_matching_marketplace_value(self, only_value: bool) -> Optional[CollectedTests]:
         """
         :param only_value: whether the value is the only one under the marketplaces field.
-        :return: all tests whose marketplace field includes the collector's marketplace value.
+        :return: all tests whose marketplace field includes the collector's marketplace value
+                    (or is equal to it, if `only_value` is used).
         """
         default = (DEFAULT_MARKETPLACE_WHEN_MISSING,)  # MUST BE OF LENGTH==1
         postfix = ' (only where this is the only marketplace value)' if only_value else ''
@@ -414,8 +415,8 @@ class NightlyTestCollector(TestCollector, ABC):
             if only_value and len(playbook_marketplaces) != 1:
                 continue
 
-            if self.marketplace.value in playbook_marketplaces and playbook.tests:
-                tests.extend(playbook.tests)
+            if self.marketplace in playbook_marketplaces:
+                tests.append(playbook.name)
 
         if not tests:
             logger.warning(f'no tests matching marketplace {self.marketplace.value} ({only_value=}) were found')
@@ -438,7 +439,7 @@ class NightlyTestCollector(TestCollector, ABC):
 
         for pack in PACK_MANAGER:
             pack_marketplaces = pack.marketplaces or default
-            if only_value and len(pack_marketplaces) >= 2:
+            if only_value and len(pack_marketplaces) != 1:
                 continue
             if self.marketplace in pack_marketplaces:
                 packs.append(pack.name)
@@ -466,7 +467,7 @@ class NightlyTestCollector(TestCollector, ABC):
         for item in self.id_set.artifact_iterator:
             item_marketplaces = item.marketplaces or default
 
-            if only_value and len(item_marketplaces) >= 2:  # 0 is ok because of the default, and 1 for obvious reasons
+            if only_value and len(item_marketplaces) != 1:
                 continue
 
             if self.marketplace in item_marketplaces:

@@ -1,21 +1,17 @@
-from os import chdir, getcwd
 from pathlib import Path
-from typing import Callable, NamedTuple, Optional
+from typing import Callable, Iterable, Optional
 
 import collect_tests
 import pytest
-from collect_tests import (BranchTestCollector, CollectedTests, TestCollector,
-                           XSIAMNightlyTestCollector,
+# importing Machine from collect_tests (rather than utils) to compare class member values
+from collect_tests import (Machine, XSIAMNightlyTestCollector,
                            XSOARNightlyTestCollector)
-from demisto_sdk.commands.common.constants import MarketplaceVersions
 
 from Tests.scripts.collect_tests.constants import XSOAR_SANITY_TEST_NAMES
 from Tests.scripts.collect_tests.path_manager import PathManager
-from Tests.scripts.collect_tests.utils import PackManager, Machine
+from Tests.scripts.collect_tests.utils import PackManager
 
 TEST_DATA = Path(__file__).parent / 'test_data'
-CASE_1 = TEST_DATA / 'case1'
-CASE_EMPTY = TEST_DATA / 'case_empty'
 
 
 class CollectTestsMocker:
@@ -28,6 +24,7 @@ class CollectTestsMocker:
         self.previous_path_manager = None
 
     def __enter__(self):
+        print(f'mocking content root={self.path_manager.content_path}')
         self.previous_path_manager = collect_tests.PATHS
         self._mock(self.path_manager)
 
@@ -40,51 +37,75 @@ class CollectTestsMocker:
         collect_tests.PATHS = path_manager
         collect_tests.PACK_MANAGER = PackManager(path_manager)
 
+    def __repr__(self):
+        return str(self.path_manager.content_path)
 
-MOCKER__CASE_ONE = CollectTestsMocker(Path('test_data/case1'))
-MOCKER__CASE_EMPTY = CollectTestsMocker(Path('test_data/case_empty'))
+
+class MockerCases:
+    empty = CollectTestsMocker(Path('test_data/empty'))
+    empty_xsiam = CollectTestsMocker(Path('test_data/empty_xsiam'))
+    A_xsoar = CollectTestsMocker(Path('test_data/A_xsoar'))
+    A_xsiam = CollectTestsMocker(Path('test_data/A_xsiam'))
+    B_xsiam = CollectTestsMocker(Path('test_data/B_xsiam'))
+    B_xsoar = CollectTestsMocker(Path('test_data/B_xsoar'))
 
 
-@pytest.mark.parametrize('collector_class,expected_tests', ((XSOARNightlyTestCollector, XSOAR_SANITY_TEST_NAMES),
-                                                            (XSIAMNightlyTestCollector, ())))
-@pytest.mark.parametrize('run_master', (True, False))
-@pytest.mark.parametrize('run_nightly', (True, False))
-def test_nightly_empty(run_master: bool, run_nightly: bool, collector_class: Callable, expected_tests: tuple[str]):
-    with MOCKER__CASE_EMPTY:
-        collector = collector_class()
-        collected = collector.collect(run_nightly, run_master)
+def _test(mocker: CollectTestsMocker, run_nightly: bool, run_master: bool, collector_class: Callable,
+          expected_tests: Iterable[str], expected_packs: Iterable[str],
+          expected_machines: Optional[Iterable[Machine]], collector_class_args: tuple[str] = ()):
+    with mocker:
+        collected = collector_class(*collector_class_args).collect(run_nightly, run_master)
+
+        if not any((expected_tests, expected_packs, expected_machines)):
+            assert not collected
 
         if expected_tests:
             assert collected.tests == set(expected_tests)
-        else:
-            assert not collected
+        if expected_packs:
+            assert collected.packs == set(expected_packs)
+        if expected_machines:
+            assert set(collected.machines) == set(expected_machines)
+
+        assert run_nightly == (Machine.NIGHTLY in collected.machines)
+        assert run_master == (Machine.MASTER in collected.machines)
 
 
-# @pytest.mark.parametrize('run_master', (True, False))
-# @pytest.mark.parametrize('run_nightly', (True, False))
-# @pytest.mark.parametrize('collector_class', (XSOARNightlyTestCollector, XSIAMNightlyTestCollector))
-# @pytest.mark.parametrize('mocker,expected', ((MOCKER__CASE_EMPTY, ExpectedResult(0, 0, 0)),
-#                                              (MOCKER__CASE_ONE, ExpectedResult(0, 1, 1))))
-# def test_sanity_nightly(mocker: CollectTestsMocker, collector_class: Callable,
-#                         expected: ExpectedResult, run_nightly: bool, run_master: bool):
-#     with mocker:
-#         collector = collector_class()
-#         collected = collector.collect(run_nightly, run_master)
-#         validate_result(collected, expected)
+@pytest.mark.parametrize('mocker,collector_class,expected_tests,expected_packs', (
+        (MockerCases.empty, XSOARNightlyTestCollector, XSOAR_SANITY_TEST_NAMES, ()),
+        (MockerCases.empty, XSIAMNightlyTestCollector, (), ()),
+        (MockerCases.empty_xsiam, XSIAMNightlyTestCollector, ("some_xsiam_test",), ()),
+))
+@pytest.mark.parametrize('run_master', (True, False))
+def test_nightly_empty(mocker, run_master: bool, collector_class: Callable,
+                       expected_tests: tuple[str], expected_packs: tuple[str]):
+    """
+    given:  a content folder
+    when:   collecting tests with a NightlyTestCollector
+    then:   make sure sanity tests are collected for XSOAR, and that XSIAM tests are collected from conf.json
+    """
+    _test(mocker, run_nightly=True, run_master=run_master, collector_class=collector_class,
+          expected_tests=expected_tests, expected_packs=expected_packs, expected_machines=None)
 
-#
-# @pytest.mark.parametrize('run_master', (True, False))
-# @pytest.mark.parametrize('run_nightly', (True, False))
-# @pytest.mark.parametrize('collector,expected_tests', (
-#         (BranchTestCollector('master', MarketplaceVersions.XSOAR, service_account=None), ()),
-#         (BranchTestCollector('master', MarketplaceVersions.MarketplaceV2, service_account=None), ()),
-# ))
-# def test_sanity_branch(mocker, run_master: bool, run_nightly: bool, collector: TestCollector, expected_tests: tuple):
-#     import collect_tests
-#     mocker.patch.object(collect_tests, 'CONTENT_PATH', CASE_1)
-#     # mocker.patch('demisto_sdk.commands.common.tools.run_command', return_value=())
-#     with MOCKER__CASE_EMPTY:
-#
-#     with ChangeCWD(CASE_1):
-#         collected = collector.collect(run_nightly, run_master)
-#         assert not collected
+
+@pytest.mark.parametrize('mocker,collector_class', (
+        (MockerCases.A_xsoar, XSOARNightlyTestCollector),
+        (MockerCases.A_xsiam, XSIAMNightlyTestCollector),
+        (MockerCases.B_xsoar, XSOARNightlyTestCollector),
+        (MockerCases.B_xsiam, XSIAMNightlyTestCollector)
+))
+@pytest.mark.parametrize('run_master', (True, False))
+@pytest.mark.parametrize('run_nightly', (True, False))
+def test_nightly(mocker, run_master: bool, collector_class: Callable, run_nightly: bool):
+    """
+    given:  a content folder
+    when:   collecting tests with a NightlyTestCollector
+    then:   make sure tests are collected from integration and id_set
+    """
+    # noinspection PyTypeChecker
+    expected_pack = {XSOARNightlyTestCollector: ('myXSOAROnlyPack',),
+                     XSIAMNightlyTestCollector: ('myXSIAMOnlyPack',)}[collector_class]
+
+    _test(mocker, run_nightly=run_nightly, run_master=run_master, collector_class=collector_class,
+          expected_tests=('myTestPlaybook', 'myOtherTestPlaybook'),
+          expected_packs=expected_pack,
+          expected_machines=None)

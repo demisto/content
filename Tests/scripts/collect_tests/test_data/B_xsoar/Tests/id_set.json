@@ -1,0 +1,25 @@
+{
+  "scripts": [],
+  "integrations": [],
+  "TestPlaybooks": [
+    {
+      "myTestPlaybook": {
+        "name": "myTestPlaybook",
+        "file_path": "Packs/myXSOAROnlyPack/Integrations/TestPlaybooks/myTestPlaybook.yml",
+        "pack": "myXSOAROnlyPack",
+        "marketplaces": [
+          "xsoar"
+        ]
+      },
+      "myOtherTestPlaybook": {
+        "name": "myOtherTestPlaybook",
+        "file_path": "Packs/myXSOAROnlyPack/Integrations/TestPlaybooks/myOtherTestPlaybook.yml",
+        "pack": "myXSOAROnlyPack",
+        "marketplaces": [
+          "xsoar"
+        ]
+      }
+    }
+  ],
+  "Packs": {}
+}

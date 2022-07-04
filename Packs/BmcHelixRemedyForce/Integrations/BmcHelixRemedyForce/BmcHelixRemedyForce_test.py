@@ -629,7 +629,7 @@ class BmcHelixRemedyForceTestCase(unittest.TestCase):
         Then expected row response should be processed and context data should be set with the same number of items in
             the results field of the response
 
-        :param mocker_http_request: Mocker object for http request call
+        :param mocker_http_request: MockerCases object for http request call
         :return: None
         """
         import BmcHelixRemedyForce
@@ -654,7 +654,7 @@ class BmcHelixRemedyForceTestCase(unittest.TestCase):
         When bmc_remedy_service_request_definition_get command is called
         Then Demisto exception should be thrown
 
-        :param mocker_http_request: Mocker object for http request call
+        :param mocker_http_request: MockerCases object for http request call
         :return: None
         """
         failure_resp = {'Success': False}
@@ -687,7 +687,7 @@ class BmcHelixRemedyForceTestCase(unittest.TestCase):
         When service request id is requested from name
         Then valid name should be returned
 
-        :param mocker_http_request: Mocker object for http request call
+        :param mocker_http_request: MockerCases object for http request call
         :return: None
         """
         success_resp = {'records': [{'Id': 'ID_FOR_GIVEN_NAME'}]}
@@ -703,7 +703,7 @@ class BmcHelixRemedyForceTestCase(unittest.TestCase):
         When service request id is requested from name is not found
         Then DemistoException should be raised with proper message
 
-        :param mocker_http_request: Mocker object for http request call
+        :param mocker_http_request: MockerCases object for http request call
         :return: None
         """
         mocker_http_request.side_effect = DemistoException('ERROR_MSG')
@@ -847,7 +847,7 @@ class BmcHelixRemedyForceTestCase(unittest.TestCase):
         When fetch-incidents is called from main()
         Then demistomock.incidents and demistomock.setLastRun should be called with respected values.
 
-        :param args: Mocker objects.
+        :param args: MockerCases objects.
         :return: None
         """
         from BmcHelixRemedyForce import main
@@ -1637,8 +1637,8 @@ class BmcHelixRemedyForceTestCase(unittest.TestCase):
         When command to create incident is called
         Then incident should be created and proper context and reatable output should be returned
 
-        :param mocker_http_request: Mocker object for http_request
-        :param mocker_return_results: Mocker object for return_results
+        :param mocker_http_request: MockerCases object for http_request
+        :param mocker_return_results: MockerCases object for return_results
         :return: None
         """
 
@@ -1669,8 +1669,8 @@ class BmcHelixRemedyForceTestCase(unittest.TestCase):
             Then incident should be created but warning output should be returned with proper context and readable
             output
 
-            :param mocker_http_request: Mocker object for http_request
-            :param mocker_return_warning: Mocker object for return_results
+            :param mocker_http_request: MockerCases object for http_request
+            :param mocker_return_warning: MockerCases object for return_results
             :param mocker_error: mocker object for demistomock.error
             :return: None
         """
@@ -1705,7 +1705,7 @@ class BmcHelixRemedyForceTestCase(unittest.TestCase):
             When command to create incident is called
             Then error output should be returned with proper error message
 
-            :param mocker_http_request: Mocker object for http_request
+            :param mocker_http_request: MockerCases object for http_request
             :return: None
         """
 
@@ -1740,8 +1740,8 @@ class BmcHelixRemedyForceTestCase(unittest.TestCase):
         When command for update incident is called
         Then command should return expected results and set context for update status success
 
-        :param mocker_http_request: Mocker for http request
-        :param mocker_return_results: Mocker for return_results
+        :param mocker_http_request: MockerCases for http request
+        :param mocker_return_results: MockerCases for return_results
         :param mocker_error: mocker object for demistomock.error
         :return: None
         """
@@ -1769,7 +1769,7 @@ class BmcHelixRemedyForceTestCase(unittest.TestCase):
         When command to create incident is called with incorrect input
         Then error output should be returned with proper error message
 
-        :param mocker_http_request: Mocker for http request
+        :param mocker_http_request: MockerCases for http request
         :return: None
         """
         mocker_http_request.return_value = fetch_dummy_response()
