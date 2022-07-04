@@ -30,6 +30,7 @@
 		],
 		"python.testing.pytestEnabled": true,
 		"python.testing.pytestArgs": ["."],
+		"python.testing.cwd": "${localWorkspaceFolder}/Packs/HelloWorld/Integrations/HelloWorld",
 		"files.autoSave": "afterDelay"
 	},
 	"extensions": [
@@ -49,7 +50,8 @@
 		"yzhang.markdown-all-in-one",
 		"shd101wyy.markdown-preview-enhanced",
 		"Gruntfuggly.todo-tree",
-		"redhat.vscode-yaml"
+		"redhat.vscode-yaml",
+		"PKief.material-icon-theme"
 		],
 	"containerEnv": {
 		"LOCAL_WORKSPACE_PATH": "${localWorkspaceFolder}",
@@ -59,7 +61,7 @@
 		"DEMISTO_BASE_URL": "${localEnv:DEMISTO_BASE_URL}",
 		"DEMISTO_USERNAME": "${localEnv:DEMISTO_USERNAME}",
 		"DEMISTO_PASSWORD": "${localEnv:DEMISTO_PASSWORD}",
-		"DEMISTO_VERIFY_SSL": "false"
+		"DEMISTO_VERIFY_SSL": "${localEnv:DEMISTO_VERIFY_SSL}"
 	},
 	"features": {
 		"docker-in-docker": "latest",
