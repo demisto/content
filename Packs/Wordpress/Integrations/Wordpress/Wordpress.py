@@ -594,7 +594,7 @@ def main() -> None:
             return_results(result)
 
         elif command in commands:
-            commands[command](client, args)
+            commands[command](client, args)  # type: ignore[operator]
 
     # Log exceptions and return errors
     except Exception as e:
