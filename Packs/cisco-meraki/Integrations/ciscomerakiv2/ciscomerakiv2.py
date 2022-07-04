@@ -118,7 +118,8 @@ class Client(BaseClient):
         res = self._http_request('GET', url_suffix=url_suffix)
         return res.get('rules', [])
 
-    def update_wireless_firewall_rules(self, network_id: str = None, number: str = None, rules: list = [], allow_lan: bool = False):
+    def update_wireless_firewall_rules(self, network_id: str = None, number: str = None, rules: list = [],
+                                   allow_lan: bool = False):
         url_suffix = f'networks/{network_id}/wireless/ssids/{number}/firewall/l3FirewallRules'
         body = {
             'rules': rules,
@@ -162,12 +163,12 @@ def test_module_command(client: Client):
 
 
 def extract_errors(res: Response) -> list:
-    errors = None
     try:
         errors: list = res.json().get('errors')
+        return errors
     except Exception:
-        errors = []
-    return errors
+        return []
+
 
 
 def meraki_fetch_org_command(client: Client, args: dict):
@@ -208,7 +209,7 @@ def meraki_fetch_device_clients_command(client: Client, args: dict):
 
 def meraki_fetch_network_clients_command(client: Client, args: dict):
     network_id = args.get('networkId')
-    timespan: int = arg_to_number(args.get('timespan', "86400"))
+    timespan: int = arg_to_number(args.get('timespan', "86400"))  # type: ignore[assignment]
     res = client.fetch_network_clients(network_id=network_id, timespan=timespan)
     command_results = CommandResults(
         outputs_prefix='Meraki.Clients',
@@ -506,8 +507,8 @@ def main() -> None:
             raise NotImplementedError(f"Command {command} is not implemented.")
 
     except Exception as err:
-       demisto.error(traceback.format_exc())  # print the traceback
-       return_error(f'Failed to execute {command} command.\nError:\n{str(err)}')
+        demisto.error(traceback.format_exc())  # print the traceback
+        return_error(f'Failed to execute {command} command.\nError:\n{str(err)}')
 
 
 ''' ENTRY POINT '''
