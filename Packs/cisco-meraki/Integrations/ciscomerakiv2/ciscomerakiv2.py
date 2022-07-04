@@ -164,9 +164,9 @@ def test_module_command(client: Client):
 def extract_errors(res: Response) -> list:
     errors = None
     try:
-        errors = res.json().get('errors')
+        errors: list = res.json().get('errors')
     except Exception:
-        errors = None
+        errors = []
     return errors
 
 
@@ -208,7 +208,7 @@ def meraki_fetch_device_clients_command(client: Client, args: dict):
 
 def meraki_fetch_network_clients_command(client: Client, args: dict):
     network_id = args.get('networkId')
-    timespan = arg_to_number(args.get('timespan', "86400"))
+    timespan: int = arg_to_number(args.get('timespan', "86400"))
     res = client.fetch_network_clients(network_id=network_id, timespan=timespan)
     command_results = CommandResults(
         outputs_prefix='Meraki.Clients',
