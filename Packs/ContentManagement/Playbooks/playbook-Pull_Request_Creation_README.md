@@ -41,4 +41,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Pull Request Creation](../docs-files/Pull_Request_Creation.png)
+![Pull Request Creation](../Doc_files/Pull_Request_Creation.png)
