@@ -7,8 +7,10 @@ category: IT Services
 description: Cloud controlled WiFi, routing, and security. Supporting v1 of the Cisco Meraki API.
 configuration:
 - display: API Key
+  hiddenusername: true
+  displaypassword: API Key
   name: api_key
-  type: 4
+  type: 9
   required: true
 - display: Trust any certificate (not secure)
   name: insecure
