@@ -3510,9 +3510,9 @@ def panorama_get_pcap_command(args: dict):
     serial_number = args.get('serialNumber')
     if VSYS and serial_number:
         raise Exception('The serialNumber argument can only be used in a Panorama instance configuration')
-    elif DEVICE_GROUP and not serial_number:
+    elif DEVICE_GROUP and not serial_number and pcap_type != 'threat-pcap':
         raise Exception('PCAP listing is only supported on Panorama with the serialNumber argument.')
-    elif serial_number:
+    elif serial_number and pcap_type != 'threat-pcap':
         params['target'] = serial_number
 
     file_name = None
