@@ -553,37 +553,9 @@ Update the L3 firewall rules of an MX network.
 | Meraki.Firewall.Rules.syslogEnabled | bool | Syslog enabled. | 
 
 ## Breaking changes from the previous version of this integration - Cisco Meraki V2
-%%FILL HERE%%
-The following sections list the changes in this version.
-
-### Commands
-#### The following commands were removed in this version:
-* *commandName* - this command was replaced by XXX.
-* *commandName* - this command was replaced by XXX.
-
-### Arguments
-#### The following arguments were removed in this version:
-
-In the *commandName* command:
-* *argumentName* - this argument was replaced by XXX.
-* *argumentName* - this argument was replaced by XXX.
-
-#### The behavior of the following arguments was changed:
-
-In the *commandName* command:
-* *argumentName* - is now required.
-* *argumentName* - supports now comma separated values.
-
-### Outputs
-#### The following outputs were removed in this version:
-
-In the *commandName* command:
-* *outputPath* - this output was replaced by XXX.
-* *outputPath* - this output was replaced by XXX.
-
-In the *commandName* command:
-* *outputPath* - this output was replaced by XXX.
-* *outputPath* - this output was replaced by XXX.
+The previous integration will continue to function. However, Cisco have ended support
+for their V0 of the API. There are no changes that will break backward compatibility as this
+is a new integration to support the V1 of their dashboard API.
 
 ## Additional Considerations for this version
 
