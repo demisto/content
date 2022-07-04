@@ -37,7 +37,6 @@ failed_unittests.txt
 Scripts/**/__init__.py
 Integrations/**/__init__.py
 Packs/**/__init__.py
-requirements.txt
 
 # Environment and reports
 .demisto-sdk-conf
@@ -46,17 +45,10 @@ requirements.txt
 .env
 .envrc
 Packs/**/report_pytest.json
-/Packs/**/Pipfile
-/Packs/**/Pipfile.lock
-
-
 
 # coverage related
 /coverage_report
 .coverage
 
 # devcontainer folders
-.devcontainer/certs.crt
-**/.devcontainer
-!/.devcontainer
-
+.devcontainer
