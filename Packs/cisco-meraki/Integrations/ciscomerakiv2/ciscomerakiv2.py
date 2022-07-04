@@ -119,7 +119,7 @@ class Client(BaseClient):
         return res.get('rules', [])
 
     def update_wireless_firewall_rules(self, network_id: str = None, number: str = None, rules: list = [],
-                                   allow_lan: bool = False):
+                                       allow_lan: bool = False):
         url_suffix = f'networks/{network_id}/wireless/ssids/{number}/firewall/l3FirewallRules'
         body = {
             'rules': rules,
@@ -168,7 +168,6 @@ def extract_errors(res: Response) -> list:
         return errors
     except Exception:
         return []
-
 
 
 def meraki_fetch_org_command(client: Client, args: dict):
