@@ -2,7 +2,7 @@
     "defaultIncidentType": "Microsoft Graph Identity and Access",
     "description": "Classifies Microsoft Graph Identity and Access's alerts",
     "feed": false,
-    "id": "Microsoft Graph Identity and Access",
+    "id": "Microsoft Graph Identity and Access Classifier",
     "keyTypeMap": {
         "unlikelyTravel": "Microsoft Graph Identity and Access",
         "anonymizedIPAddress": "Microsoft Graph Identity and Access",
