@@ -1,3 +1,5 @@
+import json
+
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
@@ -61,14 +63,14 @@ class Client(BaseClient):
         url_suffix = '/dlp/dictionary'
         return self._http_request('GET', url_suffix, raise_on_status=True)
 
-    def policy_dictionary_update(self, dict_id: Optional[int], name: str, content: List[str]) -> Dict[str, str]:
+    def policy_dictionary_update(self, dict_id: Optional[int], name: str, content: str) -> Dict[str, str]:
         url_suffix = '/dlp/dictionary'
         data = {
             "id": dict_id,
             "name": name,
             "content": content
         }
-        return self._http_request('PUT', url_suffix, json_data=data, raise_on_status=True)
+        return self._http_request('PUT', url_suffix, data=json.dumps(data), raise_on_status=True)
 
 
 ''' HELPER FUNCTIONS '''
@@ -265,7 +267,7 @@ def policy_dictionary_list_command(client: Client, args: Dict) -> CommandResults
 def policy_dictionary_update_command(client: Client, args: Dict) -> CommandResults:
     dict_id = arg_to_number(args.get('dictionary_id'))
     name = str(args.get('name'))
-    content = argToList(args.get('content'))
+    content = args.get('content')
 
     result = client.policy_dictionary_update(dict_id, name, content)
 
