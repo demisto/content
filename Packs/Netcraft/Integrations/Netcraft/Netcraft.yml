@@ -27,7 +27,7 @@ configuration:
 script:
   script: ''
   type: python
-  dockerimage: demisto/python3:3.10.4.29342
+  dockerimage: demisto/python3:3.10.4.30607
   commands:
   - name: netcraft-report-attack
     arguments:
