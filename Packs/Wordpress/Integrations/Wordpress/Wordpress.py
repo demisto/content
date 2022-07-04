@@ -4,7 +4,7 @@ from CommonServerUserPython import *  # noqa
 
 import requests
 import traceback
-from typing import Dict
+from typing import Callable, Dict
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
@@ -550,7 +550,7 @@ def main() -> None:
     demisto.debug(f'Command being called is {command}')
     try:
 
-        commands = {
+        commands: Dict[str, Callable] = {
             'wordpress-list-posts': list_posts_command,
             'wordpress-get-post': get_post_command,
             'wordpress-url-request': url_request_command,
