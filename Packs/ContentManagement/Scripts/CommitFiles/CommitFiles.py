@@ -73,7 +73,6 @@ def split_yml_file(content_file):
         file_type = 'integration'
         base_name = content_file.file_name.replace('integration-', '').replace('.yml', '')
 
-
     # create the yml file from entry id
     with open(file_object['path'], 'r') as f:
         file_contents = f.read()
@@ -84,10 +83,8 @@ def split_yml_file(content_file):
     output_capture = io.StringIO()
 
     # split the yml file
-
-    yml_splitter = YmlSplitter(content_file.file_name, base_name=base_name,output=base_name,
-                       file_type=file_type, no_pipenv=True, no_basic_fmt=True, no_logging=True,  no_readme=True)
-
+    yml_splitter = YmlSplitter(content_file.file_name, base_name=base_name, output=base_name, file_type=file_type,
+                               no_pipenv=True, no_basic_fmt=True, no_logging=True,  no_readme=True)
 
     script_type = yml_splitter.yml_data.get('type')
     if script_type == 'python':
@@ -96,7 +93,6 @@ def split_yml_file(content_file):
         script_extention = 'js'
     elif script_type == 'powershell':
         script_extention = 'ps1'
-
 
     with redirect_stdout(output_capture):
         with redirect_stderr(output_capture):
@@ -183,7 +179,7 @@ def main():
             # create ContentFile item
             content_file = ContentFile(pack_name=pack_name, file=file)
 
-            if content_file.content_type in ('automation','integration'):
+            if content_file.content_type in ('automation', 'integration'):
                 # split automation file to yml and script files
                 yml_file, script_file = split_yml_file(content_file)
                 commit_content_item(branch_name, yml_file)
