@@ -5,10 +5,8 @@ from typing import Any, Optional
 
 from demisto_sdk.commands.common.constants import MarketplaceVersions
 from demisto_sdk.commands.common.tools import json, yaml
-from logger import logger
 from packaging import version
 from packaging.version import Version
-
 from Tests.scripts.collect_tests.exceptions import (DeprecatedPackException,
                                                     InexistentPackException,
                                                     InvalidPackNameException,
@@ -18,6 +16,8 @@ from Tests.scripts.collect_tests.exceptions import (DeprecatedPackException,
                                                     SkippedPackException,
                                                     UnsupportedPackException)
 from Tests.scripts.collect_tests.path_manager import PathManager
+
+from logger import logger
 
 
 def find_pack_folder(path: Path) -> Path:

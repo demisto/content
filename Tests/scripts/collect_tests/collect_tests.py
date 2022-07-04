@@ -7,23 +7,23 @@ from enum import Enum
 from pathlib import Path
 from typing import Iterable, Optional
 
-from constants import (DEFAULT_MARKETPLACE_WHEN_MISSING,
-                       DEFAULT_REPUTATION_TESTS, ONLY_INSTALL_PACK,
-                       SKIPPED_CONTENT_ITEMS, XSOAR_SANITY_TEST_NAMES)
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
 from demisto_sdk.commands.common.tools import (find_type_by_path, run_command,
                                                str2bool)
+from git import Repo
+from Tests.scripts.collect_tests.path_manager import PathManager
+
+from constants import (DEFAULT_MARKETPLACE_WHEN_MISSING,
+                       DEFAULT_REPUTATION_TESTS, ONLY_INSTALL_PACK,
+                       SKIPPED_CONTENT_ITEMS, XSOAR_SANITY_TEST_NAMES)
 from exceptions import (DeprecatedPackException, EmptyMachineListException,
                         InexistentPackException, NonDictException,
                         NoTestsConfiguredException, NothingToCollectException,
                         NotUnderPackException, SkippedPackException,
                         UnsupportedPackException)
-from git import Repo
 from id_set import IdSet
 from logger import logger
 from test_conf import TestConf
-
-from Tests.scripts.collect_tests.path_manager import PathManager
 from utils import (ContentItem, Machine, PackManager, VersionRange,
                    find_pack_folder)
 
