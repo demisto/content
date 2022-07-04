@@ -1581,7 +1581,7 @@ class IntegrationLogger(object):
         if self.messages:
             text = 'Full Integration Log:\n' + '\n'.join(self.messages)
             if verbose:
-                demisto.log(text)
+                demisto.log(text)  # pylint: disable=E9012
             if not self.debug_logging:  # we don't print out if in debug_logging as already all message where printed
                 demisto.info(text)
             self.messages = []
@@ -7857,7 +7857,7 @@ def is_demisto_version_ge(version, build_number=''):
         raise
     except ValueError:
         # dev editions are not comparable
-        demisto.log(
+        demisto.log(  # pylint: disable=E9012
             'is_demisto_version_ge: ValueError. \n '
             'input: server version: {} build number: {}\n'
             'server version: {}'.format(version, build_number, server_version)
