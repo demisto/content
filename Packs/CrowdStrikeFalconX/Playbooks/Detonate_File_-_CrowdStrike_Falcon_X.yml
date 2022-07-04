@@ -527,7 +527,7 @@ inputs:
   playbookInputQuery: null
 - key: EnvironmentID
   value:
-    simple: '''160: Windows 10'''
+    simple: "160: Windows 10"
   required: false
   description: Sandbox environment used for analysis.
   playbookInputQuery: null
