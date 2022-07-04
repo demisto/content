@@ -1,7 +1,6 @@
 from urllib.parse import quote
 
 import pytest
-import html2text
 import requests_mock
 
 from CommonServerPython import *
