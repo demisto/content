@@ -856,7 +856,7 @@ def add_link_command(client: Client, issue_id, title, url, summary=None, global_
         link['application'] = {}
     if application_type:
         link['application']['type'] = application_type
-    if application_type:
+    if application_name:
         link['application']['name'] = application_name
 
     data = client.send_request('POST', req_url, json.dumps(link), resp_type='json')
@@ -953,7 +953,7 @@ def fetch_incidents(client: Client, query, id_offset, should_get_attachments, sh
         query = f'{query} AND created>=\"{formatted_minute_to_fetch}\"'
     else:
         if id_offset:
-            query = f'{query} AND id >= {id_offset}'
+            query = f'{query} AND id >= {id_offset} ORDER BY id ASC'
         if fetch_by_created:
             query = f'{query} AND created>-1m'
 

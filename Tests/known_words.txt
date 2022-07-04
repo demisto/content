@@ -182,6 +182,10 @@ AttackPattern
 ParsesUUID
 UUID
 Deprecated
+dbotMirrorDirection
+dbotMirrorId
+dbotMirrorInstance
+dbotMirrorTags
 Atlassian
 OAuth1
 AtlassianClient

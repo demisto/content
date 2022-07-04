@@ -19,7 +19,7 @@ def main():
         return profile_id
 
     except Exception as e:
-        demisto.log(traceback.format_exc())
+        demisto.debug(traceback.format_exc())
         return_error(str(e))
 
 
