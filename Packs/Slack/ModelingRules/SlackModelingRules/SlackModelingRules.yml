@@ -3,32 +3,4 @@ id: slack_modeling_rule
 fromversion: 6.8.0
 tags: slack
 rules: ''
-schema: |-
-  {
-    "slack_slack_raw": {
-      "id": {
-        "type": "string",
-        "is_array": false
-      },
-      "date_create": {
-        "type": "int",
-        "is_array": false
-      },
-      "action": {
-        "type": "string",
-        "is_array": false
-      },
-      "actor": {
-        "type": "string",
-        "is_array": false
-      },
-      "entity": {
-        "type": "string",
-        "is_array": false
-      },
-      "context": {
-        "type": "string",
-        "is_array": false
-      }
-    }
-  }
+schema: ''
