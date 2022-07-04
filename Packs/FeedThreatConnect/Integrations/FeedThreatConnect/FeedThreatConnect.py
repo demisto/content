@@ -2,6 +2,8 @@
 # IMPORTS #
 ###########
 # STD packages
+import hashlib
+import hmac
 from enum import Enum
 from typing import Dict, Tuple, Any, Optional, List, Union, Iterator
 from itertools import islice
@@ -158,18 +160,14 @@ def module_test_command(client: Client) -> COMMAND_OUTPUT:
         dict: Operation entry context - Empty.
         dict: Operation raw response - Empty.
     """
-    try:
-        url = '/api/v3/indicators?resultLimit=4'
+    url = '/api/v3/indicators?resultLimit=4'
 
-        response, status_code = client.make_request(Method.GET, url)
-        if status_code == 200:
-            demisto.results('ok')
-        else:
-            return_error('Error from the API: ' + response.get('message',
-                                                               'An error has occurred if it persist please contact your local help desk'))
-    except RuntimeError:
-        raise DemistoException("Unable to communicate with ThreatConnect API!")
-
+    response, status_code = client.make_request(Method.GET, url)
+    if status_code == 200:
+        return "ok", {}, {}
+    else:
+        return_error('Error from the API: ' + response.get('message',
+                                                           'An error has occurred if it persist please contact your local help desk'))
 
 def fetch_indicators_command(client: Client) -> List[Dict[str, Any]]:
     """ Fetch indicators from ThreatConnect
@@ -185,6 +183,16 @@ def fetch_indicators_command(client: Client) -> List[Dict[str, Any]]:
     return [parse_indicator(indicator) for indicator in raw_response]
 
 
+def create_or_query(delimiter_str: str, param_name: str) -> str:
+    if not delimiter_str:
+        return ''
+    arr = delimiter_str.split(',')
+    query = ''
+    for item in arr:
+        query += f'{param_name}="{item}" OR '
+    return query[:len(query) - 3]
+
+
 def get_indicators_command(client: Client) -> COMMAND_OUTPUT:
     """ Get indicator from ThreatConnect, Able to change limit and offset by command arguments.
 
@@ -196,14 +204,23 @@ def get_indicators_command(client: Client) -> COMMAND_OUTPUT:
         dict: Operation entry context.
         dict: Operation raw response.
     """
-    raw_response: Iterator[Any] = client.get_indicators(
-        owners=argToList(demisto.getArg('owners') or demisto.getParam('owners')),
-        limit=demisto.getArg('limit'),
-        offset=demisto.getArg('offset'))
-    readable_output: str = tableToMarkdown(name=f"{INTEGRATION_NAME} - Indicators",
-                                           t=[parse_indicator(indicator) for indicator in raw_response])
+    limit = demisto.args().get('limit', '50')
+    offset = demisto.args().get('offset', '0')
+    owners = demisto.getArg('owners') or demisto.getParam('owners')
+    owners = create_or_query(owners, "ownerName")
+    owners = urllib.parse.quote(owners.encode('utf8'))
+    url = f'/api/v3/indicators?tql={owners}&resultStart={offset}&resultLimit={limit}'
 
-    return readable_output, {}, list(raw_response)
+    response, status_code = client.make_request(Method.GET, url)
+    if status_code == 200:
+        readable_output: str = tableToMarkdown(name=f"{INTEGRATION_NAME} - Indicators",
+                                               t=[parse_indicator(indicator) for indicator in response.get('data')])
+
+        return readable_output, {}, list(response.get('data'))
+    else:
+        return_error('Error from the API: ' + response.get('message',
+                                                           'An error has occurred if it persist please contact your local help desk'))
+
 
 
 def get_owners_command(client: Client) -> COMMAND_OUTPUT:
@@ -217,7 +234,13 @@ def get_owners_command(client: Client) -> COMMAND_OUTPUT:
         dict: Operation entry context.
         dict: Operation raw response.
     """
-    raw_response: Iterator[Any] = client.get_owners()
+    url = f'/api/v3/security/owners?resultLimit=10000'
+
+    response, status_code = client.make_request(Method.GET, url)
+    if status_code != 200:
+        return_error('Error from the API: ' + response.get('message',
+                                                           'An error has occurred if it persist please contact your local help desk'))
+    raw_response = response.get('data')
     readable_output: str = tableToMarkdown(name=f"{INTEGRATION_NAME} - Owners",
                                            t=list(raw_response))
 
@@ -225,7 +248,8 @@ def get_owners_command(client: Client) -> COMMAND_OUTPUT:
 
 
 def main():
-    insecure = not demisto.getParam('insecure')
+    # insecure = not demisto.getParam('insecure')
+    insecure = False
     client = Client(demisto.getParam('api_access_id'), demisto.getParam('api_secret_key'),
                     demisto.getParam('tc_api_path'), insecure)
     command = demisto.command()
@@ -244,6 +268,7 @@ def main():
             readable_output, outputs, raw_response = commands[command](client)
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
+        raise e
         return_error(f'Integration {INTEGRATION_NAME} Failed to execute {command} command. Error: {str(e)}')
 
 
