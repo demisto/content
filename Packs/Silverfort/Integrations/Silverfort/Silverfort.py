@@ -208,12 +208,13 @@ def main():
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
     # get the service API url
+    err_mmg = ""
     base_url = urljoin(demisto.params().get('url'), '/v1/public')
     verify_certificate = demisto.params().get('insecure', True)
     api_key = demisto.params().get('apikey')
     app_user_id, app_user_secret = api_key.split(":")
     if not app_user_id or not app_user_secret:
-        return_error(message='Verify the API KEY parameter is correct')
+        err_mmg = 'Verify the API KEY parameter is correct'
 
     LOG(f'Command being called is {demisto.command()}')
     try:
@@ -245,11 +246,14 @@ def main():
     except Exception as e:
         error_message = f'Failed to execute {demisto.command()} command. Error: '
         if 'Failed to parse' in e.args[0]:
-            return_error(message=error_message + 'Verify the URL parameter is correct')
+            err_mmg = error_message + 'Verify the URL parameter is correct'
         elif 'riskapi' not in e.args[0]:
-            return_error(message=error_message + str(e.args[0]))
+            err_mmg = error_message + str(e.args[0])
         else:
-            return_error(message=error_message + 'Something went wrong')
+            err_mmg = error_message + 'Something went wrong'
+
+    if err_mmg:
+        return_error(message=err_mmg)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
