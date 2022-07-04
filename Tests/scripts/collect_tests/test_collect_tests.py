@@ -105,25 +105,24 @@ def test_nightly_empty(mocker, run_master: bool, collector_class: Callable,
           expected_tests=expected_tests, expected_packs=expected_packs, expected_machines=None)
 
 
-@pytest.mark.parametrize('mocker,collector_class', (
-        (MockerCases.A_xsoar, XSOARNightlyTestCollector),
-        (MockerCases.A_xsiam, XSIAMNightlyTestCollector),
-        (MockerCases.B_xsoar, XSOARNightlyTestCollector),
-        (MockerCases.B_xsiam, XSIAMNightlyTestCollector)
+NIGHTLY_EXPECTED_TESTS = {'myTestPlaybook', 'myOtherTestPlaybook'}
+
+
+@pytest.mark.parametrize('mocker,collector_class,expected_tests,expected_packs,', (
+        (MockerCases.A_xsoar, XSOARNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSOAROnlyPack',)),
+        (MockerCases.A_xsiam, XSIAMNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSIAMOnlyPack',)),
+        (MockerCases.B_xsoar, XSOARNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSOAROnlyPack',)),
+        (MockerCases.B_xsiam, XSIAMNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSIAMOnlyPack',)),
+        (MockerCases.C, XSOARNightlyTestCollector, {'myXSOAROnlyTestPlaybook', 'myTestPlaybook'}, ()),  # todo packs
+        (MockerCases.C, XSIAMNightlyTestCollector, {'myXSIAMOnlyTestPlaybook'}, ())  # todo packs
 ))
-@pytest.mark.parametrize('run_master', (True, False))
-@pytest.mark.parametrize('run_nightly', (True, False))
-def test_nightly(mocker, run_master: bool, collector_class: Callable, run_nightly: bool):
+def test_nightly(mocker, collector_class: Callable, expected_tests: set[str], expected_packs: tuple[str]):
     """
     given:  a content folder
     when:   collecting tests with a NightlyTestCollector
     then:   make sure tests are collected from integration and id_set
     """
     # noinspection PyTypeChecker
-    expected_pack = {XSOARNightlyTestCollector: ('myXSOAROnlyPack',),
-                     XSIAMNightlyTestCollector: ('myXSIAMOnlyPack',)}[collector_class]
 
-    _test(mocker, run_nightly=run_nightly, run_master=run_master, collector_class=collector_class,
-          expected_tests=('myTestPlaybook', 'myOtherTestPlaybook'),
-          expected_packs=expected_pack,
-          expected_machines=None)
+    _test(mocker, run_nightly=True, run_master=True, collector_class=collector_class, expected_tests=expected_tests,
+          expected_packs=expected_packs, expected_machines=None)
