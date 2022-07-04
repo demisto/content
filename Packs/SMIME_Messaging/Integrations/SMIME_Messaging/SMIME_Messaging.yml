@@ -68,13 +68,7 @@ script:
       description: The encrypted message with .p7 extension.
       isArray: false
       name: encrypt_message
-      required: false
-      secret: false
-    - default: false
-      description: The encrypted message text.
-      isArray: false
-      name: encrypt_message_text
-      required: false
+      required: true
       secret: false
     - default: false
       description: The encoding code to use when decode the message body, e.g 'ISO-8859-2''

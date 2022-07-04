@@ -166,22 +166,10 @@ def decrypt_email_body(client: Client, args: Dict, file_path=None):
         args: Dict
         file_path: relevant for the test module
     """
-    message_as_file = args.get('encrypt_message', '')
-    encrypt_message_text = args.get('encrypt_message_text', '')
-    if encrypt_message_text and message_as_file or not (encrypt_message_text or message_as_file) and not file_path:
-        raise DemistoException('Please provide exactly one of the arguments')
-
     if file_path:
         encrypt_message = file_path
     else:
-        if encrypt_message_text:
-            # encrypt_message = encrypt_email_body(client, {'message': 'testing'})
-            test_file = NamedTemporaryFile(delete=False)
-            test_file.write(bytes(encrypt_message_text, 'utf-8'))
-            test_file.close()
-            encrypt_message = {'path': test_file.name}
-        else:
-            encrypt_message = demisto.getFilePath(args.get('encrypt_message'))
+        encrypt_message = demisto.getFilePath(args.get('encrypt_message'))
 
     encoding = args.get('encoding', '')
     msg = ''
@@ -203,7 +191,7 @@ def decrypt_email_body(client: Client, args: Dict, file_path=None):
 
         else:
             raise
-    print(f"decrypted_text {decrypted_text}")
+
     entry_context = {
         'SMIME.Decrypted': {
             'Message': out
