@@ -18,12 +18,55 @@ configuration:
   name: api_secret_key
   required: true
   type: 4
-- additionalinfo: Comma-separated list of owners to fetch indicators from. (If
-    not specified will retrieve only indicators owned by account)
-  display: Owners
+- additionalinfo: A comma-seperated list of tags to filter by
+  display: Tags
+  name: tags
+  required: false
+  type: 0
+- additionalinfo: The group type to filter by
+  defaultValue: Incident
+  display: Group Type
+  name: group_type
+  options:
+  - Incident
+  - Event
+  required: false
+  type: 16
+- additionalinfo: The status to filter the results by
+  display: Status
+  name: status
+  options:
+  - Deleted
+  - Rejected
+  - Closed
+  - Incident Reported
+  - Restoration Achieved
+  - Containment Achieved
+  - Stalled
+  - Open
+  - New
+  - Escalated
+  - No Further Action
+  - False Positive
+  - Needs Review
+  required: false
+  type: 16
+- additionalinfo: Comma-separated list of owners to fetch indicators from.
+  display: Source
   name: owners
   required: false
   type: 0
+- additionalinfo: The metadat we want to collect.
+  display: Incident Metadata
+  name: fields
+  options:
+  - associatedGroups
+  - associatedIndicators
+  - tags
+  - securityLabels
+  - associatedVictimAssets
+  required: false
+  type: 16
 - defaultvalue: 'true'
   display: Fetch indicators
   name: feed

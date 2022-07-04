@@ -24,7 +24,7 @@ Development info:
 """  # noqa W291
 
 ####################
-# GLOBAL CONSTUNTS #
+# GLOBAL CONSTANTS #
 ####################
 INTEGRATION_NAME = 'ThreatConnect Feed'
 INTEGRATION_COMMAND_NAME = 'tc'
@@ -130,7 +130,7 @@ class Client:
         })
 
     def get_owners(self) -> Iterator[Any]:
-        """Get indicators owners - helping configuring the feed integration.
+        """Get indicators owners - helping to configure the feed integration.
 
         Yields:
             Iterable: Owner information
@@ -142,8 +142,8 @@ class Client:
         """ Get indicators from threatconnect.
 
         Args:
-            offset: Index offset from begining.
-            limit: Indicator amout limit.
+            offset: Index offset from beginning.
+            limit: Indicator amount limit.
             owners: Filter indicators belongs to specific owner.
 
         Returns:
@@ -240,6 +240,7 @@ def main():
                     demisto.getParam("api_secret_key"),
                     demisto.getParam("tc_api_path"),
                     )
+
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
     commands = {
