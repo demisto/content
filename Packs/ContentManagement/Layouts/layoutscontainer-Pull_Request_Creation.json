@@ -240,7 +240,7 @@
                                 "fieldId": "cicdpullrequestlink",
                                 "height": 22,
                                 "id": "35fb1120-efdd-11ec-ad08-d9ee2c4fe212",
-                                "index": 2,
+                                "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -249,7 +249,16 @@
                                 "fieldId": "cicdpullrequestcomment",
                                 "height": 44,
                                 "id": "71cacdd0-efdd-11ec-ad08-d9ee2c4fe212",
-                                "index": 3,
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_cicdpullrequestreview",
+                                "height": 44,
+                                "id": "71cacdd0-efdd-11ec-ad08-d9ee2c4fe668",
+                                "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }

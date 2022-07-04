@@ -236,7 +236,16 @@
                                 "fieldId": "cicdpullrequestlink",
                                 "height": 22,
                                 "id": "35fb1120-efdd-11ec-ad08-d9ee2c4fe212",
-                                "index": 1,
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "incident_cicdpullrequestreview",
+                                "height": 22,
+                                "id": "35fb1120-efdd-11ec-ad08-d9ee2c4fe669",
+                                "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
