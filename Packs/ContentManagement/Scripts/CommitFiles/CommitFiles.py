@@ -63,9 +63,16 @@ def commit_content_item(branch_name, content_file):
         raise DemistoException(get_error(commit_res))
 
 
-def split_script_file(content_file):
+def split_yml_file(content_file):
     file_object = demisto.getFilePath(content_file.entry_id)
-    base_name = content_file.file_name.replace('automation-', '').replace('.yml', '')
+
+    if content_file.content_type == 'automation':
+        file_type = 'script'
+        base_name = content_file.file_name.replace('automation-', '').replace('.yml', '')
+    else:
+        file_type = 'integration'
+        base_name = content_file.file_name.replace('integration-', '').replace('.yml', '')
+
 
     # create the yml file from entry id
     with open(file_object['path'], 'r') as f:
@@ -74,17 +81,29 @@ def split_script_file(content_file):
     with open(content_file.file_name, "w") as f:
         f.write(file_contents)
 
-    # split the yml file
-    yml_splitter = YmlSplitter(no_readme=True, base_name=base_name, input=content_file.file_name,
-                               output=base_name, file_type='script', no_pipenv=True, no_basic_fmt=True)
-
     output_capture = io.StringIO()
+
+    # split the yml file
+
+    yml_splitter = YmlSplitter(content_file.file_name, base_name=base_name,output=base_name,
+                       file_type=file_type, no_pipenv=True, no_basic_fmt=True, no_logging=True,  no_readme=True)
+
+
+    script_type = yml_splitter.yml_data.get('type')
+    if script_type == 'python':
+        script_extention = 'py'
+    elif script_type == 'javascript':
+        script_extention = 'js'
+    elif script_type == 'powershell':
+        script_extention = 'ps1'
+
+
     with redirect_stdout(output_capture):
         with redirect_stderr(output_capture):
             yml_splitter.extract_to_package_format()
 
     yml_file_path = f'{base_name}/{base_name}.yml'
-    script_file_path = f'{base_name}/{base_name}.py'
+    script_file_path = f'{base_name}/{base_name}.{script_extention}'
     path_to_file = f'{content_file.path_to_file}/{base_name}'
 
     # read the py and yml files content
@@ -100,12 +119,12 @@ def split_script_file(content_file):
     yml_file.file_name = f'{base_name}.yml'
     yml_file.path_to_file = path_to_file
 
-    py_file = ContentFile()
-    py_file.file_text = script_txt
-    py_file.file_name = f'{base_name}.py'
-    py_file.path_to_file = path_to_file
+    script_file = ContentFile()
+    script_file.file_text = script_txt
+    script_file.file_name = f'{base_name}.{script_extention}'
+    script_file.path_to_file = path_to_file
 
-    return yml_file, py_file
+    return yml_file, script_file
 
 
 class ContentFile:
@@ -131,7 +150,7 @@ class ContentFile:
         if self.file_name == 'metadata.json':
             self.file_name = 'pack_metadata.json'
             self.path_to_file = f'Packs/{pack_name}'
-            self.content_type = 'packmetadata'
+            self.content_type = 'metadata'
         else:
             content_type = self.file_name.split('-')[0].lower()
             folder = TYPE_TO_FOLDER[content_type]
@@ -161,13 +180,14 @@ def main():
             if file.get('Unzipped'):
                 continue
 
+            # create ContentFile item
             content_file = ContentFile(pack_name=pack_name, file=file)
 
-            if content_file.content_type == 'automation':
-                # split automation file to yml and python files
-                yml_file, py_file = split_script_file(content_file)
+            if content_file.content_type in ('automation','integration'):
+                # split automation file to yml and script files
+                yml_file, script_file = split_yml_file(content_file)
                 commit_content_item(branch_name, yml_file)
-                commit_content_item(branch_name, py_file)
+                commit_content_item(branch_name, script_file)
             else:
                 commit_content_item(branch_name, content_file)
 
