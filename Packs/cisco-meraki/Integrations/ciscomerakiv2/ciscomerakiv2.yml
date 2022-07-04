@@ -85,7 +85,7 @@ script:
       description: Network ID of the device.
       type: String
     - contextPath: Meraki.Devices.serial
-      description: Serail of the device.
+      description: Serial of the device.
       type: String
     - contextPath: Meraki.Devices.model
       description: Model of the device.
