@@ -218,18 +218,18 @@ List the uplink status of every Meraki MX, MG and Z series devices in the organi
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Meraki.Uplink.networkId | string | Network ID | 
-| Meraki.Uplink.serial | string | Serial | 
-| Meraki.Uplink.model | string | Model | 
-| Meraki.Uplink.lastReportedAt | string | Last reported at | 
-| Meraki.Uplink.uplinks.interface | string | Interface | 
-| Meraki.Uplink.uplinks.status | string | Status | 
-| Meraki.Uplink.uplinks.ip | string | IP | 
-| Meraki.Uplink.uplinks.gateway | string | Gateway | 
-| Meraki.Uplink.uplinks.publicIp | string | Public IP | 
-| Meraki.Uplink.uplinks.primaryDns | string | Primary DNS | 
-| Meraki.Uplink.uplinks.secondaryDns | string | Secondary DNS | 
-| Meraki.Uplink.uplinks.ipAssignedBy | string | IP assigned by | 
+| Meraki.Uplinks.networkId | string | Network ID | 
+| Meraki.Uplinks.serial | string | Serial | 
+| Meraki.Uplinks.model | string | Model | 
+| Meraki.Uplinks.lastReportedAt | string | Last reported at | 
+| Meraki.Uplinks.uplinks.interface | string | Interface | 
+| Meraki.Uplinks.uplinks.status | string | Status | 
+| Meraki.Uplinks.uplinks.ip | string | IP | 
+| Meraki.Uplinks.uplinks.gateway | string | Gateway | 
+| Meraki.Uplinks.uplinks.publicIp | string | Public IP | 
+| Meraki.Uplinks.uplinks.primaryDns | string | Primary DNS | 
+| Meraki.Uplinks.uplinks.secondaryDns | string | Secondary DNS | 
+| Meraki.Uplinks.uplinks.ipAssignedBy | string | IP assigned by | 
 
 ### meraki-fetch-ssids
 ***
