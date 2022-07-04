@@ -72,7 +72,7 @@ def remove_identity_key(source):
 
     dict_keys = list(source.keys())
     if len(dict_keys) != 1:
-        demisto.log("Got more then one identity creator. Exit function")
+        demisto.debug("Got more then one identity creator. Exit function")
         return source
 
     identity_key = dict_keys[0]
