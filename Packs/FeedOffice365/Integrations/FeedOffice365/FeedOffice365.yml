@@ -9,6 +9,16 @@ configuration:
   required: false
   type: 8
 - defaultvalue: All
+  display: Category
+  name: category
+  options:
+  - All
+  - Optimize
+  - Allow
+  - Default
+  required: true
+  type: 16
+- defaultvalue: All
   display: Regions
   name: regions
   options:
