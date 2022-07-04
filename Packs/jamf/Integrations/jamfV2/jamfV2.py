@@ -74,15 +74,15 @@ class Client(BaseClient):
         Generates new token.
         """
         resp = self._http_request(method='POST', url_suffix='api/v1/auth/token', resp_type='json')
-        self._token = resp.get('token')
+        token = resp.get('token')
         expiration_time = int(dateparser.parse(resp.get('expires')).timestamp())
         integration_context = get_integration_context()
-        integration_context.update({'token': self._token})
+        integration_context.update({'token': token})
         # Add 10 minutes buffer for the token
-        integration_context.update({'expires': expiration_time - 600})
+        integration_context.update({'expires': expiration_time - 60})
         set_integration_context(integration_context)
 
-        return self._token
+        return token
 
     def _classic_api_post(self, url_suffix, data, error_handler):
         post_headers = ((self._headers or {}) | POST_HEADERS)  # merge the token and the POST headers
