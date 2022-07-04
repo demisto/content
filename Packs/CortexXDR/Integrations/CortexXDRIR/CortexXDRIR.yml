@@ -94,7 +94,7 @@ configuration:
   name: prevent_only
   required: false
   type: 8
-  additionalinfo: 'Whether the XDR tenant Mode is prevent only'
+  additionalinfo: Whether the XDR tenant Mode is prevent only
 - additionalinfo: 'The statuses of the incidents that will be fetched. If no status is provided then incidents of all the statuses will be fetched. Note: An incident whose status was changed to a filtered status after its creation time will not be fetched.'
   display: Incident Statuses to Fetch
   hidden: false
@@ -2691,6 +2691,15 @@ script:
     - contextPath: PaloAltoNetworksXDR.RetrievedFiles.action_id
       description: ID of the action to retrieve files from selected endpoints.
       type: string
+    - contextPath: PaloAltoNetworksXDR.RetrievedFiles.endpoint_id
+      description: Endpoint ID. Added only when the operation is successful.
+      type: string
+    - contextPath: PaloAltoNetworksXDR.RetrievedFiles.file_link
+      description: Link to the file. Added only when the operation is successful.
+      type: string
+    - contextPath: PaloAltoNetworksXDR.RetrievedFiles.status
+      description: The action status. Added only when the operation is unsuccessful.
+      type: string
     polling: true
   - arguments:
     - default: false
@@ -3784,16 +3793,16 @@ script:
       isArray: true
       name: Identity_type
       predefined:
-      - 'ANONYMOUS'
-      - 'APPLICATION'
-      - 'COMPUTE'
-      - 'FEDERATED_IDENTITY'
-      - 'SERVICE'
-      - 'SERVICE_ACCOUNT'
-      - 'TEMPORARY_CREDENTIALS'
-      - 'TOKEN'
-      - 'UNKNOWN'
-      - 'USER'
+      - ANONYMOUS
+      - APPLICATION
+      - COMPUTE
+      - FEDERATED_IDENTITY
+      - SERVICE
+      - SERVICE_ACCOUNT
+      - TEMPORARY_CREDENTIALS
+      - TOKEN
+      - UNKNOWN
+      - USER
       required: false
       secret: false
     - default: false
@@ -4120,7 +4129,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of contributing events to retrieve. 
+      description: The maximum number of contributing events to retrieve.
       isArray: false
       name: limit
       required: false
@@ -4164,15 +4173,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: The string value, which defines the new field. Maximum length is 256
-        characters.
+      description: The string value, which defines the new field. Maximum length is 256 characters.
       isArray: true
       name: values
       required: true
       secret: false
     - default: false
-      description: The string value, which represents additional information regarding the featured
-        alert field.
+      description: The string value, which represents additional information regarding the featured alert field.
       isArray: false
       name: comments
       required: false
@@ -4190,8 +4197,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Replace the featured hosts\users\IP addresses\active directory groups listed
-      in your environment.
+    description: Replace the featured hosts\users\IP addresses\active directory groups listed in your environment.
     execution: false
     name: xdr-replace-featured-field
     outputs:
@@ -4201,7 +4207,7 @@ script:
     - contextPath: PaloAltoNetworksXDR.FeaturedField.fields
       description: String value that defines the new field.
       type: String
-  dockerimage: demisto/python3:3.10.4.30607
+  dockerimage: demisto/python3:3.10.4.31492
   feed: false
   isfetch: true
   longRunning: false
