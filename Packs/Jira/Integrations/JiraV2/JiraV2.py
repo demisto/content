@@ -63,7 +63,7 @@ class Client(BaseClient):
                      headers: Optional[dict] = None,
                      files: Optional[dict] = None,
                      params=None,
-                     return_raw: bool = False): # pragma: no cover
+                     return_raw: bool = False):  # pragma: no cover
         result = self.atlassian_client.http_request(method=method,
                                                     full_url=resource_url if link else urljoin(self.base_url, resource_url),
                                                     data=body,
