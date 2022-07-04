@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# This script should run only in the devcontainer.
 # This script creates a local certificate file.
 # It tries to connect to a server (for instance, github), show the local certificates and save it to a file.
 
