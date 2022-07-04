@@ -18,7 +18,7 @@
         "investigationsThreatIntelligenceSigninLinked": "Microsoft Graph Identity and Access",
         "maliciousIPAddressValidCredentialsBlockedIP": "Microsoft Graph Identity and Access",
         "unknownFutureValue": "Microsoft Graph Identity and Access"
-            },
+    },
     "name": "Microsoft Graph Identity and Access Classifier",
     "propagationLabels": [
         "all"
@@ -29,5 +29,5 @@
     },
     "type": "classification",
     "version": -1,
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.2.0"
 }
