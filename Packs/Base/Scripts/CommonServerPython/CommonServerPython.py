@@ -55,7 +55,7 @@ def register_module_line(module_name, start_end, line, wrapper=0):
             Possible values: start, end. (required)
 
         :type line: ``int``
-        :param line: the line number to record. (required)
+        :param line: the line number to record. (required).
 
         :type wrapper: ``int``
         :param wrapper: Wrapper size (used for inline replacements with headers such as ApiModules). (optional)
