@@ -1637,7 +1637,7 @@ def get_detections_by_behaviors(behaviors_id):
     try:
 
         body = {'ids': behaviors_id}
-        return http_request('POST', '/incidents/entities/behaviors/GET/v1', data=body)
+        return http_request('POST', '/incidents/entities/behaviors/GET/v1', json=body)
     except Exception as e:
         demisto.error(f'Error occurred when trying to get detections by behaviors: {str(e)}')
         return {}
