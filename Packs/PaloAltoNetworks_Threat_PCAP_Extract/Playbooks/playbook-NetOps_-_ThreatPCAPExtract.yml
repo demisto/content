@@ -1,38 +1,32 @@
 contentitemexportablefields:
   contentitemfields:
-    definitionid: ""
-    fromServerVersion: 6.5.0
-    itemVersion: ""
-    packID: cc1b4eef-f5e0-4e93-8af7-fae1d023200e
-    packName: NetOps-PANOS-Threat-PCAP-Extraction
     propagationLabels:
     - all
-    toServerVersion: ""
 description: Auto Retrieve PCAP from firewall threat logs
-id: 46d44dd4-9684-45f0-8ab2-20ec2c5eccbb
+id: NetOps - ThreatPCAPExtract
 fromversion: 6.5.0
 inputs:
 - description: clear context?
   key: debug
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
-    simple: "1"
+    simple: '1'
 - description: shoudl we use pcapminerv2 to extract
   key: mine_pcap
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
-    simple: "1"
+    simple: '1'
 - description: Incident default severity
   key: inc_severity
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
-    simple: "0.5"
+    simple: '0.5'
 - description: Default incident details
   key: inc_details
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: Threat Log PCAP extraction operation
@@ -42,55 +36,53 @@ inputs:
     format
      [\{"labelName": "labelValue"\}, \{"labelName1": "labelValue1"\}]
   key: inc_labels
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
-- description: how to get the PCAP, via firewall connection directly or via Panorama
-    as Proxy?
+- description: how to get the PCAP, via firewall connection directly or via Panorama as Proxy?
   key: proxy_via_panorama
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
-    simple: "1"
+    simple: '1'
 - description: name of the instance for ngfw connection
   key: pan_os_ngfw_instance
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: vm50-local
 - description: name of the instance for panorama connection
   key: pan_os_pra_instance
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: Panorama_esxi_panorama
 name: NetOps - ThreatPCAPExtract
 outputs: []
-starttaskid: "0"
+starttaskid: '0'
 tags:
 - custom
 - ep
 tasks:
-  "0":
-    continueonerrortype: ""
-    id: "0"
+  '0':
+    id: '0'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 34199dfd-4efe-40ac-83e6-8e89dde1b77b
       iscommand: false
-      name: ""
+      name: ''
       version: -1
-      description: ""
+      description: ''
     taskid: 34199dfd-4efe-40ac-83e6-8e89dde1b77b
     timertriggers: []
     type: start
@@ -101,15 +93,14 @@ tasks:
           "y": -240
         }
       }
-  "1":
-    continueonerrortype: ""
-    id: "1"
+  '1':
+    id: '1'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "15"
+      - '15'
     note: true
     quietmode: 0
     scriptarguments:
@@ -133,10 +124,7 @@ tasks:
     skipunavailable: false
     task:
       brand: Panorama
-      description: Returns information for a Panorama PCAP file. The recommended maximum
-        file size is 5 MB. If the limit is exceeded, you may need to SSH the firewall
-        and run the scp export command to export the PCAP file. See the Palo Alto
-        Networks documentation.
+      description: Returns information for a Panorama PCAP file. The recommended maximum file size is 5 MB. If the limit is exceeded, you may need to SSH the firewall and run the scp export command to export the PCAP file. See the Palo Alto Networks documentation.
       id: 827a15f0-7d62-4202-863b-58294249eca3
       iscommand: true
       name: pan-os-get-pcap
@@ -153,7 +141,7 @@ tasks:
           "y": 860
         }
       }
-  "2":
+  '2':
     conditions:
     - condition:
       - - left:
@@ -163,24 +151,23 @@ tasks:
           operator: isEqualString
           right:
             value:
-              simple: "1"
-      label: "yes"
-    continueonerrortype: ""
-    id: "2"
+              simple: '1'
+      label: yes
+    id: '2'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "11"
-      "yes":
-      - "3"
+      - '11'
+      yes:
+      - '3'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 1042d843-0aff-4b65-8bb2-b0c4c15acd43
       iscommand: false
       name: Debug Enabled
@@ -196,24 +183,23 @@ tasks:
           "y": -120
         }
       }
-  "3":
-    continueonerrortype: ""
-    id: "3"
+  '3':
+    id: '3'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "11"
+      - '11'
     note: false
     quietmode: 0
     scriptarguments:
       all:
-        simple: "no"
+        simple: no
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: |-
         Delete field from context.
 
@@ -236,26 +222,25 @@ tasks:
           "y": -80
         }
       }
-  "4":
-    continueonerrortype: ""
-    id: "4"
+  '4':
+    id: '4'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
     note: true
     quietmode: 0
     scriptarguments:
       entry_id:
         simple: ${File.EntryID}
       extract_strings:
-        simple: "True"
+        simple: 'True'
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: |-
         PcapMIner V2 allows to parse PCAP files by displaying the all of the relevant data within including ip addresses, ports, flows, specific protocol breakdown, searching by regex, decrypting encrypted  traffic and more.
         This automation takes about a minute to process 20,000 packets (which is approximately 10MB). If you want to mine large files you can either:
@@ -277,7 +262,7 @@ tasks:
           "y": 1850
         }
       }
-  "5":
+  '5':
     conditions:
     - condition:
       - - left:
@@ -287,30 +272,29 @@ tasks:
           operator: isEqualString
           right:
             value:
-              simple: "1"
-      label: "yes"
-    continueonerrortype: ""
-    id: "5"
+              simple: '1'
+      label: yes
+    id: '5'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "6"
-      "yes":
-      - "4"
+      - '6'
+      yes:
+      - '4'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 891ceb64-329c-4252-8e92-89c56eb166a8
       iscommand: false
       name: should we mine PCAP for flows?
       type: condition
       version: -1
-      description: ""
+      description: ''
     taskid: 891ceb64-329c-4252-8e92-89c56eb166a8
     timertriggers: []
     type: condition
@@ -321,27 +305,26 @@ tasks:
           "y": 1670
         }
       }
-  "6":
-    continueonerrortype: ""
-    id: "6"
+  '6':
+    id: '6'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "16"
+      - '16'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: acf2487c-3331-45b7-88de-32736e079e49
       iscommand: false
       name: end
       type: title
       version: -1
-      description: ""
+      description: ''
     taskid: acf2487c-3331-45b7-88de-32736e079e49
     timertriggers: []
     type: title
@@ -352,17 +335,16 @@ tasks:
           "y": 2030
         }
       }
-  "9":
-    continueonerrortype: ""
-    id: "9"
+  '9':
+    id: '9'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
-      "no":
-      - "6"
-      "yes":
-      - "13"
+      no:
+      - '6'
+      yes:
+      - '13'
     note: false
     quietmode: 0
     results:
@@ -373,9 +355,8 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      brand: ''
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       id: 6d7d55f3-272e-4fd2-87c5-27a2597c7fe3
       iscommand: false
       name: IsIntegrationAvailable - PAN-OS
@@ -392,15 +373,14 @@ tasks:
           "y": 500
         }
       }
-  "10":
-    continueonerrortype: ""
-    id: "10"
+  '10':
+    id: '10'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "12"
+      - '12'
     note: false
     quietmode: 0
     scriptarguments:
@@ -429,27 +409,26 @@ tasks:
           "y": 240
         }
       }
-  "11":
-    continueonerrortype: ""
-    id: "11"
+  '11':
+    id: '11'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "10"
+      - '10'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 49e76f35-9f28-4ca3-81a7-8e9f0f13eb2b
       iscommand: false
       name: Set Incident Properties
       type: title
       version: -1
-      description: ""
+      description: ''
     taskid: 49e76f35-9f28-4ca3-81a7-8e9f0f13eb2b
     timertriggers: []
     type: title
@@ -460,27 +439,26 @@ tasks:
           "y": 120
         }
       }
-  "12":
-    continueonerrortype: ""
-    id: "12"
+  '12':
+    id: '12'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "9"
+      - '9'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: a03c3dc4-4782-4624-86ae-51a32305ee98
       iscommand: false
       name: Get PCAP
       type: title
       version: -1
-      description: ""
+      description: ''
     taskid: a03c3dc4-4782-4624-86ae-51a32305ee98
     timertriggers: []
     type: title
@@ -491,7 +469,7 @@ tasks:
           "y": 390
         }
       }
-  "13":
+  '13':
     conditions:
     - condition:
       - - left:
@@ -501,30 +479,29 @@ tasks:
           operator: isEqualString
           right:
             value:
-              simple: "1"
+              simple: '1'
       label: Panorama
-    continueonerrortype: ""
-    id: "13"
+    id: '13'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "14"
+      - '14'
       Panorama:
-      - "1"
+      - '1'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: d6347fd2-b7bf-4e8a-85d8-48f93ddb57c3
       iscommand: false
       name: Connect Via Panorama or Firewall Direct for PCAP
       type: condition
       version: -1
-      description: ""
+      description: ''
     taskid: d6347fd2-b7bf-4e8a-85d8-48f93ddb57c3
     timertriggers: []
     type: condition
@@ -535,15 +512,14 @@ tasks:
           "y": 670
         }
       }
-  "14":
-    continueonerrortype: ""
-    id: "14"
+  '14':
+    id: '14'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "15"
+      - '15'
     note: true
     quietmode: 0
     scriptarguments:
@@ -567,10 +543,7 @@ tasks:
     skipunavailable: false
     task:
       brand: Panorama
-      description: Returns information for a Panorama PCAP file. The recommended maximum
-        file size is 5 MB. If the limit is exceeded, you may need to SSH the firewall
-        and run the scp export command to export the PCAP file. See the Palo Alto
-        Networks documentation.
+      description: Returns information for a Panorama PCAP file. The recommended maximum file size is 5 MB. If the limit is exceeded, you may need to SSH the firewall and run the scp export command to export the PCAP file. See the Palo Alto Networks documentation.
       id: caf011c3-8bb5-4392-85b8-3e557d3aa59f
       iscommand: true
       name: pan-os-get-pcap
@@ -587,15 +560,14 @@ tasks:
           "y": 860
         }
       }
-  "15":
-    continueonerrortype: ""
-    id: "15"
+  '15':
+    id: '15'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "18"
+      - '18'
     note: false
     quietmode: 0
     scriptarguments:
@@ -624,9 +596,8 @@ tasks:
           "y": 1050
         }
       }
-  "16":
-    continueonerrortype: ""
-    id: "16"
+  '16':
+    id: '16'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
@@ -662,20 +633,19 @@ tasks:
           "y": 2170
         }
       }
-  "17":
-    continueonerrortype: ""
-    id: "17"
+  '17':
+    id: '17'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     note: false
     quietmode: 0
     scriptarguments:
       severity:
-        simple: "0.5"
+        simple: '0.5'
     separatecontext: false
     skipunavailable: false
     task:
@@ -697,7 +667,7 @@ tasks:
           "y": 1400
         }
       }
-  "18":
+  '18':
     conditions:
     - condition:
       - - ignorecase: true
@@ -754,28 +724,27 @@ tasks:
             value:
               simple: Critical
       label: Critical
-    continueonerrortype: ""
-    id: "18"
+    id: '18'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       Critical:
-      - "22"
+      - '22'
       High:
-      - "21"
+      - '21'
       Info:
-      - "17"
+      - '17'
       Low:
-      - "19"
+      - '19'
       Medium:
-      - "20"
+      - '20'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 382c26bd-853f-4166-8791-9159be76c8e6
       iscommand: false
       name: Set Severity from Log
@@ -791,20 +760,19 @@ tasks:
           "y": 1220
         }
       }
-  "19":
-    continueonerrortype: ""
-    id: "19"
+  '19':
+    id: '19'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     note: false
     quietmode: 0
     scriptarguments:
       classification:
-        simple: "1"
+        simple: '1'
     separatecontext: false
     skipunavailable: false
     task:
@@ -826,20 +794,19 @@ tasks:
           "y": 1400
         }
       }
-  "20":
-    continueonerrortype: ""
-    id: "20"
+  '20':
+    id: '20'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     note: false
     quietmode: 0
     scriptarguments:
       classification:
-        simple: "2"
+        simple: '2'
     separatecontext: false
     skipunavailable: false
     task:
@@ -861,20 +828,19 @@ tasks:
           "y": 1400
         }
       }
-  "21":
-    continueonerrortype: ""
-    id: "21"
+  '21':
+    id: '21'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     note: false
     quietmode: 0
     scriptarguments:
       classification:
-        simple: "3"
+        simple: '3'
     separatecontext: false
     skipunavailable: false
     task:
@@ -896,20 +862,19 @@ tasks:
           "y": 1400
         }
       }
-  "22":
-    continueonerrortype: ""
-    id: "22"
+  '22':
+    id: '22'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     note: false
     quietmode: 0
     scriptarguments:
       classification:
-        simple: "4"
+        simple: '4'
     separatecontext: false
     skipunavailable: false
     task:
@@ -944,3 +909,5 @@ view: |-
       }
     }
   }
+tests:
+- No tests (auto formatted)
