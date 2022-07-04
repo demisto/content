@@ -130,6 +130,9 @@ class CollectedTests:
     def __repr__(self):
         return f'{len(self.packs)} packs, {len(self.tests)} tests, {self.version_range=}'
 
+    def __bool__(self):
+        return bool(self.tests or self.packs)
+
 
 class TestCollector(ABC):
     def __init__(self, marketplace: MarketplaceVersions):
@@ -168,12 +171,14 @@ class TestCollector(ABC):
 
     def collect(self, run_nightly: bool, run_master: bool) -> Optional[CollectedTests]:
         collected: CollectedTests = self._collect()
+
         if not collected:
-            return
+            logger.warning('No tests were collected, returning sanity tests only')
+            collected = self.sanity_tests
 
         collected.machines = Machine.get_suitable_machines(collected.version_range, run_nightly, run_master)
 
-        if collected.machines is None and not (collected.tests or collected.packs):  # todo reconsider
+        if collected and collected.machines is None:  # todo reconsider
             raise EmptyMachineListException()
 
         # collected |= self._add_packs_used(collected.tests)  # todo should we use it?
@@ -252,17 +257,15 @@ class BranchTestCollector(TestCollector):
             except NothingToCollectException as e:
                 logger.warning(e.message)
 
-        if not collected:
-            logger.warning('No tests were collected, returning sanity tests only')
-            return self.sanity_tests
-
         return CollectedTests.union(collected)
 
-    def _collect_yml(self, content_item: Path) -> CollectedTests:
-        yml = ContentItem(content_item.with_suffix('.yml'))
+    def _collect_yml(self, content_item_path: Path) -> CollectedTests:
+        yml = ContentItem(content_item_path.with_suffix('.yml'))
+        relative_path = PackManager.relative_to_packs(yml.path)
+
         # todo handle yml-free python files
         if not yml.path.exists():
-            raise FileNotFoundError(f'could not find yml matching {PackManager.relative_to_packs()}')
+            raise FileNotFoundError(f'could not find yml matching {PackManager.relative_to_packs(yml.path)}')
 
         match containing_folder := yml.path.parents[1].name:
             case 'Integrations':
@@ -287,23 +290,22 @@ class BranchTestCollector(TestCollector):
                             raise RuntimeError(f'unexpected content type folder {containing_folder}')
 
                     if not tests:
-                        original_type: str = find_type_by_path(content_item).value
-                        relative_path = str(PackManager.relative_to_packs())
+                        original_type: str = find_type_by_path(content_item_path).value
+                        relative_path = str(PackManager.relative_to_packs(yml.path))
                         logger.warning(f'{original_type} {relative_path} '
                                        f'has `No Tests` configured, and no tests in id_set')
             case _:
                 raise RuntimeError(f'Unexpected content type original_file_path {containing_folder} '
                                    f'(expected `Integrations`, `Scripts`, etc)')
-        relative_path = PackManager.relative_to_packs()
         # creating an object for each, as CollectedTests require #packs==#tests
         return CollectedTests.union([CollectedTests(tests=(test,), packs=yml.pack_tuple, reason=reason,
                                                     version_range=yml.version_range,
                                                     reason_description=f'{yml.id_=} ({relative_path})')
                                      for test in tests])
 
-    def _collect_single(self, path) -> CollectedTests:
+    def _collect_single(self, path: Path) -> CollectedTests:
         file_type = find_type_by_path(path)
-        reason_description = relative_path = PackManager.relative_to_packs()
+        reason_description = relative_path = PackManager.relative_to_packs(path)
 
         try:
             content_item = ContentItem(path)
