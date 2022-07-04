@@ -153,13 +153,27 @@ def parse_incident_from_finding(message, parse_body_as_json=False):
 
 
 def fetch_incidents(aws_client, aws_queue_url, max_fetch, parse_body_as_json):
+    """
+    Fetching the messages from the queue by following steps:
+
+    1. fetch.
+    2. create-incidents (while skipping previous fetch).
+    3. save fetch results to context.
+    4. try to delete all messages (if not successful, will continue next run).
+    """
+
     try:
         client = aws_client.aws_session(service='sqs')
+        # The 'receipt_handles' of the messages that were received from the last call.
+        last_receipt_handles = demisto.getLastRun().get('lastReceiptHandles')
+        if last_receipt_handles:
+            demisto.debug('last_receipt_handles before fetch occurred" -> {} {}'.format(len(last_receipt_handles),
+                          last_receipt_handles))
         incidents_created = 0  # type: int
         max_number_of_messages = min(max_fetch, 10)
+        receipt_handles = set()  # type: set
+        incidents = []  # type: list
         while incidents_created < max_fetch:
-            receipt_handles = []  # type: list
-            incidents = []  # type: list
             messages = client.receive_message(
                 QueueUrl=aws_queue_url,
                 MaxNumberOfMessages=max_number_of_messages,
@@ -175,16 +189,25 @@ def fetch_incidents(aws_client, aws_queue_url, max_fetch, parse_body_as_json):
                 else:
                     break
 
+            # Creating incidents and avoiding creating incidents that were already created previously
             for message in messages["Messages"]:
-                receipt_handles.append(message['ReceiptHandle'])
+                receipt_handles.add(message['ReceiptHandle'])
+                if last_receipt_handles and message['ReceiptHandle'] in last_receipt_handles:
+                    continue
                 incidents.append(parse_incident_from_finding(message, parse_body_as_json))
                 incidents_created += 1
                 if incidents_created == max_fetch:
                     break
 
-            demisto.incidents(incidents)
-            for receipt_handle in receipt_handles:
-                client.delete_message(QueueUrl=aws_queue_url, ReceiptHandle=receipt_handle)
+        # Save fetch results to context.
+        demisto.incidents(incidents)
+        # The "receipt_handles" of converted messages to the incidents are saved for next fetch
+        demisto.setLastRun({"lastReceiptHandles": receipt_handles})
+        demisto.debug('last_receipt_handles after fetch occurred" -> {} {}'.format(len(receipt_handles), receipt_handles))
+
+        # try to delete all messages (if not successful, will continue next run)
+        for receipt_handle in receipt_handles:
+            client.delete_message(QueueUrl=aws_queue_url, ReceiptHandle=receipt_handle)
 
     except Exception as e:
         return raise_error(e)
@@ -214,7 +237,7 @@ def main():
     timeout = params.get('timeout')
     retries = params.get('retries') or 5
     aws_queue_url = params.get('queueUrl')
-    max_fetch = min(params.get('max_fetch', 10), 100)
+    max_fetch = min(arg_to_number(params.get('max_fetch', 10)), 100)
     parse_body_as_json = params.get('parse_body_as_json', False)
 
     commands = {
