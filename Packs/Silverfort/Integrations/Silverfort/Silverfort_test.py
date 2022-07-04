@@ -95,7 +95,7 @@ def expected_jwt_token(api_key, current_time):
 class TestSiverfort(object):
     def test_get_status(self, requests_mock, base_url, api_key, client):
         from Silverfort import test_module
-        requests_mock.get(f'{base_url}/getBootStatus', json={'status':'Active'})
+        requests_mock.get(f'{base_url}/getBootStatus', json={'status': 'Active'})
         output = test_module(client)
         assert output == "ok"
 
