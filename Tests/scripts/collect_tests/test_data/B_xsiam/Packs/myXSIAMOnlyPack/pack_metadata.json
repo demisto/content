@@ -1,6 +1,6 @@
 {
     "name": "myXSIAMOnlyPack",
-    "description": "Use the ipinfo.io API to get data about an IP address",
+    "description": "a demo pack",
     "support": "xsoar",
     "currentVersion": "2.1.3",
     "author": "Cortex XSOAR",

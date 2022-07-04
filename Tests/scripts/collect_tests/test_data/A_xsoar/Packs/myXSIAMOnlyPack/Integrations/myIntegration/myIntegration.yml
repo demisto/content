@@ -46,7 +46,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Use the IPinfo.io API to get data about an IP address.
+description: a demo pack.
 display: IPinfo v2
 script:
   commands:

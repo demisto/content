@@ -11,7 +11,13 @@ from Tests.scripts.collect_tests.constants import XSOAR_SANITY_TEST_NAMES
 from Tests.scripts.collect_tests.path_manager import PathManager
 from Tests.scripts.collect_tests.utils import PackManager
 
-TEST_DATA = Path(__file__).parent / 'test_data'
+"""
+Test Collection Unit-Test cases 
+- `empty` has no packs
+- `A` has a single pack with an integration and two test playbooks. 
+- `B` has a single pack, with only test playbooks. (they should be collected) 
+- `C` has a pack supported by both marketplaces, and one only for marketplacev2 and one only for XSOAR.
+"""
 
 
 class CollectTestsMocker:
@@ -48,6 +54,7 @@ class MockerCases:
     A_xsiam = CollectTestsMocker(Path('test_data/A_xsiam'))
     B_xsiam = CollectTestsMocker(Path('test_data/B_xsiam'))
     B_xsoar = CollectTestsMocker(Path('test_data/B_xsoar'))
+    C = CollectTestsMocker(Path('test_data/C'))
 
 
 def _test(mocker: CollectTestsMocker, run_nightly: bool, run_master: bool, collector_class: Callable,
@@ -57,7 +64,7 @@ def _test(mocker: CollectTestsMocker, run_nightly: bool, run_master: bool, colle
         collected = collector_class(*collector_class_args).collect(run_nightly, run_master)
 
         if not any((expected_tests, expected_packs, expected_machines)):
-            assert not collected
+            assert not collected, f'collected packs {collected.packs}, tests {collected.tests}'
 
         if expected_tests:
             assert collected.tests == set(expected_tests)
@@ -69,11 +76,22 @@ def _test(mocker: CollectTestsMocker, run_nightly: bool, run_master: bool, colle
         assert run_nightly == (Machine.NIGHTLY in collected.machines)
         assert run_master == (Machine.MASTER in collected.machines)
 
+    for test in collected.tests:
+        print(f'collected test {test}')
+    for machine in collected.machines:
+        print(f'machine {machine}')
+    for pack in collected.packs:
+        print(f'collected pack {pack}')
+
 
 @pytest.mark.parametrize('mocker,collector_class,expected_tests,expected_packs', (
         (MockerCases.empty, XSOARNightlyTestCollector, XSOAR_SANITY_TEST_NAMES, ()),
         (MockerCases.empty, XSIAMNightlyTestCollector, (), ()),
-        (MockerCases.empty_xsiam, XSIAMNightlyTestCollector, ("some_xsiam_test",), ()),
+        (MockerCases.empty_xsiam, XSIAMNightlyTestCollector, ('some_xsiam_test',), ()),
+        (MockerCases.C, XSOARNightlyTestCollector,
+         ('myXSOAROnlyTestPlaybook', 'myTestPlaybook'), ('myXSOAROnlyPack', 'bothMarketplacesPack')),
+        (MockerCases.C, XSIAMNightlyTestCollector,
+         ('myXSIAMOnlyTestPlaybook',), ('bothMarketplacesPack', 'myXSIAMOnlyPack')),
 ))
 @pytest.mark.parametrize('run_master', (True, False))
 def test_nightly_empty(mocker, run_master: bool, collector_class: Callable,

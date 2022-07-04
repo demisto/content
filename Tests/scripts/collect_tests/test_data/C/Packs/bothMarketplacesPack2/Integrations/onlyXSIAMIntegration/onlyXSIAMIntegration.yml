@@ -1,8 +1,6 @@
-name: myIntegration
-tests:
-  - myOtherTestPlaybook
+name: onlyXSIAMIntegration
 marketplaces:
-- xsoar
+- marketplacev2
 subtype: python3
 type: python
 
