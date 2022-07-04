@@ -1,0 +1,701 @@
+category: CASB
+commonfields:
+  id: McAfee MVision CASB
+  version: -1
+configuration:
+- defaultvalue: https://www.myshn.net/
+  display: Base URL (e.g., https://www.myshn.net)
+  name: url
+  required: true
+  type: 0
+- additionalinfo: The UserName and Password to use for connection
+  name: credentials
+  required: true
+  type: 9
+- display: Maximum number of incidents to fetch every time. Default is 50. maximum is 500.
+  hidden: false
+  name: max_fetch
+  required: false
+  type: 0
+- display: First fetch in timestamp format (<number> <time unit>, e.g., 12 hours, 7 days). Default is 3 days.
+  hidden: false
+  name: first_fetch
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Skyhigh CASB is a cloud-based, multi-tenant service that enables Cloud Discovery and Risk Monitoring, Cloud Usage Analytics, Cloud Access and Control.
+display: McAfee MVision CASB
+name: McAfee MVision CASB
+script:
+  commands:
+  - arguments:
+    - default: true
+      defaultValue: '50'
+      description: Maximum number of items that will be returned within a single response. Default is 50 maximum is 500. If value exceeds maximum 500 it will not be flagged as an error but will also not increase results.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Pagination support for use with a big “limit” value.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: Pagination support for use with a big “limit” value. The maximum is 500.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: true
+      defaultValue: 3 days
+      description: For time arguments use the ISO-8601 standard - '%Y-%m-%dT%H:%M:%SZ' or relative time (last X days).
+      isArray: false
+      name: start_time
+      required: false
+      secret: false
+    - default: false
+      description: For time arguments use the ISO-8601 standard - '%Y-%m-%dT%H:%M:%SZ' or relative time (last X days).
+      isArray: false
+      name: end_time
+      required: false
+      secret: false
+    - default: false
+      description: The actor ids of the incidents to retrieve.
+      isArray: true
+      name: actor_ids
+      required: false
+      secret: false
+    - default: false
+      description: The service names of the incidents to retrieve.
+      isArray: true
+      name: service_names
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The type of the incidents to retrieve.
+      isArray: true
+      name: incident_types
+      predefined:
+      - Alert
+      - Threat
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The categories of the incidents to retrieve. When defining the categories argument the incident_types argument does not affect.
+      isArray: true
+      name: categories
+      predefined:
+      - Access
+      - Admin
+      - Audit
+      - CompromisedAccount
+      - Data
+      - InsiderThreat
+      - Policy
+      - PrivilegeAccess
+      - Vulnerability
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves a list of incidents in ascending time modified order.
+    execution: false
+    name: mvision-casb-incident-query
+    outputs:
+    - contextPath: MVisionCASB.Incident
+      description: The Incident's metadata.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The incidents ids that should be updated.
+      isArray: true
+      name: incident_ids
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The new status of the incidents.
+      isArray: false
+      name: status
+      predefined:
+      - new
+      - opened
+      - false positive
+      - resolved
+      - suppressed
+      - archived
+      required: true
+      secret: false
+    deprecated: false
+    description: |-
+      Update status of single/multiple incidents.
+      Note!
+      For multiple Ids  - single status will be changed for all IDs
+      e.g. 123, 456, 789 >> change status to >> closed.
+    execution: false
+    name: mvision-casb-incident-status-update
+  - arguments:
+    - default: false
+      description: The anomaly id from where to retrieve the activities. Only incident of type anomaly (ANO-123).
+      isArray: false
+      name: anomaly_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Fetches activities for a given anomaly Id.
+    execution: false
+    name: mvision-casb-anomaly-activity-list
+    outputs:
+    - contextPath: MVisionCASB.AnomalyActivity.timeStamp
+      description: The timestamp of the anomaly activity.
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.actionName
+      description: The action name.
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.asnName
+      description: The ASN name of an Activity.
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.city
+      description: The city where the anomaly activity occurred.
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.collabGroup
+      description: The collaboration group for the anomaly activity.
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.count
+      description: The number of anomalies detected.
+      type: Number
+    - contextPath: MVisionCASB.AnomalyActivity.country
+      description: The country of the anomaly activity.
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.deviceManaged
+      description: Whether the anomaly activity is managed by the device or not.
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.directory
+      description: The directory of the anomaly activity.
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.downloadBytes
+      description: The number of bytes downloaded by the anomaly activity.
+      type: Number
+    - contextPath: MVisionCASB.AnomalyActivity.eventCount
+      description: The number of anomalies detected.
+      type: Number
+    - contextPath: MVisionCASB.AnomalyActivity.fileFolderPath
+      description: The file folder path for the anomaly activity.
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.fileName
+      description: The file name of the anomaly activity.
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.fileSharingEnabled
+      description: Whether the CASB filesharing is enabled or not
+      type: Boolean
+    - contextPath: MVisionCASB.AnomalyActivity.fileSize
+      description: The file size of the anomaly activity.
+      type: Number
+    - contextPath: MVisionCASB.AnomalyActivity.fileType
+      description: The file type of the anomaly activity.
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.geoOrgNameV1
+      description: The geo organization name.
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.httpMethod
+      description: The HTTP method used by the anomaly activity.
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.instanceId
+      description: The instance ID for the anomaly activity.
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.isSourceTrusted
+      description: Whether the anomaly activity source is trusted or not
+      type: Boolean
+    - contextPath: MVisionCASB.AnomalyActivity.networkType
+      description: The Network Type for the anomaly.
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.objectType
+      description: The object type for the anomaly activity.
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.operation
+      description: The operation type.
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.proxyDescription
+      description: The proxy description for the anomaly activity.
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.proxyType
+      description: The proxy type for the anomaly activity.
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.region
+      description: The Region where the anomaly activity occurred.
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.serviceName
+      description: The name of the service.
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.siteUrl
+      description: The URL of the CASB's site
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.sourceIP
+      description: The IP address of the source IP.
+      type: IP
+    - contextPath: MVisionCASB.AnomalyActivity.sourceIdentifier
+      description: The SourceIdentifier for the anomaly activity.
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.targetId
+      description: The target ID for the anomaly activity.
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.targetType
+      description: The anomaly activity type.
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.tenantId
+      description: The tenant ID for the anomaly activity.
+      type: Number
+    - contextPath: MVisionCASB.AnomalyActivity.threatCategory
+      description: The threat category for the anomaly activity.
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.trustEntity
+      description: The trust entity for the anomaly activity.
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.trustReason
+      description: The trust reason of the anomaly activity.
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.uploadBytes
+      description: The number of bytes uploaded.
+      type: Number
+    - contextPath: MVisionCASB.AnomalyActivity.url
+      description: The URL of the anomaly activity.
+      type: String
+    - contextPath: MVisionCASB.AnomalyActivity.user
+      description: The User who triggered the anomaly.
+      type: String
+  - arguments:
+    - default: false
+      description: Maximum number of policies that will be returned within a single response. Default is 50.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Pagination support for use with a big “limit” value.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: Pagination support for use with a big “limit” value.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      description: The name of the policies to retrieve.
+      isArray: true
+      name: name
+      required: false
+      secret: false
+    deprecated: false
+    description: List existing Policy Dictionaries.
+    execution: false
+    name: mvision-casb-policy-dictionary-list
+    outputs:
+    - contextPath: MVisionCASB.dictionaries.ID
+      description: The ID for the dictionary.
+      type: Number
+    - contextPath: MVisionCASB.dictionaries.LastModified
+      description: The date the dictionary was last modified.
+      type: String
+    - contextPath: MVisionCASB.dictionaries.Name
+      description: The name of the dictionary.
+      type: String
+  - arguments:
+    - default: false
+      description: The dictionary where to set the policy.
+      isArray: false
+      name: dictionary_id
+      required: true
+      secret: false
+    - default: false
+      description: A name for the new key-value which will be added in the dictionary.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: The value to be set in the dictionary for the given key-name. Multiple values can be separated by commas.
+      isArray: false
+      name: content
+      required: true
+      secret: false
+    deprecated: false
+    description: Adds new content to an existing Policy Dictionaries.
+    execution: false
+    name: mvision-casb-policy-dictionary-update
+  dockerimage: demisto/python3:3.9.8.24399
+  feed: false
+  isfetch: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: >
+    register_module_line('McAfee MVision CASB', 'start', __line__())
+
+
+
+
+    import requests
+
+    import traceback
+
+    from typing import Dict, Any, Tuple
+
+
+    # Disable insecure warnings
+
+    requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+
+
+    ''' CONSTANTS '''
+
+
+    DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'  # ISO8601 format with UTC, default in XSOAR
+
+    CategoryToIncidentType = {
+        'Access': 'Alert',
+        'Admin': 'Alert',
+        'Audit': 'Alert',
+        'Data': 'Alert',
+        'Policy': 'Alert',
+        'Vulnerability': 'Alert',
+        'CompromisedAccount': 'Threat',
+        'InsiderThreat': 'Threat',
+        'PrivilegeAccess': 'Threat',
+    }
+
+
+    ''' CLIENT CLASS '''
+
+
+
+    class Client(BaseClient):
+        def test(self):
+            self.incident_query(1, (arg_to_datetime('3 days') or datetime.now() - timedelta(days=3)).strftime(DATE_FORMAT))
+
+        def incident_query(self, limit: Optional[int], start_time: str = '', end_time: str = '', actor_ids: list[str] = None,
+                           service_names: list[str] = None, categories: list[str] = None) -> Dict[str, Any]:
+            url_suffix = '/external/api/v1/queryIncidents'
+            params = {'limit': limit or 50}
+            data = assign_params(
+                startTime=start_time,
+                endTime=end_time,
+                actorIds=actor_ids,
+                serviceNames=service_names,
+                incidentCriteria=assign_params(
+                    categories=categories
+                ),
+            )
+            return self._http_request('POST', url_suffix, params=params, json_data=data, raise_on_status=True)
+
+        def status_update(self, incident_ids: List, status: str) -> Dict[str, str]:
+            url_suffix = '/external/api/v1/modifyIncidents'
+            data = [
+                {'incidentId': incident_id, "changeRequests": {"WORKFLOW_STATUS": status}} for incident_id in incident_ids
+            ]
+            return self._http_request('POST', url_suffix, json_data=data, raise_on_status=True)
+
+        def anomaly_activity_list(self, incident_id: Optional[int]) -> Dict[str, str]:
+            url_suffix = '/external/api/v1/queryActivities'
+            data = {"incident_id": incident_id}
+            return self._http_request('POST', url_suffix, json_data=data)
+
+        def policy_dictionary_list(self) -> List[Dict]:
+            url_suffix = '/dlp/dictionary'
+            return self._http_request('GET', url_suffix, raise_on_status=True)
+
+        def policy_dictionary_update(self, dict_id: Optional[int], name: str, content: List[str]) -> Dict[str, str]:
+            url_suffix = '/dlp/dictionary'
+            data = {
+                "id": dict_id,
+                "name": name,
+                "content": content
+            }
+            return self._http_request('PUT', url_suffix, json_data=data, raise_on_status=True)
+
+
+    ''' HELPER FUNCTIONS '''
+
+
+
+    def calculate_offset_and_limit(**kwargs) -> Tuple[int, int]:
+        if limit := arg_to_number(kwargs.get('limit')):  # 'limit' is stronger than pagination ('page', and 'page_size').
+            return 0, limit
+        if (page := arg_to_number(kwargs.get('page'))) and (page_size := arg_to_number(kwargs.get('page_size'))):
+            page -= 1  # First page means list in index zero.
+            return page * page_size, page * page_size + page_size
+        return 0, 50
+
+
+    ''' COMMAND FUNCTIONS '''
+
+
+
+    def test_module(client: Client) -> str:
+        """Tests API connectivity and authentication'
+
+        Returning 'ok' indicates that the integration works like it is supposed to.
+        Connection to the service is successful.
+        Raises exceptions if something goes wrong.
+
+        type client: ``Client``
+        :param client: client to use
+
+        :return: 'ok' if test passed, anything else will fail the test.
+        :rtype: ``str``
+        """
+
+        try:
+            client.test()
+            message = 'ok'
+        except DemistoException as e:
+            if 'Forbidden' in str(e) or 'Authorization' in str(e):
+                message = 'Authorization Error: make sure API Key is correctly set'
+            else:
+                raise
+        return message
+
+
+    def fetch_incidents(client: Client, params: dict) -> Tuple[dict, list]:
+        last_run = demisto.getLastRun()
+        xsoar_incidents = []
+
+        limit = arg_to_number(params.get('max_fetch', 50))
+        if not (start_time := last_run.get('start_time')):  # in the first interval.
+            default_first_time = datetime.now() - timedelta(days=3)
+            start_time = (arg_to_datetime(params.get('first_fetch')) or default_first_time).strftime(DATE_FORMAT)
+
+        result = client.incident_query(limit, start_time)
+
+        if incidents := result.get('body', {}).get('incidents', {}):
+            ids = last_run.get('ids', set())
+
+            for incident in incidents:
+                # Since the API returns the incidents in ascending time modified order.
+                # As mentioned here:
+                # https://success.myshn.net/Skyhigh_CASB/Skyhigh_CASB_APIs/Incidents_API/02_Incidents_API_Paths#_responses_3
+                # We need to verify no duplicates are pushed to xsoar.
+                if (incident_id := incident.get('incidentId')) not in ids:
+                    xsoar_incidents.append(
+                        {
+                            'name': f'McAfee MVision CASB Incident {incident_id}',
+                            'occurred': incident.get('timeModified'),
+                            'raw_json': json.dumps(incident),
+                            'dbotMirrorId': incident_id,
+                        }
+                    )
+
+                    ids.add(incident_id)
+
+            last_run = {
+                'start_time': result.get('body', {}).get('responseInfo', {}).get('nextStartTime', {}),
+                'ids': ids
+            }
+
+        return last_run, xsoar_incidents
+
+
+    def incident_query_command(client: Client, args: Dict) -> CommandResults:
+        limit = arg_to_number(args.get('limit', 50))
+        start_time = (arg_to_datetime(args.get('start_time')) or datetime.now() - timedelta(days=3)).strftime(DATE_FORMAT)
+        end_time = (arg_to_datetime(args.get('end_time')) or datetime.now()).strftime(DATE_FORMAT)
+        actor_ids = argToList(args.get('actor_ids'))
+        service_names = argToList(args.get('service_names'))
+        if categories := argToList(args.get('categories')):
+            categories = [
+                {"incidentType": CategoryToIncidentType.get(category), "category": category} for category in categories
+            ]
+        elif incident_types := argToList(args.get('incident_types')):
+            categories = [{"incidentType": incident_type} for incident_type in incident_types]
+
+        if not (page_number := arg_to_number(args.get('page_number'))) or \
+                not (page_size := arg_to_number(args.get('page_size'))):
+            result = client.incident_query(limit, start_time, end_time, actor_ids, service_names, categories)
+        else:
+            result = {}
+            for _ in range(page_number):
+                result = client.incident_query(page_size, start_time, end_time, actor_ids, service_names, categories)
+                start_time = result.get('body', {}).get('responseInfo', {}).get('nextStartTime', {})
+
+        if incidents := result.get('body', {}).get('incidents'):
+            readable_dict = []
+
+            for incident in incidents:
+                readable_dict.append({
+                    'IncidentID': incident.get('incidentId'),
+                    'Time(UTC)': incident.get('timeCreated'),
+                    'Status': incident.get('status'),
+                    'Alert Action': incident.get('remediationResponse'),
+                    'Service Name': incident.get('serviceNames'),
+                    'Alert Severity': incident.get('incidentRiskSeverity'),
+                    'User Name': incident.get('actorId'),
+                    'Policy Name': incident.get('policyName'),
+                })
+
+            readable_output = tableToMarkdown(
+                'MVISION CASB Incidents', readable_dict, headerTransform=pascalToSpace, removeNull=True
+            )
+
+            return CommandResults(
+                outputs=incidents,
+                outputs_prefix='MVisionCASB.Incident',
+                outputs_key_field='incidentId',
+                readable_output=readable_output,
+                raw_response=incidents,
+            )
+        else:
+            return CommandResults(
+                readable_output='No Incidents were found with the requested filters.',
+            )
+
+
+    def status_update_command(client: Client, args: Dict) -> CommandResults:
+        incident_ids = argToList(args.get('incident_ids'))
+        status = str(args.get('status'))
+
+        result = client.status_update(incident_ids, status)
+        readable_output = 'Status updated for user'
+
+        return CommandResults(
+            readable_output=readable_output,
+            raw_response=result,
+        )
+
+
+    def anomaly_activity_list_command(client: Client, args: Dict) -> CommandResults:
+        anomaly_id = arg_to_number(args.get('anomaly_id'))
+
+        result = client.anomaly_activity_list(anomaly_id)
+
+        return CommandResults(
+            outputs=result,
+            outputs_prefix='MVisionCASB.dictionaries',
+            outputs_key_field='ID',
+            readable_output=tableToMarkdown('', result),
+            raw_response=result
+        )
+
+
+    def policy_dictionary_list_command(client: Client, args: Dict) -> CommandResults:
+        offset, limit = calculate_offset_and_limit(**args)
+        names = argToList(args.get('name'))
+
+        result = client.policy_dictionary_list()
+        policies = result[offset:limit]
+
+        filtered_policies = []
+        for policy in policies:
+            if names and policy.get('name') in names or not names:
+                filtered_policies.append(
+                    {
+                        'ID': policy.get('id'),
+                        'Name': policy.get('name'),
+                        'LastModified': policy.get('last_modified_time'),
+                    }
+                )
+
+        readable_output = tableToMarkdown(
+            'List of MVISION CASB Policies', filtered_policies, headerTransform=pascalToSpace, removeNull=True
+        )
+
+        return CommandResults(
+            outputs=filtered_policies,
+            outputs_prefix='MVisionCASB.dictionaries',
+            outputs_key_field='ID',
+            readable_output=readable_output,
+            raw_response=filtered_policies,
+        )
+
+
+    def policy_dictionary_update_command(client: Client, args: Dict) -> CommandResults:
+        dict_id = arg_to_number(args.get('dictionary_id'))
+        name = str(args.get('name'))
+        content = argToList(args.get('content'))
+
+        result = client.policy_dictionary_update(dict_id, name, content)
+
+        return CommandResults(
+            readable_output=f'Dictionary id: {dict_id} was updated.',
+            raw_response=result
+        )
+
+
+    ''' MAIN FUNCTION '''
+
+
+
+    def main() -> None:
+        """main function, parses params and runs command functions
+
+        :return:
+        :rtype:
+        """
+
+        params = demisto.params()
+        base_url = urljoin(params['url'].removesuffix('/'), '/shnapi/rest')
+        verify_certificate = not params.get('insecure', False)
+        credentials = params.get('credentials', {})
+        handle_proxy()
+        command = demisto.command()
+
+        demisto.debug(f'Command being called is {command}')
+
+        try:
+            commands: Dict = {
+                'mvision-casb-incident-query': incident_query_command,
+                'mvision-casb-incident-status-update': status_update_command,
+                'mvision-casb-anomaly-activity-list': anomaly_activity_list_command,
+                'mvision-casb-policy-dictionary-list': policy_dictionary_list_command,
+                'mvision-casb-policy-dictionary-update': policy_dictionary_update_command,
+            }
+
+            client = Client(
+                base_url=base_url,
+                verify=verify_certificate,
+                auth=(credentials.get('identifier'), credentials.get('password'))
+            )
+
+            if command == 'test-module':
+                result = test_module(client)
+                return_results(result)
+
+            if command == 'fetch-incidents':
+                last_run, incidents = fetch_incidents(client, params)
+                demisto.setLastRun(last_run)
+                demisto.incidents(incidents)
+
+            elif command in commands:
+                return_results(commands[command](client, demisto.args()))
+
+        # Log exceptions and return errors
+        except Exception as e:
+            demisto.error(traceback.format_exc())  # print the traceback
+            return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+
+
+    ''' ENTRY POINT '''
+
+
+    if __name__ in ('__main__', '__builtin__', 'builtins'):
+        main()
+
+    register_module_line('McAfee MVision CASB', 'end', __line__())
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
+image: data:image/png;base64,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
+detaileddescription: "## McAfee MVision CASB\n\n\n### Base URL\nThe base url for example https://www.myshn.net\n\n### credentials\nUserName and Password\n\n### Additional information\nThe **mvision-casb-anomaly-activity-list** command is LD flagged and must be enabled by engineering. as mentioned [here](https://success.myshn.net/Skyhigh_CASB/Skyhigh_CASB_APIs/Anomalous_Activity_API/About_the_Anomalous_Activity_API)\n\n---\n[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/mc-afee-m-vision-casb)"

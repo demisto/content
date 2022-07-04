@@ -1,6 +1,10 @@
 Skyhigh CASB is a cloud-based, multi-tenant service that enables Cloud Discovery and Risk Monitoring, Cloud Usage Analytics, Cloud Access and Control.
 This integration was integrated and tested with version 1 of McAfee MVision CASB
 
+### API limitations
+Do to [API](https://success.myshn.net/Skyhigh_CASB/Skyhigh_CASB_APIs/Incidents_API/02_Incidents_API_Paths#_responses_3) limitations keep in mind that over time the integration can start to work more slowly.
+The solution is to restart the last-run
+
 ## Configure McAfee MVision CASB on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

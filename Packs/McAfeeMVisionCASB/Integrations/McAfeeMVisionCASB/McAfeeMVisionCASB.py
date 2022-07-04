@@ -122,8 +122,8 @@ def fetch_incidents(client: Client, params: dict) -> Tuple[dict, list]:
 
     result = client.incident_query(limit, start_time)
 
-    if incidents := result.get('body', {}).get('incidents', {}):
-        ids = last_run.get('ids', set())
+    if incidents := result.get('body', {}).get('incidents', []):
+        ids = set(last_run.get('ids', set()))
 
         for incident in incidents:
             # Since the API returns the incidents in ascending time modified order.
@@ -143,8 +143,8 @@ def fetch_incidents(client: Client, params: dict) -> Tuple[dict, list]:
                 ids.add(incident_id)
 
         last_run = {
-            'start_time': result.get('body', {}).get('responseInfo', {}).get('nextStartTime', {}),
-            'ids': ids
+            'start_time': result.get('body', {}).get('responseInfo', {}).get('nextStartTime', ''),
+            'ids': list(ids)
         }
 
     return last_run, xsoar_incidents
