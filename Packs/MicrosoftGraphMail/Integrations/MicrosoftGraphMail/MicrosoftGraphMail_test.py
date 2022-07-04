@@ -1,6 +1,7 @@
 from urllib.parse import quote
 
 import pytest
+import html2text
 import requests_mock
 
 from CommonServerPython import *
@@ -266,6 +267,18 @@ def emails_data():
         return mocked_emails
 
 
+@pytest.fixture()
+def emails_data_full_body():
+    with open('test_data/emails_data_full_body') as emails_json:
+        return json.load(emails_json)
+
+
+@pytest.fixture()
+def expected_incident_full_body():
+    with open('test_data/expected_incident_full_body') as incident:
+        return json.load(incident)
+
+
 @pytest.fixture
 def last_run_data():
     last_run = {
@@ -337,7 +350,9 @@ def test_fetch_incidents_detect_initial(mocker, client, emails_data):
 
 
 @pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
-def test_fetch_incidents_with_full_body(mocker, client, emails_data, expected_incident, last_run_data):
+def test_fetch_incidents_with_full_body(
+    mocker, client, emails_data_full_body, expected_incident_full_body, last_run_data
+):
     """
     Given -
         a flag to fetch the entire email body
@@ -350,7 +365,7 @@ def test_fetch_incidents_with_full_body(mocker, client, emails_data, expected_in
     """
     mocker.patch('MicrosoftGraphMail.get_now_utc', return_value='2019-11-12T15:01:00Z')
     client.use_full_email_body = True
-    mocker.patch.object(client.ms_client, 'http_request', return_value=emails_data)
+    mocker.patch.object(client.ms_client, 'http_request', return_value=emails_data_full_body)
     mocker.patch.object(demisto, "info")
     result_next_run, result_incidents = client.fetch_incidents(last_run_data)
 
@@ -361,11 +376,11 @@ def test_fetch_incidents_with_full_body(mocker, client, emails_data, expected_in
 
     result_incidents = result_incidents[0]
     result_raw_json = json.loads(result_incidents.pop('rawJSON'))
-    expected_incident['details'] = emails_data['value'][0]['body']['content']
-    expected_raw_json = expected_incident.pop('rawJSON', None)
+
+    expected_raw_json = expected_incident_full_body.pop('rawJSON', None)
 
     assert result_raw_json == expected_raw_json
-    assert result_incidents == expected_incident
+    assert result_incidents == expected_incident_full_body
 
 
 @pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])

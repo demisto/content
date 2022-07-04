@@ -5,6 +5,7 @@ from typing import Union, Optional
 
 ''' IMPORTS '''
 import base64
+import html2text
 import binascii
 import urllib3
 from urllib.parse import quote
@@ -843,7 +844,7 @@ class MsGraphClient:
 
         body = email.get('bodyPreview', '')
         if not body or self.use_full_email_body:
-            body = parsed_email.get('Body')
+            body = html2text.html2text(parsed_email.get('Body') or '').strip()
 
         incident = {
             'name': parsed_email['Subject'],
