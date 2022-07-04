@@ -1428,6 +1428,8 @@ def create_draft_command(client: MsGraphClient, args):
 
     created_draft = client.ms_client.http_request('POST', suffix_endpoint, json_data=draft)
 
+    create_upload_session(email, client, created_draft)
+
     parsed_draft = client.parse_item_as_dict(created_draft)
     headers = ['ID', 'From', 'Sender', 'To', 'Subject', 'Body', 'BodyType', 'Cc', 'Bcc', 'Headers', 'Importance',
                'MessageID', 'ConversationID', 'CreatedTime', 'SentTime', 'ReceivedTime', 'ModifiedTime', 'IsDraft',
@@ -1464,8 +1466,13 @@ def send_email_command(client: MsGraphClient, args):
     """
     Sends email from user's mailbox, the sent message will appear in Sent Items folder
     """
+
     prepared_args = prepare_args('send-mail', args)
     email = args.get('from', client._mailbox_to_fetch)
+
+    create_upload_session(email, client)
+
+
     suffix_endpoint = f'/users/{email}/sendMail'
     message_content = MsGraphClient.build_message(**prepared_args)
     client.ms_client.http_request('POST', suffix_endpoint, json_data={'message': message_content}, resp_type="text")
@@ -1558,6 +1565,26 @@ def send_draft_command(client: MsGraphClient, args):
     client.ms_client.http_request('POST', suffix_endpoint, resp_type="text")
 
     return_outputs(f'### Draft with: {draft_id} id was sent successfully.')
+
+
+def create_upload_session(email: str, client: MsGraphClient, created_draft: dict):
+    try:
+        created_draft_id = created_draft.get('id')
+        suffix_endpoint = f'/users/{email}/messages/{created_draft_id}/attachments/createUploadSession'
+        attachment = {
+            "attachmentType": "file",
+            "name": "Big Test file",
+            "size": 21000
+        }
+
+        upload_session = client.ms_client.http_request('POST', suffix_endpoint,
+                                                       json_data={'attachmentItem': attachment})
+
+        print(upload_session)
+    except Exception as e:
+        raise Exception(f'upload seesion error', e)
+
+
 
 
 def main():

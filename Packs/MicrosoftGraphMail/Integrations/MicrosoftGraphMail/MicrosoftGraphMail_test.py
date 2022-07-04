@@ -735,3 +735,11 @@ def test_fetch_last_emails__all_mails_in_exclude(mocker):
     assert len(fetched_emails) == 0
     assert next_fetch == '2'
     assert ids == ['1', '2']
+
+
+def test_send_mail_bit_attachment(mocker):
+    mocker.patch.object(demisto, 'getFilePath', return_value={
+        'path': '/Users/okarkkatz/dev/demisto/content/Packs/'
+                'MicrosoftGraphMail/Integrations/MicrosoftGraphMail/plant.jpeg',
+        'name': 'plant.jpeg'})
+    main()
