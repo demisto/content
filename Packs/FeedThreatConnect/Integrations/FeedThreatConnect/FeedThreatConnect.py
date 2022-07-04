@@ -2,6 +2,7 @@
 # IMPORTS #
 ###########
 # STD packages
+from enum import Enum
 from typing import Dict, Tuple, Any, Optional, List, Union, Iterator
 from itertools import islice
 from math import ceil
@@ -102,60 +103,43 @@ def parse_indicator(indicator: Dict[str, str]) -> Dict[str, Any]:
 # Client #
 ##########
 
+class Method(str, Enum):
+    """
+    A list that represent the types of http request available
+    """
+    GET = 'GET'
+    POST = 'POST'
+    PUT = 'PUT'
+    HEAD = 'HEAD'
+    PATCH = 'PATCH'
+    DELETE = 'DELETE'
+
 
 class Client:
-    """Object represnt a client for ThreatConnect actions"""
+    def __init__(self, api_id: str, api_secret: str, base_url: str, verify: bool = False):
+        self.api_id = api_id
+        self.api_secret = api_secret
+        self.base_url = base_url
+        self.verify = verify
 
-    def __init__(self, access_key: str, secret_key: str, api_path: str):
-        """ Initialize client configuration:
+    def make_request(self, method: Method, url_suffix: str, payload: dict = {}, params: dict = {},
+                     parse_json=True):  # pragma: no cover  # noqa
+        headers = self.create_header(url_suffix, method)
 
-        Args:
-            access_key: Generated access key.
-            secret_key: Generated secret key.
-            api_path: https://api.threatconnect.com
+        url = urljoin(self.base_url, url_suffix)
+        response = requests.request(method=method, url=url, headers=headers, data=payload, params=params,
+                                    verify=self.verify)
+        if parse_json:
+            return json.loads(response.text), response.status_code
+        return response
 
-        References:
-            1. HMAC: https://docs.threatconnect.com/en/latest/tcex/authorization.html
-            2. Creating user: https://training.threatconnect.com/learn/article/creating-user-accounts-kb-article#2
-
-        Notes:
-            1. When importing TcEx, Print occurred therefor an error raised in the server due to not valid stdout.
-        """
-        with suppress_stdout():
-            from tcex import TcEx
-        self._client = TcEx(config={
-            "api_access_id": access_key,
-            "api_secret_key": secret_key,
-            "tc_api_path": api_path,
-        })
-
-    def get_owners(self) -> Iterator[Any]:
-        """Get indicators owners - helping to configure the feed integration.
-
-        Yields:
-            Iterable: Owner information
-        """
-        return self._client.ti.owner().many()
-
-    def get_indicators(self, offset: int = 0, limit: Optional[int] = None, owners: Optional[str] = None) \
-            -> Iterator[Any]:
-        """ Get indicators from threatconnect.
-
-        Args:
-            offset: Index offset from beginning.
-            limit: Indicator amount limit.
-            owners: Filter indicators belongs to specific owner.
-
-        Returns:
-            Iterator: indicator objects.
-        """
-        indicators = self._client.ti.indicator().many(params={"includes": ['additional', 'attributes'],
-                                                              'owner': owners})
-        offset = int(offset)
-        if limit:
-            limit = int(limit) + offset
-
-        return islice(indicators, offset, limit)
+    def create_header(self, url_suffix: str, method: Method) -> dict:
+        timestamp = round(time.time())
+        to_sign = f'{url_suffix}:{method}:{timestamp}'
+        hash = base64.b64encode(
+            hmac.new(self.api_secret.encode('utf8'), to_sign.encode('utf8'), hashlib.sha256).digest()).decode()
+        return {'Authorization': f'TC {self.api_id}:{hash}', 'Timestamp': str(timestamp),
+                'Content-Type': 'application/json'}
 
 
 ######################
@@ -175,11 +159,16 @@ def module_test_command(client: Client) -> COMMAND_OUTPUT:
         dict: Operation raw response - Empty.
     """
     try:
-        client.get_indicators(limit=4)
+        url = '/api/v3/indicators?resultLimit=4'
+
+        response, status_code = client.make_request(Method.GET, url)
+        if status_code == 200:
+            demisto.results('ok')
+        else:
+            return_error('Error from the API: ' + response.get('message',
+                                                               'An error has occurred if it persist please contact your local help desk'))
     except RuntimeError:
         raise DemistoException("Unable to communicate with ThreatConnect API!")
-
-    return "ok", {}, {}
 
 
 def fetch_indicators_command(client: Client) -> List[Dict[str, Any]]:
@@ -236,11 +225,9 @@ def get_owners_command(client: Client) -> COMMAND_OUTPUT:
 
 
 def main():
-    client = Client(demisto.getParam("api_access_id"),
-                    demisto.getParam("api_secret_key"),
-                    demisto.getParam("tc_api_path"),
-                    )
-
+    insecure = not demisto.getParam('insecure')
+    client = Client(demisto.getParam('api_access_id'), demisto.getParam('api_secret_key'),
+                    demisto.getParam('tc_api_path'), insecure)
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
     commands = {
