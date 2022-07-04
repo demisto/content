@@ -24,16 +24,16 @@
         "Phishing"
     ],
     "keywords": [],
-        "dependencies": {
-            "EWS": {
-                "mandatory": false,
-                "display_name": "EWS"
-            },
-            "Gmail": {
-                "mandatory": false,
-                "display_name": "Gmail"
-            }
+    "dependencies": {
+        "EWS": {
+            "mandatory": false,
+            "display_name": "EWS"
         },
+        "Gmail": {
+            "mandatory": false,
+            "display_name": "Gmail"
+        }
+    },
     "marketplaces": [
         "xsoar",
         "marketplacev2"
