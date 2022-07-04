@@ -28,8 +28,8 @@
         "Trend Micro CAS Event",
         "CrowdStrike Falcon Detection",
         "CrowdStrike Falcon Incident",
-        "MVision CASB Alert",
-        "MVision CASB Threat"
+        "McAfee MVision CASB Alert",
+        "McAfee MVision CASB Threat",
     ],
     "systemAssociatedTypes": null,
     "associatedToAll": false,

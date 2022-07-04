@@ -5,8 +5,8 @@
     "FireEye NX Alert",
     "FireEye HX Alert",
     "FireEye EX Alert",
-    "MVision CASB Alert",
-    "MVision CASB Threat"
+    "McAfee MVision CASB Alert",
+    "McAfee MVision CASB Threat",
   ],
   "breachScript": "",
   "caseInsensitive": true,

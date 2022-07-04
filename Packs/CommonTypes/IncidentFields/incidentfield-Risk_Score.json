@@ -10,8 +10,8 @@
 		"Microsoft CAS Alert",
 		"Trend Micro CAS Event",
 		"Netwitness Incident",
-		"MVision CASB Alert",
-		"MVision CASB Threat"
+		"McAfee MVision CASB Alert",
+		"McAfee MVision CASB Threat",
 	],
 	"breachScript": "",
 	"caseInsensitive": true,

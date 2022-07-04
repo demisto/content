@@ -8,8 +8,8 @@
 		"AWS EC2 Instance Misconfiguration",
 		"Microsoft CAS Alert",
 		"Tripwire File Change",
-		"MVision CASB Alert",
-	    "MVision CASB Threat"
+		"McAfee MVision CASB Alert",
+	    "McAfee MVision CASB Threat",
 	],
 	"breachScript": "",
 	"caseInsensitive": true,

@@ -12,8 +12,8 @@
     "Symantec DLP Discover Incident",
     "Symantec DLP Endpoint Incident",
     "Symantec DLP Network Incident",
-    "MVision CASB Alert",
-    "MVision CASB Threat"
+    "McAfee MVision CASB Alert",
+    "McAfee MVision CASB Threat",
   ],
   "breachScript": "",
   "caseInsensitive": true,
