@@ -608,7 +608,7 @@ def create_fact_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     fact_links = argToList(args.get('fact_links', []))
     fact_relationships = argToList(args.get('fact_relationships', []))
     fact_origin_type = args.get('fact_origin_type')
-    fact_limit_count = arg_to_number(args.get('fact_limit_count'), 0)
+    fact_limit_count: int = arg_to_number(args.get('fact_limit_count'), "0")
     fact_technique_id = args.get('fact_technique_id')
     fact_trait = args.get('fact_trait')
     fact_source = args.get('fact_source')
