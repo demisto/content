@@ -18,7 +18,7 @@ def parse_tag_field(tags_str):
     for f in tags_str.split(';'):
         match = regex.match(f)
         if match is None:
-            demisto.log('could not parse field: %s' % (f,))
+            demisto.debug('could not parse field: %s' % (f,))
             continue
 
         tags.append({
@@ -34,7 +34,7 @@ def parse_subnet_mappings(subnets_str):
     for f in subnets_str.split(';'):
         match = regex.match(f)
         if match is None:
-            demisto.log('could not parse field: %s' % (f,))
+            demisto.debug('could not parse field: %s' % (f,))
             continue
 
         subnets.append({
