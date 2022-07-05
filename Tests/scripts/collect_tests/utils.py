@@ -62,9 +62,9 @@ class VersionRange:
 
 
 class Machine(Enum):
-    V6_2 = Version('6.2')
     V6_5 = Version('6.5')
     V6_6 = Version('6.6')
+    V6_8 = Version('6.8')
     MASTER = 'master'
     NIGHTLY = 'nightly'
 
