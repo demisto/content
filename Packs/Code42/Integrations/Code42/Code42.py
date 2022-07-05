@@ -23,6 +23,7 @@ from py42.sdk.queries.fileevents.filters import (
 from py42.sdk.queries.fileevents.util import FileEventFilterStringField
 from py42.sdk.queries.alerts.alert_query import AlertQuery
 from py42.sdk.queries.alerts.filters import DateObserved, Severity, AlertState
+from py42.exceptions import Py42NotFoundError
 
 
 class EventId(FileEventFilterStringField):
@@ -262,11 +263,12 @@ class Code42Client(BaseClient):
         return res.data.get("alerts")
 
     def get_alert_details(self, alert_id):
-        py42_res = self.sdk.alerts.get_details(alert_id)
-        res = py42_res.data.get("alerts")
-        if not res:
+        try:
+            py42_res = self.sdk.alerts.get_details(alert_id)
+            res = py42_res.data.get("alerts")
+            return res[0]
+        except Py42NotFoundError:
             raise Code42AlertNotFoundError(alert_id)
-        return res[0]
 
     def resolve_alert(self, id):
         self.sdk.alerts.resolve(id)
@@ -606,8 +608,9 @@ def _map_obj_to_context(obj, context_mapper):
 @logger
 def alert_get_command(client, args):
     code42_securityalert_context = []
-    alert = client.get_alert_details(args.get("id"))
-    if not alert:
+    try:
+        alert = client.get_alert_details(args.get("id"))
+    except Code42AlertNotFoundError:
         return CommandResults(
             readable_output="No results found",
             outputs={"Results": []},

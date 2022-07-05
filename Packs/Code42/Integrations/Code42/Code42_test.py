@@ -4,8 +4,10 @@ from py42.sdk.queries.fileevents.filters import FileCategory
 from requests import Response
 from py42.sdk import SDKClient
 from py42.response import Py42Response
+from py42.exceptions import Py42NotFoundError
 from py42.sdk.queries.alerts.filters import Severity
 from Code42 import (
+    create_client,
     Code42Client,
     Code42LegalHoldMatterNotFoundError,
     Code42InvalidLegalHoldMembershipError,
@@ -34,6 +36,7 @@ from Code42 import (
     list_watchlists_command,
     list_watchlists_included_users,
     add_user_to_watchlist_command,
+    remove_user_from_watchlist_command,
     download_file_command,
     fetch_incidents,
     highriskemployee_get_command,
@@ -44,6 +47,7 @@ from Code42 import (
     Code42UnsupportedHashError,
     Code42MissingSearchArgumentsError,
 )
+from requests import Response, HTTPError
 import time
 
 MOCK_URL = "https://123-fake-api.com"
@@ -1267,7 +1271,7 @@ def create_mock_code42_sdk_response_generator(mocker, response_pages):
     return (create_mock_code42_sdk_response(mocker, page) for page in response_pages)
 
 
-def create_client(sdk):
+def _create_client(sdk):
     return Code42Client(
         sdk=sdk, base_url=MOCK_URL, auth=MOCK_AUTH, verify=False, proxy=False
     )
@@ -1376,12 +1380,19 @@ def test_client_lazily_inits_sdk(mocker, code42_sdk_mock):
     assert client._sdk is not None
 
 
-def test_client_when_no_alert_found_raises_alert_not_found(mocker, code42_sdk_mock):
-    response_json = """{"alerts": []}"""
-    code42_sdk_mock.alerts.get_details.return_value = create_mock_code42_sdk_response(
-        mocker, response_json
-    )
-    client = create_client(code42_sdk_mock)
+def test_client_raises_helpful_error_when_not_given_an_api_client_id(mocker, code42_sdk_mock):
+    mock_demisto = mocker.patch("Code42.demisto")
+    mock_demisto.params.return_value = {"credentials": {"identifier": "test@example.com"}}
+    with pytest.raises(Exception) as err:
+        create_client()
+
+    assert "Got invalid API Client ID" in str(err)
+
+
+def test_client_when_no_alert_found_returns(mocker, code42_sdk_mock):
+    mock_response = mocker.MagicMock(spec=Response)
+    code42_sdk_mock.alerts.get_details.side_effect = Py42NotFoundError(HTTPError(response=mock_response))
+    client = _create_client(code42_sdk_mock)
     with pytest.raises(Code42AlertNotFoundError):
         client.get_alert_details("mock-id")
 
@@ -1391,7 +1402,7 @@ def test_client_when_no_user_found_raises_user_not_found(mocker, code42_sdk_mock
     code42_sdk_mock.users.get_by_username.return_value = (
         create_mock_code42_sdk_response(mocker, response_json)
     )
-    client = create_client(code42_sdk_mock)
+    client = _create_client(code42_sdk_mock)
     with pytest.raises(Code42UserNotFoundError):
         client.get_user("test@example.com")
 
@@ -1404,7 +1415,7 @@ def test_client_add_to_matter_when_no_legal_hold_matter_found_raises_matter_not_
         get_empty_legalhold_matters_response(mocker, MOCK_GET_ALL_MATTERS_RESPONSE)
     )
 
-    client = create_client(code42_sdk_mock)
+    client = _create_client(code42_sdk_mock)
     with pytest.raises(Code42LegalHoldMatterNotFoundError):
         client.add_user_to_legal_hold_matter("TESTUSERNAME", "TESTMATTERNAME")
 
@@ -1416,7 +1427,7 @@ def test_client_add_to_matter_when_no_user_found_raises_user_not_found(
     code42_sdk_mock.users.get_by_username.return_value = (
         create_mock_code42_sdk_response(mocker, response_json)
     )
-    client = create_client(code42_sdk_mock)
+    client = _create_client(code42_sdk_mock)
     with pytest.raises(Code42UserNotFoundError):
         client.add_user_to_legal_hold_matter("TESTUSERNAME", "TESTMATTERNAME")
 
@@ -1428,7 +1439,7 @@ def test_client_remove_from_matter_when_no_legal_hold_matter_found_raises_except
         get_empty_legalhold_matters_response(mocker, MOCK_GET_ALL_MATTERS_RESPONSE)
     )
 
-    client = create_client(code42_sdk_mock)
+    client = _create_client(code42_sdk_mock)
     with pytest.raises(Code42LegalHoldMatterNotFoundError):
         client.remove_user_from_legal_hold_matter("TESTUSERNAME", "TESTMATTERNAME")
 
@@ -1440,7 +1451,7 @@ def test_client_remove_from_matter_when_no_user_found_raises_user_not_found(
     code42_sdk_mock.users.get_by_username.return_value = (
         create_mock_code42_sdk_response(mocker, response_json)
     )
-    client = create_client(code42_sdk_mock)
+    client = _create_client(code42_sdk_mock)
     with pytest.raises(Code42UserNotFoundError):
         client.remove_user_from_legal_hold_matter("TESTUSERNAME", "TESTMATTERNAME")
 
@@ -1453,7 +1464,7 @@ def test_client_remove_from_matter_when_no_membership_raises_invalid_legal_hold_
             mocker, MOCK_GET_ALL_MATTER_CUSTODIANS_RESPONSE
         )
     )
-    client = create_client(code42_legal_hold_mock)
+    client = _create_client(code42_legal_hold_mock)
     with pytest.raises(Code42InvalidLegalHoldMembershipError):
         client.remove_user_from_legal_hold_matter("TESTUSERNAME", "TESTMATTERNAME")
 
@@ -1482,7 +1493,7 @@ def test_map_to_file_context():
 
 
 def test_alert_get_command(code42_alerts_mock):
-    client = create_client(code42_alerts_mock)
+    client = _create_client(code42_alerts_mock)
     cmd_res = alert_get_command(client, {"id": "rule-id-abc-123"})
     assert cmd_res.raw_response["ruleId"] == "rule-id-abc-123"
     assert cmd_res.outputs == [MOCK_CODE42_ALERT_CONTEXT[0]]
@@ -1490,8 +1501,16 @@ def test_alert_get_command(code42_alerts_mock):
     assert cmd_res.outputs_key_field == "ID"
 
 
+def test_alert_get_command_when_no_alert_found(mocker, code42_sdk_mock):
+    mock_response = mocker.MagicMock(spec=Response)
+    code42_sdk_mock.alerts.get_details.side_effect = Py42NotFoundError(HTTPError(response=mock_response))
+    client = _create_client(code42_sdk_mock)
+    cmd_res = alert_get_command(client, {"id": "rule-id-abc-123"})
+    assert cmd_res.readable_output == "No results found"
+
+
 def test_alert_resolve_command(code42_alerts_mock):
-    client = create_client(code42_alerts_mock)
+    client = _create_client(code42_alerts_mock)
     cmd_res = alert_resolve_command(client, {"id": "rule-id-abc-123"})
     assert cmd_res.raw_response["ruleId"] == "rule-id-abc-123"
     assert cmd_res.outputs == [MOCK_CODE42_ALERT_CONTEXT[0]]
@@ -1500,7 +1519,7 @@ def test_alert_resolve_command(code42_alerts_mock):
 
 
 def test_departingemployee_add_command(code42_sdk_mock):
-    client = create_client(code42_sdk_mock)
+    client = _create_client(code42_sdk_mock)
     date = "2020-01-01"
     note = "Dummy note"
     cmd_res = departingemployee_add_command(
@@ -1522,7 +1541,7 @@ def test_departingemployee_add_command(code42_sdk_mock):
 
 
 def test_departingemployee_remove_command(code42_sdk_mock):
-    client = create_client(code42_sdk_mock)
+    client = _create_client(code42_sdk_mock)
     cmd_res = departingemployee_remove_command(client, {"username": _TEST_USERNAME})
     assert cmd_res.raw_response == _TEST_USER_ID
     assert cmd_res.outputs_prefix == "Code42.DepartingEmployee"
@@ -1536,7 +1555,7 @@ def test_departingemployee_remove_command(code42_sdk_mock):
 
 
 def test_departingemployee_get_all_command(code42_departing_employee_mock):
-    client = create_client(code42_departing_employee_mock)
+    client = _create_client(code42_departing_employee_mock)
     cmd_res = departingemployee_get_all_command(client, {})
     expected_raw_response = json.loads(MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE)[
         "items"
@@ -1565,7 +1584,7 @@ def test_departingemployee_get_all_command_gets_employees_from_multiple_pages(
     code42_departing_employee_mock.detectionlists.departing_employee.get_all.return_value = (
         employee_page_generator
     )
-    client = create_client(code42_departing_employee_mock)
+    client = _create_client(code42_departing_employee_mock)
     cmd_res = departingemployee_get_all_command(client, {})
     assert cmd_res.outputs_prefix == "Code42.DepartingEmployee"
     assert cmd_res.outputs_key_field == "UserID"
@@ -1592,7 +1611,7 @@ def test_departingemployee_get_all_command_gets_number_of_employees_equal_to_res
     code42_departing_employee_mock.detectionlists.departing_employee.get_all.return_value = (
         employee_page_generator
     )
-    client = create_client(code42_departing_employee_mock)
+    client = _create_client(code42_departing_employee_mock)
 
     cmd_res = departingemployee_get_all_command(client, {"results": 1})
     assert len(cmd_res.raw_response) == 1
@@ -1608,7 +1627,7 @@ def test_departingemployee_get_all_command_when_no_employees(
     code42_departing_employee_mock.detectionlists.departing_employee.get_all.return_value = (
         no_employees_response
     )
-    client = create_client(code42_departing_employee_mock)
+    client = _create_client(code42_departing_employee_mock)
     cmd_res = departingemployee_get_all_command(client, {})
     assert cmd_res.outputs_prefix == "Code42.DepartingEmployee"
     assert cmd_res.outputs_key_field == "UserID"
@@ -1621,7 +1640,7 @@ def test_departingemployee_get_all_command_when_no_employees(
 
 
 def test_departingemployee_get_command(code42_departing_employee_get_mock):
-    client = create_client(code42_departing_employee_get_mock)
+    client = _create_client(code42_departing_employee_get_mock)
     cmd_res = departingemployee_get_command(client, {"username": _TEST_USERNAME})
     get_func = code42_departing_employee_get_mock.detectionlists.departing_employee.get
     get_func.assert_called_once_with(_TEST_USER_ID)
@@ -1633,7 +1652,7 @@ def test_departingemployee_get_command(code42_departing_employee_get_mock):
 
 
 def test_highriskemployee_get_command(code42_high_risk_employee_get_mock):
-    client = create_client(code42_high_risk_employee_get_mock)
+    client = _create_client(code42_high_risk_employee_get_mock)
     cmd_res = highriskemployee_get_command(client, {"username": _TEST_USERNAME})
     get_func = code42_high_risk_employee_get_mock.detectionlists.high_risk_employee.get
     get_func.assert_called_once_with(_TEST_USER_ID)
@@ -1645,7 +1664,7 @@ def test_highriskemployee_get_command(code42_high_risk_employee_get_mock):
 
 
 def test_highriskemployee_add_command(code42_high_risk_employee_mock):
-    client = create_client(code42_high_risk_employee_mock)
+    client = _create_client(code42_high_risk_employee_mock)
     cmd_res = highriskemployee_add_command(
         client, {"username": _TEST_USERNAME, "note": "Dummy note"}
     )
@@ -1663,7 +1682,7 @@ def test_highriskemployee_add_command(code42_high_risk_employee_mock):
 
 
 def test_highriskemployee_remove_command(code42_sdk_mock):
-    client = create_client(code42_sdk_mock)
+    client = _create_client(code42_sdk_mock)
     cmd_res = highriskemployee_remove_command(client, {"username": _TEST_USERNAME})
     assert cmd_res.raw_response == _TEST_USER_ID
     assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
@@ -1676,7 +1695,7 @@ def test_highriskemployee_remove_command(code42_sdk_mock):
 
 
 def test_highriskemployee_get_all_command(code42_high_risk_employee_mock):
-    client = create_client(code42_high_risk_employee_mock)
+    client = _create_client(code42_high_risk_employee_mock)
     cmd_res = highriskemployee_get_all_command(client, {})
     expected_response = json.loads(MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE)["items"]
     assert cmd_res.outputs_key_field == "UserID"
@@ -1703,7 +1722,7 @@ def test_highriskemployee_get_all_command_gets_employees_from_multiple_pages(
     code42_high_risk_employee_mock.detectionlists.high_risk_employee.get_all.return_value = (
         employee_page_generator
     )
-    client = create_client(code42_high_risk_employee_mock)
+    client = _create_client(code42_high_risk_employee_mock)
 
     cmd_res = highriskemployee_get_all_command(client, {"username": _TEST_USERNAME})
     expected_response = (
@@ -1720,7 +1739,7 @@ def test_highriskemployee_get_all_command_gets_employees_from_multiple_pages(
 def test_highriskemployee_get_all_command_when_given_risk_tags_only_gets_employees_with_tags(
     code42_high_risk_employee_mock,
 ):
-    client = create_client(code42_high_risk_employee_mock)
+    client = _create_client(code42_high_risk_employee_mock)
     cmd_res = highriskemployee_get_all_command(
         client,
         {
@@ -1754,7 +1773,7 @@ def test_highriskemployee_get_all_command_gets_number_of_employees_equal_to_resu
     code42_high_risk_employee_mock.detectionlists.high_risk_employee.get_all.return_value = (
         employee_page_generator
     )
-    client = create_client(code42_high_risk_employee_mock)
+    client = _create_client(code42_high_risk_employee_mock)
     cmd_res = highriskemployee_get_all_command(client, {"results": 1})
     assert len(cmd_res.raw_response) == 1
     assert len(cmd_res.outputs) == 1
@@ -1769,7 +1788,7 @@ def test_highriskemployee_get_all_command_when_no_employees(
     code42_high_risk_employee_mock.detectionlists.high_risk_employee.get_all.return_value = (
         no_employees_response
     )
-    client = create_client(code42_high_risk_employee_mock)
+    client = _create_client(code42_high_risk_employee_mock)
     cmd_res = highriskemployee_get_all_command(
         client,
         {
@@ -1788,7 +1807,7 @@ def test_highriskemployee_get_all_command_when_no_employees(
 
 def test_highriskemployee_add_risk_tags_command(code42_sdk_mock):
     tags = "FLIGHT_RISK"
-    client = create_client(code42_sdk_mock)
+    client = _create_client(code42_sdk_mock)
     cmd_res = highriskemployee_add_risk_tags_command(
         client, {"username": _TEST_USERNAME, "risktags": tags}
     )
@@ -1804,7 +1823,7 @@ def test_highriskemployee_add_risk_tags_command(code42_sdk_mock):
 
 
 def test_highriskemployee_remove_risk_tags_command(code42_sdk_mock):
-    client = create_client(code42_sdk_mock)
+    client = _create_client(code42_sdk_mock)
     cmd_res = highriskemployee_remove_risk_tags_command(
         client,
         {"username": _TEST_USERNAME, "risktags": "FLIGHT_RISK,CONTRACT_EMPLOYEE"},
@@ -1821,7 +1840,7 @@ def test_highriskemployee_remove_risk_tags_command(code42_sdk_mock):
 
 
 def test_legalhold_add_user_command(code42_legal_hold_mock):
-    client = create_client(code42_legal_hold_mock)
+    client = _create_client(code42_legal_hold_mock)
     cmd_res = legal_hold_add_user_command(
         client, {"username": _TEST_USERNAME, "mattername": "Patent Lawsuit"}
     )
@@ -1837,7 +1856,7 @@ def test_legalhold_add_user_command(code42_legal_hold_mock):
 
 
 def test_legalhold_remove_user_command(code42_legal_hold_mock):
-    client = create_client(code42_legal_hold_mock)
+    client = _create_client(code42_legal_hold_mock)
     cmd_res = legal_hold_remove_user_command(
         client, {"username": _TEST_USERNAME, "mattername": "Patent Lawsuit"}
     )
@@ -1852,7 +1871,7 @@ def test_legalhold_remove_user_command(code42_legal_hold_mock):
 
 
 def test_user_create_command(code42_users_mock):
-    client = create_client(code42_users_mock)
+    client = _create_client(code42_users_mock)
     cmd_res = user_create_command(
         client,
         {
@@ -1876,7 +1895,7 @@ def test_user_create_command_when_org_not_found_raises_org_not_found(
     code42_users_mock.orgs.get_all.return_value = (
         create_mock_code42_sdk_response_generator(mocker, [response_json])
     )
-    client = create_client(code42_users_mock)
+    client = _create_client(code42_users_mock)
     with pytest.raises(Code42OrgNotFoundError):
         user_create_command(
             client,
@@ -1889,7 +1908,7 @@ def test_user_create_command_when_org_not_found_raises_org_not_found(
 
 
 def test_user_block_command(code42_users_mock):
-    client = create_client(code42_users_mock)
+    client = _create_client(code42_users_mock)
     cmd_res = user_block_command(client, {"username": "new.user@example.com"})
     assert cmd_res.raw_response == 123456
     assert cmd_res.outputs["UserID"] == 123456
@@ -1898,7 +1917,7 @@ def test_user_block_command(code42_users_mock):
 
 
 def test_user_unblock_command(code42_users_mock):
-    client = create_client(code42_users_mock)
+    client = _create_client(code42_users_mock)
     cmd_res = user_unblock_command(client, {"username": "new.user@example.com"})
     assert cmd_res.raw_response == 123456
     assert cmd_res.outputs["UserID"] == 123456
@@ -1907,7 +1926,7 @@ def test_user_unblock_command(code42_users_mock):
 
 
 def test_user_deactivate_command(code42_users_mock):
-    client = create_client(code42_users_mock)
+    client = _create_client(code42_users_mock)
     cmd_res = user_deactivate_command(client, {"username": "new.user@example.com"})
     assert cmd_res.raw_response == 123456
     assert cmd_res.outputs["UserID"] == 123456
@@ -1916,7 +1935,7 @@ def test_user_deactivate_command(code42_users_mock):
 
 
 def test_user_reactivate_command(code42_users_mock):
-    client = create_client(code42_users_mock)
+    client = _create_client(code42_users_mock)
     cmd_res = user_reactivate_command(client, {"username": "new.user@example.com"})
     assert cmd_res.raw_response == 123456
     assert cmd_res.outputs["UserID"] == 123456
@@ -1925,7 +1944,7 @@ def test_user_reactivate_command(code42_users_mock):
 
 
 def test_security_data_search_command(code42_file_events_mock):
-    client = create_client(code42_file_events_mock)
+    client = _create_client(code42_file_events_mock)
     cmd_res = securitydata_search_command(client, MOCK_SECURITY_DATA_SEARCH_QUERY)
     code42_res = cmd_res[0]
     file_res = cmd_res[1]
@@ -1966,14 +1985,14 @@ def test_security_data_search_command(code42_file_events_mock):
 def test_securitydata_search_command_when_not_given_any_queryable_args_raises_error(
     code42_file_events_mock,
 ):
-    client = create_client(code42_file_events_mock)
+    client = _create_client(code42_file_events_mock)
     with pytest.raises(Code42MissingSearchArgumentsError):
         securitydata_search_command(client, {})
 
 
 def test_download_file_command_when_given_md5(code42_sdk_mock, mocker):
     fr = mocker.patch("Code42.fileResult")
-    client = create_client(code42_sdk_mock)
+    client = _create_client(code42_sdk_mock)
     _ = download_file_command(client, {"hash": "b6312dbe4aa4212da94523ccb28c5c16"})
     code42_sdk_mock.securitydata.stream_file_by_md5.assert_called_once_with(
         "b6312dbe4aa4212da94523ccb28c5c16"
@@ -1984,7 +2003,7 @@ def test_download_file_command_when_given_md5(code42_sdk_mock, mocker):
 def test_download_file_command_when_given_sha256(code42_sdk_mock, mocker):
     fr = mocker.patch("Code42.fileResult")
     _hash = "41966f10cc59ab466444add08974fde4cd37f88d79321d42da8e4c79b51c2149"
-    client = create_client(code42_sdk_mock)
+    client = _create_client(code42_sdk_mock)
     _ = download_file_command(client, {"hash": _hash})
     code42_sdk_mock.securitydata.stream_file_by_sha256.assert_called_once_with(_hash)
     assert fr.call_count == 1
@@ -1998,13 +2017,13 @@ def test_download_file_when_given_other_hash_raises_unsupported_hash(
         "41966f10cc59ab466444add08974fde4cd37f88d79321d42da8e4c79b51c214941966f10cc59ab466444add08974fde4cd37"
         "f88d79321d42da8e4c79b51c2149"
     )
-    client = create_client(code42_sdk_mock)
+    client = _create_client(code42_sdk_mock)
     with pytest.raises(Code42UnsupportedHashError):
         _ = download_file_command(client, {"hash": _hash})
 
 
 def test_list_watchlists_command(code42_watchlists_mock):
-    client = create_client(code42_watchlists_mock)
+    client = _create_client(code42_watchlists_mock)
     cmd_res = list_watchlists_command(client, {})
     expected_response = json.loads(MOCK_WATCHLISTS_RESPONSE)["watchlists"]
     actual_response = cmd_res.raw_response
@@ -2026,7 +2045,7 @@ def test_list_watchlists_included_users_calls_by_id_when_watchlist_type_arg_prov
     code42_watchlists_included_users_mock.watchlists._watchlists_service.watchlist_type_id_map.get.return_value = (
         watchlist_id
     )
-    client = create_client(code42_watchlists_included_users_mock)
+    client = _create_client(code42_watchlists_included_users_mock)
     cmd_res = list_watchlists_included_users(
         client, {"watchlist": "DEPARTING_EMPLOYEE"}
     )
@@ -2058,7 +2077,7 @@ def test_add_user_to_watchlist_command_with_UUID_calls_add_by_id_method(
     code42_sdk_mock.watchlists.add_included_users_by_watchlist_id.return_value = (
         create_mock_code42_sdk_response(mocker, "")
     )
-    client = create_client(code42_sdk_mock)
+    client = _create_client(code42_sdk_mock)
     cmd_res = add_user_to_watchlist_command(
         client, {"watchlist": watchlist_id, "username": "user_a@example.com"}
     )
@@ -2087,7 +2106,7 @@ def test_add_user_to_watchlist_command_with_watchlist_type_calls_add_by_type_met
     code42_sdk_mock.watchlists.add_included_users_by_watchlist_type.return_value = (
         create_mock_code42_sdk_response(mocker, "")
     )
-    client = create_client(code42_sdk_mock)
+    client = _create_client(code42_sdk_mock)
     cmd_res = add_user_to_watchlist_command(
         client, {"watchlist": watchlist_type, "username": "user_a@example.com"}
     )
@@ -2100,9 +2119,64 @@ def test_add_user_to_watchlist_command_with_watchlist_type_calls_add_by_type_met
         "Success": True,
     }
 
+def test_remove_user_from_watchlist_command_with_UUID_calls_add_by_id_method(
+    code42_sdk_mock, mocker
+):
+    watchlist_id = "b55978d5-2d50-494d-bec9-678867f3830c"
+    user_id = "1234"
+    code42_sdk_mock.users.get_by_username.return_value = (
+        create_mock_code42_sdk_response(
+            mocker, f'{{"users": [{{"userUid": "{user_id}"}}]}}'
+        )
+    )
+    code42_sdk_mock.watchlists.remove_included_users_by_watchlist_id.return_value = (
+        create_mock_code42_sdk_response(mocker, "")
+    )
+    client = _create_client(code42_sdk_mock)
+    cmd_res = remove_user_from_watchlist_command(
+        client, {"watchlist": watchlist_id, "username": "user_a@example.com"}
+    )
+    assert (
+        code42_sdk_mock.watchlists.remove_included_users_by_watchlist_id.called_once_with(
+            user_id, watchlist_id
+        )
+    )
+    assert cmd_res.raw_response == {
+        "Watchlist": "b55978d5-2d50-494d-bec9-678867f3830c",
+        "Username": "user_a@example.com",
+        "Success": True,
+    }
+
+
+def test_remove_user_from_watchlist_command_with_watchlist_type_calls_add_by_type_method(
+    code42_sdk_mock, mocker
+):
+    watchlist_type = "DEPARTING_EMPLOYEE"
+    user_id = "1234"
+    code42_sdk_mock.users.get_by_username.return_value = (
+        create_mock_code42_sdk_response(
+            mocker, f'{{"users": [{{"userUid": "{user_id}"}}]}}'
+        )
+    )
+    code42_sdk_mock.watchlists.remove_included_users_by_watchlist_type.return_value = (
+        create_mock_code42_sdk_response(mocker, "")
+    )
+    client = _create_client(code42_sdk_mock)
+    cmd_res = remove_user_from_watchlist_command(
+        client, {"watchlist": watchlist_type, "username": "user_a@example.com"}
+    )
+    assert code42_sdk_mock.watchlists.remove_included_users_by_watchlist_type.called_once_with(
+        user_id, watchlist_type
+    )
+    assert cmd_res.raw_response == {
+        "Watchlist": "DEPARTING_EMPLOYEE",
+        "Username": "user_a@example.com",
+        "Success": True,
+    }
+
 
 def test_fetch_incidents_handles_single_severity(code42_fetch_incidents_mock):
-    client = create_client(code42_fetch_incidents_mock)
+    client = _create_client(code42_fetch_incidents_mock)
     fetch_incidents(
         client=client,
         last_run={"last_fetch": None},
@@ -2116,7 +2190,7 @@ def test_fetch_incidents_handles_single_severity(code42_fetch_incidents_mock):
 
 
 def test_fetch_incidents_handles_multi_severity(code42_fetch_incidents_mock):
-    client = create_client(code42_fetch_incidents_mock)
+    client = _create_client(code42_fetch_incidents_mock)
     fetch_incidents(
         client=client,
         last_run={"last_fetch": None},
@@ -2132,7 +2206,7 @@ def test_fetch_incidents_handles_multi_severity(code42_fetch_incidents_mock):
 
 
 def test_fetch_when_include_files_includes_files(code42_fetch_incidents_mock):
-    client = create_client(code42_fetch_incidents_mock)
+    client = _create_client(code42_fetch_incidents_mock)
     _, incidents, _ = fetch_incidents(
         client=client,
         last_run={"last_fetch": None},
@@ -2148,7 +2222,7 @@ def test_fetch_when_include_files_includes_files(code42_fetch_incidents_mock):
 
 
 def test_fetch_when_not_include_files_excludes_files(code42_fetch_incidents_mock):
-    client = create_client(code42_fetch_incidents_mock)
+    client = _create_client(code42_fetch_incidents_mock)
     _, incidents, _ = fetch_incidents(
         client=client,
         last_run={"last_fetch": None},
@@ -2164,7 +2238,7 @@ def test_fetch_when_not_include_files_excludes_files(code42_fetch_incidents_mock
 
 
 def test_fetch_incidents_first_run(code42_fetch_incidents_mock):
-    client = create_client(code42_fetch_incidents_mock)
+    client = _create_client(code42_fetch_incidents_mock)
     next_run, incidents, remaining_incidents = fetch_incidents(
         client=client,
         last_run={"last_fetch": None},
@@ -2183,7 +2257,7 @@ def test_fetch_incidents_next_run(code42_fetch_incidents_mock):
     mock_timestamp = int(
         time.mktime(time.strptime(mock_date, "%Y-%m-%dT%H:%M:%S.000Z"))
     )
-    client = create_client(code42_fetch_incidents_mock)
+    client = _create_client(code42_fetch_incidents_mock)
     next_run, incidents, remaining_incidents = fetch_incidents(
         client=client,
         last_run={"last_fetch": mock_timestamp},
@@ -2202,7 +2276,7 @@ def test_fetch_incidents_fetch_limit(code42_fetch_incidents_mock):
     mock_timestamp = int(
         time.mktime(time.strptime(mock_date, "%Y-%m-%dT%H:%M:%S.000Z"))
     )
-    client = create_client(code42_fetch_incidents_mock)
+    client = _create_client(code42_fetch_incidents_mock)
     next_run, incidents, remaining_incidents = fetch_incidents(
         client=client,
         last_run={"last_fetch": mock_timestamp},
@@ -2240,7 +2314,7 @@ def test_fetch_incidents_fetch_limit(code42_fetch_incidents_mock):
 def test_security_data_search_command_searches_exposure_exists_when_all_is_specified(
     code42_file_events_mock, query
 ):
-    client = create_client(code42_file_events_mock)
+    client = _create_client(code42_file_events_mock)
     cmd_res = securitydata_search_command(client, query)
     code42_res = cmd_res[0]
     file_res = cmd_res[1]
@@ -2275,7 +2349,7 @@ def test_security_data_search_command_searches_exposure_exists_when_all_is_speci
 def test_security_data_search_command_searches_exposure_exists_when_no_exposure_type_is_specified(
     code42_file_events_mock,
 ):
-    client = create_client(code42_file_events_mock)
+    client = _create_client(code42_file_events_mock)
     cmd_res = securitydata_search_command(
         client, MOCK_SECURITY_DATA_SEARCH_QUERY_WITHOUT_EXPOSURE_TYPE
     )
