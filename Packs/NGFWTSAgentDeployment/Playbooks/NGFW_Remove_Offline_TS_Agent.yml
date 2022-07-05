@@ -104,7 +104,7 @@ tasks:
       id: 07fc750f-53bb-4e2a-83df-da72b846b9ce
       iscommand: true
       name: Remove TS Agent from NGFW Config
-      script: '|||panorama'
+      script: '|||pan-os'
       type: regular
       version: -1
     taskid: 07fc750f-53bb-4e2a-83df-da72b846b9ce
