@@ -1,24 +1,24 @@
-id: Caldera Operation
+id: CalderaOperation
 version: -1
 name: Caldera Operation
 description: This playbook is used to create a new Operation in Mitre Caldera.
 starttaskid: '0'
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     taskid: 031d51ea-474d-4d92-878c-820cb230fe12
     type: start
     task:
       id: 031d51ea-474d-4d92-878c-820cb230fe12
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     nexttasks:
       '#none#':
-      - '3'
+      - "3"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -33,12 +33,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '1':
-    id: '1'
-    taskid: a9da1a97-cb5e-4a74-8606-88335883a5bd
+  "1":
+    id: "1"
+    taskid: c5939ed7-c453-4e39-836c-1538e213ed2f
     type: regular
     task:
-      id: a9da1a97-cb5e-4a74-8606-88335883a5bd
+      id: c5939ed7-c453-4e39-836c-1538e213ed2f
       version: -1
       name: Create New Operation
       description: Create a new CALDERA operation record
@@ -48,7 +48,7 @@ tasks:
       brand: MitreCaldera
     nexttasks:
       '#none#':
-      - '2'
+      - "4"
     scriptarguments:
       adversary_id:
         complex:
@@ -100,6 +100,7 @@ tasks:
                 value:
                   simple: )
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -110,16 +111,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    fieldMapping:
-    - incidentfield: Caldera Operation ID
-      output:
-        simple: ${MitreCaldera.Operations.id}
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '2':
-    id: '2'
+  "2":
+    id: "2"
     taskid: 81f1a669-8857-46fb-872d-54094ea99d8f
     type: title
     task:
@@ -128,14 +125,14 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 720
         }
       }
     note: false
@@ -145,8 +142,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '3':
-    id: '3'
+  "3":
+    id: "3"
     taskid: 4c99f441-d1d8-4272-8aba-26900b7114ac
     type: regular
     task:
@@ -160,7 +157,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - '1'
+      - "1"
     scriptarguments:
       name:
         complex:
@@ -174,11 +171,47 @@ tasks:
                   simple: 'Caldera Operation - '
               suffix: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
           "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 6cf1cced-130c-470a-84ab-4b5deb345bab
+    type: regular
+    task:
+      id: 6cf1cced-130c-470a-84ab-4b5deb345bab
+      version: -1
+      name: Set Incident Fields
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      calderaoperationid:
+        simple: ${MitreCaldera.Operations.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
         }
       }
     note: false

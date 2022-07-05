@@ -2,18 +2,15 @@ commonfields:
   id: CalderaGetOperationReport
   version: -1
 name: CalderaGetOperationReport
-comment: ''
+comment: Populates the Operation Facts with Facts from the MITRE Caldera
 dependson:
   must:
   - '|||caldera-get-operation-report'
 script: ''
 type: python
-tags: []
+tags:
+- dynamic-section
 enabled: true
-args:
-- name: operation_id
-  required: true
-  description: Operation ID
 scripttarget: 0
 subtype: python3
 runonce: false

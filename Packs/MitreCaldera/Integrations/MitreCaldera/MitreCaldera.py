@@ -788,7 +788,7 @@ def create_operation_command(client: Client, args: Dict[str, Any]) -> CommandRes
                                        use_learning_parsers, source, jitter, adversary, auto_close)
     command_results = CommandResults(
         outputs_prefix='MitreCaldera.Operations',
-        outputs_key_field='',
+        outputs_key_field='id',
         outputs=response,
         raw_response=response
     )

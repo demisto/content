@@ -21,7 +21,7 @@
     "disabled": false,
     "reputationCalc": 0,
     "onChangeRepAlg": 0,
-    "layout": "CalderaOperationLayout",
+    "layout": "CalderaOperation",
     "detached": false,
     "extractSettings": {
         "mode": "Specific",

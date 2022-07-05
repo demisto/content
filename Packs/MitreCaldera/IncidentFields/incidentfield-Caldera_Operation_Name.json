@@ -7,7 +7,7 @@
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
-    "required": false,
+    "required": true,
     "script": "CalderaReadOnlyFields",
     "neverSetAsRequired": false,
     "isReadOnly": false,
