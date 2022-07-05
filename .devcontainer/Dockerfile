@@ -3,7 +3,9 @@ ARG IMAGENAME
 FROM ${IMAGENAME}
 
 ADD create_certs.sh .
-RUN chmod +x /create_certs.sh \ 
+RUN apt-get update && apt-get install dos2unix -y \
+    && dos2unix /create_certs.sh \
+    && chmod +x /create_certs.sh \ 
     && /create_certs.sh /usr/local/share/ca-certificates/certs.crt \
     && update-ca-certificates
 
