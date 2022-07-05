@@ -1108,7 +1108,6 @@ def add_user_to_watchlist_command(client, args):
     watchlist = args.get("watchlist")
     user = client.get_user(username)
     user_id = user["userUid"]
-    demisto.log(user_id)
     try:
         UUID(hex=watchlist)
         resp = client.sdk.watchlists.add_included_users_by_watchlist_id(user_id, watchlist)
@@ -1127,7 +1126,6 @@ def remove_user_from_watchlist_command(client, args):
     watchlist = args.get("watchlist")
     user = client.get_user(username)
     user_id = user["userUid"]
-    demisto.log(user_id)
     try:
         UUID(hex=watchlist)
         resp = client.sdk.watchlists.remove_included_users_by_watchlist_id(user_id, watchlist)
