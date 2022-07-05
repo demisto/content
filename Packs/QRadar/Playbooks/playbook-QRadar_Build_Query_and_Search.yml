@@ -380,7 +380,7 @@ inputs:
   value:
     simple: exact
   required: false
-  description: Whether the values of the first field should be an exact match or a partial match. Valid options are exact or partial. When choosing exact, the AQL query will use the = operator. When choosing partial, the AQL query will ILIKE and add '%%' to the values.
+  description: Whether the values of the first field should be an exact match or a partial match. Valid options are exact or partial. When choosing exact, the AQL query will use the = operator. When choosing partial, the AQL query will ILIKE and add '%%' to the values. Notice that if you choose exact you will have to specify the BaseFieldsToSearch as well.
   playbookInputQuery:
 - key: FirstAdditionalValues
   value: {}
@@ -396,7 +396,7 @@ inputs:
   value:
     simple: include
   required: false
-  description: The state of the second field to search, meaning whether the values in the field should be included or excluded. Valid options are include or exclude.
+  description: The state of the second field to search, meaning whether the values in the field should be included or excluded. Valid options are include or exclude. Notice that if you choose exact you will have to specify the FirstAdditionalFields as well.
   playbookInputQuery:
 - key: FirstAdditionalFieldMatch
   value:
@@ -424,7 +424,7 @@ inputs:
   value:
     simple: exact
   required: false
-  description: Should the values of the third field be an exact match or a partial match. Valid options are exact or partial. When choosing exact, the AQL query will use the = operator. When choosing partial, the AQL query will ILIKE and add '%%' to the values.
+  description: Should the values of the third field be an exact match or a partial match. Valid options are exact or partial. When choosing exact, the AQL query will use the = operator. When choosing partial, the AQL query will ILIKE and add '%%' to the values. Notice that if you choose exact you will have to specify the SecondAdditionalFields as well.
   playbookInputQuery:
 - key: SelectFields
   value:
