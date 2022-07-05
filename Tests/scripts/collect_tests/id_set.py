@@ -111,7 +111,7 @@ class IdSet(DictFileBased):
                         if item.to_version <= existing.to_version and item.from_version <= existing.from_version:
                             logger.info(f'skipping duplicate of {item.name} as its version range {item.version_range} '
                                         f'is older than of the existing one, {existing.version_range}')
-                            continue  # todo makes sense?
+                            continue
 
                     result[id_] = item
         return result

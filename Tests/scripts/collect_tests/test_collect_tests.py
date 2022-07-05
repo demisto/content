@@ -126,13 +126,13 @@ NIGHTLY_EXPECTED_TESTS = {'myTestPlaybook', 'myOtherTestPlaybook'}
 
 @pytest.mark.parametrize('mocker,collector_class,expected_tests,expected_packs,', (
         (MockerCases.A_xsoar, XSOARNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSOAROnlyPack',)),
-        (MockerCases.A_xsiam, XSIAMNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSIAMOnlyPack',)),
         (MockerCases.B_xsoar, XSOARNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSOAROnlyPack',)),
+        (MockerCases.A_xsiam, XSIAMNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSIAMOnlyPack',)),
         (MockerCases.B_xsiam, XSIAMNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSIAMOnlyPack',)),
         (MockerCases.C, XSOARNightlyTestCollector,
-         {'myXSOAROnlyTestPlaybook', 'myTestPlaybook'}, {'bothMarketplacesPack', 'myXSOAROnlyPack'}),  # todo packs
+         {'myXSOAROnlyTestPlaybook', 'myTestPlaybook'}, {'bothMarketplacesPack', 'myXSOAROnlyPack'}),
         (MockerCases.C, XSIAMNightlyTestCollector,
-         {'myXSIAMOnlyTestPlaybook'}, {'bothMarketplacesPack', 'myXSIAMOnlyPack'})  # todo packs
+         {'myXSIAMOnlyTestPlaybook'}, {'bothMarketplacesPack', 'myXSIAMOnlyPack'})
 ))
 def test_nightly(mocker, collector_class: Callable, expected_tests: set[str], expected_packs: tuple[str]):
     """
