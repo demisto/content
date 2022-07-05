@@ -8,11 +8,11 @@ configuration:
   name: url
   required: true
   type: 0
-- additionalinfo: The UserName and Password to use for connection
+- additionalinfo: The username and password to use for the connection.
   name: credentials
   required: true
   type: 9
-- display: Maximum number of incidents to fetch every time. Default is 50. maximum is 500.
+- display: Maximum number of incidents to fetch every time. Default is 50. Maximum is 500.
   hidden: false
   name: max_fetch
   required: false
@@ -38,19 +38,19 @@ script:
   - arguments:
     - default: true
       defaultValue: '50'
-      description: Maximum number of items that will be returned within a single response. Default is 50 maximum is 500. If value exceeds maximum 500 it will not be flagged as an error but will also not increase results.
+      description: Maximum number of items that will be returned within a single response. Maximum is 500. If the limit value exceeds the 500 maximum, it will not be flagged as an error but will also not increase results.
       isArray: false
       name: limit
       required: false
       secret: false
     - default: false
-      description: Pagination support for use with a big “limit” value.
+      description: Pagination support for use with a large “limit” value.
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
-      description: Pagination support for use with a big “limit” value. The maximum is 500.
+      description: Pagination support for use with a large “limit” value. The maximum is 500.
       isArray: false
       name: page_size
       required: false
@@ -69,7 +69,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: The actor ids of the incidents to retrieve.
+      description: The actor IDs of the incidents to retrieve.
       isArray: true
       name: actor_ids
       required: false
@@ -92,7 +92,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The categories of the incidents to retrieve. When defining the categories argument the incident_types argument does not affect.
+      description: The categories of the incidents to retrieve. When defining the categories argument. the incident_types argument is ignored.
       isArray: true
       name: categories
       predefined:
@@ -113,11 +113,11 @@ script:
     name: mvision-casb-incident-query
     outputs:
     - contextPath: MVisionCASB.Incident
-      description: The Incident's metadata.
+      description: The incident's metadata.
       type: Unknown
   - arguments:
     - default: false
-      description: The incidents ids that should be updated.
+      description: The incidents IDs that should be updated.
       isArray: true
       name: incident_ids
       required: true
@@ -140,19 +140,19 @@ script:
     description: |-
       Update status of single/multiple incidents.
       Note!
-      For multiple Ids  - single status will be changed for all IDs
-      e.g. 123, 456, 789 >> change status to >> closed.
+      For multiple IDs, a single status will be applied for all IDs
+      e.g., 123, 456, 789 >> change status to >> closed.
     execution: false
     name: mvision-casb-incident-status-update
   - arguments:
     - default: false
-      description: The anomaly id from where to retrieve the activities. Only incident of type anomaly (ANO-123).
+      description: The anomaly ID from where to retrieve the activities. Only for incidents of type anomaly (ANO-123).
       isArray: false
       name: anomaly_id
       required: true
       secret: false
     deprecated: false
-    description: Fetches activities for a given anomaly Id.
+    description: Fetches activities for a given anomaly ID.
     execution: false
     name: mvision-casb-anomaly-activity-list
     outputs:
@@ -163,7 +163,7 @@ script:
       description: The action name.
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.asnName
-      description: The ASN name of an Activity.
+      description: The ASN name of an activity.
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.city
       description: The city where the anomaly activity occurred.
@@ -196,7 +196,7 @@ script:
       description: The file name of the anomaly activity.
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.fileSharingEnabled
-      description: Whether the CASB filesharing is enabled or not
+      description: Whether the CASB file sharing is enabled or not.
       type: Boolean
     - contextPath: MVisionCASB.AnomalyActivity.fileSize
       description: The file size of the anomaly activity.
@@ -214,10 +214,10 @@ script:
       description: The instance ID for the anomaly activity.
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.isSourceTrusted
-      description: Whether the anomaly activity source is trusted or not
+      description: Whether the anomaly activity source is trusted or not.
       type: Boolean
     - contextPath: MVisionCASB.AnomalyActivity.networkType
-      description: The Network Type for the anomaly.
+      description: The network type for the anomaly.
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.objectType
       description: The object type for the anomaly activity.
@@ -238,13 +238,13 @@ script:
       description: The name of the service.
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.siteUrl
-      description: The URL of the CASB's site
+      description: The URL of the CASB's site.
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.sourceIP
       description: The IP address of the source IP.
       type: IP
     - contextPath: MVisionCASB.AnomalyActivity.sourceIdentifier
-      description: The SourceIdentifier for the anomaly activity.
+      description: The source identifier for the anomaly activity.
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.targetId
       description: The target ID for the anomaly activity.
@@ -271,7 +271,7 @@ script:
       description: The URL of the anomaly activity.
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.user
-      description: The User who triggered the anomaly.
+      description: The user who triggered the anomaly.
       type: String
   - arguments:
     - default: false
@@ -281,13 +281,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Pagination support for use with a big “limit” value.
+      description: Pagination support for use with a large “limit” value.
       isArray: false
       name: page
       required: false
       secret: false
     - default: false
-      description: Pagination support for use with a big “limit” value.
+      description: Pagination support for use with a large “limit” value.
       isArray: false
       name: page_size
       required: false
@@ -299,7 +299,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: List existing Policy Dictionaries.
+    description: List existing policy dictionaries.
     execution: false
     name: mvision-casb-policy-dictionary-list
     outputs:
@@ -332,7 +332,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Adds new content to an existing Policy Dictionaries.
+    description: Adds new content to an existing policy dictionary.
     execution: false
     name: mvision-casb-policy-dictionary-update
   dockerimage: demisto/python3:3.9.8.24399
