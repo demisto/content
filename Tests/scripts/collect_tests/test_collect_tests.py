@@ -11,9 +11,11 @@ import collect_tests
 from collect_tests import (Machine, XSIAMNightlyTestCollector,
                            XSOARNightlyTestCollector)
 
+# todo empty_xsiam
 """
 Test Collection Unit-Test cases 
 - `empty` has no packs
+- `empty_xsiam` has no packs, and only a test that is taken from conf.json (it is not saved elsewhere)
 - `A` has a single pack with an integration and two test playbooks. 
 - `B` has a single pack, with only test playbooks. (they should be collected) 
 - `C` has a pack supported by both marketplaces, and one only for marketplacev2 and one only for XSOAR.
@@ -64,13 +66,13 @@ def _test(mocker: CollectTestsMocker, run_nightly: bool, run_master: bool, colle
         collected = collector_class(*collector_class_args).collect(run_nightly, run_master)
 
         if not any((expected_tests, expected_packs, expected_machines)):
-            assert not collected, f'collected packs {collected.packs}, tests {collected.tests}'
+            assert not collected, f'should not have collected packs {collected.packs}, tests {collected.tests}'
 
-        if expected_tests:
+        if expected_tests is not None:
             assert collected.tests == set(expected_tests)
-        if expected_packs:
+        if expected_packs is not None:
             assert collected.packs == set(expected_packs)
-        if expected_machines:
+        if expected_machines is not None:
             assert set(collected.machines) == set(expected_machines)
 
         assert run_nightly == (Machine.NIGHTLY in collected.machines)
@@ -87,7 +89,7 @@ def _test(mocker: CollectTestsMocker, run_nightly: bool, run_master: bool, colle
 @pytest.mark.parametrize('mocker,collector_class,expected_tests,expected_packs', (
         (MockerCases.empty, XSOARNightlyTestCollector, XSOAR_SANITY_TEST_NAMES, ()),
         (MockerCases.empty, XSIAMNightlyTestCollector, (), ()),
-        (MockerCases.empty_xsiam, XSIAMNightlyTestCollector, ('some_xsiam_test',), ()),
+        (MockerCases.empty_xsiam, XSIAMNightlyTestCollector, ('some_xsiam_test_only_mentioned_in_conf_json',), ()),
         (MockerCases.C, XSOARNightlyTestCollector,
          ('myXSOAROnlyTestPlaybook', 'myTestPlaybook'), ('myXSOAROnlyPack', 'bothMarketplacesPack')),
         (MockerCases.C, XSIAMNightlyTestCollector,
@@ -113,8 +115,10 @@ NIGHTLY_EXPECTED_TESTS = {'myTestPlaybook', 'myOtherTestPlaybook'}
         (MockerCases.A_xsiam, XSIAMNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSIAMOnlyPack',)),
         (MockerCases.B_xsoar, XSOARNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSOAROnlyPack',)),
         (MockerCases.B_xsiam, XSIAMNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSIAMOnlyPack',)),
-        (MockerCases.C, XSOARNightlyTestCollector, {'myXSOAROnlyTestPlaybook', 'myTestPlaybook'}, ()),  # todo packs
-        (MockerCases.C, XSIAMNightlyTestCollector, {'myXSIAMOnlyTestPlaybook'}, ())  # todo packs
+        (MockerCases.C, XSOARNightlyTestCollector,
+         {'myXSOAROnlyTestPlaybook', 'myTestPlaybook'}, {'bothMarketplacesPack', 'myXSOAROnlyPack'}),  # todo packs
+        (MockerCases.C, XSIAMNightlyTestCollector,
+         {'myXSIAMOnlyTestPlaybook'}, {'bothMarketplacesPack', 'myXSIAMOnlyPack'})  # todo packs
 ))
 def test_nightly(mocker, collector_class: Callable, expected_tests: set[str], expected_packs: tuple[str]):
     """

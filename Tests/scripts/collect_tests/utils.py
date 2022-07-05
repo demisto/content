@@ -69,11 +69,18 @@ class Machine(Enum):
     NIGHTLY = 'nightly'
 
     @staticmethod
+    def numeric_machines() -> tuple['Machine']:
+        return tuple(machine for machine in Machine if isinstance(machine.value, Version))
+
+    @staticmethod
     def get_suitable_machines(version_range: VersionRange, run_nightly: bool, run_master: bool) -> tuple['Machine']:
         result = []
+
         if version_range:
-            result.extend([machine for machine in Machine
-                           if isinstance(machine.value, Version) and machine.value in version_range])
+            result.extend(filter(lambda machine: machine.value in version_range, Machine.numeric_machines()))
+        else:
+            result.extend(Machine.numeric_machines())
+
         if run_nightly:
             result.append(Machine.NIGHTLY)
         if run_master:

@@ -6,5 +6,5 @@
   "nightly_integrations": [],
   "parallel_integrations": [],
   "private_tests": [],
-  "test_marketplacev2": ["some_xsiam_test"]
+  "test_marketplacev2": ["some_xsiam_test_only_mentioned_in_conf_json"]
 }

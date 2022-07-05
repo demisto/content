@@ -77,9 +77,9 @@ class CollectedTests:
 
         if tests and packs and len(tests) != len(packs):
             raise ValueError(f'when both are not empty, {len(tests)=} must be equal to {len(packs)=}')
-        elif tests:
+        elif tests and not packs:
             packs = (None,) * len(tests)  # so accessors get a None
-        elif packs:
+        elif packs and not tests:
             tests = (None,) * len(packs)  # so accessors get a None
 
         for i in range(len(tests)):
@@ -407,7 +407,8 @@ class NightlyTestCollector(TestCollector, ABC):
         postfix = ' (only where this is the only marketplace value)' if only_value else ''
         logger.info(f'collecting test playbooks by their marketplace field, searching for {self.marketplace.value}'
                     f'{postfix}')
-        tests = []
+
+        collected = []
 
         for playbook in self.id_set.test_playbooks:
             playbook_marketplaces = playbook.marketplaces or default
@@ -416,14 +417,16 @@ class NightlyTestCollector(TestCollector, ABC):
                 continue
 
             if self.marketplace in playbook_marketplaces:
-                tests.append(playbook.name)
+                collected.append(CollectedTests(tests=(playbook.name,), packs=(playbook.pack,),
+                                                reason=CollectionReason.ID_SET_MARKETPLACE_VERSION,
+                                                reason_description=f'({self.marketplace.value})',
+                                                version_range=VersionRange(playbook.from_version, playbook.to_version)))
 
-        if not tests:
+        if not collected:
             logger.warning(f'no tests matching marketplace {self.marketplace.value} ({only_value=}) were found')
             return None
 
-        return CollectedTests(tests=tests, packs=None, reason=CollectionReason.ID_SET_MARKETPLACE_VERSION,
-                              version_range=None, reason_description=f'({self.marketplace.value}), {tests=}')
+        return CollectedTests.union(collected)
 
     def _packs_matching_marketplace_value(self, only_value: bool) -> Optional[CollectedTests]:
         """
