@@ -268,7 +268,7 @@ Fetches activities for a given anomaly Id.
 | MVisionCASB.AnomalyActivity.collabGroup        | String   | The collaboration group for the anomaly activity.             |
 | MVisionCASB.AnomalyActivity.count              | Number   | The number of anomalies detected.                             |
 | MVisionCASB.AnomalyActivity.country            | String   | The country of the anomaly activity.                          |
-| MVisionCASB.AnomalyActivity.deviceManaged      | String   | Whether the anomaly activity is managed by the device or not. |
+| MVisionCASB.AnomalyActivity.deviceManaged      | Boolean  | Whether the anomaly activity is managed by the device or not. |
 | MVisionCASB.AnomalyActivity.directory          | String   | The directory of the anomaly activity.                        |
 | MVisionCASB.AnomalyActivity.downloadBytes      | Number   | The number of bytes downloaded by the anomaly activity.       |
 | MVisionCASB.AnomalyActivity.eventCount         | Number   | The number of anomalies detected.                             |

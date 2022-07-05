@@ -179,7 +179,7 @@ script:
       type: String
     - contextPath: MVisionCASB.AnomalyActivity.deviceManaged
       description: Whether the anomaly activity is managed by the device or not.
-      type: String
+      type: Boolean
     - contextPath: MVisionCASB.AnomalyActivity.directory
       description: The directory of the anomaly activity.
       type: String
