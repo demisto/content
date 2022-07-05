@@ -14,11 +14,10 @@ class IdSetItem(DictBased):
         super().__init__(dict_)
         self.id_: str = id_  # None for packs, as they don't have it.
         self.file_path: str = self.get('file_path', warn_if_missing=False)  # packs have no file_path value
-        self.pack: Optional[str] = self.get('pack', warn_if_missing=False)  # we log an error instead of warning
-        self.name: str = self.get('name', '', warn_if_missing=False,
-                                  warning_comment=Path(self.file_path or '').name)  # todo is ok w/o name?
-        if id_ and 'pack' not in self.content:  # packs have no ids, and no `pack`, so non-packs are errors
-            logger.error(f'content item with id={id_} and name={self.name} has no pack value in id_set')
+        self.name: str = self.get('name', '', warn_if_missing=False, warning_comment=Path(self.file_path or '').name)
+
+        # None for packs, that have no id.
+        self.pack_id: Optional[str] = self.get('pack', warning_comment=self.file_path) if id_ else None
 
         # hidden for pack_name_to_pack_metadata, deprecated for content items
         self.deprecated: Optional[bool] = \
@@ -39,6 +38,10 @@ class IdSetItem(DictBased):
     @property
     def implementing_playbooks(self):
         return self.get('implementing_playbooks', (), warn_if_missing=False)
+
+    @property
+    def pack_name_tuple(self) -> tuple[str]:
+        return self.pack_id,
 
 
 class IdSet(DictFileBased):
@@ -61,10 +64,13 @@ class IdSet(DictFileBased):
             for playbook in test.implementing_playbooks:
                 self.implemented_playbooks_to_tests[playbook].append(test)
 
-        self.integration_to_pack: dict[str, str] = {integration.name: integration.pack
-                                                    for integration in self.integrations}
-        self.scripts_to_pack: dict[str, str] = {script.name: script.pack for script in self.scripts}
-        self.test_playbooks_to_pack: dict[str, str] = {test.name: test.pack for test in self.test_playbooks}
+        # the folder under where a pack is saved serves as its id
+        self.integration_to_pack_id: dict[str, str] = {integration.name: integration.pack_id
+                                                       for integration in self.integrations}
+        self.scripts_to_pack_id: dict[str, str] = {script.name: script.pack_id
+                                                   for script in self.scripts}
+        self.test_playbooks_to_pack_id: dict[str, str] = {test.name: test.pack_id
+                                                          for test in self.test_playbooks}
 
     @property
     def artifact_iterator(self) -> Iterable[IdSetItem]:
@@ -101,9 +107,8 @@ class IdSet(DictFileBased):
                 for value in values:  # may have multiple values for different from/to versions
                     item = IdSetItem(id_, value)
 
-                    # todo does this make sense here? raise exception?
-                    if item.pack in PackManager.skipped_packs:
-                        logger.info(f'skipping {id_=} as the {item.pack} pack is skipped')
+                    if item.pack_id in PackManager.skipped_packs:
+                        logger.info(f'skipping {id_=} as the {item.pack_id} pack is skipped')
                         continue
 
                     if existing := result.get(id_):

@@ -11,7 +11,6 @@ from Tests.scripts.collect_tests.constants import XSOAR_SANITY_TEST_NAMES
 from Tests.scripts.collect_tests.path_manager import PathManager
 from Tests.scripts.collect_tests.utils import PackManager
 
-# todo empty_xsiam
 """
 Test Collection Unit-Test cases 
 - `empty` has no packs
@@ -28,7 +27,7 @@ class CollectTestsMocker:
     """
 
     def __init__(self, content_path: Path):
-        self.path_manager = PathManager(content_path)
+        self.path_manager = PathManager(Path(__file__).parent / content_path)
         self.previous_path_manager = None
 
     def __enter__(self):

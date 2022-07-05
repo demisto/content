@@ -5,19 +5,14 @@ from typing import Any, Optional
 
 from demisto_sdk.commands.common.constants import MarketplaceVersions
 from demisto_sdk.commands.common.tools import json, yaml
+from exceptions import (DeprecatedPackException, NonexistentPackException,
+                        InvalidPackNameException, NonDictException,
+                        NoTestsConfiguredException, NotUnderPackException,
+                        SkippedPackException, UnsupportedPackException)
 from logger import logger
 from packaging import version
 from packaging.version import Version
-
-from Tests.scripts.collect_tests.exceptions import (DeprecatedPackException,
-                                                    InexistentPackException,
-                                                    InvalidPackNameException,
-                                                    NonDictException,
-                                                    NoTestsConfiguredException,
-                                                    NotUnderPackException,
-                                                    SkippedPackException,
-                                                    UnsupportedPackException)
-from Tests.scripts.collect_tests.path_manager import PathManager
+from path_manager import PathManager
 
 
 def find_pack_folder(path: Path) -> Path:
@@ -30,9 +25,13 @@ def find_pack_folder(path: Path) -> Path:
     'MyPack2'
     >>> find_pack_folder(Path('Packs/MyPack3/Scripts')).name
     'MyPack3'
+    >>> find_pack_folder(Path('Packs/MyPack4')).name
+    'MyPack4'
     """
     if 'Packs' not in path.parts:
         raise NotUnderPackException(path)
+    if path.parent.name == 'Packs':
+        return path
     return path.parents[len(path.parts) - (path.parts.index('Packs')) - 3]
 
 
@@ -106,7 +105,7 @@ class DictBased:
     def get(self, key: str, default: Any = None, warn_if_missing: bool = True, warning_comment: str = ''):
         if key not in self.content and warn_if_missing:
             suffix = f' ({warning_comment})' if warning_comment else ''
-            logger.warning(f'attempted to access key {key}, which does not exist{suffix}')
+            logger.warning(f'attempted to access nonexistent key {key}{suffix}')
         return self.content.get(key, default)
 
     def __getitem__(self, key):
@@ -155,7 +154,7 @@ class DictFileBased(DictBased):
 class ContentItem(DictFileBased):
     def __init__(self, path: Path):
         super().__init__(path)
-        self.pack = find_pack_folder(self.path)  # todo if not used elsewhere, create inside pack_tuple
+        self.pack_path = find_pack_folder(self.path)
         self.deprecated = self.get('deprecated', warn_if_missing=False)
 
     @property
@@ -163,8 +162,8 @@ class ContentItem(DictFileBased):
         return self['commonfields']['id'] if 'commonfields' in self.content else self['id']
 
     @property
-    def pack_tuple(self) -> tuple[str]:
-        return self.pack.name,
+    def pack_folder_name_tuple(self) -> tuple[str]:
+        return self.pack_path.name,
 
     @property
     def name(self) -> str:
@@ -178,33 +177,39 @@ class ContentItem(DictFileBased):
             raise NoTestsConfiguredException(self.id_)
         return tests
 
+    @property
+    def pack_id(self):
+        return self.pack_path.name
 
 class PackManager:
     skipped_packs = {'DeprecatedContent', 'NonSupported', 'ApiModules'}
 
     def __init__(self, path_manager: PathManager):
         self.packs_path = path_manager.packs_path
-        self.pack_name_to_pack_metadata: dict[str, ContentItem] = {}
-        self.pack_folder_to_pack_metadata: dict[Path, ContentItem] = {}
-        self.deprecated_packs: set[str] = set()
 
-        for folder in (folder.name for folder in self.packs_path.glob('*') if folder.is_dir()):
-            metadata = ContentItem(self.packs_path / folder / 'pack_metadata.json')
-            self.pack_name_to_pack_metadata[metadata.name] = metadata
-            self.pack_folder_to_pack_metadata[metadata.path.parent] = metadata
+        self.deprecated_packs: set[str] = set()
+        self.pack_id_to_pack_metadata: dict[str, ContentItem] = {}  # NOTE: The ID of a pack is the name of its folder.
+        self.pack_id_to_pack_name_field: dict[str, str] = {}
+
+        for pack_folder in (pack_folder for pack_folder in self.packs_path.iterdir() if pack_folder.is_dir()):
+            metadata = ContentItem(pack_folder / 'pack_metadata.json')
+            self.pack_id_to_pack_metadata[pack_folder.name] = metadata
+            self.pack_id_to_pack_name_field[pack_folder.name] = metadata.name
 
             if metadata.deprecated:
-                self.deprecated_packs.add(folder)
-        self.pack_names = set(self.pack_name_to_pack_metadata.keys())
+                self.deprecated_packs.add(pack_folder)
+
+        self.pack_ids: set[str] = set(self.pack_id_to_pack_metadata.keys())
+        self.pack_name_to_pack_folder_name: dict[str, str] = {v: k for k, v in self.pack_id_to_pack_name_field.items()}
 
     def get_pack_by_path(self, path: Path) -> ContentItem:
-        return self.pack_folder_to_pack_metadata[path]
+        return self.pack_id_to_pack_metadata[path.name]
 
-    def __getitem__(self, pack_name: str) -> ContentItem:
-        return self.pack_name_to_pack_metadata[pack_name]
+    def __getitem__(self, pack_folder_name: str) -> ContentItem:
+        return self.pack_id_to_pack_metadata[pack_folder_name]
 
     def __iter__(self):
-        yield from self.pack_name_to_pack_metadata.values()
+        yield from self.pack_id_to_pack_metadata.values()
 
     @staticmethod
     def relative_to_packs(path: Path | str):
@@ -212,7 +217,7 @@ class PackManager:
             path = Path(path)
         parts = path.parts
         if 'Packs' not in parts:
-            raise ValueError('path is not relative to Packs')
+            raise ValueError(f'path {path} is not relative to Packs')
         return Path(*path.parts[path.parts.index('Packs') + 1:])
 
     def validate_pack(self, pack: str) -> None:
@@ -223,9 +228,9 @@ class PackManager:
             raise SkippedPackException(pack)
         if pack in self.deprecated_packs:
             raise DeprecatedPackException(pack)
-        if pack not in self.pack_names:
-            logger.error(f'inexistent pack {pack}')
-            raise InexistentPackException(pack)
+        if pack not in self.pack_ids:
+            logger.error(f'nonexistent pack {pack}')
+            raise NonexistentPackException(pack)
         if not (support_level := self[pack].get('support')):
             raise ValueError(f'pack {pack} has no support level (`support`) field or value')
         if support_level.lower() != 'xsoar':
