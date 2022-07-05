@@ -45,7 +45,7 @@ class MimecastClient(IntegrationEventsClient):
     def __init__(self, request: IntegrationHTTPRequest, options: MimecastOptions):  # pragma: no cover
         super().__init__(request=request, options=options)
 
-    def prepare_headers(self, uri: str):
+    def prepare_headers(self, uri: str):    # pragma: no cover
         """
         Args:
             uri (str): The uri of the end point
@@ -78,7 +78,7 @@ class MimecastClient(IntegrationEventsClient):
         return headers
 
     @staticmethod
-    def get_hdr_date():
+    def get_hdr_date():  # pragma: no cover
         return datetime.utcnow().strftime("%a, %d %b %Y %H:%M:%S UTC")
 
     def set_request_filter(self, after: Any):   # noqa: F841  # pragma: no cover
