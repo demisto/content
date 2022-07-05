@@ -85,6 +85,26 @@ def calculate_offset_and_limit(**kwargs) -> Tuple[int, int]:
     return 0, 50
 
 
+def convert_to_xsoar_severity(severity: str) -> int:
+    """Maps McAfee MVision severity to Cortex XSOAR severity
+
+    Converts the McAfee MVision incident severity level to Cortex XSOAR incident severity (1 to 4)
+    for mapping.
+
+    :type severity: ``str``
+    :param severity: severity as returned from the McAfee MVision API ('info', 'low', 'medium', 'high')
+
+    :return: Cortex XSOAR Severity (int: 1 to 4)
+    :rtype: ``int``
+    """
+    return {
+        'info': IncidentSeverity.INFO,
+        'low': IncidentSeverity.LOW,
+        'medium': IncidentSeverity.MEDIUM,
+        'high': IncidentSeverity.HIGH,
+    }[severity]
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -139,6 +159,7 @@ def fetch_incidents(client: Client, params: dict) -> Tuple[dict, list]:
                         'occurred': incident.get('timeModified'),
                         'rawJSON': json.dumps(incident),
                         'dbotMirrorId': incident_id,
+                        'severity': convert_to_xsoar_severity(incident.get('incidentRiskSeverity', 'low'))
                     }
                 )
 
