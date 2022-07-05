@@ -8,6 +8,7 @@ configuration:
   required: false
   type: 9
   hiddenusername: true
+  display: ''
 - additionalinfo: Determines the visibility level of the scan. This will override the 'public submissions' setting.
   display: Scan Visibility
   name: scan_visibility
@@ -40,8 +41,7 @@ configuration:
   required: false
   type: 8
 - defaultvalue: '1'
-  display: URL Threshold. Minimum number of positive results from urlscan.io to consider
-    the URL malicious.
+  display: URL Threshold. Minimum number of positive results from urlscan.io to consider the URL malicious.
   name: url_threshold
   required: false
   type: 0
@@ -73,28 +73,18 @@ script:
   commands:
   - arguments:
     - default: true
-      description: A parameter for which to search (as a string), for example an IP
-        address, file name, SHA256 hash, URL, domain, and so on.
-      isArray: false
+      description: A parameter for which to search (as a string), for example an IP address, file name, SHA256 hash, URL, domain, and so on.
       name: searchParameter
       required: true
-      secret: false
     - auto: PREDEFINED
       description: The search type. When advanced, allows to query multiple search parameters.
       predefined:
-        - advanced
-      isArray: false
+      - advanced
       name: searchType
-    - default: false
-      defaultValue: '20'
+    - defaultValue: '20'
       description: The maximum number of results to return. Default is 20.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Search for an indicator that is related to former urlscan.io scans.
-    execution: false
     name: urlscan-search
     outputs:
     - contextPath: URLScan.URL
@@ -128,65 +118,37 @@ script:
       description: File type of the file scanned
       type: string
   - arguments:
-    - default: false
-      description: The URL to scan.
+    - description: The URL to scan.
       isArray: true
       name: url
       required: true
-      secret: false
-    - default: false
-      defaultValue: '60'
-      description: The amount of time (in seconds) to wait for the scan ID result
-        before timeout. Default is 60.
-      isArray: false
+    - defaultValue: '60'
+      description: The amount of time (in seconds) to wait for the scan ID result before timeout. Default is 60.
       name: timeout
-      required: false
-      secret: false
     - auto: PREDEFINED
       description: The submission visibility. If specified, overrides the 'public' parameter.
       predefined:
-        - public
-        - private
-        - unlisted
-      isArray: false
+      - public
+      - private
+      - unlisted
       name: scan_visibility
-      required: false
-      secret: false
-    - default: false
-      description: The submission type. Can be "public" or "private".
-      isArray: false
+    - description: The submission type. Can be "public" or "private".
       name: public
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '20'
-      description: The maximum number of Limits the returned list of Certificates,
-        IP's and ASN's
-      isArray: false
+    - defaultValue: '20'
+      description: The maximum number of Limits the returned list of Certificates, IP's and ASN's
       name: limit
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: Determines whether a scan should continue if one of the URLs is on 
-        block list.
+      description: Determines whether a scan should continue if one of the URLs is on block list.
       isArray: true
       name: continue_on_blacklisted_urls
       predefined:
       - 'true'
       - 'false'
       defaultValue: 'false'
-      required: false
-      secret: false
-    - default: false
-      isArray: false
-      name: useragent
+    - name: useragent
       description: User agent to perform request
-      required: false
-      secret: false
     deprecated: true
     description: Deprecated. Use the url command instead.
-    execution: false
     name: urlscan-submit
     outputs:
     - contextPath: URL.Data
@@ -264,74 +226,38 @@ script:
       isArray: true
       name: url
       required: true
-      secret: false
     - auto: PREDEFINED
       description: The submission visibility. If specified, overrides the 'public' parameter.
       predefined:
-        - public
-        - private
-        - unlisted
-      isArray: false
+      - public
+      - private
+      - unlisted
       name: scan_visibility
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '60'
-      description: The amount of time (in seconds) to wait for the scan ID result
-        before timeout. Default is 60.
-      isArray: false
+    - defaultValue: '60'
+      description: The amount of time (in seconds) to wait for the scan ID result before timeout. Default is 60.
       name: timeout
-      required: false
-      secret: false
-    - default: false
-      description: The submission type. Can be "public" or "private".
-      isArray: false
+    - description: The submission type. Can be "public" or "private".
       name: public
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '20'
+    - defaultValue: '20'
       description: The maximum number of results to return.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '5'
-      description: The amount of time (in seconds) to wait between tries if the API
-        rate limit is exceeded.
-      isArray: false
+    - defaultValue: '5'
+      description: The amount of time (in seconds) to wait between tries if the API rate limit is exceeded.
       name: wait
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: Number of retries for the API rate limit. Default is 0.
-      isArray: false
       name: retries
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: Determines whether a scan should continue if one of the URLs is
-        on block list.
+      description: Determines whether a scan should continue if one of the URLs is on block list.
       isArray: true
       name: continue_on_blacklisted_urls
       predefined:
       - 'true'
       - 'false'
       defaultValue: 'false'
-      required: false
-      secret: false
-    - default: false
-      isArray: false
-      name: useragent
+    - name: useragent
       description: User agent to perform request
-      required: false
-      secret: false
-    deprecated: false
     description: Submits a URL to scan.
-    execution: false
     name: url
     outputs:
     - contextPath: URL.Data
@@ -449,81 +375,51 @@ script:
       description: Tags that are associated with the URL.
       type: String
   - arguments:
-    - default: false
-      description: The UUID of the URL for which to search the transaction list.
-      isArray: false
+    - description: The UUID of the URL for which to search the transaction list.
       name: uuid
       required: true
-      secret: false
-    - default: false
-      defaultValue: '20'
-      description: The maximum number of results to return to the War Room. Maximum
-        is 100. Default is 20.
-      isArray: false
+    - defaultValue: '20'
+      description: The maximum number of results to return to the War Room. Maximum is 100. Default is 20.
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: The URL for which to search the transaction list.
-      isArray: false
+    - description: The URL for which to search the transaction list.
       name: url
       required: true
-      secret: false
     deprecated: true
-    description: Returns the HTTP transaction list for the specified URL. Do not use
-      this command in conjunction with the urlscan-get-http-transactions script.
-    execution: false
+    description: Returns the HTTP transaction list for the specified URL. Do not use this command in conjunction with the urlscan-get-http-transactions script.
     name: urlscan-get-http-transaction-list
     outputs:
     - contextPath: URLScan.URL
       description: The URL address that was scanned.
       type: string
     - contextPath: URLScan.httpTransaction
-      description: A link to the HTTP transaction made during the search for the specified
-        URL.
+      description: A link to the HTTP transaction made during the search for the specified URL.
       type: string
   - arguments:
-    - default: false
-      description: The URL sought after.
-      isArray: false
+    - description: The URL sought after.
       name: url
       required: true
-      secret: false
     deprecated: true
     description: Submits a URL to retrieve its UUID.
-    execution: false
     name: urlscan-submit-url-command
   - arguments:
-    - default: false
-      description: The URI for which to get the results.
-      isArray: false
+    - description: The URI for which to get the results.
       name: uri
       required: true
-      secret: false
     deprecated: true
-    description: Polls the urlscan service regarding the results of the specified
-      URI.
-    execution: false
+    description: Polls the urlscan service regarding the results of the specified URI.
     name: urlscan-poll-uri
   - arguments:
-    - default: false
-      description: The UUID of the URL for which to search.
-      isArray: false
+    - description: The UUID of the URL for which to search.
       name: uuid
       required: true
-      secret: false
     deprecated: true
     description: Returns the results page for the specified UUID.
-    execution: false
     name: urlscan-get-result-page
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
   runonce: false
-  script: '-'
+  script: ''
   subtype: python2
   type: python
   dockerimage: demisto/python:2.7.18.27799
-defaultEnabled: false
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
