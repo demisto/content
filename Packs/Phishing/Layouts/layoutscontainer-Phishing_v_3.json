@@ -14,6 +14,7 @@
                 "sections": [
                     {
                         "displayType": "CARD",
+                        "description": "Lists all attachments inserted in the reported email. If the reported email was originally attached, the .eml or .msg file will also be listed here.",
                         "h": 2,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
@@ -35,7 +36,7 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Email Attachment",
+                        "name": "Email Attachments",
                         "static": false,
                         "w": 1,
                         "x": 2,
