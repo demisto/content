@@ -1,8 +1,6 @@
 contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
-description: "This playbook uses the Live Response feature to retrieve a file from an endpoint./nNote that the endpoint id will be set from the incident field \"Device ID\"."
+  contentitemfields: {}
+description: This playbook uses the Live Response feature to retrieve a file from an endpoint./nNote that the endpoint id will be set from the incident field "Device ID".
 id: MDE - Retrieve File
 inputs:
 - description: The file paths to be provided.
@@ -106,7 +104,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 720
+          "y": 890
         }
       }
   '3':
@@ -120,7 +118,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - '2'
+      - '6'
     note: false
     quietmode: 0
     scriptarguments:
@@ -132,24 +130,35 @@ tasks:
               left:
                 iscontext: true
                 value:
-                  simple: File.Info
-              operator: isEqualString
+                  simple: File.Extension
+              operator: containsString
               right:
                 value:
                   simple: gz
+          - - operator: containsString
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: Response Result
+              ignorecase: true
           root: File
+          transformers:
+          - operator: LastArrayElement
     separatecontext: false
     skipunavailable: false
     task:
       brand: ''
       description: Unzips a file using file name or entry ID to specify a file. Unzipped files are loaded to the War Room and names are put into the context.
-      id: 466943ee-d1f6-4264-80a4-d5b3c858d5e2
+      id: e2ab0b64-e4e8-464c-848c-5e1e182224d0
       iscommand: false
       name: Unzip results
       scriptName: UnzipFile
       type: regular
       version: -1
-    taskid: 466943ee-d1f6-4264-80a4-d5b3c858d5e2
+    taskid: e2ab0b64-e4e8-464c-848c-5e1e182224d0
     timertriggers: []
     type: regular
     view: |-
@@ -168,7 +177,7 @@ tasks:
       no:
       - '3'
       yes:
-      - '2'
+      - '6'
     note: false
     quietmode: 0
     scriptarguments:
@@ -192,7 +201,7 @@ tasks:
       {
         "position": {
           "x": -60,
-          "y": 350
+          "y": 360
         }
       }
   '5':
@@ -220,7 +229,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#default#':
-      - '2'
+      - '6'
       yes:
       - '1'
     note: false
@@ -245,13 +254,54 @@ tasks:
           "y": 10
         }
       }
+  '6':
+    id: '6'
+    taskid: a33756fa-a3de-4ad9-873e-1baa56d38f90
+    type: regular
+    task:
+      id: a33756fa-a3de-4ad9-873e-1baa56d38f90
+      version: -1
+      name: 'Delete Sub-Playbook Context '
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      all:
+        simple: yes
+      subplaybook:
+        simple: yes
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 version: -1
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 925,
+        "height": 1095,
         "width": 842.5,
         "x": -300,
         "y": -140
@@ -259,5 +309,8 @@ view: |-
     }
   }
 tests:
-- No tests (auto formatted)
+- Microsoft Defender Advanced Threat Protection - Test
+- Microsoft Defender - ATP - Indicators SC Test
+- Microsoft Defender - ATP - Indicators Test
 fromversion: 6.5.0
+system: true

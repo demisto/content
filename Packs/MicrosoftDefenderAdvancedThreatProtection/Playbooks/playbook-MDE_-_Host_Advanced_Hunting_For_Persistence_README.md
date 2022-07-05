@@ -7,14 +7,14 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-MicrosoftDefenderAdvancedThreatProtection
+* MicrosoftDefenderAdvancedThreatProtection
 
 ### Scripts
 This playbook does not use any scripts.
 
 ### Commands
-* microsoft-atp-advanced-hunting-persistence-evidence
 * setIncident
+* microsoft-atp-advanced-hunting-persistence-evidence
 
 ## Playbook Inputs
 ---
@@ -31,7 +31,21 @@ This playbook does not use any scripts.
 
 ## Playbook Outputs
 ---
-There are no outputs for this playbook.
+
+| **Path** | **Description** | **Type** |
+| --- | --- | --- |
+| MicrosoftATP.HuntPersistenceEvidence.Result |  | unknown |
+| MicrosoftATP.HuntPersistenceEvidence.Result.scheduled_job | The query results for scheduled_job query_purpose. | unknown |
+| MicrosoftATP.HuntPersistenceEvidence.Result.registry_entry | The query results for registry_entry query_purpose. | unknown |
+| MicrosoftATP.HuntPersistenceEvidence.Result.startup_folder_changes | The query results for startup_folder_changes query_purpose. | unknown |
+| MicrosoftATP.HuntPersistenceEvidence.Result.new_service_created | The query results for new_service_created query_purpose. | unknown |
+| MicrosoftATP.HuntPersistenceEvidence.Result.service_updated | The query results for service_updated query_purpose. | unknown |
+| MicrosoftATP.HuntPersistenceEvidence.Result.file_replaced | The query results for file_replaced query_purpose. | unknown |
+| MicrosoftATP.HuntPersistenceEvidence.Result.new_user | The query results for new_user query_purpose. | unknown |
+| MicrosoftATP.HuntPersistenceEvidence.Result.new_group | The query results for new_group query_purpose. | unknown |
+| MicrosoftATP.HuntPersistenceEvidence.Result.group_user_change | The query results for group_user_change query_purpose. | unknown |
+| MicrosoftATP.HuntPersistenceEvidence.Result.local_firewall_change | The query results for local_firewall_change query_purpose. | unknown |
+| MicrosoftATP.HuntPersistenceEvidence.Result.host_file_change | The query results for host_file_change query_purpose. | unknown |
 
 ## Playbook Image
 ---

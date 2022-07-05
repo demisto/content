@@ -1,7 +1,5 @@
 contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
+  contentitemfields: {}
 description: This playbook uses the Microsoft Defender For Endpoint Advanced Hunting feature to hunt for host network activity.
 id: MDE - Host Advanced Hunting For Network Activity
 inputs:
@@ -76,7 +74,49 @@ inputs:
       transformers:
       - operator: uniq
 name: MDE - Host Advanced Hunting For Network Activity
-outputs: []
+outputs:
+- contextPath: MicrosoftATP.HuntNetworkConnections.Result
+  type: unknown
+- contextPath: MicrosoftATP.HuntNetworkConnections.Result.external_addresses
+  description: The query results for external_addresses query_purpose.
+- contextPath: MicrosoftATP.HuntNetworkConnections.Result.dns_query
+  description: The query results for dns_query query_purpose.
+- contextPath: MicrosoftATP.HuntNetworkConnections.Result.encoded_commands
+  description: The query results for encoded_commands query_purpose.
+- contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result
+  type: unknown
+- contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result.network_connections
+  description: The query results for network_connections query_purpose.
+- contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result.smb_connections
+  description: The query results for smb_connections query_purpose.
+- contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result.credential_dumping
+  description: The query results for credential_dumping query_purpose.
+- contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result.management_connection
+  description: The query results for management_connection query_purpose.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result
+  type: unknown
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.scheduled_job
+  description: The query results for scheduled_job query_purpose.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.registry_entry
+  description: The query results for registry_entry query_purpose.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.startup_folder_changes
+  description: The query results for startup_folder_changes query_purpose.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.new_service_created
+  description: The query results for new_service_created query_purpose.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.service_updated
+  description: The query results for service_updated query_purpose.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.file_replaced
+  description: The query results for file_replaced query_purpose.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.new_user
+  description: The query results for new_user query_purpose.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.new_group
+  description: The query results for new_group query_purpose.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.group_user_change
+  description: The query results for group_user_change query_purpose.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.local_firewall_change
+  description: The query results for local_firewall_change query_purpose.
+- contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.host_file_change
+  description: The query results for host_file_change query_purpose.
 starttaskid: '0'
 tasks:
   '0':
@@ -105,8 +145,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3280,
-          "y": 410
+          "x": 2720,
+          "y": 220
         }
       }
   '1':
@@ -128,8 +168,6 @@ tasks:
     scriptarguments:
       device_id:
         simple: ${inputs.DeviceID}
-      device_name:
-        simple: ${inputs.DeviceName}
       query_operation:
         simple: and
       query_purpose:
@@ -141,20 +179,20 @@ tasks:
     task:
       brand: ''
       description: Network connections investigation. By selecting a “query_purpose” argument, a designated query template will be used.
-      id: 17ce36af-0594-4d89-867a-00a06d96c884
+      id: bb1996d2-6ca6-4af1-8df3-2b1f31c7aab0
       iscommand: true
       name: Is there any network activity initiated by the file?
       script: '|||microsoft-atp-advanced-hunting-network-connections'
       type: regular
       version: -1
-    taskid: 17ce36af-0594-4d89-867a-00a06d96c884
+    taskid: bb1996d2-6ca6-4af1-8df3-2b1f31c7aab0
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
           "x": 4080,
-          "y": 845
+          "y": 890
         }
       }
   '2':
@@ -198,7 +236,7 @@ tasks:
       {
         "position": {
           "x": 1460,
-          "y": 845
+          "y": 860
         }
       }
   '3':
@@ -208,7 +246,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - '1'
+      - '48'
     note: false
     quietmode: 0
     separatecontext: false
@@ -227,7 +265,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4080,
+          "x": 4300,
           "y": 560
         }
       }
@@ -238,9 +276,8 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - '36'
       - '37'
-      - '39'
+      - '45'
     note: false
     quietmode: 0
     separatecontext: false
@@ -259,8 +296,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2710,
-          "y": 560
+          "x": 2180,
+          "y": 360
         }
       }
   '5':
@@ -303,8 +340,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1870,
-          "y": 845
+          "x": 1880,
+          "y": 860
         }
       }
   '6':
@@ -459,8 +496,6 @@ tasks:
     scriptarguments:
       device_id:
         simple: ${inputs.DeviceID}
-      device_name:
-        simple: ${inputs.DeviceName}
       query_operation:
         simple: and
       query_purpose:
@@ -472,20 +507,20 @@ tasks:
     task:
       brand: ''
       description: Network connections investigation. By selecting a “query_purpose” argument, a designated query template will be used.
-      id: eec728f7-127b-4b50-81b9-d9b2d049eb51
+      id: 89b8860f-9a10-4d34-826c-e5991ce6f1c3
       iscommand: true
-      name: Are there any DNS requests initiated ?
+      name: Are there any DNS requests initiated?
       script: '|||microsoft-atp-advanced-hunting-network-connections'
       type: regular
       version: -1
-    taskid: eec728f7-127b-4b50-81b9-d9b2d049eb51
+    taskid: 89b8860f-9a10-4d34-826c-e5991ce6f1c3
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 1020,
-          "y": 845
+          "x": 1230,
+          "y": 1180
         }
       }
   '10':
@@ -893,8 +928,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1020,
-          "y": 1040
+          "x": 1230,
+          "y": 1335
         }
       }
   '21':
@@ -941,7 +976,7 @@ tasks:
       {
         "position": {
           "x": 1670,
-          "y": 1030
+          "y": 1040
         }
       }
   '22':
@@ -976,8 +1011,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1260,
-          "y": 1295
+          "x": 1230,
+          "y": 1520
         }
       }
   '23':
@@ -1041,8 +1076,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1260,
-          "y": 1710
+          "x": 1230,
+          "y": 1835
         }
       }
   '25':
@@ -1080,7 +1115,7 @@ tasks:
       {
         "position": {
           "x": 1430,
-          "y": 1930
+          "y": 2030
         }
       }
   '28':
@@ -1109,7 +1144,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4080,
+          "x": 4300,
           "y": 2200
         }
       }
@@ -1139,8 +1174,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1020,
-          "y": 2115
+          "x": 990,
+          "y": 2200
         }
       }
   '30':
@@ -1176,7 +1211,7 @@ tasks:
       {
         "position": {
           "x": 1670,
-          "y": 1505
+          "y": 1835
         }
       }
   '31':
@@ -1269,7 +1304,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1680,
+          "x": 1670,
           "y": 705
         }
       }
@@ -1280,7 +1315,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - '9'
+      - '46'
     note: false
     quietmode: 0
     separatecontext: false
@@ -1299,7 +1334,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1020,
+          "x": 990,
           "y": 705
         }
       }
@@ -1367,8 +1402,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1260,
-          "y": 1505
+          "x": 1230,
+          "y": 1685
         }
       }
   '41':
@@ -1450,7 +1485,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2790,
+          "x": 2750,
           "y": 1180
         }
       }
@@ -1526,6 +1561,137 @@ tasks:
           "y": 1360
         }
       }
+  '45':
+    id: '45'
+    taskid: 88124d1e-6223-43c8-89b1-264076f46201
+    type: condition
+    task:
+      id: 88124d1e-6223-43c8-89b1-264076f46201
+      version: -1
+      name: Check if device information was provided
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '36'
+      - '39'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.DeviceName
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.DeviceID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2180,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '46':
+    id: '46'
+    taskid: 3b430e7e-7a24-4e44-8a7c-2938d89f1850
+    type: condition
+    task:
+      id: 3b430e7e-7a24-4e44-8a7c-2938d89f1850
+      version: -1
+      name: Are DeviceID and FileName provided?
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '29'
+      yes:
+      - '9'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.FileSha256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.DeviceID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '48':
+    id: '48'
+    taskid: fd8e6713-5106-4527-82c0-dc6970184e36
+    type: condition
+    task:
+      id: fd8e6713-5106-4527-82c0-dc6970184e36
+      version: -1
+      name: Are DeviceID and FileName provided?
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '28'
+      yes:
+      - '1'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.FileSha256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.DeviceID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 4300,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 version: -1
 view: |-
   {
@@ -1536,13 +1702,14 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2005,
-        "width": 3440,
-        "x": 1020,
-        "y": 410
+        "height": 2195,
+        "width": 3690,
+        "x": 990,
+        "y": 220
       }
     }
   }
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
+system: true
