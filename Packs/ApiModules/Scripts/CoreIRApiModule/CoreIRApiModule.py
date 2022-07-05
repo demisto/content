@@ -1815,9 +1815,7 @@ def get_endpoints_command(client, args):
         sort_by_first_seen = args.get('sort_by_first_seen')
         sort_by_last_seen = args.get('sort_by_last_seen')
 
-        username = args.get('username')
-        if not isinstance(username, list):
-            username = [username]
+        username = argToList(args.get('username'))
 
         endpoints = client.get_endpoints(
             endpoint_id_list=endpoint_id_list,
