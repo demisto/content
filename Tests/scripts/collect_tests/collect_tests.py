@@ -1,9 +1,9 @@
-import functools
 import os
 import sys
 from abc import ABC, abstractmethod
 from argparse import ArgumentParser
 from enum import Enum
+from functools import reduce
 from pathlib import Path
 from typing import Iterable, Optional
 
@@ -99,7 +99,7 @@ class CollectedTests:
             logger.warning('no tests to union')
             return None
 
-        return functools.reduce(lambda a, b: a | b, collected_tests)
+        return reduce(lambda a, b: a | b, collected_tests)
 
     def _add_single(
             self,

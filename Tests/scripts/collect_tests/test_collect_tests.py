@@ -16,8 +16,8 @@ from Tests.scripts.collect_tests.utils import PackManager
 Test Collection Unit-Test cases 
 - `empty` has no packs
 - `empty_xsiam` has no packs, and only a test that is taken from conf.json (it is not saved elsewhere)
-- `A` has a single pack with an integration and two test playbooks. 
-- `B` has a single pack, with only test playbooks. (they should be collected) 
+- `A` has a single pack with an integration and two test playbooks.
+- `B` has a single pack, with only test playbooks. (they should be collected)
 - `C` has a pack supported by both marketplaces, and one only for marketplacev2 and one only for XSOAR.
 """
 

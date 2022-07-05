@@ -95,7 +95,7 @@ class Machine(Enum):
 class DictBased:
     def __init__(self, dict_: dict):
         if not isinstance(dict_, dict):
-            raise ValueError(f'DictBased must be initialized with a dict,')
+            raise ValueError('DictBased must be initialized with a dict')
         self.content = dict_
         self.from_version = self._calculate_from_version()
         self.to_version = self._calculate_to_version()

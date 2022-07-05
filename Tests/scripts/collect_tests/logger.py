@@ -1,4 +1,4 @@
-from logging import getLogger, Formatter, StreamHandler
+from logging import Formatter, StreamHandler, getLogger
 
 logger = getLogger('collect_tests')
 
