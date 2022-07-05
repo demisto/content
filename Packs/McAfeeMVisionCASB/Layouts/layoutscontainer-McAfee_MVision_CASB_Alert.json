@@ -571,15 +571,6 @@
                                 "index": 28,
                                 "sectionItemType": "field",
                                 "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "severity",
-                                "height": 22,
-                                "id": "c183f6c0-fb96-11ec-b8f1-4f20a873546d",
-                                "index": 29,
-                                "sectionItemType": "field",
-                                "startCol": 0
                             }
                         ],
                         "maxW": 3,

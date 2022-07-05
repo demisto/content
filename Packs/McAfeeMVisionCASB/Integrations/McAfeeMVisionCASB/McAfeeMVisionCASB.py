@@ -137,7 +137,7 @@ def fetch_incidents(client: Client, params: dict) -> Tuple[dict, list]:
                     {
                         'name': f'McAfee MVision CASB Incident {incident_id}',
                         'occurred': incident.get('timeModified'),
-                        'raw_json': json.dumps(incident),
+                        'rawJSON': json.dumps(incident),
                         'dbotMirrorId': incident_id,
                     }
                 )
