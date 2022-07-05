@@ -82,6 +82,8 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
+      confidenceThreshold:
+        simple: "0.5"
       emailBody:
         simple: 'Re: PO# OP848784204'
       emailBodyHTML: {}
@@ -143,7 +145,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "0.9"
+              simple: "0.5"
     view: |-
       {
         "position": {

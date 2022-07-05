@@ -7,6 +7,9 @@ on:
     branches:
       - 'contrib/**'
 
+permissions:
+  contents: read
+
 jobs:
   sync_contributor_base_branch:
     runs-on: ubuntu-latest
