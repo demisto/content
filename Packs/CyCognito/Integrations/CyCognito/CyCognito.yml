@@ -1029,7 +1029,7 @@ script:
     - contextPath: CyCognito.Asset.from_rotating
       description: Whether the asset has a rotating IP address.
       type: String
-  dockerimage: demisto/pycountry:1.0.0.30361
+  dockerimage: demisto/pycountry:1.0.0.31623
   feed: false
   isfetch: true
   isremotesyncin: true
