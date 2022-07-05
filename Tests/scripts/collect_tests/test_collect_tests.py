@@ -62,6 +62,20 @@ class MockerCases:
 def _test(mocker: CollectTestsMocker, run_nightly: bool, run_master: bool, collector_class: Callable,
           expected_tests: Iterable[str], expected_packs: Iterable[str],
           expected_machines: Optional[Iterable[Machine]], collector_class_args: tuple[str] = ()):
+    """
+    Instantiates the given collector class, calls collect with (run_nightly, run_master) and asserts
+    that the result packs and tests are expected ones.
+
+    :param mocker: with which to run the test
+    :param run_nightly: whether to ask, and check for, a nightly machine.
+    :param run_master: whether to ask and check for a master machine.
+    :param collector_class: the collector class to test.
+    :param expected_tests: the expected test names. (pass None to not check)
+    :param expected_packs: the expected pack names. (pass None to not check)
+    :param expected_machines: the expected machines. (pass None to not check)
+    :param collector_class_args: with which to instantiate the collector class.
+    :return: Nothing: only calls assert.
+    """
     with mocker:
         collected = collector_class(*collector_class_args).collect(run_nightly, run_master)
 
