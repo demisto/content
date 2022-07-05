@@ -3,11 +3,11 @@ import GLIMPSDetect
 
 def mocked_gdetect_get():
     return {
-        "uuid": "uuid",
-        "sha256": "sha256",
-        "sha1": "sha1",
-        "md5": "md5",
-        "ssdeep": "ssdeep",
+        "uuid": "23465d22-3464-39ce-b8b3-bc2ee7d6eecf",
+        "sha256": "005b00d41749f7b0336d4d5fe0402dcfc95ae0df44a2231a89a59919eeb30b31",
+        "sha1": "2159b8d8b985f32641314220bb24126747b71d13",
+        "md5": "c24d410c7e7d4b6066e09ceee057fbf9",
+        "ssdeep": "6153:KyJE1yd7WHJmcyfjtPWna8DQFu/U3buRKlemZ9DnGAevIhdi++:KU/d7WsvBPWa9DQFu/U3buRKlemZ9DnG",
         "is_malware": True,
         "score": 4000,
         "done": True,
@@ -24,11 +24,11 @@ def mocked_gdetect_get():
         ],
         "files": [
             {
-                "sha256": "sha256",
-                "sha1": "sha1",
-                "md5": "md5",
-                "ssdeep": "ssdeep",
-                "magic": "magic",
+                "sha256": "005b00d41749f7b0336d4d5fe0402dcfc95ae0df44a2231a89a59919eeb30b31",
+                "sha1": "2159b8d8b985f32641314220bb24126747b71d13",
+                "md5": "c24d410c7e7d4b6066e09ceee057fbf9",
+                "ssdeep": "6153:KyJE1yd7WHJmcyfjtPWna8DQFu/U3buRKlemZ9DnGAevIhdi++:KU/d7WsvBPWa9DQFu/U3buRKlemZ9DnG",
+                "magic": "PE32 executable (GUI) Intel 80386, for MS Windows",
                 "av_results": [
                     {
                         "av": "SignatureOyster",
@@ -50,19 +50,19 @@ def mocked_gdetect_get():
                 "is_malware": True
             },
             {
-                "sha256": "sha256",
-                "sha1": "sha1",
-                "md5": "md5",
-                "ssdeep": "ssdeep",
+                "sha256": "bd52eb164e64e6316791a8c260689b8ca0bf54440fa629edc05f6d4c301faec",
+                "sha1": "d0333bf36f7bd1bdc1b2110e0a55e608ec378577",
+                "md5": "5edb7d7e63f80d657e975628add89cd3",
+                "ssdeep": "99:JKXtFmZan3KNhTP+5oXlNbAuC5mDDtUEDPUmgXSM:JMFkNhy1qlNkPDDzPcF",
                 "magic": "data",
                 "size": 6144,
                 "is_malware": False
             },
             {
-                "sha256": "sha256",
-                "sha1": "sha1",
-                "md5": "md5",
-                "ssdeep": "ssdeep",
+                "sha256": "f9c00d396b73fc4b4d05c518a7c9eddbed35462270d2ae5e31380fe5ca0f0c67",
+                "sha1": "d5cfd73469f053c4ec8cd34d7a81baaf4e6d5068",
+                "md5": "5a58f4825aa4cc6ce9098c20dcc99448",
+                "ssdeep": "98:WuuR8iHj18usiDdeKvg3nbNqCH7FazFT3jCDomhCuorfhHSEdP2pVUVi7P1uH:Q6ijDUsEg0nf5CCo0Cu054VUViCu",
                 "magic": "data",
                 "size": 6144,
                 "is_malware": False
@@ -101,10 +101,10 @@ def mocked_gdetect_get():
                 ],
                 "score": 4000,
                 "magic": "PE32 executable (GUI) Intel 80386, for MS Windows",
-                "sha256": "sha256",
-                "sha1": "sha1",
-                "md5": "md5",
-                "ssdeep": "ssdeep",
+                "sha256": "005b00d41749f7b0336d4d5fe0402dcfc95ae0df44a2231a89a59919eeb30b31",
+                "sha1": "2159b8d8b985f32641314220bb24126747b71d13",
+                "md5": "c24d410c7e7d4b6066e09ceee057fbf9",
+                "ssdeep": "6153:KyJE1yd7WHJmcyfjtPWna8DQFu/U3buRKlemZ9DnGAevIhdi++:KU/d7WsvBPWa9DQFu/U3buRKlemZ9DnG",
                 "file_size": 219648,
                 "mime": "application/x-dosexec"
             }
@@ -115,14 +115,14 @@ def mocked_gdetect_get():
 
 def mocked_gdetect_get_base():
     return {
-        "sha256": "sha256",
-        "sha1": "sha1",
-        "md5": "md5",
+        "sha256": "005b00d41749f7b0336d4d5fe0402dcfc95ae0df44a2231a89a59919eeb30b31",
+        "sha1": "2159b8d8b985f32641314220bb24126747b71d13",
+        "md5": "c24d410c7e7d4b6066e09ceee057fbf9",
         "size": 219648,
-        "ssdeep": "ssdeep",
+        "ssdeep": "6153:KyJE1yd7WHJmcyfjtPWna8DQFu/U3buRKlemZ9DnGAevIhdi++:KU/d7WsvBPWa9DQFu/U3buRKlemZ9DnG",
         "status": True,
         "timestamp": 1651157541588,
-        "uuid": "uuid",
+        "uuid": "23465d22-3464-39ce-b8b3-bc2ee7d6eecf",
         "malwares": [
             "Win.Ransomware.Buhtrap-9865977-0",
             "TR/Redcap.ltkcp",
@@ -159,9 +159,7 @@ def mocked_gdetect_get_sid():
 
 def mock_add_token(mock):
     mock = mock_add_sid(mock)
-    mock["token"] = ("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ6.eyJ1c2VybmFtZSI6ImFwaS10YW8ndWl0ZXN0IiwiZ7JvdXBzIjpbInRhbmd1aXRlc3QiX"
-                     "Swic2lkIjoiN2d6WUNzWDRSNmp6bHlaQzNpZXJLWSIsImV4cCI4MTY1MzgwNzgwOSwiaWF3IjoxNjUxMjE3ODA2fQ.EGk75tKwAq70T"
-                     "PCjClnOp_2_339XqMXk0TbPJhSN2uE")
+    mock["token"] = ("token")
     return mock
 
 

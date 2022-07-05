@@ -202,7 +202,7 @@ get all file analysis from gDetect API.
                 "link": "http://gdetect-instance.lan/expert/en/analysis-redirect/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ6.J1c2VybmFtZSI6ImFwaS10YW8ndWl0ZXN0IiwiZ7JvdXBzIjpbInRhbmd1aXRlc3QiXSwic2lkIjoiN2d6WUNzWDRSNmp6bHlaQzNpZXJLWSIsImV4cCI4MTY1MzgwNzgwOSwiaWF3IjoxNjUxMjE3ODA2fQ.EGk75tKwAq70TPCjClnOp_2_339XqMXk0TbPJhSN2uE",
                 "file_count": 3,
                 "duration": 8268,
-                "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ6.J1c2VybmFtZSI6ImFwaS10YW8ndWl0ZXN0IiwiZ7JvdXBzIjpbInRhbmd1aXRlc3QiXSwic2lkIjoiN2d6WUNzWDRSNmp6bHlaQzNpZXJLWSIsImV4cCI4MTY1MzgwNzgwOSwiaWF3IjoxNjUxMjE3ODA2fQ.EGk75tKwAq70TPCjClnOp_2_339XqMXk0TbPJhSN2uE",
+                "token": "token",
                 "threats": {
                     "005b00d41749f7b0336d4d5fe0402dcfc95ae0df44a2231a89a59919eeb30b31": {
                         "filenames": [
