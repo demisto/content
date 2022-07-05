@@ -1428,9 +1428,9 @@ def create_filter_envs_file(from_version: str, to_version: str, documentation_ch
     """
     envs_to_test = {
         'Server Master': True,
+        'Server 6.8': is_runnable_in_server_version(from_version, '6.8', to_version),
         'Server 6.6': is_runnable_in_server_version(from_version, '6.6', to_version),
         'Server 6.5': is_runnable_in_server_version(from_version, '6.5', to_version),
-        'Server 6.2': is_runnable_in_server_version(from_version, '6.2', to_version),
 
     }
 
@@ -1438,9 +1438,9 @@ def create_filter_envs_file(from_version: str, to_version: str, documentation_ch
         # No need to create the instances.
         envs_to_test = {
             'Server Master': False,
+            'Server 6.8': False,
             'Server 6.6': False,
             'Server 6.5': False,
-            'Server 6.2': False,
         }
 
     logging.info("Creating filter_envs.json with the following envs: {}".format(envs_to_test))
