@@ -15,7 +15,7 @@ from CommonServerPython import arg_to_datetime
 
 DUMMY_TIME = '2022-03-21T07:06:41.000Z'
 ASSET_IP_ENDPOINT = '/assets/ip'
-
+CURRENT_TIME = time.time()
 
 def util_load_json(path):
     """Load a json file to python dictionary."""
@@ -67,18 +67,19 @@ def mocked_client():
     ([{
         'field': 'first-seen',
         'op': 'between',
-        'values': [['2020-01-01T00:00:00Z', arg_to_datetime(time.time()).strftime(DATE_FORMAT)]]
+        'values': [['2020-01-01T00:00:00Z', arg_to_datetime(CURRENT_TIME).strftime(DATE_FORMAT)]]
     }, {
         'field': 'last-seen',
         'op': 'between',
-        'values': [['2020-01-01T00:00:00Z', arg_to_datetime(time.time()).strftime(DATE_FORMAT)]]
+        'values': [['2020-01-01T00:00:00Z', arg_to_datetime(CURRENT_TIME).strftime(DATE_FORMAT)]]
     }], {'first_seen': "2020-01-01T00:00:00Z", 'last_seen': "2020-01-01T00:00:00Z"})
 ])
-def test_prepare_filters_for_get_indicators(expected, args):
+def test_prepare_filters_for_get_indicators(expected, args, mocker):
     """Test case scenario for successful execution of prepare_filters_for_get_indicators function."""
     from FeedCyCognito import prepare_body_filters_for_get_indicators
 
-    assert prepare_body_filters_for_get_indicators(**args) == expected
+    with mocker.patch('time.time', return_value=CURRENT_TIME):
+        assert prepare_body_filters_for_get_indicators(**args) == expected
 
 
 @pytest.mark.parametrize("err_msg, args", [
@@ -206,11 +207,12 @@ def test_test_module(requests_mock, mocked_client):
     (ERRORS['INVALID_COUNTRY_ERROR'].format('invalid_country_name'),
      {'locations': ['invalid_country_name'], 'asset_type': 'ip', 'feed': False})
 ])
-def test_fetch_indicators_when_invalid_arguments_provided(err_msg, args, mocked_client):
+def test_fetch_indicators_when_invalid_arguments_provided(err_msg, args, mocked_client, capfd):
     """Test case scenario when arguments provided to fetch-indicators are invalid."""
     from FeedCyCognito import fetch_indicators_command
 
     with pytest.raises(ValueError) as err:
+        capfd.close()
         fetch_indicators_command(mocked_client, args, {})
 
     assert str(err.value) == err_msg
