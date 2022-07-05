@@ -7,23 +7,23 @@ from enum import Enum
 from pathlib import Path
 from typing import Iterable, Optional
 
-from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
-from demisto_sdk.commands.common.tools import (find_type_by_path, run_command,
-                                               str2bool)
-from git import Repo
-from Tests.scripts.collect_tests.path_manager import PathManager
-
 from constants import (DEFAULT_MARKETPLACE_WHEN_MISSING,
                        DEFAULT_REPUTATION_TESTS, ONLY_INSTALL_PACK,
                        SKIPPED_CONTENT_ITEMS, XSOAR_SANITY_TEST_NAMES)
+from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
+from demisto_sdk.commands.common.tools import (find_type_by_path, run_command,
+                                               str2bool)
 from exceptions import (DeprecatedPackException, EmptyMachineListException,
                         InexistentPackException, NonDictException,
                         NoTestsConfiguredException, NothingToCollectException,
                         NotUnderPackException, SkippedPackException,
                         UnsupportedPackException)
+from git import Repo
 from id_set import IdSet
 from logger import logger
 from test_conf import TestConf
+
+from Tests.scripts.collect_tests.path_manager import PathManager
 from utils import (ContentItem, Machine, PackManager, VersionRange,
                    find_pack_folder)
 
@@ -63,15 +63,15 @@ class CollectionReason(Enum):
 class CollectedTests:
     def __init__(
             self,
-            tests: Optional[tuple[str] | list[str]],
-            packs: Optional[tuple[str] | list[str]],
+            tests: Optional[tuple[Optional[str]] | list[Optional[str]]],
+            packs: Optional[tuple[Optional[str]] | list[Optional[str]]],
             reason: CollectionReason,
             version_range: Optional[VersionRange],
             reason_description: Optional[str] = None,
     ):
 
-        self.tests = set()  # only updated on init
-        self.packs = set()  # only updated on init
+        self.tests: set[str] = set()  # only updated on init
+        self.packs: set[str] = set()  # only updated on init
         self.version_range = None if version_range and version_range.is_default else version_range
         self.machines: Optional[Iterable[Machine]] = None
 
@@ -169,7 +169,7 @@ class TestCollector(ABC):
         pass
 
     def collect(self, run_nightly: bool, run_master: bool) -> Optional[CollectedTests]:
-        collected: CollectedTests = self._collect()
+        collected: Optional[CollectedTests] = self._collect()
 
         if not collected:
             logger.warning('No tests were collected, returning sanity tests only')
@@ -212,8 +212,8 @@ class TestCollector(ABC):
         )
 
     def _add_packs_from_test_playbooks(self, tests: set[str]) -> list[CollectedTests]:  # only called in _add_packs_used
-        logger.info(f'searching for pack_name_to_pack_metadata under which test playbooks are saved,'
-                    f' to make sure they are installed')
+        logger.info('searching for pack_name_to_pack_metadata under which test playbooks are saved,'
+                    ' to make sure they are installed')
         collected = []
 
         for test in tests:
