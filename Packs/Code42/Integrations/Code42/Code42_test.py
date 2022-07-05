@@ -442,15 +442,25 @@ MOCK_FILE_EVENT_QUERY_PAYLOAD = {
         },
         {
             "filterClause": "AND",
-            "filters": [{"operator": "IS", "term": "osHostName", "value": "DESKTOP-0001"}],
+            "filters": [
+                {"operator": "IS", "term": "osHostName", "value": "DESKTOP-0001"}
+            ],
         },
         {
             "filterClause": "AND",
-            "filters": [{"operator": "IS", "term": "deviceUserName", "value": "user3@example.com"}],
+            "filters": [
+                {
+                    "operator": "IS",
+                    "term": "deviceUserName",
+                    "value": "user3@example.com",
+                }
+            ],
         },
         {
             "filterClause": "AND",
-            "filters": [{"operator": "IS", "term": "exposure", "value": "ApplicationRead"}],
+            "filters": [
+                {"operator": "IS", "term": "exposure", "value": "ApplicationRead"}
+            ],
         },
     ],
     "pgNum": 1,
@@ -466,7 +476,11 @@ MOCK_OBSERVATION_QUERIES = [
             {
                 "filterClause": "AND",
                 "filters": [
-                    {"operator": "IS", "term": "deviceUserName", "value": "user1@example.com"}
+                    {
+                        "operator": "IS",
+                        "term": "deviceUserName",
+                        "value": "user1@example.com",
+                    }
                 ],
             },
             {
@@ -499,15 +513,17 @@ MOCK_OBSERVATION_QUERIES = [
             },
             {
                 "filterClause": "AND",
-                "filters": [{"operator": "IS", "term": "exposure", "value": "ApplicationRead"}],
+                "filters": [
+                    {"operator": "IS", "term": "exposure", "value": "ApplicationRead"}
+                ],
             },
             {
                 "filterClause": "OR",
                 "filters": [
                     {"operator": "IS", "term": "fileCategory", "value": "Pdf"},
-                    {"operator": "IS", "term": "fileCategory", "value": "SourceCode"}
-                ]
-            }
+                    {"operator": "IS", "term": "fileCategory", "value": "SourceCode"},
+                ],
+            },
         ],
         "pgNum": 1,
         "pgSize": 10000,
@@ -519,7 +535,9 @@ MOCK_OBSERVATION_QUERIES = [
         "groups": [
             {
                 "filterClause": "AND",
-                "filters": [{"operator": "IS", "term": "actor", "value": "user1@example.com"}],
+                "filters": [
+                    {"operator": "IS", "term": "actor", "value": "user1@example.com"}
+                ],
             },
             {
                 "filterClause": "AND",
@@ -544,7 +562,11 @@ MOCK_OBSERVATION_QUERIES = [
             {
                 "filterClause": "AND",
                 "filters": [
-                    {"operator": "IS", "term": "exposure", "value": "OutsideTrustedDomains"}
+                    {
+                        "operator": "IS",
+                        "term": "exposure",
+                        "value": "OutsideTrustedDomains",
+                    }
                 ],
             },
         ],
@@ -558,7 +580,9 @@ MOCK_OBSERVATION_QUERIES = [
         "groups": [
             {
                 "filterClause": "AND",
-                "filters": [{"operator": "IS", "term": "actor", "value": "user1@example.com"}],
+                "filters": [
+                    {"operator": "IS", "term": "actor", "value": "user1@example.com"}
+                ],
             },
             {
                 "filterClause": "AND",
@@ -584,8 +608,16 @@ MOCK_OBSERVATION_QUERIES = [
                 "filterClause": "AND",
                 "filters": [
                     {"operator": "IS_NOT", "term": "exposure", "value": "IsPublic"},
-                    {"operator": "IS_NOT", "term": "exposure", "value": "OutsideTrustedDomains"},
-                    {"operator": "IS_NOT", "term": "exposure", "value": "SharedViaLink"},
+                    {
+                        "operator": "IS_NOT",
+                        "term": "exposure",
+                        "value": "OutsideTrustedDomains",
+                    },
+                    {
+                        "operator": "IS_NOT",
+                        "term": "exposure",
+                        "value": "SharedViaLink",
+                    },
                 ],
             },
         ],
@@ -600,7 +632,11 @@ MOCK_OBSERVATION_QUERIES = [
             {
                 "filterClause": "AND",
                 "filters": [
-                    {"operator": "IS", "term": "deviceUserName", "value": "user3@example.com"}
+                    {
+                        "operator": "IS",
+                        "term": "deviceUserName",
+                        "value": "user3@example.com",
+                    }
                 ],
             },
             {
@@ -633,7 +669,9 @@ MOCK_OBSERVATION_QUERIES = [
             },
             {
                 "filterClause": "AND",
-                "filters": [{"operator": "IS", "term": "exposure", "value": "RemovableMedia"}],
+                "filters": [
+                    {"operator": "IS", "term": "exposure", "value": "RemovableMedia"}
+                ],
             },
         ],
         "pgNum": 1,
@@ -1102,15 +1140,21 @@ def code42_fetch_incidents_mock(code42_sdk_mock, mocker):
 
 @pytest.fixture
 def code42_users_mock(code42_sdk_mock, mocker):
-    create_user_response = create_mock_code42_sdk_response(mocker, MOCK_CREATE_USER_RESPONSE)
+    create_user_response = create_mock_code42_sdk_response(
+        mocker, MOCK_CREATE_USER_RESPONSE
+    )
     code42_sdk_mock.users.create_user.return_value = create_user_response
     return code42_sdk_mock
 
 
 def create_alerts_mock(c42_sdk_mock, mocker):
-    alert_details_response = create_mock_code42_sdk_response(mocker, MOCK_ALERT_DETAILS_RESPONSE)
+    alert_details_response = create_mock_code42_sdk_response(
+        mocker, MOCK_ALERT_DETAILS_RESPONSE
+    )
     c42_sdk_mock.alerts.get_details.return_value = alert_details_response
-    alert_aggregate_response = create_mock_code42_sdk_response(mocker, MOCK_ALERT_AGGREGATE_RESPONSE)
+    alert_aggregate_response = create_mock_code42_sdk_response(
+        mocker, MOCK_ALERT_AGGREGATE_RESPONSE
+    )
     c42_sdk_mock.alerts.get_aggregate_data.return_value = alert_aggregate_response
     alerts_response = create_mock_code42_sdk_response(mocker, MOCK_ALERTS_RESPONSE)
     c42_sdk_mock.alerts.search.return_value = alerts_response
@@ -1121,7 +1165,9 @@ def create_file_events_mock(c42_sdk_mock, mocker):
     search_file_events_response = create_mock_code42_sdk_response(
         mocker, MOCK_SECURITY_EVENT_RESPONSE
     )
-    c42_sdk_mock.securitydata.search_file_events.return_value = search_file_events_response
+    c42_sdk_mock.securitydata.search_file_events.return_value = (
+        search_file_events_response
+    )
     return c42_sdk_mock
 
 
@@ -1152,9 +1198,7 @@ def code42_watchlists_mock(code42_sdk_mock, mocker):
     all_watchlists_response = create_mock_code42_sdk_response_generator(
         mocker, [MOCK_WATCHLISTS_RESPONSE]
     )
-    code42_sdk_mock.watchlists.get_all.return_value = (
-        all_watchlists_response
-    )
+    code42_sdk_mock.watchlists.get_all.return_value = all_watchlists_response
     return code42_sdk_mock
 
 
@@ -1169,30 +1213,41 @@ def code42_watchlists_included_users_mock(code42_sdk_mock, mocker):
     return code42_sdk_mock
 
 
-
 @pytest.fixture
 def code42_departing_employee_get_mock(code42_sdk_mock, mocker):
-    single_departing_employee = json.loads(MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE)["items"][0]
-    response = create_mock_code42_sdk_response(mocker, json.dumps(single_departing_employee))
+    single_departing_employee = json.loads(MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE)[
+        "items"
+    ][0]
+    response = create_mock_code42_sdk_response(
+        mocker, json.dumps(single_departing_employee)
+    )
     code42_sdk_mock.detectionlists.departing_employee.get.return_value = response
     return code42_sdk_mock
 
 
 @pytest.fixture
 def code42_high_risk_employee_get_mock(code42_sdk_mock, mocker):
-    single_high_risk_employee = json.loads(MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE)["items"][0]
-    response = create_mock_code42_sdk_response(mocker, json.dumps(single_high_risk_employee))
+    single_high_risk_employee = json.loads(MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE)[
+        "items"
+    ][0]
+    response = create_mock_code42_sdk_response(
+        mocker, json.dumps(single_high_risk_employee)
+    )
     code42_sdk_mock.detectionlists.high_risk_employee.get.return_value = response
     return code42_sdk_mock
 
 
 @pytest.fixture
 def code42_legal_hold_mock(code42_sdk_mock, mocker):
-    code42_sdk_mock.legalhold.get_all_matters.return_value = create_mock_code42_sdk_response_generator(
-        mocker, [MOCK_GET_ALL_MATTERS_RESPONSE]
+    code42_sdk_mock.legalhold.get_all_matters.return_value = (
+        create_mock_code42_sdk_response_generator(
+            mocker, [MOCK_GET_ALL_MATTERS_RESPONSE]
+        )
     )
     code42_sdk_mock.legalhold.get_all_matter_custodians.return_value = (
-        create_mock_code42_sdk_response_generator(mocker, [MOCK_GET_ALL_MATTER_CUSTODIANS_RESPONSE])
+        create_mock_code42_sdk_response_generator(
+            mocker, [MOCK_GET_ALL_MATTER_CUSTODIANS_RESPONSE]
+        )
     )
     code42_sdk_mock.legalhold.add_to_matter.return_value = (
         create_mock_code42_sdk_response(mocker, MOCK_ADD_TO_MATTER_RESPONSE)
@@ -1213,14 +1268,18 @@ def create_mock_code42_sdk_response_generator(mocker, response_pages):
 
 
 def create_client(sdk):
-    return Code42Client(sdk=sdk, base_url=MOCK_URL, auth=MOCK_AUTH, verify=False, proxy=False)
+    return Code42Client(
+        sdk=sdk, base_url=MOCK_URL, auth=MOCK_AUTH, verify=False, proxy=False
+    )
 
 
 def get_empty_detectionlist_response(mocker, base_text):
     no_employees_response_text = json.loads(base_text)
     no_employees_response_text["items"] = []
     no_employees_response_text = json.dumps(no_employees_response_text)
-    return create_mock_code42_sdk_response_generator(mocker, [no_employees_response_text])
+    return create_mock_code42_sdk_response_generator(
+        mocker, [no_employees_response_text]
+    )
 
 
 def get_empty_legalhold_matters_response(mocker, base_text):
@@ -1240,7 +1299,9 @@ def get_empty_legalhold_custodians_response(mocker, base_text):
 def assert_departingemployee_outputs_match_response(outputs_list, response_items):
     assert_detection_list_outputs_match_response_items(outputs_list, response_items)
     for i in range(0, len(outputs_list)):
-        assert outputs_list[i]["DepartureDate"] == response_items[i].get("departureDate")
+        assert outputs_list[i]["DepartureDate"] == response_items[i].get(
+            "departureDate"
+        )
 
 
 def assert_detection_list_outputs_match_response_items(outputs_list, response_items):
@@ -1299,13 +1360,15 @@ def test_get_file_category_value_handles_hyphenated_case():
 def test_client_lazily_inits_sdk(mocker, code42_sdk_mock):
     sdk_factory_mock = mocker.patch("py42.sdk.from_jwt_provider")
     response_json_mock = """{"total": 1, "users": [{"username": "Test"}]}"""
-    code42_sdk_mock.users.get_by_username.return_value = create_mock_code42_sdk_response(
-        mocker, response_json_mock
+    code42_sdk_mock.users.get_by_username.return_value = (
+        create_mock_code42_sdk_response(mocker, response_json_mock)
     )
     sdk_factory_mock.return_value = code42_sdk_mock
 
     # test that sdk does not init during ctor
-    client = Code42Client(sdk=None, base_url=MOCK_URL, auth=MOCK_AUTH, verify=False, proxy=False)
+    client = Code42Client(
+        sdk=None, base_url=MOCK_URL, auth=MOCK_AUTH, verify=False, proxy=False
+    )
     assert client._sdk is None
 
     # test that sdk init from first method call
@@ -1325,15 +1388,17 @@ def test_client_when_no_alert_found_raises_alert_not_found(mocker, code42_sdk_mo
 
 def test_client_when_no_user_found_raises_user_not_found(mocker, code42_sdk_mock):
     response_json = """{"totalCount": 0, "users": []}"""
-    code42_sdk_mock.users.get_by_username.return_value = create_mock_code42_sdk_response(
-        mocker, response_json
+    code42_sdk_mock.users.get_by_username.return_value = (
+        create_mock_code42_sdk_response(mocker, response_json)
     )
     client = create_client(code42_sdk_mock)
     with pytest.raises(Code42UserNotFoundError):
         client.get_user("test@example.com")
 
 
-def test_client_add_to_matter_when_no_legal_hold_matter_found_raises_matter_not_found(code42_sdk_mock, mocker):
+def test_client_add_to_matter_when_no_legal_hold_matter_found_raises_matter_not_found(
+    code42_sdk_mock, mocker
+):
 
     code42_sdk_mock.legalhold.get_all_matters.return_value = (
         get_empty_legalhold_matters_response(mocker, MOCK_GET_ALL_MATTERS_RESPONSE)
@@ -1344,15 +1409,21 @@ def test_client_add_to_matter_when_no_legal_hold_matter_found_raises_matter_not_
         client.add_user_to_legal_hold_matter("TESTUSERNAME", "TESTMATTERNAME")
 
 
-def test_client_add_to_matter_when_no_user_found_raises_user_not_found(mocker, code42_sdk_mock):
+def test_client_add_to_matter_when_no_user_found_raises_user_not_found(
+    mocker, code42_sdk_mock
+):
     response_json = '{"totalCount":0, "users":[]}'
-    code42_sdk_mock.users.get_by_username.return_value = create_mock_code42_sdk_response(mocker, response_json)
+    code42_sdk_mock.users.get_by_username.return_value = (
+        create_mock_code42_sdk_response(mocker, response_json)
+    )
     client = create_client(code42_sdk_mock)
     with pytest.raises(Code42UserNotFoundError):
         client.add_user_to_legal_hold_matter("TESTUSERNAME", "TESTMATTERNAME")
 
 
-def test_client_remove_from_matter_when_no_legal_hold_matter_found_raises_exception(code42_sdk_mock, mocker):
+def test_client_remove_from_matter_when_no_legal_hold_matter_found_raises_exception(
+    code42_sdk_mock, mocker
+):
     code42_sdk_mock.legalhold.get_all_matters.return_value = (
         get_empty_legalhold_matters_response(mocker, MOCK_GET_ALL_MATTERS_RESPONSE)
     )
@@ -1362,17 +1433,25 @@ def test_client_remove_from_matter_when_no_legal_hold_matter_found_raises_except
         client.remove_user_from_legal_hold_matter("TESTUSERNAME", "TESTMATTERNAME")
 
 
-def test_client_remove_from_matter_when_no_user_found_raises_user_not_found(mocker, code42_sdk_mock):
+def test_client_remove_from_matter_when_no_user_found_raises_user_not_found(
+    mocker, code42_sdk_mock
+):
     response_json = '{"totalCount":0, "users":[]}'
-    code42_sdk_mock.users.get_by_username.return_value = create_mock_code42_sdk_response(mocker, response_json)
+    code42_sdk_mock.users.get_by_username.return_value = (
+        create_mock_code42_sdk_response(mocker, response_json)
+    )
     client = create_client(code42_sdk_mock)
     with pytest.raises(Code42UserNotFoundError):
         client.remove_user_from_legal_hold_matter("TESTUSERNAME", "TESTMATTERNAME")
 
 
-def test_client_remove_from_matter_when_no_membership_raises_invalid_legal_hold_membership(code42_legal_hold_mock, mocker):
+def test_client_remove_from_matter_when_no_membership_raises_invalid_legal_hold_membership(
+    code42_legal_hold_mock, mocker
+):
     code42_legal_hold_mock.legalhold.get_all_matter_custodians.return_value = (
-        get_empty_legalhold_custodians_response(mocker, MOCK_GET_ALL_MATTER_CUSTODIANS_RESPONSE)
+        get_empty_legalhold_custodians_response(
+            mocker, MOCK_GET_ALL_MATTER_CUSTODIANS_RESPONSE
+        )
     )
     client = create_client(code42_legal_hold_mock)
     with pytest.raises(Code42InvalidLegalHoldMembershipError):
@@ -1437,7 +1516,9 @@ def test_departingemployee_add_command(code42_sdk_mock):
     assert cmd_res.outputs["UserID"] == _TEST_USER_ID
     assert cmd_res.outputs["CaseID"] == _TEST_USER_ID
     add_func.assert_called_once_with(_TEST_USER_ID, departure_date=date)
-    code42_sdk_mock.detectionlists.update_user_notes.assert_called_once_with(_TEST_USER_ID, note)
+    code42_sdk_mock.detectionlists.update_user_notes.assert_called_once_with(
+        _TEST_USER_ID, note
+    )
 
 
 def test_departingemployee_remove_command(code42_sdk_mock):
@@ -1449,18 +1530,27 @@ def test_departingemployee_remove_command(code42_sdk_mock):
     assert cmd_res.outputs["Username"] == _TEST_USERNAME
     assert cmd_res.outputs["UserID"] == _TEST_USER_ID
     assert cmd_res.outputs["CaseID"] == _TEST_USER_ID
-    code42_sdk_mock.detectionlists.departing_employee.remove.assert_called_once_with(_TEST_USER_ID)
+    code42_sdk_mock.detectionlists.departing_employee.remove.assert_called_once_with(
+        _TEST_USER_ID
+    )
 
 
 def test_departingemployee_get_all_command(code42_departing_employee_mock):
     client = create_client(code42_departing_employee_mock)
     cmd_res = departingemployee_get_all_command(client, {})
-    expected_raw_response = json.loads(MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE)["items"]
+    expected_raw_response = json.loads(MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE)[
+        "items"
+    ]
     assert cmd_res.outputs_prefix == "Code42.DepartingEmployee"
     assert cmd_res.outputs_key_field == "UserID"
-    assert cmd_res.raw_response == json.loads(MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE)["items"]
+    assert (
+        cmd_res.raw_response
+        == json.loads(MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE)["items"]
+    )
     # Tests outputs
-    assert_departingemployee_outputs_match_response(cmd_res.outputs, expected_raw_response)
+    assert_departingemployee_outputs_match_response(
+        cmd_res.outputs, expected_raw_response
+    )
 
 
 def test_departingemployee_get_all_command_gets_employees_from_multiple_pages(
@@ -1484,7 +1574,9 @@ def test_departingemployee_get_all_command_gets_employees_from_multiple_pages(
     expected_page = json.loads(MOCK_GET_ALL_DEPARTING_EMPLOYEES_RESPONSE)["items"]
     expected = expected_page + expected_page + expected_page
     assert cmd_res.raw_response == expected
-    assert_departingemployee_outputs_match_response(cmd_res.outputs, cmd_res.raw_response)
+    assert_departingemployee_outputs_match_response(
+        cmd_res.outputs, cmd_res.raw_response
+    )
 
 
 def test_departingemployee_get_all_command_gets_number_of_employees_equal_to_results_param(
@@ -1522,14 +1614,15 @@ def test_departingemployee_get_all_command_when_no_employees(
     assert cmd_res.outputs_key_field == "UserID"
     assert cmd_res.raw_response == {}
     assert cmd_res.outputs == {"Results": []}
-    assert code42_departing_employee_mock.detectionlists.departing_employee.get_all.call_count == 1
+    assert (
+        code42_departing_employee_mock.detectionlists.departing_employee.get_all.call_count
+        == 1
+    )
 
 
 def test_departingemployee_get_command(code42_departing_employee_get_mock):
     client = create_client(code42_departing_employee_get_mock)
-    cmd_res = departingemployee_get_command(
-        client, {"username": _TEST_USERNAME}
-    )
+    cmd_res = departingemployee_get_command(client, {"username": _TEST_USERNAME})
     get_func = code42_departing_employee_get_mock.detectionlists.departing_employee.get
     get_func.assert_called_once_with(_TEST_USER_ID)
     assert cmd_res.raw_response == _TEST_USERNAME
@@ -1541,9 +1634,7 @@ def test_departingemployee_get_command(code42_departing_employee_get_mock):
 
 def test_highriskemployee_get_command(code42_high_risk_employee_get_mock):
     client = create_client(code42_high_risk_employee_get_mock)
-    cmd_res = highriskemployee_get_command(
-        client, {"username": _TEST_USERNAME}
-    )
+    cmd_res = highriskemployee_get_command(client, {"username": _TEST_USERNAME})
     get_func = code42_high_risk_employee_get_mock.detectionlists.high_risk_employee.get
     get_func.assert_called_once_with(_TEST_USER_ID)
     assert cmd_res.raw_response == _TEST_USERNAME
@@ -1579,7 +1670,9 @@ def test_highriskemployee_remove_command(code42_sdk_mock):
     assert cmd_res.outputs_key_field == "UserID"
     assert cmd_res.outputs["UserID"] == _TEST_USER_ID
     assert cmd_res.outputs["Username"] == _TEST_USERNAME
-    code42_sdk_mock.detectionlists.high_risk_employee.remove.assert_called_once_with(_TEST_USER_ID)
+    code42_sdk_mock.detectionlists.high_risk_employee.remove.assert_called_once_with(
+        _TEST_USER_ID
+    )
 
 
 def test_highriskemployee_get_all_command(code42_high_risk_employee_mock):
@@ -1589,8 +1682,13 @@ def test_highriskemployee_get_all_command(code42_high_risk_employee_mock):
     assert cmd_res.outputs_key_field == "UserID"
     assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
     assert cmd_res.raw_response == expected_response
-    assert code42_high_risk_employee_mock.detectionlists.high_risk_employee.get_all.call_count == 1
-    assert_detection_list_outputs_match_response_items(cmd_res.outputs, expected_response)
+    assert (
+        code42_high_risk_employee_mock.detectionlists.high_risk_employee.get_all.call_count
+        == 1
+    )
+    assert_detection_list_outputs_match_response_items(
+        cmd_res.outputs, expected_response
+    )
 
 
 def test_highriskemployee_get_all_command_gets_employees_from_multiple_pages(
@@ -1608,27 +1706,40 @@ def test_highriskemployee_get_all_command_gets_employees_from_multiple_pages(
     client = create_client(code42_high_risk_employee_mock)
 
     cmd_res = highriskemployee_get_all_command(client, {"username": _TEST_USERNAME})
-    expected_response = json.loads(MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE)["items"] * 3
+    expected_response = (
+        json.loads(MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE)["items"] * 3
+    )
     assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
     assert cmd_res.outputs_key_field == "UserID"
     assert cmd_res.raw_response == expected_response
-    assert_detection_list_outputs_match_response_items(cmd_res.outputs, expected_response)
+    assert_detection_list_outputs_match_response_items(
+        cmd_res.outputs, expected_response
+    )
 
 
 def test_highriskemployee_get_all_command_when_given_risk_tags_only_gets_employees_with_tags(
-    code42_high_risk_employee_mock
+    code42_high_risk_employee_mock,
 ):
     client = create_client(code42_high_risk_employee_mock)
     cmd_res = highriskemployee_get_all_command(
         client,
-        {"risktags": "PERFORMANCE_CONCERNS,SUSPICIOUS_SYSTEM_ACTIVITY,POOR_SECURITY_PRACTICES"},
+        {
+            "risktags": "PERFORMANCE_CONCERNS,SUSPICIOUS_SYSTEM_ACTIVITY,POOR_SECURITY_PRACTICES"
+        },
     )
-    expected_response = [json.loads(MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE)["items"][0]]
+    expected_response = [
+        json.loads(MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE)["items"][0]
+    ]
     assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
     assert cmd_res.outputs_key_field == "UserID"
     assert cmd_res.raw_response == expected_response
-    assert code42_high_risk_employee_mock.detectionlists.high_risk_employee.get_all.call_count == 1
-    assert_detection_list_outputs_match_response_items(cmd_res.outputs, expected_response)
+    assert (
+        code42_high_risk_employee_mock.detectionlists.high_risk_employee.get_all.call_count
+        == 1
+    )
+    assert_detection_list_outputs_match_response_items(
+        cmd_res.outputs, expected_response
+    )
 
 
 def test_highriskemployee_get_all_command_gets_number_of_employees_equal_to_results_param(
@@ -1649,7 +1760,9 @@ def test_highriskemployee_get_all_command_gets_number_of_employees_equal_to_resu
     assert len(cmd_res.outputs) == 1
 
 
-def test_highriskemployee_get_all_command_when_no_employees(code42_high_risk_employee_mock, mocker):
+def test_highriskemployee_get_all_command_when_no_employees(
+    code42_high_risk_employee_mock, mocker
+):
     no_employees_response = get_empty_detectionlist_response(
         mocker, MOCK_GET_ALL_HIGH_RISK_EMPLOYEES_RESPONSE
     )
@@ -1659,13 +1772,18 @@ def test_highriskemployee_get_all_command_when_no_employees(code42_high_risk_emp
     client = create_client(code42_high_risk_employee_mock)
     cmd_res = highriskemployee_get_all_command(
         client,
-        {"risktags": "PERFORMANCE_CONCERNS,SUSPICIOUS_SYSTEM_ACTIVITY,POOR_SECURITY_PRACTICES"},
+        {
+            "risktags": "PERFORMANCE_CONCERNS,SUSPICIOUS_SYSTEM_ACTIVITY,POOR_SECURITY_PRACTICES"
+        },
     )
     assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
     assert cmd_res.outputs_key_field == "UserID"
     assert cmd_res.outputs == {"Results": []}
     assert cmd_res.raw_response == {}
-    assert code42_high_risk_employee_mock.detectionlists.high_risk_employee.get_all.call_count == 1
+    assert (
+        code42_high_risk_employee_mock.detectionlists.high_risk_employee.get_all.call_count
+        == 1
+    )
 
 
 def test_highriskemployee_add_risk_tags_command(code42_sdk_mock):
@@ -1688,7 +1806,8 @@ def test_highriskemployee_add_risk_tags_command(code42_sdk_mock):
 def test_highriskemployee_remove_risk_tags_command(code42_sdk_mock):
     client = create_client(code42_sdk_mock)
     cmd_res = highriskemployee_remove_risk_tags_command(
-        client, {"username": _TEST_USERNAME, "risktags": "FLIGHT_RISK,CONTRACT_EMPLOYEE"}
+        client,
+        {"username": _TEST_USERNAME, "risktags": "FLIGHT_RISK,CONTRACT_EMPLOYEE"},
     )
     assert cmd_res.raw_response == _TEST_USER_ID
     assert cmd_res.outputs_prefix == "Code42.HighRiskEmployee"
@@ -1712,8 +1831,9 @@ def test_legalhold_add_user_command(code42_legal_hold_mock):
     assert cmd_res.outputs["UserID"] == _TEST_USER_ID
     assert cmd_res.outputs["MatterName"] == "Patent Lawsuit"
     assert cmd_res.outputs["MatterID"] == "645576513911664484"
-    code42_legal_hold_mock.legalhold.add_to_matter.assert_called_once_with("123412341234123412",
-                                                                           "645576513911664484")
+    code42_legal_hold_mock.legalhold.add_to_matter.assert_called_once_with(
+        "123412341234123412", "645576513911664484"
+    )
 
 
 def test_legalhold_remove_user_command(code42_legal_hold_mock):
@@ -1726,7 +1846,9 @@ def test_legalhold_remove_user_command(code42_legal_hold_mock):
     assert cmd_res.outputs["UserID"] == _TEST_USER_ID
     assert cmd_res.outputs["MatterName"] == "Patent Lawsuit"
     assert cmd_res.outputs["MatterID"] == "645576513911664484"
-    code42_legal_hold_mock.legalhold.remove_from_matter.assert_called_once_with("645579283748927372")
+    code42_legal_hold_mock.legalhold.remove_from_matter.assert_called_once_with(
+        "645579283748927372"
+    )
 
 
 def test_user_create_command(code42_users_mock):
@@ -1747,10 +1869,12 @@ def test_user_create_command(code42_users_mock):
     assert cmd_res.outputs["Email"] == "new.user@example.com"
 
 
-def test_user_create_command_when_org_not_found_raises_org_not_found(mocker, code42_users_mock):
+def test_user_create_command_when_org_not_found_raises_org_not_found(
+    mocker, code42_users_mock
+):
     response_json = """{"total": 0, "orgs": []}"""
-    code42_users_mock.orgs.get_all.return_value = create_mock_code42_sdk_response_generator(
-        mocker, [response_json]
+    code42_users_mock.orgs.get_all.return_value = (
+        create_mock_code42_sdk_response_generator(mocker, [response_json])
     )
     client = create_client(code42_users_mock)
     with pytest.raises(Code42OrgNotFoundError):
@@ -1760,7 +1884,7 @@ def test_user_create_command_when_org_not_found_raises_org_not_found(mocker, cod
                 "orgname": _TEST_ORG_NAME,
                 "username": "new.user@example.com",
                 "email": "new.user@example.com",
-            }
+            },
         )
 
 
@@ -1810,7 +1934,9 @@ def test_security_data_search_command(code42_file_events_mock):
     assert code42_res.outputs_key_field == "EventID"
     assert file_res.outputs_prefix == "File"
 
-    actual_query = code42_file_events_mock.securitydata.search_file_events.call_args[0][0]
+    actual_query = code42_file_events_mock.securitydata.search_file_events.call_args[0][
+        0
+    ]
     filter_groups = json.loads(str(actual_query))["groups"]
     expected_query_items = [
         ("md5Checksum", "d41d8cd98f00b204e9800998ecf8427e"),
@@ -1837,7 +1963,9 @@ def test_security_data_search_command(code42_file_events_mock):
         assert output_item == mapped_event
 
 
-def test_securitydata_search_command_when_not_given_any_queryable_args_raises_error(code42_file_events_mock):
+def test_securitydata_search_command_when_not_given_any_queryable_args_raises_error(
+    code42_file_events_mock,
+):
     client = create_client(code42_file_events_mock)
     with pytest.raises(Code42MissingSearchArgumentsError):
         securitydata_search_command(client, {})
@@ -1862,10 +1990,14 @@ def test_download_file_command_when_given_sha256(code42_sdk_mock, mocker):
     assert fr.call_count == 1
 
 
-def test_download_file_when_given_other_hash_raises_unsupported_hash(code42_sdk_mock, mocker):
+def test_download_file_when_given_other_hash_raises_unsupported_hash(
+    code42_sdk_mock, mocker
+):
     mocker.patch("Code42.fileResult")
-    _hash = "41966f10cc59ab466444add08974fde4cd37f88d79321d42da8e4c79b51c214941966f10cc59ab466444add08974fde4cd37" \
-            "f88d79321d42da8e4c79b51c2149"
+    _hash = (
+        "41966f10cc59ab466444add08974fde4cd37f88d79321d42da8e4c79b51c214941966f10cc59ab466444add08974fde4cd37"
+        "f88d79321d42da8e4c79b51c2149"
+    )
     client = create_client(code42_sdk_mock)
     with pytest.raises(Code42UnsupportedHashError):
         _ = download_file_command(client, {"hash": _hash})
@@ -1882,17 +2014,29 @@ def test_list_watchlists_command(code42_watchlists_mock):
     assert len(expected_response) == len(actual_response)
     for i in range(0, len(actual_response)):
         assert actual_response[i]["WatchlistID"] == expected_response[i]["watchlistId"]
-        assert actual_response[i]["IncludedUsersCount"] == expected_response[i]["stats"].get("includedUsersCount", 0)
+        assert actual_response[i]["IncludedUsersCount"] == expected_response[i][
+            "stats"
+        ].get("includedUsersCount", 0)
 
 
-def test_list_watchlists_included_users_calls_by_id_when_watchlist_type_arg_provided_looks_up_watchlist_id(code42_watchlists_included_users_mock):
+def test_list_watchlists_included_users_calls_by_id_when_watchlist_type_arg_provided_looks_up_watchlist_id(
+    code42_watchlists_included_users_mock,
+):
     watchlist_id = "b55978d5-2d50-494d-bec9-678867f3830c"
-    code42_watchlists_included_users_mock.watchlists._watchlists_service.watchlist_type_id_map.get.return_value = watchlist_id
+    code42_watchlists_included_users_mock.watchlists._watchlists_service.watchlist_type_id_map.get.return_value = (
+        watchlist_id
+    )
     client = create_client(code42_watchlists_included_users_mock)
-    cmd_res = list_watchlists_included_users(client, {"watchlist": "DEPARTING_EMPLOYEE"})
+    cmd_res = list_watchlists_included_users(
+        client, {"watchlist": "DEPARTING_EMPLOYEE"}
+    )
     actual_response = cmd_res.raw_response
-    expected_response = json.loads(MOCK_WATCHLISTS_INCLUDED_USERS_RESPONSE)["includedUsers"]
-    assert code42_watchlists_included_users_mock.watchlists.get_all_included_users.called_once_with(watchlist_id)
+    expected_response = json.loads(MOCK_WATCHLISTS_INCLUDED_USERS_RESPONSE)[
+        "includedUsers"
+    ]
+    assert code42_watchlists_included_users_mock.watchlists.get_all_included_users.called_once_with(
+        watchlist_id
+    )
     assert cmd_res.outputs_prefix == "Code42.WatchlistUsers"
     assert len(expected_response) == len(actual_response)
     for i in range(0, len(actual_response)):
@@ -1901,26 +2045,60 @@ def test_list_watchlists_included_users_calls_by_id_when_watchlist_type_arg_prov
         assert actual_response[i]["WatchlistID"] == watchlist_id
 
 
-def test_add_user_to_watchlist_command_with_UUID_calls_add_by_id_method(code42_sdk_mock, mocker):
+def test_add_user_to_watchlist_command_with_UUID_calls_add_by_id_method(
+    code42_sdk_mock, mocker
+):
     watchlist_id = "b55978d5-2d50-494d-bec9-678867f3830c"
     user_id = "1234"
-    code42_sdk_mock.users.get_by_username.return_value = create_mock_code42_sdk_response(mocker, f'{{"users": [{{"userUid": "{user_id}"}}]}}')
-    code42_sdk_mock.watchlists.add_included_users_by_watchlist_id.return_value = create_mock_code42_sdk_response(mocker, "")
+    code42_sdk_mock.users.get_by_username.return_value = (
+        create_mock_code42_sdk_response(
+            mocker, f'{{"users": [{{"userUid": "{user_id}"}}]}}'
+        )
+    )
+    code42_sdk_mock.watchlists.add_included_users_by_watchlist_id.return_value = (
+        create_mock_code42_sdk_response(mocker, "")
+    )
     client = create_client(code42_sdk_mock)
-    cmd_res = add_user_to_watchlist_command(client, {"watchlist": watchlist_id, "username": "user_a@example.com"})
-    assert code42_sdk_mock.watchlists.add_included_users_by_watchlist_id.called_once_with(user_id, watchlist_id)
-    assert cmd_res.raw_response == {'Watchlist': 'b55978d5-2d50-494d-bec9-678867f3830c', 'Username': 'user_a@example.com', 'Success': True}
+    cmd_res = add_user_to_watchlist_command(
+        client, {"watchlist": watchlist_id, "username": "user_a@example.com"}
+    )
+    assert (
+        code42_sdk_mock.watchlists.add_included_users_by_watchlist_id.called_once_with(
+            user_id, watchlist_id
+        )
+    )
+    assert cmd_res.raw_response == {
+        "Watchlist": "b55978d5-2d50-494d-bec9-678867f3830c",
+        "Username": "user_a@example.com",
+        "Success": True,
+    }
 
 
-def test_add_user_to_watchlist_command_with_watchlist_type_calls_add_by_type_method(code42_sdk_mock, mocker):
+def test_add_user_to_watchlist_command_with_watchlist_type_calls_add_by_type_method(
+    code42_sdk_mock, mocker
+):
     watchlist_type = "DEPARTING_EMPLOYEE"
     user_id = "1234"
-    code42_sdk_mock.users.get_by_username.return_value = create_mock_code42_sdk_response(mocker, f'{{"users": [{{"userUid": "{user_id}"}}]}}')
-    code42_sdk_mock.watchlists.add_included_users_by_watchlist_type.return_value = create_mock_code42_sdk_response(mocker, "")
+    code42_sdk_mock.users.get_by_username.return_value = (
+        create_mock_code42_sdk_response(
+            mocker, f'{{"users": [{{"userUid": "{user_id}"}}]}}'
+        )
+    )
+    code42_sdk_mock.watchlists.add_included_users_by_watchlist_type.return_value = (
+        create_mock_code42_sdk_response(mocker, "")
+    )
     client = create_client(code42_sdk_mock)
-    cmd_res = add_user_to_watchlist_command(client, {"watchlist": watchlist_type, "username": "user_a@example.com"})
-    assert code42_sdk_mock.watchlists.add_included_users_by_watchlist_type.called_once_with(user_id, watchlist_type)
-    assert cmd_res.raw_response == {'Watchlist': 'DEPARTING_EMPLOYEE', 'Username': 'user_a@example.com', 'Success': True}
+    cmd_res = add_user_to_watchlist_command(
+        client, {"watchlist": watchlist_type, "username": "user_a@example.com"}
+    )
+    assert code42_sdk_mock.watchlists.add_included_users_by_watchlist_type.called_once_with(
+        user_id, watchlist_type
+    )
+    assert cmd_res.raw_response == {
+        "Watchlist": "DEPARTING_EMPLOYEE",
+        "Username": "user_a@example.com",
+        "Success": True,
+    }
 
 
 def test_fetch_incidents_handles_single_severity(code42_fetch_incidents_mock):
@@ -2002,7 +2180,9 @@ def test_fetch_incidents_first_run(code42_fetch_incidents_mock):
 
 def test_fetch_incidents_next_run(code42_fetch_incidents_mock):
     mock_date = "2020-01-01T00:00:00.000Z"
-    mock_timestamp = int(time.mktime(time.strptime(mock_date, "%Y-%m-%dT%H:%M:%S.000Z")))
+    mock_timestamp = int(
+        time.mktime(time.strptime(mock_date, "%Y-%m-%dT%H:%M:%S.000Z"))
+    )
     client = create_client(code42_fetch_incidents_mock)
     next_run, incidents, remaining_incidents = fetch_incidents(
         client=client,
@@ -2019,7 +2199,9 @@ def test_fetch_incidents_next_run(code42_fetch_incidents_mock):
 
 def test_fetch_incidents_fetch_limit(code42_fetch_incidents_mock):
     mock_date = "2020-01-01T00:00:00.000Z"
-    mock_timestamp = int(time.mktime(time.strptime(mock_date, "%Y-%m-%dT%H:%M:%S.000Z")))
+    mock_timestamp = int(
+        time.mktime(time.strptime(mock_date, "%Y-%m-%dT%H:%M:%S.000Z"))
+    )
     client = create_client(code42_fetch_incidents_mock)
     next_run, incidents, remaining_incidents = fetch_incidents(
         client=client,
@@ -2050,12 +2232,13 @@ def test_fetch_incidents_fetch_limit(code42_fetch_incidents_mock):
 
 @pytest.mark.parametrize(
     "query",
-    [MOCK_SECURITY_DATA_SEARCH_QUERY_EXPOSURE_TYPE_ALL,
-     MOCK_SECURITY_DATA_SEARCH_QUERY_EXPOSURE_TYPE_ALL_WITH_OTHERS
-     ]
+    [
+        MOCK_SECURITY_DATA_SEARCH_QUERY_EXPOSURE_TYPE_ALL,
+        MOCK_SECURITY_DATA_SEARCH_QUERY_EXPOSURE_TYPE_ALL_WITH_OTHERS,
+    ],
 )
 def test_security_data_search_command_searches_exposure_exists_when_all_is_specified(
-        code42_file_events_mock, query
+    code42_file_events_mock, query
 ):
     client = create_client(code42_file_events_mock)
     cmd_res = securitydata_search_command(client, query)
@@ -2066,7 +2249,9 @@ def test_security_data_search_command_searches_exposure_exists_when_all_is_speci
     assert code42_res.outputs_key_field == "EventID"
     assert file_res.outputs_prefix == "File"
 
-    actual_query = code42_file_events_mock.securitydata.search_file_events.call_args[0][0]
+    actual_query = code42_file_events_mock.securitydata.search_file_events.call_args[0][
+        0
+    ]
 
     # Assert that the  correct query gets made
     filter_groups = json.loads(str(actual_query))["groups"]
@@ -2088,10 +2273,12 @@ def test_security_data_search_command_searches_exposure_exists_when_all_is_speci
 
 
 def test_security_data_search_command_searches_exposure_exists_when_no_exposure_type_is_specified(
-        code42_file_events_mock,
+    code42_file_events_mock,
 ):
     client = create_client(code42_file_events_mock)
-    cmd_res = securitydata_search_command(client, MOCK_SECURITY_DATA_SEARCH_QUERY_WITHOUT_EXPOSURE_TYPE)
+    cmd_res = securitydata_search_command(
+        client, MOCK_SECURITY_DATA_SEARCH_QUERY_WITHOUT_EXPOSURE_TYPE
+    )
     code42_res = cmd_res[0]
     file_res = cmd_res[1]
 
@@ -2099,7 +2286,9 @@ def test_security_data_search_command_searches_exposure_exists_when_no_exposure_
     assert code42_res.outputs_key_field == "EventID"
     assert file_res.outputs_prefix == "File"
 
-    actual_query = code42_file_events_mock.securitydata.search_file_events.call_args[0][0]
+    actual_query = code42_file_events_mock.securitydata.search_file_events.call_args[0][
+        0
+    ]
 
     # Assert that the  correct query gets made
     filter_groups = json.loads(str(actual_query))["groups"]
