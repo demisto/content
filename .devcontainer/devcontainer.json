@@ -31,7 +31,7 @@
 		"python.testing.pytestEnabled": true,
 		"python.testing.pytestArgs": ["."],
 		"python.testing.cwd": "${localWorkspaceFolder}/Packs/HelloWorld/Integrations/HelloWorld",
-		"files.autoSave": "afterDelay"
+		"files.autoSave": "onFocusChange"
 	},
 	"extensions": [
 		"cortexxsoarext.xsoar",
