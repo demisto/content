@@ -106,7 +106,7 @@ configuration:
   type: 4
   hidden: true
 - display: Fetch the entire email body
-  additionalinfo: Whether to fetch incidents with the entire email body, or just an email body preview, mark if the full email body request is required.
+  additionalinfo: Whether to fetch incidents with the entire email body, or just an email body preview, mark if the full email body is required.
   name: use_full_email_body
   type: 8
   defaultvalue: 'false'

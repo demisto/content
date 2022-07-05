@@ -845,7 +845,7 @@ class MsGraphClient:
         body = email.get('bodyPreview', '')
         if not body or self.use_full_email_body:
             # parse HTML into plain-text
-            body = BeautifulSoup(parsed_email.get('Body') or '').get_text(strip=True)
+            body = get_text_from_html(parsed_email.get('Body') or '')
 
         incident = {
             'name': parsed_email['Subject'],
@@ -1126,6 +1126,23 @@ def parse_folders_list(folders_list):
         folders_list = [folders_list]
 
     return [{FOLDER_MAPPING[k]: v for (k, v) in f.items() if k in FOLDER_MAPPING} for f in folders_list]
+
+
+def get_text_from_html(html):
+    # parse HTML into plain-text
+    # kill all script and style elements
+    soup = BeautifulSoup(html, features="html.parser")
+
+    for script in soup(["script", "style"]):
+        script.extract()  # rip it out
+    # get text
+    text = soup.get_text()
+    # break into lines and remove leading and trailing space on each line
+    lines = (line.strip() for line in text.splitlines())
+    # break multi-headlines into a line each
+    chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
+    # drop blank lines
+    return '\n'.join(chunk for chunk in chunks if chunk)
 
 
 ''' COMMANDS '''
