@@ -1,10 +1,12 @@
+
+### Additional information
 Skyhigh CASB is a cloud-based, multi-tenant service that enables Cloud Discovery and Risk Monitoring, Cloud Usage Analytics, Cloud Access and Control.
-This integration was integrated and tested with version 1 of McAfee MVision CASB
+This integration was integrated and tested with version 1 of McAfee MVision CASB.
 
 ### API limitations
 
-Do to [API](https://success.myshn.net/Skyhigh_CASB/Skyhigh_CASB_APIs/Incidents_API/02_Incidents_API_Paths#_responses_3) limitations keep in mind that over time the integration can start to work more slowly.
-The solution is to restart the last-run
+Do to [API](https://success.myshn.net/Skyhigh_CASB/Skyhigh_CASB_APIs/Incidents_API/02_Incidents_API_Paths#_responses_3) limitations, keep in mind that over time the integration can start to work more slowly.
+The solution is to restart the last-run.
 
 ## Configure McAfee MVision CASB on Cortex XSOAR
 
@@ -12,14 +14,14 @@ The solution is to restart the last-run
 2. Search for McAfee MVision CASB.
 3. Click **Add instance** to create and configure a new integration instance.
 
-   | **Parameter**                                                                                                  | **Description**                                 | **Required** |
-   | -------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- | ------------ |
-   | Base URL (e.g., https://www.myshn.net)                                                                         |                                                 | True         |
-   | Password                                                                                                       | The UserName and Password to use for connection | True         |
-   | Maximum number of incidents to fetch every time. Default is 50. maximum is 500.                                |                                                 | False        |
-   | First fetch in timestamp format (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). Default is 3 days. |                                                 | False        |
-   | Trust any certificate (not secure)                                                                             |                                                 | False        |
-   | Use system proxy settings                                                                                      |                                                 | False        |
+   | **Parameter**  | **Description** | **Required** |
+   | ---- | -------- | ------------ |
+   | Base URL (e.g., https://www.myshn.net)|    | True   |
+   | Password | The username and password to use for the connection | True |
+   | Maximum number of incidents to fetch every time. Default is 50. Maximum is 500. | False  |
+   | First fetch in timestamp format (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). Default is 3 days. |   | False   |
+   | Trust any certificate (not secure) |  | False  |
+   | Use system proxy settings |  | False   |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -41,22 +43,22 @@ Retrieves a list of incidents in ascending time modified order.
 #### Input
 
 | **Argument Name** | **Description**                                                                                                                                                                                                                                             | **Required** |
-| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
-| limit             | Maximum number of items that will be returned within a single response. Default is 50 maximum is 500. If value exceeds maximum 500 it will not be flagged as an error but will also not increase results. Default is 50.                                    | Optional     |
-| page              | Pagination support for use with a big “limit” value.                                                                                                                                                                                                        | Optional     |
-| page_size         | Pagination support for use with a big “limit” value. The maximum is 500.                                                                                                                                                                                    | Optional     |
-| start_time        | For time arguments use the ISO-8601 standard - '%Y-%m-%dT%H:%M:%SZ' or relative time (last X days). Default is 3 days.                                                                                                                                      | Optional     |
-| end_time          | For time arguments use the ISO-8601 standard - '%Y-%m-%dT%H:%M:%SZ' or relative time (last X days).                                                                                                                                                         | Optional     |
-| actor_ids         | The actor ids of the incidents to retrieve.                                                                                                                                                                                                                 | Optional     |
-| service_names     | The service names of the incidents to retrieve.                                                                                                                                                                                                             | Optional     |
-| incident_types    | The type of the incidents to retrieve. Possible values are: Alert, Threat.                                                                                                                                                                                  | Optional     |
-| categories        | The categories of the incidents to retrieve. When defining the categories argument the incident_types argument does not affect. Possible values are: Access, Admin, Audit, CompromisedAccount, Data, InsiderThreat, Policy, PrivilegeAccess, Vulnerability. | Optional     |
+| ------- | ---------- | ------------ |
+| limit   | Maximum number of items that will be returned within a single response. Maximum is 500. If the limit value exceeds the 500 maximum, it will not be flagged as an error but will also not increase results. Default is 50. | Optional |
+| page   | Pagination support for use with a large “limit” value. | Optional |
+| page_size | Pagination support for use with a large “limit” value. The maximum is 500. | Optional |
+| start_time  | For time arguments use the ISO-8601 standard - '%Y-%m-%dT%H:%M:%SZ' or relative time (last X days). Default is 3 days. | Optional  |
+| end_time  | For time arguments use the ISO-8601 standard - '%Y-%m-%dT%H:%M:%SZ' or relative time (last X days).  | Optional |
+| actor_ids   | The actor IDs of the incidents to retrieve.  | Optional  |
+| service_names  | The service names of the incidents to retrieve. | Optional     |
+| incident_types  | The type of the incidents to retrieve. Possible values are: Alert, Threat. | Optional  |
+| categories | The categories of the incidents to retrieve. When defining the categories argument the incident_types argument is ignored. Possible values are: Access, Admin, Audit, CompromisedAccount, Data, InsiderThreat, Policy, PrivilegeAccess, Vulnerability. | Optional     |
 
 #### Context Output
 
 | **Path**             | **Type** | **Description**          |
-| -------------------- | -------- | ------------------------ |
-| MVisionCASB.Incident | Unknown  | The Incident's metadata. |
+| ------ | ----- | ------ |
+| MVisionCASB.Incident | Unknown  | The incident's metadata. |
 
 #### Command example
 
@@ -203,20 +205,21 @@ Retrieves a list of incidents in ascending time modified order.
 
 > ### MVISION CASB Incidents
 >
-> | Alert Severity | Incident ID | Service Name                      | Status | Time (UTC)               | User Name     |
-> | -------------- | ----------- | --------------------------------- | ------ | ------------------------ | ------------- |
-> | high           | CAP-111111  | Microsoft Office 365 and OneDrive | new    | 2022-07-01T19:13:53.075Z | NOT AVAILABLE |
-> | low            | CAP-555555  | SAP - SuccessFactors HXM Suite    | new    | 2022-07-02T02:38:16.706Z | NOT AVAILABLE |
-> | low            | CAP-999999  | SAP - SuccessFactors HXM Suite    | new    | 2022-07-02T02:38:16.888Z | NOT AVAILABLE |
+> | Alert Severity | Incident ID | Service Name   | Status | Time (UTC)  | User Name  |
+> | ---- | ---- | ----- | ------ | ------ | ---- |
+> | high   | CAP-111111  | Microsoft Office 365 and OneDrive | new  | 2022-07-01T19:13:53.075Z | NOT AVAILABLE |
+> | low   | CAP-555555  | SAP - SuccessFactors HXM Suite  | new  | 2022-07-02T02:38:16.706Z | NOT AVAILABLE |
+> | low   | CAP-999999  | SAP - SuccessFactors HXM Suite  | new  | 2022-07-02T02:38:16.888Z | NOT AVAILABLE |
 
 ### mvision-casb-incident-status-update
 
 ---
 
 Update status of single/multiple incidents.
+
 Note!
-For multiple Ids - single status will be changed for all IDs
-e.g. 123, 456, 789 >> change status to >> closed.
+For multiple IDs, a single status will be applied for all IDs
+e.g., 123, 456, 789 >> change status to >> closed.
 
 #### Base Command
 
@@ -224,10 +227,10 @@ e.g. 123, 456, 789 >> change status to >> closed.
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                                    | **Required** |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------ | ------------ |
-| incident_ids      | The incidents ids that should be updated.                                                                          | Required     |
-| status            | The new status of the incidents. Possible values are: new, opened, false positive, resolved, suppressed, archived. | Required     |
+| **Argument Name** | **Description** | **Required** |
+| ------ | ----- | ---- |
+| incident_ids | The incidents IDs that should be updated. | Required  |
+| status  | The new status of the incidents. Possible values are: new, opened, false positive, resolved, suppressed, archived. | Required  |
 
 #### Context Output
 
@@ -245,7 +248,7 @@ There is no context output for this command.
 
 ---
 
-Fetches activities for a given anomaly Id.
+Fetches activities for a given anomaly ID.
 
 #### Base Command
 
@@ -253,59 +256,59 @@ Fetches activities for a given anomaly Id.
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                | **Required** |
-| ----------------- | ---------------------------------------------------------------------------------------------- | ------------ |
-| anomaly_id        | The anomaly id from where to retrieve the activities. Only incident of type anomaly (ANO-123). | Required     |
+| **Argument Name** | **Description**  | **Required** |
+| ----- | ---- | --- |
+| anomaly_id  | The anomaly ID from where to retrieve the activities. Only for incidents of type anomaly (ANO-123). | Required  |
 
 #### Context Output
 
-| **Path**                                       | **Type** | **Description**                                               |
-| ---------------------------------------------- | -------- | ------------------------------------------------------------- |
-| MVisionCASB.AnomalyActivity.timeStamp          | String   | The timestamp of the anomaly activity.                        |
-| MVisionCASB.AnomalyActivity.actionName         | String   | The action name.                                              |
-| MVisionCASB.AnomalyActivity.asnName            | String   | The ASN name of an Activity.                                  |
-| MVisionCASB.AnomalyActivity.city               | String   | The city where the anomaly activity occurred.                 |
-| MVisionCASB.AnomalyActivity.collabGroup        | String   | The collaboration group for the anomaly activity.             |
-| MVisionCASB.AnomalyActivity.count              | Number   | The number of anomalies detected.                             |
-| MVisionCASB.AnomalyActivity.country            | String   | The country of the anomaly activity.                          |
-| MVisionCASB.AnomalyActivity.deviceManaged      | Boolean  | Whether the anomaly activity is managed by the device or not. |
-| MVisionCASB.AnomalyActivity.directory          | String   | The directory of the anomaly activity.                        |
-| MVisionCASB.AnomalyActivity.downloadBytes      | Number   | The number of bytes downloaded by the anomaly activity.       |
-| MVisionCASB.AnomalyActivity.eventCount         | Number   | The number of anomalies detected.                             |
-| MVisionCASB.AnomalyActivity.fileFolderPath     | String   | The file folder path for the anomaly activity.                |
+| **Path** | **Type** | **Description**                                               |
+| --- | ----- | --- |
+| MVisionCASB.AnomalyActivity.timeStamp          | String   | The timestamp of the anomaly activity.   |                     |
+| MVisionCASB.AnomalyActivity.actionName         | String  | The action name.  |
+| MVisionCASB.AnomalyActivity.asnName            | String  | The ASN name of an activity.  |                                |
+| MVisionCASB.AnomalyActivity.city               | String  | The city where the anomaly activity occurred.    |
+| MVisionCASB.AnomalyActivity.collabGroup        | String  | The collaboration group for the anomaly activity.  |
+| MVisionCASB.AnomalyActivity.count              | Number  | The number of anomalies detected.      |
+| MVisionCASB.AnomalyActivity.country            | String   | The country of the anomaly activity.   |
+| MVisionCASB.AnomalyActivity.deviceManaged      | Boolean   | Whether the anomaly activity is managed by the device or not. |
+| MVisionCASB.AnomalyActivity.directory          | String   | The directory of the anomaly activity.    |
+| MVisionCASB.AnomalyActivity.downloadBytes      | Number   | The number of bytes downloaded by the anomaly activity.   |
+| MVisionCASB.AnomalyActivity.eventCount         | Number   | The number of anomalies detected.     |
+| MVisionCASB.AnomalyActivity.fileFolderPath     | String   | The file folder path for the anomaly activity.    |
 | MVisionCASB.AnomalyActivity.fileName           | String   | The file name of the anomaly activity.                        |
-| MVisionCASB.AnomalyActivity.fileSharingEnabled | Boolean  | Whether the CASB filesharing is enabled or not                |
-| MVisionCASB.AnomalyActivity.fileSize           | Number   | The file size of the anomaly activity.                        |
-| MVisionCASB.AnomalyActivity.fileType           | String   | The file type of the anomaly activity.                        |
-| MVisionCASB.AnomalyActivity.geoOrgNameV1       | String   | The geo organization name.                                    |
-| MVisionCASB.AnomalyActivity.httpMethod         | String   | The HTTP method used by the anomaly activity.                 |
-| MVisionCASB.AnomalyActivity.instanceId         | String   | The instance ID for the anomaly activity.                     |
-| MVisionCASB.AnomalyActivity.isSourceTrusted    | Boolean  | Whether the anomaly activity source is trusted or not         |
-| MVisionCASB.AnomalyActivity.networkType        | String   | The Network Type for the anomaly.                             |
-| MVisionCASB.AnomalyActivity.objectType         | String   | The object type for the anomaly activity.                     |
-| MVisionCASB.AnomalyActivity.operation          | String   | The operation type.                                           |
-| MVisionCASB.AnomalyActivity.proxyDescription   | String   | The proxy description for the anomaly activity.               |
-| MVisionCASB.AnomalyActivity.proxyType          | String   | The proxy type for the anomaly activity.                      |
-| MVisionCASB.AnomalyActivity.region             | String   | The Region where the anomaly activity occurred.               |
-| MVisionCASB.AnomalyActivity.serviceName        | String   | The name of the service.                                      |
-| MVisionCASB.AnomalyActivity.siteUrl            | String   | The URL of the CASB's site                                    |
-| MVisionCASB.AnomalyActivity.sourceIP           | IP       | The IP address of the source IP.                              |
-| MVisionCASB.AnomalyActivity.sourceIdentifier   | String   | The SourceIdentifier for the anomaly activity.                |
+| MVisionCASB.AnomalyActivity.fileSharingEnabled | Boolean  | Whether the CASB file sharing is enabled or not.   |             |
+| MVisionCASB.AnomalyActivity.fileSize           | Number   | The file size of the anomaly activity.  |
+| MVisionCASB.AnomalyActivity.fileType           | String   | The file type of the anomaly activity.   |
+| MVisionCASB.AnomalyActivity.geoOrgNameV1       | String   | The geo organization name.     |
+| MVisionCASB.AnomalyActivity.httpMethod         | String   | The HTTP method used by the anomaly activity.     |
+| MVisionCASB.AnomalyActivity.instanceId         | String   | The instance ID for the anomaly activity.   |
+| MVisionCASB.AnomalyActivity.isSourceTrusted    | Boolean  | Whether the anomaly activity source is trusted or not.       |
+| MVisionCASB.AnomalyActivity.networkType        | String   | The network type for the anomaly.    |
+| MVisionCASB.AnomalyActivity.objectType         | String   | The object type for the anomaly activity.   |
+| MVisionCASB.AnomalyActivity.operation          | String   | The operation type.    |
+| MVisionCASB.AnomalyActivity.proxyDescription   | String   | The proxy description for the anomaly activity.   |
+| MVisionCASB.AnomalyActivity.proxyType          | String   | The proxy type for the anomaly activity.   |
+| MVisionCASB.AnomalyActivity.region             | String   | The region where the anomaly activity occurred.  |
+| MVisionCASB.AnomalyActivity.serviceName        | String   | The name of the service.    |
+| MVisionCASB.AnomalyActivity.siteUrl            | String   | The URL of the CASB's site.       |
+| MVisionCASB.AnomalyActivity.sourceIP           | IP     | The IP address of the source IP.   |
+| MVisionCASB.AnomalyActivity.sourceIdentifier   | String   | The source identifier for the anomaly activity.   |
 | MVisionCASB.AnomalyActivity.targetId           | String   | The target ID for the anomaly activity.                       |
-| MVisionCASB.AnomalyActivity.targetType         | String   | The anomaly activity type.                                    |
-| MVisionCASB.AnomalyActivity.tenantId           | Number   | The tenant ID for the anomaly activity.                       |
-| MVisionCASB.AnomalyActivity.threatCategory     | String   | The threat category for the anomaly activity.                 |
-| MVisionCASB.AnomalyActivity.trustEntity        | String   | The trust entity for the anomaly activity.                    |
-| MVisionCASB.AnomalyActivity.trustReason        | String   | The trust reason of the anomaly activity.                     |
-| MVisionCASB.AnomalyActivity.uploadBytes        | Number   | The number of bytes uploaded.                                 |
-| MVisionCASB.AnomalyActivity.url                | String   | The URL of the anomaly activity.                              |
-| MVisionCASB.AnomalyActivity.user               | String   | The User who triggered the anomaly.                           |
+| MVisionCASB.AnomalyActivity.targetType         | String   | The anomaly activity type.   |
+| MVisionCASB.AnomalyActivity.tenantId           | Number   | The tenant ID for the anomaly activity.     |
+| MVisionCASB.AnomalyActivity.threatCategory     | String   | The threat category for the anomaly activity.    |
+| MVisionCASB.AnomalyActivity.trustEntity        | String   | The trust entity for the anomaly activity.      |
+| MVisionCASB.AnomalyActivity.trustReason        | String   | The trust reason of the anomaly activity.    |
+| MVisionCASB.AnomalyActivity.uploadBytes        | Number   | The number of bytes uploaded.       |
+| MVisionCASB.AnomalyActivity.url                | String   | The URL of the anomaly activity.     |
+| MVisionCASB.AnomalyActivity.user               | String   | The user who triggered the anomaly.     |
 
 ### mvision-casb-policy-dictionary-list
 
 ---
 
-List existing Policy Dictionaries.
+List existing policy dictionaries.
 
 #### Base Command
 
@@ -314,19 +317,19 @@ List existing Policy Dictionaries.
 #### Input
 
 | **Argument Name** | **Description**                                                                           | **Required** |
-| ----------------- | ----------------------------------------------------------------------------------------- | ------------ |
-| limit             | Maximum number of policies that will be returned within a single response. Default is 50. | Optional     |
-| page              | Pagination support for use with a big “limit” value.                                      | Optional     |
-| page_size         | Pagination support for use with a big “limit” value.                                      | Optional     |
-| name              | The name of the policies to retrieve.                                                     | Optional     |
+| ------ | ----- | ------- |
+| limit     | Maximum number of policies that will be returned within a single response. Default is 50. | Optional     |
+| page   | Pagination support for use with a large “limit” value.    | Optional     |
+| page_size     | Pagination support for use with a large “limit” value.   | Optional     |
+| name     | The name of the policies to retrieve.    | Optional     |
 
 #### Context Output
 
-| **Path**                              | **Type** | **Description**                            |
-| ------------------------------------- | -------- | ------------------------------------------ |
-| MVisionCASB.dictionaries.ID           | Number   | The ID for the dictionary.                 |
+| **Path**   | **Type** | **Description**    |
+| ------- | -------- | ----------- |
+| MVisionCASB.dictionaries.ID           | Number   | The ID for the dictionary.   |
 | MVisionCASB.dictionaries.LastModified | String   | The date the dictionary was last modified. |
-| MVisionCASB.dictionaries.Name         | String   | The name of the dictionary.                |
+| MVisionCASB.dictionaries.Name    | String   | The name of the dictionary.     |
 
 #### Command example
 
@@ -362,17 +365,17 @@ List existing Policy Dictionaries.
 
 > ### List of MVISION CASB Policies
 >
-> | ID     | Last Modified                | Name                       |
-> | ------ | ---------------------------- | -------------------------- |
+> | ID    | Last Modified   | Name   |
+> | ------ | ----- | ------- |
 > | 121212 | 2022-07-04T14:02:03.000+0000 | (Default) Internal Domains |
 > | 131313 | 2020-04-15T13:08:09.000+0000 | Access Whitelist Users     |
-> | 141414 | 2021-07-14T12:22:37.000+0000 | Allowed Geo                |
+> | 141414 | 2021-07-14T12:22:37.000+0000 | Allowed Geo    |
 
 ### mvision-casb-policy-dictionary-update
 
 ---
 
-Adds new content to an existing Policy Dictionaries.
+Adds new content to an existing policy dictionary.
 
 #### Base Command
 
@@ -380,11 +383,11 @@ Adds new content to an existing Policy Dictionaries.
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                           | **Required** |
-| ----------------- | --------------------------------------------------------------------------------------------------------- | ------------ |
-| dictionary_id     | The dictionary where to set the policy.                                                                   | Required     |
-| name              | A name for the new key-value which will be added in the dictionary.                                       | Required     |
-| content           | The value to be set in the dictionary for the given key-name. Multiple values can be separated by commas. | Required     |
+| **Argument Name** | **Description**   | **Required** |
+| ---- | --- | --- |
+| dictionary_id     | The dictionary where to set the policy.   | Required     |
+| name    | A name for the new key-value which will be added in the dictionary.  | Required   |
+| content    | The value to be set in the dictionary for the given key-name. Multiple values can be separated by commas. | Required     |
 
 #### Context Output
 
