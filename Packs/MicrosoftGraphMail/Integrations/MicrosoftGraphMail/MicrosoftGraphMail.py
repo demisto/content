@@ -1130,9 +1130,9 @@ def parse_folders_list(folders_list):
 
 def get_text_from_html(html):
     # parse HTML into plain-text
-    # kill all script and style elements
     soup = BeautifulSoup(html, features="html.parser")
 
+    # kill all script and style elements
     for script in soup(["script", "style"]):
         script.extract()  # rip it out
     # get text
