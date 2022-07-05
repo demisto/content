@@ -1,0 +1,874 @@
+[
+  {
+    "fields": {
+      "creationdate": null,
+      "domainname": null,
+      "feedcycognitoaliveendpoint": true,
+      "feedcycognitoassetid": "ip/127.0.0.1",
+      "feedcycognitoassettype": "ip",
+      "feedcycognitobusinessunits": null,
+      "feedcycognitocertificatesignature": null,
+      "feedcycognitoclosedports": [],
+      "feedcycognitocomment": null,
+      "feedcycognitodomainnames": [
+        "mobile.acme.in"
+      ],
+      "feedcycognitodomains": null,
+      "feedcycognitoexpirationtime": null,
+      "feedcycognitohostingtypes": "cloud",
+      "feedcycognitoinvestigationstatus": "uninvestigated",
+      "feedcycognitoipnames": null,
+      "feedcycognitoissueralternativenames": null,
+      "feedcycognitoissuercommonname": null,
+      "feedcycognitoissuercountry": null,
+      "feedcycognitoissuerlocality": null,
+      "feedcycognitoissuerorganization": null,
+      "feedcycognitoissuerorganizationunit": null,
+      "feedcycognitoissuerstate": null,
+      "feedcycognitoissuescount": 2,
+      "feedcycognitolocations": [
+        "United Kingdom"
+      ],
+      "feedcycognitoopenportprotocols": [
+        "tcp"
+      ],
+      "feedcycognitoopenports": [
+        {
+          "port": 80,
+          "protocol": "tcp",
+          "status": "open"
+        }
+      ],
+      "feedcycognitoorganizations": [
+        "ACME Cleantech Solutions",
+        "Acme Corporation"
+      ],
+      "feedcycognitosecurityrating": "B",
+      "feedcycognitosevereissuescount": 0,
+      "feedcycognitosignaturealgorithm": null,
+      "feedcycognitostatus": "new",
+      "feedcycognitosubdomains": null,
+      "feedcycognitosubjectalternativenames": null,
+      "feedcycognitosubjectcommonname": null,
+      "feedcycognitosubjectcountry": null,
+      "feedcycognitosubjectlocality": null,
+      "feedcycognitosubjectorganization": null,
+      "feedcycognitosubjectorganizationunit": null,
+      "feedcycognitosubjectstate": null,
+      "feedcycognitotags": [],
+      "firstseenbysource": "2020-03-24T04:26:03.296Z",
+      "ipaddress": "127.0.0.1",
+      "lastseenbysource": "2022-03-21T07:06:41.000Z",
+      "tags": []
+    },
+    "rawJSON": {
+      "alive": true,
+      "closed_ports": [],
+      "comment": null,
+      "domain_names": [
+        "mobile.acme.in"
+      ],
+      "first_seen": "2020-03-24T04:26:03.296Z",
+      "from_rotating": "yes",
+      "hosting_type": "cloud",
+      "id": "ip/127.0.0.1",
+      "investigation_status": "uninvestigated",
+      "ip": "127.0.0.1",
+      "issues_count": 2,
+      "last_seen": "2022-03-21T07:06:41.000Z",
+      "locations": [
+        "GBR"
+      ],
+      "open_ports": [
+        {
+          "port": 80,
+          "protocol": "tcp",
+          "status": "open"
+        }
+      ],
+      "organizations": [
+        "ACME Cleantech Solutions",
+        "Acme Corporation"
+      ],
+      "security_rating": "B",
+      "severe_issues_count": 0,
+      "status": "new",
+      "tags": [],
+      "type": "ip"
+    },
+    "type": "IP",
+    "value": "127.0.0.1"
+  },
+  {
+    "fields": {
+      "creationdate": null,
+      "domainname": null,
+      "feedcycognitoaliveendpoint": true,
+      "feedcycognitoassetid": "127.0.0.2",
+      "feedcycognitoassettype": "ip",
+      "feedcycognitobusinessunits": null,
+      "feedcycognitocertificatesignature": null,
+      "feedcycognitoclosedports": [],
+      "feedcycognitocomment": null,
+      "feedcycognitodomainnames": [
+        "mail.acme.in"
+      ],
+      "feedcycognitodomains": null,
+      "feedcycognitoexpirationtime": null,
+      "feedcycognitohostingtypes": "cloud",
+      "feedcycognitoinvestigationstatus": "uninvestigated",
+      "feedcycognitoipnames": null,
+      "feedcycognitoissueralternativenames": null,
+      "feedcycognitoissuercommonname": null,
+      "feedcycognitoissuercountry": null,
+      "feedcycognitoissuerlocality": null,
+      "feedcycognitoissuerorganization": null,
+      "feedcycognitoissuerorganizationunit": null,
+      "feedcycognitoissuerstate": null,
+      "feedcycognitoissuescount": 2,
+      "feedcycognitolocations": [
+        "Netherlands"
+      ],
+      "feedcycognitoopenportprotocols": [
+        "tcp"
+      ],
+      "feedcycognitoopenports": [
+        {
+          "port": 80,
+          "protocol": "tcp",
+          "status": "open"
+        }
+      ],
+      "feedcycognitoorganizations": [
+        "ACME Cleantech Solutions",
+        "Acme Corporation"
+      ],
+      "feedcycognitosecurityrating": "B",
+      "feedcycognitosevereissuescount": 0,
+      "feedcycognitosignaturealgorithm": null,
+      "feedcycognitostatus": "new",
+      "feedcycognitosubdomains": null,
+      "feedcycognitosubjectalternativenames": null,
+      "feedcycognitosubjectcommonname": null,
+      "feedcycognitosubjectcountry": null,
+      "feedcycognitosubjectlocality": null,
+      "feedcycognitosubjectorganization": null,
+      "feedcycognitosubjectorganizationunit": null,
+      "feedcycognitosubjectstate": null,
+      "feedcycognitotags": [],
+      "firstseenbysource": "2020-03-24T16:26:03.296Z",
+      "ipaddress": "127.0.0.2",
+      "lastseenbysource": "2022-03-24T04:26:03.296Z",
+      "tags": []
+    },
+    "rawJSON": {
+      "alive": true,
+      "closed_ports": [],
+      "comment": null,
+      "domain_names": [
+        "mail.acme.in"
+      ],
+      "first_seen": "2020-03-24T16:26:03.296Z",
+      "from_rotating": "no",
+      "hosting_type": "cloud",
+      "id": "127.0.0.2",
+      "investigation_status": "uninvestigated",
+      "ip": "127.0.0.2",
+      "issues_count": 2,
+      "last_seen": "2022-03-24T04:26:03.296Z",
+      "locations": [
+        "NLD"
+      ],
+      "open_ports": [
+        {
+          "port": 80,
+          "protocol": "tcp",
+          "status": "open"
+        }
+      ],
+      "organizations": [
+        "ACME Cleantech Solutions",
+        "Acme Corporation"
+      ],
+      "security_rating": "B",
+      "severe_issues_count": 0,
+      "status": "new",
+      "tags": [],
+      "type": "ip"
+    },
+    "type": "IP",
+    "value": "127.0.0.2"
+  },
+  {
+    "fields": {
+      "creationdate": null,
+      "domainname": null,
+      "feedcycognitoaliveendpoint": true,
+      "feedcycognitoassetid": "ip/127.0.0.3",
+      "feedcycognitoassettype": "ip",
+      "feedcycognitobusinessunits": null,
+      "feedcycognitocertificatesignature": null,
+      "feedcycognitoclosedports": [],
+      "feedcycognitocomment": null,
+      "feedcycognitodomainnames": [
+        "mail.acme.in"
+      ],
+      "feedcycognitodomains": null,
+      "feedcycognitoexpirationtime": null,
+      "feedcycognitohostingtypes": "cloud",
+      "feedcycognitoinvestigationstatus": "uninvestigated",
+      "feedcycognitoipnames": null,
+      "feedcycognitoissueralternativenames": null,
+      "feedcycognitoissuercommonname": null,
+      "feedcycognitoissuercountry": null,
+      "feedcycognitoissuerlocality": null,
+      "feedcycognitoissuerorganization": null,
+      "feedcycognitoissuerorganizationunit": null,
+      "feedcycognitoissuerstate": null,
+      "feedcycognitoissuescount": 1,
+      "feedcycognitolocations": [
+        "France"
+      ],
+      "feedcycognitoopenportprotocols": [
+        "tcp"
+      ],
+      "feedcycognitoopenports": [
+        {
+          "port": 80,
+          "protocol": "tcp",
+          "status": "open"
+        }
+      ],
+      "feedcycognitoorganizations": [
+        "ACME Cleantech Solutions",
+        "Acme Corporation"
+      ],
+      "feedcycognitosecurityrating": "B",
+      "feedcycognitosevereissuescount": 0,
+      "feedcycognitosignaturealgorithm": null,
+      "feedcycognitostatus": "new",
+      "feedcycognitosubdomains": null,
+      "feedcycognitosubjectalternativenames": null,
+      "feedcycognitosubjectcommonname": null,
+      "feedcycognitosubjectcountry": null,
+      "feedcycognitosubjectlocality": null,
+      "feedcycognitosubjectorganization": null,
+      "feedcycognitosubjectorganizationunit": null,
+      "feedcycognitosubjectstate": null,
+      "feedcycognitotags": [],
+      "firstseenbysource": "2020-03-24T17:26:03.296Z",
+      "ipaddress": "127.0.0.3",
+      "lastseenbysource": "2022-03-24T17:00:42.200Z",
+      "tags": []
+    },
+    "rawJSON": {
+      "alive": true,
+      "closed_ports": [],
+      "comment": null,
+      "domain_names": [
+        "mail.acme.in"
+      ],
+      "first_seen": "2020-03-24T17:26:03.296Z",
+      "from_rotating": "no",
+      "hosting_type": "cloud",
+      "id": "ip/127.0.0.3",
+      "investigation_status": "uninvestigated",
+      "ip": "127.0.0.3",
+      "issues_count": 1,
+      "last_seen": "2022-03-24T17:00:42.200Z",
+      "locations": [
+        "FRA"
+      ],
+      "open_ports": [
+        {
+          "port": 80,
+          "protocol": "tcp",
+          "status": "open"
+        }
+      ],
+      "organizations": [
+        "ACME Cleantech Solutions",
+        "Acme Corporation"
+      ],
+      "security_rating": "B",
+      "severe_issues_count": 0,
+      "status": "new",
+      "tags": [],
+      "type": "ip"
+    },
+    "type": "IP",
+    "value": "127.0.0.3"
+  },
+  {
+    "fields": {
+      "creationdate": null,
+      "domainname": null,
+      "feedcycognitoaliveendpoint": true,
+      "feedcycognitoassetid": "ip/127.0.0.4",
+      "feedcycognitoassettype": "ip",
+      "feedcycognitobusinessunits": null,
+      "feedcycognitocertificatesignature": null,
+      "feedcycognitoclosedports": [],
+      "feedcycognitocomment": null,
+      "feedcycognitodomainnames": [
+        "mail.acme.in"
+      ],
+      "feedcycognitodomains": null,
+      "feedcycognitoexpirationtime": null,
+      "feedcycognitohostingtypes": "cloud",
+      "feedcycognitoinvestigationstatus": "uninvestigated",
+      "feedcycognitoipnames": null,
+      "feedcycognitoissueralternativenames": null,
+      "feedcycognitoissuercommonname": null,
+      "feedcycognitoissuercountry": null,
+      "feedcycognitoissuerlocality": null,
+      "feedcycognitoissuerorganization": null,
+      "feedcycognitoissuerorganizationunit": null,
+      "feedcycognitoissuerstate": null,
+      "feedcycognitoissuescount": 1,
+      "feedcycognitolocations": [
+        "United States"
+      ],
+      "feedcycognitoopenportprotocols": [
+        "tcp"
+      ],
+      "feedcycognitoopenports": [
+        {
+          "port": 80,
+          "protocol": "tcp",
+          "status": "open"
+        }
+      ],
+      "feedcycognitoorganizations": [
+        "ACME Cleantech Solutions",
+        "Acme Corporation"
+      ],
+      "feedcycognitosecurityrating": "B",
+      "feedcycognitosevereissuescount": 0,
+      "feedcycognitosignaturealgorithm": null,
+      "feedcycognitostatus": "new",
+      "feedcycognitosubdomains": null,
+      "feedcycognitosubjectalternativenames": null,
+      "feedcycognitosubjectcommonname": null,
+      "feedcycognitosubjectcountry": null,
+      "feedcycognitosubjectlocality": null,
+      "feedcycognitosubjectorganization": null,
+      "feedcycognitosubjectorganizationunit": null,
+      "feedcycognitosubjectstate": null,
+      "feedcycognitotags": [],
+      "firstseenbysource": "2020-03-24T18:26:03.296Z",
+      "ipaddress": "127.0.0.4",
+      "lastseenbysource": "2022-03-24T18:03:03.000Z",
+      "tags": []
+    },
+    "rawJSON": {
+      "alive": true,
+      "closed_ports": [],
+      "comment": null,
+      "domain_names": [
+        "mail.acme.in"
+      ],
+      "first_seen": "2020-03-24T18:26:03.296Z",
+      "from_rotating": "no",
+      "hosting_type": "cloud",
+      "id": "ip/127.0.0.4",
+      "investigation_status": "uninvestigated",
+      "ip": "127.0.0.4",
+      "issues_count": 1,
+      "last_seen": "2022-03-24T18:03:03.000Z",
+      "locations": [
+        "USA"
+      ],
+      "open_ports": [
+        {
+          "port": 80,
+          "protocol": "tcp",
+          "status": "open"
+        }
+      ],
+      "organizations": [
+        "ACME Cleantech Solutions",
+        "Acme Corporation"
+      ],
+      "security_rating": "B",
+      "severe_issues_count": 0,
+      "status": "new",
+      "tags": [],
+      "type": "ip"
+    },
+    "type": "IP",
+    "value": "127.0.0.4"
+  },
+  {
+    "fields": {
+      "creationdate": null,
+      "domainname": null,
+      "feedcycognitoaliveendpoint": true,
+      "feedcycognitoassetid": "ip/127.0.0.5",
+      "feedcycognitoassettype": "ip",
+      "feedcycognitobusinessunits": null,
+      "feedcycognitocertificatesignature": null,
+      "feedcycognitoclosedports": [],
+      "feedcycognitocomment": null,
+      "feedcycognitodomainnames": [
+        "sip.acme.in"
+      ],
+      "feedcycognitodomains": null,
+      "feedcycognitoexpirationtime": null,
+      "feedcycognitohostingtypes": "cloud",
+      "feedcycognitoinvestigationstatus": "uninvestigated",
+      "feedcycognitoipnames": null,
+      "feedcycognitoissueralternativenames": null,
+      "feedcycognitoissuercommonname": null,
+      "feedcycognitoissuercountry": null,
+      "feedcycognitoissuerlocality": null,
+      "feedcycognitoissuerorganization": null,
+      "feedcycognitoissuerorganizationunit": null,
+      "feedcycognitoissuerstate": null,
+      "feedcycognitoissuescount": 1,
+      "feedcycognitolocations": [
+        "United States"
+      ],
+      "feedcycognitoopenportprotocols": [
+        "tcp"
+      ],
+      "feedcycognitoopenports": [
+        {
+          "port": 443,
+          "protocol": "tcp",
+          "status": "open"
+        }
+      ],
+      "feedcycognitoorganizations": [
+        "ACME Cleantech Solutions",
+        "Acme Corporation"
+      ],
+      "feedcycognitosecurityrating": "B",
+      "feedcycognitosevereissuescount": 0,
+      "feedcycognitosignaturealgorithm": null,
+      "feedcycognitostatus": "new",
+      "feedcycognitosubdomains": null,
+      "feedcycognitosubjectalternativenames": null,
+      "feedcycognitosubjectcommonname": null,
+      "feedcycognitosubjectcountry": null,
+      "feedcycognitosubjectlocality": null,
+      "feedcycognitosubjectorganization": null,
+      "feedcycognitosubjectorganizationunit": null,
+      "feedcycognitosubjectstate": null,
+      "feedcycognitotags": [],
+      "firstseenbysource": "2020-03-24T04:26:03.296Z",
+      "ipaddress": "127.0.0.5",
+      "lastseenbysource": "2022-03-26T20:53:10.312Z",
+      "tags": []
+    },
+    "rawJSON": {
+      "alive": true,
+      "closed_ports": [],
+      "comment": null,
+      "domain_names": [
+        "sip.acme.in"
+      ],
+      "first_seen": "2020-03-24T04:26:03.296Z",
+      "from_rotating": "yes",
+      "hosting_type": "cloud",
+      "id": "ip/127.0.0.5",
+      "investigation_status": "uninvestigated",
+      "ip": "127.0.0.5",
+      "issues_count": 1,
+      "last_seen": "2022-03-26T20:53:10.312Z",
+      "locations": [
+        "USA"
+      ],
+      "open_ports": [
+        {
+          "port": 443,
+          "protocol": "tcp",
+          "status": "open"
+        }
+      ],
+      "organizations": [
+        "ACME Cleantech Solutions",
+        "Acme Corporation"
+      ],
+      "security_rating": "B",
+      "severe_issues_count": 0,
+      "status": "new",
+      "tags": [],
+      "type": "ip"
+    },
+    "type": "IP",
+    "value": "127.0.0.5"
+  },
+  {
+    "fields": {
+      "creationdate": null,
+      "domainname": null,
+      "feedcycognitoaliveendpoint": true,
+      "feedcycognitoassetid": "ip/127.0.0.6",
+      "feedcycognitoassettype": "ip",
+      "feedcycognitobusinessunits": null,
+      "feedcycognitocertificatesignature": null,
+      "feedcycognitoclosedports": [],
+      "feedcycognitocomment": null,
+      "feedcycognitodomainnames": [
+        "lyncdiscover.acme.in"
+      ],
+      "feedcycognitodomains": null,
+      "feedcycognitoexpirationtime": null,
+      "feedcycognitohostingtypes": "cloud",
+      "feedcycognitoinvestigationstatus": "uninvestigated",
+      "feedcycognitoipnames": null,
+      "feedcycognitoissueralternativenames": null,
+      "feedcycognitoissuercommonname": null,
+      "feedcycognitoissuercountry": null,
+      "feedcycognitoissuerlocality": null,
+      "feedcycognitoissuerorganization": null,
+      "feedcycognitoissuerorganizationunit": null,
+      "feedcycognitoissuerstate": null,
+      "feedcycognitoissuescount": 1,
+      "feedcycognitolocations": [
+        "Hong Kong"
+      ],
+      "feedcycognitoopenportprotocols": [],
+      "feedcycognitoopenports": [],
+      "feedcycognitoorganizations": [
+        "ACME Cleantech Solutions",
+        "Acme Corporation"
+      ],
+      "feedcycognitosecurityrating": "B",
+      "feedcycognitosevereissuescount": 0,
+      "feedcycognitosignaturealgorithm": null,
+      "feedcycognitostatus": "new",
+      "feedcycognitosubdomains": null,
+      "feedcycognitosubjectalternativenames": null,
+      "feedcycognitosubjectcommonname": null,
+      "feedcycognitosubjectcountry": null,
+      "feedcycognitosubjectlocality": null,
+      "feedcycognitosubjectorganization": null,
+      "feedcycognitosubjectorganizationunit": null,
+      "feedcycognitosubjectstate": null,
+      "feedcycognitotags": [],
+      "firstseenbysource": "2020-03-24T04:26:03.296Z",
+      "ipaddress": "127.0.0.6",
+      "lastseenbysource": "2022-03-26T03:59:56.000Z",
+      "tags": []
+    },
+    "rawJSON": {
+      "alive": true,
+      "closed_ports": [],
+      "comment": null,
+      "domain_names": [
+        "lyncdiscover.acme.in"
+      ],
+      "first_seen": "2020-03-24T04:26:03.296Z",
+      "from_rotating": "yes",
+      "hosting_type": "cloud",
+      "id": "ip/127.0.0.6",
+      "investigation_status": "uninvestigated",
+      "ip": "127.0.0.6",
+      "issues_count": 1,
+      "last_seen": "2022-03-26T03:59:56.000Z",
+      "locations": [
+        "HKG"
+      ],
+      "open_ports": [],
+      "organizations": [
+        "ACME Cleantech Solutions",
+        "Acme Corporation"
+      ],
+      "security_rating": "B",
+      "severe_issues_count": 0,
+      "status": "new",
+      "tags": [],
+      "type": "ip"
+    },
+    "type": "IP",
+    "value": "127.0.0.6"
+  },
+  {
+    "fields": {
+      "creationdate": null,
+      "domainname": null,
+      "feedcycognitoaliveendpoint": true,
+      "feedcycognitoassetid": "ip/127.0.0.7",
+      "feedcycognitoassettype": "ip",
+      "feedcycognitobusinessunits": null,
+      "feedcycognitocertificatesignature": null,
+      "feedcycognitoclosedports": [],
+      "feedcycognitocomment": null,
+      "feedcycognitodomainnames": [
+        "mail.acme.in"
+      ],
+      "feedcycognitodomains": null,
+      "feedcycognitoexpirationtime": null,
+      "feedcycognitohostingtypes": "cloud",
+      "feedcycognitoinvestigationstatus": "uninvestigated",
+      "feedcycognitoipnames": null,
+      "feedcycognitoissueralternativenames": null,
+      "feedcycognitoissuercommonname": null,
+      "feedcycognitoissuercountry": null,
+      "feedcycognitoissuerlocality": null,
+      "feedcycognitoissuerorganization": null,
+      "feedcycognitoissuerorganizationunit": null,
+      "feedcycognitoissuerstate": null,
+      "feedcycognitoissuescount": 1,
+      "feedcycognitolocations": [
+        "United States"
+      ],
+      "feedcycognitoopenportprotocols": [
+        "tcp"
+      ],
+      "feedcycognitoopenports": [
+        {
+          "port": 80,
+          "protocol": "tcp",
+          "status": "open"
+        }
+      ],
+      "feedcycognitoorganizations": [
+        "ACME Cleantech Solutions",
+        "Acme Corporation"
+      ],
+      "feedcycognitosecurityrating": "B",
+      "feedcycognitosevereissuescount": 0,
+      "feedcycognitosignaturealgorithm": null,
+      "feedcycognitostatus": "new",
+      "feedcycognitosubdomains": null,
+      "feedcycognitosubjectalternativenames": null,
+      "feedcycognitosubjectcommonname": null,
+      "feedcycognitosubjectcountry": null,
+      "feedcycognitosubjectlocality": null,
+      "feedcycognitosubjectorganization": null,
+      "feedcycognitosubjectorganizationunit": null,
+      "feedcycognitosubjectstate": null,
+      "feedcycognitotags": [],
+      "firstseenbysource": "2020-03-24T04:26:03.296Z",
+      "ipaddress": "127.0.0.7",
+      "lastseenbysource": "2022-03-27T22:58:44.677Z",
+      "tags": []
+    },
+    "rawJSON": {
+      "alive": true,
+      "closed_ports": [],
+      "comment": null,
+      "domain_names": [
+        "mail.acme.in"
+      ],
+      "first_seen": "2020-03-24T04:26:03.296Z",
+      "from_rotating": "no",
+      "hosting_type": "cloud",
+      "id": "ip/127.0.0.7",
+      "investigation_status": "uninvestigated",
+      "ip": "127.0.0.7",
+      "issues_count": 1,
+      "last_seen": "2022-03-27T22:58:44.677Z",
+      "locations": [
+        "USA"
+      ],
+      "open_ports": [
+        {
+          "port": 80,
+          "protocol": "tcp",
+          "status": "open"
+        }
+      ],
+      "organizations": [
+        "ACME Cleantech Solutions",
+        "Acme Corporation"
+      ],
+      "security_rating": "B",
+      "severe_issues_count": 0,
+      "status": "new",
+      "tags": [],
+      "type": "ip"
+    },
+    "type": "IP",
+    "value": "127.0.0.7"
+  },
+  {
+    "fields": {
+      "creationdate": null,
+      "domainname": null,
+      "feedcycognitoaliveendpoint": true,
+      "feedcycognitoassetid": "ip/127.0.0.8",
+      "feedcycognitoassettype": "ip",
+      "feedcycognitobusinessunits": null,
+      "feedcycognitocertificatesignature": null,
+      "feedcycognitoclosedports": [],
+      "feedcycognitocomment": null,
+      "feedcycognitodomainnames": [
+        "mail.acme.in"
+      ],
+      "feedcycognitodomains": null,
+      "feedcycognitoexpirationtime": null,
+      "feedcycognitohostingtypes": "cloud",
+      "feedcycognitoinvestigationstatus": "uninvestigated",
+      "feedcycognitoipnames": null,
+      "feedcycognitoissueralternativenames": null,
+      "feedcycognitoissuercommonname": null,
+      "feedcycognitoissuercountry": null,
+      "feedcycognitoissuerlocality": null,
+      "feedcycognitoissuerorganization": null,
+      "feedcycognitoissuerorganizationunit": null,
+      "feedcycognitoissuerstate": null,
+      "feedcycognitoissuescount": 1,
+      "feedcycognitolocations": [
+        "United States"
+      ],
+      "feedcycognitoopenportprotocols": [
+        "tcp"
+      ],
+      "feedcycognitoopenports": [
+        {
+          "port": 80,
+          "protocol": "tcp",
+          "status": "open"
+        }
+      ],
+      "feedcycognitoorganizations": [
+        "ACME Cleantech Solutions",
+        "Acme Corporation"
+      ],
+      "feedcycognitosecurityrating": "B",
+      "feedcycognitosevereissuescount": 0,
+      "feedcycognitosignaturealgorithm": null,
+      "feedcycognitostatus": "new",
+      "feedcycognitosubdomains": null,
+      "feedcycognitosubjectalternativenames": null,
+      "feedcycognitosubjectcommonname": null,
+      "feedcycognitosubjectcountry": null,
+      "feedcycognitosubjectlocality": null,
+      "feedcycognitosubjectorganization": null,
+      "feedcycognitosubjectorganizationunit": null,
+      "feedcycognitosubjectstate": null,
+      "feedcycognitotags": [],
+      "firstseenbysource": "2020-03-24T04:26:03.296Z",
+      "ipaddress": "127.0.0.8",
+      "lastseenbysource": "2022-03-28T08:46:42.000Z",
+      "tags": []
+    },
+    "rawJSON": {
+      "alive": true,
+      "closed_ports": [],
+      "comment": null,
+      "domain_names": [
+        "mail.acme.in"
+      ],
+      "first_seen": "2020-03-24T04:26:03.296Z",
+      "from_rotating": "no",
+      "hosting_type": "cloud",
+      "id": "ip/127.0.0.8",
+      "investigation_status": "uninvestigated",
+      "ip": "127.0.0.8",
+      "issues_count": 1,
+      "last_seen": "2022-03-28T08:46:42.000Z",
+      "locations": [
+        "USA"
+      ],
+      "open_ports": [
+        {
+          "port": 80,
+          "protocol": "tcp",
+          "status": "open"
+        }
+      ],
+      "organizations": [
+        "ACME Cleantech Solutions",
+        "Acme Corporation"
+      ],
+      "security_rating": "B",
+      "severe_issues_count": 0,
+      "status": "new",
+      "tags": [],
+      "type": "ip"
+    },
+    "type": "IP",
+    "value": "127.0.0.8"
+  },
+  {
+    "fields": {
+      "creationdate": null,
+      "domainname": null,
+      "feedcycognitoaliveendpoint": true,
+      "feedcycognitoassetid": "ip/127.0.0.9",
+      "feedcycognitoassettype": "ip",
+      "feedcycognitobusinessunits": null,
+      "feedcycognitocertificatesignature": null,
+      "feedcycognitoclosedports": [],
+      "feedcycognitocomment": null,
+      "feedcycognitodomainnames": [
+        "mail.acme.in"
+      ],
+      "feedcycognitodomains": null,
+      "feedcycognitoexpirationtime": null,
+      "feedcycognitohostingtypes": "cloud",
+      "feedcycognitoinvestigationstatus": "uninvestigated",
+      "feedcycognitoipnames": null,
+      "feedcycognitoissueralternativenames": null,
+      "feedcycognitoissuercommonname": null,
+      "feedcycognitoissuercountry": null,
+      "feedcycognitoissuerlocality": null,
+      "feedcycognitoissuerorganization": null,
+      "feedcycognitoissuerorganizationunit": null,
+      "feedcycognitoissuerstate": null,
+      "feedcycognitoissuescount": 1,
+      "feedcycognitolocations": [
+        "United States"
+      ],
+      "feedcycognitoopenportprotocols": [],
+      "feedcycognitoopenports": [],
+      "feedcycognitoorganizations": [
+        "ACME Cleantech Solutions",
+        "Acme Corporation"
+      ],
+      "feedcycognitosecurityrating": "B",
+      "feedcycognitosevereissuescount": 0,
+      "feedcycognitosignaturealgorithm": null,
+      "feedcycognitostatus": "new",
+      "feedcycognitosubdomains": null,
+      "feedcycognitosubjectalternativenames": null,
+      "feedcycognitosubjectcommonname": null,
+      "feedcycognitosubjectcountry": null,
+      "feedcycognitosubjectlocality": null,
+      "feedcycognitosubjectorganization": null,
+      "feedcycognitosubjectorganizationunit": null,
+      "feedcycognitosubjectstate": null,
+      "feedcycognitotags": [],
+      "firstseenbysource": "2020-03-24T04:26:03.296Z",
+      "ipaddress": "127.0.0.9",
+      "lastseenbysource": "2022-03-29T09:44:22.143Z",
+      "tags": []
+    },
+    "rawJSON": {
+      "alive": true,
+      "closed_ports": [],
+      "comment": null,
+      "domain_names": [
+        "mail.acme.in"
+      ],
+      "first_seen": "2020-03-24T04:26:03.296Z",
+      "from_rotating": "no",
+      "hosting_type": "cloud",
+      "id": "ip/127.0.0.9",
+      "investigation_status": "uninvestigated",
+      "ip": "127.0.0.9",
+      "issues_count": 1,
+      "last_seen": "2022-03-29T09:44:22.143Z",
+      "locations": [
+        "USA"
+      ],
+      "open_ports": [],
+      "organizations": [
+        "ACME Cleantech Solutions",
+        "Acme Corporation"
+      ],
+      "security_rating": "B",
+      "severe_issues_count": 0,
+      "status": "new",
+      "tags": [],
+      "type": "ip"
+    },
+    "type": "IP",
+    "value": "127.0.0.9"
+  }
+]

@@ -1,0 +1,48 @@
+[
+  {
+    "severe_issues_count": 1,
+    "ip_names": [
+      "127.0.0.1"
+    ],
+    "tags": [],
+    "id": "domain/testdomain.com",
+    "organizations": [
+      "Acme Homes"
+    ],
+    "sub_domains": [
+      "domain/www.test.domain.in"
+    ],
+    "first_seen": "2021-07-22T03:27:19.641Z",
+    "security_rating": "F",
+    "investigation_status": "investigated",
+    "domain": "testdomain.in",
+    "last_seen": "2022-03-24T04:26:03.296Z",
+    "type": "domain",
+    "hosting_type": "owned",
+    "status": "normal",
+    "comment": null,
+    "issues_count": 1
+  },
+  {
+    "severe_issues_count": 1,
+    "ip_names": [],
+    "tags": [],
+    "id": "domain/example.com",
+    "organizations": [
+      "Acme Corporation"
+    ],
+    "sub_domains": [
+      "domain/www.example.com"
+    ],
+    "first_seen": "2021-07-24T15:34:54.458Z",
+    "security_rating": "D",
+    "investigation_status": "investigating",
+    "domain": "example.com",
+    "last_seen": "2022-03-24T04:26:03.296Z",
+    "type": "domain",
+    "hosting_type": "owned",
+    "status": "normal",
+    "comment": null,
+    "issues_count": 1
+  }
+]

@@ -1,0 +1,305 @@
+[
+    {
+        "severe_issues_count": 0,
+        "domain_names": [
+            "mobile.acme.in"
+        ],
+        "from_rotating": "yes",
+        "tags": [],
+        "id": "ip/127.0.0.1",
+        "organizations": [
+            "ACME Cleantech Solutions",
+            "Acme Corporation"
+        ],
+        "last_seen": "2022-03-21T07:06:41.000Z",
+        "open_ports": [
+            {
+                "status": "open",
+                "port": 80,
+                "protocol": "tcp"
+            }
+        ],
+        "security_rating": "B",
+        "investigation_status": "uninvestigated",
+        "locations": [
+            "GBR"
+        ],
+        "ip": "127.0.0.1",
+        "first_seen": "2020-03-24T04:26:03.296Z",
+        "type": "ip",
+        "closed_ports": [],
+        "hosting_type": "cloud",
+        "status": "new",
+        "alive": true,
+        "comment": null,
+        "issues_count": 2
+    },
+    {
+        "severe_issues_count": 0,
+        "domain_names": [
+            "mail.acme.in"
+        ],
+        "from_rotating": "no",
+        "tags": [],
+        "id": "127.0.0.2",
+        "organizations": [
+            "ACME Cleantech Solutions",
+            "Acme Corporation"
+        ],
+        "last_seen": "2022-03-24T04:26:03.296Z",
+        "open_ports": [
+            {
+                "status": "open",
+                "port": 80,
+                "protocol": "tcp"
+            }
+        ],
+        "security_rating": "B",
+        "investigation_status": "uninvestigated",
+        "locations": [
+            "NLD"
+        ],
+        "ip": "127.0.0.2",
+        "first_seen": "2020-03-24T16:26:03.296Z",
+        "type": "ip",
+        "closed_ports": [],
+        "hosting_type": "cloud",
+        "status": "new",
+        "alive": true,
+        "comment": null,
+        "issues_count": 2
+    },
+    {
+        "severe_issues_count": 0,
+        "domain_names": [
+            "mail.acme.in"
+        ],
+        "from_rotating": "no",
+        "tags": [],
+        "id": "ip/127.0.0.3",
+        "organizations": [
+            "ACME Cleantech Solutions",
+            "Acme Corporation"
+        ],
+        "last_seen": "2022-03-24T17:00:42.200Z",
+        "open_ports": [
+            {
+                "status": "open",
+                "port": 80,
+                "protocol": "tcp"
+            }
+        ],
+        "security_rating": "B",
+        "investigation_status": "uninvestigated",
+        "locations": [
+            "FRA"
+        ],
+        "ip": "127.0.0.3",
+        "first_seen": "2020-03-24T17:26:03.296Z",
+        "type": "ip",
+        "closed_ports": [],
+        "hosting_type": "cloud",
+        "status": "new",
+        "alive": true,
+        "comment": null,
+        "issues_count": 1
+    },
+    {
+        "severe_issues_count": 0,
+        "domain_names": [
+            "mail.acme.in"
+        ],
+        "from_rotating": "no",
+        "tags": [],
+        "id": "ip/127.0.0.4",
+        "organizations": [
+            "ACME Cleantech Solutions",
+            "Acme Corporation"
+        ],
+        "last_seen": "2022-03-24T18:03:03.000Z",
+        "open_ports": [
+            {
+                "status": "open",
+                "port": 80,
+                "protocol": "tcp"
+            }
+        ],
+        "security_rating": "B",
+        "investigation_status": "uninvestigated",
+        "locations": [
+            "USA"
+        ],
+        "ip": "127.0.0.4",
+        "first_seen": "2020-03-24T18:26:03.296Z",
+        "type": "ip",
+        "closed_ports": [],
+        "hosting_type": "cloud",
+        "status": "new",
+        "alive": true,
+        "comment": null,
+        "issues_count": 1
+    },
+    {
+        "severe_issues_count": 0,
+        "domain_names": [
+            "sip.acme.in"
+        ],
+        "from_rotating": "yes",
+        "tags": [],
+        "id": "ip/127.0.0.5",
+        "organizations": [
+            "ACME Cleantech Solutions",
+            "Acme Corporation"
+        ],
+        "last_seen": "2022-03-26T20:53:10.312Z",
+        "open_ports": [
+            {
+                "status": "open",
+                "port": 443,
+                "protocol": "tcp"
+            }
+        ],
+        "security_rating": "B",
+        "investigation_status": "uninvestigated",
+        "locations": [
+            "USA"
+        ],
+        "ip": "127.0.0.5",
+        "first_seen": "2020-03-24T04:26:03.296Z",
+        "type": "ip",
+        "closed_ports": [],
+        "hosting_type": "cloud",
+        "status": "new",
+        "alive": true,
+        "comment": null,
+        "issues_count": 1
+    },
+    {
+        "severe_issues_count": 0,
+        "domain_names": [
+            "lyncdiscover.acme.in"
+        ],
+        "from_rotating": "yes",
+        "tags": [],
+        "id": "ip/127.0.0.6",
+        "organizations": [
+            "ACME Cleantech Solutions",
+            "Acme Corporation"
+        ],
+        "last_seen": "2022-03-26T03:59:56.000Z",
+        "open_ports": [],
+        "security_rating": "B",
+        "investigation_status": "uninvestigated",
+        "locations": [
+            "HKG"
+        ],
+        "ip": "127.0.0.6",
+        "first_seen": "2020-03-24T04:26:03.296Z",
+        "type": "ip",
+        "closed_ports": [],
+        "hosting_type": "cloud",
+        "status": "new",
+        "alive": true,
+        "comment": null,
+        "issues_count": 1
+    },
+    {
+        "severe_issues_count": 0,
+        "domain_names": [
+            "mail.acme.in"
+        ],
+        "from_rotating": "no",
+        "tags": [],
+        "id": "ip/127.0.0.7",
+        "organizations": [
+            "ACME Cleantech Solutions",
+            "Acme Corporation"
+        ],
+        "last_seen": "2022-03-27T22:58:44.677Z",
+        "open_ports": [
+            {
+                "status": "open",
+                "port": 80,
+                "protocol": "tcp"
+            }
+        ],
+        "security_rating": "B",
+        "investigation_status": "uninvestigated",
+        "locations": [
+            "USA"
+        ],
+        "ip": "127.0.0.7",
+        "first_seen": "2020-03-24T04:26:03.296Z",
+        "type": "ip",
+        "closed_ports": [],
+        "hosting_type": "cloud",
+        "status": "new",
+        "alive": true,
+        "comment": null,
+        "issues_count": 1
+    },
+    {
+        "severe_issues_count": 0,
+        "domain_names": [
+            "mail.acme.in"
+        ],
+        "from_rotating": "no",
+        "tags": [],
+        "id": "ip/127.0.0.8",
+        "organizations": [
+            "ACME Cleantech Solutions",
+            "Acme Corporation"
+        ],
+        "last_seen": "2022-03-28T08:46:42.000Z",
+        "open_ports": [
+            {
+                "status": "open",
+                "port": 80,
+                "protocol": "tcp"
+            }
+        ],
+        "security_rating": "B",
+        "investigation_status": "uninvestigated",
+        "locations": [
+            "USA"
+        ],
+        "ip": "127.0.0.8",
+        "first_seen": "2020-03-24T04:26:03.296Z",
+        "type": "ip",
+        "closed_ports": [],
+        "hosting_type": "cloud",
+        "status": "new",
+        "alive": true,
+        "comment": null,
+        "issues_count": 1
+    },
+    {
+        "severe_issues_count": 0,
+        "domain_names": [
+            "mail.acme.in"
+        ],
+        "from_rotating": "no",
+        "tags": [],
+        "id": "ip/127.0.0.9",
+        "organizations": [
+            "ACME Cleantech Solutions",
+            "Acme Corporation"
+        ],
+        "last_seen": "2022-03-29T09:44:22.143Z",
+        "open_ports": [],
+        "security_rating": "B",
+        "investigation_status": "uninvestigated",
+        "locations": [
+            "USA"
+        ],
+        "ip": "127.0.0.9",
+        "first_seen": "2020-03-24T04:26:03.296Z",
+        "type": "ip",
+        "closed_ports": [],
+        "hosting_type": "cloud",
+        "status": "new",
+        "alive": true,
+        "comment": null,
+        "issues_count": 1
+    }
+]

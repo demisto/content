@@ -1,0 +1,36 @@
+{
+    "name": "CyCognito Feed",
+    "description": "Provides a feed integration to retrieve the discovered assets.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "CyCognito",
+    "url": "",
+    "email": "support@cycognito.com",
+    "categories": [
+        "Data Enrichment & Threat Intelligence",
+        "External Exposure",
+        "Vulnerability Management"
+    ],
+    "tags": [
+        "Threat Intelligence",
+        "Security"
+    ],
+    "useCases": [
+        "Asset Management",
+        "Threat Intelligence Management",
+        "Vulnerability Management"
+    ],
+    "keywords": [
+        "Assets",
+        "CyCognito",
+        "Risk",
+        "Attack Surface"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "crestdatasystems"
+    ]
+}

@@ -1,0 +1,94 @@
+[
+  {
+    "subject_alt_names": [],
+    "severe_issues_count": 0,
+    "domain_names": [
+      "localhost.example.com"
+    ],
+    "creation_time": null,
+    "ip_names":[
+      "127.0.0.1"
+    ],
+    "subject_organization": "test",
+    "tags": [],
+    "id": "cert/08b373a86084dc1e7b2bc0b3a",
+    "issuer_state": "",
+    "organizations": [
+      "Acme Corporation"
+    ],
+    "subject_country": "us",
+    "issuer_country": "us",
+    "subject_common_name": "localhost.example.com",
+    "issuer_locality": "",
+    "subject_organization_unit": "it",
+    "first_seen": "2021-06-26T09:22:27.012Z",
+    "security_rating": "C",
+    "investigation_status": "uninvestigated",
+    "locations": [
+      "MYS"
+    ],
+    "issuer_alt_names": [],
+    "domains": [
+      "domain/localhost.example.com"
+    ],
+    "signature_algorithm": "SHA256",
+    "last_seen": "2022-03-24T04:26:03.296Z",
+    "type": "cert",
+    "subject_locality": "",
+    "hosting_type": "owned",
+    "status": "normal",
+    "issuer_organization_unit": "it",
+    "expiration_time": "2022-03-22T02:07:00.000Z",
+    "comment": null,
+    "issuer_organization": "test",
+    "issuer_common_name": "localhost.example.com",
+    "subject_state": "",
+    "issues_count": 1
+  },
+  {
+    "subject_alt_names": [],
+    "severe_issues_count": 0,
+    "domain_names": [
+      "example.com"
+    ],
+    "creation_time": null,
+    "ip_names": [
+      "127.0.0.18"
+    ],
+    "subject_organization": "example",
+    "tags": [],
+    "id": "cert/4b7ad14712b2d55cc76695e0c57",
+    "issuer_state": "",
+    "organizations": [
+      "Acme Corporation"
+    ],
+    "subject_country": "us",
+    "issuer_country": "us",
+    "subject_common_name": "localhost",
+    "issuer_locality": "",
+    "subject_organization_unit": "automatically-generated imap ssl key",
+    "first_seen": "2021-07-22T17:04:19.404Z",
+    "security_rating": "C",
+    "investigation_status": "uninvestigated",
+    "locations": [
+      "MYS"
+    ],
+    "issuer_alt_names": [],
+    "domains": [
+      "domain/example.com"
+    ],
+    "signature_algorithm": "SHA256",
+    "last_seen": "2022-03-24T04:26:03.296Z",
+    "type": "cert",
+    "subject_locality": "",
+    "hosting_type": "owned",
+    "status": "normal",
+    "issuer_organization_unit": "automatically-generated imap ssl key",
+    "expiration_time": "2015-11-13T01:31:21.000Z",
+    "comment": null,
+    "issuer_organization": "example",
+    "issuer_common_name": "localhost",
+    "subject_state": "",
+    "issues_count": 1
+  }
+]
