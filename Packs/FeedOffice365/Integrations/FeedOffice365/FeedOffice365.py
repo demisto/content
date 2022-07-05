@@ -260,7 +260,7 @@ def main():
     unique_id = str(uuid.uuid4())
     regions_list = build_region_or_category_list(argToList(params.get('regions')), ALL_REGIONS_LIST)
     services_list = argToList(params.get('services'))
-    category_list = build_region_or_category_list(argToList(params.get('category')), ALL_CATEGORY_LIST)
+    category_list = build_region_or_category_list(argToList(params.get('category', ['All'])), ALL_CATEGORY_LIST)
     urls_list = build_urls_dict(regions_list, services_list, unique_id)
     use_ssl = not params.get('insecure', False)
     tags = argToList(params.get('feedTags'))
