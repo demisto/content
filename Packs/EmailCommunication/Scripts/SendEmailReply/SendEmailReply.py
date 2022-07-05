@@ -414,16 +414,16 @@ def get_reply_body(notes, incident_id, attachments):
             attachment_names = [attachment.get('name') for attachment in attachments]
             reply_body += f'Attachments: {attachment_names}\n\n'
 
-            entry_note = json.dumps(
-                [{"Type": 1, "ContentsFormat": 'html', "Contents": reply_body, "tags": ['email-thread']}])
-            entry_tags_res = demisto.executeCommand("addEntries", {"entries": entry_note, 'id': incident_id})
+        entry_note = json.dumps(
+            [{"Type": 1, "ContentsFormat": 'html', "Contents": reply_body, "tags": ['email-thread']}])
+        entry_tags_res = demisto.executeCommand("addEntries", {"entries": entry_note, 'id': incident_id})
 
-            entry_note_res = demisto.executeCommand("demisto-api-post", {"uri": "/entry/note", "body": json.dumps(
-                {"id": note.get('ID'), "version": -1, "investigationId": incident_id, "data": "false"})})
-            if is_error(entry_note_res):
-                return_error(get_error(entry_note_res))
-            if is_error(entry_tags_res):
-                return_error(get_error(entry_tags_res))
+        entry_note_res = demisto.executeCommand("demisto-api-post", {"uri": "/entry/note", "body": json.dumps(
+            {"id": note.get('ID'), "version": -1, "investigationId": incident_id, "data": "false"})})
+        if is_error(entry_note_res):
+            return_error(get_error(entry_note_res))
+        if is_error(entry_tags_res):
+            return_error(get_error(entry_tags_res))
 
     else:
         return_error("Please add a note")
