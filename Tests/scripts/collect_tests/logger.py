@@ -1,11 +1,10 @@
-import logging
-from logging import getLogger
+from logging import getLogger, Formatter, StreamHandler
 
 logger = getLogger('collect_tests')
 
-formatter = logging.Formatter('%(levelname)s [%(filename)s:%(lineno)s %(funcName)s() ] %(message)s')
+formatter = Formatter('%(levelname)s [%(filename)s:%(lineno)s %(funcName)s() ] %(message)s')
 
-sh = logging.StreamHandler()
+sh = StreamHandler()
 sh.setFormatter(formatter)
 
 logger.addHandler(sh)
