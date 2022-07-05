@@ -14,7 +14,7 @@ class IdSetItem(DictBased):
         super().__init__(dict_)
         self.id_: str = id_  # None for packs, as they don't have it.
         self.file_path: str = self.get('file_path', warn_if_missing=False)  # packs have no file_path value
-        self.name: str = self.get('name', '', warn_if_missing=False, warning_comment=Path(self.file_path or '').name)
+        self.name: str = self.get('name', '', warning_comment=Path(self.file_path or '').name)
 
         # None for packs, that have no id.
         self.pack_id: Optional[str] = self.get('pack', warning_comment=self.file_path) if id_ else None
