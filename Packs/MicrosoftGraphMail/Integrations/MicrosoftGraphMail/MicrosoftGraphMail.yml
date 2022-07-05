@@ -1233,7 +1233,7 @@ script:
     - contextPath: MicrosoftGraph.SentMail.ID
       description: The immutable ID of the message.
       type: String
-  dockerimage: demisto/crypto:1.0.0.31577
+  dockerimage: devdemisto/crypto:1.0.0.31706
   feed: false
   isfetch: true
   longRunning: false
