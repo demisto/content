@@ -31,7 +31,6 @@ class CollectTestsMocker:
         self.previous_path_manager = None
 
     def __enter__(self):
-        print(f'mocking content root={self.path_manager.content_path}')
         self.previous_path_manager = collect_tests.PATHS
         self._mock(self.path_manager)
 
@@ -129,9 +128,9 @@ NIGHTLY_EXPECTED_TESTS = {'myTestPlaybook', 'myOtherTestPlaybook'}
         (MockerCases.A_xsiam, XSIAMNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSIAMOnlyPack',)),
         (MockerCases.B_xsiam, XSIAMNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSIAMOnlyPack',)),
         (MockerCases.C, XSOARNightlyTestCollector,
-         {'myXSOAROnlyTestPlaybook', 'myTestPlaybook'}, {'bothMarketplacesPack', 'myXSOAROnlyPack'}),
-        (MockerCases.C, XSIAMNightlyTestCollector,
-         {'myXSIAMOnlyTestPlaybook'}, {'bothMarketplacesPack', 'myXSIAMOnlyPack'})
+         {'myXSOAROnlyTestPlaybook', 'myTestPlaybook'},
+         {'bothMarketplacesPack', 'bothMarketplacesPack2', 'myXSOAROnlyPack'}),
+        (MockerCases.C, XSIAMNightlyTestCollector, {'myXSIAMOnlyTestPlaybook'}, {'myXSIAMOnlyPack'})
 ))
 def test_nightly(mocker, collector_class: Callable, expected_tests: set[str], expected_packs: tuple[str]):
     """
