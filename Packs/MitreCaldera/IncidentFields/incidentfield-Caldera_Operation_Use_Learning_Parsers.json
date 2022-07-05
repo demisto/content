@@ -1,7 +1,7 @@
 {
     "id": "incident_calderaoperationuselearningparsers",
     "version": -1,
-    "name": "Caldera Operation Use Learning Parsers",
+    "name": "MITRE Caldera Operation Use Learning Parsers",
     "ownerOnly": false,
     "description": "Whether learning parsers are used.",
     "cliName": "calderaoperationuselearningparsers",

@@ -1,7 +1,7 @@
 {
     "id": "incident_calderadeleteoperation",
     "version": -1,
-    "name": "Caldera Delete Operation",
+    "name": "MITRE Caldera Delete Operation",
     "ownerOnly": false,
     "cliName": "calderadeleteoperation",
     "type": "boolean",

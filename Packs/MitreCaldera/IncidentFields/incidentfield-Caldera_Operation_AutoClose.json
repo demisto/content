@@ -1,7 +1,7 @@
 {
     "id": "incident_calderaoperationautoclose",
     "version": -1,
-    "name": "Caldera Operation Auto Close",
+    "name": "MITRE Caldera Operation Auto Close",
     "ownerOnly": false,
     "cliName": "calderaoperationautoclose",
     "type": "singleSelect",

@@ -1,7 +1,7 @@
 {
     "id": "incident_calderaoperationvisibility",
     "version": -1,
-    "name": "Caldera Operation Visbility",
+    "name": "MITRE Caldera Operation Visbility",
     "ownerOnly": false,
     "placeholder": "51",
     "description": "How visible should the operation be to the defense (1-100), default is 51",

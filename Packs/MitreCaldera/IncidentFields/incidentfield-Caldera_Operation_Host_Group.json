@@ -1,7 +1,7 @@
 {
     "id": "incident_calderaoperationhostgroup",
     "version": -1,
-    "name": "Caldera Operation Host Group",
+    "name": "MITRE Caldera Operation Host Group",
     "ownerOnly": false,
     "cliName": "calderaoperationhostgroup",
     "type": "shortText",

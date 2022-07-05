@@ -1,7 +1,7 @@
 {
     "id": "incident_calderaoperationjitter",
     "version": -1,
-    "name": "Caldera Operation Jitter",
+    "name": "MITRE Caldera Operation Jitter",
     "ownerOnly": false,
     "placeholder": "2/8",
     "description": "Jitter is defined as a fraction (default is '2/8')",

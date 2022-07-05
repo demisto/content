@@ -1,7 +1,7 @@
 {
     "id": "incident_calderaoperationautonomy",
     "version": -1,
-    "name": "Caldera Operation Autonomy",
+    "name": "MITRE Caldera Operation Autonomy",
     "ownerOnly": false,
     "cliName": "calderaoperationautonomy",
     "type": "singleSelect",

@@ -1,7 +1,7 @@
 {
     "id": "incident_calderaoperationgroup",
     "version": -1,
-    "name": "Caldera Operation Group",
+    "name": "MITRE Caldera Operation Group",
     "ownerOnly": false,
     "description": "Which collection of agents to run against.",
     "cliName": "calderaoperationgroup",

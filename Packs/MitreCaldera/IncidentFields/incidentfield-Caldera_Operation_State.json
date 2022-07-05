@@ -1,7 +1,7 @@
 {
     "id": "incident_calderaoperationstate",
     "version": -1,
-    "name": "Caldera Operation State",
+    "name": "MITRE Caldera Operation State",
     "ownerOnly": false,
     "description": "State of the operation",
     "cliName": "calderaoperationstate",

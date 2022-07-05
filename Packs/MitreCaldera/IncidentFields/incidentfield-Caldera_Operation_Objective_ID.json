@@ -1,7 +1,7 @@
 {
     "id": "incident_calderaoperationobjectiveid",
     "version": -1,
-    "name": "Caldera Operation Objective ID",
+    "name": "MITRE Caldera Operation Objective ID",
     "ownerOnly": false,
     "cliName": "calderaoperationobjectiveid",
     "type": "singleSelect",
