@@ -186,4 +186,3 @@ dbotMirrorDirection
 dbotMirrorId
 dbotMirrorInstance
 dbotMirrorTags
-https://vscode.dev
