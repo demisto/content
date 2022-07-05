@@ -127,16 +127,16 @@ script:
     execution: false
     name: taxii-server-info
     outputs:
-    - contextPath: TAXIIServer.Info.title
+    - contextPath: TAXIIServer.ServerInfo.title
       description: The server title
       type: String
-    - contextPath: TAXIIServer.Info.api_roots
+    - contextPath: TAXIIServer.ServerInfo.api_roots
       description: The server api roots urls
       type: Unknown
-    - contextPath: TAXIIServer.Info.default
+    - contextPath: TAXIIServer.ServerInfo.default
       description: The default url
       type: String
-    - contextPath: TAXIIServer.Info.description
+    - contextPath: TAXIIServer.ServerInfo.description
       description: The server description
       type: String
   dockerimage: demisto/flask-nginx:1.0.0.29338

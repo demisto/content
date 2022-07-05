@@ -265,10 +265,10 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TAXIIServer.Info.title | String | The server title | 
-| TAXIIServer.Info.api_roots | Unknown | The server api roots urls | 
-| TAXIIServer.Info.default | String | The default url | 
-| TAXIIServer.Info.description | String | The server description | 
+| TAXIIServer.ServerInfo.title | String | The server title | 
+| TAXIIServer.ServerInfo.api_roots | Unknown | The server api roots urls | 
+| TAXIIServer.ServerInfo.default | String | The default url | 
+| TAXIIServer.ServerInfo.description | String | The server description | 
 
 #### Command example
 ```!taxii-server-info```

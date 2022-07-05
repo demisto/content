@@ -882,7 +882,7 @@ def taxii2_server_discovery() -> Response:
     return handle_response(HTTP_200_OK, discovery_response)
 
 
-@APP.route('/<api_root>/', methods=['GET'])
+@APP.route('/<api_root>', methods=['GET'], strict_slashes=False)
 @taxii_validate_request_headers
 @taxii_validate_url_param
 def taxii2_api_root(api_root: str) -> Response:
@@ -906,7 +906,7 @@ def taxii2_api_root(api_root: str) -> Response:
     return handle_response(HTTP_200_OK, api_root_response)
 
 
-@APP.route('/<api_root>/status/<status_id>/', methods=['GET'])
+@APP.route('/<api_root>/status/<status_id>', methods=['GET'], strict_slashes=False)
 @taxii_validate_request_headers
 @taxii_validate_url_param
 def taxii2_status(api_root: str, status_id: str) -> Response:  # noqa: F841
@@ -921,7 +921,7 @@ def taxii2_status(api_root: str, status_id: str) -> Response:  # noqa: F841
                                                                'access to the resource'})
 
 
-@APP.route('/<api_root>/collections/', methods=['GET'])
+@APP.route('/<api_root>/collections', methods=['GET'], strict_slashes=False)
 @taxii_validate_request_headers
 @taxii_validate_url_param
 def taxii2_collections(api_root: str) -> Response:
@@ -945,7 +945,7 @@ def taxii2_collections(api_root: str) -> Response:
     return handle_response(HTTP_200_OK, collections_response)
 
 
-@APP.route('/<api_root>/collections/<collection_id>/', methods=['GET'])
+@APP.route('/<api_root>/collections/<collection_id>', methods=['GET'], strict_slashes=False)
 @taxii_validate_request_headers
 @taxii_validate_url_param
 def taxii2_collection_by_id(api_root: str, collection_id: str) -> Response:
@@ -970,7 +970,7 @@ def taxii2_collection_by_id(api_root: str, collection_id: str) -> Response:
     return handle_response(HTTP_200_OK, collection_response)  # type: ignore[arg-type]
 
 
-@APP.route('/<api_root>/collections/<collection_id>/manifest/', methods=['GET'])
+@APP.route('/<api_root>/collections/<collection_id>/manifest', methods=['GET'], strict_slashes=False)
 @taxii_validate_request_headers
 @taxii_validate_url_param
 def taxii2_manifest(api_root: str, collection_id: str) -> Response:
@@ -1020,7 +1020,7 @@ def taxii2_manifest(api_root: str, collection_id: str) -> Response:
     )
 
 
-@APP.route('/<api_root>/collections/<collection_id>/objects/', methods=['GET'])
+@APP.route('/<api_root>/collections/<collection_id>/objects', methods=['GET'], strict_slashes=False)
 @taxii_validate_request_headers
 @taxii_validate_url_param
 def taxii2_objects(api_root: str, collection_id: str) -> Response:
