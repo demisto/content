@@ -3,7 +3,7 @@ Predict phishing URLs using a pre-trained model.
 ## Security Recommendations
 ---
 
-This script is used to rasterize usually untrusted URLs, so we recommend following the instructions at the [Docker Network Hardening](https://xsoar.pan.dev/docs/reference/integrations/rasterize#docker-security-recommendations) page under the Block Internal Network Access section.
+This script uses the [Rasterize](https://xsoar.pan.dev/docs/reference/integrations/rasterize) integration. If this script is used to rasterize untrusted URLs, we strongly recommend following the security recommendations included at the [Rasterize Documentation](https://xsoar.pan.dev/docs/reference/integrations/rasterize).
 
 ## Script Data
 ---
