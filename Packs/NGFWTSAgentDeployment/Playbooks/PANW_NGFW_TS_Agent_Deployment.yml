@@ -235,7 +235,7 @@ tasks:
       id: 0193639e-b400-4a75-8c32-8111e0d41e2d
       iscommand: true
       name: Register TS Agent in NGFW
-      script: '|||panorama'
+      script: 'Panorama|||pan-os'
       type: regular
       version: -1
     taskid: 0193639e-b400-4a75-8c32-8111e0d41e2d
