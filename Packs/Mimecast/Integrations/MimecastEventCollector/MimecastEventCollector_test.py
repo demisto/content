@@ -128,7 +128,7 @@ def test_process_siem_data():
                          [({'IP': '1.2.3.4', 'Dir': 'Outbound', 'Rcpt': 'bla'},
                            {'IP': ['1.2.3.4'], 'Dir': 'Outbound', 'Rcpt': ['bla']}),
                           ({'a': 'b', 'c': 'd'}, {'a': 'b', 'c': 'd'}),
-                          ({'Rcpt': ['dimeff@demo-visionary.b41.one']}, {'Rcpt': ['bla']}),
+                          ({'Rcpt': ['bla']}, {'Rcpt': ['bla']}),
                           ({}, {})])
 def test_convert_field_to_xdm_type(event, res):
     """

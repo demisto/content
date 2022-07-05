@@ -241,7 +241,7 @@ SIEM_LOG_PROCESS_EVENT = [
             "AttCnt": 0,
             "Dir": "Inbound",
             "ReceiptAck": None,
-            "MsgId": "<fakdeId>",
+            "MsgId": "<fakeId>",
             "Subject": "Tesing Out of Office Agent",
             "Latency": 43470985,
             "Sender": "enronmessaging@pacific-concept.b41.one",
