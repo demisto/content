@@ -102,7 +102,7 @@ def convert_countries_to_alpha_3_codes(countries: List[str]):
         try:
             converted_country_codes.append(pycountry.countries.search_fuzzy(country)[0].alpha_3)
         except LookupError as err:
-            demisto.error(f"[+] FeedCyCognito: Error while parsing country name: {country}")
+            demisto.info(f"[+] FeedCyCognito: Error while parsing country name: {country}")
             raise ValueError(ERRORS['INVALID_COUNTRY_ERROR'].format(country)) from err
 
     return converted_country_codes
@@ -122,7 +122,7 @@ def convert_alpha_3_codes_to_country_names(locations: List[str]):
         try:
             converted_locations.append(pycountry.countries.search_fuzzy(location)[0].name)
         except LookupError as err:
-            demisto.error(f"[+] FeedCyCognito: Error while parsing country code: {location}")
+            demisto.info(f"[+] FeedCyCognito: Error while parsing country code: {location}")
             raise ValueError(ERRORS['INVALID_COUNTRY_ERROR'].format(location)) from err
 
     return converted_locations
