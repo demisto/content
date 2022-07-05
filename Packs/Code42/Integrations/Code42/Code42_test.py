@@ -1404,8 +1404,8 @@ def test_map_to_file_context():
 
 def test_alert_get_command(code42_alerts_mock):
     client = create_client(code42_alerts_mock)
-    cmd_res = alert_get_command(client, {"id": "4576576e-13cb-4f88-be3a-ee77739de649"})
-    assert cmd_res.raw_response["ruleId"] == "4576576e-13cb-4f88-be3a-ee77739de649"
+    cmd_res = alert_get_command(client, {"id": "rule-id-abc-123"})
+    assert cmd_res.raw_response["ruleId"] == "rule-id-abc-123"
     assert cmd_res.outputs == [MOCK_CODE42_ALERT_CONTEXT[0]]
     assert cmd_res.outputs_prefix == "Code42.SecurityAlert"
     assert cmd_res.outputs_key_field == "ID"
@@ -1413,8 +1413,8 @@ def test_alert_get_command(code42_alerts_mock):
 
 def test_alert_resolve_command(code42_alerts_mock):
     client = create_client(code42_alerts_mock)
-    cmd_res = alert_resolve_command(client, {"id": "4576576e-13cb-4f88-be3a-ee77739de649"})
-    assert cmd_res.raw_response["ruleId"] == "4576576e-13cb-4f88-be3a-ee77739de649"
+    cmd_res = alert_resolve_command(client, {"id": "rule-id-abc-123"})
+    assert cmd_res.raw_response["ruleId"] == "rule-id-abc-123"
     assert cmd_res.outputs == [MOCK_CODE42_ALERT_CONTEXT[0]]
     assert cmd_res.outputs_prefix == "Code42.SecurityAlert"
     assert cmd_res.outputs_key_field == "ID"

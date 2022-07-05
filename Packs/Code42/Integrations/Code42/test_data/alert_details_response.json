@@ -3,7 +3,7 @@
   "alerts": [
     {
       "type$": "ALERT_DETAILS",
-      "tenantId": "1d71796f-af5b-4231-9d8e-df6434da4663",
+      "tenantId": "tenant-abc-123",
       "type": "FED_ENDPOINT_EXFILTRATION",
       "name": "Departing Employee Alert",
       "description": "Cortex XSOAR is cool.",
@@ -12,7 +12,7 @@
       "target": "N/A",
       "severity": "HIGH",
       "riskSeverity": "CRITICAL",
-      "ruleId": "4576576e-13cb-4f88-be3a-ee77739de649",
+      "ruleId": "rule-id-abc-123",
       "ruleSource": "Alerting",
       "id": "36fb8ca5-0533-4d25-9763-e09d35d60610",
       "createdAt": "2019-10-02T17:02:23.5867670Z",
@@ -55,7 +55,7 @@
             "files": [
               {
                 "type$": "OBSERVED_FILE",
-                "eventId": "0_1d71796f-af5b-4231-9d8e-df6434da4663_935873453596901068_956171635867906205_5",
+                "eventId": "0_tenant-abc-123_935873453596901068_956171635867906205_5",
                 "path": "C:/Users/QA/Downloads/",
                 "name": "Customers.jpg",
                 "category": "Image",
@@ -63,7 +63,7 @@
               },
               {
                 "type$": "OBSERVED_FILE",
-                "eventId": "0_1d71796f-af5b-4231-9d8e-df6434da4663_935873453596901068_956171635867906205_6",
+                "eventId": "0_tenant-abc-123_935873453596901068_956171635867906205_6",
                 "path": "C:/Users/QA/Downloads/",
                 "name": "data.png",
                 "category": "Image",
@@ -71,7 +71,7 @@
               },
               {
                 "type$": "OBSERVED_FILE",
-                "eventId": "0_1d71796f-af5b-4231-9d8e-df6434da4663_935873453596901068_956171635867906205_7",
+                "eventId": "0_tenant-abc-123_935873453596901068_956171635867906205_7",
                 "path": "C:/Users/QA/Downloads/",
                 "name": "company_secrets.ps",
                 "category": "Image",
@@ -190,7 +190,7 @@
     },
     {
       "type$": "ALERT_DETAILS",
-      "tenantId": "1d71796f-af5b-4231-9d8e-df6434da4663",
+      "tenantId": "tenant-abc-123",
       "type": "FED_CLOUD_SHARE_PERMISSIONS",
       "name": "High-Risk Employee Alert",
       "description": "Cortex XSOAR is 2cool.",
@@ -199,7 +199,7 @@
       "target": "N/A",
       "severity": "MEDIUM",
       "riskSeverity": "MODERATE",
-      "ruleId": "4576576e-13cb-4f88-be3a-ee77739de649",
+      "ruleId": "rule-id-abc-123",
       "ruleSource": "Alerting",
       "id": "18ac641d-7d9c-4d37-a48f-c89396c07d03",
       "createdAt": "2019-10-02T17:02:24.2071980Z",
@@ -208,7 +208,7 @@
     },
     {
       "type$": "ALERT_DETAILS",
-      "tenantId": "1d71796f-af5b-4231-9d8e-df6434da4663",
+      "tenantId": "tenant-abc-123",
       "type": "FED_ENDPOINT_EXFILTRATION",
       "name": "Custom Alert 1",
       "description": "Cortex XSOAR is 3cool.",
@@ -217,7 +217,7 @@
       "target": "N/A",
       "severity": "LOW",
       "riskSeverity": "LOW",
-      "ruleId": "4576576e-13cb-4f88-be3a-ee77739de649",
+      "ruleId": "rule-id-abc-123",
       "ruleSource": "Alerting",
       "id": "3137ff1b-b824-42e4-a476-22bccdd8ddb8",
       "createdAt": "2019-10-02T17:03:28.2885720Z",
