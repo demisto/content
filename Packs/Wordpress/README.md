@@ -4,7 +4,7 @@
 
 To obtain your application password (API key) do the following:
 
-- Navigate to your wordpress admin site (typically <domain>/wp-admin)
+- Navigate to your wordpress admin site
 - Navigate to users
 - Click on 'edit' for the user you wish to generate the application password for
 - Scroll down to **Application Passwords**
