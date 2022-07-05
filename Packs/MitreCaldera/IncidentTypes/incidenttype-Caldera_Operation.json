@@ -1,17 +1,7 @@
 {
     "id": "Caldera Operation",
     "version": -1,
-    "cacheVersn": 0,
-    "modified": "2022-06-08T13:25:48.728281983Z",
-    "packID": "",
-    "itemVersion": "",
-    "fromServerVersion": "",
-    "toServerVersion": "",
-    "definitionId": "",
     "vcShouldIgnore": false,
-    "vcShouldKeepItemLegacyProdMachine": false,
-    "commitMessage": "",
-    "shouldCommit": false,
     "locked": false,
     "name": "Caldera Operation",
     "prevName": "Caldera Operation",
@@ -27,7 +17,6 @@
     "readonly": false,
     "default": false,
     "autorun": true,
-    "preProcessingScript": "",
     "closureScript": "CalderaOperationPostProcessing",
     "disabled": false,
     "reputationCalc": 0,
@@ -37,5 +26,6 @@
     "extractSettings": {
         "mode": "Specific",
         "fieldCliNameToExtractSettings": {}
-    }
+    },
+    "fromVersion": "6.2.0"
 }

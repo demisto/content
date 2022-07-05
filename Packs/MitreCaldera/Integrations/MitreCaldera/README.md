@@ -1,5 +1,5 @@
 Mitre Caldera can be used to test endpoint security solutions and assess a network's security posture against the common post-compromise adversarial techniques contained in the ATT&CK model. CALDERA leverages the ATT&CK model to identify and replicate adversary behaviors as if a real intrusion is occurring.
-This integration was integrated and tested with version xx of MitreCaldera
+This integration was integrated and tested with version 4.0.0 of MitreCaldera
 
 ## Configure MitreCaldera on Cortex XSOAR
 
@@ -388,9 +388,9 @@ Create a Relationship
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| relationship_unique | | Optional | 
-| relationship_origin | | Optional | 
-| relationship_edge | | Optional | 
+| relationship_unique | . | Optional | 
+| relationship_origin | . | Optional | 
+| relationship_edge | . | Optional | 
 | relationship_source_unique | relationship_source unique. | Optional | 
 | relationship_source_name | relationship_source name. | Optional | 
 | relationship_source_links | relationship_source links. | Optional | 
@@ -404,8 +404,8 @@ Create a Relationship
 | relationship_source_score | relationship_source score. | Optional | 
 | relationship_source_value | relationship_source value. | Optional | 
 | relationship_source_collected_by | relationship_source collected_by. | Optional | 
-| relationship_score | | Optional | 
-| relationship_target | | Optional | 
+| relationship_score | . | Optional | 
+| relationship_target | . | Optional | 
 
 
 #### Context Output
@@ -429,22 +429,22 @@ Creates a new ability.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ability_ability_id | | Optional | 
-| ability_name | | Optional | 
-| ability_buckets | | Optional | 
-| ability_technique_id | | Optional | 
-| ability_delete_payload | | Optional | 
-| ability_executors | | Optional | 
-| ability_privilege | | Optional | 
-| ability_requirements | | Optional | 
-| ability_plugin | | Optional | 
-| ability_access | | Optional | 
-| ability_tactic | | Optional | 
-| ability_additional_info | | Optional | 
-| ability_singleton | | Optional | 
-| ability_technique_name | | Optional | 
-| ability_repeatable | | Optional | 
-| ability_description | | Optional | 
+| ability_ability_id | . | Optional | 
+| ability_name | . | Optional | 
+| ability_buckets | . | Optional | 
+| ability_technique_id | . | Optional | 
+| ability_delete_payload | . | Optional | 
+| ability_executors | . | Optional | 
+| ability_privilege | . | Optional | 
+| ability_requirements | . | Optional | 
+| ability_plugin | . | Optional | 
+| ability_access | . | Optional | 
+| ability_tactic | . | Optional | 
+| ability_additional_info | . | Optional | 
+| ability_singleton | . | Optional | 
+| ability_technique_name | . | Optional | 
+| ability_repeatable | . | Optional | 
+| ability_description | . | Optional | 
 
 
 #### Context Output
@@ -490,19 +490,19 @@ Creates a potential Link
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | operation_id | UUID of the operation object for the link to be created on. | Required | 
-| link_relationships | | Optional | 
-| link_id | | Optional | 
-| link_collect | | Optional | 
-| link_pid | | Optional | 
+| link_relationships | . | Optional | 
+| link_id | . | Optional | 
+| link_collect | . | Optional | 
+| link_pid | . | Optional | 
 | link_visibility_adjustments | link_visibility adjustments. | Optional | 
 | link_visibility_score | link_visibility score. | Optional | 
-| link_finish | | Optional | 
-| link_pin | | Optional | 
-| link_jitter | | Optional | 
-| link_agent_reported_time | | Optional | 
-| link_deadman | | Optional | 
-| link_used | | Optional | 
-| link_host | | Optional | 
+| link_finish | . | Optional | 
+| link_pin | . | Optional | 
+| link_jitter | . | Optional | 
+| link_agent_reported_time | . | Optional | 
+| link_deadman | . | Optional | 
+| link_used | . | Optional | 
+| link_host | . | Optional | 
 | link_ability_ability_id | link_ability ability_id. | Optional | 
 | link_ability_name | link_ability name. | Optional | 
 | link_ability_buckets | link_ability buckets. | Optional | 
@@ -519,13 +519,13 @@ Creates a potential Link
 | link_ability_technique_name | link_ability technique_name. | Optional | 
 | link_ability_repeatable | link_ability repeatable. | Optional | 
 | link_ability_description | link_ability description. | Optional | 
-| link_status | | Optional | 
-| link_score | | Optional | 
-| link_command | | Optional | 
-| link_unique | | Optional | 
-| link_cleanup | | Optional | 
-| link_decide | | Optional | 
-| link_facts | | Optional | 
+| link_status | . | Optional | 
+| link_score | . | Optional | 
+| link_command | . | Optional | 
+| link_unique | . | Optional | 
+| link_cleanup | . | Optional | 
+| link_decide | . | Optional | 
+| link_facts | . | Optional | 
 | link_executor_name | link_executor name. | Optional | 
 | link_executor_cleanup | link_executor cleanup. | Optional | 
 | link_executor_platform | link_executor platform. | Optional | 
@@ -539,8 +539,8 @@ Creates a potential Link
 | link_executor_command | link_executor command. | Optional | 
 | link_executor_additional_info | link_executor additional_info. | Optional | 
 | link_executor_code | link_executor code. | Optional | 
-| link_paw | | Optional | 
-| link_output | | Optional | 
+| link_paw | . | Optional | 
+| link_output | . | Optional | 
 
 
 #### Context Output
@@ -597,7 +597,7 @@ Create Schedule
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| schedule_schedule | | Required | 
+| schedule_schedule | . | Required | 
 | schedule_task_name | schedule_task name. | Optional | 
 | schedule_task_autonomous | schedule_task autonomous. | Optional | 
 | schedule_task_id | schedule_task id. | Optional | 
@@ -615,7 +615,7 @@ Create Schedule
 | schedule_task_start | schedule_task start. | Optional | 
 | schedule_task_adversary | schedule_task adversary. | Optional | 
 | schedule_task_auto_close | schedule_task auto_close. | Optional | 
-| schedule_id | | Optional | 
+| schedule_id | . | Optional | 
 
 
 #### Context Output
@@ -660,30 +660,7 @@ Delete an existing Fact Source.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| MitreCaldera.Sources.name | String |  | 
-| MitreCaldera.Sources.adjustments.ability_id | String |  | 
-| MitreCaldera.Sources.adjustments.offset | Number |  | 
-| MitreCaldera.Sources.adjustments.trait | String |  | 
-| MitreCaldera.Sources.adjustments.value | String |  | 
-| MitreCaldera.Sources.relationships.unique | String |  | 
-| MitreCaldera.Sources.relationships.origin | String |  | 
-| MitreCaldera.Sources.relationships.edge | String |  | 
-| MitreCaldera.Sources.relationships.score | Number |  | 
-| MitreCaldera.Sources.id | String |  | 
-| MitreCaldera.Sources.rules.trait | String |  | 
-| MitreCaldera.Sources.rules.match | String |  | 
-| MitreCaldera.Sources.facts.unique | String |  | 
-| MitreCaldera.Sources.facts.name | String |  | 
-| MitreCaldera.Sources.facts.created | String |  | 
-| MitreCaldera.Sources.facts.limit_count | Number |  | 
-| MitreCaldera.Sources.facts.technique_id | String |  | 
-| MitreCaldera.Sources.facts.trait | String |  | 
-| MitreCaldera.Sources.facts.source | String |  | 
-| MitreCaldera.Sources.facts.score | Number |  | 
-| MitreCaldera.Sources.plugin | String |  | 
-
+There is no context output for this command.
 ### caldera-delete-operation
 ***
 Delete an operation by operation id
@@ -701,82 +678,7 @@ Delete an operation by operation id
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| MitreCaldera.Operations.name | String |  | 
-| MitreCaldera.Operations.autonomous | Number |  | 
-| MitreCaldera.Operations.id | String |  | 
-| MitreCaldera.Operations.visibility | Number |  | 
-| MitreCaldera.Operations.state | String |  | 
-| MitreCaldera.Operations.group | String |  | 
-| MitreCaldera.Operations.host_group.watchdog | Number |  | 
-| MitreCaldera.Operations.host_group.links.relationships.unique | String |  | 
-| MitreCaldera.Operations.host_group.links.relationships.origin | String |  | 
-| MitreCaldera.Operations.host_group.links.relationships.edge | String |  | 
-| MitreCaldera.Operations.host_group.links.relationships.score | Number |  | 
-| MitreCaldera.Operations.host_group.links.id | String |  | 
-| MitreCaldera.Operations.host_group.links.collect | String |  | 
-| MitreCaldera.Operations.host_group.links.pid | String |  | 
-| MitreCaldera.Operations.host_group.links.finish | String |  | 
-| MitreCaldera.Operations.host_group.links.pin | Number |  | 
-| MitreCaldera.Operations.host_group.links.jitter | Number |  | 
-| MitreCaldera.Operations.host_group.links.agent_reported_time | String |  | 
-| MitreCaldera.Operations.host_group.links.deadman | Boolean |  | 
-| MitreCaldera.Operations.host_group.links.used.unique | String |  | 
-| MitreCaldera.Operations.host_group.links.used.name | String |  | 
-| MitreCaldera.Operations.host_group.links.used.created | String |  | 
-| MitreCaldera.Operations.host_group.links.used.limit_count | Number |  | 
-| MitreCaldera.Operations.host_group.links.used.technique_id | String |  | 
-| MitreCaldera.Operations.host_group.links.used.trait | String |  | 
-| MitreCaldera.Operations.host_group.links.used.source | String |  | 
-| MitreCaldera.Operations.host_group.links.used.score | Number |  | 
-| MitreCaldera.Operations.host_group.links.host | String |  | 
-| MitreCaldera.Operations.host_group.links.status | Number |  | 
-| MitreCaldera.Operations.host_group.links.score | Number |  | 
-| MitreCaldera.Operations.host_group.links.command | String |  | 
-| MitreCaldera.Operations.host_group.links.unique | String |  | 
-| MitreCaldera.Operations.host_group.links.cleanup | Number |  | 
-| MitreCaldera.Operations.host_group.links.decide | String |  | 
-| MitreCaldera.Operations.host_group.links.facts.unique | String |  | 
-| MitreCaldera.Operations.host_group.links.facts.name | String |  | 
-| MitreCaldera.Operations.host_group.links.facts.created | String |  | 
-| MitreCaldera.Operations.host_group.links.facts.limit_count | Number |  | 
-| MitreCaldera.Operations.host_group.links.facts.technique_id | String |  | 
-| MitreCaldera.Operations.host_group.links.facts.trait | String |  | 
-| MitreCaldera.Operations.host_group.links.facts.source | String |  | 
-| MitreCaldera.Operations.host_group.links.facts.score | Number |  | 
-| MitreCaldera.Operations.host_group.links.paw | String |  | 
-| MitreCaldera.Operations.host_group.links.output | String |  | 
-| MitreCaldera.Operations.host_group.deadman_enabled | Boolean |  | 
-| MitreCaldera.Operations.host_group.ppid | Number |  | 
-| MitreCaldera.Operations.host_group.pid | Number |  | 
-| MitreCaldera.Operations.host_group.created | String |  | 
-| MitreCaldera.Operations.host_group.origin_link_id | String |  | 
-| MitreCaldera.Operations.host_group.last_seen | String |  | 
-| MitreCaldera.Operations.host_group.platform | String |  | 
-| MitreCaldera.Operations.host_group.pending_contact | String |  | 
-| MitreCaldera.Operations.host_group.host | String |  | 
-| MitreCaldera.Operations.host_group.group | String |  | 
-| MitreCaldera.Operations.host_group.location | String |  | 
-| MitreCaldera.Operations.host_group.display_name | String |  | 
-| MitreCaldera.Operations.host_group.upstream_dest | String |  | 
-| MitreCaldera.Operations.host_group.sleep_max | Number |  | 
-| MitreCaldera.Operations.host_group.architecture | String |  | 
-| MitreCaldera.Operations.host_group.sleep_min | Number |  | 
-| MitreCaldera.Operations.host_group.server | String |  | 
-| MitreCaldera.Operations.host_group.contact | String |  | 
-| MitreCaldera.Operations.host_group.privilege | String |  | 
-| MitreCaldera.Operations.host_group.username | String |  | 
-| MitreCaldera.Operations.host_group.trusted | Boolean |  | 
-| MitreCaldera.Operations.host_group.proxy_chain | String |  | 
-| MitreCaldera.Operations.host_group.paw | String |  | 
-| MitreCaldera.Operations.host_group.exe_name | String |  | 
-| MitreCaldera.Operations.obfuscator | String |  | 
-| MitreCaldera.Operations.use_learning_parsers | Boolean |  | 
-| MitreCaldera.Operations.jitter | String |  | 
-| MitreCaldera.Operations.start | String |  | 
-| MitreCaldera.Operations.auto_close | Boolean |  | 
-
+There is no context output for this command.
 ### caldera-delete-facts
 ***
 Delete One or More Facts
@@ -789,19 +691,19 @@ Delete One or More Facts
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| fact_unique | | Optional | 
-| fact_name | | Optional | 
-| fact_links | | Optional | 
-| fact_relationships | | Optional | 
-| fact_origin_type | | Optional | 
-| fact_created | | Optional | 
-| fact_limit_count | | Optional | 
-| fact_technique_id | | Optional | 
-| fact_trait | | Optional | 
-| fact_source | | Optional | 
-| fact_score | | Optional | 
-| fact_value | | Optional | 
-| fact_collected_by | | Optional | 
+| fact_unique | . | Optional | 
+| fact_name | . | Optional | 
+| fact_links | . | Optional | 
+| fact_relationships | . | Optional | 
+| fact_origin_type | . | Optional | 
+| fact_created | . | Optional | 
+| fact_limit_count | . | Optional | 
+| fact_technique_id | . | Optional | 
+| fact_trait | . | Optional | 
+| fact_source | . | Optional | 
+| fact_score | . | Optional | 
+| fact_value | . | Optional | 
+| fact_collected_by | . | Optional | 
 
 
 #### Context Output
@@ -829,9 +731,9 @@ Delete One or More Relationships
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| relationship_unique | | Optional | 
-| relationship_origin | | Optional | 
-| relationship_edge | | Optional | 
+| relationship_unique | . | Optional | 
+| relationship_origin | . | Optional | 
+| relationship_edge | . | Optional | 
 | relationship_source_unique | relationship_source unique. | Optional | 
 | relationship_source_name | relationship_source name. | Optional | 
 | relationship_source_links | relationship_source links. | Optional | 
@@ -845,8 +747,8 @@ Delete One or More Relationships
 | relationship_source_score | relationship_source score. | Optional | 
 | relationship_source_value | relationship_source value. | Optional | 
 | relationship_source_collected_by | relationship_source collected_by. | Optional | 
-| relationship_score | | Optional | 
-| relationship_target | | Optional | 
+| relationship_score | . | Optional | 
+| relationship_target | . | Optional | 
 
 
 #### Context Output
@@ -926,8 +828,8 @@ Get all Abilities with optional ability ID.
 | --- | --- | --- |
 | ability_id | Optional UUID of the Ability to be retrieved. | Optional | 
 | sort | Results are sorted if no Ability ID is provided. | Optional | 
-| include | | Optional | 
-| exclude | | Optional | 
+| include | . | Optional | 
+| exclude | . | Optional | 
 
 
 #### Context Output
@@ -974,8 +876,8 @@ Get all Adversaries with optional Adversary ID
 | --- | --- | --- |
 | adversary_id | Optional UUID of the adversary to be retrieved. | Optional | 
 | sort | Results are sorted if no Adversary ID is provided. | Optional | 
-| include | | Optional | 
-| exclude | | Optional | 
+| include | . | Optional | 
+| exclude | . | Optional | 
 
 
 #### Context Output
@@ -1002,9 +904,9 @@ Retrieves all agents with optional Agent PAW
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | paw | Optioanl PAW ID of the Agent to retrieve information about. | Optional | 
-| sort | | Optional | 
-| include | | Optional | 
-| exclude | | Optional | 
+| sort | . | Optional | 
+| include | . | Optional | 
+| exclude | . | Optional | 
 
 
 #### Context Output
@@ -1093,6 +995,7 @@ Retrieve Config
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| MitreCaldera.Name | String | Config name | 
 | MitreCaldera.Config | Unknown | Config settings | 
 
 ### caldera-get-contacts
@@ -1155,9 +1058,9 @@ Retrieve Facts with optional Operation ID
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sort | | Optional | 
-| include | | Optional | 
-| exclude | | Optional | 
+| sort | . | Optional | 
+| include | . | Optional | 
+| exclude | . | Optional | 
 | operation_id | Optional Operation ID. | Optional | 
 
 
@@ -1210,9 +1113,9 @@ Retrieve obfuscators with optional name
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | Name of the Obfuscator. | Optional | 
-| sort | | Optional | 
-| include | | Optional | 
-| exclude | | Optional | 
+| sort | . | Optional | 
+| include | . | Optional | 
+| exclude | . | Optional | 
 
 
 #### Context Output
@@ -1236,9 +1139,9 @@ Retrieve objectives with optional Objective ID
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | Optional UUID of the objective to be retrieved. | Optional | 
-| sort | | Optional | 
-| include | | Optional | 
-| exclude | | Optional | 
+| sort | . | Optional | 
+| include | . | Optional | 
+| exclude | . | Optional | 
 
 
 #### Context Output
@@ -1268,9 +1171,9 @@ Retrieve operations
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | Optional UUID of the Operation object to be retrieved. | Optional | 
-| sort | | Optional | 
-| include | | Optional | 
-| exclude | | Optional | 
+| sort | . | Optional | 
+| include | . | Optional | 
+| exclude | . | Optional | 
 
 
 #### Context Output
@@ -1363,11 +1266,11 @@ Get Links from Operation with optional Link ID
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| operation_id | | Required | 
+| operation_id | . | Required | 
 | link_id | Optional UUID of the Link with the operation. | Optional | 
-| sort | | Optional | 
-| include | | Optional | 
-| exclude | | Optional | 
+| sort | . | Optional | 
+| include | . | Optional | 
+| exclude | . | Optional | 
 
 
 #### Context Output
@@ -1426,8 +1329,8 @@ Retrieve the result of a link
 | --- | --- | --- |
 | operation_id | UUID of the operation object to be retrieved. | Required | 
 | link_id | UUID of the link object to retrieve results of. | Required | 
-| include | | Optional | 
-| exclude | | Optional | 
+| include | . | Optional | 
+| exclude | . | Optional | 
 
 
 #### Context Output
@@ -1486,9 +1389,9 @@ Retrieve potential links for an operation with optional PAW.
 | --- | --- | --- |
 | operation_id | UUID of the operation object to retrieve links for. | Required | 
 | paw | Optional Agent paw for the specified operation. | Optional | 
-| sort | | Optional | 
-| include | | Optional | 
-| exclude | | Optional | 
+| sort | . | Optional | 
+| include | . | Optional | 
+| exclude | . | Optional | 
 
 
 #### Context Output
@@ -1546,9 +1449,9 @@ Retrieve planners with optional Planner ID
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | planner_id | UUID of the Planner object to be retrieved. | Optional | 
-| sort | | Optional | 
-| include | | Optional | 
-| exclude | | Optional | 
+| sort | . | Optional | 
+| include | . | Optional | 
+| exclude | . | Optional | 
 
 
 #### Context Output
@@ -1583,9 +1486,9 @@ Retrieve plugins with optional Name
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | The name of the plugin. | Optional | 
-| sort | | Optional | 
-| include | | Optional | 
-| exclude | | Optional | 
+| sort | . | Optional | 
+| include | . | Optional | 
+| exclude | . | Optional | 
 
 
 #### Context Output
@@ -1611,10 +1514,10 @@ Retrieve Relationships with optional Operation ID
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| operation_id | | Optional | 
-| sort | | Optional | 
-| include | | Optional | 
-| exclude | | Optional | 
+| operation_id | . | Optional | 
+| sort | . | Optional | 
+| include | . | Optional | 
+| exclude | . | Optional | 
 
 
 #### Context Output
@@ -1639,17 +1542,17 @@ Retrieve Schedules with optional Schedule ID
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | schedule_id | Optional UUID of the Schedule to be retrieved. | Optional | 
-| sort | | Optional | 
-| include | | Optional | 
-| exclude | | Optional | 
+| sort | . | Optional | 
+| include | . | Optional | 
+| exclude | . | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MitreCaldera.PartialSchedule.schedule | String |  | 
-| MitreCaldera.PartialSchedule.id | String |  | 
+| MitreCaldera.Schedules.schedule | String |  | 
+| MitreCaldera.Schedules.id | String |  | 
 
 ### caldera-get-sources
 ***
@@ -1664,9 +1567,9 @@ Retrieve all Fact Sources with optional Fact Source ID
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | source_id | The id of the Fact Source. | Optional | 
-| sort | | Optional | 
-| include | | Optional | 
-| exclude | | Optional | 
+| sort | . | Optional | 
+| include | . | Optional | 
+| exclude | . | Optional | 
 
 
 #### Context Output
@@ -1707,16 +1610,17 @@ Get Operation Event Logs
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| operation_id | | Required | 
+| operation_id | . | Required | 
 | enable_agent_output | Whether to enable the agent output. Possible values are: false, true. Default is false. | Optional | 
-| include | | Optional | 
-| exclude | | Optional | 
+| include | . | Optional | 
+| exclude | . | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| MitreCaldera.Operations.EventLogs.id | String |  | 
 | MitreCaldera.Operations.EventLogs.collected_timestamp | String |  | 
 | MitreCaldera.Operations.EventLogs.ability_metadata | Unknown |  | 
 | MitreCaldera.Operations.EventLogs.attack_metadata | Unknown |  | 
@@ -1742,16 +1646,17 @@ Get Operation Report
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| operation_id | | Required | 
+| operation_id | . | Required | 
 | enable_agent_output | Whether to enable the agent output. Possible values are: false, true. Default is false. | Optional | 
-| include | | Optional | 
-| exclude | | Optional | 
+| include | . | Optional | 
+| exclude | . | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| MitreCaldera.Operations.OperationReport.id | String |  | 
 | MitreCaldera.Operations.OperationReport.start | String |  | 
 | MitreCaldera.Operations.OperationReport.steps | Unknown |  | 
 | MitreCaldera.Operations.OperationReport.facts | Unknown |  | 
@@ -1777,21 +1682,21 @@ Replaces an existing ability.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ability_id | UUID of the Ability to be retrieved. | Required | 
-| ability_name | | Optional | 
-| ability_buckets | | Optional | 
-| ability_technique_id | | Optional | 
-| ability_delete_payload | | Optional | 
-| ability_executors | | Optional | 
-| ability_privilege | | Optional | 
-| ability_requirements | | Optional | 
-| ability_plugin | | Optional | 
-| ability_access | | Optional | 
-| ability_tactic | | Optional | 
-| ability_additional_info | | Optional | 
-| ability_singleton | | Optional | 
-| ability_technique_name | | Optional | 
-| ability_repeatable | | Optional | 
-| ability_description | | Optional | 
+| ability_name | . | Optional | 
+| ability_buckets | . | Optional | 
+| ability_technique_id | . | Optional | 
+| ability_delete_payload | . | Optional | 
+| ability_executors | . | Optional | 
+| ability_privilege | . | Optional | 
+| ability_requirements | . | Optional | 
+| ability_plugin | . | Optional | 
+| ability_access | . | Optional | 
+| ability_tactic | . | Optional | 
+| ability_additional_info | . | Optional | 
+| ability_singleton | . | Optional | 
+| ability_technique_name | . | Optional | 
+| ability_repeatable | . | Optional | 
+| ability_description | . | Optional | 
 
 
 #### Context Output
@@ -1836,25 +1741,25 @@ Replace Schedule
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| schedule_id | UUID of the Schedule to be retrieved. | Required | 
-| partial_schedule2_schedule | | Optional | 
-| partial_schedule2_task_name | partial_schedule2_task name. | Optional | 
-| partial_schedule2_task_autonomous | partial_schedule2_task autonomous. | Optional | 
-| partial_schedule2_task_id | partial_schedule2_task id. | Optional | 
-| partial_schedule2_task_objective | partial_schedule2_task objective. | Optional | 
-| partial_schedule2_task_visibility | partial_schedule2_task visibility. | Optional | 
-| partial_schedule2_task_state | partial_schedule2_task state. | Optional | 
-| partial_schedule2_task_group | partial_schedule2_task group. | Optional | 
-| partial_schedule2_task_host_group | partial_schedule2_task host_group. | Optional | 
-| partial_schedule2_task_planner | partial_schedule2_task planner. | Optional | 
-| partial_schedule2_task_obfuscator | partial_schedule2_task obfuscator. | Optional | 
-| partial_schedule2_task_chain | partial_schedule2_task chain. | Optional | 
-| partial_schedule2_task_use_learning_parsers | partial_schedule2_task use_learning_parsers. | Optional | 
-| partial_schedule2_task_source | partial_schedule2_task source. | Optional | 
-| partial_schedule2_task_jitter | partial_schedule2_task jitter. | Optional | 
-| partial_schedule2_task_start | partial_schedule2_task start. | Optional | 
-| partial_schedule2_task_adversary | partial_schedule2_task adversary. | Optional | 
-| partial_schedule2_task_auto_close | partial_schedule2_task auto_close. | Optional | 
+| schedule_id | UUID of the Schedule to be replaced. | Required | 
+| partial_schedule_schedule | . | Optional | 
+| partial_schedule_task_name | partial_schedule_task name. | Optional | 
+| partial_schedule_task_autonomous | partial_schedule_task autonomous. | Optional | 
+| partial_schedule_task_id | partial_schedule_task id. | Optional | 
+| partial_schedule_task_objective | partial_schedule_task objective. | Optional | 
+| partial_schedule_task_visibility | partial_schedule_task visibility. | Optional | 
+| partial_schedule_task_state | partial_schedule_task state. | Optional | 
+| partial_schedule_task_group | partial_schedule_task group. | Optional | 
+| partial_schedule_task_host_group | partial_schedule_task host_group. | Optional | 
+| partial_schedule_task_planner | partial_schedule_task planner. | Optional | 
+| partial_schedule_task_obfuscator | partial_schedule_task obfuscator. | Optional | 
+| partial_schedule_task_chain | partial_schedule_task chain. | Optional | 
+| partial_schedule_task_use_learning_parsers | partial_schedule_task use_learning_parsers. | Optional | 
+| partial_schedule_task_source | partial_schedule_task source. | Optional | 
+| partial_schedule_task_jitter | partial_schedule_task jitter. | Optional | 
+| partial_schedule_task_start | partial_schedule_task start. | Optional | 
+| partial_schedule_task_adversary | partial_schedule_task adversary. | Optional | 
+| partial_schedule_task_auto_close | partial_schedule_task auto_close. | Optional | 
 
 
 #### Context Output
@@ -1876,14 +1781,14 @@ Update Agent Config
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| watchdog | | Optional | 
-| sleep_min | | Optional | 
-| deployments | | Optional | 
-| deadman_abilities | | Optional | 
-| untrusted_timer | | Optional | 
-| bootstrap_abilities | | Optional | 
-| sleep_max | | Optional | 
-| implant_name | | Optional | 
+| watchdog | . | Optional | 
+| sleep_min | . | Optional | 
+| deployments | . | Optional | 
+| deadman_abilities | . | Optional | 
+| untrusted_timer | . | Optional | 
+| bootstrap_abilities | . | Optional | 
+| sleep_max | . | Optional | 
+| implant_name | . | Optional | 
 
 
 #### Context Output
@@ -1909,13 +1814,13 @@ Update an adversary
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | adversary_id | UUID of the adversary to be updated. | Required | 
-| adversaryname | | Optional | 
-| adversarytags | | Optional | 
-| adversaryobjective | | Optional | 
-| adversaryhas_repeatable_abilities | | Optional | 
-| adversaryatomic_ordering | | Optional | 
-| adversaryplugin | | Optional | 
-| adversarydescription | | Optional | 
+| adversaryname | . | Optional | 
+| adversarytags | . | Optional | 
+| adversaryobjective | . | Optional | 
+| adversaryhas_repeatable_abilities | . | Optional | 
+| adversaryatomic_ordering | . | Optional | 
+| adversaryplugin | . | Optional | 
+| adversarydescription | . | Optional | 
 
 
 #### Context Output
@@ -1942,12 +1847,12 @@ Update an Agent
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | paw | ID of the Agent to update. | Required | 
-| watchdog | | Optional | 
-| sleep_min | | Optional | 
-| trusted | | Optional | 
-| sleep_max | | Optional | 
-| pending_contact | | Optional | 
-| group | | Optional | 
+| watchdog | . | Optional | 
+| sleep_min | . | Optional | 
+| trusted | . | Optional | 
+| sleep_max | . | Optional | 
+| pending_contact | . | Optional | 
+| group | . | Optional | 
 
 
 #### Context Output
@@ -2030,13 +1935,13 @@ Update an existing Fact Source.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | fact_source_id | The id of the Fact Source. | Required | 
-| source_name | | Optional | 
-| source_adjustments | | Optional | 
-| source_relationships | | Optional | 
-| source_id | | Optional | 
-| source_rules | | Optional | 
-| source_facts | | Optional | 
-| source_plugin | | Optional | 
+| source_name | . | Optional | 
+| source_adjustments | . | Optional | 
+| source_relationships | . | Optional | 
+| source_id | . | Optional | 
+| source_rules | . | Optional | 
+| source_facts | . | Optional | 
+| source_plugin | . | Optional | 
 
 
 #### Context Output
@@ -2078,9 +1983,9 @@ Update an objective
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | objective_id | UUID of the Objective to be updated. | Required | 
-| name | | Optional | 
-| goals | | Optional | 
-| description | | Optional | 
+| name | . | Optional | 
+| goals | . | Optional | 
+| description | . | Optional | 
 
 
 #### Context Output
@@ -2110,9 +2015,9 @@ Update fields within an operation
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | operation_id | UUID of the Operation object to be retrieved. | Required | 
-| obfuscator | | Optional | 
-| autonomous | | Optional | 
-| state | | Optional | 
+| obfuscator | . | Optional | 
+| autonomous | . | Optional | 
+| state | . | Optional | 
 
 
 #### Context Output
@@ -2205,8 +2110,8 @@ Update Main Config
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| property | | Required | 
-| value | | Required | 
+| property | . | Required | 
+| value | . | Required | 
 
 
 #### Context Output
@@ -2313,18 +2218,18 @@ Updates an existing ability.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ability_id | UUID of the Ability to be retrieved. | Required | 
-| name | | Optional | 
-| buckets | | Optional | 
-| technique_id | | Optional | 
-| delete_payload | | Optional | 
-| executors | | Optional | 
-| privilege | | Optional | 
-| technique_name | | Optional | 
-| tactic | | Optional | 
-| singleton | | Optional | 
-| plugin | | Optional | 
-| repeatable | | Optional | 
-| description | | Optional | 
+| name | . | Optional | 
+| buckets | . | Optional | 
+| technique_id | . | Optional | 
+| delete_payload | . | Optional | 
+| executors | . | Optional | 
+| privilege | . | Optional | 
+| technique_name | . | Optional | 
+| tactic | . | Optional | 
+| singleton | . | Optional | 
+| plugin | . | Optional | 
+| repeatable | . | Optional | 
+| description | . | Optional | 
 
 
 #### Context Output
@@ -2370,7 +2275,7 @@ Update Schedule
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | schedule_id | UUID of the Schedule to be updated. | Required | 
-| schedule | | Optional | 
+| schedule | . | Optional | 
 | task_obfuscator | task obfuscator. | Optional | 
 | task_autonomous | task autonomous. | Optional | 
 | task_state | task state. | Optional | 
@@ -2397,8 +2302,8 @@ Update the specified link within an operation
 | --- | --- | --- |
 | operation_id | String UUID of the Operation containing desired link. | Required | 
 | link_id | String UUID of the Link with the above operation. | Required | 
-| command | | Optional | 
-| status | | Optional | 
+| command | . | Optional | 
+| status | . | Optional | 
 
 
 #### Context Output

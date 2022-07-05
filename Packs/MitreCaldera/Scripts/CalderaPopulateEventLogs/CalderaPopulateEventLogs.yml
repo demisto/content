@@ -1,9 +1,8 @@
 commonfields:
   id: CalderaPopulateEventLogs
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: CalderaPopulateEventLogs
-comment: 'Populates the Event Logs with Event Logs from the MITRE Caldera'
+comment: Populates the Event Logs with Event Logs from the MITRE Caldera
 dependson:
   must:
   - '|||caldera-get-operation-event-logs'
@@ -14,10 +13,9 @@ tags:
 enabled: true
 scripttarget: 0
 subtype: python3
-pswd: ''
 runonce: false
-dockerimage: demisto/python3:3.10.4.29342
+dockerimage: demisto/python3:3.10.4.31492
 runas: DBotWeakRole
 fromversion: 6.2.0
-engineinfo: {}
-mainengineinfo: {}
+tests:
+- No tests (auto formatted)

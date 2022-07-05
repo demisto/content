@@ -1,12 +1,8 @@
 {
     "id": "incident_calderaoperationuselearningparsers",
     "version": -1,
-    "fromServerVersion": "",
-    "toServerVersion": "",
-    "definitionId": "incident",
     "name": "Caldera Operation Use Learning Parsers",
     "ownerOnly": false,
-    "placeholder": "",
     "description": "Whether learning parsers are used.",
     "cliName": "calderaoperationuselearningparsers",
     "type": "singleSelect",
@@ -14,32 +10,26 @@
     "editForm": true,
     "required": false,
     "script": "CalderaReadOnlyFields",
-    "fieldCalcScript": "",
     "neverSetAsRequired": false,
     "isReadOnly": false,
     "selectValues": [
         "true",
         "false"
     ],
-    "validationRegex": "",
     "useAsKpi": false,
     "locked": false,
     "system": false,
-    "content": false,
+    "content": true,
     "group": 0,
     "hidden": false,
     "associatedTypes": [
         "Caldera Operation"
     ],
-    "systemAssociatedTypes": null,
     "associatedToAll": false,
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "caseInsensitive": true,
-    "columns": null,
-    "defaultRows": null,
     "sla": 0,
     "threshold": 72,
-    "breachScript": "",
-    "validatedError": ""
+    "fromVersion": "6.2.0"
 }

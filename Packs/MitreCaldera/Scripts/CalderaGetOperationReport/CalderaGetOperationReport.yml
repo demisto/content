@@ -13,10 +13,11 @@ enabled: true
 args:
 - name: operation_id
   required: true
+  description: Operation ID
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.10.4.29342
+dockerimage: demisto/python3:3.10.4.31492
 runas: DBotWeakRole
 fromversion: 6.2.0
 tests:

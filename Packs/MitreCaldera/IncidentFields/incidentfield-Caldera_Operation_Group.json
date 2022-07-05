@@ -1,13 +1,8 @@
 {
     "id": "incident_calderaoperationgroup",
     "version": -1,
-    
-    "fromServerVersion": "",
-    "toServerVersion": "",
-    "definitionId": "incident",
     "name": "Caldera Operation Group",
     "ownerOnly": false,
-    "placeholder": "",
     "description": "Which collection of agents to run against.",
     "cliName": "calderaoperationgroup",
     "type": "shortText",
@@ -15,29 +10,22 @@
     "editForm": true,
     "required": false,
     "script": "CalderaReadOnlyFields",
-    "fieldCalcScript": "",
     "neverSetAsRequired": false,
     "isReadOnly": false,
-    "selectValues": [],
-    "validationRegex": "",
     "useAsKpi": false,
     "locked": false,
     "system": false,
-    "content": false,
+    "content": true,
     "group": 0,
     "hidden": false,
     "associatedTypes": [
         "Caldera Operation"
     ],
-    "systemAssociatedTypes": null,
     "associatedToAll": false,
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "caseInsensitive": true,
-    "columns": null,
-    "defaultRows": null,
     "sla": 0,
     "threshold": 72,
-    "breachScript": "",
-    "validatedError": ""
+    "fromVersion": "6.2.0"
 }

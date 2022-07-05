@@ -1,9 +1,8 @@
 commonfields:
   id: CalderaPopulateObjectiveIDField
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: CalderaPopulateObjectiveIDField
-comment: 'Populates the Objective ID Field with Objectives from the MITRE Caldera'
+comment: Populates the Objective ID Field with Objectives from the MITRE Caldera
 dependson:
   must:
   - '|||caldera-get-objectives'
@@ -14,10 +13,9 @@ tags:
 enabled: true
 scripttarget: 0
 subtype: python3
-pswd: ''
 runonce: false
-dockerimage: demisto/python3:3.10.4.29342
+dockerimage: demisto/python3:3.10.4.31492
 runas: DBotWeakRole
 fromversion: 6.2.0
-engineinfo: {}
-mainengineinfo: {}
+tests:
+- No tests (auto formatted)

@@ -1,7 +1,6 @@
 commonfields:
   id: CalderaOperationPostProcessing
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: CalderaOperationPostProcessing
 script: ''
 type: python
@@ -10,10 +9,10 @@ tags:
 enabled: true
 scripttarget: 0
 subtype: python3
-pswd: ''
 runonce: false
-dockerimage: demisto/python3:3.10.4.29342
+dockerimage: demisto/python3:3.10.4.31492
 runas: DBotWeakRole
 fromversion: 6.2.0
-engineinfo: {}
-mainengineinfo: {}
+comment: Post processing script for MITRE Caldera incidents.
+tests:
+- No tests (auto formatted)
