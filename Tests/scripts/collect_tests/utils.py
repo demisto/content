@@ -76,7 +76,8 @@ class Machine(Enum):
         result = []
 
         if version_range:
-            result.extend(filter(lambda machine: machine.value in version_range, Machine.numeric_machines()))
+            result.extend(filter(None,
+                                 (machine for machine in Machine.numeric_machines() if machine.value in version_range)))
         else:
             result.extend(Machine.numeric_machines())
 
@@ -180,6 +181,7 @@ class ContentItem(DictFileBased):
     @property
     def pack_id(self):
         return self.pack_path.name
+
 
 class PackManager:
     skipped_packs = {'DeprecatedContent', 'NonSupported', 'ApiModules'}
