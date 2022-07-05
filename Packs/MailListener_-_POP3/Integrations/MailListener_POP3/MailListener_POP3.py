@@ -310,7 +310,7 @@ def fetch_incidents():
 
     incidents = []
     messages = get_user_emails()
-
+    i = 1
     for msg in messages:
         try:
             incident = mail_to_incident(msg)
@@ -325,7 +325,9 @@ def fetch_incidents():
         # update last run
         if temp_date > last_fetch:
             last_fetch = temp_date + timedelta(seconds=1)
-
+        if i == 247:
+            test = True
+        i = i + 1
         # avoid duplication due to weak time query
         if temp_date > current_fetch:
             incidents.append(incident)
@@ -363,5 +365,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ == "__builtin__" or __name__ == "builtins" or True:
     main()
