@@ -404,7 +404,7 @@ def test_main_fetch_incidents(mocker):
     When fetch-incidents is called from main()
     Then demistomock.incidents and demistomock.setLastRun should be called with respected values.
 
-    :param args: MockerCases objects.
+    :param args: Mocker objects.
     :return: None
     """
     from GoogleDrive import main, demisto
