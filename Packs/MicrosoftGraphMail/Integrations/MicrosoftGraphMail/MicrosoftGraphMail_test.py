@@ -68,7 +68,7 @@ def test_params_working(mocker, params, expected_results):
     MsGraphClient.__init__.assert_called_with(False, expected_results[0], expected_results[1], expected_results[2],
                                               'ms-graph-mail', '/v1.0', True, False, (200, 201, 202, 204), '', 'Inbox',
                                               '15 minutes', 50, 10, 'com', certificate_thumbprint='', private_key='',
-                                              use_full_email_body=False)
+                                              display_full_email_body=False)
 
 
 def test_build_mail_object():
@@ -363,7 +363,7 @@ def test_fetch_incidents_with_full_body(
         Make sure that in the details section, there is the full email body content.
     """
     mocker.patch('MicrosoftGraphMail.get_now_utc', return_value='2019-11-12T15:01:00Z')
-    client.use_full_email_body = True
+    client.display_full_email_body = True
     mocker.patch.object(client.ms_client, 'http_request', return_value=emails_data_full_body)
     mocker.patch.object(demisto, "info")
     result_next_run, result_incidents = client.fetch_incidents(last_run_data)

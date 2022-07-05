@@ -67,7 +67,7 @@ class MsGraphClient:
     def __init__(self, self_deployed, tenant_id, auth_and_token_url, enc_key,
                  app_name, base_url, use_ssl, proxy, ok_codes, mailbox_to_fetch, folder_to_fetch, first_fetch_interval,
                  emails_fetch_limit, timeout=10, endpoint='com', certificate_thumbprint=None, private_key=None,
-                 use_full_email_body=False):
+                 display_full_email_body=False):
 
         self.ms_client = MicrosoftClient(self_deployed=self_deployed, tenant_id=tenant_id, auth_id=auth_and_token_url,
                                          enc_key=enc_key, app_name=app_name, base_url=base_url, verify=use_ssl,
@@ -78,7 +78,8 @@ class MsGraphClient:
         self._folder_to_fetch = folder_to_fetch
         self._first_fetch_interval = first_fetch_interval
         self._emails_fetch_limit = emails_fetch_limit
-        self.use_full_email_body = use_full_email_body  # whether to use the full email body for the fetch-incidents
+        # whether to display the full email body for the fetch-incidents
+        self.display_full_email_body = display_full_email_body
 
     def pages_puller(self, response: dict, page_count: int) -> list:
         """ Gets first response from API and returns all pages
@@ -843,7 +844,7 @@ class MsGraphClient:
         parsed_email['Mailbox'] = self._mailbox_to_fetch
 
         body = email.get('bodyPreview', '')
-        if not body or self.use_full_email_body:
+        if not body or self.display_full_email_body:
             # parse HTML into plain-text
             body = get_text_from_html(parsed_email.get('Body') or '')
 
@@ -1622,13 +1623,13 @@ def main():
     first_fetch_interval = params.get('first_fetch', '15 minutes')
     emails_fetch_limit = int(params.get('fetch_limit', '50'))
     timeout = arg_to_number(params.get('timeout', '10') or '10')
-    use_full_email_body = argToBoolean(params.get("use_full_email_body", False))
+    display_full_email_body = argToBoolean(params.get("display_full_email_body", False))
 
     client: MsGraphClient = MsGraphClient(self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url,
                                           use_ssl, proxy, ok_codes, mailbox_to_fetch, folder_to_fetch,
                                           first_fetch_interval, emails_fetch_limit, timeout, endpoint,
                                           certificate_thumbprint=certificate_thumbprint,
-                                          private_key=private_key, use_full_email_body=use_full_email_body
+                                          private_key=private_key, display_full_email_body=display_full_email_body
                                           )
 
     command = demisto.command()
