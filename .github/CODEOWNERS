@@ -74,3 +74,6 @@ Utils/trigger_nightly_sdk_build.sh @dorschw
 # Dependencies
 pyproject.toml @ilaner
 poetry.lock @ilaner
+
+# Devcontainers
+.devcontainer/* @ilaner
