@@ -1585,8 +1585,6 @@ def create_upload_session(email: str, client: MsGraphClient, created_draft: dict
         raise Exception(f'upload seesion error', e)
 
 
-
-
 def main():
     """ COMMANDS MANAGER / SWITCH PANEL """
     args: dict = demisto.args()
