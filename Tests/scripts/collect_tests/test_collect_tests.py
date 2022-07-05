@@ -79,18 +79,18 @@ def _test(mocker: CollectTestsMocker, run_nightly: bool, run_master: bool, colle
     with mocker:
         collected = collector_class(*collector_class_args).collect(run_nightly, run_master)
 
-        if not any((expected_tests, expected_packs, expected_machines)):
-            assert not collected, f'should not have collected packs {collected.packs}, tests {collected.tests}'
+    if not any((expected_tests, expected_packs, expected_machines)):
+        assert not collected, f'should not have collected packs {collected.packs}, tests {collected.tests}'
 
-        if expected_tests is not None:
-            assert collected.tests == set(expected_tests)
-        if expected_packs is not None:
-            assert collected.packs == set(expected_packs)
-        if expected_machines is not None:
-            assert set(collected.machines) == set(expected_machines)
+    if expected_tests is not None:
+        assert collected.tests == set(expected_tests)
+    if expected_packs is not None:
+        assert collected.packs == set(expected_packs)
+    if expected_machines is not None:
+        assert set(collected.machines) == set(expected_machines)
 
-        assert run_nightly == (Machine.NIGHTLY in collected.machines)
-        assert run_master == (Machine.MASTER in collected.machines)
+    assert run_nightly == (Machine.NIGHTLY in collected.machines)
+    assert run_master == (Machine.MASTER in collected.machines)
 
     for test in collected.tests:
         print(f'collected test {test}')
