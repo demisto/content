@@ -974,8 +974,7 @@ def test_retrieve_files_command(requests_mock):
     from CoreIRApiModule import retrieve_files_command, CoreClient
     from CommonServerPython import tableToMarkdown, string_to_table_header
 
-    retrieve_expected_result = {
-        'CoreApiModule.RetrievedFiles(val.action_id == obj.action_id)': {'action_id': 1773}}
+    retrieve_expected_result = {'action_id': 1773}
     requests_mock.post(f'{Core_URL}/public_api/v1/endpoints/file_retrieval/', json={'reply': {'action_id': 1773}})
     result = {'action_id': 1773}
 
@@ -1003,8 +1002,7 @@ def test_retrieve_files_command_using_general_file_path(requests_mock):
     from CoreIRApiModule import retrieve_files_command, CoreClient
     from CommonServerPython import tableToMarkdown, string_to_table_header
 
-    retrieve_expected_result = {
-        'CoreApiModule.RetrievedFiles(val.action_id == obj.action_id)': {'action_id': 1773}}
+    retrieve_expected_result = {'action_id': 1773}
     requests_mock.post(f'{Core_URL}/public_api/v1/endpoints/file_retrieval/', json={'reply': {'action_id': 1773}})
     result = {'action_id': 1773}
 
@@ -1076,7 +1074,7 @@ def test_retrieve_file_details_command(requests_mock):
     args = {
         'action_id': '1788'
     }
-    results, file_result = retrieve_file_details_command(client, args)
+    results, file_result = retrieve_file_details_command(client, args, False)
     assert results == retrieve_expected_hr
     assert file_result[0]['File'] == 'endpoint_test_1.zip'
 
@@ -1218,9 +1216,7 @@ def test_action_status_get_command(requests_mock):
             'endpoint_id': item,
             'status': data.get(item)
         })
-    action_status_get_command_expected_result = {
-        'CoreApiModule.GetActionStatus(val.action_id == obj.action_id)':
-            result}
+    action_status_get_command_expected_result = result
 
     requests_mock.post(f'{Core_URL}/public_api/v1/actions/get_action_status/',
                        json=action_status_get_command_command_reply)
