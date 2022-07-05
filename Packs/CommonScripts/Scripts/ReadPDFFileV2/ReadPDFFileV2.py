@@ -288,11 +288,11 @@ def extract_url_from_annot_object(annot_object):
     # Extracts the URLs from the Annot object (under key: '/A'):
     if a := annot_object.get('/A'):
         if isinstance(a, PyPDF2.generic.IndirectObject):
-            a = a.getObject()
+            a = a.get_object()
 
         if url := a.get('/URI'):
             if isinstance(url, PyPDF2.generic.IndirectObject):
-                url = url.getObject()
+                url = url.get_object()
             return url
 
 
@@ -349,7 +349,14 @@ def extract_urls_and_emails_from_annot_objects(annot_objects):
 
     for annot_object in annot_objects:
         if isinstance(annot_object, PyPDF2.generic.IndirectObject):
-            annot_object = annot_object.getObject()
+            try:
+                annot_object = annot_object.get_object()
+            except Exception as e:
+                if "Could not find object" in str(e):
+                    demisto.error(f'annot.get_object() encountered an error: {e}.\n Skipping without failure.')
+                    continue
+                else:
+                    demisto.error(f'annot.get_object() encountered an error: {e}.')
 
         extracted_object = extract_url_from_annot_object(annot_object)
         # Separates URLs and Emails:
@@ -377,12 +384,12 @@ def get_urls_and_emails_from_pdf_annots(file_path):
 
     pdf_file = open(file_path, 'rb')
     pdf = PyPDF2.PdfFileReader(pdf_file)
-    pages = pdf.getNumPages()
+    pages_len = len(pdf.pages)
 
     # Goes over the PDF, page by page, and extracts urls and emails:
-    for page in range(pages):
-        page_sliced = pdf.getPage(page)
-        page_object = page_sliced.getObject()
+    for page in range(pages_len):
+        page_sliced = pdf.pages[page]
+        page_object = page_sliced.get_object()
 
         # Extracts the PDF's Annots (Annotations and Commenting):
         if annots := page_object.get('/Annots'):
@@ -390,7 +397,7 @@ def get_urls_and_emails_from_pdf_annots(file_path):
                 annots = [annots]
 
             for annot in annots:
-                annot_objects = annot.getObject()
+                annot_objects = annot.get_object()
                 if not isinstance(annot_objects, PyPDF2.generic.ArrayObject):
                     annot_objects = [annot_objects]
 
