@@ -16,7 +16,7 @@ configuration:
   - Optimize
   - Allow
   - Default
-  required: true
+  required: false
   type: 16
 - defaultvalue: All
   display: Regions
