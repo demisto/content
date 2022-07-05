@@ -17,6 +17,7 @@ DUMMY_TIME = '2022-03-21T07:06:41.000Z'
 ASSET_IP_ENDPOINT = '/assets/ip'
 CURRENT_TIME = time.time()
 
+
 def util_load_json(path):
     """Load a json file to python dictionary."""
     with io.open(path, mode='r', encoding='utf-8') as f:
