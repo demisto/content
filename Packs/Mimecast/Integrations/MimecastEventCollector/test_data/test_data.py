@@ -5,7 +5,7 @@ WITH_OUT_DUP_TEST = {
             "auditType": "User Logged On",
             "user": "outbound-auth@journal.paloaltonetworks.mime.integration.com",
             "eventTime": "2022-05-28T12:55:22+0000",
-            "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-28, Time: 08:55:22 GMT-04:00, IP: 34.235.45.235, Application: SMTP-MTA2, Method: Cloud",
+            "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-28, Time: 08:55:22 GMT-04:00, IP: 1.2.3.4, Application: SMTP-MTA2, Method: Cloud",
             "category": "authentication_logs"
         },
         {
@@ -13,7 +13,7 @@ WITH_OUT_DUP_TEST = {
             "auditType": "User Logged On",
             "user": "outbound-auth@journal.paloaltonetworks.mime.integration.com",
             "eventTime": "2022-05-28T08:00:21+0000",
-            "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-28, Time: 04:00:21 GMT-04:00, IP: 34.235.45.235, Application: SMTP-MTA2, Method: Cloud",
+            "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-28, Time: 04:00:21 GMT-04:00, IP: 1.2.3.4, Application: SMTP-MTA2, Method: Cloud",
             "category": "authentication_logs"
         }],
 
@@ -30,7 +30,7 @@ WITH_DUP_TEST = {
             "auditType": "User Logged On",
             "user": "outbound-auth@journal.paloaltonetworks.mime.integration.com",
             "eventTime": "2022-05-28T12:55:22+0000",
-            "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-28, Time: 08:55:22 GMT-04:00, IP: 34.235.45.235, Application: SMTP-MTA2, Method: Cloud",
+            "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-28, Time: 08:55:22 GMT-04:00, IP: 1.2.3.4, Application: SMTP-MTA2, Method: Cloud",
             "category": "authentication_logs"
         },
         {
@@ -38,7 +38,7 @@ WITH_DUP_TEST = {
             "auditType": "User Logged On",
             "user": "outbound-auth@journal.paloaltonetworks.mime.integration.com",
             "eventTime": "2022-05-28T08:00:21+0000",
-            "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-28, Time: 04:00:21 GMT-04:00, IP: 34.235.45.235, Application: SMTP-MTA2, Method: Cloud",
+            "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-28, Time: 04:00:21 GMT-04:00, IP: 1.2.3.4, Application: SMTP-MTA2, Method: Cloud",
             "category": "authentication_logs"
         },
         {
@@ -46,7 +46,7 @@ WITH_DUP_TEST = {
             "auditType": "User Logged On",
             "user": "outbound-auth@journal.paloaltonetworks.mime.integration.com",
             "eventTime": "2022-05-28T08:00:21+0000",
-            "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-28, Time: 04:00:21 GMT-04:00, IP: 34.235.45.235, Application: SMTP-MTA2, Method: Cloud",
+            "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-28, Time: 04:00:21 GMT-04:00, IP: 1.2.3.4, Application: SMTP-MTA2, Method: Cloud",
             "category": "authentication_logs"
         }
     ],
@@ -60,7 +60,7 @@ WITH_DUP_TEST = {
         "auditType": "User Logged On",
         "user": "outbound-auth@journal.paloaltonetworks.mime.integration.com",
         "eventTime": "2022-05-28T12:55:22+0000",
-        "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-28, Time: 08:55:22 GMT-04:00, IP: 34.235.45.235, Application: SMTP-MTA2, Method: Cloud",
+        "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-28, Time: 08:55:22 GMT-04:00, IP: 1.2.3.4, Application: SMTP-MTA2, Method: Cloud",
         "category": "authentication_logs"
     }]
 }
@@ -86,7 +86,7 @@ FILTER_SAME_TIME_EVEMTS = {
                 "auditType": "User Logged On",
                 "user": "outbound-auth@journal.paloaltonetworks.mime.integration.com",
                 "eventTime": "2022-05-31T12:50:33+0000",
-                "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-31, Time: 08:50:33 GMT-04:00, IP: 54.243.138.179, Application: SMTP-MTA2, Method: Cloud",
+                "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-31, Time: 08:50:33 GMT-04:00, IP: 1.2.3.4, Application: SMTP-MTA2, Method: Cloud",
                 "category": "authentication_logs"
             },
             {
@@ -94,7 +94,7 @@ FILTER_SAME_TIME_EVEMTS = {
                 "auditType": "User Logged On",
                 "user": "outbound-auth@journal.paloaltonetworks.mime.integration.com",
                 "eventTime": "2022-05-31T12:50:33+0000",
-                "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-31, Time: 08:50:33 GMT-04:00, IP: 54.243.138.179, Application: SMTP-MTA2, Method: Cloud",
+                "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-31, Time: 08:50:33 GMT-04:00, IP: 1.2.3.4, Application: SMTP-MTA2, Method: Cloud",
                 "category": "authentication_logs"
             },
             {
@@ -102,7 +102,7 @@ FILTER_SAME_TIME_EVEMTS = {
                 "auditType": "User Logged On",
                 "user": "outbound-auth@journal.paloaltonetworks.mime.integration.com",
                 "eventTime": "2022-05-31T11:35:31+0000",
-                "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-31, Time: 09:35:31 GMT-04:00, IP: 54.243.138.179, Application: SMTP-MTA2, Method: Cloud",
+                "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-31, Time: 09:35:31 GMT-04:00, IP: 1.2.3.4, Application: SMTP-MTA2, Method: Cloud",
                 "category": "authentication_logs"
             },
             {
@@ -110,7 +110,7 @@ FILTER_SAME_TIME_EVEMTS = {
                 "auditType": "User Logged On",
                 "user": "outbound-auth@journal.paloaltonetworks.mime.integration.com",
                 "eventTime": "2022-05-31T9:05:31+0000",
-                "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-31, Time: 09:05:31 GMT-04:00, IP: 54.243.138.179, Application: SMTP-MTA2, Method: Cloud",
+                "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-31, Time: 09:05:31 GMT-04:00, IP: 1.2.3.4, Application: SMTP-MTA2, Method: Cloud",
                 "category": "authentication_logs"
             },
         ]
@@ -121,7 +121,7 @@ FILTER_SAME_TIME_EVEMTS = {
             "auditType": "User Logged On",
             "user": "outbound-auth@journal.paloaltonetworks.mime.integration.com",
             "eventTime": "2022-05-31T12:50:33+0000",
-            "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-31, Time: 08:50:33 GMT-04:00, IP: 54.243.138.179, Application: SMTP-MTA2, Method: Cloud",
+            "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-31, Time: 08:50:33 GMT-04:00, IP: 1.2.3.4, Application: SMTP-MTA2, Method: Cloud",
             "category": "authentication_logs"
         },
         {
@@ -129,7 +129,7 @@ FILTER_SAME_TIME_EVEMTS = {
             "auditType": "User Logged On",
             "user": "outbound-auth@journal.paloaltonetworks.mime.integration.com",
             "eventTime": "2022-05-31T12:50:33+0000",
-            "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-31, Time: 08:50:33 GMT-04:00, IP: 54.243.138.179, Application: SMTP-MTA2, Method: Cloud",
+            "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-31, Time: 08:50:33 GMT-04:00, IP: 1.2.3.4, Application: SMTP-MTA2, Method: Cloud",
             "category": "authentication_logs"
         }
     ]
@@ -149,7 +149,7 @@ AUDIT_LOG_RESPONSE = {
             "auditType": "User Logged On",
             "user": "outbound-auth@journal.paloaltonetworks.mime.integration.com",
             "eventTime": "2022-05-29T10:43:25+0000",
-            "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-29, Time: 06:43:25 GMT-04:00, IP: 54.243.138.179, Application: SMTP-MTA2, Method: Cloud",
+            "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-29, Time: 06:43:25 GMT-04:00, IP: 1.2.3.4, Application: SMTP-MTA2, Method: Cloud",
             "category": "authentication_logs"
         },
         {
@@ -157,7 +157,7 @@ AUDIT_LOG_RESPONSE = {
             "auditType": "User Logged On",
             "user": "outbound-auth@journal.paloaltonetworks.mime.integration.com",
             "eventTime": "2022-05-29T08:43:25+0000",
-            "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-29, Time: 04:43:25 GMT-04:00, IP: 54.243.138.179, Application: SMTP-MTA2, Method: Cloud",
+            "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-29, Time: 04:43:25 GMT-04:00, IP: 1.2.3.4, Application: SMTP-MTA2, Method: Cloud",
             "category": "authentication_logs"
         },
         {
@@ -165,7 +165,7 @@ AUDIT_LOG_RESPONSE = {
             "auditType": "User Logged On",
             "user": "outbound-auth@journal.paloaltonetworks.mime.integration.com",
             "eventTime": "2022-05-29T05:03:24+0000",
-            "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-29, Time: 01:03:24 GMT-04:00, IP: 54.243.138.179, Application: SMTP-MTA2, Method: Cloud",
+            "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-29, Time: 01:03:24 GMT-04:00, IP: 1.2.3.4, Application: SMTP-MTA2, Method: Cloud",
             "category": "authentication_logs"
         }
     ],
@@ -178,7 +178,7 @@ AUDIT_LOG_AFTER_PROCESS = [
         "auditType": "User Logged On",
         "user": "outbound-auth@journal.paloaltonetworks.mime.integration.com",
         "eventTime": "2022-05-29T10:43:25+0000",
-        "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-29, Time: 06:43:25 GMT-04:00, IP: 54.243.138.179, Application: SMTP-MTA2, Method: Cloud",
+        "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-29, Time: 06:43:25 GMT-04:00, IP: 1.2.3.4, Application: SMTP-MTA2, Method: Cloud",
         "category": "authentication_logs",
         "xsiem_classifier": "audit_event"
     },
@@ -187,7 +187,7 @@ AUDIT_LOG_AFTER_PROCESS = [
         "auditType": "User Logged On",
         "user": "outbound-auth@journal.paloaltonetworks.mime.integration.com",
         "eventTime": "2022-05-29T08:43:25+0000",
-        "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-29, Time: 04:43:25 GMT-04:00, IP: 54.243.138.179, Application: SMTP-MTA2, Method: Cloud",
+        "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-29, Time: 04:43:25 GMT-04:00, IP: 1.2.3.4, Application: SMTP-MTA2, Method: Cloud",
         "category": "authentication_logs",
         "xsiem_classifier": "audit_event"
     },
@@ -196,7 +196,7 @@ AUDIT_LOG_AFTER_PROCESS = [
         "auditType": "User Logged On",
         "user": "outbound-auth@journal.paloaltonetworks.mime.integration.com",
         "eventTime": "2022-05-29T05:03:24+0000",
-        "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-29, Time: 01:03:24 GMT-04:00, IP: 54.243.138.179, Application: SMTP-MTA2, Method: Cloud",
+        "eventInfo": "Successful authentication for outbound-auth@journal.paloaltonetworks.mime.integration.com <SMTP Outbound Auth>, Date: 2022-05-29, Time: 01:03:24 GMT-04:00, IP: 1.2.3.4, Application: SMTP-MTA2, Method: Cloud",
         "category": "authentication_logs",
         "xsiem_classifier": "audit_event"
     }
@@ -266,7 +266,7 @@ SIEM_RESPONSE_MULTIPLE_EVENTS = {
         {
             "acc": "CUSA102A236",
             "SpamLimit": 28,
-            "IP": "54.243.138.179",
+            "IP": "1.2.3.4",
             "Dir": "Outbound",
             "Subject": "Re",
             "MsgId": "<4bf108530de00f37-111331@nodered-mimecast-55569955-kthgt.hamilton321.net>",
@@ -284,7 +284,7 @@ SIEM_RESPONSE_MULTIPLE_EVENTS = {
         {
             "acc": "CUSA102A236",
             "SpamLimit": 28,
-            "IP": "54.243.138.179",
+            "IP": "1.2.3.4",
             "Dir": "Outbound",
             "Subject": "Re",
             "MsgId": "<c096a6439eae1c9c-57128@nodered-mimecast-55569955-kthgt.hamilton321.net>",
@@ -302,7 +302,7 @@ SIEM_RESPONSE_MULTIPLE_EVENTS = {
         {
             "acc": "CUSA102A236",
             "SpamLimit": 28,
-            "IP": "54.243.138.179",
+            "IP": "1.2.3.4",
             "Dir": "Outbound",
             "Subject": "Re",
             "MsgId": "<c096a6439eae1c9c-57128@nodered-mimecast-55569955-kthgt.hamilton321.net>",
@@ -325,7 +325,7 @@ SIEM_RESULT_MULTIPLE_EVENTS_PROCESS = [
         "acc": "CUSA102A236",
         "SpamLimit": 28,
         "IP": [
-            "54.243.138.179"
+            "1.2.3.4"
         ],
         "Dir": "Outbound",
         "Subject": "Re",
@@ -347,7 +347,7 @@ SIEM_RESULT_MULTIPLE_EVENTS_PROCESS = [
         "acc": "CUSA102A236",
         "SpamLimit": 28,
         "IP": [
-            "54.243.138.179"
+            "1.2.3.4"
         ],
         "Dir": "Outbound",
         "Subject": "Re",
@@ -369,7 +369,7 @@ SIEM_RESULT_MULTIPLE_EVENTS_PROCESS = [
         "acc": "CUSA102A236",
         "SpamLimit": 28,
         "IP": [
-            "54.243.138.179"
+            "1.2.3.4"
         ],
         "Dir": "Outbound",
         "Subject": "Re",

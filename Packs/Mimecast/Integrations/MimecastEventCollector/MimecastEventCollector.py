@@ -117,7 +117,7 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
                     slicing from {len(self.events_from_prev_run)=}.'
                 )
                 stored = self.events_from_prev_run[:self.options.limit]
-                self.events_from_prev_run = stored[self.options.limit:]
+                self.events_from_prev_run = self.events_from_prev_run[self.options.limit:]
                 return stored
 
             else:
@@ -503,7 +503,7 @@ def prepare_potential_audit_duplicates_for_next_run(audit_events: list, next_run
     return same_time_events
 
 
-def main():
+def main():      # pragma: no cover
     # Args is always stronger. Get last run even stronger
     demisto.info('\n started running main\n')
     demisto_params = demisto.params() | demisto.args()

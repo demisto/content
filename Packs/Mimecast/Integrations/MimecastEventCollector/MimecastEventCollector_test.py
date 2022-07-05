@@ -246,3 +246,67 @@ def test_handle_last_run_exit_without_values(mocker):
             SIEM_EVENTS_FROM_LAST_RUN: ['event1', 'event2'],
             AUDIT_LAST_RUN: '2011-12-03T10:15:30+0000',
             AUDIT_EVENT_DEDUP_LIST: ['id1', 'id2']} == set_last_run_call_args
+
+
+def test_siem_custom_run():
+    """
+    Given:
+         - A list of events_from_prev_run
+    When:
+        - The events_from_prev_run is bigger the SIEM_LOG_LIMIT
+    Then:
+        - assert that the stored returned are the events from last run and that the events_from_prev_run has been modified
+    """
+    mock_events_from_prev_run: list = [i for i in range(500)]
+    siem_event_handler.events_from_prev_run = mock_events_from_prev_run
+    assert siem_event_handler.run() == mock_events_from_prev_run[:SIEM_LOG_LIMIT]
+    assert siem_event_handler.events_from_prev_run == mock_events_from_prev_run[SIEM_LOG_LIMIT:]
+
+
+def test_siem_custom_run2(mocker):
+    """
+    Given:
+        - A list of events from last run
+    When:
+        - The events_from_prev_run is smaller than SIEM_LOG_LIMIT
+    Then:
+        - Checke the events are stored correctly
+    """
+    mocker.patch.object(MimecastGetSiemEvents, '_iter_events', return_value=[])
+    mock_events_from_prev_run: list = [i for i in range(200)]
+    siem_event_handler.events_from_prev_run = mock_events_from_prev_run
+    assert siem_event_handler.run() == mock_events_from_prev_run[:SIEM_LOG_LIMIT]
+    assert siem_event_handler.events_from_prev_run == []
+
+
+def test_siem_custom_run3(mocker):
+    """
+    Given:
+        - A list of events from last run
+    When:
+        - The events_from_prev_run is smaller then SIEM_LOG_LIMIT and events are returned from iter events
+    Then:
+        - Check the events are stored correctly
+    """
+    iter_events_mock_return_val = [[i for i in range(600, 900)]]
+    mocker.patch.object(MimecastGetSiemEvents, '_iter_events', return_value=iter_events_mock_return_val)
+    mock_events_from_prev_run: list = [i for i in range(200)]
+    siem_event_handler.events_from_prev_run = mock_events_from_prev_run.copy()
+
+    stored = siem_event_handler.run()
+
+    len_from_last_run = len(mock_events_from_prev_run)
+    len_from_iter_events = SIEM_LOG_LIMIT - len_from_last_run
+
+    assert stored == mock_events_from_prev_run + iter_events_mock_return_val[0][:len_from_iter_events]
+    assert siem_event_handler.events_from_prev_run == iter_events_mock_return_val[0][len_from_iter_events:]
+
+
+def test_prepare_siem_request_body():
+    siem_event_handler.token = ''
+    post_body = {'data': [{'type': 'MTA', 'compress': True, 'fileFormat': 'json'}]}
+    assert json.dumps(post_body) == siem_event_handler.prepare_siem_request_body()
+
+    siem_event_handler.token = '1234'
+    post_body = {'data': [{'type': 'MTA', 'compress': True, 'fileFormat': 'json', 'token': '1234'}]}
+    assert json.dumps(post_body) == siem_event_handler.prepare_siem_request_body()
