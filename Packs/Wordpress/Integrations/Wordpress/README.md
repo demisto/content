@@ -1,5 +1,5 @@
 The WordPress REST API provides an interface for applications to interact with your WordPress site by sending and receiving data as JSON (JavaScript Object Notation) objects. It is the foundation of the WordPress Block Editor, and can likewise enable your theme, plugin or custom application to present new, powerful interfaces for managing and publishing your site content.
-This integration was integrated and tested with version xx of Wordpress
+This integration was integrated and tested with version 5.6 of Wordpress
 
 ## Configure Wordpress on Cortex XSOAR
 
