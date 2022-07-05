@@ -120,7 +120,7 @@ tasks:
       version: -1
       name: PAN-OS - Refresh Domain EDL
       description: Refreshes the specified external dynamic list
-      script: '|||panorama-refresh-edl'
+      script: '|||pan-os-refresh-edl'
       type: regular
       iscommand: true
       brand: ""
@@ -370,7 +370,7 @@ tasks:
       version: -1
       name: Fetch instance info
       description: Run any command supported in the API.
-      script: '|||panorama'
+      script: '|||pan-os'
       type: regular
       iscommand: true
       brand: ""
