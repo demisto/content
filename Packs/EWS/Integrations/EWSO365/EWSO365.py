@@ -2325,7 +2325,7 @@ def sub_main():
         client = EWSClient(**params)
         start_logging()
 
-        # replace sensitive access_token value from logs
+        # replace sensitive access_token value in logs
         add_sensitive_log_strs(client.credentials.access_token.get('access_token', ''))
 
         command = demisto.command()
