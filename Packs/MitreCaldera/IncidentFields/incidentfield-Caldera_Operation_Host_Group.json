@@ -3,6 +3,7 @@
     "version": -1,
     "name": "MITRE Caldera Operation Host Group",
     "ownerOnly": false,
+    "description": "Which Host Group to run against.",
     "cliName": "calderaoperationhostgroup",
     "type": "shortText",
     "closeForm": false,
