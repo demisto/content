@@ -17,8 +17,10 @@ def main():
         issue_end_point = f"https://platform.cycognito.com/issues/issue/{issue_id}/info"
         asset_end_point = f"https://platform.cycognito.com/assets/{asset_id}/info"
 
-        html = f"<p style=text-align:left;>For more information on the Issue, <a href={issue_end_point}><i>click here</i></a></p>" \
-            f"<p style=text-align:left;>For more information on the Affected Asset, <a href={asset_end_point}><i>click here</i></a></p>"
+        html = "<p style=text-align:left;>For more information on the Issue, " \
++               f"<a href={issue_end_point}><i>click here</i></a></p>" \
++               "<p style=text-align:left;>For more information on the Affected Asset, " \
++               f"<a href={asset_end_point}><i>click here</i></a></p>"
 
         demisto.results({
             'ContentsFormat': formats['html'],

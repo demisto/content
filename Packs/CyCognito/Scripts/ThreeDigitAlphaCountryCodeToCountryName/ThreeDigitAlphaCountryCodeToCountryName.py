@@ -14,7 +14,7 @@ def main():
             for location in argToList(loc_names):
                 names.append(pycountry.countries.get(alpha_3=location).name)
             demisto.results(names)
-    except AttributeError as e:
+    except AttributeError:
         demisto.results("")
     except Exception as e:
         return_error(f'Error occurred while parsing country name:\n{e}')

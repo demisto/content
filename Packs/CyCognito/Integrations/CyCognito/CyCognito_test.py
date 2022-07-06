@@ -762,7 +762,7 @@ def test_list_asset_command_with_empty_response(requests_mock, mock_client):
     ({'max_fetch': 1, "locations": ['incorrect_country_name']},
      ERRORS['INVALID_COUNTRY_ERROR'].format('incorrect_country_name'))
 ])
-def test_fetch_incident_when_invalid_arguments_provided(args, err_msg, mock_client):
+def test_fetch_incident_when_invalid_arguments_provided(args, err_msg, mock_client, capfd):
     """
     Test case scenario for execution of fetch_incident when invalid arguments are provided.
 
@@ -776,6 +776,7 @@ def test_fetch_incident_when_invalid_arguments_provided(args, err_msg, mock_clie
     from CyCognito import fetch_incidents
 
     with pytest.raises(ValueError) as err:
+        capfd.close()
         fetch_incidents(mock_client, {}, args)
 
     assert str(err.value) == err_msg
