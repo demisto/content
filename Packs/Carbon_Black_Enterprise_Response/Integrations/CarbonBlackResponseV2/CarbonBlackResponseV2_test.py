@@ -298,47 +298,47 @@ def test_crossproc(data_str, expected):
 
 NETCONN_CASES = [
     (
-		[{"domain": "login.live.com",
-		  "proto": 6,
-		  "local_port": 49240,
-		  "timestamp": "2017-01-11T16:20:04.892Z",
-		  "local_ip": 167772448,
-		  "direction": "true",
-		  "remote_port": 80,
-		  "remote_ip": -2080555708}],
-		[{"domain": "login.live.com",
-		  "proto": 6,
-		  "local_port": 49240,
-		  "timestamp": "2017-01-11T16:20:04.892Z",
-		  "local_ip": "10.0.1.32",
-		  "direction": "true",
-		  "remote_port": 80,
-		  "remote_ip": "131.253.61.68"}],
+        [{"domain": "login.live.com",
+          "proto": 6,
+          "local_port": 49240,
+          "timestamp": "2017-01-11T16:20:04.892Z",
+          "local_ip": 167772448,
+          "direction": "true",
+          "remote_port": 80,
+          "remote_ip": -2080555708}],
+        [{"domain": "login.live.com",
+          "proto": 6,
+          "local_port": 49240,
+          "timestamp": "2017-01-11T16:20:04.892Z",
+          "local_ip": "10.0.1.32",
+          "direction": "true",
+          "remote_port": 80,
+          "remote_ip": "131.253.61.68"}],
     )
 ]
 
 
 NETCONN_BAD_CASES = [
     (
-		[{"domain": "login.live.com",
-		  "proto": 6,
-		  "local_port": 49240,
-		  "timestamp": "2017-01-11T16:20:04.892Z",
-		  "local_ip": "ff02::fb",
-		  "direction": "true",
-		  "remote_port": 80,
-		  "remote_ip": "fe80::a8f9:1961:6c38:2c0e"}],
-		[{"domain": "login.live.com",
-		  "proto": 6,
-		  "local_port": 49240,
-		  "timestamp": "2017-01-11T16:20:04.892Z",
-		  "local_ip": "ff02::fb",
-		  "direction": "true",
-		  "remote_port": 80,
-		  "remote_ip": "fe80::a8f9:1961:6c38:2c0e"}],
-        # ipv6 expected
+        [{"domain": "login.live.com",
+          "proto": 6,
+          "local_port": 49240,
+          "timestamp": "2017-01-11T16:20:04.892Z",
+          "local_ip": "ff02::fb",
+          "direction": "true",
+          "remote_port": 80,
+          "remote_ip": "fe80::a8f9:1961:6c38:2c0e"}],
+        [{"domain": "login.live.com",
+          "proto": 6,
+          "local_port": 49240,
+          "timestamp": "2017-01-11T16:20:04.892Z",
+          "local_ip": "ff02::fb",
+          "direction": "true",
+          "remote_port": 80,
+          "remote_ip": "fe80::a8f9:1961:6c38:2c0e"}] # ipv6 expected
     )
 ]
+
 
 @pytest.mark.parametrize('data_str, expected', NETCONN_CASES)
 def test_netconn(data_str, expected):
@@ -374,7 +374,6 @@ def test_fail_netconn(mocker, data_str, expected):
 
     res = netconn_complete(data_str).format()
     assert res == expected
-
 
 
 @freeze_time("2021-03-14T13:34:14.758295Z")

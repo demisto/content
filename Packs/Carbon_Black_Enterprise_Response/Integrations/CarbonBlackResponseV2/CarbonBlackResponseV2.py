@@ -95,6 +95,7 @@ class regmod_complete(ProcessEventDetail):
             entry['operation_type'] = self.OPERATION_TYPE.get(entry.get('operation_type', ''), '')
         return self.fields
 
+
 class netconn_complete(ProcessEventDetail):
     """
     For netconn_complete, the v2 API and newer return an array of JSON objects instead of piped-versioned fields.
@@ -102,7 +103,6 @@ class netconn_complete(ProcessEventDetail):
     """
     def __init__(self, fields):
         self.fields = fields
-
 
     def format(self):
         for entry in self.fields:
