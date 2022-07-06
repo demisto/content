@@ -14,7 +14,8 @@ configuration:
 - name: api_key
   display: API Key
   defaultvalue: ''
-  type: 4
+  hiddenusername: true
+  type: 9
   required: true
 - name: insecure
   display: Trust any certificate (not secure)
