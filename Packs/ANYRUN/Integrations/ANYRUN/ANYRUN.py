@@ -18,6 +18,8 @@ USERNAME = PARAMS.get('credentials', {}).get('identifier', '')
 PASSWORD = PARAMS.get('credentials', {}).get('password', '')
 AUTH = (USERNAME + ':' + PASSWORD).encode('utf-8')
 BASIC_AUTH = 'Basic ' + b64encode(AUTH).decode()
+
+
 # Remove trailing slash to prevent wrong URL path to service
 SERVER = PARAMS.get('url', '')
 SERVER = SERVER[:-1] if (SERVER and SERVER.endswith('/')) else SERVER
@@ -225,8 +227,8 @@ def generate_dbotscore(response):
     dict
         A DBotScore object.
     """
-
-    analysis = response.get('data', {}).get('analysis', {})
+    data: dict = response.get('data', {})
+    analysis = data.get('analysis', {})
     main_object = analysis.get('content', {}).get('mainObject', {})
     submission_type = main_object.get('type')
     submission_type = 'hash' if submission_type in {'file', 'download'} else submission_type
@@ -236,14 +238,59 @@ def generate_dbotscore(response):
         indicator = hashes.get('sha256', hashes.get('sha1', hashes.get('md5')))
     else:
         indicator = main_object.get('url')
+
+
+    # Add the hash first
     dbot_score = {
-        "DBotScore": {
+        "DBotScore": [ {
             "Indicator": indicator,
             "Type": submission_type,
             "Vendor": "ANYRUN",
             "Score": THREAT_TEXT_TO_DBOTSCORE.get(threat_text, 0)
-        }
+            } ]
     }
+
+    # Check if network information is available in the report
+    if 'network' in data:
+        network_data: dict = data.get('network')
+
+        # Then add all the network-related indicators - 'connections'
+        if 'connections' in network_data:
+            connections: list = network_data.get('connections')
+            for current_connection in connections:
+                if current_connection.get('Reputation') == 'malicious':
+                    current_indicator = {
+                        "Indicator": current_connection['IP'],
+                        "Type": 'ip',
+                        "Vendor": "ANYRUN",
+                        "Score": 3
+                    }
+                    dbot_score['DBotScore'].append(current_indicator)
+
+        # Then add all the network-related indicators - 'dnsRequests'
+        if 'dnsRequests' in network_data:
+            for current_dnsRequests in network_data.get('dnsRequests'):
+                if current_dnsRequests.get('Reputation') == 'malicious':
+                    current_indicator = {
+                        "Indicator": current_dnsRequests['Domain'],
+                        "Type": 'domain',
+                        "Vendor": "ANYRUN",
+                        "Score": 3
+                    }
+                    dbot_score['DBotScore'].append(current_indicator)
+
+        # Then add all the network-related indicators - 'httpRequests'
+        if 'httpRequests' in network_data:
+            for current_httpRequests in network_data.get('httpRequests'):
+                if current_httpRequests['Reputation'] == 'malicious':
+                    current_indicator = {
+                        "Indicator": current_httpRequests['URL'],
+                        "Type": 'url',
+                        "Vendor": "ANYRUN",
+                        "Score": 3
+                    }
+                    dbot_score['DBotScore'].append(current_indicator)
+
     return dbot_score
 
 
@@ -554,6 +601,7 @@ def contents_from_report(response):
         }
         reformatted_incidents.append(reformatted_incident)
 
+    # BRE - Network entry added
     contents = {
         'OS': os,
         'AnalysisDate': start_text,
@@ -562,8 +610,10 @@ def contents_from_report(response):
         'FileInfo': file_info,
         'Process': reformatted_processes,
         'Behavior': reformatted_incidents,
+        'Network': network,
         'Status': status
     }
+
     if hashes:
         for key, val in hashes.items():
             contents[key] = val
