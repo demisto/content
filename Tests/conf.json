@@ -3148,7 +3148,7 @@
             "fromversion": "5.0.0"
         },
         {
-            "integrations": "CyCognito Feed",
+            "integrations": "FeedCyCognito",
             "playbookID": "FeedCyCognito-Test",
             "fromversion": "6.0.0"
         },
