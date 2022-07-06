@@ -7,8 +7,10 @@ category: Utilities
 description: Drift integration to fetch, modify, create and delete contacts within the Drift Plattform's Contact API.
 configuration:
 - display: Access Token
+  displaypassword: Access Token
+  hiddenusername: true
   name: access_token
-  type: 4
+  type: 9
   required: true
   additionalinfo: API Access Token
 - display: Use system proxy settings
@@ -88,7 +90,7 @@ script:
     - contextPath: Drift.Contacts.Attributes
       description: Attributes of the contact (JSON dict).
     description: 'Post New Contact using a new contact Email '
-  dockerimage: demisto/python3:3.10.4.30607
+  dockerimage: demisto/python3:3.10.4.31492
   runonce: false
   subtype: python3
 fromversion: 6.2.0
