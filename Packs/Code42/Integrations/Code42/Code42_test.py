@@ -1,7 +1,6 @@
 import json
 import pytest
 from py42.sdk.queries.fileevents.filters import FileCategory
-from requests import Response
 from py42.sdk import SDKClient
 from py42.response import Py42Response
 from py42.exceptions import Py42NotFoundError
@@ -2118,6 +2117,7 @@ def test_add_user_to_watchlist_command_with_watchlist_type_calls_add_by_type_met
         "Username": "user_a@example.com",
         "Success": True,
     }
+
 
 def test_remove_user_from_watchlist_command_with_UUID_calls_add_by_id_method(
     code42_sdk_mock, mocker
