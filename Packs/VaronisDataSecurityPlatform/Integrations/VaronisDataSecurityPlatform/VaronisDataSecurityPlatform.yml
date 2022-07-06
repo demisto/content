@@ -318,7 +318,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Maximum number of alerts to retrieve (up to 5k)
+      description: Maximum number of alerts to retrieve (up to 100)
       isArray: false
       name: max_results
       required: false

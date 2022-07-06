@@ -187,17 +187,32 @@ def test_fetch_incidents(mocker: MockerFixture, requests_mock: MockerFixture):
     assert next_run == {'last_fetched_id': 152}
     assert incidents == [
         {
-            'name': 'Varonis alert 70FED0AD-8C95-4B52-A8EE-47F9AF72514F',
+            'name': 'Varonis alert DNS CUSTOM - Copy(2)',
             'occurred': '2022-04-13T10:01:35Z',
             'rawJSON': json.dumps(expected_outputs[0]),
             'type': 'Varonis DSP Incident',
             'severity': 3,
         },
         {
-            'name': 'Varonis alert 08CA3B6B-CFC4-45B0-8822-4C0BD007E0B0',
+            'name': 'Varonis alert DNS CUSTOM',
             'occurred': '2022-04-13T10:01:33Z',
             'rawJSON': json.dumps(expected_outputs[1]),
             'type': 'Varonis DSP Incident',
             'severity': 3,
         }
     ]
+
+
+def test_enrich_with_url():
+    from VaronisDataSecurityPlatform import enrich_with_url
+    obj = dict()
+    baseUrl = 'http://test.com'
+    id = '1'
+    expectedUrl = f'{baseUrl}/#/app/analytics/entity/Alert/{id}'
+
+    enrich_with_url(obj, baseUrl, id)
+    assert obj['Url'] == expectedUrl
+
+    baseUrl = 'http://test.com/'
+    enrich_with_url(obj, baseUrl, id)
+    assert obj['Url'] == expectedUrl
