@@ -744,7 +744,7 @@ def edit_issue_command(issue_id, mirroring=False, headers=None, status=None, tra
 def edit_status(issue_id, status, issue):
     # check for all authorized transitions available for this user
     # if the requested transition is available, execute it.
-    if issue is None:
+    if not issue:
         issue = {}
     j_res = list_transitions_data_for_issue(issue_id)
     transitions = [transition.get('name') for transition in j_res.get('transitions')]
