@@ -1,65 +1,50 @@
+from wsgiref import headers
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 ''' CONSTANTS '''
 API_ENDPOINT = 'https://driftapi.com'
-
-
 class Client(BaseClient):
-
-    def __init__(self, base_url, access_token, verify, proxy, email):
-        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
-        self.access_token = access_token
-        self.email = email
 
     def test(self):
         url_suffix = '/users/list'
-        params = {'access_token': self.access_token}
-        self._http_request('GET', url_suffix=url_suffix, params=params)
+        self._http_request('GET', url_suffix=url_suffix)
 
-    def post_contact(self, email: str = None):
+    def post_contact(self, email: dict = None):
         url_suffix = '/contacts'
-        params = {'access_token': self.access_token}
-        res = self._http_request('POST', url_suffix=url_suffix, params=params, json_data=email)
+        res = self._http_request('POST', url_suffix=url_suffix, json_data=email)
         return res
 
-    def get_contact(self, contact_id: str = None, email: str = None):
+    def get_contact(self, contact_id: str = None, email: dict = None):
         url_suffix = '/contacts'
-        params = {'access_token': self.access_token}
-        if contact_id:  # single contact attached to ID
+        if contact_id: 
             url_suffix = f"{url_suffix}/{contact_id}"
         elif email:
-            params.update({'email': email})
-        res = self._http_request('GET', url_suffix=url_suffix, params=params)
+            headers.update({'email': email})
+        res = self._http_request('GET', url_suffix=url_suffix)
         return res.get('data', [])
 
     def patch_contact(self, contact_id: str = None, attributes: dict = None):
         url_suffix = f"/contacts/{contact_id}"
-        params = {'access_token': self.access_token}
         res = self._http_request(
             'PATCH',
             url_suffix=url_suffix,
-            params=params,
             json_data=attributes
         )
         return res
 
     def delete_contact(self, contact_id: str = None):
         url_suffix = f"/contacts/{contact_id}"
-        params = {'access_token': self.access_token}
         res = self._http_request(
             'DELETE',
             url_suffix=url_suffix,
-            params=params,
             resp_type='response',
             ok_codes=[200, 202])
         return res
 
-
 def test_module(client):
     client.test()
     return_results('ok')
-
 
 def post_contact_command(client, args):
     email = {
@@ -76,7 +61,6 @@ def post_contact_command(client, args):
     )
     return command_results
 
-
 def get_contact_command(client, args):
     email = args.get('email')
     contact_id = args.get('id')
@@ -90,7 +74,6 @@ def get_contact_command(client, args):
         readable_output=tableToMarkdown('Contact:', res)
     )
     return_results(command_results)
-
 
 def patch_contact_command(client, args):
     contact_id = args.get('id')
@@ -106,7 +89,6 @@ def patch_contact_command(client, args):
     )
     return_results(command_results)
 
-
 def delete_contact_command(client, args):
     contact_id = args.get('id')
     client.delete_contact(contact_id=contact_id)
@@ -115,13 +97,12 @@ def delete_contact_command(client, args):
     )
     return_results(command_results)
 
-
 def main():
     params = demisto.params()
+    args = demisto.args()
     access_token = params.get('access_token')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    email = params.get('email')
     command = demisto.command()
 
     commands = {
@@ -131,16 +112,17 @@ def main():
         'drift-delete-contact': delete_contact_command
     }
 
-    LOG(f'Command being called is {command}')
+    demisto.debug(f'Command being called is {command}')
     try:
+        headers = {
+            'access_token': access_token
+        }
         client = Client(
-            API_ENDPOINT,
-            access_token,
+            API_ENDPOINT
             verify_certificate,
             proxy,
-            email
-        )
-        args = demisto.args()
+            headers=headers
+        )        
 
         if command == 'test-module':
             test_module(client)
@@ -150,7 +132,6 @@ def main():
     # Log exceptions
     except Exception as e:
         return_error(f'Failed to execute {command} command. Error: {str(e)}')
-
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
