@@ -22,6 +22,7 @@ from TrendMicroVisionOne import (
 api_key = "test api key"
 proxy = "false"
 
+
 # Mock function for add to block list and remove from block list
 def add_remove_blocklist_mock_response(*args, **kwargs):
     return_value = {
