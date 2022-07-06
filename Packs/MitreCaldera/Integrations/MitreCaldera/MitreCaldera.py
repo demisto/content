@@ -1902,11 +1902,11 @@ def test_module(client: Client) -> None:
 
 def main() -> None:
 
-    params: Dict[str, Any] = demisto.params()
-    args: Dict[str, Any] = demisto.args()
+    params = demisto.params()
+    args = demisto.args()
     url = params.get('url')
-    credentials: dict = params.get('api_key')
-    api_key: str = credentials.get('password')
+    credentials = params.get('api_key')
+    api_key = credentials.get('password')
     verify_certificate: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     headers = {}
