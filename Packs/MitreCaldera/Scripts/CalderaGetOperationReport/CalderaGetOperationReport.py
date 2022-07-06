@@ -11,8 +11,8 @@ if operation_id:
     if isinstance(res, dict) and "facts" in res:
         caldera_operation_facts = []
 
-        facts = res.get('facts')
-        
+        facts: list = res.get('facts')
+
         for fact in facts:
             caldera_operation_facts.append(
                 {
