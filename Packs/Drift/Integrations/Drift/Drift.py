@@ -1,9 +1,10 @@
-from wsgiref import headers
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 ''' CONSTANTS '''
 API_ENDPOINT = 'https://driftapi.com'
+
+
 class Client(BaseClient):
 
     def test(self):
@@ -15,13 +16,18 @@ class Client(BaseClient):
         res = self._http_request('POST', url_suffix=url_suffix, json_data=email)
         return res
 
-    def get_contact(self, contact_id: str = None, email: dict = None):
+    def get_contact(self, contact_id: str = None, email: str = None):
         url_suffix = '/contacts'
-        if contact_id: 
+        params = dict()
+        if contact_id:
             url_suffix = f"{url_suffix}/{contact_id}"
         elif email:
-            headers.update({'email': email})
-        res = self._http_request('GET', url_suffix=url_suffix)
+            params['email'] = email
+        res = self._http_request(
+            'GET',
+            url_suffix=url_suffix,
+            params=params
+        )
         return res.get('data', [])
 
     def patch_contact(self, contact_id: str = None, attributes: dict = None):
@@ -42,9 +48,11 @@ class Client(BaseClient):
             ok_codes=[200, 202])
         return res
 
-def test_module(client):
+
+def test_module(client: Client):
     client.test()
     return_results('ok')
+
 
 def post_contact_command(client, args):
     email = {
@@ -61,6 +69,7 @@ def post_contact_command(client, args):
     )
     return command_results
 
+
 def get_contact_command(client, args):
     email = args.get('email')
     contact_id = args.get('id')
@@ -74,6 +83,7 @@ def get_contact_command(client, args):
         readable_output=tableToMarkdown('Contact:', res)
     )
     return_results(command_results)
+
 
 def patch_contact_command(client, args):
     contact_id = args.get('id')
@@ -89,6 +99,7 @@ def patch_contact_command(client, args):
     )
     return_results(command_results)
 
+
 def delete_contact_command(client, args):
     contact_id = args.get('id')
     client.delete_contact(contact_id=contact_id)
@@ -97,10 +108,12 @@ def delete_contact_command(client, args):
     )
     return_results(command_results)
 
+
 def main():
     params = demisto.params()
     args = demisto.args()
-    access_token = params.get('access_token')
+    credentials = params.get('access_token')
+    access_token = credentials.get('password')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     command = demisto.command()
@@ -115,14 +128,14 @@ def main():
     demisto.debug(f'Command being called is {command}')
     try:
         headers = {
-            'access_token': access_token
+            'Authorization': f'Bearer {access_token}'
         }
         client = Client(
-            API_ENDPOINT
+            API_ENDPOINT,
             verify_certificate,
             proxy,
             headers=headers
-        )        
+        )
 
         if command == 'test-module':
             test_module(client)
@@ -132,6 +145,7 @@ def main():
     # Log exceptions
     except Exception as e:
         return_error(f'Failed to execute {command} command. Error: {str(e)}')
+
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
