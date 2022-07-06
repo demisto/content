@@ -15,6 +15,7 @@ configuration:
   display: API Key
   defaultvalue: ''
   hiddenusername: true
+  displaypassword: API Key
   type: 9
   required: true
 - name: insecure

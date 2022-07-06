@@ -1905,7 +1905,8 @@ def main() -> None:
     params: Dict[str, Any] = demisto.params()
     args: Dict[str, Any] = demisto.args()
     url = params.get('url')
-    api_key = params.get('api_key')
+    credentials = params.get('api_key')
+    api_key = credentials.get('password')
     verify_certificate: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     headers = {}
