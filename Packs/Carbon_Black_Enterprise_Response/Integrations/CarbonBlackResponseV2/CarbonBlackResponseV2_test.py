@@ -335,7 +335,7 @@ NETCONN_BAD_CASES = [
           "local_ip": "ff02::fb",
           "direction": "true",
           "remote_port": 80,
-          "remote_ip": "fe80::a8f9:1961:6c38:2c0e"}] # ipv6 expected
+          "remote_ip": "fe80::a8f9:1961:6c38:2c0e"}]  #ipv6 expected
     )
 ]
 
