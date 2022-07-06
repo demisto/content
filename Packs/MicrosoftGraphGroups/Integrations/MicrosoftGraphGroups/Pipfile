@@ -13,7 +13,7 @@ flake8 = "*"
 [packages]
 cybox = "==2.1.0.13"  # disable-secrets-detection
 future = "==0.16.0"
-lxml = "==3.7.2"
+lxml = "==4.9.1"
 mixbox = "==1.0.1"
 olefile = "==0.44"
 ordered-set = "==2.0.1"
