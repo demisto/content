@@ -423,18 +423,14 @@ tasks:
     scriptarguments:
       IoC_IP:
         complex:
-          root: inputs.IoC_IP
+          root: .
           filters:
-          - - operator: notContainsGeneral
-              left:
-                value:
-                  simple: inputs.IoC_IP
-                iscontext: true
-              right:
-                value:
-                  simple: 0.0.0.0
           transformers:
-          - operator: uniq
+          - operator: DsSearchQueryArray
+            args:
+              field:
+                value:
+                  simple: IP.Address
     loop:
       iscommand: false
       exitCondition: ''
@@ -475,9 +471,13 @@ tasks:
     scriptarguments:
       IoC_CVE:
         complex:
-          root: inputs.IoC_CVE
+          root: .
           transformers:
-          - operator: uniq
+          - operator: DsSearchQueryArray
+            args:
+              field:
+                value:
+                  simple: CVE.ID
     loop:
       iscommand: false
       exitCondition: ''
@@ -518,18 +518,13 @@ tasks:
     scriptarguments:
       IoC_Domain:
         complex:
-          root: inputs.IoC_Domain
-          filters:
-          - - operator: notContainsString
-              left:
-                value:
-                  simple: inputs.IoC_Domain
-                iscontext: true
-              right:
-                value:
-                  simple: portal-digitalshadows.com
+          root: .
           transformers:
-          - operator: uniq
+          - operator: DsSearchQueryArray
+            args:
+              field:
+                value:
+                  simple: Domain.Name
     loop:
       iscommand: false
       exitCondition: ''
@@ -570,18 +565,13 @@ tasks:
     scriptarguments:
       IoC_URL:
         complex:
-          root: inputs.IoC_URL
-          filters:
-          - - operator: notContainsGeneral
-              left:
-                value:
-                  simple: inputs.IoC_URL
-                iscontext: true
-              right:
-                value:
-                  simple: portal-digitalshadows.com
+          root: .
           transformers:
-          - operator: uniq
+          - operator: DsSearchQueryArray
+            args:
+              field:
+                value:
+                  simple: URL.Data
     loop:
       iscommand: false
       exitCondition: ''
@@ -622,9 +612,13 @@ tasks:
     scriptarguments:
       IoC_MD5:
         complex:
-          root: inputs.IoC_MD5
+          root: .
           transformers:
-          - operator: uniq
+          - operator: DsSearchQueryArray
+            args:
+              field:
+                value:
+                  simple: File.MD5
     loop:
       iscommand: false
       exitCondition: ''
@@ -665,9 +659,13 @@ tasks:
     scriptarguments:
       IoC_SHA256:
         complex:
-          root: inputs.IoC_SHA256
+          root: .
           transformers:
-          - operator: uniq
+          - operator: DsSearchQueryArray
+            args:
+              field:
+                value:
+                  simple: File.SHA256
     loop:
       iscommand: false
       exitCondition: ''
@@ -708,9 +706,13 @@ tasks:
     scriptarguments:
       IoC_SHA1:
         complex:
-          root: inputs.IoC_SHA1
+          root: .
           transformers:
-          - operator: uniq
+          - operator: DsSearchQueryArray
+            args:
+              field:
+                value:
+                  simple: File.SHA1
     loop:
       iscommand: false
       exitCondition: ''
