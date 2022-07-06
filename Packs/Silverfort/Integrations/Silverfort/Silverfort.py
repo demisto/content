@@ -216,7 +216,7 @@ def main():
     if not app_user_id or not app_user_secret:
         err_mmg = 'Verify the API KEY parameter is correct'
 
-    LOG(f'Command being called is {demisto.command()}')
+    demisto.debug(f'Command being called is {demisto.command()}')
     try:
         client = Client(
             app_user_id=app_user_id,
