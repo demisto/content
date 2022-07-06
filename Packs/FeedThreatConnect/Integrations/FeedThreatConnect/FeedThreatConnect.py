@@ -169,7 +169,15 @@ def module_test_command(client: Client) -> COMMAND_OUTPUT:
         return_error('Error from the API: ' + response.get('message',
                                                            'An error has occurred if it persist please contact your local help desk'))
 
-def fetch_indicators_command(client: Client) -> List[Dict[str, Any]]:
+
+def set_fields_query(fields: list) -> str:
+    fields_str = ''
+    for field in fields:
+        fields_str += f'&fields={field}'
+    return fields_str
+
+
+def fetch_groups_command(client: Client) -> List[Dict[str, Any]]:
     """ Fetch indicators from ThreatConnect
 
     Args:
@@ -178,9 +186,41 @@ def fetch_indicators_command(client: Client) -> List[Dict[str, Any]]:
     Returns:
         list: indicator to populate in demisto server.
     """
-    raw_response = client.get_indicators(owners=argToList(demisto.getParam('owners')))
+    owners = f'AND ({create_or_query(demisto.getParam("owners"), "ownerName")}) '
+    tags = f'AND ({create_or_query(demisto.getParam("tags"), "tags")}) '
+    status = f'AND ({create_or_query(demisto.getParam("status"), "status")}) '
+    fields = set_fields_query(argToList(demisto.getParam("fields")))
+    group_type = f'AND ({create_or_query(demisto.params().get("group_type", "Incident"), "typeName")}) '
+    first_fetch_time = demisto.getParam("first_fetch_time")
+    if first_fetch_time:
+        first_fetch_time = dateparser.parse(demisto.getParam('first_fetch_time').strip()).strftime("%Y-%m-%d")
+        from_date = f'AND (dateAdded > "{first_fetch_time}") '
+    page = 0
+    tql = f'{owners if owners != "AND () " else ""}{tags if tags != "AND () " else ""}' \
+          f'{group_type if group_type != "AND () " else ""}{status if status != "AND () " else ""}' \
+          f'{from_date if from_date != "AND () " else ""}'.replace('AND', '', 1)
+    if tql:
+        tql = urllib.parse.quote(tql.encode('utf8'))
+        tql = f'?tql={tql}'
+    else:
+        tql = ''
+        if fields:
+            fields = fields.replace('&', '?', 1)
+    url = f'/api/v3/groups{tql}{fields}&resultStart={page}&resultLimit=500'
+    indicators = []
+    while True:
+        response, status_code = client.make_request(Method.GET, url)
+        if status_code == 200:
+            indicators.extend(response.get('data', {}))
+            if 'next' in response:
+                url = response.get('next').replace(demisto.getParam('tc_api_path'), '')
+            else:
+                break
+        else:
+            return_error('Error from the API: ' + response.get('message',
+                                                               'An error has occurred if it persist please contact your local help desk'))
 
-    return [parse_indicator(indicator) for indicator in raw_response]
+    return [parse_indicator(indicator) for indicator in indicators]
 
 
 def create_or_query(delimiter_str: str, param_name: str) -> str:
@@ -222,7 +262,6 @@ def get_indicators_command(client: Client) -> COMMAND_OUTPUT:
                                                            'An error has occurred if it persist please contact your local help desk'))
 
 
-
 def get_owners_command(client: Client) -> COMMAND_OUTPUT:
     """ Get availble indicators owners from ThreatConnect - Help configure ThreatConnect Feed integraiton.
 
@@ -234,7 +273,7 @@ def get_owners_command(client: Client) -> COMMAND_OUTPUT:
         dict: Operation entry context.
         dict: Operation raw response.
     """
-    url = f'/api/v3/security/owners?resultLimit=10000'
+    url = f'/api/v3/security/owners?resultLimit=500'
 
     response, status_code = client.make_request(Method.GET, url)
     if status_code != 200:
@@ -248,8 +287,7 @@ def get_owners_command(client: Client) -> COMMAND_OUTPUT:
 
 
 def main():
-    # insecure = not demisto.getParam('insecure')
-    insecure = False
+    insecure = not demisto.getParam('insecure')
     client = Client(demisto.getParam('api_access_id'), demisto.getParam('api_secret_key'),
                     demisto.getParam('tc_api_path'), insecure)
     command = demisto.command()
@@ -261,7 +299,7 @@ def main():
     }
     try:
         if demisto.command() == 'fetch-indicators':
-            indicators = fetch_indicators_command(client)
+            indicators = fetch_groups_command(client)
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
         else:
