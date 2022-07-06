@@ -657,6 +657,60 @@ class Client(BaseClient):
         endpoint_url = 'dv/events/pq-ping'
         response = self._http_request(method='GET', url_suffix=endpoint_url, params=params)
         return response.get('data', [])
+    
+    def update_threat_status_request(self, threat_ids, status):
+        endpoint_url = 'threats/incident'
+
+        payload = {
+            "data": {
+                        "incidentStatus": status
+                    },
+            "filter": {
+                        "ids": threat_ids
+                    }
+        }
+        response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
+        return response.get('data', {})
+
+    def update_alert_status_request(self, alert_ids, status):
+        endpoint_url = 'cloud-detection/alerts/incident'
+
+        payload = {
+            "data": {
+                        "incidentStatus": status
+                    },
+            "filter": {
+                        "ids": alert_ids
+                    }
+        }
+        response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
+        return response.get('data', {})
+
+    def expire_site_request(self, site_id):
+        endpoint_url  = f'sites/{site_id}/expire-now'
+
+        response = self._http_request(method='POST', url_suffix=endpoint_url)
+        return response.get('data', {})
+    
+    def fetch_threat_file_request(self, password, threat_ids):
+        endpoint_url = 'threats/fetch-file'
+
+        payload = {
+            "data": {
+                        "password": password
+                    },
+            "filter": {
+                        "ids": threat_ids
+                    }
+        }
+        response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
+        return response.get('data', {})
+
+    def get_alerts_request(self, query_params):
+        endpoint_url = 'cloud-detection/alerts'
+
+        response = self._http_request(method='GET', url_suffix=endpoint_url, params=query_params)
+        return response.get('data', {})
 
 
 ''' COMMANDS + REQUESTS FUNCTIONS '''
@@ -1505,7 +1559,210 @@ def ping_power_query(client: Client, args: dict) -> CommandResults:
         outputs_prefix='SentinelOne.PowerQuery',
         outputs=context_entries,
         raw_response=response)
+
+def update_threat_status(client: Client, args: dict) -> CommandResults:
+    """
+    Apply a update status action to a group of threats. Relevant for API version 2.1
+    """
+    context_entries = []
+
+    # Get arguments
+    threat_ids = argToList(args.get('threat_ids'))
+    status = args.get('status')
     
+    # Make request and get raw response
+    updated_threats = client.update_threat_status_request(threat_ids, status)
+    
+    # Parse response into context & content entries
+    if updated_threats.get('affected') and int(updated_threats.get('affected')) > 0:
+        updated = True
+        meta = f'Total of {updated_threats.get("affected")} provided threats status were updated successfully'
+    else:
+        updated = False
+        meta = 'No threats were updated'
+    for threat_id in threat_ids:
+        context_entries.append({
+            'Updated': updated,
+            'ID': threat_id,
+            'Status': status,
+        })
+    
+    return CommandResults(
+        readable_output=tableToMarkdown('Sentinel One - Update threats status', context_entries, metadata=meta, removeNull=True),
+        outputs_prefix='SentinelOne.Threat',
+        outputs_key_field='ID',
+        outputs=context_entries,
+        raw_response=updated_threats)
+
+def update_alert_status(client: Client, args: dict) -> CommandResults:
+    """
+    Updates the status for group of Alerts. Relevant for API version 2.1
+    """
+    context_entries = []
+
+    # Get arguments
+    alert_ids = argToList(args.get('alert_ids'))
+    status = args.get('status')
+    
+    # Make request and get raw response
+    updated_alerts = client.update_alert_status_request(alert_ids, status)
+    
+    # Parse response into content entries
+    if updated_alerts.get('affected') and int(updated_alerts.get('affected')) > 0:
+        updated = True
+        meta = f'Total of {updated_alerts.get("affected")} provided alerts status were updated successfully'
+    else:
+        updated = False
+        meta = 'No alerts were updated'
+    for alert_id in alert_ids:
+        context_entries.append({
+            'Updated': updated,
+            'ID': alert_id,
+            'Status': status,
+        })
+    
+    return CommandResults(
+        readable_output=tableToMarkdown('Sentinel One - Update alerts status', context_entries, metadata=meta, removeNull=True),
+        outputs_prefix='SentinelOne.Alert',
+        outputs_key_field='ID',
+        outputs=context_entries,
+        raw_response=updated_alerts) 
+
+def expire_site(client: Client, args: dict) -> CommandResults:
+    """
+    Expires the site from the server. Relavent to both API Versions
+    """
+    context_entries = {}
+
+    # Get arguments
+    site_id = args.get("site_id")
+
+    # Make request and get raw response
+    Expired_site = client.expire_site_request(site_id) 
+
+    if Expired_site:
+        context_entries = {
+            "ID": Expired_site.get('id'),
+            "Name": Expired_site.get('name'),
+            "State": Expired_site.get('state'),
+            "SKU": Expired_site.get('sku'),
+            "Site Type": Expired_site.get('siteType'),
+            "Suite": Expired_site.get('suite'),
+            "Total Licences": Expired_site.get('totalLicenses'),
+            "Account ID": Expired_site.get('accountId'),
+            "Creator": Expired_site.get('creator'),
+            "Creator ID": Expired_site.get('creatorId'),
+            "Description": Expired_site.get('description'),
+            "Expiration": Expired_site.get('expiration'),
+        }
+    return CommandResults(
+        readable_output=tableToMarkdown('Sentinel One - Expire Site', context_entries, removeNull=True),
+        outputs_prefix='SentinelOne.Site',
+        outputs_key_field='ID',
+        outputs=context_entries,
+        raw_response=Expired_site)
+
+def fetch_threat_file(client: Client, args: dict) -> CommandResults:
+    """
+    Fetches the threat file. Relevent to both API Versions
+    """ 
+    context_entries = []
+
+    # Get Arguments
+    threat_ids = argToList(args.get('threat_ids'))
+    password = args.get('password')
+
+    downloaded_files = client.fetch_threat_file_request(password, threat_ids)
+
+    if downloaded_files.get('affected') and int(downloaded_files.get('affected')) > 0:
+        downloadable = True
+        meta = f'Total of {downloaded_files.get("affected")} provided threats were downloaded successfully'
+    else:
+        downloadable = False
+        meta = 'No threats were downloaded'
+    for threat_id in threat_ids:
+        context_entries.append({
+            'Downloadable': downloadable,
+            'ID': threat_id,
+        })
+    return CommandResults(
+        readable_output=tableToMarkdown('Sentinel One - Fetch threat file', context_entries, metadata=meta, removeNull=True),
+        outputs_prefix='SentinelOne.Threat',
+        outputs_key_field='ID',
+        outputs=context_entries,
+        raw_response=downloaded_files)
+
+def get_alerts(client: Client, args: dict) -> CommandResults:
+    """
+    Get the Alerts from server. Relevant to API Version 2.1
+    """
+    context_entries = []
+    headers = ['AlertId', 'EventType','RuleName', 'EndpointName', 'SrcProcName' ,'SrcProcPath','SrcProcCommandline',
+                'SrcProcSHA1','SrcProcStartTime' ,'SrcProcStorylineId' ,'SrcParentProcName',
+                'AlertCreatedAt','AgentId','AgentUUID','RuleName']
+    query_params = assign_params(
+        createdAt__lt=args.get('created_before'),
+        ruleName__contains=args.get('ruleName'),
+        incidentStatus=args.get('incidentStatus'),
+        analystVerdict=args.get('analystVerdict'),
+        createdAt__gt=args.get('created_after'),
+        createdAt__lte=args.get('created_until'),
+        createdAt__gte=args.get('created_from'),
+        ids=argToList(args.get('alert_ids')),
+        limit=int(args.get('limit',1000)),
+        siteIds=args.get('site_ids'),
+    )
+
+    alerts = client.get_alerts_request(query_params)
+    if alerts:
+        for alert in alerts:
+            alert_info = alert.get('alertInfo')
+            rule_info = alert.get('ruleInfo')
+            source_process_info = alert.get('sourceProcessInfo')
+            source_parent_process_info = alert.get('sourceParentProcessInfo')
+            agent_realtime_info = alert.get('agentRealtimeInfo')
+            agent_detection_info = alert.get('agentDetectionInfo')
+            context_entries.append({
+                'EventType': alert_info.get('eventType'),
+                'RuleName': rule_info.get('name'),
+                'SrcProcUser' : source_process_info.get('user'),
+                'SrcProcName' : source_process_info.get('name'),
+                'SrcProcPath' : source_process_info.get('filePath'),
+                'SrcProcCommandline' : source_process_info.get('commandline'),
+                'SrcProcSHA1' : source_process_info.get('fileHashSha1'),
+                'SrcProcStartTime' : source_process_info.get('pidStarttime'),
+                'SrcProcStorylineId' : source_process_info.get('storyline'),
+                'SrcParentProcName' : source_parent_process_info.get('name'),
+                'SrcParentProcPath' : source_parent_process_info.get('filePath'),
+                'SrcParentProcCommandline' : source_parent_process_info.get('commandline'),
+                'SrcParentProcStartTime' : source_parent_process_info.get('pidStarttime'),
+                'SrcParentProcUser' : source_parent_process_info.get('user'),
+                'SrcParentProcSHA1' : source_parent_process_info.get('fileHashSha1'),
+                'SrcProcSignerIdentity' : source_process_info.get('fileSignerIdentity'),
+                'SrcParentProcSignerIdentity' : source_parent_process_info.get('fileSignerIdentity'),
+                'AlertCreatedAt' : alert_info.get('createdAt'),
+                'AlertId' : alert_info.get('alertId'),
+                'AnalystVerdict' : alert_info.get('analystVerdict'),
+                'IncidentStatus' : alert_info.get('incidentStatus'),
+                'EndpointName' : agent_realtime_info.get('name'),
+                'AgentId' : agent_realtime_info.get('id'),
+                'AgentUUID' : agent_detection_info.get('uuid'),
+                'dvEventId' : alert_info.get('dvEventId'),
+                'AgentOS' : agent_realtime_info.get('os'),
+                'AgentVersion' : agent_detection_info.get('version'),
+                'SiteId' : agent_detection_info.get('siteId'),
+                'RuleId' : rule_info.get('id'),
+            })
+    
+    return CommandResults(
+        readable_output=tableToMarkdown('Sentinel One - Getting Alert List', context_entries, removeNull=True,
+                                        metadata='Provides summary information and details for all the alerts that matched your search criteria.', 
+                                        headers=headers, headerTransform=pascalToSpace),
+        outputs_prefix='SentinelOne.Alert',
+        outputs_key_field='AlertId',
+        outputs=context_entries,
+        raw_response=alerts)
+
 def resolve_threat_command(client: Client, args: dict) -> CommandResults:
     """
     Mark threats as resolved
@@ -2391,6 +2648,8 @@ def main():
             'sentinelone-get-processes': get_processes,
             'sentinelone-shutdown-agent': shutdown_agents,
             'sentinelone-uninstall-agent': uninstall_agent,
+            'sentinelone-expire-site': expire_site,
+            'sentinelone-fetch-threat-file': fetch_threat_file,
         },
         '2.0': {
             'sentinelone-mark-as-threat': mark_as_threat_command,
@@ -2418,6 +2677,9 @@ def main():
             'sentinelone-get-iocs': get_iocs,
             'sentinelone-create-power-query': create_power_query,
             'sentinelone-ping-power-query': ping_power_query,
+            'sentinelone-update-threats-status': update_threat_status,
+            'sentinelone-update-alerts-status': update_alert_status,
+            'sentinelone-get-alerts': get_alerts,
         },
     }
 
