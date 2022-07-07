@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Detonate URL - Hatching Triage
-description: Detonating URL with Hatching Triage
+description: Detonating URL with Hatching Triage.
 starttaskid: "0"
 tasks:
   "0":
@@ -42,7 +42,7 @@ tasks:
     task:
       id: 6fe76277-78da-4060-80e6-7510e4714e54
       version: -1
-      name: Is there any active Hatcing Triage instance?
+      name: Is there any active Hatching Triage instance?
       description: Check for active instance
       type: condition
       iscommand: false
@@ -69,7 +69,7 @@ tasks:
                             iscontext: true
                           right:
                             value:
-                              simple: Hatcing Triage
+                              simple: Hatching Triage
                       - - operator: isEqualString
                           left:
                             value:
@@ -146,7 +146,7 @@ tasks:
       id: ff206737-1a1f-4024-89d7-49c9afcd24fd
       version: -1
       name: Send URL to Hatching Triage
-      description: Submits a file or url for analysis
+      description: Submits a file or URL for analysis
       script: Hatching Triage|||triage-submit-sample
       type: regular
       iscommand: true
@@ -265,7 +265,7 @@ tasks:
       id: b76b27db-e95d-4178-827b-7bcbb45bbb4d
       version: -1
       name: Get task report
-      description: Gets a summary report of the sample id provided
+      description: Gets a summary report of the sample ID provided
       script: Hatching Triage|||triage-get-sample-summary
       type: regular
       iscommand: true
@@ -333,7 +333,7 @@ tasks:
       id: 63fdd375-6640-48dc-82b0-f9727db684bf
       version: -1
       name: View task
-      description: Gets a summary report of the sample id provided
+      description: Gets a summary report of the sample ID provided
       script: Hatching Triage|||triage-get-sample-summary
       type: regular
       iscommand: true
@@ -378,47 +378,47 @@ inputs:
         root: URL
         accessor: Data
     required: false
-    description: URL to detonate
+    description: URL to detonate.
     playbookInputQuery:
   - key: interval
     value:
       simple: "1"
     required: false
-    description: How often to poll for results
+    description: How often to poll for results.
     playbookInputQuery:
   - key: timeout
     value:
       simple: "10"
     required: false
-    description: How long to wait before giving up waiting for results
+    description: How long to wait before giving up waiting for results.
     playbookInputQuery:
 outputs:
   - contextPath: Triage.sample-summaries.completed
-    description: Date the sample analysis was completed
+    description: Date the sample analysis was completed.
   - contextPath: Triage.sample-summaries.created
-    description: Date the analysis report was created
+    description: Date the analysis report was created.
   - contextPath: Triage.sample-summaries.custom
-    description: Custom
+    description: Custom sample analysis.
   - contextPath: Triage.sample-summaries.owner
-    description: Owner
+    description: Owner of the sample analysis.
     type: unknown
   - contextPath: Triage.sample-summaries.sample
-    description: Unique identifier of the sample
+    description: Unique identifier of the sample,
     type: unknown
   - contextPath: Triage.sample-summaries.score
-    description: Score of the sample on a scale of 0 to 10
+    description: Score of the sample on a scale of 0 to 10.
     type: unknown
   - contextPath: Triage.sample-summaries.sha256
-    description: SHA256 of the sample
+    description: SHA256 hash of the sample.
     type: unknown
   - contextPath: Triage.sample-summaries.status
-    description: Status of the analysis
+    description: Status of the analysis.
     type: unknown
   - contextPath: Triage.sample-summaries.target
-    description: Target for analysis
+    description: Target for the analysis.
     type: unknown
   - contextPath: Triage.sample-summaries.tasks
-    description: Tasks performed in the analysis
+    description: Tasks performed in the analysis.
     type: unknown
 tests:
   - No tests (auto formatted)
