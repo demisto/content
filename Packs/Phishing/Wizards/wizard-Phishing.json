@@ -12,7 +12,7 @@
         "packs": [
           {
             "name": "EWS",
-            "display_name": "EWS Mail (Please Also install EWS Mail Sender Pack)"
+            "display_name": "EWS Mail (Note: Please install also the EWS Mail Sender Pack)"
           },
           {
             "name": "Gmail",
@@ -29,6 +29,16 @@
           {
             "name": "MicrosoftGraphListener",
             "display_name": "Microsoft Graph Mail - Single User"
+          }
+        ]
+      },
+      {
+        "name": "Mail Sender",
+        "min_required": 0,
+        "packs": [
+          {
+            "name": "EWSMailSender",
+            "display_name": "EWS Mail Sender"
           }
         ]
       },
@@ -185,16 +195,6 @@
         ]
       },
       {
-        "name": "Mail Sender",
-        "min_required": 0,
-        "packs": [
-          {
-            "name": "EWSMailSender",
-            "display_name": "EWS Mail Sender"
-          }
-        ]
-      },
-      {
         "name": "Email Security",
         "min_required": 0,
         "packs": [
@@ -309,10 +309,10 @@
         {
           "name": "EWS Mail Sender",
           "action": {
-            "existing": "Configure 'EWS Mail Sender' to enable email notifications.",
-            "new": "Configure EWS Mail Sender to enable email notifications."
+            "existing": "Only if you have chosen the 'EWS v2' integration - Configure 'EWS Mail Sender' to enable email notifications.",
+            "new": " Only if you have chosen the 'EWS v2' integration - Configure EWS Mail Sender to enable email notifications."
           },
-          "description": "Configure EWS Mail Sender to enable email notifications."
+          "description": "Only if you have chosen the 'EWS v2' integration - Configure EWS Mail Sender to enable email notifications."
         },
         {
           "name": "Active Directory Query v2",
