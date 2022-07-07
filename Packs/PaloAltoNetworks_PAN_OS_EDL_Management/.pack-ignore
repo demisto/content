@@ -9,3 +9,6 @@ ignore=RM106
 
 [file:playbook-PAN-OS_-_Block_Domain_-_External_Dynamic_List_README.md]
 ignore=RM106
+
+[known_words]
+deprecated

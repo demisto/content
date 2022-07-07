@@ -8,7 +8,7 @@ ignore=PB110
 ignore=PB111
 
 [file:README.md]
-ignore=RM104
+ignore=RM104,RM113
 
 [file:ChronicleAssetEventsForHostnameWidgetScript.yml]
 ignore=BA110
