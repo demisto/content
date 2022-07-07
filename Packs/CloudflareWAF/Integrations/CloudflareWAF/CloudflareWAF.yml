@@ -33,7 +33,7 @@ configuration:
 - name: insecure
   display: Trust any certificate (not secure)
   required: false
-  defaultvalue: ''
+  defaultvalue: 'true'
   type: 8
   additionalinfo: ''
 description: Cloudflare WAF integration allows customers to manage firewall rules, filters, and IP-lists. It also allows to retrieve zones list for each account.
@@ -842,7 +842,7 @@ script:
     - contextPath: CloudflareWAF.IpListItem.list_id
       description: The list ID.
       type: String
-  dockerimage: demisto/python3:3.10.4.30607
+  dockerimage: demisto/python3:3.10.5.31797
   feed: false
   isfetch: false
   longRunning: false
