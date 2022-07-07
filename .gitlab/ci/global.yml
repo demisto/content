@@ -239,7 +239,7 @@
             export COMMIT_HASH_COMPARE_TO=$(cat $ARTIFACTS_FOLDER/previous_index.json | jq -r ".\"commit\"")
             demisto-sdk lint -vvv -p 8 -g --prev-ver $COMMIT_HASH_COMPARE_TO -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -idp $ARTIFACTS_FOLDER/id_set.json -cdam
           else
-            demisto-sdk lint -vvv -p 8 -g -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report
+            echo "Skipping, Should run on circleCi."
           fi
         fi
         if [[ -f $ARTIFACTS_FOLDER/coverage_report/.coverage ]]; then
