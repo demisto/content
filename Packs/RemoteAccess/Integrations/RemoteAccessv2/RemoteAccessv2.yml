@@ -58,6 +58,24 @@ script:
       name: timeout
       required: false
       secret: false
+    - default: false
+      description: Additional system to run the command on.
+      isArray: false
+      name: system
+      required: false
+      secret: false
+    - default: false
+      description: Additional hostname to run the command on.
+      isArray: false
+      name: host
+      required: false
+      secret: false
+    - default: false
+      description: Port to run the command on. Argument "port" is supported only when providing "host" argument.
+      isArray: false
+      name: port
+      required: false
+      secret: false
     deprecated: false
     description: Run the specified command on the remote system with SSH.
     execution: true
@@ -117,6 +135,24 @@ script:
       name: entry
       required: false
       secret: false
+    - default: false
+      description: Additional system to run the command on.
+      isArray: false
+      name: system
+      required: false
+      secret: false
+    - default: false
+      description: Additional hostname to run the command on.
+      isArray: false
+      name: host
+      required: false
+      secret: false
+    - default: false
+      description: Port to run the command on. Argument "port" is supported only when providing "host" argument.
+      isArray: false
+      name: port
+      required: false
+      secret: false
     deprecated: false
     description: Copies the given file from Cortex XSOAR to the remote machine.
     execution: false
@@ -154,6 +190,24 @@ script:
         (Deprecated. Use file_path instead).
       isArray: false
       name: file
+      required: false
+      secret: false
+    - default: false
+      description: Additional system to run the command on.
+      isArray: false
+      name: system
+      required: false
+      secret: false
+    - default: false
+      description: Additional hostname to run the command on.
+      isArray: false
+      name: host
+      required: false
+      secret: false
+    - default: false
+      description: Port to run the command on. Argument "port" is supported only when providing "host" argument.
+      isArray: false
+      name: port
       required: false
       secret: false
     deprecated: false
