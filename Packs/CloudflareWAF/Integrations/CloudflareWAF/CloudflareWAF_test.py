@@ -374,11 +374,36 @@ def test_cloudflare_waf_ip_lists_list_command(requests_mock, mock_client):
     requests_mock.get(url=url, json=mock_response)
 
     result = cloudflare_waf_ip_lists_list_command(
-        mock_client, {'page': 1, 'page_size': 5, 'list_id': '123', 'item_ip': '120.2.2.8'})
+        mock_client, {'page': 1, 'page_size': 5})
 
     assert result.outputs_prefix == 'CloudflareWAF.IpList'
     assert len(result.outputs) == 2
     assert result.outputs[0]['id'] == 'list_id_1'
+
+def test_cloudflare_waf_ip_list_item_list_command(requests_mock, mock_client):
+    """
+    Scenario: List filters.
+    Given:
+     - User has provided valid credentials.
+    When:
+     - cloudflare-waf-filter-list called.
+    Then:
+     - Ensure number of items is correct.
+     - Ensure outputs prefix is correct.
+     - Ensure a sample value from the API matches what is generated in the context.
+    """
+
+    from CloudflareWAF import cloudflare_waf_ip_list_item_list_command
+
+    mock_response = load_mock_response('ip_list_item_list.json')
+    url = f'{BASE_URL}accounts/{ACCOUNT_ID}/rules/lists/123/items'
+    requests_mock.get(url=url, json=mock_response)
+
+    result = cloudflare_waf_ip_list_item_list_command(
+        mock_client, {'page': 1, 'page_size': 5, 'list_id': '123', 'item_ip': 'ip1'})
+
+    assert result.outputs_prefix == 'CloudflareWAF.IpListItem'
+    assert result.outputs['list_id'] == '123'
 
 
 def test_cloudflare_waf_ip_list_item_create_command(requests_mock, mock_client):
