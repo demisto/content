@@ -726,3 +726,51 @@ def test_get_modified_remote_data_command(requests_mock):
     response = get_modified_remote_data_command(client, args)
 
     assert response.modified_incident_ids == ['1', '2']
+
+
+def test_get_contributing_event_command(requests_mock):
+    from CortexXDRIR import get_contributing_event_command, Client
+
+    contributing_events = load_test_data('./test_data/contributing_events.json')
+    requests_mock.post(f'{XDR_URL}/public_api/v1/alerts/get_correlation_alert_data/', json=contributing_events)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    args = {
+        "alert_ids": "[1111]",
+    }
+
+    response = get_contributing_event_command(client, args)
+
+    assert response.outputs[0].get('alertID') == args.get('alert_ids').strip('[]')
+    assert len(response.outputs[0].get('events')) == 1
+
+
+def test_replace_featured_field_command(requests_mock):
+    from CortexXDRIR import replace_featured_field_command, Client
+
+    replace_featured_field = load_test_data('./test_data/replace_featured_field.json')
+    requests_mock.post(f'{XDR_URL}/public_api/v1/featured_fields/replace_ad_groups', json=replace_featured_field)
+    expected_response = {
+        'fieldType': 'ad_groups',
+        'fields': [
+            {'value': 'new value', 'comment': 'this is a comment', 'type': 'ou'},
+            {'value': 'one new value', 'comment': '', 'type': ''}
+        ]
+    }
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    args = {
+        "ad_type": "[\"ou\"]",
+        "comments": "[\"this is a comment\"]",
+        "field_type": "ad_groups",
+        "values": "[\"new value\", \"one new value\"]",
+    }
+
+    response = replace_featured_field_command(client, args)
+
+    assert response.outputs == expected_response
+    assert len(response.outputs.get('fields')) == 2
