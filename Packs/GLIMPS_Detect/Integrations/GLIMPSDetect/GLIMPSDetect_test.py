@@ -71,7 +71,9 @@ def mocked_gdetect_get():
         "sid": "9gzYCsX4R9jzlyZC3ierKY",
         "file_count": 3,
         "duration": 8268,
-        "token": ("token"),
+        "token": ("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ6.eyJ1c2VybmFtZSI6ImFwaS10YW8ndWl0ZXN0IiwiZ7JvdXBzIjpbInRhbmd1aXRlc3QiXSwi"
+                  "c2lkIjoiN2d6WUNzWDRSNmp6bHlaQzNpZXJLWSIsImV4cCI4MTY1MzgwNzgwOSwiaWF3IjoxNjUxMjE3ODA2fQ.EGk75tKwAq70TPCjClnOp_"
+                  "2_339XqMXk0TbPJhSN2uE"),
         "threats": {
             "005b00d41749f7b0336d4d5fe0402dcfc95ae0df44a2231a89a59919eeb30b31": {
                 "filenames": [
@@ -159,7 +161,9 @@ def mocked_gdetect_get_sid():
 
 def mock_add_token(mock):
     mock = mock_add_sid(mock)
-    mock["token"] = ("token")
+    mock["token"] = ("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ6.eyJ1c2VybmFtZSI6ImFwaS10YW8ndWl0ZXN0IiwiZ7JvdXBzIjpbInRhbmd1aXRlc3QiX"
+                     "Swic2lkIjoiN2d6WUNzWDRSNmp6bHlaQzNpZXJLWSIsImV4cCI4MTY1MzgwNzgwOSwiaWF3IjoxNjUxMjE3ODA2fQ.EGk75tKwAq70T"
+                     "PCjClnOp_2_339XqMXk0TbPJhSN2uE")
     return mock
 
 
@@ -461,3 +465,4 @@ def test_gdetect_get_threats_command_no_threats(mocker):
     assert 'link' in results.outputs
     assert 'uuid' in results.outputs
     assert 'No threats' in results.readable_output
+    
