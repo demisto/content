@@ -406,11 +406,28 @@ tasks:
       '#none#':
       - "15"
     scriptarguments:
-      comment: {}
+      action_script:
+        simple: ${inputs.ActionScript}
+      command_line:
+        simple: ${inputs.CommandLine}
+      document_password:
+        simple: ${inputs.DocumentPassword}
+      enable_tor:
+        simple: "false"
+      environment_id:
+        simple: ${inputs.EnvironmentID}
+      sha256:
+        simple: ${csfalconx.resource.sha256}
+      submit_name:
+        simple: ${inputs.SubmitName}
+      system_date:
+        simple: ${inputs.SystemDate}
+      system_time:
+        simple: ${inputs.SystemTime}
       file:
         simple: ${inputs.File.EntryID}
       file_name:
-        simple: inputs.File.EntryID
+        simple: ${inputs.File.Name}
       is_confidential: {}
     separatecontext: false
     view: |-
@@ -440,18 +457,24 @@ tasks:
       '#none#':
       - "8"
     scriptarguments:
-      action_script: {}
-      command_line: {}
-      document_password: {}
+      action_script:
+        simple: ${inputs.ActionScript}
+      command_line:
+        simple: ${inputs.CommandLine}
+      document_password:
+        simple: ${inputs.DocumentPassword}
       enable_tor:
         simple: "false"
       environment_id:
-        simple: '160: Windows 10'
+        simple: ${inputs.EnvironmentID}
       sha256:
         simple: ${csfalconx.resource.sha256}
-      submit_name: {}
-      system_date: {}
-      system_time: {}
+      submit_name:
+        simple: ${inputs.SubmitName}
+      system_date:
+        simple: ${inputs.SystemDate}
+      system_time:
+        simple: ${inputs.SystemTime}
     separatecontext: false
     view: |-
       {
@@ -487,11 +510,60 @@ inputs:
     simple: "1"
   required: false
   description: Polling frequency - how often the polling command should run (minutes)
+  playbookInputQuery: null
 - key: Timeout
   value:
     simple: "15"
   required: false
   description: How much time to wait before a timeout occurs (minutes)
+  playbookInputQuery: null
+- key: EnableTor
+  value:
+    simple: "false"
+  required: false
+  description: Whether the sandbox analysis routes network traffic via TOR. If true,
+    sandbox analysis routes network traffic via TOR. Relevant if the submit_file parameter
+    is set to true.
+  playbookInputQuery: null
+- key: EnvironmentID
+  value:
+    simple: "160: Windows 10"
+  required: false
+  description: Sandbox environment used for analysis.
+  playbookInputQuery: null
+- key: ActionScript
+  value: {}
+  required: false
+  description: Runtime script for sandbox analysis.
+  playbookInputQuery: null
+- key: CommandLine
+  value: {}
+  required: false
+  description: 'Command line script passed to the submitted file at runtime. Max length:
+    2048 characters.'
+  playbookInputQuery: null
+- key: DocumentPassword
+  value: {}
+  required: false
+  description: 'Auto-filled for Adobe or Office files that prompt for a password.
+    Max length: 32 characters.'
+  playbookInputQuery: null
+- key: SubmitName
+  value: {}
+  required: false
+  description: Name of the malware sample that’s used for file type detection. and
+    analysis.
+  playbookInputQuery: null
+- key: SystemDate
+  value: {}
+  required: false
+  description: Set a custom date for the sandbox environment in the format yyyy-MM-dd.
+  playbookInputQuery: null
+- key: SystemTime
+  value: {}
+  required: false
+  description: Sets a custom time for the sandbox environment in the format HH:mm.
+  playbookInputQuery: null
 outputs:
     - contextPath: csfalconx.resource.id
       description: Analysis ID.

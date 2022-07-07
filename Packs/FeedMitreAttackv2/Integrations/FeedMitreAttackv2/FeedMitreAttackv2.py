@@ -455,6 +455,7 @@ def build_command_result(value, score, md, attack_obj):
     )
     attack_context = Common.AttackPattern(
         stix_id=attack_obj.get('stixid'),
+        value=value,
         kill_chain_phases=attack_obj.get('killchainphases'),
         first_seen_by_source=attack_obj.get('firstseenbysource'),
         description=attack_obj.get('description'),
@@ -482,7 +483,7 @@ def attack_pattern_reputation_command(client, args):
             filter_by_name = [Filter('type', '=', 'attack-pattern'), Filter('name', '=', name)]
             mitre_data = get_mitre_data_by_filter(client, filter_by_name)
             if not mitre_data:
-                break
+                continue
 
             value = mitre_data.get('name')
 
@@ -496,7 +497,7 @@ def attack_pattern_reputation_command(client, args):
             filter_by_name = [Filter('type', '=', 'attack-pattern'), Filter('name', '=', parent)]
             mitre_data = get_mitre_data_by_filter(client, filter_by_name)
             if not mitre_data:
-                break
+                continue
             indicator_json = json.loads(str(mitre_data))
             parent_mitre_id = [external.get('external_id') for external in
                                indicator_json.get('external_references', [])
@@ -508,7 +509,7 @@ def attack_pattern_reputation_command(client, args):
             filter_by_name = [Filter('type', '=', 'attack-pattern'), Filter('name', '=', sub)]
             mitre_data = get_mitre_data_by_filter(client, filter_by_name)
             if not mitre_data:
-                break
+                continue
             indicator_json = json.loads(str(mitre_data))
             sub_mitre_id = [external.get('external_id') for external in
                             indicator_json.get('external_references', [])
@@ -521,14 +522,15 @@ def attack_pattern_reputation_command(client, args):
                             Filter("type", "=", "attack-pattern")]
             mitre_data = get_mitre_data_by_filter(client, mitre_filter)
             if not mitre_data:
-                break
+                continue
 
             value = f'{parent_name}: {mitre_data.get("name")}'
 
         attack_obj = map_fields_by_type('Attack Pattern', json.loads(str(mitre_data)))
         custom_fields = attack_obj or {}
         score = INDICATOR_TYPE_TO_SCORE.get('Attack Pattern')
-        md = f"## {[value]}: {attack_obj.get('mitreid')}\n {custom_fields.get('description', '')}"
+        md = f"## MITRE ATTACK \n ## Name: {value} - ID: " \
+             f"{attack_obj.get('mitreid')} \n {custom_fields.get('description', '')}"
         command_results.append(build_command_result(value, score, md, attack_obj))
 
     return command_results

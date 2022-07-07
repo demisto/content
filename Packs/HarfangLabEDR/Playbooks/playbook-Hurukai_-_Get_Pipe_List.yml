@@ -1,0 +1,301 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: Hurukai - Get Pipe List
+inputs:
+- description: ''
+  key: agentid
+  playbookInputQuery:
+  required: true
+  value: {}
+name: Hurukai - Get Pipe List
+outputs: []
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '9'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: bf31a2c2-5375-42b1-8009-cf0f9cbc94b3
+      iscommand: false
+      name: ''
+      version: -1
+      description: ''
+    taskid: bf31a2c2-5375-42b1-8009-cf0f9cbc94b3
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": -980
+        }
+      }
+  '3':
+    id: '3'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ''
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '7'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      Ids:
+        simple: ${Harfanglab.Job.ID}
+      Interval:
+        simple: '1'
+      PollingCommandArgName:
+        simple: ids
+      PollingCommandName:
+        simple: harfanglab-job-info
+      Timeout:
+        simple: '60'
+      dt:
+        simple: Harfanglab.Job.Info(val.Status !== 'finished').ID
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ''
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      id: 4d53ac1a-0e46-4369-812e-6ad5162bd628
+      iscommand: false
+      name: GenericPolling
+      playbookId: GenericPolling
+      type: playbook
+      version: -1
+    taskid: 4d53ac1a-0e46-4369-812e-6ad5162bd628
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": -260
+        }
+      }
+  '5':
+    id: '5'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 2c537af3-26de-4624-8c71-e62d75b61e00
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 2c537af3-26de-4624-8c71-e62d75b61e00
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 100
+        }
+      }
+  '6':
+    id: '6'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '3'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      agent_id:
+        simple: ${inputs.agentid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Hurukai
+      description: Start a job to get the list of pipes from a host (Windows)
+      id: b7bda684-111c-408f-8603-7469b0f4459d
+      iscommand: true
+      name: harfanglab-job-pipelist
+      script: Hurukai|||harfanglab-job-pipelist
+      type: regular
+      version: -1
+    taskid: b7bda684-111c-408f-8603-7469b0f4459d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": -450
+        }
+      }
+  '7':
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Named pipe list
+    id: '7'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '5'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      job_id:
+        simple: ${Harfanglab.Job.ID}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Hurukai
+      description: Get a hostname's list of pipes from job results
+      id: 1bd31068-1646-479e-8194-60d6e14cd7d9
+      iscommand: true
+      name: harfanglab-result-pipelist
+      script: Hurukai|||harfanglab-result-pipelist
+      type: regular
+      version: -1
+    taskid: 1bd31068-1646-479e-8194-60d6e14cd7d9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": -90
+        }
+      }
+  '8':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Agent
+                root: Harfanglab
+                transformers:
+                - args:
+                    field:
+                      value:
+                        simple: ostype
+                  operator: getField
+          operator: isEqualString
+          right:
+            value:
+              simple: windows
+      label: windows
+    id: '8'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '5'
+      windows:
+      - '6'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: f217c501-40f6-441d-843c-804f4ca23551
+      iscommand: false
+      name: Which platform is the agent running on ?
+      type: condition
+      version: -1
+      description: ''
+    taskid: f217c501-40f6-441d-843c-804f4ca23551
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": -670
+        }
+      }
+  '9':
+    id: '9'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '8'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      agent_id:
+        simple: ${inputs.agentid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Hurukai
+      description: Get endpoint information from agent_id
+      id: 46ed5526-1fc4-498b-890d-14f1fe4aa1be
+      iscommand: true
+      name: harfanglab-get-endpoint-info
+      script: Hurukai|||harfanglab-get-endpoint-info
+      type: regular
+      version: -1
+    taskid: 46ed5526-1fc4-498b-890d-14f1fe4aa1be
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": -845
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1145,
+        "width": 530,
+        "x": 550,
+        "y": -980
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.2.0
+description: Get the list of named pipes

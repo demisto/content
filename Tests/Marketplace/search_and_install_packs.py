@@ -225,7 +225,7 @@ def find_malformed_pack_id(body: str) -> List:
                     ' ', '').split(','))
             else:
                 malformed_pack_pattern = re.compile(r'invalid version [0-9.]+ for pack with ID ([\w_-]+)')
-                malformed_pack_id = malformed_pack_pattern.findall(error)
+                malformed_pack_id = malformed_pack_pattern.findall(str(error))
                 if malformed_pack_id and error:
                     malformed_ids.extend(malformed_pack_id)
     return malformed_ids

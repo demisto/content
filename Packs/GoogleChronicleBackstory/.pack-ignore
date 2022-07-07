@@ -8,7 +8,7 @@ ignore=PB110
 ignore=PB111
 
 [file:README.md]
-ignore=RM104
+ignore=RM104,RM113
 
 [file:ChronicleAssetEventsForHostnameWidgetScript.yml]
 ignore=BA110
@@ -61,3 +61,6 @@ ignore=PB114
 
 [file:GoogleChronicleBackstory_image.png]
 ignore=IM111
+
+[file:classifier-Chronicle.json]
+ignore=BA101

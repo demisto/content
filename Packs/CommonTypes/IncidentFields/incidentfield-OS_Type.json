@@ -1,0 +1,31 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "ostype",
+    "closeForm": false,
+    "content": true,
+    "description": "OS Type",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_ostype",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "OS Type",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": true,
+    "version": -1,
+    "fromVersion": "6.2.0",
+    "marketplaces": [
+        "xsoar",
+	"marketplacev2"
+    ]
+}

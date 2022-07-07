@@ -46,21 +46,21 @@ Fetches business object records based on the defined filter values.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Ivantiheat.incidents.RecId | String | Incident ID | 
-| Ivantiheat.incidents.Subject | String | Incident subject | 
-| Ivantiheat.incidents.Status | String | Incident status | 
-| Ivantiheat.incidents.CreatedDateTime | Date | Incident createion time | 
-| Ivantiheat.incidents.Symptom | String | Incident description | 
-| Ivantiheat.incidents.OwnerTeam | String | Incident owner team | 
-| Ivantiheat.incidents.IncidentNumber | Number | The incident number | 
-| Ivantiheat.incidents.CreatedBy | String | The user who created the incident | 
-| Ivantiheat.incidents.Owner | String | Incident owner | 
-| Ivantiheat.incidents.Category | String | Incident category | 
-| Ivantiheat.incidents.Priority | Number | Incident priority | 
-| Ivantiheat.incidents.TypeOfIncident | String | Incident type | 
-| Ivantiheat.incidents.ActualCategory | String | Incident actual category | 
-| Ivantiheat.incidents.SocialTextHeader | String | Incident text header | 
-| Ivantiheat.incidents.Email | String | Incident owner Email | 
+| IvantiHeat.incidents.RecId | String | Incident ID | 
+| IvantiHeat.incidents.Subject | String | Incident subject | 
+| IvantiHeat.incidents.Status | String | Incident status | 
+| IvantiHeat.incidents.CreatedDateTime | Date | Incident createion time | 
+| IvantiHeat.incidents.Symptom | String | Incident description | 
+| IvantiHeat.incidents.OwnerTeam | String | Incident owner team | 
+| IvantiHeat.incidents.IncidentNumber | Number | The incident number | 
+| IvantiHeat.incidents.CreatedBy | String | The user who created the incident | 
+| IvantiHeat.incidents.Owner | String | Incident owner | 
+| IvantiHeat.incidents.Category | String | Incident category | 
+| IvantiHeat.incidents.Priority | Number | Incident priority | 
+| IvantiHeat.incidents.TypeOfIncident | String | Incident type | 
+| IvantiHeat.incidents.ActualCategory | String | Incident actual category | 
+| IvantiHeat.incidents.SocialTextHeader | String | Incident text header | 
+| IvantiHeat.incidents.Email | String | Incident owner Email | 
 
 
 #### Command Example
@@ -174,21 +174,21 @@ Update details of a business object such as a change, problem, or incident.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Ivantiheat.incidents.RecId | String | Incident ID | 
-| Ivantiheat.incidents.Subject | String | Incident subject | 
-| Ivantiheat.incidents.Status | String | Incident status | 
-| Ivantiheat.incidents.CreatedDateTime | Date | Incident createion time | 
-| Ivantiheat.incidents.Symptom | String | Incident description | 
-| Ivantiheat.incidents.OwnerTeam | String | Incident owner team | 
-| Ivantiheat.incidents.IncidentNumber | Number | The incident number | 
-| Ivantiheat.incidents.CreatedBy | String | The user who created the incident | 
-| Ivantiheat.incidents.Owner | String | Incident owner | 
-| Ivantiheat.incidents.Category | String | Incident category | 
-| Ivantiheat.incidents.Priority | Number | Incident priority | 
-| Ivantiheat.incidents.TypeOfIncident | String | Incident type | 
-| Ivantiheat.incidents.ActualCategory | String | Incident actual category | 
-| Ivantiheat.incidents.SocialTextHeader | String | Incident text header | 
-| Ivantiheat.incidents.Email | String | Incident owner Email | 
+| IvantiHeat.incidents.RecId | String | Incident ID | 
+| IvantiHeat.incidents.Subject | String | Incident subject | 
+| IvantiHeat.incidents.Status | String | Incident status | 
+| IvantiHeat.incidents.CreatedDateTime | Date | Incident createion time | 
+| IvantiHeat.incidents.Symptom | String | Incident description | 
+| IvantiHeat.incidents.OwnerTeam | String | Incident owner team | 
+| IvantiHeat.incidents.IncidentNumber | Number | The incident number | 
+| IvantiHeat.incidents.CreatedBy | String | The user who created the incident | 
+| IvantiHeat.incidents.Owner | String | Incident owner | 
+| IvantiHeat.incidents.Category | String | Incident category | 
+| IvantiHeat.incidents.Priority | Number | Incident priority | 
+| IvantiHeat.incidents.TypeOfIncident | String | Incident type | 
+| IvantiHeat.incidents.ActualCategory | String | Incident actual category | 
+| IvantiHeat.incidents.SocialTextHeader | String | Incident text header | 
+| IvantiHeat.incidents.Email | String | Incident owner Email | 
 
 
 #### Command Example
@@ -380,9 +380,9 @@ Upload attachments to business objects.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Ivantiheat.Attachment.AttachmentId | String | The ID of the attachment | 
-| Ivantiheat.Attachment.FileName | String | The name of the attachment | 
-| Ivantiheat.Attachment.RecId | String | Attachement buisiness object ID | 
+| IvantiHeat.Attachment.AttachmentId | String | The ID of the attachment | 
+| IvantiHeat.Attachment.FileName | String | The name of the attachment | 
+| IvantiHeat.Attachment.RecId | String | Attachement buisiness object ID | 
 
 
 #### Command Example
@@ -454,21 +454,21 @@ create business objects available out-of-the-box, such as a Change, Problem, Inc
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Ivantiheat.incidents.RecId | String | Incident ID | 
-| Ivantiheat.incidents.Subject | String | Incident subject | 
-| Ivantiheat.incidents.Status | String | Incident status | 
-| Ivantiheat.incidents.CreatedDateTime | Date | Incident createion time | 
-| Ivantiheat.incidents.Symptom | String | Incident description | 
-| Ivantiheat.incidents.OwnerTeam | String | Incident owner team | 
-| Ivantiheat.incidents.IncidentNumber | Number | The incident number | 
-| Ivantiheat.incidents.CreatedBy | String | The user who created the incident | 
-| Ivantiheat.incidents.Owner | String | Incident owner | 
-| Ivantiheat.incidents.Category | String | Incident category | 
-| Ivantiheat.incidents.Priority | Number | Incident priority | 
-| Ivantiheat.incidents.TypeOfIncident | String | Incident type | 
-| Ivantiheat.incidents.ActualCategory | String | Incident actual category | 
-| Ivantiheat.incidents.SocialTextHeader | String | Incident text header | 
-| Ivantiheat.incidents.Email | String | Incident owner Email | 
+| IvantiHeat.incidents.RecId | String | Incident ID | 
+| IvantiHeat.incidents.Subject | String | Incident subject | 
+| IvantiHeat.incidents.Status | String | Incident status | 
+| IvantiHeat.incidents.CreatedDateTime | Date | Incident createion time | 
+| IvantiHeat.incidents.Symptom | String | Incident description | 
+| IvantiHeat.incidents.OwnerTeam | String | Incident owner team | 
+| IvantiHeat.incidents.IncidentNumber | Number | The incident number | 
+| IvantiHeat.incidents.CreatedBy | String | The user who created the incident | 
+| IvantiHeat.incidents.Owner | String | Incident owner | 
+| IvantiHeat.incidents.Category | String | Incident category | 
+| IvantiHeat.incidents.Priority | Number | Incident priority | 
+| IvantiHeat.incidents.TypeOfIncident | String | Incident type | 
+| IvantiHeat.incidents.ActualCategory | String | Incident actual category | 
+| IvantiHeat.incidents.SocialTextHeader | String | Incident text header | 
+| IvantiHeat.incidents.Email | String | Incident owner Email | 
 
 
 #### Command Example
