@@ -380,6 +380,7 @@ def test_cloudflare_waf_ip_lists_list_command(requests_mock, mock_client):
     assert len(result.outputs) == 2
     assert result.outputs[0]['id'] == 'list_id_1'
 
+
 def test_cloudflare_waf_ip_list_item_list_command(requests_mock, mock_client):
     """
     Scenario: List filters.
