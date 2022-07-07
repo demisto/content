@@ -1,0 +1,30 @@
+{
+	"autorun": false,
+	"closureScript": "",
+	"color": "#7C71F5",
+	"days": 0,
+	"daysR": 0,
+	"default": false,
+	"disabled": false,
+	"fromServerVersion": "",
+	"hours": 0,
+	"hoursR": 0,
+	"id": "SNOWTicket",
+	"itemVersion": "",
+	"layout": "",
+	"locked": false,
+	"name": "SNOWTicket",
+	"packID": "c51ed6ea-3b89-4a07-8bd7-8eaf0749e1e6",
+	"preProcessingScript": "",
+	"propagationLabels": [
+		"all"
+	],
+	"readonly": false,
+	"reputationCalc": 0,
+	"sortValues": null,
+	"system": false,
+	"toServerVersion": "",
+	"version": -1,
+	"weeks": 0,
+	"weeksR": 0
+}
