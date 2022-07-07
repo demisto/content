@@ -1,7 +1,11 @@
+import copy
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *
 from CommonServerUserPython import *
 from typing import Any, Dict, Callable, Tuple
+
+MIN_PAGE_SIZE = 5
+MAX_PAGE_SIZE = 100
 
 
 class Client(BaseClient):
@@ -10,12 +14,11 @@ class Client(BaseClient):
     def __init__(self, credentials: str, account_id: str, proxy: bool, insecure: bool, base_url: str, zone_id: str = None):
         self.account_id = account_id
         self.zone_id = zone_id
-        self.base_url = base_url
         headers = {'Authorization': f'Bearer {credentials}', 'Content-Type': 'application/json'}
-        super().__init__(base_url=self.base_url, headers=headers, proxy=proxy, verify=insecure)
+        super().__init__(base_url=base_url, headers=headers, proxy=proxy, verify=insecure)
 
     def cloudflare_waf_firewall_rule_create_request(self, action: str, zone_id: str, description: str = None,
-                                                    products: list = None, paused: bool = None, priority: int = None,
+                                                    products: List[str] = None, paused: bool = None, priority: int = None,
                                                     ref: str = None, filter_id: int = None,
                                                     filter_expression: str = None) -> Dict[str, Any]:
         """ Create a new Firewall rule in Cloudflare.
@@ -53,21 +56,22 @@ class Client(BaseClient):
             json_data=[params])
 
     def cloudflare_waf_firewall_rule_update_request(self, rule_id: str, filter_id: str, zone_id: str, action: str,
-                                                    description: str = None, products: list = None, paused: bool = None,
+                                                    description: str = None, products: List[str] = None, paused: bool = None,
                                                     priority: int = None, ref: str = None) -> Dict[str, Any]:
-        """ Sets the Firewall rule for the specified rule id.
+        """ Sets the Firewall rule for the specified rule id. Can update rule action, paused, description,
+            priority, products and ref. Can not update or delete rule filter, ONLY add a new filter.
 
         Args:
-            id (str, optional): Firewall Rule identifier. Defaults to None.
-            description (str, optional): A description of the rule to help identify it. Defaults to None.
-            products (list, optional): List of products to bypass for a request when the bypass action is used. Defaults to None.
-            action (str, optional): The rule action. Defaults to None.
-            paused (bool, optional): Whether this firewall rule is currently paused. Defaults to None.
-            priority (int, optional): The priority of the rule to allow control of processing order. A lower number indicates
+            id(str): Firewall Rule identifier. Defaults to None.
+            description(str, optional): A description of the rule to help identify it. Defaults to None.
+            products(list, optional): List of products to bypass for a request when the bypass action is used. Defaults to None.
+            action(str, optional): The rule action. Defaults to None.
+            paused(bool, optional): Whether this firewall rule is currently paused. Defaults to None.
+            priority(int, optional): The priority of the rule to allow control of processing order. A lower number indicates
                 high priority. If not provided, any rules with a priority will be sequenced before those without.
                 Defaults to None.
-            ref (str, optional): Short reference tag to quickly select related rules. Defaults to None.
-            filter_id (int, optional): Filter ID (for adding an existing filter). Defaults to None.
+            ref(str, optional): Short reference tag to quickly select related rules. Defaults to None.
+            filter_id(int, optional): Filter ID(for adding an existing filter). Defaults to None.
 
         Returns:
             dict: API response from Cloudflare.
@@ -91,7 +95,7 @@ class Client(BaseClient):
     def cloudflare_waf_firewall_rule_delete_request(self, rule_id: str, zone_id: str) -> Dict[str, Any]:
         """ Delete Firewall rule for the specified rule id.
         Args:
-            id (str, optional): Firewall Rule identifier.
+            id(str, optional): Firewall Rule identifier.
 
         Returns:
             dict: API response from Cloudflare.
@@ -105,12 +109,12 @@ class Client(BaseClient):
         """ List of firewall rules or details of individual rule by ID.
 
         Args:
-            id (str, optional): Firewall Rule identifier. Defaults to None.
-            description (str, optional): A description of the rule to help identify it. Defaults to None.
-            action (str, optional): The rule action. Defaults to None.
-            paused (bool, optional): Whether this firewall rule is currently paused. Defaults to None.
-            page (int, optional): Page number of paginated results. min value: 1.
-            page_size (int, optional): Number of firewall rules per page. min value: 5, max value: 100.
+            id(str, optional): Firewall Rule identifier. Defaults to None.
+            description(str, optional): A description of the rule to help identify it. Defaults to None.
+            action(str, optional): The rule action. Defaults to None.
+            paused(bool, optional): Whether this firewall rule is currently paused. Defaults to None.
+            page(int, optional): Page number of paginated results. min value: 1.
+            page_size(int, optional): Number of firewall rules per page. min value: 5, max value: 100.
 
         Returns:
             dict: API response from Cloudflare.
@@ -130,23 +134,26 @@ class Client(BaseClient):
             url_suffix=f'zones/{zone_id}/firewall/rules',
             params=params)
 
-    def cloudflare_waf_zone_list_request(self, args: dict = {}, page: int = None, page_size: int = None) -> Dict[str, Any]:
+    def cloudflare_waf_zone_list_request(self, args: dict = None, page: int = None, page_size: int = None) -> Dict[str, Any]:
         """ List account's zones or details of individual zone by ID.
 
         Args:
-            match (str, optional): Whether to match all search requirements or at least one (any). Defaults to None.
-            name (str, optional):A domain name. Defaults to None.
-            account_name (str, optional): Account name. Defaults to None.
-            order (str, optional): Field to order zones by. Defaults to None.
-            status (str, optional): Status of the zone. Defaults to None.
-            account_id (str, optional): Account identifier tag. Defaults to None.
-            direction (str, optional): Direction to order zones. Defaults to None.
-            page (int, optional): Page number of paginated results. Defaults to 1.
-            page_size (int, optional): Number of zones per page. Defaults to 50.
+            match(str, optional): Whether to match all search requirements or at least one(any). Defaults to None.
+            name(str, optional): A domain name. Defaults to None.
+            account_name(str, optional): Account name. Defaults to None.
+            order(str, optional): Field to order zones by. Defaults to None.
+            status(str, optional): Status of the zone. Defaults to None.
+            account_id(str, optional): Account identifier tag. Defaults to None.
+            direction(str, optional): Direction to order zones. Defaults to None.
+            page(int, optional): Page number of paginated results. Defaults to 1.
+            page_size(int, optional): Number of zones per page. Defaults to 50.
 
         Returns:
             dict: API response from Cloudflare.
         """
+        if args is None:
+            args = {}
+
         params = remove_empty_elements({
             'match': args.get('match'),
             'name': args.get('name'),
@@ -167,11 +174,11 @@ class Client(BaseClient):
                                              description: str = None) -> Dict[str, Any]:
         """ Create a new Filter in Cloudflare.
         Args:
-            expression (str, optional): The filter expression to be used. Defaults to None.
-            ref (str, optional): Short reference tag to quickly select related rules. Defaults to None.
-            paused (str, optional): Whether this filter is currently paused. Defaults to None.
-            description (str, optional): A note that you can use to describe the purpose of the filter. Defaults to None.
-            zone_id (str, optional): Zone identifier. Defaults to None.
+            expression(str): The filter expression to be used. Defaults to None.
+            ref(str, optional): Short reference tag to quickly select related rules. Defaults to None.
+            paused(str, optional): Whether this filter is currently paused. Defaults to None.
+            description(str, optional): A note that you can use to describe the purpose of the filter. Defaults to None.
+            zone_id(str, optional): Zone identifier. Defaults to None.
 
         Returns:
             dict: API response from Cloudflare.
@@ -217,14 +224,15 @@ class Client(BaseClient):
             json_data=[params])
 
     def cloudflare_waf_filter_delete_request(self, filter_id: str, zone_id: str) -> Dict[str, Any]:
-        """_summary_
+        """ Delete filter by the specified id.
 
         Args:
-            filter_id (str): _description_
-            zone_id (str): _description_
+            filter_id (str): Filter ID.
+            zone_id (str): Zone ID.
 
         Returns:
-            Dict[str, Any]: _description_
+            dict: API response from Cloudflare.
+
         """
         return self._http_request(
             method='DELETE',
@@ -324,9 +332,8 @@ class Client(BaseClient):
         """  Create a new ip-list items.
 
         Args:
-            name (str, optional): The name of the list (used in filter expressions). Defaults to None.
-            kind (int, optional): The kind of values in the List. Defaults to 1.
-            description (int, optional): A note that can be used to annotate the List. Defaults to 50.
+            list_id (str, optional): The list ID.
+            items (int, optional): The items to add to the list.
 
         Returns:
             dict: API response from Cloudflare.
@@ -340,9 +347,8 @@ class Client(BaseClient):
         """  Replace ip-list items with a new items. Remove all current list items and append the given items to the List.
 
         Args:
-            name (str, optional): The name of the list (used in filter expressions). Defaults to None.
-            kind (int, optional): The kind of values in the List. Defaults to 1.
-            description (int, optional): A note that can be used to annotate the List. Defaults to 50.
+            list_id (str, optional): The list ID.
+            items (int, optional): The item to update.
 
         Returns:
             dict: API response from Cloudflare.
@@ -356,9 +362,8 @@ class Client(BaseClient):
         """  Delete ip-list items.
 
         Args:
-            name (str, optional): The name of the list (used in filter expressions). Defaults to None.
-            kind (int, optional): The kind of values in the List. Defaults to 1.
-            description (int, optional): A note that can be used to annotate the List. Defaults to 50.
+            list_id (str, optional): The list ID.
+            items (int, optional): The item to delete.
 
         Returns:
             dict: API response from Cloudflare.
@@ -368,21 +373,23 @@ class Client(BaseClient):
             url_suffix=f'accounts/{self.account_id}/rules/lists/{list_id}/items',
             json_data={'items': items})
 
-    def cloudflare_waf_ip_list_item_list_request(self, list_id: str, item: list = None) -> Dict[str, Any]:
+    def cloudflare_waf_ip_list_item_list_request(self, list_id: str, item: list = None, cursors: str = None) -> Dict[str, Any]:
         """  List ip-list items.
 
         Args:
-            name (str, optional): The name of the list (used in filter expressions). Defaults to None.
-            kind (int, optional): The kind of values in the List. Defaults to 1.
-            description (int, optional): A note that can be used to annotate the List. Defaults to 50.
+            list_id (str, optional): The list ID.
+            item (list, optional): The item ID to fetch.
+            cursors (str, optional): The key to fetch the rest of the list.
 
         Returns:
             dict: API response from Cloudflare.
         """
         item_suffix = f'/{item}' if item else ''
+        params = {'cursor': cursors} if cursors else {}
 
         return self._http_request(
             method='GET',
+            params=params,
             url_suffix=f'accounts/{self.account_id}/rules/lists/{list_id}/items{item_suffix}')
 
     def cloudflare_waf_get_operation_request(self, operation_id: str) -> Dict[str, Any]:
@@ -410,9 +417,8 @@ def validate_pagination_arguments(page: int = None, page_size: int = None, limit
     Raises:
         ValueError: Appropriate error message.
     """
-    if page_size:
-        if page_size < 5 or page_size > 100:
-            raise ValueError('page size argument must be greater than 5 and smaller than 100.')
+    if page_size and not MIN_PAGE_SIZE <= page_size <= MAX_PAGE_SIZE:
+        raise ValueError(f'page size argument must be greater than {MIN_PAGE_SIZE} and smaller than {MAX_PAGE_SIZE}.')
 
     if page:
         if page < 1:
@@ -428,7 +434,7 @@ def pagination(request_command: Callable, args: Dict[str, Any], pagination_args:
         or Automatic Pagination (display a number of total results).
     Args:
         request_command (Callable): The command to execute.
-        args (list): The command arguments.
+        args (Dict[str, Any]): The command arguments.
         pagination_args (dict): page, page_size and limit arguments.
 
     Returns:
@@ -457,13 +463,14 @@ def pagination(request_command: Callable, args: Dict[str, Any], pagination_args:
             response = request_command(args, page_size=page_size)
             total_count = dict_safe_get(response, ['result_info', 'total_count'])
             output.extend(response['result'])  # type: ignore
-            limit = limit - 100
+            limit -= 100
+
         pagination_message = f'Showing {len(output)} rows out of {total_count}.'
 
     return response, output, pagination_message
 
 
-def ip_list_pagination(response: dict, page: int = None, page_size: int = None, limit: int = None) -> Tuple:
+def ip_list_pagination(response: Union[list, dict], page: int = None, page_size: int = None, limit: int = None) -> Tuple:
     """ Executing Manual Pagination (using the page and page size arguments)
         or Automatic Pagination (display a number of total results) for the ip-list commands.
 
@@ -476,6 +483,9 @@ def ip_list_pagination(response: dict, page: int = None, page_size: int = None, 
     Returns:
         dict: output and pagination message for Command Results.
     """
+    if isinstance(response, dict):
+        response = [response]  # type: ignore
+
     output = response
     if page and page_size:
         if page_size < len(response):
@@ -489,6 +499,18 @@ def ip_list_pagination(response: dict, page: int = None, page_size: int = None, 
         pagination_message = f'Showing {len(output)} rows out of {len(response)}.'
 
     return output, pagination_message
+
+
+def arg_to_boolean(arg: str) -> Optional[bool]:
+    """ Retrieve arg boolean value if it's not none.
+
+    Args:
+        arg (str): Boolean argument.
+
+    Returns:
+        Optional[bool]: The argument boolean value.
+    """
+    return argToBoolean(arg) if arg else None
 
 
 def cloudflare_waf_firewall_rule_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -508,8 +530,7 @@ def cloudflare_waf_firewall_rule_create_command(client: Client, args: Dict[str, 
     filter_expression = args.get('filter_expression')
     products = argToList(args.get('products'))
     description = args.get('description')
-    paused = args.get('paused')
-    paused = argToBoolean(paused) if paused else None
+    paused = arg_to_boolean(args.get('paused'))  # type: ignore
     priority = arg_to_number(args.get('priority'))
     ref = args.get('ref')
 
@@ -564,8 +585,7 @@ def cloudflare_waf_firewall_rule_update_command(client: Client, args: Dict[str, 
     filter_id = args.get('filter_id')
     products = args.get('products')
     description = args.get('description')
-    paused = args.get('paused')
-    paused = argToBoolean(paused) if paused else None
+    paused = arg_to_boolean(args.get('paused'))  # type: ignore
     priority = arg_to_number(args.get('priority'))
     ref = args.get('ref')
 
@@ -597,11 +617,11 @@ def cloudflare_waf_firewall_rule_delete_command(client: Client, args: Dict[str, 
     rule_id = args['id']
     zone_id = args.get('zone_id', client.zone_id)
 
-    output = client.cloudflare_waf_firewall_rule_delete_request(rule_id, zone_id)
+    response = client.cloudflare_waf_firewall_rule_delete_request(rule_id, zone_id)
 
     return CommandResults(
         readable_output=f'Firewall rule {rule_id} was successfully deleted.',
-        raw_response=output
+        raw_response=response
     )
 
 
@@ -620,9 +640,7 @@ def cloudflare_waf_firewall_rule_list_command(client: Client, args: Dict[str, An
     rule_id = args.get('id')
     description = args.get('description')
     action = args.get('action')
-    paused = args.get('paused')
-    paused = argToBoolean(paused) if paused else None
-
+    paused = arg_to_boolean(args.get('paused'))  # type: ignore
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
     limit = arg_to_number(args.get('limit'))
@@ -691,7 +709,7 @@ def cloudflare_waf_zone_list_command(client: Client, args: Dict[str, Any]) -> Co
         client.cloudflare_waf_zone_list_request, command_args, pagination_args)
 
     readable_output = tableToMarkdown(
-        name='Zone list',
+        name='Zone List',
         metadata=pagination_message,
         t=output,
         headers=['name', 'account name', 'status', 'account id', 'direction'],
@@ -723,13 +741,13 @@ def cloudflare_waf_filter_create_command(client: Client, args: Dict[str, Any]) -
 
     ref = args.get('ref')
     description = args.get('description')
-    paused = args.get('paused')
-    paused = argToBoolean(paused) if paused else None
+    paused = arg_to_boolean(args.get('paused'))  # type: ignore
 
     response = client.cloudflare_waf_filter_create_request(
         expression, zone_id, description=description, paused=paused, ref=ref)
 
-    output = response['result']
+    cloned_response = copy.deepcopy(response)
+    output = cloned_response['result']
     output.append({'zone_id': zone_id})
 
     readable_output = tableToMarkdown(
@@ -763,8 +781,7 @@ def cloudflare_waf_filter_update_command(client: Client, args: Dict[str, Any]) -
     zone_id = args.get('zone_id', client.zone_id)
     ref = args.get('ref')
     description = args.get('description')
-    paused = args.get('paused')
-    paused = argToBoolean(paused) if paused else None
+    paused = arg_to_boolean(args.get('paused'))  # type: ignore
 
     response = client.cloudflare_waf_filter_update_request(
         filter_id, expression, zone_id, description=description,  # type: ignore
@@ -818,8 +835,7 @@ def cloudflare_waf_filter_list_command(client: Client, args: Dict[str, Any]) -> 
     expression = args.get('expression')
     ref = args.get('ref')
     description = args.get('description')
-    paused = args.get('paused')
-    paused = argToBoolean(paused) if paused else None
+    paused = arg_to_boolean(args.get('paused'))  # type: ignore
 
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
@@ -833,8 +849,8 @@ def cloudflare_waf_filter_list_command(client: Client, args: Dict[str, Any]) -> 
     response, output, pagination_message = pagination(
         client.cloudflare_waf_filter_list_request, command_args, pagination_args)
 
-    for f in output:
-        f['zone_id'] = zone_id
+    for filter in output:
+        filter['zone_id'] = zone_id
 
     readable_output = tableToMarkdown(
         name='Filter list',
@@ -877,6 +893,7 @@ def cloudflare_waf_ip_lists_list_command(client: Client, args: Dict[str, Any]) -
         list_id, page=page, page_size=page_size)
     response = response['result']
 
+    # make sure response type is a list
     if isinstance(response, dict):
         response = [response]  # type: ignore
 
@@ -971,7 +988,7 @@ def cloudflare_waf_ip_list_item_create_command(client: Client, args: Dict[str, A
     output = response['result']
 
     return CommandResults(
-        readable_output=f'Replace items in the IP List {list_id} is executing',
+        readable_output=f'Create items in the IP List {list_id} is executing',
         raw_response=output)
 
 
@@ -991,11 +1008,10 @@ def cloudflare_waf_ip_list_item_update_command(client: Client, args: Dict[str, A
     items = [{'ip': item} for item in argToList(args.get('items'))]
 
     response = client.cloudflare_waf_ip_list_item_update_request(list_id, items)
-
     output = response['result']
 
     return CommandResults(
-        readable_output=f'Delete items from ip-list {list_id} is executing',
+        readable_output=f'Update items from ip-list {list_id} is executing',
         raw_response=output)
 
 
@@ -1018,12 +1034,12 @@ def cloudflare_waf_ip_list_item_delete_command(client: Client, args: Dict[str, A
     output = response['result']
 
     return CommandResults(
-        readable_output=f'Add items to the ip-list {list_id} is executing',
+        readable_output=f'Delete items to the ip-list {list_id} is executing',
         raw_response=output)
 
 
 def cloudflare_waf_ip_list_item_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    """ List ip-list items.
+    """ List ip-list items. Can get by specified item ID or item IP.
 
     Args:
         client (Client): ClouDflare API client.
@@ -1034,20 +1050,40 @@ def cloudflare_waf_ip_list_item_list_command(client: Client, args: Dict[str, Any
     """
 
     list_id = args['list_id']
-    item = args.get('items')
+    item_id = args.get('item_id')
+    item_ip = args.get('item_ip')
+
+    if item_id and item_ip:
+        raise ValueError('You specified both item_id and item_ip, only one can be specified.')
+
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
     limit = arg_to_number(args.get('limit'))
 
     validate_pagination_arguments(page, page_size, limit)
 
-    item_list = client.cloudflare_waf_ip_list_item_list_request(list_id, item=item)
-    response = item_list['result']
+    ip_list = client.cloudflare_waf_ip_list_item_list_request(list_id, item=item_id)
+    response = ip_list['result']
+
+    # fetch all ip-list item, each call get 25 items
+    while dict_safe_get(ip_list, ['result_info', 'cursors', 'after']):
+        cursors = ip_list['result_info']['cursors']['after']
+        ip_list = client.cloudflare_waf_ip_list_item_list_request(list_id, item=item_id, cursors=cursors)
+        response += ip_list['result']
 
     output, pagination_message = ip_list_pagination(response, page, page_size, limit)
 
-    new_output = {'list_id': list_id, 'items': output}
+    # if user specified an item_IP and not item_ID - search in IP list the specified IP
+    if item_ip:
+        for item in response:
+            if item['ip'] == item_ip:
+                item_id = item['id']
+                output = item
+                pagination_message = 'Showing 1 rows out of 1.'
+        if not item_id:
+            raise ValueError(f"IP address {item_ip} it's not an item in IP list {list_id}")
 
+    new_output = {'list_id': list_id, 'items': output}
     readable_output = tableToMarkdown(
         name=f'ip-list {list_id}',
         metadata=pagination_message,
@@ -1055,12 +1091,13 @@ def cloudflare_waf_ip_list_item_list_command(client: Client, args: Dict[str, Any
         headers=['id', 'ip', 'created_on', 'modified_on'],
         headerTransform=string_to_table_header
     )
+
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='CloudflareWAF.IpListItem',
         outputs_key_field='list_id',
         outputs=new_output,
-        raw_response=item_list
+        raw_response=new_output
     )
 
 
@@ -1098,14 +1135,12 @@ def test_module(client: Client):
     return 'ok'
 
 
-def scheduled_commands(operation_id: str, interval: Optional[int], timeout: Optional[int], cmd: str,
-                       args: Dict[str, Any]) -> ScheduledCommand:
+def schedule_command(operation_id: str, interval: Optional[int], timeout: Optional[int], cmd: str,
+                     args: Dict[str, Any]) -> ScheduledCommand:
     """ Build scheduled command if operation status is not completed.
 
     Args:
         operation_id (str): The command operation ID.
-        interval (int): _description_
-        timeout (int): _description_
         cmd (Callable): The command name to execute.
         args (Dict[str, Any]): Command arguments from XSOAR.
 
@@ -1119,6 +1154,7 @@ def scheduled_commands(operation_id: str, interval: Optional[int], timeout: Opti
         'polling': True,
         **args
     }
+
     scheduled_command = ScheduledCommand(
         command=cmd,
         next_run_in_seconds=interval,  # type: ignore
@@ -1128,7 +1164,8 @@ def scheduled_commands(operation_id: str, interval: Optional[int], timeout: Opti
 
 
 def run_polling_command(client: Client, cmd: str, command_function: Callable, args: Dict[str, Any]) -> CommandResults:
-    """ Run a pipline.
+    """ Run a pipeline.
+
     Args:
         cmd (str): The command name.
         command (Callable): The command.
@@ -1147,7 +1184,8 @@ def run_polling_command(client: Client, cmd: str, command_function: Callable, ar
         output = command_results.raw_response
         operation_id = output['operation_id']
         args['operation_id'] = operation_id
-        scheduled_command = scheduled_commands(operation_id, interval, timeout, cmd, args)
+        scheduled_command = schedule_command(operation_id, interval, timeout, cmd, args)
+
         command_results.scheduled_command = scheduled_command
         return command_results
 
@@ -1155,7 +1193,7 @@ def run_polling_command(client: Client, cmd: str, command_function: Callable, ar
     command_results = cloudflare_waf_get_operation_command(client, operation_id)
 
     if command_results.outputs['status'] != 'completed':
-        scheduled_command = scheduled_commands(operation_id, interval, timeout, cmd, args)
+        scheduled_command = schedule_command(operation_id, interval, timeout, cmd, args)
         command_results = CommandResults(scheduled_command=scheduled_command)
     return command_results
 
