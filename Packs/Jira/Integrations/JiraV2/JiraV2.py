@@ -909,7 +909,7 @@ def add_link_command(issue_id, title, url, summary=None, global_id=None, relatio
         link['application'] = {}
     if application_type:
         link['application']['type'] = application_type
-    if application_type:
+    if application_name:
         link['application']['name'] = application_name
 
     data = jira_req('POST', req_url, json.dumps(link), resp_type='json')
@@ -1004,7 +1004,7 @@ def fetch_incidents(query, id_offset, should_get_attachments, should_get_comment
         query = f'{query} AND created>=\"{formatted_minute_to_fetch}\"'
     else:
         if id_offset:
-            query = f'{query} AND id >= {id_offset}'
+            query = f'{query} AND id >= {id_offset} ORDER BY id ASC'
         if fetch_by_created:
             query = f'{query} AND created>-1m'
 

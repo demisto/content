@@ -126,6 +126,7 @@ Optional system fields are:
 - `lastReputationRun`
 - `modifiedTime`
 - `aggregatedReliability`
+- `communitynotes`
 
 In addition to the system fields, you can also search for custom fields.
 In order to get the list of all available fields to search by, you can configure the `Exported Fields` parameter with the `all` option and check the list returned.
