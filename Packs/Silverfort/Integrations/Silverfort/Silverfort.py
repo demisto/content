@@ -203,7 +203,7 @@ def update_resource_entity_risk_command(client, args):
         return "Couldn't update the resource entity's risk"
 
 
-def main():
+def main():  # pragma: no cover
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
