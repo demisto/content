@@ -541,8 +541,9 @@ def main() -> None:
     params = demisto.params()
     args = demisto.args()
     base_url = params.get('url')
-    user = params.get('username')
-    app_password = params.get('app_password')
+    credentials = params.get('credentials')
+    user = credentials.get('identifier')
+    app_password = credentials.get('password')
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
 
