@@ -5184,6 +5184,10 @@
             "integrations": "Arkime",
             "playbookID": "Arkime Test playbook",
             "fromversion": "6.2.0"
+        },
+        {
+            "integrations": "Cisco Meraki v2",
+            "playbookID": "Cisco Meraki V2 Test"
         }
     ],
     "skipped_tests": {
