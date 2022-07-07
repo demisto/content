@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Detonate URL - Hybrid Analysis
-description: Detonating URL with Hybrid Analysis
+description: Detonating URL with Hybrid Analysis.
 starttaskid: '0'
 tasks:
   '0':
@@ -14,7 +14,7 @@ tasks:
       id: ac486e14-1500-41db-8579-c2acb8b805ef
       version: -1
       name: ''
-      description: starting test
+      description: Starting test.
       iscommand: false
       brand: ''
     nexttasks:
@@ -43,7 +43,7 @@ tasks:
       id: 6fe76277-78da-4060-80e6-7510e4714e54
       version: -1
       name: Is there any active Hybrid Analysis instance?
-      description: Check for active instance
+      description: Check for an active instance.
       type: condition
       iscommand: false
       brand: ''
@@ -104,7 +104,7 @@ tasks:
       id: 93a33cc8-1959-49e6-8bde-49bf5dd9b550
       version: -1
       name: Is there a URL?
-      description: Check for URL
+      description: Check for a URL.
       type: condition
       iscommand: false
       brand: ''
@@ -376,29 +376,29 @@ inputs:
       root: URL
       accessor: Data
   required: false
-  description: URL to detonate
+  description: URL to detonate.
   playbookInputQuery:
 - key: interval
   value:
     simple: '1'
   required: false
-  description: How often to poll for results
+  description: How often to poll for results.
   playbookInputQuery:
 - key: timeout
   value:
     simple: '10'
   required: false
-  description: How long to wait before giving up waiting for results
+  description: How long to wait before giving up waiting for results.
   playbookInputQuery:
 outputs:
 - contextPath: HybridAnalysis.URL.Scanner.Name
-  description: the URL scanner name
+  description: The URL scanner name.
 - contextPath: HybridAnalysis.URL.Scanner.Positives
-  description: Number of positive scanners
+  description: Number of positive scanners.
 - contextPath: HybridAnalysis.URL.Scanner.Status
-  description: Status of the scanning
+  description: Status of the scanning.
 - contextPath: HybridAnalysis.URL.Scanner
-  description: Place Holder for Scanner Data
+  description: Placeholder for scanner data.
   type: unknown
 tests:
 - No tests (auto formatted)

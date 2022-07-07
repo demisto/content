@@ -6,15 +6,15 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-- GenericPolling
+GenericPolling
 
 ### Integrations
 
-- Hybrid Analysis
+Hybrid Analysis
 
 ### Scripts
 
-- Sleep
+Sleep
 
 ### Commands
 
@@ -25,22 +25,22 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ---
 
-| **Name** | **Description**                                       | **Default Value** | **Required** |
-| -------- | ----------------------------------------------------- | ----------------- | ------------ |
-| URL      | URL to detonate                                       | URL.Data          | Optional     |
-| interval | How often to poll for results                         | 1                 | Optional     |
-| timeout  | How long to wait before giving up waiting for results | 10                | Optional     |
+| **Name** | **Description**                                        | **Default Value** | **Required** |
+| -------- | ------------------------------------------------------ | ----------------- | ------------ |
+| URL      | URL to detonate .                                      | URL.Data          | Optional     |
+| interval | How often to poll for results.                         | 1                 | Optional     |
+| timeout  | How long to wait before giving up waiting for results. | 10                | Optional     |
 
 ## Playbook Outputs
 
 ---
 
-| **Path**                             | **Description**               | **Type** |
-| ------------------------------------ | ----------------------------- | -------- |
-| HybridAnalysis.URL.Scanner.Name      | the URL scanner name          | unknown  |
-| HybridAnalysis.URL.Scanner.Positives | Number of positive scanners   | unknown  |
-| HybridAnalysis.URL.Scanner.Status    | Status of the scanning        | unknown  |
-| HybridAnalysis.URL.Scanner           | Place Holder for Scanner Data | unknown  |
+| **Path**                             | **Description**                | **Type** |
+| ------------------------------------ | ------------------------------ | -------- |
+| HybridAnalysis.URL.Scanner.Name      | The URL scanner name.          | unknown  |
+| HybridAnalysis.URL.Scanner.Positives | Number of positive scanners.   | unknown  |
+| HybridAnalysis.URL.Scanner.Status    | Status of the scanning.        | unknown  |
+| HybridAnalysis.URL.Scanner           | Placeholder for scanner data.  | unknown  |
 
 ## Playbook Image
 
