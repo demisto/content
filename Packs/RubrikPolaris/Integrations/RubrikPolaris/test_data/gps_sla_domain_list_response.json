@@ -112,12 +112,7 @@
                         "objectTypes": []
                     }
                 }
-            ],
-            "pageInfo": {
-                "endCursor": "Y3Vyc29yOmludDox",
-                "hasNextPage": true,
-                "hasPreviousPage": false
-            }
+            ]
         }
     }
 }
