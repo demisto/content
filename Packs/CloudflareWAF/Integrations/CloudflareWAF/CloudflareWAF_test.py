@@ -144,7 +144,7 @@ def test_cloudflare_waf_firewall_rule_list_command(requests_mock, mock_client):
     url = f'{BASE_URL}zones/{ZONE_ID}/firewall/rules'
     requests_mock.get(url=url, json=mock_response)
 
-    result = cloudflare_waf_firewall_rule_list_command(mock_client, {'limit': 5})
+    result = cloudflare_waf_firewall_rule_list_command(mock_client, {'page': 1,'page_size':5})
 
     assert result.outputs_prefix == 'CloudflareWAF.FirewallRule'
     assert len(result.outputs) == 2
