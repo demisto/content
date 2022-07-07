@@ -32,50 +32,50 @@ script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.4.31492
+  dockerimage: demisto/python3:3.10.5.31797
   isfetch: false
   commands:
   - name: caldera-create-fact
     description: Create a Fact
     arguments:
     - name: fact_name
-      description: 'Fact name'
+      description: Fact name
       required: false
       isArray: false
     - name: fact_links
-      description: 'Fact links (CSV of IDs)'
+      description: Fact links (CSV of IDs)
       required: false
       isArray: true
     - name: fact_relationships
-      description: 'Fact relationships (CSV of IDs)'
+      description: Fact relationships (CSV of IDs)
       required: false
       isArray: true
     - name: fact_origin_type
-      description: 'Fact origin type'
+      description: Fact origin type
       required: false
       isArray: false
     - name: fact_limit_count
-      description: 'Fact limit count'
+      description: Fact limit count
       required: false
       isArray: false
     - name: fact_technique_id
-      description: 'Fact technique ID'
+      description: Fact technique ID
       required: false
       isArray: false
     - name: fact_trait
-      description: 'Fact trait'
+      description: Fact trait
       required: true
       isArray: false
     - name: fact_source
-      description: 'Fact source'
+      description: Fact source
       required: false
       isArray: false
     - name: fact_score
-      description: 'Fact score'
+      description: Fact score
       required: false
       isArray: false
     - name: fact_value
-      description: 'Fact value'
+      description: Fact value
       required: false
       isArray: false
     outputs:
@@ -107,27 +107,27 @@ script:
     description: Create a Fact Source.
     arguments:
     - name: name
-      description: 'Name'
+      description: Name
       required: false
       isArray: false
     - name: adjustments
-      description: 'Adjustments (array of adjustment objects)'
+      description: Adjustments (array of adjustment objects)
       required: false
       isArray: true
     - name: relationships
-      description: 'Relationships (array of relationship objects)'
+      description: Relationships (array of relationship objects)
       required: false
       isArray: true
     - name: rules
-      description: 'Rules (array of rule objects)'
+      description: Rules (array of rule objects)
       required: false
       isArray: true
     - name: facts
-      description: 'Facts (array of fact objects)'
+      description: Facts (array of fact objects)
       required: false
       isArray: true
     - name: plugin
-      description: 'Plugin'
+      description: Plugin
       required: false
       isArray: false
     outputs:
@@ -198,27 +198,27 @@ script:
     description: Create a new adversary
     arguments:
     - name: name
-      description: 'Adversary name'
+      description: Adversary name
       required: false
       isArray: false
     - name: tags
-      description: 'Tags (CSV of tag names)'
+      description: Tags (CSV of tag names)
       required: false
       isArray: true
     - name: objective
-      description: 'Objective'
+      description: Objective
       required: false
       isArray: false
     - name: atomic_ordering
-      description: 'Atomic ordering (CSV of ability IDs)'
+      description: Atomic ordering (CSV of ability IDs)
       required: false
       isArray: true
     - name: plugin
-      description: 'Plugin'
+      description: Plugin
       required: false
       isArray: false
     - name: description
-      description: 'Description'
+      description: Description
       required: false
       isArray: false
     outputs:
@@ -244,117 +244,117 @@ script:
     description: Create a new agent
     arguments:
     - name: watchdog
-      description: 'Watchdog timer'
+      description: Watchdog timer
       required: false
       isArray: false
     - name: deadman_enabled
-      description: 'Deadman enabled (true or false)'
+      description: Deadman enabled (true or false)
       auto: PREDEFINED
       predefined:
-      - "false"
-      - "true"
-      defaultValue: "false"
+      - 'false'
+      - 'true'
+      defaultValue: 'false'
       required: false
       isArray: false
     - name: ppid
-      description: 'PPID'
+      description: PPID
       required: false
       isArray: false
     - name: pid
-      description: 'PID'
+      description: PID
       required: false
       isArray: false
     - name: proxy_receivers
-      description: 'Proxy Receivers (JSON dict)'
+      description: Proxy Receivers (JSON dict)
       required: false
       isArray: false
     - name: origin_link_id
-      description: 'Origin link ID'
+      description: Origin link ID
       required: false
       isArray: false
     - name: available_contacts
-      description: 'Available contacts (CSV of contact IDs)'
+      description: Available contacts (CSV of contact IDs)
       required: false
       isArray: true
     - name: platform
-      description: 'Platform'
+      description: Platform
       required: false
       isArray: false
     - name: host
-      description: 'Host'
+      description: Host
       required: false
       isArray: false
     - name: group
-      description: 'Group'
+      description: Group
       required: false
       isArray: false
     - name: location
-      description: 'Location'
+      description: Location
       required: false
       isArray: false
     - name: display_name
-      description: 'Display name'
+      description: Display name
       required: false
       isArray: false
     - name: upstream_dest
-      description: 'Upstream destination'
+      description: Upstream destination
       required: false
       isArray: false
     - name: host_ip_addrs
-      description: 'Host IP addresses (CSV of IP addresses)'
+      description: Host IP addresses (CSV of IP addresses)
       required: false
       isArray: true
     - name: sleep_max
-      description: 'Sleep maximum'
+      description: Sleep maximum
       required: false
       isArray: false
     - name: architecture
-      description: 'Architecture'
+      description: Architecture
       required: false
       isArray: false
     - name: sleep_min
-      description: 'Sleep minimum'
+      description: Sleep minimum
       required: false
       isArray: false
     - name: server
-      description: 'Server'
+      description: Server
       required: false
       isArray: false
     - name: contact
-      description: 'Contact'
+      description: Contact
       required: false
       isArray: false
     - name: exeutors
-      description: 'Executors (CSV of executor IDs)'
+      description: Executors (CSV of executor IDs)
       required: false
       isArray: true
     - name: privilege
-      description: 'Privilege'
+      description: Privilege
       required: false
       isArray: false
     - name: username
-      description: 'Username'
+      description: Username
       required: false
       isArray: false
     - name: trusted
-      description: 'Trusted'
+      description: Trusted
       auto: PREDEFINED
       predefined:
-      - "false"
-      - "true"
-      defaultValue: "true"
+      - 'false'
+      - 'true'
+      defaultValue: 'true'
       required: false
       isArray: false
     - name: proxy_chain
-      description: 'Proxy chain (array of proxy arrays)'
+      description: Proxy chain (array of proxy arrays)
       required: false
       isArray: true
     - name: paw
-      description: 'Agent PAW'
+      description: Agent PAW
       required: false
       isArray: false
     - name: exe_name
-      description: 'EXE name'
+      description: EXE name
       required: false
       isArray: false
     outputs:
@@ -548,76 +548,76 @@ script:
     description: Create a new CALDERA operation record
     arguments:
     - name: name
-      description: 'Operation name'
+      description: Operation name
       required: true
       isArray: false
     - name: autonomous
-      description: 'Autonomous (autonomous or manual)'
+      description: Autonomous (autonomous or manual)
       auto: PREDEFINED
       predefined:
-      - "autonomous"
-      - "manual"
-      defaultValue: "autonomous"
+      - autonomous
+      - manual
+      defaultValue: autonomous
       required: false
       isArray: false
     - name: objective_id
-      description: 'Objective ID'
+      description: Objective ID
       required: false
       isArray: false
     - name: visibility
-      description: 'How visible should the operation be to the defense (1-100), default is 51'
+      description: How visible should the operation be to the defense (1-100), default is 51
       required: false
       isArray: false
     - name: state
-      description: 'State'
+      description: State
       auto: PREDEFINED
       predefined:
-      - "running"
-      - "paused"
-      - "run_one_link"
-      defaultValue: "running"
+      - running
+      - paused
+      - run_one_link
+      defaultValue: running
       required: false
       isArray: false
     - name: group
-      description: 'Group'
+      description: Group
       required: false
       isArray: false
     - name: host_group
-      description: 'Host group'
+      description: Host group
       required: false
       isArray: true
     - name: planner_id
-      description: 'Planner ID'
+      description: Planner ID
       required: true
       isArray: false
     - name: obfuscator
-      description: 'Obfuscator'
+      description: Obfuscator
       auto: PREDEFINED
       predefined:
-      - "base64"
-      - "base64jumble"
-      - "base64noPadding"
-      - "caesar cipher"
-      - "plain-text"
-      - "steganography"
-      defaultValue: "plain-text"
+      - base64
+      - base64jumble
+      - base64noPadding
+      - caesar cipher
+      - plain-text
+      - steganography
+      defaultValue: plain-text
       required: false
       isArray: false
     - name: use_learning_parsers
-      description: 'Use learning parsers'
+      description: Use learning parsers
       auto: PREDEFINED
       predefined:
-      - "false"
-      - "true"
-      defaultValue: "false"
+      - 'false'
+      - 'true'
+      defaultValue: 'false'
       required: false
       isArray: false
     - name: source_id
-      description: 'Source ID'
+      description: Source ID
       required: true
       isArray: false
     - name: jitter
-      description: 'Jitter is defined as a fraction (default is "2/8")'
+      description: Jitter is defined as a fraction (default is "2/8")
       required: false
       isArray: false
     - name: adversary_id
@@ -625,12 +625,12 @@ script:
       required: true
       isArray: false
     - name: auto_close
-      description: 'Auto close'
+      description: Auto close
       auto: PREDEFINED
       predefined:
-      - "false"
-      - "true"
-      defaultValue: "false"
+      - 'false'
+      - 'true'
+      defaultValue: 'false'
       required: false
       isArray: false
     outputs:
@@ -857,15 +857,15 @@ script:
     description: Create a new objective
     arguments:
     - name: name
-      description: 'Objective name'
+      description: Objective name
       required: false
       isArray: false
     - name: goals
-      description: 'Goals (array of objective objects)'
+      description: Goals (array of objective objects)
       required: false
       isArray: true
     - name: description
-      description: 'Description'
+      description: Description
       required: false
       isArray: false
     outputs:
@@ -1754,7 +1754,7 @@ script:
       required: false
       isArray: false
     - name: sort
-      description: 'Results are sorted if no Ability ID is provided.'
+      description: Results are sorted if no Ability ID is provided.
       required: false
       isArray: false
     - name: include
@@ -1849,7 +1849,7 @@ script:
       required: false
       isArray: false
     - name: sort
-      description: 'Results are sorted if no Adversary ID is provided.'
+      description: Results are sorted if no Adversary ID is provided.
       required: false
       isArray: false
     - name: include
@@ -2092,14 +2092,14 @@ script:
       description: 'Name of the configuration file to be retrieved (example: main)'
       required: true
       isArray: false
-      defaultValue: 'main'
+      defaultValue: main
     outputs:
     - type: String
       contextPath: MitreCaldera.Name
-      description: 'Config name'
+      description: Config name
     - type: Unknown
       contextPath: MitreCaldera.Config
-      description: 'Config settings'
+      description: Config settings
   - name: caldera-get-contacts
     description: Retrieve a List of all available Contact reports
     arguments:
@@ -2110,7 +2110,7 @@ script:
     outputs:
     - type: Unknnown
       contextPath: MitreCaldera.Contacts
-      description: 'List of contacts'
+      description: List of contacts
   - name: caldera-get-deploy-commands
     description: Retrieve deploy commands with optional Ability ID
     arguments:
@@ -2121,25 +2121,25 @@ script:
     outputs:
     - type: String
       contextPath: MitreCaldera.DeployCommands.command
-      description: 'Command'
+      description: Command
     - type: String
       contextPath: MitreCaldera.DeployCommands.description
-      description: 'Description'
+      description: Description
     - type: String
       contextPath: MitreCaldera.DeployCommands.executor
-      description: 'Executor'
+      description: Executor
     - type: String
       contextPath: MitreCaldera.DeployCommands.name
-      description: 'Name'
+      description: Name
     - type: String
       contextPath: MitreCaldera.DeployCommands.platform
-      description: 'Platform'
+      description: Platform
     - type: String
       contextPath: MitreCaldera.DeployCommands.variations.command
-      description: 'Command'
+      description: Command
     - type: String
       contextPath: MitreCaldera.DeployCommands.variations.description
-      description: 'Description'
+      description: Description
   - name: caldera-get-facts
     description: Retrieve Facts with optional Operation ID
     arguments:
@@ -2156,7 +2156,7 @@ script:
       required: false
       isArray: true
     - name: operation_id
-      description: 'Optional Operation ID'
+      description: Optional Operation ID
       required: false
       isArray: false
     outputs:
@@ -3170,12 +3170,12 @@ script:
       required: true
       isArray: false
     - name: enable_agent_output
-      description: 'Whether to enable the agent output.'
+      description: Whether to enable the agent output.
       auto: PREDEFINED
       predefined:
-        - "false"
-        - "true"
-      defaultValue: "false"
+      - 'false'
+      - 'true'
+      defaultValue: 'false'
     - name: include
       description: ''
       required: false
@@ -3232,12 +3232,12 @@ script:
       required: true
       isArray: false
     - name: enable_agent_output
-      description: 'Whether to enable the agent output.'
+      description: Whether to enable the agent output.
       auto: PREDEFINED
       predefined:
-        - "false"
-        - "true"
-      defaultValue: "false"
+      - 'false'
+      - 'true'
+      defaultValue: 'false'
     - name: include
       description: ''
       required: false
