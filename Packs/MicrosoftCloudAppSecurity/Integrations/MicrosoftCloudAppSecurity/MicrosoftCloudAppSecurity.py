@@ -613,7 +613,6 @@ def alerts_to_incidents_and_fetch_start_from(alerts: List[dict], fetch_start_tim
         incident_created_datetime = datetime.fromtimestamp(incident_created_time / 1000.0).isoformat()
         incident_occurred = incident_created_datetime.split('.')
         occurred = incident_occurred[0]
-        demisto.debug("======alert is " + str(alert))
         demisto.debug("------ Alert occurred time is: " + occurred)
         incident = {
             'name': alert['title'],
@@ -639,8 +638,6 @@ def fetch_incidents(client: Client, max_results: Optional[str], last_run: dict, 
     max_results = int(max_results) if max_results else DEFAULT_INCIDENT_TO_FETCH
     fetch_start_time, fetch_end_time = get_fetch_run_time_range(last_run=last_run, first_fetch=first_fetch,
                                                                 look_back=look_back)
-    demisto.debug("start time fetch is " + str(fetch_start_time))
-    demisto.debug("end time fetch is " + str(fetch_end_time))
 
     formatted_fetch_start_time = format_fetch_start_time_to_timestamp(fetch_start_time)
     filters["date"] = {"gte": formatted_fetch_start_time}
