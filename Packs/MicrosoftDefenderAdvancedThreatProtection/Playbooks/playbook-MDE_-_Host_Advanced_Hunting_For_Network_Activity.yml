@@ -1572,6 +1572,7 @@ tasks:
       id: 88124d1e-6223-43c8-89b1-264076f46201
       version: -1
       name: Check if device information was provided
+      description: Check if device information was provided
       type: condition
       iscommand: false
       brand: ''
@@ -1615,6 +1616,7 @@ tasks:
       id: 3b430e7e-7a24-4e44-8a7c-2938d89f1850
       version: -1
       name: Are DeviceID and FileName provided?
+      description: Are DeviceID and FileName provided?
       type: condition
       iscommand: false
       brand: ''
@@ -1659,6 +1661,7 @@ tasks:
       id: fd8e6713-5106-4527-82c0-dc6970184e36
       version: -1
       name: Are DeviceID and FileName provided?
+      description: Are DeviceID and FileName provided?
       type: condition
       iscommand: false
       brand: ''

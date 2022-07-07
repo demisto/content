@@ -1111,6 +1111,7 @@ tasks:
       id: 0a3ba1a2-67eb-4d83-8e17-962c519073d4
       version: -1
       name: Is there a hash?
+      description: Is there a hash?
       type: condition
       iscommand: false
       brand: ''
@@ -1150,6 +1151,7 @@ tasks:
       id: 87ffe3f4-08ba-45e7-8232-46393f0dfca2
       version: -1
       name: Check if device information was provided
+      description: Check if device information was provided
       type: condition
       iscommand: false
       brand: ''
