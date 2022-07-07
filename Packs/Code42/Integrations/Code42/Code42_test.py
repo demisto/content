@@ -1361,7 +1361,7 @@ def test_get_file_category_value_handles_hyphenated_case():
 
 
 def test_client_lazily_inits_sdk(mocker, code42_sdk_mock):
-    sdk_factory_mock = mocker.patch("py42.sdk.from_jwt_provider")
+    sdk_factory_mock = mocker.patch("py42.sdk.SDKClient.from_jwt_provider")
     response_json_mock = """{"total": 1, "users": [{"username": "Test"}]}"""
     code42_sdk_mock.users.get_by_username.return_value = (
         create_mock_code42_sdk_response(mocker, response_json_mock)
@@ -1377,6 +1377,13 @@ def test_client_lazily_inits_sdk(mocker, code42_sdk_mock):
     # test that sdk init from first method call
     client.get_user("Test")
     assert client._sdk is not None
+
+
+def test_client_gets_jwt_provider_if_no_sdk_provided(mocker):
+    mock_sdk = mocker.patch("Code42.py42.sdk.SDKClient")
+    client = Code42Client(sdk=None, base_url=MOCK_URL, auth=MOCK_AUTH, verify=False, proxy=False)
+    client.sdk
+    assert mock_sdk.from_jwt_provider.call_count == 1
 
 
 def test_client_raises_helpful_error_when_not_given_an_api_client_id(mocker, code42_sdk_mock):

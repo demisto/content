@@ -155,10 +155,9 @@ class Code42Client(BaseClient):
         self._sdk = sdk
 
         if not proxy:
-            _clear_env_var_if_exists('HTTP_PROXY')
-            _clear_env_var_if_exists('HTTPS_PROXY')
-            _clear_env_var_if_exists('http_proxy')
-            _clear_env_var_if_exists('https_proxy')
+            for var in ("HTTP_PROXY", "HTTPS_PROXY", "http_proxy", "https_proxy"):
+                if os.environ.get(var):
+                    del os.environ[var]
 
         py42.settings.set_user_agent_suffix("Cortex XSOAR")
         py42.settings.verify_ssl_certs = verify
@@ -167,13 +166,15 @@ class Code42Client(BaseClient):
     def sdk(self):
         if self._sdk is None:
             def api_client_provider():
-                uri = f"https://{self._base_url}/api/v3/oauth/token"
-                params = {"grant_type": "client_credentials"}
-                r = requests.post(uri, params=params, auth=self._auth)
+                r = requests.post(
+                    f"https://{self._base_url}/api/v3/oauth/token",
+                    params={"grant_type": "client_credentials"},
+                    auth=self._auth
+                )
                 r.raise_for_status()
                 return r.json()["access_token"]
 
-            self._sdk = py42.sdk.from_jwt_provider(self._base_url, api_client_provider)
+            self._sdk = py42.sdk.SDKClient.from_jwt_provider(self._base_url, api_client_provider)
         return self._sdk
 
     # Departing Employee methods (deprecated, replaced by Watchlist methods)
@@ -273,10 +274,6 @@ class Code42Client(BaseClient):
     def resolve_alert(self, id):
         self.sdk.alerts.resolve(id)
         return id
-
-    def get_current_user(self):
-        res = self.sdk.usercontext.get_current_tenant_id()
-        return res
 
     def get_user(self, username):
         py42_res = self.sdk.users.get_by_username(username)
@@ -562,18 +559,6 @@ def get_file_category_value(key):
         "archive": FileCategory.ZIP,
     }
     return category_map.get(key, "UNCATEGORIZED")
-
-
-def _convert_date_arg_to_epoch(date_arg):
-    date_arg = date_arg[:25]
-    return (
-        datetime.strptime(date_arg, "%Y-%m-%dT%H:%M:%S.%f") - datetime.utcfromtimestamp(0)
-    ).total_seconds()
-
-
-def _clear_env_var_if_exists(var):
-    if os.environ.get(var):
-        del os.environ[var]
 
 
 @logger
@@ -1284,7 +1269,7 @@ def fetch_incidents(
 def test_module(client):
     try:
         # Will fail if unauthorized
-        client.get_current_user()
+        client.sdk.usercontext.get_current_tenant_id()
         return "ok"
     except Exception:
         return (
