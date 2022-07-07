@@ -4,6 +4,10 @@
 [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/demisto/content.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/demisto/content/context:python)
 [![Open in Visual Studio Code](https://open.vscode.dev/badges/open-in-vscode.svg)](https://open.vscode.dev/demisto/content)
 
+[![Open in Remote - Containers](https://img.shields.io/static/v1?label=Remote%20-%20Containers&message=Open&color=blue&logo=visualstudiocode)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=git@github.com:demisto/content.git)
+
+If you already have VS Code and Docker installed, you can click the badge above or [here](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=git@github.com:demisto/content.git) to get started. Clicking these links causes VS Code to automatically install the Remote - Containers extension (if needed), clone the source code into a container volume, and spin up a development container for use.
+
 # Cortex XSOAR Platform - Content Repository
 #### Demisto is now Cortex XSOAR.
 This repo contains content provided by Demisto to automate and orchestrate your Security Operations. Here we will share our ever-growing list of playbooks, automation scripts, report templates and other useful content.
