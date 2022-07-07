@@ -755,3 +755,7 @@ def test_chunk_size():
         while data := f.read(chunk_size):
             print(i)
             i = i+1
+
+
+def test_print():
+    print('hello')

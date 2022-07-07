@@ -468,9 +468,9 @@ class MsGraphClient:
             'body': MsGraphClient._build_body_input(body=body, body_type=body_type),
             'bodyPreview': body[:255],
             'importance': importance,
-            'flag': MsGraphClient._build_flag_input(flag),
-            'attachments': MsGraphClient._build_file_attachments_input(attach_ids, attach_names, attach_cids,
-                                                                       manual_attachments)
+            'flag': MsGraphClient._build_flag_input(flag)
+             'attachments': MsGraphClient._build_file_attachments_input(attach_ids, attach_names, attach_cids,
+                                                                        manual_attachments)
         }
 
         if internet_message_headers:
@@ -1432,6 +1432,8 @@ def create_draft_command(client: MsGraphClient, args):
 
     create_upload_session(email, client, created_draft)
 
+
+
     parsed_draft = client.parse_item_as_dict(created_draft)
     headers = ['ID', 'From', 'Sender', 'To', 'Subject', 'Body', 'BodyType', 'Cc', 'Bcc', 'Headers', 'Importance',
                'MessageID', 'ConversationID', 'CreatedTime', 'SentTime', 'ReceivedTime', 'ModifiedTime', 'IsDraft',
@@ -1569,29 +1571,33 @@ def send_draft_command(client: MsGraphClient, args):
     return_outputs(f'### Draft with: {draft_id} id was sent successfully.')
 
 
-def create_upload_session(email: str, client: MsGraphClient, created_draft: dict, file_path):
+def create_upload_session(email: str, client: MsGraphClient, created_draft: dict):
     try:
         created_draft_id = created_draft.get('id')
         suffix_endpoint = f'/users/{email}/messages/{created_draft_id}/attachments/createUploadSession'
+
+        file_path = '/Users/okarkkatz/dev/demisto/content/Packs/MicrosoftGraphMail/Integrations/MicrosoftGraphMail/world.jpg'
+        file_size = os.path.getsize(
+            '/Users/okarkkatz/dev/demisto/content/Packs/MicrosoftGraphMail/Integrations/MicrosoftGraphMail/world.jpg')
+
         attachment = {
             "attachmentType": "file",
             "name": "Big Test file",
-            "size": 21000
+            "size": file_size
         }
 
         upload_session = client.ms_client.http_request('POST', suffix_endpoint,
                                                        json_data={'attachmentItem': attachment})
 
-        upload_url = upload_session.json()['uploadUrl']
+        upload_url = upload_session['uploadUrl']
 
-        with open(file_path, 'rb') as upload_file:
-            total_file_size = 0
+        with open(file_path, 'rb') as file_to_upload:
             chunk_size = 4 * (2 ** 20)  # 4MB
-            chunk_number = total_file_size // chunk_size
-            chunk_leftover = total_file_size - (chunk_size * chunk_number)  # The size of the last chunk
-            counter =0
+            chunk_number = file_size // chunk_size
+            chunk_leftover = file_size - (chunk_size * chunk_number)  # The size of the last chunk
+            counter = 0
             while True:
-                chunk_data = upload_file.read(chunk_size)
+                chunk_data = file_to_upload.read(chunk_size)
                 start_index = counter * chunk_size
                 end_index = start_index + chunk_size
 
@@ -1601,21 +1607,17 @@ def create_upload_session(email: str, client: MsGraphClient, created_draft: dict
                     end_index = start_index + chunk_leftover
 
                 headers = {
-                    'Content-Lenght' : f'{chunk_size}',
-                    'Content-Range' : f'bytes {start_index}-{end_index-1}/{total_file_size}'
+                    'Content-Lenght': f'{chunk_size}',
+                    'Content-Range': f'bytes {start_index}-{end_index - 1}/{file_size}'
                 }
 
                 chunk_data_upload_status = requests.put(upload_url,
-                                                        headers= headers,
+                                                        headers=headers,
                                                         data=chunk_data
                                                         )
+                demisto.info(f'upload progress {chunk_data_upload_status.json()["nextExpectedRanges"]}')
+                counter+=1
 
-
-
-
-
-
-        print(upload_session)
     except Exception as e:
         raise Exception(f'upload seesion error', e)
 
