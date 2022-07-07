@@ -776,10 +776,10 @@ outputs:
     description: The MD5 hash of the file.
     type: string
   - contextPath: File.Malicious.Vendor
-    description: The vendor that decides the file is malicious.
+    description: The vendor that decided the file is malicious.
     type: string
   - contextPath: File.Malicious.Description
-    description: The reason the vendor decides the file is malicious.
+    description: The reason the vendor decided the file is malicious.
     type: string
   - contextPath: DBotScore
     description: The indicator's object.
@@ -797,7 +797,7 @@ outputs:
     description: The actual score.
     type: number
   - contextPath: Joe.Analysis.WebID
-    description: The  Joe Analysis-related Web ID.
+    description: The Joe Analysis-related web ID.
     type: string
   - contextPath: Joe.Analysis.Status
     description: The Joe Analysis-related status.
@@ -818,7 +818,7 @@ outputs:
     description: The Joe Analysis-related errors raised during sampling.
     type: string
   - contextPath: Joe.Analysis.Systems
-    description: The Joe Analysis-related OS.
+    description: The Joe Analysis-related operating systems.
     type: string
   - contextPath: Joe.Analysis.MD5
     description: The MD5 hash of the Joe Analysis-related sample.
@@ -830,7 +830,7 @@ outputs:
     description: The SHA256 hash of the Joe Analysis-related sample.
     type: string
   - contextPath: Joe.Analysis.SampleName
-    description: The Joe Analysis-related sample data name, can be a file name or a URL.
+    description: The Joe Analysis-related sample data name. Can be a file name or a URL.
     type: string
   - contextPath: InfoFile.Name
     description: The file name.
@@ -854,7 +854,7 @@ outputs:
     description: The sample ID.
     type: string
   - contextPath: IP.Address
-    description: The IPs relevant to the sample.
+    description: The IP addresses relevant to the sample.
     type: string
   - contextPath: InfoFile
     description: The report file's object.
@@ -937,7 +937,7 @@ outputs:
     description: The ANY.RUN connection port number.
     type: Number
   - contextPath: ANYRUN.Task.Connection.IP
-    description: The ANY.RUN connection IP number.
+    description: The ANY.RUN connection IP address.
     type: String
   - contextPath: ANYRUN.Task.DnsRequest.Reputation
     description: The ANY.RUN process reputation of the DNS request.
@@ -1009,7 +1009,7 @@ outputs:
     description: The ANY.RUN submitted file details.
     type: String
   - contextPath: ANYRUN.Task.OS
-    description: The ANY.RUN OS of the sandbox in which the file was analyzed.
+    description: The ANY.RUN operating system of the sandbox in which the file was analyzed.
     type: String
   - contextPath: ANYRUN.Task.ID
     description: The unique ANY.RUN task ID.
@@ -1030,7 +1030,7 @@ outputs:
     description: The ANY.RUN process parent process identification number.
     type: Number
   - contextPath: ANYRUN.Task.Process.ProcessUUID
-    description: The Unique ANY.RUN process UUID.
+    description: The unique ANY.RUN process UUID.
     type: String
   - contextPath: ANYRUN.Task.Process.CMD
     description: The ANY.RUN process command.
@@ -1063,10 +1063,10 @@ outputs:
     description: The URL data.
     type: String
   - contextPath: URL.Malicious.Vendor
-    description: The vendor that decides the URL is malicious.
+    description: The vendor that decided the URL is malicious.
     type: String
   - contextPath: URL.Malicious.Description
-    description: The reason the vendor decides the URL is malicious.
+    description: The reason the vendor decided the URL is malicious.
     type: String
   - contextPath: ANYRUN.Task.Status
     description: The task analysis status.
@@ -1078,49 +1078,49 @@ outputs:
   - contextPath: FireEyeAX.Submissions.InfoLevel
     description: The info level of the report.
   - contextPath: DBotScore.Score
-    description: The actual score
+    description: The actual score.
     type: unknown
   - contextPath: DBotScore.Indicator
-    description: The indicator we tested
+    description: The indicator that was tested.
     type: unknown
   - contextPath: DBotScore.Vendor
-    description: Vendor used to calculate the score
+    description: The vendor used to calculate the score.
     type: unknown
   - contextPath: Triage.sample-summaries.completed
-    description: Date the sample analysis was completed
+    description: The date the sample analysis was completed.
   - contextPath: Triage.sample-summaries.created
-    description: Date the analysis report was created
+    description: The date the analysis report was created.
   - contextPath: Triage.sample-summaries.custom
-    description: Custom
+    description: The custom sample analysis.
   - contextPath: Triage.sample-summaries.owner
-    description: Owner
+    description: The owner of the sample summaries.
     type: unknown
   - contextPath: Triage.sample-summaries.sample
-    description: Unique identifier of the sample
+    description: The unique identifier of the sample.
     type: unknown
   - contextPath: Triage.sample-summaries.score
-    description: Score of the sample on a scale of 0 to 10
+    description: The score of the sample on a scale of 0 to 10.
     type: unknown
   - contextPath: Triage.sample-summaries.sha256
-    description: SHA256 of the sample
+    description: The SHA256 of the sample.
     type: unknown
   - contextPath: Triage.sample-summaries.status
-    description: Status of the analysis
+    description: The status of the analysis.
     type: unknown
   - contextPath: Triage.sample-summaries.target
-    description: Target for analysis
+    description: The target for the analysis.
     type: unknown
   - contextPath: Triage.sample-summaries.tasks
-    description: Tasks performed in the analysis
+    description: The tasks performed in the analysis.
     type: unknown
   - contextPath: HybridAnalysis.URL.Scanner.Name
-    description: the URL scanner name
+    description: The URL scanner name.
   - contextPath: HybridAnalysis.URL.Scanner.Positives
-    description: Number of positive scanners
+    description: The number of positive scanners.
   - contextPath: HybridAnalysis.URL.Scanner.Status
-    description: Status of the scanning
+    description: The status of the scanning.
   - contextPath: HybridAnalysis.URL.Scanner
-    description: Place Holder for Scanner Data
+    description: The place holder for the scanner data.
     type: unknown
 fromversion: 5.0.0
 tests:
