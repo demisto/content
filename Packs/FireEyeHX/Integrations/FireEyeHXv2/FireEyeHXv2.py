@@ -831,6 +831,87 @@ class Client(BaseClient):
         )
 
     """
+    HOST SETS
+    """
+
+    def delete_host_set_request(self, host_set_id: str):
+        return self._http_request(
+            method="DELETE",
+            url_suffix=f'host_sets/{host_set_id}',
+            return_empty_response=True
+        )
+    
+    def create_static_host_set_request(self, host_set_name: str, hosts_ids: List[str]):
+        body = self.create_static_host_body_request(host_set_name, hosts_ids, [])
+
+        return self._http_request(
+            method='POST',
+            url_suffix='/host_sets/static',
+            body=body
+        )
+    
+    def update_static_host_set_request(self,host_set_id, host_set_name, add_host_ids, remove_host_ids):
+        body = self.create_static_host_body_request(host_set_name, add_host_ids, remove_host_ids)
+
+        return self._http_request(
+            method='PUT',
+            url_suffix=f'/host_sets/static/{host_set_id}',
+            body=body
+        )
+    
+    def create_dynamic_host_set_request(self, host_set_name, query, query_key, query_value, query_operator):
+        body = self.create_dynamic_host_body_request(host_set_name, query, query_key, query_value, query_operator)
+
+        return self._http_request(
+            method='POST',
+            url_suffix='/host_sets/static',
+            body=body
+        )
+            
+    def update_dynamic_host_set_request(self, host_set_name, query, query_key, query_value, query_operator):
+        body = self.create_dynamic_host_body_request(host_set_name, query, query_key, query_value, query_operator)
+
+        return self._http_request(
+            method='PUT',
+            url_suffix='/host_sets/static',
+            body=body
+        )
+
+    @staticmethod
+    def create_static_host_body_request(host_set_name: str, host_ids_to_add: list, host_ids_to_remove: list):
+        body = {
+            'name': host_set_name,
+            'changes':[
+                {
+                    'command': 'change',
+                    'add': host_ids_to_add,
+                    'remove': host_ids_to_remove
+                }
+            ]
+        }
+
+        return body
+
+    @staticmethod
+    def create_dynamic_host_body_request(host_set_name: str, query: str, query_key: str, query_value: str, query_operator: str):
+        body = {
+            'name': host_set_name,
+        }
+
+        if query:
+            body['query'] = query
+        else:
+            body['query'] = [ # type: ignore
+                {
+                    'key': query_key,
+                    'value': query_value,
+                    'operator': query_operator
+                }
+            ]
+
+        return body
+        
+    """
     ACQUISITION REQUEST
     """
 
@@ -1963,6 +2044,148 @@ def cancel_containment_command(client: Client, args: Dict[str, Any]) -> CommandR
 
 
 """
+HOST SETS
+"""
+
+
+def delete_host_set_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    host_set_id = args.get('HostSetId')
+
+    if not host_set_id:
+        raise ValueError('Host Set ID is required')
+    message = ''
+    try:
+        client.delete_host_set_request(host_set_id)
+        message = 'Success'
+    except Exception as e:
+        if '404' in str(e):
+            message = f'Host Set ID - {host_set_id} Not Found'
+        else:
+            raise ValueError(e)
+
+    return CommandResults(readable_output=message)
+
+def create_static_host_set_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    host_set_name = args.get('name')
+    hosts_ids = argToList(args.get('hosts_id'))
+
+    if not hosts_ids:
+        raise ValueError('Please provide at least one Host ID.')
+    elif not host_set_name:
+        raise ValueError('Host Set name is required')
+    data = None
+    try:
+        response = client.create_static_host_set_request(host_set_name, hosts_ids)
+        data = response['data']
+        message = f'Static Host Set {host_set_name} was created successfully, with ids {hosts_ids}'
+    except Exception as e:
+        if '409' in str(e):
+            message = "Another host set has that name, please choose a different one."
+        else:
+            message = "Creating Host Set failed, check if you have the necessary permissions"
+
+    return CommandResults(
+        outputs_prefix='FireEyeHX.HostSets',
+        outputs_key_field="_id",
+        outputs=data,
+        readable_output=message
+    )
+
+def update_static_host_set_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    host_set_id = args.get('id')
+    host_set_name = args.get('name')
+    add_host_ids = argToList(args.get('add_host_ids'))
+    remove_host_ids = argToList(args.get('remove_host_ids'))
+
+    if not host_set_id:
+        raise ValueError('Host ID is required.')
+
+    data = None
+    try:
+        response = client.update_static_host_set_request(host_set_name, host_set_id, add_host_ids, remove_host_ids)
+        data = response['data']
+        message = f'Static Host Set {host_set_name} was updated successfully.'
+    except Exception as e:
+        if '409' in str(e):
+            message = 'Another host set has that name, please choose a different one.'
+        elif '404' in str(e):
+            message = 'Host set was not found.'
+        else:
+            message = 'Updating Host Set failed, check if you have the necessary permissions'
+
+    return CommandResults(
+        outputs_prefix='FireEyeHX.HostSets',
+        outputs_key_field="_id",
+        outputs=data,
+        readable_output=message
+    )
+
+def create_dynamic_host_set_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    host_set_name = args.get('name')
+    query = args.get('query')
+    query_key = args.get('query_key')
+    query_value = args.get('query_value')
+    query_operator = args.get('query_operator')
+
+    if not host_set_name:
+        raise ValueError('Host Set name is required')
+    elif query and (query_key or query_value or query_operator):
+        raise ValueError('Cannot use free text query with other query operators, Please use one.')
+    elif not (query_key and query_value and query_operator) and not query:
+        ValueError('Please provide a free text query, or add all of the query operators toghether')
+
+    data = None
+    try:
+        response = client.create_dynamic_host_set_request(host_set_name, query, query_key, query_value, query_operator)
+        data = response['data']
+        message = f'Dynamic Host Set {host_set_name} was created successfully.'
+    except Exception as e:
+        if '409' in str(e):
+            message = "Another host set has that name, please choose a different one."
+        else:
+            message = "Creating Host Set failed, check if you have the necessary permissions"
+
+    return CommandResults(
+        outputs_prefix='FireEyeHX.HostSets',
+        outputs_key_field="_id",
+        outputs=data,
+        readable_output=message
+    )
+
+def update_dynamic_host_set_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    host_set_name = args.get('name')
+    query = args.get('query')
+    query_key = args.get('query_key')
+    query_value = args.get('query_value')
+    query_operator = args.get('query_operator')
+
+    if not host_set_name:
+        raise ValueError('Host Set name is required')
+    elif query and (query_key or query_value or query_operator):
+        raise ValueError('Cannot use free text query with other query operators, Please use one.')
+    elif not (query_key and query_value and query_operator) and not query:
+        ValueError('Please provide a free text query, or add all of the query operators toghether')
+
+    data = None
+    try:
+        response = client.create_dynamic_host_set_request(host_set_name, query, query_key, query_value, query_operator)
+        data = response['data']
+        message = f'Dynamic Host Set {host_set_name} was updated successfully.'
+    except Exception as e:
+        if '409' in str(e):
+            message = "Another host set has that name, please choose a different one."
+        elif '404' in str(e):
+            message = 'Host set was not found.'
+        else:
+            message = "Updating Host Set failed, check if you have the necessary permissions"
+
+    return CommandResults(
+        outputs_prefix='FireEyeHX.HostSets',
+        outputs_key_field="_id",
+        outputs=data,
+        readable_output=message
+    )
+"""
 ACQUISITION
 """
 
@@ -2869,6 +3092,11 @@ def main() -> None:
         'fireeye-hx-delete-indicator': delete_indicator_command,
         'fireeye-hx-list-indicator-category': list_indicator_categories_command,
         'fireeye-hx-delete-indicator-condition': delete_condition_command,
+        'fireeye-hx-delete-host-set': delete_host_set_command,
+        'fireeye-hx-create-host-set-static': create_static_host_set_command,
+        'fireeye-hx-update-host-set-static': update_static_host_set_command,
+        'fireeye-hx-create-host-set-dynamic': create_dynamic_host_set_command,
+        'fireeye-hx-update-host-set-dynamic': update_dynamic_host_set_command,
     }
 
     params = demisto.params()
