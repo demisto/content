@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Detonate URL - FireEye AX
-description: Detonating URL with FireEye AX
+description: Detonating URL with FireEye AX.
 starttaskid: '0'
 tasks:
   '0':
@@ -42,8 +42,8 @@ tasks:
     task:
       id: b553e4e7-adfb-4d47-822f-23c2baa6c75a
       version: -1
-      name: Is there any active FireEye AX instance?
-      description: Check for active instance
+      name: Is there an active FireEye AX instance?
+      description: Check for an active instance.
       type: condition
       iscommand: false
       brand: ''
@@ -104,7 +104,7 @@ tasks:
       id: 93a33cc8-1959-49e6-8bde-49bf5dd9b550
       version: -1
       name: Is there a URL?
-      description: Check for URL
+      description: Check for a URL.
       type: condition
       iscommand: false
       brand: ''
@@ -146,7 +146,7 @@ tasks:
       id: 70b2a5ea-ad97-4dcf-89ea-36eade5e0a59
       version: -1
       name: Send URL to FireEye AX sandbox
-      description: Submit a url for analysis by FireEye
+      description: Submit a URL for analysis by FireEye.
       script: fireeye|||fe-submit-url
       type: regular
       iscommand: true
@@ -277,7 +277,7 @@ tasks:
       id: 922099fa-9796-48f4-8b19-090d46bda6ac
       version: -1
       name: Get task report
-      description: Results of the file submission
+      description: Results of the file submission.
       script: fireeye|||fe-submit-result
       type: regular
       iscommand: true
@@ -396,29 +396,29 @@ inputs:
   value:
     simple: '1'
   required: false
-  description: How often to poll for results
+  description: How often to poll for results.
   playbookInputQuery:
 - key: timeout
   value:
     simple: '10'
   required: false
-  description: How long to wait before giving up waiting for results
+  description: How long to wait before giving up waiting for results.
   playbookInputQuery:
 outputs:
 - contextPath: FireEyeAX.Submissions.Key
-  description: The submission key
+  description: The submission key.
 - contextPath: FireEyeAX.Submissions.Severity
-  description: The severity level of the file
+  description: The severity level of the file.
 - contextPath: FireEyeAX.Submissions.InfoLevel
   description: The info level of the report.
 - contextPath: DBotScore.Score
-  description: The actual score
+  description: The actual score.
   type: unknown
 - contextPath: DBotScore.Indicator
-  description: The indicator we tested
+  description: The indicator that was tested.
   type: unknown
 - contextPath: DBotScore.Vendor
-  description: Vendor used to calculate the score
+  description: Vendor used to calculate the score.
   type: unknown
 tests:
 - No tests (auto formatted)
