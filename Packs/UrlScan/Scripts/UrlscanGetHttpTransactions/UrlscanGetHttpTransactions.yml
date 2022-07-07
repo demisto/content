@@ -7,26 +7,22 @@ type: javascript
 tags:
 - polling
 - UrlScan
-comment: "This script retrieves the HTTP transactions performed for a given URL using\
-  \ the UrlScan integration. \nUse this script inside a playbook and check the 'Run\
-  \ without a worker' checkbox in the Advanced section of the task that executes this\
-  \ script. This will cause the system to use less resources when polling."
+deprecated: true
+comment: "Deprecated. No available replacement."
 enabled: true
 args:
 - name: url
   required: true
   description: The URL to search the transaction list for.
 - name: wait_time_for_polling
-  description: The wait time between two polling actions(In Seconds) of UrlScan results
-    page, please note that you may encounter rate-limit error if the time set is too
-    low.
-  defaultValue: "5"
+  description: The wait time between two polling actions(In Seconds) of UrlScan results page, please note that you may encounter rate-limit error if the time set is too low.
+  defaultValue: '5'
 - name: timeout
   description: How many seconds to wait for the scan id result
-  defaultValue: "60"
+  defaultValue: '60'
 - name: limit
   description: Limits the results in the war room(Maximum limit allowed is 100)
-  defaultValue: "20"
+  defaultValue: '20'
 scripttarget: 0
 dependson:
   must:

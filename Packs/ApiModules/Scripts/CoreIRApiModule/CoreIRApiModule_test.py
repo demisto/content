@@ -15,13 +15,6 @@ test_client = CoreClient(
 )
 
 
-def test_get_incidents():
-    with pytest.raises(ValueError, match='Should be provide either sort_by_creation_time or '
-                                         'sort_by_modification_time. Can\'t provide both'):
-        test_client.get_incidents(sort_by_creation_time="asc",
-                                  sort_by_modification_time="desc")
-
-
 def test_client_update_incident():
     with pytest.raises(ValueError, match="Can't provide both assignee_email/assignee_name and unassign_user"):
         test_client.update_incident(incident_id='1',
@@ -981,8 +974,7 @@ def test_retrieve_files_command(requests_mock):
     from CoreIRApiModule import retrieve_files_command, CoreClient
     from CommonServerPython import tableToMarkdown, string_to_table_header
 
-    retrieve_expected_result = {
-        'CoreApiModule.RetrievedFiles(val.action_id == obj.action_id)': {'action_id': 1773}}
+    retrieve_expected_result = {'action_id': 1773}
     requests_mock.post(f'{Core_URL}/public_api/v1/endpoints/file_retrieval/', json={'reply': {'action_id': 1773}})
     result = {'action_id': 1773}
 
@@ -1010,8 +1002,7 @@ def test_retrieve_files_command_using_general_file_path(requests_mock):
     from CoreIRApiModule import retrieve_files_command, CoreClient
     from CommonServerPython import tableToMarkdown, string_to_table_header
 
-    retrieve_expected_result = {
-        'CoreApiModule.RetrievedFiles(val.action_id == obj.action_id)': {'action_id': 1773}}
+    retrieve_expected_result = {'action_id': 1773}
     requests_mock.post(f'{Core_URL}/public_api/v1/endpoints/file_retrieval/', json={'reply': {'action_id': 1773}})
     result = {'action_id': 1773}
 
@@ -1083,7 +1074,7 @@ def test_retrieve_file_details_command(requests_mock):
     args = {
         'action_id': '1788'
     }
-    results, file_result = retrieve_file_details_command(client, args)
+    results, file_result = retrieve_file_details_command(client, args, False)
     assert results == retrieve_expected_hr
     assert file_result[0]['File'] == 'endpoint_test_1.zip'
 
@@ -1225,9 +1216,7 @@ def test_action_status_get_command(requests_mock):
             'endpoint_id': item,
             'status': data.get(item)
         })
-    action_status_get_command_expected_result = {
-        'CoreApiModule.GetActionStatus(val.action_id == obj.action_id)':
-            result}
+    action_status_get_command_expected_result = result
 
     requests_mock.post(f'{Core_URL}/public_api/v1/actions/get_action_status/',
                        json=action_status_get_command_command_reply)
@@ -2688,6 +2677,16 @@ class TestGetAlertByFilter:
 
     @freeze_time("2022-05-03 11:00:00 GMT")
     def test_get_alert_by_filter(self, requests_mock, mocker):
+        """
+        Given:
+            - Core client
+            - timeframe, start_time, end_time
+        When
+            - Running get_alerts_by_filter command
+        Then
+            - Verify expected output
+            - Ensure request filter sent as expected
+        """
         from CoreIRApiModule import get_alerts_by_filter_command, CoreClient
         api_response = load_test_data('./test_data/get_alerts_by_filter_results.json')
         requests_mock.post(f'{Core_URL}/public_api/v1/alerts/get_alerts_by_filter_data/', json=api_response)
@@ -2708,6 +2707,16 @@ class TestGetAlertByFilter:
                "{'from': 1541494601000, 'to': 1541494601000}}]}}}" in request_data_log.call_args[0][0]
 
     def test_get_alert_by_filter_command_multiple_values_in_same_arg(self, requests_mock, mocker):
+        """
+        Given:
+            - Core client
+            - alert_source
+        When
+            - Running get_alerts_by_filter command
+        Then
+            - Verify expected output
+            - Ensure request filter sent as expected (connected with OR operator)
+        """
         from CoreIRApiModule import get_alerts_by_filter_command, CoreClient
         api_response = load_test_data('./test_data/get_alerts_by_filter_results.json')
         requests_mock.post(f'{Core_URL}/public_api/v1/alerts/get_alerts_by_filter_data/', json=api_response)
@@ -2726,6 +2735,17 @@ class TestGetAlertByFilter:
                "'second'}]}]}}}" in request_data_log.call_args[0][0]
 
     def test_get_alert_by_filter_command_multiple_args(self, requests_mock, mocker):
+        """
+        Given:
+            - Core client
+            - alert_source
+            - user_name
+        When
+            - Running get_alerts_by_filter command
+        Then
+            - Verify expected output
+            - Ensure request filter sent as expected (connected with AND operator)
+        """
         from CoreIRApiModule import get_alerts_by_filter_command, CoreClient
         api_response = load_test_data('./test_data/get_alerts_by_filter_results.json')
         requests_mock.post(f'{Core_URL}/public_api/v1/alerts/get_alerts_by_filter_data/', json=api_response)
@@ -2743,3 +2763,83 @@ class TestGetAlertByFilter:
                "'SEARCH_VALUE': 'first'}, {'SEARCH_FIELD': 'alert_source', 'SEARCH_TYPE': 'CONTAINS', 'SEARCH_VALUE': " \
                "'second'}]}, {'OR': [{'SEARCH_FIELD': 'actor_effective_username', 'SEARCH_TYPE': 'CONTAINS', " \
                "'SEARCH_VALUE': 'N/A'}]}]}" in request_data_log.call_args[0][0]
+
+    @freeze_time('2022-05-26T13:00:00Z')
+    def test_get_alert_by_filter_complex_custom_filter_and_timeframe(self, requests_mock, mocker):
+        """
+        Given:
+            - Core client
+            - custom_filter (filters are connected with AND operator)
+            - timeframe
+        When
+            - Running get_alerts_by_filter command
+        Then
+            - Verify expected output
+            - Ensure request filter sent as expected (connected with AND operator)
+        """
+        import dateparser
+        from datetime import datetime as dt
+        from CoreIRApiModule import get_alerts_by_filter_command, CoreClient
+
+        custom_filter = '{"AND": [{"OR": [{"SEARCH_FIELD": "alert_source","SEARCH_TYPE": "EQ","SEARCH_VALUE": "CORRELATION"},' \
+                        '{"SEARCH_FIELD": "alert_source","SEARCH_TYPE": "EQ","SEARCH_VALUE": "IOC"}]},' \
+                        '{"SEARCH_FIELD": "severity","SEARCH_TYPE": "EQ","SEARCH_VALUE": "SEV_040_HIGH"}]}'
+        api_response = load_test_data('./test_data/get_alerts_by_filter_results.json')
+        requests_mock.post(f'{Core_URL}/public_api/v1/alerts/get_alerts_by_filter_data/', json=api_response)
+        request_data_log = mocker.patch.object(demisto, 'debug')
+        mocker.patch.object(dateparser, 'parse', return_value=dt(year=2022, month=5, day=24, hour=13, minute=0, second=0))
+        client = CoreClient(
+            base_url=f'{Core_URL}/public_api/v1', headers={}
+        )
+        args = {
+            'custom_filter': custom_filter,
+            'time_frame': '2 days'
+        }
+        get_alerts_by_filter_command(client, args)
+        assert "{'filter_data': {'sort': [{'FIELD': 'source_insert_ts', 'ORDER': 'DESC'}], " \
+               "'paging': {'from': 0, 'to': 50}, " \
+               "'filter': {'AND': [{'SEARCH_FIELD': 'source_insert_ts', 'SEARCH_TYPE': 'RELATIVE_TIMESTAMP', " \
+               "'SEARCH_VALUE': '172800000'}, " \
+               "{'OR': [{'SEARCH_FIELD': 'alert_source', 'SEARCH_TYPE': 'EQ', 'SEARCH_VALUE': 'CORRELATION'}, " \
+               "{'SEARCH_FIELD': 'alert_source', 'SEARCH_TYPE': 'EQ', 'SEARCH_VALUE': 'IOC'}]}, " \
+               "{'SEARCH_FIELD': 'severity', 'SEARCH_TYPE': 'EQ', 'SEARCH_VALUE': 'SEV_040_HIGH'}]}}}" \
+               in request_data_log.call_args[0][0]
+
+    @freeze_time('2022-05-26T13:00:00Z')
+    def test_get_alert_by_filter_custom_filter_and_timeframe_(self, requests_mock, mocker):
+        """
+        Given:
+            - Core client
+            - custom_filter (filters are connected with OR operator)
+            - timeframe
+        When
+            - Running get_alerts_by_filter command
+        Then
+            - Verify expected output
+            - Ensure request filter sent as expected (connected with AND operator)
+        """
+        import dateparser
+        from datetime import datetime as dt
+        from CoreIRApiModule import get_alerts_by_filter_command, CoreClient
+
+        custom_filter = '{"OR": [{"SEARCH_FIELD": "actor_process_image_sha256",' \
+                        '"SEARCH_TYPE": "EQ",' \
+                        '"SEARCH_VALUE": "222"}]}'
+        api_response = load_test_data('./test_data/get_alerts_by_filter_results.json')
+        requests_mock.post(f'{Core_URL}/public_api/v1/alerts/get_alerts_by_filter_data/', json=api_response)
+        request_data_log = mocker.patch.object(demisto, 'debug')
+        mocker.patch.object(dateparser, 'parse', return_value=dt(year=2022, month=5, day=24, hour=13, minute=0, second=0))
+        client = CoreClient(
+            base_url=f'{Core_URL}/public_api/v1', headers={}
+        )
+        args = {
+            'custom_filter': custom_filter,
+            'time_frame': '2 days'
+        }
+        get_alerts_by_filter_command(client, args)
+        assert "{'filter_data': {'sort': [{'FIELD': 'source_insert_ts', 'ORDER': 'DESC'}], " \
+               "'paging': {'from': 0, 'to': 50}, " \
+               "'filter': {'AND': [{'SEARCH_FIELD': 'source_insert_ts', 'SEARCH_TYPE': 'RELATIVE_TIMESTAMP', " \
+               "'SEARCH_VALUE': '172800000'}, " \
+               "{'OR': [{'SEARCH_FIELD': 'actor_process_image_sha256', 'SEARCH_TYPE': 'EQ'," \
+               " 'SEARCH_VALUE': '222'}]}]}" in request_data_log.call_args[0][0]

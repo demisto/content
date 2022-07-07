@@ -152,14 +152,13 @@ function lock_machine() {
 
 function poll_for_env() {
   export START=$SECONDS
-  # this line remove all existing lock files, even if they runs. CLEAN_XSIAM_LOCKS - gitlab variable
-  if [ ! -z $CLEAN_XSIAM_LOCKS ]; then gsutil -m rm "$GCS_LOCKS_PATH/*-$LOCK_IDENTIFIER-*"; fi
 
   # remove old self locks - this will ensure that in case of retries we won't interfere with other builds or lock a machine out of use
   gsutil -m rm "$GCS_LOCKS_PATH/$SELF_LOCK_PATTERN" 2> /dev/null
 
   while true;
   do
+    echo "Starting polling for env:"
 	# for each machine in machine list do:
 	 cat $TEST_MACHINES_LIST | while read TEST_MACHINE; do
 	  # if ($LOCK_MACHINE_NAME is not defined) or ($LOCK_MACHINE_NAME is defined and $LOCK_MACHINE_NAME == TEST_MACHINE):
@@ -227,6 +226,14 @@ gsutil cp $GCS_LOCKS_PATH/$TEST_MACHINES_LIST $TEST_MACHINES_LIST	# copy file fr
 export NUM_OF_TEST_MACHINES=`sed -n '$=' $TEST_MACHINES_LIST`	# reads num of lines in file (this is the num of machines)
 
 TEST_MACHINES_LIST_STRING=`cat $TEST_MACHINES_LIST`
+echo "All existing machines: $TEST_MACHINES_LIST_STRING"
+
+if [ -z $TEST_MACHINES_LIST_STRING ];
+then
+  echo "No machines in Test Machines List."
+  exit 1
+fi
+
 if [[ $TEST_MACHINES_LIST_STRING != *"$LOCK_MACHINE_NAME"* ]];
 then
   echo "Machine that you trying to lock: '$LOCK_MACHINE_NAME' is not exist in Test Machines List."
