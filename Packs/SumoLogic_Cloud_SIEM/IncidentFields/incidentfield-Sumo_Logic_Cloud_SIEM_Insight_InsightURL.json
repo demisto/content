@@ -1,10 +1,10 @@
 {
 	"associatedToAll": false,
 	"associatedTypes": ["Sumo Logic Insight"],
-	"id": "incident_insighturl",
+	"id": "incident_sumologiccloudsieminsighturl",
 	"breachScript": "",
 	"caseInsensitive": true,
-	"cliName": "insighturl",
+	"cliName": "sumologiccloudsieminsighturl",
 	"closeForm": false,
 	"columns": null,
 	"content": true,

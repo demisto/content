@@ -365,7 +365,7 @@
 							{
 								"dropEffect": "move",
 								"endCol": 6,
-								"fieldId": "insightentity",
+								"fieldId": "sumologiccloudsieminsightentity",
 								"height": 106,
 								"id": "a3db2670-d8c8-11ec-9d6b-6f4f1820d86f",
 								"index": 0,
@@ -393,7 +393,7 @@
 						"items": [
 							{
 								"endCol": 6,
-								"fieldId": "insightsignals",
+								"fieldId": "sumologiccloudsieminsightsignals",
 								"height": 106,
 								"id": "85192840-d8c8-11ec-9d6b-6f4f1820d86f",
 								"index": 0,
@@ -421,7 +421,7 @@
 							{
 								"dropEffect": "move",
 								"endCol": 6,
-								"fieldId": "insightinvolvedentities",
+								"fieldId": "sumologiccloudsieminsightinvolvedentities",
 								"height": 106,
 								"id": "81244760-d8c8-11ec-9d6b-6f4f1820d86f",
 								"index": 0,
