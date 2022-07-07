@@ -1,4 +1,3 @@
-from uuid import UUID
 from SEKOIAIntelligenceCenter import (
     Client,
     get_observable_command,
@@ -8,6 +7,7 @@ from SEKOIAIntelligenceCenter import (
     get_tlp,
     get_reputation_score,
     test_module,
+    extract_indicator_from_pattern,
 )
 from CommonServerPython import *
 import pytest
@@ -32,6 +32,27 @@ def client():
         headers=headers,
     )
     return client
+
+
+@pytest.mark.parametrize(
+    "input, output",
+    [
+        ("[network-traffic:dst_ref.value = 'buike.duckdns.org']", "buike.duckdns.org"),
+        (
+            "[network-traffic:dst_ref.value = 'buike.duckdns.org' AND network-traffic:dst_port = 30303]",
+            "buike.duckdns.org",
+        ),
+        ("[email-addr:value = 'eicar@sekoia.io']", "eicar@sekoia.io"),
+        ("[filename:value = 'sessionmanagermodule.dll']", "sessionmanagermodule.dll"),
+        ("[ipv4-addr:value = '206.189.85.18']", "206.189.85.18"),
+        (
+            "[url:value = 'http://177.22.84.44:49467/.i']",
+            "http://177.22.84.44:49467/.i",
+        ),
+    ],
+)
+def test_extract_indicator_from_pattern(input, output):
+    extract_indicator_from_pattern(input) == output
 
 
 @pytest.mark.parametrize(
@@ -240,15 +261,15 @@ def test_get_reliability_score(input: int, output: str):
 
 
 @pytest.mark.parametrize(
-    "input, output",
+    "input",
     [
-        ("red", "red"),
-        ("amber", "amber"),
-        ("green", "green"),
-        ("white", "white"),
+        ("red"),
+        ("amber"),
+        ("green"),
+        ("white"),
     ],
 )
-def test_get_tlp(input, output):
+def test_get_tlp(input):
     marking_definition: str = "marking-definition--123"
     stix_bundle: dict[list[dict]] = {
         "objects": [
@@ -259,10 +280,12 @@ def test_get_tlp(input, output):
             {
                 "id": marking_definition,
                 "definition": {"tlp": input},
+                "definition_type": "tlp",
             },
         ]
     }
-    assert get_tlp([marking_definition], stix_bundle) == output
+    assert get_tlp([marking_definition], stix_bundle) == input
+
 
 def test_get_tlp_not_found():
     marking_definition: str = "marking-definition--123"

@@ -52,6 +52,36 @@ script:
     - contextPath: GetObservable.Output
       description: SEKOIA.IO returned data
       type: String
+    - contextPath: SEKOIAIntelligenceCenter.has_more
+      description: 'Is more information available'
+      type: Boolean
+    - contextPath: SEKOIAIntelligenceCenter.total
+      description: 'Total number of object returned'
+      type: Number
+    - contextPath: SEKOIAIntelligenceCenter.items.x_inthreat_short_display
+      description: 'Short display name of the observable'
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.modified
+      description: 'Modification date of the observable'
+      type: Date
+    - contextPath: SEKOIAIntelligenceCenter.items.spec_version
+      description: 'STIX specification version'
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.created
+      description: 'Observable creation date'
+      type: Date
+    - contextPath: SEKOIAIntelligenceCenter.items.type
+      description: 'Observable type'
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.x_inthreat_sources_refs
+      description: 'Unique identifier of the observable source'
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.value
+      description: 'Value of the item'
+      type: String
+    - contextPath: SEKOIAIntelligenceCenter.items.id
+      description: 'Unique identifier of the item'
+      type: String
   - arguments:
     - default: false
       description: Indicator value
@@ -71,73 +101,73 @@ script:
     name: GetIndicator
     outputs:
     - contextPath: SEKOIAIntelligenceCenter.has_more
-      description: ''
+      description: 'Is more information available'
       type: Boolean
     - contextPath: SEKOIAIntelligenceCenter.items.lang
-      description: ''
+      description: 'Language of the indicator data'
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.x_ic_is_in_flint
-      description: ''
+      description: 'Is this indicator from a SEKOIA FLINT report'
       type: Boolean
     - contextPath: SEKOIAIntelligenceCenter.items.kill_chain_phases.kill_chain_name
-      description: ''
+      description: 'Name of the kill chain used'
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.kill_chain_phases.phase_name
-      description: ''
+      description: 'Name of the kill chain phase'
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.name
-      description: ''
+      description: 'Name of the item'
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.valid_until
-      description: ''
+      description: 'Expiration date of the item'
       type: Date
     - contextPath: SEKOIAIntelligenceCenter.items.x_ic_deprecated
-      description: ''
+      description: 'Is the item deprecated'
       type: Boolean
     - contextPath: SEKOIAIntelligenceCenter.items.x_inthreat_sources_refs
-      description: ''
+      description: 'Source references of the observable'
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.spec_version
-      description: ''
+      description: 'STIX specification version used'
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.description
-      description: ''
+      description: 'Item description'
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.modified
-      description: ''
+      description: 'Last modification date of the item'
       type: Date
     - contextPath: SEKOIAIntelligenceCenter.items.id
-      description: ''
+      description: 'Unique identifier of the item'
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.created_by_ref
-      description: ''
+      description: 'Unique identifier of the creator of the item'
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.pattern
-      description: ''
+      description: 'STIX pattern of the item'
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.pattern_type
-      description: ''
+      description: 'STIX pattern type'
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.valid_from
-      description: ''
+      description: 'Beginning of the item validity date'
       type: Date
     - contextPath: SEKOIAIntelligenceCenter.items.x_ic_observable_types
-      description: ''
+      description: 'Intelligence Center observable types'
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.type
-      description: ''
+      description: 'STIX Object type'
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.revoked
-      description: ''
+      description: 'Is this item revoked'
       type: Boolean
     - contextPath: SEKOIAIntelligenceCenter.items.object_marking_refs
-      description: ''
+      description: 'Unique identifier of the marking reference (TLP)'
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.created
-      description: ''
+      description: 'Creation date of the item'
       type: Date
     - contextPath: SEKOIAIntelligenceCenter.items.indicator_types
-      description: ''
+      description: 'STIX indicator types'
       type: String
   - arguments:
     - default: false
@@ -153,174 +183,165 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Query SEKOIA.IO Intelligence Center for context around this observable
+    description: Query SEKOIA.IO Intelligence Center for context around this indicator
     execution: false
     name: GetIndicatorContext
     outputs:
     - contextPath: SEKOIAIntelligenceCenter.items.type
-      description: ''
-      type: String
-    - contextPath: SEKOIAIntelligenceCenter.items.type
-      description: ''
+      description: 'Observable type'
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.id
       description: ''
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.valid_from
-      description: ''
+      description: 'Unique identifier of the item'
       type: Date
     - contextPath: SEKOIAIntelligenceCenter.items.objects.x_inthreat_sources_refs
-      description: ''
+      description: 'Unique identifier of the observable source'
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.spec_version
-      description: ''
+      description: 'STIX specification version'
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.x_ic_is_in_flint
-      description: ''
+      description: 'Is this indicator from a SEKOIA FLINT report'
       type: Boolean
     - contextPath: SEKOIAIntelligenceCenter.items.objects.lang
-      description: ''
+      description: 'Language of the indicator data'
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.x_ic_impacted_locations
-      description: ''
+      description: 'UUID of the impacted locations'
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.id
-      description: ''
+      description: 'UUID of the objects'
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.created_by_ref
-      description: ''
+      description: 'Unique identifier of the creator of the item'
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.modified
-      description: ''
+      description: 'Modification date of the observable'
       type: Date
     - contextPath: SEKOIAIntelligenceCenter.items.objects.type
-      description: ''
+      description: 'STIX Object type'
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.revoked
-      description: ''
+      description: 'Is this item revoked'
       type: Boolean
     - contextPath: SEKOIAIntelligenceCenter.items.objects.created
-      description: ''
+      description: 'Creation date of the item'
       type: Date
     - contextPath: SEKOIAIntelligenceCenter.items.objects.x_ic_observable_types
-      description: ''
+      description: 'Intelligence Center observable types'
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.pattern_type
-      description: ''
+      description: 'STIX pattern type'
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.name
-      description: ''
+      description: 'Name of the item'
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.pattern
-      description: ''
+      description: 'STIX pattern'
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.indicator_types
-      description: ''
+      description: 'STIX indicator types'
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.object_marking_refs
-      description: ''
+      description: 'Unique identifier of the Object Marking reference (TLP)'
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.x_ic_impacted_sectors
-      description: ''
+      description: 'UUID of the impacted sectors'
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.kill_chain_phases.kill_chain_name
-      description: ''
+      description: 'Name of the kill chain used'
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.kill_chain_phases.phase_name
-      description: ''
+      description: 'Name of the kill chain phase'
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.confidence
-      description: ''
+      description: 'Indicator confidence score'
       type: Number
     - contextPath: SEKOIAIntelligenceCenter.items.objects.x_ic_deprecated
-      description: ''
+      description: 'Is the item deprecated'
       type: Boolean
     - contextPath: SEKOIAIntelligenceCenter.items.objects.valid_until
-      description: ''
+      description: 'Expiration date of the item'
       type: Date
     - contextPath: SEKOIAIntelligenceCenter.items.objects.x_ic_external_refs
-      description: ''
+      description: 'External references'
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.first_seen
-      description: ''
+      description: 'Item first seen date'
       type: Date
     - contextPath: SEKOIAIntelligenceCenter.items.objects.aliases
-      description: ''
+      description: 'Item aliases names'
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.is_family
-      description: ''
+      description: 'Is the item part of a family'
       type: Boolean
     - contextPath: SEKOIAIntelligenceCenter.items.objects.external_references.description
-      description: ''
+      description: 'Object external references description'
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.external_references.source_name
-      description: ''
+      description: 'Object external references source name'
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.external_references.url
-      description: ''
+      description: 'Object external references URL'
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.capabilities
-      description: ''
+      description: 'Malware capabilities'
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.malware_types
-      description: ''
+      description: 'Malware type'
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.implementation_languages
-      description: ''
+      description: 'Malware implementation languages'
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.description
-      description: ''
+      description: 'Item description'
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.stop_time
-      description: ''
+      description: 'Stop time date'
       type: Date
     - contextPath: SEKOIAIntelligenceCenter.items.objects.relationship_type
-      description: ''
+      description: 'STIX object relationship type'
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.target_ref
-      description: ''
+      description: 'Target reference UUID'
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.source_ref
-      description: ''
+      description: 'Source reference UUID'
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.start_time
-      description: ''
+      description: 'Object start time'
       type: Date
     - contextPath: SEKOIAIntelligenceCenter.items.objects.x_ic_is_sector
-      description: ''
+      description: 'Is the object a sector'
       type: Boolean
     - contextPath: SEKOIAIntelligenceCenter.items.objects.contact_information
-      description: ''
+      description: 'Object contact information'
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.x_ic_is_source
-      description: ''
+      description: 'Is the object a source'
       type: Boolean
     - contextPath: SEKOIAIntelligenceCenter.items.objects.sectors
-      description: ''
+      description: 'Associated sectors'
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.identity_class
-      description: ''
+      description: 'Object identity class'
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.definition_type
-      description: ''
+      description: 'Object definition type'
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.definition.tlp
-      description: ''
+      description: 'TLP type'
       type: String
     - contextPath: SEKOIAIntelligenceCenter.has_more
-      description: ''
+      description: 'Is more information available'
       type: Boolean
-    - contextPath: Domain.DNS
-      description: A list of IP objects resolved by DNS.
-      type: String
-    - contextPath: SEKOIAIntelligenceCenter.Domain
-      description: A list of IP objects resolved by DNS.
-      type: String
     - contextPath: IP.Address
       description: IP address
       type: String
     - contextPath: DBotScore.Indicator
-      description: The indicator that was tested.
+      description: The indicator name.
       type: String
     - contextPath: DBotScore.Type
       description: The indicator type.
@@ -340,15 +361,6 @@ script:
     - contextPath: File.SHA256
       description: The SHA256 hash of the file.
       type: String
-    - contextPath: SEKOIAIntelligenceCenter.File.sha1
-      description: The SHA1 hash of the file.
-      type: String
-    - contextPath: SEKOIAIntelligenceCenter.File.sha256
-      description: The SHA256 hash of the file.
-      type: String
-    - contextPath: SEKOIAIntelligenceCenter.File.total
-      description: Total number of engines
-      type: Number
   isfetch: false
   runonce: false
   script: '-'
