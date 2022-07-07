@@ -18,4 +18,4 @@ Combines an array of queries to as few as possible whilst staying under the maxi
 
 ## Outputs
 ---
-There are no outputs for this script.
+Outputs an array of query.

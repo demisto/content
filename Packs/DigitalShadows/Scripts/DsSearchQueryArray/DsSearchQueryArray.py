@@ -27,7 +27,7 @@ def convert_to_ds_query_array(args: Dict[str, Any]):
 
     if (isinstance(data, list)):
         res = list()
-        query = [extractData(query_field) for query_field in data]
+        query = [extractData(query_field) for query_field in data if field_type_property in query_field]
         query = sorted(query, key=lambda x: count_terms(x))
         init = list()
         term_count = 0
@@ -47,7 +47,6 @@ def convert_to_ds_query_array(args: Dict[str, Any]):
         return ""
 
     return res
-
 
 def reject(field, string):
     return {
