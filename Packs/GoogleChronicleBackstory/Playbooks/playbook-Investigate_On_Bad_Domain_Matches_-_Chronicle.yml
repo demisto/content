@@ -595,7 +595,7 @@ tasks:
       version: -1
       name: Apply user tag at the firewall
       description: Registers Users to a tag.
-      script: '|||panorama-register-user-tag'
+      script: '|||pan-os-register-user-tag'
       type: regular
       iscommand: true
       brand: ""
