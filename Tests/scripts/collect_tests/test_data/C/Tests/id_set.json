@@ -7,8 +7,8 @@
         "marketplaces": [
           "marketplacev2"
         ],
-        "file_path": "Packs/bothMarketplacesPack2/Integrations/onlyXSIAMIntegration/onlyXSIAMIntegration.yml",
-        "pack": "bothMarketplacesPack2"
+        "file_path": "Packs/bothMarketplacesPackOnlyXSIAMIntegration/Integrations/onlyXSIAMIntegration/onlyXSIAMIntegration.yml",
+        "pack": "bothMarketplacesPackOnlyXSIAMIntegration"
       }
     }
   ],
@@ -66,8 +66,8 @@
       ],
       "ContentItems": {}
     },
-    "bothMarketplacesPack2": {
-      "name": "bothMarketplacesPack2",
+    "bothMarketplacesPackOnlyXSIAMIntegration": {
+      "name": "bothMarketplacesPackOnlyXSIAMIntegration",
       "marketplaces": [
         "xsoar",
         "marketplacev2"

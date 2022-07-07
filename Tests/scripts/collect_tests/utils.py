@@ -89,7 +89,7 @@ class Machine(Enum):
         return tuple(result)
 
     def __repr__(self):
-        return self.value
+        return str(self.value)
 
 
 class DictBased:

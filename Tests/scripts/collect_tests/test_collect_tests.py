@@ -18,6 +18,7 @@ Test Collection Unit-Test cases
 - `A` has a single pack with an integration and two test playbooks.
 - `B` has a single pack, with only test playbooks. (they should be collected)
 - `C` has a pack supported by both marketplaces, and one only for marketplacev2 and one only for XSOAR.
+- `D` has a single pack with from_version == to_version == 6.5, for testing the version range. 
 """
 
 
@@ -55,6 +56,7 @@ class MockerCases:
     B_xsiam = CollectTestsMocker(Path('test_data/B_xsiam'))
     B_xsoar = CollectTestsMocker(Path('test_data/B_xsoar'))
     C = CollectTestsMocker(Path('test_data/C'))
+    D = CollectTestsMocker(Path('test_data/D'))
 
 
 def _test(mocker: CollectTestsMocker, run_nightly: bool, run_master: bool, collector_class: Callable,
@@ -103,9 +105,12 @@ def _test(mocker: CollectTestsMocker, run_nightly: bool, run_master: bool, colle
         (MockerCases.empty, XSIAMNightlyTestCollector, (), ()),
         (MockerCases.empty_xsiam, XSIAMNightlyTestCollector, ('some_xsiam_test_only_mentioned_in_conf_json',), ()),
         (MockerCases.C, XSOARNightlyTestCollector,
-         ('myXSOAROnlyTestPlaybook', 'myTestPlaybook'), ('myXSOAROnlyPack', 'bothMarketplacesPack')),
+         ('myXSOAROnlyTestPlaybook', 'myTestPlaybook'), ('bothMarketplacesPack',
+                                                         'bothMarketplacesPackOnlyXSIAMIntegration',
+                                                         'myXSOAROnlyPack')),
         (MockerCases.C, XSIAMNightlyTestCollector,
-         ('myXSIAMOnlyTestPlaybook',), ('bothMarketplacesPack', 'myXSIAMOnlyPack')),
+         ('myXSIAMOnlyTestPlaybook',), ('myXSIAMOnlyPack',
+                                        'bothMarketplacesPackOnlyXSIAMIntegration')),
 ))
 @pytest.mark.parametrize('run_master', (True, False))
 def test_nightly_empty(mocker, run_master: bool, collector_class: Callable,
@@ -122,17 +127,21 @@ def test_nightly_empty(mocker, run_master: bool, collector_class: Callable,
 NIGHTLY_EXPECTED_TESTS = {'myTestPlaybook', 'myOtherTestPlaybook'}
 
 
-@pytest.mark.parametrize('mocker,collector_class,expected_tests,expected_packs,', (
-        (MockerCases.A_xsoar, XSOARNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSOAROnlyPack',)),
-        (MockerCases.B_xsoar, XSOARNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSOAROnlyPack',)),
-        (MockerCases.A_xsiam, XSIAMNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSIAMOnlyPack',)),
-        (MockerCases.B_xsiam, XSIAMNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSIAMOnlyPack',)),
+@pytest.mark.parametrize('mocker,collector_class,expected_tests,expected_packs,expected_machines', (
+        (MockerCases.A_xsoar, XSOARNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSOAROnlyPack',), None),
+        (MockerCases.B_xsoar, XSOARNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSOAROnlyPack',), None),
+        (MockerCases.A_xsiam, XSIAMNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSIAMOnlyPack',), None),
+        (MockerCases.B_xsiam, XSIAMNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSIAMOnlyPack',), None),
         (MockerCases.C, XSOARNightlyTestCollector,
          {'myXSOAROnlyTestPlaybook', 'myTestPlaybook'},
-         {'bothMarketplacesPack', 'bothMarketplacesPack2', 'myXSOAROnlyPack'}),
-        (MockerCases.C, XSIAMNightlyTestCollector, {'myXSIAMOnlyTestPlaybook'}, {'myXSIAMOnlyPack'})
+         {'bothMarketplacesPack', 'bothMarketplacesPackOnlyXSIAMIntegration', 'myXSOAROnlyPack'}, None),
+        (MockerCases.C, XSIAMNightlyTestCollector, {'myXSIAMOnlyTestPlaybook'},
+         {'myXSIAMOnlyPack', 'bothMarketplacesPackOnlyXSIAMIntegration'}, None),
+        (MockerCases.D, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myPack'},
+         (Machine.V6_5,Machine.MASTER,Machine.NIGHTLY)),
 ))
-def test_nightly(mocker, collector_class: Callable, expected_tests: set[str], expected_packs: tuple[str]):
+def test_nightly(mocker, collector_class: Callable, expected_tests: set[str], expected_packs: tuple[str],
+                 expected_machines: Optional[tuple[Machine]]):
     """
     given:  a content folder
     when:   collecting tests with a NightlyTestCollector
@@ -141,4 +150,4 @@ def test_nightly(mocker, collector_class: Callable, expected_tests: set[str], ex
     # noinspection PyTypeChecker
 
     _test(mocker, run_nightly=True, run_master=True, collector_class=collector_class, expected_tests=expected_tests,
-          expected_packs=expected_packs, expected_machines=None)
+          expected_packs=expected_packs, expected_machines=expected_machines)
