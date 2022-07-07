@@ -93,7 +93,7 @@ def main():
 
         try:
             indicator_type = demisto_indicator_type.lower().replace("-", "")
-            indicator = Indicator(pattern=SCOs[indicator_type].format(value),
+            indicator = Indicator(pattern=f"[{SCOs[indicator_type]} = '{value}']",
                                   pattern_type='stix',
                                   **kwargs)
 
