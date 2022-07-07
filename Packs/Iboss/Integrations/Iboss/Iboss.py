@@ -177,6 +177,13 @@ metadata_collector = YMLMetadataCollector(
 
 
 def set_auth(method):
+    """Set the authentication for the iboss client.
+
+    This wrapper function is used to set the authentication for the iboss client if authentication has not yet been set
+    or if the session has been terminated due to an expired (whether that is from a standard expiration date or force
+    expired by the server.) The `_auth()` method is called to establish/re-establish a valid session.
+    This wrapper is applied to any functions that interact with the iboss API.
+    """
     @wraps(method)
     def _impl(self, *method_args, **method_kwargs):
         if not self.expiration or self.expiration < datetime.utcnow().timestamp():
@@ -223,6 +230,14 @@ class Client(BaseClient):
             self._headers = {"Cookie": self.gateway_xsrf_token}
 
     def auth(self):
+        """Authenticate to the iboss API
+
+        This method performs the authentication steps with the iboss primary gateway.
+
+        First, it sends a request to the main cloud service to obtain an API token. Then, it fetches the primary
+        gateway for a givent AccountSettingsID. Finally, it obtains the XSRF token for the primary gateway. All values
+        are cached so that they can be utilized by subsequent calls to the API.
+        """
         demisto.debug("Re-authenticating")
 
         token = self._get_cloud_token()
@@ -480,6 +495,18 @@ def reputation_get_malicious_message(reputation_data, score) -> str:
 
 
 def reputation_calculate_engines(reputation_data: dict) -> tuple[int, int]:
+    """
+    Calculate the number of engines used and the number of engines that detected the entity as malicious.
+
+    Each engine returns a key ending with "isSafeUrl" with a boolean value indicating if the engine determined if the
+    entity is malicious or not. We must ignore the key that is `isSafeUrl` as this represents the overall disposition
+    and not a particular engine.
+    Args:
+        reputation_data: iboss return data from the URL lookup response
+
+    Returns:
+        tuple of (engines_used, engines_malicious)
+    """
     num_engines = 0
     num_positive_engines = 0
     for key, value in reputation_data.items():
