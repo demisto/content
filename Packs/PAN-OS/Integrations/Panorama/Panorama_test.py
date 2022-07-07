@@ -756,16 +756,16 @@ class TestPcap:
     @pytest.mark.parametrize(
         'api_response, expected_context, expected_markdown_table', [
             (
-                '<?xml version="1.0"?>\n<response status="success">\n  <result>\n    <dir-listing>\n      '
-                '<file>/pcap</file>\n      <file>/pcap_test</file>\n    </dir-listing>\n  </result>\n</response>\n',
-                ['pcap', 'pcap_test'],
-                '### List of Pcaps:\n|Pcap name|\n|---|\n| pcap |\n| pcap_test |\n'
+                    '<?xml version="1.0"?>\n<response status="success">\n  <result>\n    <dir-listing>\n      '
+                    '<file>/pcap</file>\n      <file>/pcap_test</file>\n    </dir-listing>\n  </result>\n</response>\n',
+                    ['pcap', 'pcap_test'],
+                    '### List of Pcaps:\n|Pcap name|\n|---|\n| pcap |\n| pcap_test |\n'
             ),
             (
-                '<?xml version="1.0"?>\n<response status="success">\n  <result>\n    <dir-listing>\n      '
-                '<file>/pcap_test</file>\n    </dir-listing>\n  </result>\n</response>\n',
-                ['pcap_test'],
-                '### List of Pcaps:\n|Pcap name|\n|---|\n| pcap_test |\n'
+                    '<?xml version="1.0"?>\n<response status="success">\n  <result>\n    <dir-listing>\n      '
+                    '<file>/pcap_test</file>\n    </dir-listing>\n  </result>\n</response>\n',
+                    ['pcap_test'],
+                    '### List of Pcaps:\n|Pcap name|\n|---|\n| pcap_test |\n'
             )
         ]
     )
@@ -1202,7 +1202,7 @@ def test_panorama_push_to_device_group_command(mocker, args, expected_request_pa
                                        id='with device'),
                           ])
 def test_panorama_push_to_template_command(
-    mocker, args, expected_request_params, request_result, expected_demisto_result
+        mocker, args, expected_request_params, request_result, expected_demisto_result
 ):
     """
     Given:
@@ -1306,7 +1306,7 @@ def test_panorama_push_to_template_command(
                                  id='with device'),
                          ])
 def test_panorama_push_to_template_stack_command(
-    mocker, args, expected_request_params, request_result, expected_demisto_result
+        mocker, args, expected_request_params, request_result, expected_demisto_result
 ):
     """
     Given:
@@ -1370,6 +1370,46 @@ def test_get_url_category__url_length_gt_1278(mocker):
 
     # validate
     assert 'URL Node can be at most 1278 characters.' == return_results_mock.call_args[0][0][1].readable_output
+
+
+def test_get_url_category__multiple_categories_for_url(mocker):
+    """
+    Given:
+        - response indicating the url has multiple categories.
+
+    When:
+        - Run get_url_category command
+
+    Then:
+        - Validate a commandResult is returned with detailed readable output
+    """
+
+    # prepare
+    import Panorama
+    import requests
+    from Panorama import panorama_get_url_category_command
+    Panorama.DEVICE_GROUP = ''
+    mocked_res_dict = {
+        'response': {
+            '@cmd': 'status',
+            '@status': 'success',
+            'result': 'https://pixabay.com not-resolved (Base db) expires in 5 seconds\n'
+                      'https://pixabay.com shareware-and-freeware online-storage-and-backup low-risk (Cloud db)'
+        }
+    }
+    mocked_res_obj = requests.Response()
+    mocked_res_obj.status_code = 200
+    mocked_res_obj._content = json.dumps(mocked_res_dict).encode('utf-8')
+    mocker.patch.object(requests, 'request', return_value=mocked_res_obj)
+    mocker.patch.object(Panorama, 'xml2json', return_value=mocked_res_obj._content)
+    return_results_mock = mocker.patch.object(Panorama, 'return_results')
+
+    # run
+    panorama_get_url_category_command(url_cmd='url', url='test_url', additional_suspicious=[], additional_malicious=[])
+
+    # validate
+    assert return_results_mock.call_args[0][0][0].outputs[0].get('Category') == 'shareware-and-freeware'
+    assert return_results_mock.call_args[0][0][0].outputs[1].get('Category') == 'online-storage-and-backup'
 
 
 class TestDevices:
@@ -1929,7 +1969,8 @@ class TestUtilityFunctions:
         assert "### PAN-OS Object" in results.readable_output
 
         results = dataclasses_to_command_results(
-            test_dataclass, override_table_name="Test Table", override_table_headers=["hostid", "name", "container_name"])
+            test_dataclass, override_table_name="Test Table",
+            override_table_headers=["hostid", "name", "container_name"])
         # When we provide overrides, check they are rendered correctly in the readable output
         assert "hostid|name|container_name" in results.readable_output
         assert "### Test Table" in results.readable_output
@@ -2052,16 +2093,16 @@ class TestUniversalCommand:
 
         # We also want to check that if an empty string is passed, an error is returned
         with pytest.raises(
-            DemistoException,
-            match="filter_str  is not the exact ID of a host in this topology; use a more specific filter string."
+                DemistoException,
+                match="filter_str  is not the exact ID of a host in this topology; use a more specific filter string."
         ):
             UniversalCommand.reboot(mock_topology, "")
 
         # Lets also check that if an invalid hostid is given, we also raise.
         with pytest.raises(
-            DemistoException,
-            match="filter_str badserialnumber is not the exact ID of "
-                  "a host in this topology; use a more specific filter string."
+                DemistoException,
+                match="filter_str badserialnumber is not the exact ID of "
+                      "a host in this topology; use a more specific filter string."
         ):
             UniversalCommand.reboot(mock_topology, "badserialnumber")
 
@@ -2568,7 +2609,7 @@ class TestObjectFunctions:
                                      'key': 'fakeAPIKEY!',
                                  },
                                  None,
-                         ),
+                             ),
                          ])
 def test_add_target_arg(mocker, expected_request_params, target):
     """
@@ -2594,33 +2635,33 @@ def test_add_target_arg(mocker, expected_request_params, target):
 
 @pytest.mark.parametrize('rule , expected_result',
                          [pytest.param({'target':
-                                        {'devices':
-                                         {'entry':
-                                          [{'@name': 'fw1'},
-                                           {'@name': 'fw2'}]
-                                          }
-                                         }
+                                            {'devices':
+                                                 {'entry':
+                                                      [{'@name': 'fw1'},
+                                                       {'@name': 'fw2'}]
+                                                  }
+                                             }
                                         },
                                        True
                                        ),
                           pytest.param(
                               {'target':
-                               {'devices':
-                                {'entry': {'@name': 'fw1'}}
-                                }
+                                   {'devices':
+                                        {'entry': {'@name': 'fw1'}}
+                                    }
                                },
                               True),
                           pytest.param({'target':
-                                        {'devices':
-                                         {'entry': {'@name': 'fw2'}
-                                          }
-                                         }
+                                            {'devices':
+                                                 {'entry': {'@name': 'fw2'}
+                                                  }
+                                             }
                                         },
                                        False),
                           pytest.param({'target':
-                                        {'devices':
-                                         {'entry': [{'@name': 'fw1'}]}
-                                         }
+                                            {'devices':
+                                                 {'entry': [{'@name': 'fw1'}]}
+                                             }
                                         },
                                        True),
 
