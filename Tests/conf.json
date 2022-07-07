@@ -5140,7 +5140,7 @@
         },
         {
             "integrations": "CloudflareWAF",
-            "playbookID": "TestCloudflareWAFPlaybook",
+            "playbookID": "playbook-TestCloudflareWAFPlaybook_Test",
             "fromversion": "6.2.0"
         },
         {
