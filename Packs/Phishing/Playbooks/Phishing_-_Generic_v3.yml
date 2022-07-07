@@ -2215,7 +2215,7 @@ tasks:
       version: -1
       name: Predict Phishing URLs
       description: Predicts phishing URLs using a pre-trained model.
-      script: DBotPredictURLPhishing
+      scriptName: DBotPredictURLPhishing
       type: regular
       iscommand: false
       brand: ''

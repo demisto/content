@@ -3,6 +3,9 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "IndicatorFormatterFilterTest"
+        },
+        {
             "integrations": "RSANetWitnessv115",
             "playbookID": "RSANetWitnessv115-Test"
         },
@@ -4396,7 +4399,7 @@
         {
             "playbookID": "CrowdStrike_Falcon_X_-Test-Detonate_File",
             "fromversion": "6.1.0",
-            "memory_threshold": 90,
+            "memory_threshold": 95,
             "integrations": [
                 "CrowdStrike Falcon X"
             ],
@@ -4405,7 +4408,7 @@
         {
             "playbookID": "CrowdStrike_FalconX_Test",
             "fromversion": "6.1.0",
-            "memory_threshold": 90,
+            "memory_threshold": 91,
             "integrations": [
                 "CrowdStrike Falcon X"
             ]
@@ -5176,9 +5179,16 @@
             ],
             "playbookID": "Microsoft Defender for Cloud Apps Event Collector-test",
             "fromversion": "6.8.0"
+        },
+        {
+            "integrations": "Arkime",
+            "playbookID": "Arkime Test playbook",
+            "fromversion": "6.2.0"
         }
     ],
     "skipped_tests": {
+        "Panorama Query Logs - Test": "issues with firewall environment configuration - CIAC-3459",
+        "palo_alto_firewall_test_pb": "issues with firewall environment configuration - CIAC-3459",
         "Test - CrowdStrike Falcon": "to merge https://github.com/demisto/content/pull/19250",
         "MISP V2 Test": "The integration is deprecated as we released MISP V3",
         "Github IAM - Test Playbook": "Issue 32383",
@@ -5311,7 +5321,8 @@
         "RedLockTest": "Issue 24600",
         "SymantecEndpointProtection_Test": "Issue 30157",
         "RSANetWitnessv115-Test": "Issue XDRSUP-12553",
-        "TestCloudflareWAFPlaybook": "No instance"
+        "TestCloudflareWAFPlaybook": "No instance",
+        "DBot Build Phishing Classifier Test - Multiple Algorithms": "Issue 48350"
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",

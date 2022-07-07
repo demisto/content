@@ -36,7 +36,7 @@ def get_token():
                     {", ".join(available_customer_names)})
             raise Exception(message)
     except ValueError as exception:
-        demisto.log(exception)
+        demisto.debug(exception)
         raise Exception('Could not parse API response.')
     HEADERS['x-redlock-auth'] = TOKEN
 
@@ -878,7 +878,6 @@ def main():
         else:
             raise Exception('Unrecognized command: ' + command)
     except Exception as err:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(str(err))
 
 
