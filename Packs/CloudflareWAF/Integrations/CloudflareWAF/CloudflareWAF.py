@@ -332,9 +332,8 @@ class Client(BaseClient):
         """  Create a new ip-list items.
 
         Args:
-            name (str, optional): The name of the list (used in filter expressions). Defaults to None.
-            kind (int, optional): The kind of values in the List. Defaults to 1.
-            description (int, optional): A note that can be used to annotate the List. Defaults to 50.
+            list_id (str, optional): The list ID.
+            items (int, optional): The items to add to the list.
 
         Returns:
             dict: API response from Cloudflare.
@@ -348,9 +347,8 @@ class Client(BaseClient):
         """  Replace ip-list items with a new items. Remove all current list items and append the given items to the List.
 
         Args:
-            name (str, optional): The name of the list (used in filter expressions). Defaults to None.
-            kind (int, optional): The kind of values in the List. Defaults to 1.
-            description (int, optional): A note that can be used to annotate the List. Defaults to 50.
+            list_id (str, optional): The list ID.
+            items (int, optional): The item to update.
 
         Returns:
             dict: API response from Cloudflare.
@@ -364,9 +362,8 @@ class Client(BaseClient):
         """  Delete ip-list items.
 
         Args:
-            name (str, optional): The name of the list (used in filter expressions). Defaults to None.
-            kind (int, optional): The kind of values in the List. Defaults to 1.
-            description (int, optional): A note that can be used to annotate the List. Defaults to 50.
+            list_id (str, optional): The list ID.
+            items (int, optional): The item to delete.
 
         Returns:
             dict: API response from Cloudflare.
@@ -380,9 +377,9 @@ class Client(BaseClient):
         """  List ip-list items.
 
         Args:
-            name (str, optional): The name of the list (used in filter expressions). Defaults to None.
-            kind (int, optional): The kind of values in the List. Defaults to 1.
-            description (int, optional): A note that can be used to annotate the List. Defaults to 50.
+            list_id (str, optional): The list ID.
+            item (list, optional): The item ID to fetch.
+            cursors (str, optional): The key to fetch the rest of the list.
 
         Returns:
             dict: API response from Cloudflare.
