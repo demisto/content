@@ -123,7 +123,6 @@ For information about classification and mapping see [Classification and Mapping
 **Note:**  
 - For Cortex XSOAR version 6.1 only, the final source of truth for an incident are the values in Cortex XSOAR.  For example, if you change the severity in Cortex XSOAR and then change it back in ServiceNow, the final value that will be presented is the one in Cortex XSOAR. For versions 6.2 and later, if mirroring is in both directions then the latest update is the source of truth. 
 - The mirroring settings apply only for incidents that are fetched after applying the settings. Pre-existing comments or work notes are not fetched/mirrored at the time of incident creation.
--  Confirm whether you will use ServiceNow out of the box or the Security Incident Response (SIR) module, since mirroring is not supported out of the box for SIR. 
 - To use a custom mapper, you must first duplicate the mapper and edit the field in the copy of the mapper. If you detach the out of the box mapper and make changes to it, the pack does not automatically get updates.
 
 To set up incident mirroring you need to:  

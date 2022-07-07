@@ -1464,7 +1464,34 @@ script:
       name: proxies
     description: Creates a Zone with the specified name
     name: okta-create-zone
-  dockerimage: demisto/python3:3.10.4.29342
+  - arguments:
+    - description: Name of the group to add.
+      name: name
+      required: true
+    - description: Description of the group to add.
+      name: description
+    description: Create a new group in Okta tenant.
+    execution: true
+    name: okta-create-group
+    outputs:
+    - contextPath: OktaGroup.ID
+      description: Group ID in Okta,
+    - contextPath: OktaGroup.Name
+      description: Group name in Okta,
+    - contextPath: OktaGroup.Description
+      description: Group description in Okta,
+    - contextPath: OktaGroup.Type
+      description: Group type in Okta,
+  - arguments:
+    - description: Name of the group to assign to the app.
+      name: groupName
+    - description: ID of the group to assign to the app.
+      name: groupId
+    - description: Friendly name of the app that the group will be assigned to.
+      name: appName
+    description: Assign a group to an application
+    name: okta-assign-group-to-app
+  dockerimage: demisto/python3:3.10.4.30607
   runonce: false
   script: ''
   subtype: python3

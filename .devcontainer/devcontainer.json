@@ -1,0 +1,71 @@
+{
+	"name": "XSOAR Content",
+	"build": {
+		"dockerfile": "Dockerfile",
+		"args": {
+			"IMAGENAME": "devdemisto/content-dev:31677"
+		}
+	},
+	"containerUser": "root",
+	"settings": {
+		"terminal.integrated.defaultProfile.linux": "zsh",
+		"terminal.integrated.profiles.linux": {
+			"zsh": {
+				"path": "/bin/zsh"
+			}
+		},
+		"python.defaultInterpreterPath": "/usr/local/bin/python",
+		"python.venvFolders": ["~/.cache/pypoetry/virtualenvs"],
+		"python.linting.enabled": true,
+		"python.linting.flake8Enabled": true,
+		"python.linting.mypyEnabled": true,
+		"python.linting.mypyArgs": [
+			"--follow-imports=silent",
+			"--ignore-missing-imports",
+			"--show-column-numbers",
+			"--no-pretty",
+			"--allow-redefinition",
+			"--no-site-packages",
+			"--namespace-packages"
+		],
+		"python.testing.pytestEnabled": true,
+		"python.testing.pytestArgs": ["."],
+		"python.testing.cwd": "${localWorkspaceFolder}/Packs/HelloWorld/Integrations/HelloWorld"
+	},
+	"extensions": [
+		"cortexxsoarext.xsoar",
+		"ms-python.python",
+		"ms-python.vscode-pylance",
+		"ms-vscode.PowerShell",
+		"ms-toolsai.jupyter",
+		"timonwong.shellcheck",
+		"GitHub.vscode-pull-request-github",
+		"eamodio.gitlens",
+		"ms-azuretools.vscode-docker",
+		"ms-vscode-remote.remote-containers",
+		"streetsidesoftware.code-spell-checker",
+		"njpwerner.autodocstring",
+		"VisualStudioExptTeam.vscodeintellicode",
+		"yzhang.markdown-all-in-one",
+		"shd101wyy.markdown-preview-enhanced",
+		"Gruntfuggly.todo-tree",
+		"redhat.vscode-yaml",
+		"PKief.material-icon-theme"
+		],
+	"containerEnv": {
+		"LOCAL_WORKSPACE_PATH": "${localWorkspaceFolder}",
+		"CONTENT": "${containerWorkspaceFolder}",
+		"PYTHONPATH": "${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerPython/:${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerUserPython/:${containerWorkspaceFolder}/Tests/demistomock/:${containerEnv:PYTHONPATH}",
+		"MYPYPATH": "${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerPython/:${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerUserPython/:${containerWorkspaceFolder}/Tests/demistomock/:${containerEnv:PYTHONPATH}",
+		"DEMISTO_BASE_URL": "${localEnv:DEMISTO_BASE_URL}",
+		"DEMISTO_USERNAME": "${localEnv:DEMISTO_USERNAME}",
+		"DEMISTO_PASSWORD": "${localEnv:DEMISTO_PASSWORD}",
+		"DEMISTO_VERIFY_SSL": "${localEnv:DEMISTO_VERIFY_SSL}"
+	},
+	"features": {
+		"docker-in-docker": "latest",
+		"git": "os-provided",
+		"github-cli": "latest"
+	},
+	"onCreateCommand": "echo 'export PYTHONPATH=$(printf '%s: ' ${containerWorkspaceFolder}/Packs/ApiModules/Scripts/*):$PYTHONPATH' >> ~/.zshrc && echo 'export MYPYPATH=$(printf '%s: ' ${containerWorkspaceFolder}/Packs/ApiModules/Scripts/*):$MYPYPATH' >> ~/.zshrc"
+}

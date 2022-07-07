@@ -112,17 +112,13 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -140,
-          "y": 2950
+          "x": -470,
+          "y": 2960
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
     fieldMapping:
     - incidentfield: Rendered HTML
       output:
@@ -136,6 +132,10 @@ tasks:
                 value:
                   simple: inputs.EmailText
                 iscontext: true
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   '3':
     id: '3'
     taskid: 5802b254-fac3-4c94-8b2d-89038b4239e5
@@ -235,8 +235,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 310,
-          "y": 3440
+          "x": -20,
+          "y": 3450
         }
       }
     note: false
@@ -276,8 +276,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 70,
-          "y": 3660
+          "x": -260,
+          "y": 3670
         }
       }
     note: false
@@ -303,8 +303,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 310,
-          "y": 3890
+          "x": -20,
+          "y": 3900
         }
       }
     note: false
@@ -333,8 +333,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 310,
-          "y": 3310
+          "x": -20,
+          "y": 3320
         }
       }
     note: false
@@ -641,6 +641,18 @@ tasks:
       emailurlclicked:
         complex:
           root: EmailUrlClicked
+      renderedhtml:
+        complex:
+          root: Email
+          accessor: HTML
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Email.Text
+                iscontext: true
       reportedemailcc:
         complex:
           root: Email
@@ -655,6 +667,12 @@ tasks:
           transformers:
           - operator: uniq
           - operator: Stringify
+      reportedemailmessageid:
+        complex:
+          root: Email.HeadersMap
+          accessor: Message-ID
+          transformers:
+          - operator: uniq
       reportedemailorigin:
         complex:
           root: ReportedEmailOrigin
@@ -676,30 +694,12 @@ tasks:
               separator:
                 value:
                   simple: ','
-      reportedemailmessageid:
-        complex:
-          root: Email.HeadersMap
-          accessor: Message-ID
-          transformers:
-          - operator: uniq
-      renderedhtml:
-        complex:
-          root: Email
-          accessor: HTML
-          transformers:
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: Email.Text
-                iscontext: true
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1250,
-          "y": 3140
+          "x": 920,
+          "y": 3150
         }
       }
     note: false
@@ -739,13 +739,13 @@ tasks:
       unpack_nested_elements:
         simple: 'false'
     reputationcalc: 2
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
     view: |-
       {
         "position": {
-          "x": 310,
-          "y": 2950
+          "x": -20,
+          "y": 2960
         }
       }
     note: false
@@ -795,8 +795,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 630,
-          "y": 2590
+          "x": 300,
+          "y": 2600
         }
       }
     note: false
@@ -936,12 +936,13 @@ tasks:
       - '29'
       - '30'
       - '31'
+      - '53'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 2340,
-          "y": 2590
+          "x": 2010,
+          "y": 2600
         }
       }
     note: false
@@ -995,8 +996,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1730,
-          "y": 2790
+          "x": 1320,
+          "y": 2800
         }
       }
     note: false
@@ -1055,8 +1056,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1330,
-          "y": 2790
+          "x": 920,
+          "y": 2800
         }
       }
     note: false
@@ -1115,8 +1116,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2137.5,
-          "y": 2790
+          "x": 1727.5,
+          "y": 2800
         }
       }
     note: false
@@ -1175,8 +1176,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2950,
-          "y": 2790
+          "x": 2540,
+          "y": 2800
         }
       }
     note: false
@@ -1235,8 +1236,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2550,
-          "y": 2790
+          "x": 2140,
+          "y": 2800
         }
       }
     note: false
@@ -1295,8 +1296,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3360,
-          "y": 2790
+          "x": 2950,
+          "y": 2800
         }
       }
     note: false
@@ -1335,8 +1336,8 @@ tasks:
         simple: headername
       unpack_nested_elements:
         simple: 'false'
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
     view: |-
       {
         "position": {
@@ -1519,13 +1520,13 @@ tasks:
       unpack_nested_elements:
         simple: 'true'
     reputationcalc: 2
-    continueonerror: true
     separatecontext: false
+    continueonerror: true
     view: |-
       {
         "position": {
-          "x": 760,
-          "y": 2950
+          "x": 430,
+          "y": 2960
         }
       }
     note: false
@@ -1691,8 +1692,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 760,
-          "y": 2790
+          "x": 430,
+          "y": 2800
         }
       }
     note: false
@@ -1808,6 +1809,8 @@ tasks:
         retriescount: 2
         retriesinterval: 360
         completeafterreplies: 1
+        completeafterv2: false
+        completeaftersla: false
     form:
       questions:
       - id: '0'
@@ -2128,6 +2131,136 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  '53':
+    id: '53'
+    taskid: c47ecfaf-7dd1-4be0-8842-37d5ff4ff430
+    type: condition
+    task:
+      description: ''
+      id: c47ecfaf-7dd1-4be0-8842-37d5ff4ff430
+      version: -1
+      name: Was the reported email attached?
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '19'
+      yes:
+      - '54'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: ReportedEmailOrigin
+            iscontext: true
+          right:
+            value:
+              simple: Attached
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Demisto REST API
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Demisto REST API
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+    view: |-
+      {
+        "position": {
+          "x": 3360,
+          "y": 2800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '54':
+    id: '54'
+    taskid: d3e4ef95-744f-4b03-85f6-b1a18a415f75
+    type: regular
+    task:
+      id: d3e4ef95-744f-4b03-85f6-b1a18a415f75
+      version: -1
+      name: Set incident attachments
+      description: Copies a file from this incident to the specified incident. The file is recorded as an entry in the specified incident’s War Room.
+      scriptName: DemistoUploadFileV2
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '19'
+    scriptarguments:
+      entryID:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.MD5
+                iscontext: true
+              right:
+                value:
+                  simple: Email.Attachment.Hash
+                iscontext: true
+          accessor: EntryID
+      incidentID:
+        complex:
+          root: incident
+          accessor: id
+      target:
+        simple: incident attachment
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 3360,
+          "y": 2980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
@@ -2136,11 +2269,12 @@ view: |-
       "39_22_yes": 0.31,
       "41_3_#default#": 0.35,
       "41_42_yes": 0.5,
-      "4_5_yes": 0.57
+      "4_5_yes": 0.57,
+      "53_19_#default#": 0.1
     },
     "paper": {
       "dimensions": {
-        "height": 4465,
+        "height": 4475,
         "width": 4210,
         "x": -470,
         "y": -510

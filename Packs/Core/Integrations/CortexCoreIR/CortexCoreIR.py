@@ -10,12 +10,20 @@ TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 INTEGRATION_CONTEXT_BRAND = 'Core'
 INTEGRATION_NAME = 'Cortex Core - IR'
 
-
 XSOAR_RESOLVED_STATUS_TO_Core = {
     'Other': 'resolved_other',
     'Duplicate': 'resolved_duplicate',
     'False Positive': 'resolved_false_positive',
     'Resolved': 'resolved_true_positive',
+}
+
+PREVALENCE_COMMANDS = {
+    'core-get-hash-analytics-prevalence': 'hash',
+    'core-get-IP-analytics-prevalence': 'ip',
+    'core-get-domain-analytics-prevalence': 'domain',
+    'core-get-process-analytics-prevalence': 'process',
+    'core-get-registry-analytics-prevalence': 'registry',
+    'core-get-cmd-analytics-prevalence': 'cmd',
 }
 
 
@@ -26,7 +34,7 @@ class Client(CoreClient):
             Performs basic get request to get item samples
         """
         try:
-            self.get_incidents(limit=1)
+            self.get_endpoints(limit=1)
         except Exception as err:
             if 'API request Unauthorized' in str(err):
                 # this error is received from the Core server when the client clock is not in sync to the server
@@ -49,6 +57,11 @@ class Client(CoreClient):
 
         return reply
 
+    def get_prevalence(self, request_data: dict):
+        reply = self._http_request(method='POST', json_data={'request_data': request_data}, headers=self._headers,
+                                   url_suffix='/analytics_apis/')
+        return reply
+
 
 def report_incorrect_wildfire_command(client: Client, args) -> CommandResults:
     file_hash = args.get('file_hash')
@@ -69,6 +82,59 @@ def report_incorrect_wildfire_command(client: Client, args) -> CommandResults:
     )
 
 
+def handle_prevalence_command(client: Client, command: str, args: dict):
+    key_names_in_response = {
+        'ip': 'ip_address',
+        'domain': 'domain_name',
+        'process': 'process_name',
+        'cmd': 'process_command_line',
+        'hash': 'sha256',
+        'registry': 'key_name',
+    }
+    args.pop('integration_context_brand', None)
+    args.pop('integration_name', None)
+    if command == 'core-get-registry-analytics-prevalence':
+        # arg list should in the following structure:
+        #   args: [
+        #       {"key_name": "some_key1", "value_name": "some_value1"},
+        #       {"key_name": "some_key2", "value_name": "some_value2"}
+        #       ]
+
+        args_list = []
+        keys = argToList(args.get('key_name'))
+        values = argToList(args.get('value_name'))
+        if len(keys) != len(values):
+            raise DemistoException('Number of elements in key_name argument should be equal to the number '
+                                   'of elements in value_name argument.')
+        for key, value in zip(keys, values):
+            args_list.append({'key_name': key, 'value_name': value})
+    else:
+        args_list = []
+        for key, value in args.items():
+            values = argToList(value)
+            for val in values:
+                args_list.append({key: val})
+
+    request_body = {
+        'api_id': command,
+        'args': args_list
+    }
+    res = client.get_prevalence(request_body).get('results', [])
+    command_type = PREVALENCE_COMMANDS[command]
+    return CommandResults(
+        readable_output=tableToMarkdown(string_to_table_header(f'{command_type} Prevalence'),
+                                        [{
+                                            key_names_in_response[command_type]: item.get('args', {}).get(
+                                                key_names_in_response[command_type]),
+                                            'Prevalence': item.get('value')
+                                        } for item in res],
+                                        headerTransform=string_to_table_header),
+        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.AnalyticsPrevalence.{command_type.title()}',
+        outputs=res,
+        raw_response=res,
+    )
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -81,6 +147,8 @@ def main():  # pragma: no cover
     api_key = demisto.params().get('apikey')
     api_key_id = demisto.params().get('apikey_id')
     url = demisto.params().get('url')
+    url_suffix = '/xsiam' if command in PREVALENCE_COMMANDS else "/public_api/v1"
+
     if not api_key or not api_key_id or not url:
         headers = {
             "HOST": demisto.getLicenseCustomField("Core.ApiHostName"),
@@ -97,7 +165,7 @@ def main():  # pragma: no cover
         }
         add_sensitive_log_strs(api_key)
 
-    base_url = urljoin(url, '/public_api/v1')
+    base_url = urljoin(url, url_suffix)
     proxy = demisto.params().get('proxy')
     verify_cert = not demisto.params().get('insecure', False)
 
@@ -256,7 +324,7 @@ def main():  # pragma: no cover
                                                               "PENDING_ABORT"]))
 
         elif command == 'core-retrieve-file-details':
-            return_entry, file_results = retrieve_file_details_command(client, args)
+            return_entry, file_results = retrieve_file_details_command(client, args, False)
             demisto.results(return_entry)
             if file_results:
                 demisto.results(file_results)
@@ -371,6 +439,9 @@ def main():  # pragma: no cover
 
         elif command == 'core-get-dynamic-analysis':
             return_results(get_dynamic_analysis_command(client, args))
+
+        elif command in PREVALENCE_COMMANDS:
+            return_results(handle_prevalence_command(client, command, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
