@@ -8,13 +8,6 @@
 		"terminal.integrated.profiles.linux": {
 			"zsh": {
 				"path": "/bin/zsh"
-			},
-			"terminal (Host)": {
-				"path": "ssh",
-				"icon": "terminal-bash",
-				"args": [
-					"user@host"
-				]
 			}
 		},
 		"python.defaultInterpreterPath": "/usr/local/bin/python",
