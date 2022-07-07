@@ -180,7 +180,13 @@ class TestCollector(ABC):
             raise EmptyMachineListException()
 
         # collected |= self._add_packs_used(collected.tests)  # todo should we use it?
+        self._validate_tests_in_id_set(collected.tests)
         return collected
+
+    def _validate_tests_in_id_set(self, tests: Iterable[str]):
+        if not_found := ((set(tests) - self.sanity_tests.tests).difference(self.id_set.id_to_test_playbook.keys())):
+            not_found_string = '\n\t'.join(not_found)
+            logger.warning(f'{len(not_found)} tests were not found in id-set: \n{not_found_string}')
 
     # def _add_packs_used(self, tests: set[str]) -> list[CollectedTests]:  # todo is used?
     #     return self._add_packs_from_tested_integrations(tests) + self._add_packs_from_test_playbooks(tests)
