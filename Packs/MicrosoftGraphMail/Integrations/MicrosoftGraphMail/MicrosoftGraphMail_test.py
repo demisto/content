@@ -1,3 +1,4 @@
+import os.path
 from urllib.parse import quote
 
 import pytest
@@ -743,3 +744,14 @@ def test_send_mail_bit_attachment(mocker):
                 'MicrosoftGraphMail/Integrations/MicrosoftGraphMail/plant.jpeg',
         'name': 'plant.jpeg'})
     main()
+
+
+def test_chunk_size():
+    chunk_size = 4 * (2**20)
+    file_size = os.path.getsize('/Users/okarkkatz/dev/demisto/content/Packs/MicrosoftGraphMail/Integrations/MicrosoftGraphMail/world.jpg')
+    print(f'file_size: {file_size}')
+    with open('/Users/okarkkatz/dev/demisto/content/Packs/MicrosoftGraphMail/Integrations/MicrosoftGraphMail/world.jpg', 'rb') as f:
+        i = 1
+        while data := f.read(chunk_size):
+            print(i)
+            i = i+1

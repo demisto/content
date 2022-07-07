@@ -1,3 +1,5 @@
+import requests
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -1567,7 +1569,7 @@ def send_draft_command(client: MsGraphClient, args):
     return_outputs(f'### Draft with: {draft_id} id was sent successfully.')
 
 
-def create_upload_session(email: str, client: MsGraphClient, created_draft: dict):
+def create_upload_session(email: str, client: MsGraphClient, created_draft: dict, file_path):
     try:
         created_draft_id = created_draft.get('id')
         suffix_endpoint = f'/users/{email}/messages/{created_draft_id}/attachments/createUploadSession'
@@ -1579,6 +1581,39 @@ def create_upload_session(email: str, client: MsGraphClient, created_draft: dict
 
         upload_session = client.ms_client.http_request('POST', suffix_endpoint,
                                                        json_data={'attachmentItem': attachment})
+
+        upload_url = upload_session.json()['uploadUrl']
+
+        with open(file_path, 'rb') as upload_file:
+            total_file_size = 0
+            chunk_size = 4 * (2 ** 20)  # 4MB
+            chunk_number = total_file_size // chunk_size
+            chunk_leftover = total_file_size - (chunk_size * chunk_number)  # The size of the last chunk
+            counter =0
+            while True:
+                chunk_data = upload_file.read(chunk_size)
+                start_index = counter * chunk_size
+                end_index = start_index + chunk_size
+
+                if not chunk_data:
+                    break
+                if counter == chunk_number:
+                    end_index = start_index + chunk_leftover
+
+                headers = {
+                    'Content-Lenght' : f'{chunk_size}',
+                    'Content-Range' : f'bytes {start_index}-{end_index-1}/{total_file_size}'
+                }
+
+                chunk_data_upload_status = requests.put(upload_url,
+                                                        headers= headers,
+                                                        data=chunk_data
+                                                        )
+
+
+
+
+
 
         print(upload_session)
     except Exception as e:
