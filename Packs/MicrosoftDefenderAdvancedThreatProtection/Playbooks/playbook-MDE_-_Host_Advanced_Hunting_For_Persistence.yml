@@ -76,6 +76,7 @@ inputs:
 name: MDE - Host Advanced Hunting For Persistence
 outputs:
 - contextPath: MicrosoftATP.HuntPersistenceEvidence.Result
+  description: The query results for Hunt Persistence Evidence.
   type: unknown
 - contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.scheduled_job
   description: The query results for scheduled_job query_purpose.

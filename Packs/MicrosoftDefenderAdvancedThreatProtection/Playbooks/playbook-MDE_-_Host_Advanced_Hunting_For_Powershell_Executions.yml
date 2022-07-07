@@ -76,6 +76,7 @@ inputs:
 name: MDE - Host Advanced Hunting For Powershell Executions
 outputs:
 - contextPath: MicrosoftATP.HuntProcessDetails.Result
+  description: The query results for Process Details.
   type: unknown
 - contextPath: MicrosoftATP.HuntProcessDetails.Result.parent_process
   description: The query results for parent_process query_purposeThe query results.
@@ -90,6 +91,7 @@ outputs:
 - contextPath: MicrosoftATP.HuntProcessDetails.Result.process_excecution_powershell
   description: The query results for process_excecution_powershell query_purpose.
 - contextPath: MicrosoftATP.FileMachine.Machines
+  description: The Query results for getting a collection of machines with a given file SHA1 hash.
   type: unknown
 - contextPath: MicrosoftATP.FileMachine.Machines.ID
   description: The machine ID.
@@ -126,14 +128,17 @@ outputs:
 - contextPath: MicrosoftATP.FileMachine.Machines.MachineTags
   description: Set of machine tags.
 - contextPath: MicrosoftATP.Machine
+  description: Results for device information.
   type: unknown
 - contextPath: MicrosoftATP.Machine.OSProcessor
   description: The operating system processor.
 - contextPath: MicrosoftATP.FileMachine
+  description: Results for File information on a device.
   type: unknown
 - contextPath: MicrosoftATP.FileMachine.File
   description: The machine related file hash.
 - contextPath: MicrosoftATP.HuntNetworkConnections.Result
+  description: The query results for Hunt Network Connections.
   type: unknown
 - contextPath: MicrosoftATP.HuntNetworkConnections.Result.external_addresses
   description: The query results for external_addresses query_purpose.

@@ -76,6 +76,7 @@ inputs:
 name: MDE - Host Advanced Hunting For Network Activity
 outputs:
 - contextPath: MicrosoftATP.HuntNetworkConnections.Result
+  description: The query results for Hunt Network Connections.
   type: unknown
 - contextPath: MicrosoftATP.HuntNetworkConnections.Result.external_addresses
   description: The query results for external_addresses query_purpose.
@@ -84,6 +85,7 @@ outputs:
 - contextPath: MicrosoftATP.HuntNetworkConnections.Result.encoded_commands
   description: The query results for encoded_commands query_purpose.
 - contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result
+  description: The query results for Hunt Lateral Movement Evidence.
   type: unknown
 - contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result.network_connections
   description: The query results for network_connections query_purpose.
@@ -94,6 +96,7 @@ outputs:
 - contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result.management_connection
   description: The query results for management_connection query_purpose.
 - contextPath: MicrosoftATP.HuntPersistenceEvidence.Result
+  description: The query results for Hunt Persistence Evidence.
   type: unknown
 - contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.scheduled_job
   description: The query results for scheduled_job query_purpose.

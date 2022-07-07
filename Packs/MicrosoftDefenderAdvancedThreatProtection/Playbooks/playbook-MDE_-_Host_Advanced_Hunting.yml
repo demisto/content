@@ -41,14 +41,17 @@ inputs:
 name: MDE - Host Advanced Hunting
 outputs:
 - contextPath: MicrosoftATP.HuntTampering
+  description: The query results for Hunt Tampering.
   type: unknown
 - contextPath: MicrosoftATP.HuntTampering.Result
   description: The query results.
 - contextPath: MicrosoftATP.HuntPrivilegeEscalation
+  description: The query results for Hunt Privilege Escalation.
   type: unknown
 - contextPath: MicrosoftATP.HuntPrivilegeEscalation.Result
   description: The query results.
 - contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result
+  description: The query results for Hunt Lateral Movement Evidence.
   type: unknown
 - contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result.network_connections
   description: The query results for network_connections query_purpose.
@@ -59,8 +62,10 @@ outputs:
 - contextPath: MicrosoftATP.HuntLateralMovementEvidence.Result.management_connection
   description: The query results for management_connection query_purpose.
 - contextPath: MicrosoftATP.HuntPersistenceEvidence
+  description: The query results for Hunt Lateral Movement Evidence.
   type: unknown
 - contextPath: MicrosoftATP.HuntPersistenceEvidence.Result
+  description: The query results for Hunt Persistence Evidence.
   type: unknown
 - contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.scheduled_job
   description: The query results for scheduled_job query_purpose.
@@ -85,6 +90,7 @@ outputs:
 - contextPath: MicrosoftATP.HuntPersistenceEvidence.Result.host_file_change
   description: The query results for host_file_change query_purpose.
 - contextPath: MicrosoftATP.File
+  description: File information from Microsoft ATP.
   type: unknown
 starttaskid: '0'
 tasks:
