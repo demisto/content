@@ -5,10 +5,10 @@ starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: 840e9af7-bd61-487b-86ff-8ab283b84ce0
+    taskid: fb25d265-f826-47f0-8347-889fa5663ce8
     type: start
     task:
-      id: 840e9af7-bd61-487b-86ff-8ab283b84ce0
+      id: fb25d265-f826-47f0-8347-889fa5663ce8
       version: -1
       name: ''
       iscommand: false
@@ -21,7 +21,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 50,
           "y": 50
         }
       }
@@ -34,10 +34,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '1':
     id: '1'
-    taskid: 7e471176-b33d-4e40-8641-35293e602811
+    taskid: 54c1c3c9-d968-41d7-863a-01422e18a807
     type: regular
     task:
-      id: 7e471176-b33d-4e40-8641-35293e602811
+      id: 54c1c3c9-d968-41d7-863a-01422e18a807
       version: -1
       name: Create new IP Indicator (5.6.4.1)
       description: commands.local.cmd.new.indicator
@@ -47,7 +47,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - '2'
+      - '5'
     scriptarguments:
       asn:
         simple: test
@@ -71,8 +71,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 230
+          "x": 50,
+          "y": 195
         }
       }
     note: false
@@ -84,10 +84,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '2':
     id: '2'
-    taskid: eb9497c2-8f49-456e-81d4-fc193aea17ef
+    taskid: d804009a-c43d-44a1-8a01-4679a9fb603d
     type: regular
     task:
-      id: eb9497c2-8f49-456e-81d4-fc193aea17ef
+      id: d804009a-c43d-44a1-8a01-4679a9fb603d
       version: -1
       name: Get Created Indicator
       description: commands.local.cmd.find.indicators
@@ -107,8 +107,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 420
+          "x": 50,
+          "y": 545
         }
       }
     note: false
@@ -120,10 +120,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '3':
     id: '3'
-    taskid: e325aea4-599a-43cc-88cb-f831331ecc5b
+    taskid: 89738e96-7498-4717-8fcf-9f7c0427405f
     type: condition
     task:
-      id: e325aea4-599a-43cc-88cb-f831331ecc5b
+      id: 89738e96-7498-4717-8fcf-9f7c0427405f
       version: -1
       name: Assert custom fields were populated
       description: Asserts custom fields were populated correctly
@@ -197,8 +197,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 610
+          "x": 50,
+          "y": 720
         }
       }
     note: false
@@ -210,10 +210,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '4':
     id: '4'
-    taskid: b390bc91-a3ee-4183-8066-40a23f49656c
+    taskid: 4bc28c68-3753-44a0-81c6-7c08a8231827
     type: title
     task:
-      id: b390bc91-a3ee-4183-8066-40a23f49656c
+      id: 4bc28c68-3753-44a0-81c6-7c08a8231827
       version: -1
       name: Done
       type: title
@@ -224,8 +224,42 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 800
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '5':
+    id: '5'
+    taskid: e8425cbe-1c92-4c36-8cff-4534405e2a73
+    type: regular
+    task:
+      id: e8425cbe-1c92-4c36-8cff-4534405e2a73
+      version: -1
+      name: sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      seconds:
+        simple: '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
         }
       }
     note: false
@@ -240,9 +274,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 815,
+        "height": 910,
         "width": 380,
-        "x": 450,
+        "x": 50,
         "y": 50
       }
     }
@@ -250,7 +284,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
-contentitemexportablefields:
-  contentitemfields: {}
-system: true
-description: 'Test creation of an IP indicator'
+description: Test creation of an IP indicator
