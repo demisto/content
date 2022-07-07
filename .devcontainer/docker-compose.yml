@@ -1,0 +1,10 @@
+version: '3.7'
+
+services:
+  content:
+    build: .
+    volumes:
+      - ..:/workspaces/content
+    working_dir: /workspaces/content
+    command: /bin/sh -c "while sleep 1000; do :; done"  
+      

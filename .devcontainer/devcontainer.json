@@ -1,11 +1,8 @@
 {
 	"name": "XSOAR Content",
-	"build": {
-		"dockerfile": "Dockerfile",
-		"args": {
-			"IMAGENAME": "devdemisto/content-dev:31677"
-		}
-	},
+	"dockerComposeFile": "docker-compose.yml",
+	"service": "content",
+	"workspaceFolder": "/workspaces/content",
 	"containerUser": "root",
 	"settings": {
 		"terminal.integrated.defaultProfile.linux": "zsh",

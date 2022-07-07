@@ -1,6 +1,4 @@
-ARG IMAGENAME
-
-FROM ${IMAGENAME}
+FROM devdemisto/content-dev:31677
 
 ADD create_certs.sh .
 RUN apt-get update && apt-get install dos2unix -y \

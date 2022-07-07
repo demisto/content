@@ -1,0 +1,25 @@
+version: '3.7'
+
+volumes:
+  code:
+
+services:
+  content:
+    build: .
+    volumes:
+      - code:/workspaces/content
+    working_dir: /workspaces/content
+    command: /bin/sh -c "while sleep 1000; do :; done"  
+      
+x-mutagen:
+  sync:
+    defaults:
+      ignore:
+        vcs: false
+        paths:
+          - "node_modules"
+          - ".idea"
+    code:
+      alpha: ".."
+      beta: "volume://code"
+      mode: "two-way-resolved"
