@@ -1,0 +1,160 @@
+id: 7000de2d-cc11-420f-82b5-03aa534e9489
+version: 5
+vcShouldKeepItemLegacyProdMachine: false
+name: Cisco Meraki V2 Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8b035c1f-6c64-457d-8d46-59710e5834b6
+    type: start
+    task:
+      id: 8b035c1f-6c64-457d-8d46-59710e5834b6
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: f3534c6b-ae72-460c-8b48-9ab6ce5d72ed
+    type: regular
+    task:
+      id: f3534c6b-ae72-460c-8b48-9ab6ce5d72ed
+      version: -1
+      name: Fetch Organizations
+      description: List the organizations that the api-key has privileges on.
+      script: '|||meraki-fetch-organizations'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 004fdf1c-603e-4ca9-80d2-3c8de509c1f9
+    type: title
+    task:
+      id: 004fdf1c-603e-4ca9-80d2-3c8de509c1f9
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 204659bd-234b-4e80-81cb-a9974df72f4d
+    type: regular
+    task:
+      id: 204659bd-234b-4e80-81cb-a9974df72f4d
+      version: -1
+      name: Print the Organizations
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      value:
+        complex:
+          root: Meraki.Organizations
+          accessor: name
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: |2+
+
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: |+
+                    Found the following Organizations:
+
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

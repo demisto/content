@@ -673,9 +673,9 @@ script:
       description: Syslog enabled.
       type: bool
     description: Update the L3 firewall rules of an MX network.
-  dockerimage: demisto/python3:3.10.4.31492
+  dockerimage: demisto/python3:3.10.5.31797
   runonce: false
   subtype: python3
 fromversion: 6.2.0
 tests:
-- No tests (auto formatted)
+- Cisco Meraki V2 Test Playbook

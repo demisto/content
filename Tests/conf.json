@@ -5152,6 +5152,10 @@
             ],
             "playbookID": "Github Event Collector-test",
             "fromversion": "6.6.0"
+        },
+        {
+            "integrations": "Cisco Meraki v2",
+            "playbookID": "Cisco Meraki V2 Test"
         }
     ],
     "skipped_tests": {
