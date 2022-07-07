@@ -3,12 +3,18 @@
 	"dockerComposeFile": "docker-compose.yml",
 	"service": "content",
 	"workspaceFolder": "/workspaces/content",
-	"containerUser": "root",
 	"settings": {
 		"terminal.integrated.defaultProfile.linux": "zsh",
 		"terminal.integrated.profiles.linux": {
 			"zsh": {
 				"path": "/bin/zsh"
+			},
+			"terminal (Host)": {
+				"path": "ssh",
+				"icon": "terminal-bash",
+				"args": [
+					"user@host"
+				]
 			}
 		},
 		"python.defaultInterpreterPath": "/usr/local/bin/python",
@@ -25,7 +31,9 @@
 			"--namespace-packages"
 		],
 		"python.testing.pytestEnabled": true,
-		"python.testing.pytestArgs": ["."],
+		"python.testing.pytestArgs": [
+			"."
+		],
 		"python.testing.cwd": "${localWorkspaceFolder}/Packs/HelloWorld/Integrations/HelloWorld"
 	},
 	"extensions": [
@@ -46,7 +54,7 @@
 		"Gruntfuggly.todo-tree",
 		"redhat.vscode-yaml",
 		"PKief.material-icon-theme"
-		],
+	],
 	"remoteEnv": {
 		"LOCAL_WORKSPACE_PATH": "${localWorkspaceFolder}",
 		"CONTENT": "${containerWorkspaceFolder}",
