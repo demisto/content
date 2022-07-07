@@ -18,4 +18,4 @@ Combines an array of queries to as few as possible whilst staying under the maxi
 
 ## Outputs
 ---
-Outputs an array of query.
+Outputs an array of query or a single query string.
