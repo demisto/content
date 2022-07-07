@@ -195,6 +195,11 @@ TEST_DATA = [
         20,
         1,
     ),
+    (
+        'test_data/many_pages.pdf',
+        '*',
+        3,
+    ),
 ]
 
 
