@@ -12,37 +12,38 @@ from stix2 import AttackPattern, Campaign, Malware, Infrastructure, IntrusionSet
 from stix2 import Tool, CourseOfAction
 from typing import Any, Callable
 
+SCOs: dict[str, str] = {
+    "file md5": "file:hashes.md5",
+    "file sha1": "file:hashes.sha1",
+    "file sha256": "file:hashes.sha256",
+    "ssdeep": "file:hashes.ssdeep",
+    "ip": "ipv4-addr:value",
+    "cidr": "ipv4-addr:value",
+    "ipv6": "ipv6-addr:value",
+    "ipv6cidr": "ipv6-addr:value",
+    "url": "url:value",
+    "email": "email-message:sender_ref.value",
+    "username": "user-account:account_login",
+    "domain": "domain-name:value",
+    "hostname": "domain-name:value",
+    "registry key": "windows-registry-key:key]"
+}
+
+SDOs: dict[str, Callable] = {
+    "malware": Malware,
+    "attack pattern": AttackPattern,
+    "campaign": Campaign,
+    "infrastructure": Infrastructure,
+    "tool": Tool,
+    "intrusion set": IntrusionSet,
+    "report": Report,
+    "threat actor": ThreatActor,
+    "cve": Vulnerability,
+    "course of action": CourseOfAction
+}
+
 
 def main():
-    SCOs: dict[str, str] = {
-        "file md5": "[file:hashes.md5 ='{}']",
-        "file sha1": "[file:hashes.sha1 = '{}']",
-        "file sha256": "[file:hashes.sha256 = '{}']",
-        "ssdeep": "[file:hashes.ssdeep = '']",
-        "ip": "[ipv4-addr:value = '{}']",
-        "cidr": "[ipv4-addr:value = '{}']",
-        "ipv6": "[ipv6-addr:value = '{}']",
-        "ipv6cidr": "[ipv6-addr:value = '{}']",
-        "url": "[url:value = '{}']",
-        "email": "[email-message:sender_ref.value = '{}']",
-        "username": "[user-account:account_login = '{}']",
-        "domain": "[domain-name:value = '{}']",
-        "hostname": "[domain-name:value = '{}']",
-        "registry key": "[windows-registry-key:key = '{}']"
-    }
-
-    SDOs: dict[str, Callable] = {
-        "malware": Malware,
-        "attack pattern": AttackPattern,
-        "campaign": Campaign,
-        "infrastructure": Infrastructure,
-        "tool": Tool,
-        "intrusion set": IntrusionSet,
-        "report": Report,
-        "threat actor": ThreatActor,
-        "cve": Vulnerability,
-        "course of action": CourseOfAction
-    }
 
     user_args = demisto.args().get('indicators', 'Unknown')
     doubleBackslash = demisto.args().get('doubleBackslash', True)
@@ -100,6 +101,9 @@ def main():
             indicators.append(indicator)
 
         except KeyError:
+
+            demisto.debug(f"{demisto_indicator_type} isn't an SCO checking other IOC types")
+
             try:
                 indicator_type = demisto_indicator_type.lower()
 
