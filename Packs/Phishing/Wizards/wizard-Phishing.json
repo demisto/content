@@ -244,7 +244,7 @@
           "incident_type": "Phishing"
         },
         {
-          "priority": 2,
+          "priority": 4,
           "name": "EWSO365",
           "action": {
             "existing": "Update your current instance to work with the Phishing incident type: \n1. Enable fetching. \n2. Set the Incident type field to Phishing. \n3. Set the Mapper field to 'EWS v2-mapper'.",
@@ -264,7 +264,7 @@
           "incident_type": "Phishing"
         },
         {
-          "priority": 4,
+          "priority": 2,
           "name": "EWS v2",
           "action": {
             "existing": "Update your current instance to work with the new Phishing incident type: \n1. Enable fetching. \n2. Set the Incident type field to Phishing. \n3. Set the Mapper field to 'EWS v2-mapper'.",
