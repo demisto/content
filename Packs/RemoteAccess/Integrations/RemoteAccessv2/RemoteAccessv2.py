@@ -138,8 +138,9 @@ def find_system(args: Dict[str, Any]):
     systems = investigation.get('systems')
     demisto.debug(f'Available systems are {systems}.')
     if not systems or system not in systems:
-        raise DemistoException(f'System {system} not found on investigation {investigation.get("id")}. '
-                               f'Available systems are {systems}.')
+        demisto.debug(f'System {system} not found on investigation {investigation.get("id")}. '
+                      f'Available systems are {systems}.')
+        return system
 
     demisto.debug(f'investigation.get("systems") is of type {type(systems)}')
     if isinstance(systems, list):
