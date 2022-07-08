@@ -1408,8 +1408,12 @@ def test_get_url_category__multiple_categories_for_url(mocker):
     panorama_get_url_category_command(url_cmd='url', url='test_url', additional_suspicious=[], additional_malicious=[])
 
     # validate
-    assert return_results_mock.call_args[0][0][0].outputs[0].get('Category') == 'shareware-and-freeware'
-    assert return_results_mock.call_args[0][0][0].outputs[1].get('Category') == 'online-storage-and-backup'
+    assert return_results_mock.call_args[0][0][0].outputs[0].get('Category') in ['shareware-and-freeware',
+                                                                                 'online-storage-and-backup',
+                                                                                 'not-resolved']
+    assert return_results_mock.call_args[0][0][0].outputs[1].get('Category') in ['shareware-and-freeware',
+                                                                                 'online-storage-and-backup',
+                                                                                 'not-resolved']
 
 
 class TestDevices:
