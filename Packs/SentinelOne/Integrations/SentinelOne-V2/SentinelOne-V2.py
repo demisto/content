@@ -1,5 +1,6 @@
 import io
 import json
+import time
 import traceback
 import zipfile
 from typing import Callable, List, Optional, Tuple
@@ -705,6 +706,23 @@ class Client(BaseClient):
         }
         response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
+    
+    def download_url_request(self, threat_id):
+        endpoint_url = f'threats/{threat_id}/timeline'
+        query_params = assign_params(
+            skip=0,
+            limit=30,
+            sortOrder="desc",
+        )
+        response = self._http_request(method='GET', url_suffix=endpoint_url, params=query_params)
+        urls_found = []
+        for i in range(30):
+            if response['data'][i]['data'].get('downloadUrl') is not None:
+                urls_found.append(response['data'][i]['data'].get('downloadUrl'))
+        for item in urls_found:
+            if item[:8] == "/agents/":
+                return item
+        return "-1"
 
     def get_alerts_request(self, query_params):
         endpoint_url = 'cloud-detection/alerts'
@@ -1671,6 +1689,7 @@ def fetch_threat_file(client: Client, args: dict) -> CommandResults:
     # Get Arguments
     threat_ids = argToList(args.get('threat_ids'))
     password = args.get('password')
+    time_to_sleep = int(args.get('time_to_sleep',30))
 
     downloaded_files = client.fetch_threat_file_request(password, threat_ids)
 
@@ -1680,13 +1699,20 @@ def fetch_threat_file(client: Client, args: dict) -> CommandResults:
     else:
         downloadable = False
         meta = 'No threats were downloaded'
+    time.sleep(time_to_sleep)
     for threat_id in threat_ids:
+        download_url = ""
+        threat_file_download_endpoint = client.download_url_request(threat_id)
+        if threat_file_download_endpoint != "-1":
+            server = demisto.params().get('url').rstrip('/')
+            download_url = f'{server}/web/api/v2.1{threat_file_download_endpoint}'
         context_entries.append({
             'Downloadable': downloadable,
             'ID': threat_id,
+            'Download URL': download_url,
         })
     return CommandResults(
-        readable_output=tableToMarkdown('Sentinel One - Fetch threat file', context_entries, metadata=meta, removeNull=True),
+        readable_output=tableToMarkdown('Sentinel One - Fetch threat file', context_entries, metadata=meta, removeNull=False),
         outputs_prefix='SentinelOne.Threat',
         outputs_key_field='ID',
         outputs=context_entries,
@@ -1701,11 +1727,9 @@ def get_alerts(client: Client, args: dict) -> CommandResults:
                 'SrcProcSHA1','SrcProcStartTime' ,'SrcProcStorylineId' ,'SrcParentProcName',
                 'AlertCreatedAt','AgentId','AgentUUID','RuleName']
     query_params = assign_params(
-        createdAt__lt=args.get('created_before'),
         ruleName__contains=args.get('ruleName'),
         incidentStatus=args.get('incidentStatus'),
         analystVerdict=args.get('analystVerdict'),
-        createdAt__gt=args.get('created_after'),
         createdAt__lte=args.get('created_until'),
         createdAt__gte=args.get('created_from'),
         ids=argToList(args.get('alert_ids')),

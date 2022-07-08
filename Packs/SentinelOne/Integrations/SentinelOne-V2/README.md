@@ -2441,6 +2441,7 @@ Fetch a file associated with the threat that matches the filter.
 | --- | --- | --- |
 | threat_ids | A comma-separated list of threat IDs. | Required | 
 | password | File encryption password (Aleast 10 characters, three of these uppercase,lowercase,digits and symbols. Maximum length is 256 characters) | Optional | 
+| time_to_sleep | The time to sleep the command to fetch the timeline of particular threat, But it's defaulted to 30 seconds. | Optional |
 
 
 #### Context Output
@@ -2449,6 +2450,7 @@ Fetch a file associated with the threat that matches the filter.
 | --- | --- | --- |
 | SentinelOne.Threat.ID | String | The threat ID. | 
 | SentinelOne.Threat.Downloadable | Boolean | The file is downlable or not | 
+| SentinelOne.Threat.Download URL | String | Download URL for the fetched threat file. |
 
 #### Command Example
 ```!sentinelone-fetch-threat-file threat_ids=106802961889425793 password=Mypassword1!```
@@ -2526,8 +2528,7 @@ Get a list of alerts for a given scope
 | alert_ids | A comma-separated list of alert IDs. | Optional |
 | limit | Limit number of returned items (1-1000). Example: "10". But defaulted to 1000 | Optional |
 | site_ids | List of Site IDs to filter by. Example: "225494730938493804,225494730938493915". | Optional | 
-| created_before | Created at lesser than. Example: "2018-02-27T04:49:26.257525Z". | Optional | 
-| created_after | Created at greater than. Example: "2018-02-27T04:49:26.257525Z". | Optional |
+
 
 #### Context Output
 
