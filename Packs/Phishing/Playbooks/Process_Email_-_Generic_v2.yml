@@ -2240,6 +2240,8 @@ tasks:
                   simple: Email.Attachment.Hash
                 iscontext: true
           accessor: EntryID
+          transformers:
+          - operator: uniq
       incidentID:
         complex:
           root: incident
