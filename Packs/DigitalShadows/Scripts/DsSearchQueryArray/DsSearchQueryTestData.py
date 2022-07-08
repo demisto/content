@@ -87,8 +87,8 @@ TEST_DATA_DOMAIN = {
     },
 }
 TEST_DATA_DOMAIN_EXPECTED = [
-  "GermDetectives.com OR TutorialFriend.com OR LessIsFull.com OR SaveJam.com OR SaveItDay.com OR "
-  "portal-digitalshadows.com.still.valid"
+    "GermDetectives.com OR TutorialFriend.com OR LessIsFull.com OR SaveJam.com OR SaveItDay.com OR "
+    "portal-digitalshadows.com.still.valid"
 ]
 TEST_DATA_DOMAIN_SINGLE = {
     "field": "Domain.Name",
