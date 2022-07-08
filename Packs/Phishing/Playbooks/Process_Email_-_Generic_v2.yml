@@ -2230,7 +2230,7 @@ tasks:
         complex:
           root: File
           filters:
-          - - operator: isEqualString
+          - - operator: inList
               left:
                 value:
                   simple: File.MD5
