@@ -235,8 +235,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -20,
-          "y": 3450
+          "x": 310,
+          "y": 3830
         }
       }
     note: false
@@ -276,8 +276,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -260,
-          "y": 3670
+          "x": 70,
+          "y": 4050
         }
       }
     note: false
@@ -303,8 +303,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -20,
-          "y": 3900
+          "x": 310,
+          "y": 4280
         }
       }
     note: false
@@ -333,8 +333,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -20,
-          "y": 3320
+          "x": 310,
+          "y": 3700
         }
       }
     note: false
@@ -466,6 +466,7 @@ tasks:
     nexttasks:
       '#none#':
       - '11'
+      - '53'
     scriptarguments:
       attachmentcount:
         complex:
@@ -936,7 +937,6 @@ tasks:
       - '29'
       - '30'
       - '31'
-      - '53'
     separatecontext: false
     view: |-
       {
@@ -2133,19 +2133,19 @@ tasks:
     isautoswitchedtoquietmode: false
   '53':
     id: '53'
-    taskid: c47ecfaf-7dd1-4be0-8842-37d5ff4ff430
+    taskid: ebe9bbd6-f485-4ee8-8081-90994078cf15
     type: condition
     task:
-      description: ''
-      id: c47ecfaf-7dd1-4be0-8842-37d5ff4ff430
+      id: ebe9bbd6-f485-4ee8-8081-90994078cf15
       version: -1
-      name: Was the reported email attached?
+      name: Check whether to add attachments
       type: condition
       iscommand: false
       brand: ''
+      description: ''
     nexttasks:
       '#default#':
-      - '19'
+      - '11'
       yes:
       - '54'
     separatecontext: false
@@ -2195,11 +2195,18 @@ tasks:
           right:
             value:
               simple: active
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Email
+                accessor: AttachmentNames
+            iscontext: true
     view: |-
       {
         "position": {
-          "x": 3360,
-          "y": 2800
+          "x": 920,
+          "y": 3330
         }
       }
     note: false
@@ -2211,10 +2218,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '54':
     id: '54'
-    taskid: d3e4ef95-744f-4b03-85f6-b1a18a415f75
+    taskid: 90e0d050-3532-4e37-83d2-5de6675aa0a5
     type: regular
     task:
-      id: d3e4ef95-744f-4b03-85f6-b1a18a415f75
+      id: 90e0d050-3532-4e37-83d2-5de6675aa0a5
       version: -1
       name: Set incident attachments
       description: Copies a file from this incident to the specified incident. The file is recorded as an entry in the specified incident’s War Room.
@@ -2224,13 +2231,13 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '19'
+      - '11'
     scriptarguments:
       entryID:
         complex:
           root: File
           filters:
-          - - operator: isEqualString
+          - - operator: inList
               left:
                 value:
                   simple: File.MD5
@@ -2240,6 +2247,8 @@ tasks:
                   simple: Email.Attachment.Hash
                 iscontext: true
           accessor: EntryID
+          transformers:
+          - operator: uniq
       incidentID:
         complex:
           root: incident
@@ -2250,8 +2259,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3360,
-          "y": 2980
+          "x": 920,
+          "y": 3505
         }
       }
     note: false
@@ -2270,12 +2279,13 @@ view: |-
       "41_3_#default#": 0.35,
       "41_42_yes": 0.5,
       "4_5_yes": 0.57,
-      "53_19_#default#": 0.1
+      "53_11_#default#": 0.31,
+      "53_54_yes": 0.64
     },
     "paper": {
       "dimensions": {
-        "height": 4475,
-        "width": 4210,
+        "height": 4855,
+        "width": 3800,
         "x": -470,
         "y": -510
       }
