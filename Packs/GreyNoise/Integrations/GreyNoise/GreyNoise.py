@@ -378,7 +378,7 @@ def ip_quick_check_command(client: Client, args: Dict[str, Any]) -> CommandResul
 
 @exception_handler
 @logger
-def ip_reputation_command(client: Client, args: dict, reliability) -> List[CommandResults]:
+def ip_reputation_command(client: Client, args: dict, reliability: str) -> List[CommandResults]:
     """Get information about a given IP address. Returns classification (benign, malicious or unknown),
         IP metadata (network owner, ASN, reverse DNS pointer, country), associated actors, activity tags,
         and raw port scan and web request information.
