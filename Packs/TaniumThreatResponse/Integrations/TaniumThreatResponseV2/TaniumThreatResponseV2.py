@@ -1,18 +1,18 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import ast
+import copy
+import json
+import os
+import traceback
+import urllib.parse
+from typing import Any, List, Tuple
+
+import demistomock as demisto  # noqa: F401
+import urllib3
+from CommonServerPython import *  # noqa: F401
+from dateutil.parser import parse
+from lxml import etree
 
 ''' IMPORTS '''
-import traceback
-import os
-import ast
-import json
-import urllib3
-import urllib.parse
-from dateutil.parser import parse
-from typing import Any, Tuple, List
-from lxml import etree
-import copy
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -381,6 +381,13 @@ def alarm_to_incident(client, alarm):
     if intel_doc_id := alarm.get('intelDocId', ''):
         raw_response = client.do_request('GET', f'/plugin/products/detect3/api/v1/intels/{intel_doc_id}')
         intel_doc = raw_response.get('name')
+        alarm['intelDocDetails'] = raw_response
+        intel_doc_labels = []
+        intel_doc_labels_resp = client.do_request('GET', f'/plugin/products/detect3/api/v1/intels'
+                                                         f'/{intel_doc_id}/labels')
+        for label in intel_doc_labels_resp:
+            intel_doc_labels.append(label['name'])
+        alarm['labels'] = intel_doc_labels
 
     return {
         'name': f'{host} found {intel_doc}',
@@ -401,6 +408,10 @@ def state_params_suffix(alerts_states_to_retrieve):
     return '&'.join(['state=' + state.lower() for state in alerts_states_to_retrieve])
 
 
+def label_filter_suffix(label_names_to_retrieve: list):
+    return '&' + '&'.join(['labelName=' + urllib.parse.quote(label_name) for label_name in label_names_to_retrieve])
+
+
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 ''' GENERAL COMMANDS FUNCTIONS '''
 
@@ -413,7 +424,7 @@ def test_module(client, data_args):
         raise ValueError(f'Please check your credentials and try again. Error is:\n{str(e)}')
 
 
-def fetch_incidents(client, alerts_states_to_retrieve, last_run, fetch_time, max_fetch):
+def fetch_incidents(client, alerts_states_to_retrieve, label_names_to_retrieve, last_run, fetch_time, max_fetch):
     """
     Fetch events from this integration and return them as Demisto incidents
 
@@ -424,6 +435,7 @@ def fetch_incidents(client, alerts_states_to_retrieve, last_run, fetch_time, max
     last_fetch = last_run.get('time')
     last_id = int(last_run.get('id', '0'))
     alerts_states = argToList(alerts_states_to_retrieve)
+    label_names = label_names_to_retrieve.split(',')
     offset = 0
 
     # Handle first time fetch, fetch incidents retroactively
@@ -435,12 +447,13 @@ def fetch_incidents(client, alerts_states_to_retrieve, last_run, fetch_time, max
     last_fetch = parse(last_fetch)
 
     alerts_states_suffix = state_params_suffix(alerts_states)
+    label_names_suffix = label_filter_suffix(label_names)
     incidents = []
 
     while True:
         demisto.debug(f'Sending new alerts api request with offset: {offset}.')
         url_suffix = '/plugin/products/detect3/api/v1/alerts?' + alerts_states_suffix + \
-                     f'&sort=-createdAt&limit=500&offset={offset}'
+                     f'&sort=-createdAt&limit=500&offset={offset}' + label_names_suffix
 
         raw_response = client.do_request('GET', url_suffix)
         if not raw_response:
@@ -2078,10 +2091,12 @@ def main():
             # demisto.getLastRun() will returns an obj with the previous run in it.
             last_run = demisto.getLastRun()
             alerts_states_to_retrieve = demisto.params().get('filter_alerts_by_state')
+            filter_label_names = demisto.params().get('filter_by_label_name')
             first_fetch = demisto.params().get('first_fetch')
             max_fetch = int(demisto.params().get('max_fetch', '50'))
 
-            incidents, next_run = fetch_incidents(client, alerts_states_to_retrieve, last_run, first_fetch, max_fetch)
+            incidents, next_run = fetch_incidents(client, alerts_states_to_retrieve,
+                                                  filter_label_names, last_run, first_fetch, max_fetch)
 
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
