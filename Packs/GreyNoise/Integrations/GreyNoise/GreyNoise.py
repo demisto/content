@@ -995,7 +995,7 @@ def main() -> None:
             return_results(result)
 
         elif demisto.command() == "greynoise-ip-quick-check":
-            result = ip_quick_check_command(client, demisto.args(), reliability)
+            result = ip_quick_check_command(client, demisto.args())
             return_results(result)
 
         elif demisto.command() == "ip":
