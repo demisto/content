@@ -4,6 +4,7 @@
 # STD packages
 import hashlib
 import hmac
+import json
 from enum import Enum
 from typing import Dict, Tuple, Any, Optional, List, Union, Iterator
 from itertools import islice
@@ -160,9 +161,9 @@ def module_test_command(client: Client) -> COMMAND_OUTPUT:
         dict: Operation entry context - Empty.
         dict: Operation raw response - Empty.
     """
-    url = '/api/v3/indicators?resultLimit=4'
-
+    url = '/api/v3/groups?resultLimit=4'
     response, status_code = client.make_request(Method.GET, url)
+    t = json.dumps(response.get('data'))
     if status_code == 200:
         return "ok", {}, {}
     else:
@@ -306,7 +307,6 @@ def main():
             readable_output, outputs, raw_response = commands[command](client)
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
-        raise e
         return_error(f'Integration {INTEGRATION_NAME} Failed to execute {command} command. Error: {str(e)}')
 
 
