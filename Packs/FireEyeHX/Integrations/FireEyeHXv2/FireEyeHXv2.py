@@ -2049,14 +2049,14 @@ HOST SETS
 
 
 def delete_host_set_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    host_set_id = args.get('HostSetId')
+    host_set_id = args.get('host_set_id')
 
     if not host_set_id:
         raise ValueError('Host Set ID is required')
-    message = ''
+
     try:
         client.delete_host_set_request(host_set_id)
-        message = 'Success'
+        message = f'Host set {host_set_id} was deleted successfully'
     except Exception as e:
         if '404' in str(e):
             message = f'Host Set ID - {host_set_id} Not Found'
@@ -2065,9 +2065,10 @@ def delete_host_set_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
     return CommandResults(readable_output=message)
 
+
 def create_static_host_set_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    host_set_name = args.get('name')
-    hosts_ids = argToList(args.get('hosts_id'))
+    host_set_name = args.get('host_set_name')
+    hosts_ids = argToList(args.get('hosts_ids'))
 
     if not hosts_ids:
         raise ValueError('Please provide at least one Host ID.')
@@ -2091,9 +2092,10 @@ def create_static_host_set_command(client: Client, args: Dict[str, Any]) -> Comm
         readable_output=message
     )
 
+
 def update_static_host_set_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    host_set_id = args.get('id')
-    host_set_name = args.get('name')
+    host_set_id = args.get('host_set_id')
+    host_set_name = args.get('host_set_name')
     add_host_ids = argToList(args.get('add_host_ids'))
     remove_host_ids = argToList(args.get('remove_host_ids'))
 
@@ -2120,8 +2122,9 @@ def update_static_host_set_command(client: Client, args: Dict[str, Any]) -> Comm
         readable_output=message
     )
 
+
 def create_dynamic_host_set_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    host_set_name = args.get('name')
+    host_set_name = args.get('host_set_name')
     query = args.get('query')
     query_key = args.get('query_key')
     query_value = args.get('query_value')
@@ -2152,8 +2155,9 @@ def create_dynamic_host_set_command(client: Client, args: Dict[str, Any]) -> Com
         readable_output=message
     )
 
+
 def update_dynamic_host_set_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    host_set_name = args.get('name')
+    host_set_name = args.get('host_set_name')
     query = args.get('query')
     query_key = args.get('query_key')
     query_value = args.get('query_value')
@@ -2185,6 +2189,8 @@ def update_dynamic_host_set_command(client: Client, args: Dict[str, Any]) -> Com
         outputs=data,
         readable_output=message
     )
+
+
 """
 ACQUISITION
 """

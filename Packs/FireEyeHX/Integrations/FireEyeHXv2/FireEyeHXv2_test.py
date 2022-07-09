@@ -1664,3 +1664,72 @@ def test_list_indicator_categories_command(mocker, requests_mock, file_name: str
     assert command_result.to_context() == expected_context
     assert request.called_once
     assert request.last_request._url_parts.query == 'limit=49&search=foo'
+
+def test_delete_host_set_command(mocker):
+    from FireEyeHXv2 import delete_host_set_command, Client
+    base_url = 'https://example.com'
+    args = {'host_set_id': 'host_set_id'}
+
+    mocker.patch.object(Client, 'get_token_request', return_value='')
+    mocker.patch.object(Client, 'delete_host_set_request', return_value='')  
+
+    client = Client(base_url)
+    command_result = delete_host_set_command(client, args)
+    assert command_result.readable_output == 'Host set host_set_id was deleted successfully'
+
+def test_create_static_host_set_command(mocker):
+    from FireEyeHXv2 import create_static_host_set_command, Client
+    base_url = 'https://example.com'
+    args = {'host_set_name': 'host_set_name',
+            'hosts_id': 'hosts_id'}
+
+    mocker.patch.object(Client, 'get_token_request', return_value='')
+    mocker.patch.object(Client, 'create_static_host_set_request', return_value={'data': 'data'})  
+
+    client = Client(base_url)
+    command_result = create_static_host_set_command(client, args)
+    assert command_result.readable_output == 'Static Host Set host_set_name was created successfully, with ids hosts_ids'
+
+
+def test_create_dynamic_host_set_command(mocker):
+    from FireEyeHXv2 import create_dynamic_host_set_command, Client
+    base_url = 'https://example.com'
+    args = {'host_set_name': 'host_set_name',
+            'query': 'query'}
+
+    mocker.patch.object(Client, 'get_token_request', return_value='')
+    mocker.patch.object(Client, 'create_dynamic_host_set_request', return_value={'data': 'data'})  
+
+    client = Client(base_url)
+    command_result = create_dynamic_host_set_command(client, args)
+    assert command_result.readable_output == 'Dynamic Host Set host_set_name was created successfully.'
+
+def test_update_static_host_set_command(mocker):
+    from FireEyeHXv2 import update_static_host_set_command, Client
+    base_url = 'https://example.com'
+    args = {
+        'host_set_id': 'host_set_id',
+        'host_set_name': 'host_set_name',
+        'add_host_ids': 'add_host_ids',
+        'remove_host_ids': 'remove_host_ids'
+    }
+
+    mocker.patch.object(Client, 'get_token_request', return_value='')
+    mocker.patch.object(Client, 'update_static_host_set_request', return_value={'data': 'data'})  
+
+    client = Client(base_url)
+    command_result = update_static_host_set_command(client, args)
+    assert command_result.readable_output == 'Static Host Set host_set_name was updated successfully.'
+
+def test_update_dynamic_host_set_command(mocker):
+    from FireEyeHXv2 import update_dynamic_host_set_command, Client
+    base_url = 'https://example.com'
+    args = {'host_set_name': 'host_set_name',
+            'query': 'query'}
+
+    mocker.patch.object(Client, 'get_token_request', return_value='')
+    mocker.patch.object(Client, 'update_dynamic_host_set_request', return_value={'data': 'data'})  
+
+    client = Client(base_url)
+    command_result = update_dynamic_host_set_command(client, args)
+    assert command_result.readable_output == 'Dynamic Host Set host_set_name was updated successfully.'
