@@ -769,7 +769,7 @@ def stats_command(client: Client, args: dict) -> Any:
 
 @exception_handler
 @logger
-def riot_command(client: Client, args: Dict, reliability) -> CommandResults:
+def riot_command(client: Client, args: Dict, reliability: str) -> CommandResults:
     """
     Returns information about IP whether it is harmful or not. RIOT (Rule It Out) means to inform the analyst about
     the harmfulness of the IP. For the harmless IP, the value of Riot is "True" which in turn returns DNS and other
