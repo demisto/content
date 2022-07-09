@@ -422,6 +422,7 @@ def fetch_incidents(service, mapper):
             # in the last run object to avoid entering this case
             fetch_incidents_for_mapping(integration_context)
         else:
+            demisto.debug("SplunkPy-Debug-session - run_enrichment_mechanism\n")
             run_enrichment_mechanism(service, integration_context, mapper)
     else:
         fetch_notables(service=service, enrich_notables=False, mapper=mapper)
@@ -576,8 +577,10 @@ class Notable:
     def to_incident(self, mapper):
         """ Gathers all data from all notable's enrichments and return an incident """
         self.incident_created = True
-
+        demisto.debug("\nSplunkPy-Debug-session  - to_incident {}\n".format(self.id))
         for e in self.enrichments:
+            demisto.debug(e)
+            demisto.debug("\n")
             self.data[e.type] = e.data
             self.data[ENRICHMENT_TYPE_TO_ENRICHMENT_STATUS[e.type]] = e.status == Enrichment.SUCCESSFUL
 
@@ -952,8 +955,10 @@ def identity_enrichment(service, notable_data, num_enrichment_events):
         demisto.debug("Identity query for notable {}: {}".format(notable_data[EVENT_ID], query))
         try:
             job = service.jobs.create(query, **kwargs)
+            demisto.debug(job)
+            demisto.debug('\n')
         except Exception as e:
-            demisto.error("Caught an exception in drilldown_enrichment function: {}".format(str(e)))
+            demisto.error("Caught an exception in identity_enrichment function: {}".format(str(e)))
     else:
         demisto.debug('No users were found in notable. {}'.format(error_msg))
 
@@ -1006,10 +1011,15 @@ def handle_submitted_notables(service, incidents, cache_object, mapper):
     enrichment_timeout = arg_to_number(str(demisto.params().get('enrichment_timeout', '5')))
     notables = cache_object.submitted_notables
     total = len(notables)
+    demisto.debug("SplunkPy-Debug-session - handle_submitted_notables - timeout: {} - total: {}\n".format(enrichment_timeout, total))
     demisto.debug("Trying to handle {}/{} open enrichments".format(len(notables[:MAX_HANDLE_NOTABLES]), total))
 
     for notable in notables[:MAX_HANDLE_NOTABLES]:
+        demisto.debug("\nSplunkPy-Debug-session  - ###############################\n")
+        demisto.debug(notable)
+        demisto.debug("\nSplunkPy-Debug-session  - ###############################\n")
         task_status = handle_submitted_notable(service, notable, enrichment_timeout)
+        demisto.debug("SplunkPy-Debug-session - task_status {}".format(task_status))
         if task_status:
             incidents.append(notable.to_incident(mapper))
             handled_notables.append(notable)
@@ -1033,16 +1043,24 @@ def handle_submitted_notable(service, notable, enrichment_timeout):
 
     """
     task_status = False
+    demisto.debug("SplunkPy-Debug-session - handle_submitted_notables {}\n".format(notable.id))
 
     if not notable.is_enrichment_process_exceeding_timeout(enrichment_timeout):
         demisto.debug("Trying to handle open enrichment {}".format(notable.id))
+
         for enrichment in notable.enrichments:
+            demisto.debug("SplunkPy-Debug-session - {} {}\n".format(enrichment.type,enrichment.status))
+
             if enrichment.status == Enrichment.IN_PROGRESS:
                 try:
                     job = client.Job(service=service, sid=enrichment.id)
+                    demisto.debug(job)
+                    demisto.debug('\n')
                     if job.is_ready():
                         demisto.debug('Handling open {} enrichment for notable {}'.format(enrichment.type, notable.id))
                         for item in results.ResultsReader(job.results()):
+                            demisto.debug(item)
+                            demisto.debug('\n')
                             enrichment.data.append(item)
                         enrichment.status = Enrichment.SUCCESSFUL
                 except Exception as e:
@@ -1076,6 +1094,8 @@ def submit_notables(service, incidents, cache_object, mapper):
     failed_notables, submitted_notables = [], []
     num_enrichment_events = arg_to_number(str(demisto.params().get('num_enrichment_events', '20')))
     notables = cache_object.not_yet_submitted_notables
+    demisto.debug("SplunkPy-Debug-session - submit_notables")
+
     total = len(notables)
     if notables:
         demisto.debug('Enriching {}/{} fetched notables'.format(len(notables[:MAX_SUBMIT_NOTABLES]), total))
@@ -1151,6 +1171,7 @@ def run_enrichment_mechanism(service, integration_context, mapper):
         if cache_object.done_submitting() and cache_object.done_handling():
             fetch_notables(service=service, cache_object=cache_object, enrich_notables=True, mapper=mapper)
         submit_notables(service, incidents, cache_object, mapper)
+        demisto.debug("SplunkPy-Debug-session - run_enrichment_mechanism success\n")
 
     except Exception as e:
         err = 'Caught an exception while executing the enriching fetch mechanism. Additional Info: {}'.format(str(e))
@@ -1158,6 +1179,8 @@ def run_enrichment_mechanism(service, integration_context, mapper):
         raise e
 
     finally:
+        demisto.debug("SplunkPy-Debug-session - run_enrichment_mechanism finally\n")
+
         store_incidents_for_mapping(incidents, integration_context)
         handled_but_not_created_incidents = cache_object.organize()
         cache_object.dump_to_integration_context(integration_context)
