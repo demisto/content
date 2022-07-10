@@ -1299,12 +1299,14 @@ def add_file_object(demisto_args: dict):
     obj = FileObject(file_path)
     return add_object(event_id, obj)
 
+
 def add_email_object(demisto_args: dict):
     entry_id = demisto_args.get('entry_id')
     event_id = demisto_args.get('event_id')
     email_path = demisto.getFilePath(entry_id).get('path')
     obj = EMailObject(email_path)
     return add_object(event_id, obj)
+
 
 def add_domain_object(demisto_args: dict):
     """Adds a domain object to MISP
