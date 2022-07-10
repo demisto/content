@@ -465,4 +465,3 @@ def test_gdetect_get_threats_command_no_threats(mocker):
     assert 'link' in results.outputs
     assert 'uuid' in results.outputs
     assert 'No threats' in results.readable_output
-    
