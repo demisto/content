@@ -1,4 +1,4 @@
-[file: README.md]
+[file:README.md]
 ignore=RM100,RM113
 
 [file:AnsibleLinux.yml]
