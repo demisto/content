@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-def prepare_arg_dict(ids_arg_name, ids, additional_arg_names, additional_arg_values, using_instance):
+def prepare_arg_dict(ids_arg_name, ids, additional_arg_names, additional_arg_values, using_instance=''):
     if not isinstance(ids, list):
         ids = [ids]
     for i, val in enumerate(ids):
@@ -35,7 +35,7 @@ def main(args):
         additional_polling_command_arg_values = args.get('additionalPollingCommandArgValues').encode('utf-8') if type(
             args.get('additionalPollingCommandArgValues')) != int else args.get('additionalPollingCommandArgValues')
 
-        using = args.get('using')
+        using = args.get('using', '')
         using_instance = using.encode('utf-8') if type(using) != int and using else using
 
         args = prepare_arg_dict(args.get('pollingCommandArgName'),
