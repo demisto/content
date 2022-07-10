@@ -72,7 +72,7 @@ def remove_identity_key(source):
 
     dict_keys = list(source.keys())
     if len(dict_keys) != 1:
-        demisto.log("Got more then one identity creator. Exit function")
+        demisto.debug("Got more then one identity creator. Exit function")
         return source
 
     identity_key = dict_keys[0]
@@ -114,16 +114,15 @@ class MsGraphClient:
             base_url=base_url, verify=verify, proxy=proxy, self_deployed=self_deployed, ok_codes=ok_codes,
             certificate_thumbprint=certificate_thumbprint, private_key=private_key)
 
-    def list_sharepoint_sites(self):
+    def list_sharepoint_sites(self, keyword):
         """
-        This function returns a list of the tenant sites
+        This function lists the tenant sites
         :return: graph api raw response
         """
-        query_string = {"search": "*"}
         return self.ms_client.http_request(
             method="GET",
             url_suffix="sites",
-            params=query_string,
+            params={"search": keyword},
         )
 
     def list_drives_in_site(self, site_id=None, limit=None, next_page_url=None):
@@ -397,13 +396,16 @@ def list_share_point_sites_human_readable_object(parsed_drive_items):
     return human_readable_content_obj
 
 
-def list_sharepoint_sites_command(client: MsGraphClient, *_):
+def list_sharepoint_sites_command(client: MsGraphClient, args):
     """
     This function runs list tenant site command
     :return: human_readable, context, result
     """
-    result = client.list_sharepoint_sites()
-
+    if args.get('keyword'):
+        keyword = args.get('keyword')
+    else:
+        keyword = '*'
+    result = client.list_sharepoint_sites(keyword)
     parsed_sites_items = [parse_key_to_context(item) for item in result["value"]]
 
     human_readable_content = [
