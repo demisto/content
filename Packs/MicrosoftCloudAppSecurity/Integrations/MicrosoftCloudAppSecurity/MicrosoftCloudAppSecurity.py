@@ -636,6 +636,12 @@ def fetch_incidents(client: Client, max_results: Optional[str], last_run: dict, 
     if not first_fetch:
         first_fetch = '3 days'
     max_results = int(max_results) if max_results else DEFAULT_INCIDENT_TO_FETCH
+
+    if not last_run.get("time") and last_run.get("last_fetch"):
+        demisto.debug(f"last fetch from old version is: {str(last_run.get('last_fetch'))}")
+        last_fetch_time = datetime.fromtimestamp(last_run.get("last_fetch") / 1000.0).isoformat()
+        last_run.update({"time": last_fetch_time})
+
     fetch_start_time, fetch_end_time = get_fetch_run_time_range(last_run=last_run, first_fetch=first_fetch,
                                                                 look_back=look_back)
 
