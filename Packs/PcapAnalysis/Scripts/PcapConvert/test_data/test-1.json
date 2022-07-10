@@ -1,0 +1,81 @@
+[{
+    "value": "AQABpgAAAdAQw7A19hUX7WItz0QAAAAAAA4AIgFwAaYAFAIAOPheywbPAAwpprhVCABFAAGYu8BAAIAGgLbAqAoIPRW1I8e6AFArFRPBi8D1olAYBAJWTwAAR0VUIC9lbWRsL2QvZG9kL3BoL3Byb2Q1L21zZG93bmxvYWQvdXBkYXRlL3NvZnR3YXJlL2RlZnUvMjAyMi8wMy8xMDI0L2FtX2RlbHRhX3BhdGNoXzEuMzU5LjE4NjYuMF82YWUzZjNjYzY3M2U3NWI0ZTgwNGZmNDZmNzczNzI3N2YzOTQwNTQ3LmV4ZS5qc29uIEhUVFAvMS4xDQpDb25uZWN0aW9uOiBLZWVwLUFsaXZlDQpBY2NlcHQ6ICovKg0KQWNjZXB0LUVuY29kaW5nOiBnemlwLCBkZWZsYXRlDQpVc2VyLUFnZW50OiBNaWNyb3NvZnQtRGVsaXZlcnktT3B0aW1pemF0aW9uLzEwLjANCk1TLUNWOiBIcmg4OXc3dnowcS9zd282LjIuMC4wLjIuMi4zLjEuMQ0KQ29udGVudC1MZW5ndGg6IDANCkhvc3Q6IGVtZGwud3MubWljcm9zb2Z0LmNvbQ0KDQrwoTAOBgM=",
+    "path": "",
+    "pcap_type": "auto",
+    "error_action": "",
+    "result": "obLD1AACAAQAAAAAAAAAAAAA//8AAAABYi3PRAAAAAAAAAGmAAABpjj4XssGzwAMKaa4VQgARQABmLvAQACABoC2wKgKCD0VtSPHugBQKxUTwYvA9aJQGAQCVk8AAEdFVCAvZW1kbC9kL2RvZC9waC9wcm9kNS9tc2Rvd25sb2FkL3VwZGF0ZS9zb2Z0d2FyZS9kZWZ1LzIwMjIvMDMvMTAyNC9hbV9kZWx0YV9wYXRjaF8xLjM1OS4xODY2LjBfNmFlM2YzY2M2NzNlNzViNGU4MDRmZjQ2Zjc3MzcyNzdmMzk0MDU0Ny5leGUuanNvbiBIVFRQLzEuMQ0KQ29ubmVjdGlvbjogS2VlcC1BbGl2ZQ0KQWNjZXB0OiAqLyoNCkFjY2VwdC1FbmNvZGluZzogZ3ppcCwgZGVmbGF0ZQ0KVXNlci1BZ2VudDogTWljcm9zb2Z0LURlbGl2ZXJ5LU9wdGltaXphdGlvbi8xMC4wDQpNUy1DVjogSHJoODl3N3Z6MHEvc3dvNi4yLjAuMC4yLjIuMy4xLjENCkNvbnRlbnQtTGVuZ3RoOiAwDQpIb3N0OiBlbWRsLndzLm1pY3Jvc29mdC5jb20NCg0K"
+}, {
+    "value": {
+        "_id": "5cc8e4c4-619f-4c2b-a8ed-8d85f253ec49",
+        "_insert_time": "2022-03-21T04:33:16.000Z",
+        "_product": "NGFW",
+        "_tag": [],
+        "_time": "2022-03-21T04:32:52.000Z",
+        "_vendor": "PANW",
+        "dest_ip": "8.8.8.8",
+        "pcap": "AQAAUwAAAIAQxGQh8AGxEGI3//QAAAAAAA4AIgApAFMACAUAOPheywbPAAwpprhVCABFAABFP80AAIARIBvAqAoICAgICP/8ADUAMWD/wagBAAABAAAAAAAACWtlZXBhbGl2ZQlzb2Z0ZXRoZXIDb3JnAAABAAEwXHxkXH0YyAk=",
+        "source_ip": "192.168.10.8"
+    },
+    "path": "pcap",
+    "pcap_type": "auto",
+    "error_action": "",
+    "result": {
+        "_id": "5cc8e4c4-619f-4c2b-a8ed-8d85f253ec49",
+        "_insert_time": "2022-03-21T04:33:16.000Z",
+        "_product": "NGFW",
+        "_tag": [],
+        "_time": "2022-03-21T04:32:52.000Z",
+        "_vendor": "PANW",
+        "dest_ip": "8.8.8.8",
+        "pcap": "obLD1AACAAQAAAAAAAAAAAAA//8AAAABYjf/9AAAAAAAAABTAAAAUzj4XssGzwAMKaa4VQgARQAART/NAACAESAbwKgKCAgICAj//AA1ADFg/8GoAQAAAQAAAAAAAAlrZWVwYWxpdmUJc29mdGV0aGVyA29yZwAAAQAB",
+        "source_ip": "192.168.10.8"
+    }
+}, {
+    "value": {
+        "_id": "5cc8e4c4-619f-4c2b-a8ed-8d85f253ec49",
+        "_insert_time": "2022-03-21T04:33:16.000Z",
+        "_product": "NGFW",
+        "_tag": [],
+        "_time": "2022-03-21T04:32:52.000Z",
+        "_vendor": "PANW",
+        "dest_ip": "8.8.8.8",
+        "pcap": "AQAAUwAAAIAQxGQh8AGxEGI3//QAAAAAAA4AIgApAFMACAUAOPheywbPAAwpprhVCABFAABFP80AAIARIBvAqAoICAgICP/8ADUAMWD/wagBAAABAAAAAAAACWtlZXBhbGl2ZQlzb2Z0ZXRoZXIDb3JnAAABAAEwXHxkXH0YyAk=",
+        "source_ip": "192.168.10.8"
+    },
+    "path": "pcap,pcap-new",
+    "pcap_type": "auto",
+    "error_action": "",
+    "result": {
+        "_id": "5cc8e4c4-619f-4c2b-a8ed-8d85f253ec49",
+        "_insert_time": "2022-03-21T04:33:16.000Z",
+        "_product": "NGFW",
+        "_tag": [],
+        "_time": "2022-03-21T04:32:52.000Z",
+        "_vendor": "PANW",
+        "dest_ip": "8.8.8.8",
+        "pcap": "AQAAUwAAAIAQxGQh8AGxEGI3//QAAAAAAA4AIgApAFMACAUAOPheywbPAAwpprhVCABFAABFP80AAIARIBvAqAoICAgICP/8ADUAMWD/wagBAAABAAAAAAAACWtlZXBhbGl2ZQlzb2Z0ZXRoZXIDb3JnAAABAAEwXHxkXH0YyAk=",
+        "source_ip": "192.168.10.8",
+        "pcap-new": "obLD1AACAAQAAAAAAAAAAAAA//8AAAABYjf/9AAAAAAAAABTAAAAUzj4XssGzwAMKaa4VQgARQAART/NAACAESAbwKgKCAgICAj//AA1ADFg/8GoAQAAAQAAAAAAAAlrZWVwYWxpdmUJc29mdGV0aGVyA29yZwAAAQAB"
+    }
+}, {
+    "value": {
+        "pcap": "0123456789ACBDEF"
+    },
+    "path": "pcap",
+    "pcap_type": "",
+    "error_action": "ignore",
+    "result": {
+        "pcap": []
+    }
+}, {
+    "value": {
+        "pcap": "0123456789ACBDEF"
+    },
+    "path": "pcap",
+    "pcap_type": "",
+    "error_action": "keep",
+    "result": {
+        "pcap": "0123456789ACBDEF"
+    }
+}
+]

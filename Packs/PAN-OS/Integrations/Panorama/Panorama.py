@@ -116,7 +116,7 @@ class InvalidUrlLengthException(Exception):
 
 
 def http_request(uri: str, method: str, headers: dict = {},
-                 body: dict = {}, params: dict = {}, files: dict = None, is_pcap: bool = False) -> Any:
+                 body: dict = {}, params: dict = {}, files: dict = None, is_pcap: bool = False, is_xml: bool = False) -> Any:
     """
     Makes an API call with the given arguments
     """
@@ -137,6 +137,8 @@ def http_request(uri: str, method: str, headers: dict = {},
     # if pcap download
     if is_pcap:
         return result
+    if is_xml:
+        return result.text
 
     json_result = json.loads(xml2json(result.text))
 
@@ -3510,9 +3512,9 @@ def panorama_get_pcap_command(args: dict):
     serial_number = args.get('serialNumber')
     if VSYS and serial_number:
         raise Exception('The serialNumber argument can only be used in a Panorama instance configuration')
-    elif DEVICE_GROUP and not serial_number:
+    elif DEVICE_GROUP and not serial_number and pcap_type != 'threat-pcap':
         raise Exception('PCAP listing is only supported on Panorama with the serialNumber argument.')
-    elif serial_number:
+    elif serial_number and pcap_type != 'threat-pcap':
         params['target'] = serial_number
 
     file_name = None
@@ -10886,6 +10888,43 @@ def dataclasses_to_command_results(
     return command_result
 
 
+def pan_os_get_running_config(args: dict):
+    """
+    Get running config file
+    """
+
+    params = {
+        'type': 'op',
+        'key': API_KEY,
+        'cmd': '<show><config><running></running></config></show>'
+    }
+
+    if args.get("target"):
+        params["target"] = args.get("target")
+
+    result = http_request(URL, 'POST', params=params, is_xml=True)
+    return fileResult("running_config", result)
+
+
+def pan_os_get_merged_config(args: dict):
+    """
+    Get merged config file
+    """
+
+    params = {
+        'type': 'op',
+        'key': API_KEY,
+        'cmd': '<show><config><merged></merged></config></show>'
+    }
+
+    if args.get("target"):
+        params["target"] = args.get("target")
+
+    result = http_request(URL, 'POST', params=params, is_xml=True)
+
+    return fileResult("merged_config", result)
+
+
 def main():
     try:
         args = demisto.args()
@@ -11516,6 +11555,10 @@ def main():
             topology = get_topology()
             # This just returns a fileResult object directly.
             return_results(get_device_state(topology, **demisto.args()))
+        elif command == 'pan-os-get-merged-config':
+            return_results(pan_os_get_merged_config(args))
+        elif command == 'pan-os-get-running-config':
+            return_results(pan_os_get_running_config(args))
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
     except Exception as err:
