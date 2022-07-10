@@ -502,4 +502,4 @@ outputs:
     type: Unknown
 tests:
   - No tests (auto formatted)
-fromversion: 6.6.0
+fromversion: 6.0.0
