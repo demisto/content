@@ -1,6 +1,3 @@
-import email.utils
-from time import mktime
-
 import feedparser
 
 from CommonServerPython import *
@@ -31,7 +28,8 @@ class Client(BaseClient):
         self.read_timeout = read_timeout
 
     def request_feed_url(self):
-        return self._http_request(method='GET', resp_type='response', timeout=self.read_timeout, full_url=self._base_url)
+        return self._http_request(method='GET', resp_type='response', timeout=self.read_timeout,
+                                  full_url=self._base_url)
 
     def parse_feed_data(self, feed_response):
         try:
@@ -51,7 +49,7 @@ class Client(BaseClient):
                 published = dateparser.parse(indicator.published)
                 if not published:
                     continue
-                published_iso = published.isoformat()
+                published_iso = published.strftime('%Y-%m-%dT%H:%M:%S')
                 publications.append({
                     'timestamp': indicator.get('published'),
                     'link': indicator.get('link'),
