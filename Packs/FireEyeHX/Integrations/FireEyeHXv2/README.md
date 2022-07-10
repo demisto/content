@@ -2196,30 +2196,29 @@ Create a new indicator.
 >| YYYXXXYYY |
 
 
-### fireeye-hx-delete-host-set-policy
+### fireeye-hx-delete-host-set
 ***
-Deletes a Host Set policy.
+Deletes a host set.
 
 
 #### Base Command
 
-`fireeye-hx-delete-host-set-policy`
+`fireeye-hx-delete-host-set`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hostSetId | The host set ID. | Required | 
-| policyId | The policy ID. | Required | 
+| host_set_id | The host set id. | Required | 
 
 
 #### Context Output
 
 There is no context output for this command.
 #### Command example
-```!fireeye-hx-delete-host-set-policy hostSetId=1005 policyId=YYYXXXYYY```
+```!fireeye-hx-delete-host-set host_set_id=1036```
 #### Human Readable Output
 
->Success
+>Host Set ID - 1036 Not Found
 
 ### fireeye-hx-delete-data-acquisition
 ***
@@ -2397,3 +2396,131 @@ There is no context output for this command.
 
 >Successfully deleted indicator 7f49e4c6-14d5-4b06-8d17-843fd17f79de from the Custom category
 
+### fireeye-hx-create-host-set-static
+***
+Creates static host set.
+
+
+#### Base Command
+
+`fireeye-hx-create-host-set-static`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_set_name | The host set name. | Required | 
+| hosts_ids | The hosts ids to add to the host set. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FireEyeHX.HostSets._id | String | The host set id | 
+| FireEyeHX.HostSets.url | String | URI to retrieve data for this record. | 
+| FireEyeHX.HostSets.name | String | The host set name. | 
+| FireEyeHX.HostSets._revision | Date | Timestamp of last update. Used for preventing updates with obsolete data. If _revision in the request body does not match _revision in the databse, the update will fail. | 
+
+#### Command example
+```!fireeye-hx-create-host-set-static host_set_name=demisto_test hosts_ids=Hqb2ns3oui1fpzg0BxI1Ch```
+#### Human Readable Output
+
+>Another host set has that name, please choose a different one.
+### fireeye-hx-update-host-set-static
+***
+Updates a static host set.
+
+
+#### Base Command
+
+`fireeye-hx-update-host-set-static`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_set_id | The host set id. | Required | 
+| host_set_name | The host set name. | Required | 
+| add_host_ids | The host sets ids to add. | Optional | 
+| remove_host_ids | The host set ids to remove. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FireEyeHX.HostSets._id | String | The host set id. | 
+| FireEyeHX.HostSets.url | String | URI to retrieve data for this record. | 
+| FireEyeHX.HostSets.name | String | The host set name. | 
+| FireEyeHX.HostSets._revision | Date | Timestamp of last update. Used for preventing updates with obsolete data. If _revision in the request body does not match _revision in the databse, the update will fail. | 
+
+#### Command example
+```!fireeye-hx-update-host-set-static host_set_name=demisto_test host_set_id=1036 add_host_ids=GfLI00Q4zpidezw9I11rV6 remove_host_ids=Hqb2ns3oui1fpzg0BxI1Ch```
+#### Human Readable Output
+
+>Updating Host Set failed, check if you have the necessary permissions
+### fireeye-hx-create-host-set-dynamic
+***
+Creates dynamic host set.
+
+
+#### Base Command
+
+`fireeye-hx-create-host-set-dynamic`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_set_name | The host set name. | Required | 
+| query | Free text query. Cannot be used with the other query arguments. | Optional | 
+| query_key | The query key. Must be provided with the query_value and query_operator. Possible values are: domain, <br/>product_name, <br/>patch_level, <br/>timezone, <br/>os_bitness, <br/>cloud_provider, <br/>app_version, <br/>hostname, <br/>server_time, <br/>gmt_offset_seconds, <br/>primary-ip_address, <br/>normalized_app_version, <br/>litmus_script_id, <br/>app_config_hash, <br/>platform. | Optional | 
+| query_value | The query value. Must be provided with the query_key and query_operator. | Optional | 
+| query_operator | The query operator. Must be provided with the query_key and query_value. Possible values are: eq, <br/>gt, <br/>lt, <br/>lte, <br/>gte, <br/>exists, <br/>cidr. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FireEyeHX.HostSets._id | String | The host set id. | 
+| FireEyeHX.HostSets.url | String | URI to retrieve data for this record. | 
+| FireEyeHX.HostSets.name | String | The host set name. | 
+| FireEyeHX.HostSets._revision | Date | Timestamp of last update. Used for preventing updates with obsolete data. If _revision in the request body does not match _revision in the databse, the update will fail. | 
+
+#### Command example
+```!fireeye-hx-create-host-set-dynamic host_set_name=demisto_test query_key=Bitlevel query_operator=eq query_value=64-bit```
+#### Human Readable Output
+
+>Creating Host Set failed, check if you have the necessary permissions
+### fireeye-hx-update-host-set-dynamic
+***
+Updates dynamic host set.
+
+
+#### Base Command
+
+`fireeye-hx-update-host-set-dynamic`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_set_name | The host set name. | Required | 
+| query | free text query. Cannot be used with the other query arguments. | Optional | 
+| query_key | The query key. Must be provided with the query_value and query_operator. Possible values are: domain, <br/>product_name, <br/>patch_level, <br/>timezone, <br/>os_bitness, <br/>cloud_provider, <br/>app_version, <br/>hostname, <br/>server_time, <br/>gmt_offset_seconds, <br/>primary-ip_address, <br/>normalized_app_version, <br/>litmus_script_id, <br/>app_config_hash, <br/>platform. | Optional | 
+| query_value | The query value. Must be provided with the query_key and query_operator. | Optional | 
+| query_operator | The query operator. Must be provided with the query_value and query_key. Possible values are: eq, <br/>gt, <br/>lt, <br/>lte, <br/>gte, <br/>exists, <br/>cidr. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FireEyeHX.HostSets._id | String | The host set id. | 
+| FireEyeHX.HostSets.url | String | URI to retrieve data for this record. | 
+| FireEyeHX.HostSets.name | String | The host set name. | 
+| FireEyeHX.HostSets._revision | Date | Timestamp of last update. Used for preventing updates with obsolete data. If _revision in the request body does not match _revision in the databse, the update will fail. | 
+
+#### Command example
+```!fireeye-hx-update-host-set-dynamic host_set_name=demisto_test query_key=Bitlevel query_operator=eq query_value=64-bit```
+#### Human Readable Output
+
+>Updating Host Set failed, check if you have the necessary permissions

@@ -2219,8 +2219,6 @@ script:
     description: Deletes a host set.
     execution: true
     name: fireeye-hx-delete-host-set
-    outputs:
-    - type: Unknown
   - arguments:
     - default: false
       description: The host set name.

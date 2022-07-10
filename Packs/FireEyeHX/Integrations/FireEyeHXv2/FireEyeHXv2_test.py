@@ -1681,14 +1681,36 @@ def test_create_static_host_set_command(mocker):
     from FireEyeHXv2 import create_static_host_set_command, Client
     base_url = 'https://example.com'
     args = {'host_set_name': 'host_set_name',
-            'hosts_id': 'hosts_id'}
+            'hosts_ids': 'hosts_ids'}
 
     mocker.patch.object(Client, 'get_token_request', return_value='')
-    mocker.patch.object(Client, 'create_static_host_set_request', return_value={'data': 'data'})  
+    mocker.patch.object(Client, 'create_static_host_set_request', return_value={'data': 'data'})
 
     client = Client(base_url)
     command_result = create_static_host_set_command(client, args)
-    assert command_result.readable_output == 'Static Host Set host_set_name was created successfully, with ids hosts_ids'
+    assert command_result.readable_output == 'Static Host Set host_set_name was created successfully.'
+
+
+@pytest.mark.parametrize('args, expected_results', [({'hosts_ids': 'hosts_ids'}, 'Host Set name is required.'),
+                                                    ({'host_set_name': 'host_set_name'}, 'Please provide at least one Host ID.')])
+def test_create_static_host_set_command_failed(args, expected_results):
+    """
+    Given:
+        - Host set name or hosts ids
+
+    When:
+        - Calling the create_static_host_set command
+
+    Then:
+        - failing when missing required data
+    """
+    from FireEyeHXv2 import create_static_host_set_command
+
+    client = ""
+
+    with pytest.raises(Exception) as e:
+        create_static_host_set_command(client, args)
+    assert str(e.value) == expected_results
 
 
 def test_create_dynamic_host_set_command(mocker):
@@ -1703,6 +1725,31 @@ def test_create_dynamic_host_set_command(mocker):
     client = Client(base_url)
     command_result = create_dynamic_host_set_command(client, args)
     assert command_result.readable_output == 'Dynamic Host Set host_set_name was created successfully.'
+
+@pytest.mark.parametrize('args, expected_results', [({'query': 'query'}, 'Host Set name is required.'),
+                                                    ({'host_set_name': 'host_set_name',
+                                                    'query': 'query',
+                                                    'query_key': 'query_key'}, 'Cannot use free text query with other query operators, Please use one.'),
+                                                    ({'host_set_name': 'host_set_name'},
+                                                     'Please provide a free text query, or add all of the query operators toghether.')])
+def test_create_dynamic_host_set_command_failed(args, expected_results):
+    """
+    Given:
+        - Host set name, query or query_key
+
+    When:
+        - Calling the create_dynamic_host_set command
+
+    Then:
+        - failing when missing required data
+    """
+    from FireEyeHXv2 import create_dynamic_host_set_command
+
+    client = ""
+
+    with pytest.raises(Exception) as e:
+        create_dynamic_host_set_command(client, args)
+    assert str(e.value) == expected_results
 
 def test_update_static_host_set_command(mocker):
     from FireEyeHXv2 import update_static_host_set_command, Client
@@ -1721,6 +1768,27 @@ def test_update_static_host_set_command(mocker):
     command_result = update_static_host_set_command(client, args)
     assert command_result.readable_output == 'Static Host Set host_set_name was updated successfully.'
 
+@pytest.mark.parametrize('args, expected_results', [({'host_set_name': 'host_set_name'}, 'Host ID is required.'),
+                                                    ({'host_set_id': 'host_set_id'}, 'Host Set name is required.')])
+def test_update_static_host_set_command_failed(args, expected_results):
+    """
+    Given:
+        - Host set name
+
+    When:
+        - Calling the update_static_host_set_command command
+
+    Then:
+        - failing when missing required data
+    """
+    from FireEyeHXv2 import update_static_host_set_command
+
+    client = ""
+
+    with pytest.raises(Exception) as e:
+        update_static_host_set_command(client, args)
+    assert str(e.value) == expected_results
+
 def test_update_dynamic_host_set_command(mocker):
     from FireEyeHXv2 import update_dynamic_host_set_command, Client
     base_url = 'https://example.com'
@@ -1733,3 +1801,28 @@ def test_update_dynamic_host_set_command(mocker):
     client = Client(base_url)
     command_result = update_dynamic_host_set_command(client, args)
     assert command_result.readable_output == 'Dynamic Host Set host_set_name was updated successfully.'
+
+@pytest.mark.parametrize('args, expected_results', [({'query': 'query'}, 'Host Set name is required.'),
+                                                    ({'host_set_name': 'host_set_name',
+                                                    'query': 'query',
+                                                    'query_key': 'query_key'}, 'Cannot use free text query with other query operators, Please use one.'),
+                                                    ({'host_set_name': 'host_set_name'},
+                                                     'Please provide a free text query, or add all of the query operators toghether.')])
+def test_update_dynamic_host_set_command_failed(args, expected_results):
+    """
+    Given:
+        - Host set name, query or query_key
+
+    When:
+        - Calling the update_dynamic_host_set command
+
+    Then:
+        - failing when missing required data
+    """
+    from FireEyeHXv2 import update_dynamic_host_set_command
+
+    client = ""
+
+    with pytest.raises(Exception) as e:
+        update_dynamic_host_set_command(client, args)
+    assert str(e.value) == expected_results
