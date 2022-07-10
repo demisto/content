@@ -3,7 +3,7 @@ commonfields:
   id: McAfee MVision CASB
   version: -1
 configuration:
-- defaultvalue: https://www.myshn.net/
+- defaultvalue: https://www.myshn.net
   display: Base URL (e.g., https://www.myshn.net)
   name: url
   required: true
