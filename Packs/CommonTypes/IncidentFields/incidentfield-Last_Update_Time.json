@@ -14,7 +14,7 @@
         "OpsGenie Incident",
         "OpsGenie Alert",
         "McAfee MVision CASB Alert",
-        "McAfee MVision CASB Threat",
+        "McAfee MVision CASB Threat"
     ],
     "breachScript": "",
     "caseInsensitive": true,

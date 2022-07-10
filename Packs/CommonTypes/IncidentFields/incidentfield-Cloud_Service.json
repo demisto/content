@@ -29,7 +29,7 @@
         "CrowdStrike Falcon Detection",
         "CrowdStrike Falcon Incident",
         "McAfee MVision CASB Alert",
-        "McAfee MVision CASB Threat",
+        "McAfee MVision CASB Threat"
     ],
     "systemAssociatedTypes": null,
     "associatedToAll": false,

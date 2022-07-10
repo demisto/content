@@ -7,7 +7,7 @@
 		"AWS IAM Policy Misconfiguration",
 		"AWS EC2 Instance Misconfiguration",
 		"McAfee MVision CASB Alert",
-		"McAfee MVision CASB Threat",
+		"McAfee MVision CASB Threat"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,

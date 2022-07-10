@@ -31,7 +31,7 @@
 	"IAM - Sync User",
     "IAM - Rehire User",
     "McAfee MVision CASB Alert",
-    "McAfee MVision CASB Threat",
+    "McAfee MVision CASB Threat"
 ],
 "systemAssociatedTypes":[
 	"GDPR Data Breach",

@@ -18,7 +18,7 @@
   "Deactivate",
   "Reactivate",
   "McAfee MVision CASB Alert",
-  "McAfee MVision CASB Threat",
+  "McAfee MVision CASB Threat"
  ],
  "useAsKpi": true,
  "locked": false,
