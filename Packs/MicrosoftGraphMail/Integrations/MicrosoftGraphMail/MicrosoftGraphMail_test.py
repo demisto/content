@@ -67,7 +67,8 @@ def test_params_working(mocker, params, expected_results):
     main()
     MsGraphClient.__init__.assert_called_with(False, expected_results[0], expected_results[1], expected_results[2],
                                               'ms-graph-mail', '/v1.0', True, False, (200, 201, 202, 204), '', 'Inbox',
-                                              '15 minutes', 50, 10, 'com', certificate_thumbprint='', private_key='')
+                                              '15 minutes', 50, 10, 'com', certificate_thumbprint='', private_key='',
+                                              display_full_email_body=False)
 
 
 def test_build_mail_object():
@@ -265,6 +266,18 @@ def emails_data():
         return mocked_emails
 
 
+@pytest.fixture()
+def emails_data_full_body():
+    with open('test_data/emails_data_full_body') as emails_json:
+        return json.load(emails_json)
+
+
+@pytest.fixture()
+def expected_incident_full_body():
+    with open('test_data/expected_incident_full_body') as incident:
+        return json.load(incident)
+
+
 @pytest.fixture
 def last_run_data():
     last_run = {
@@ -333,6 +346,40 @@ def test_fetch_incidents_detect_initial(mocker, client, emails_data):
     client.fetch_incidents({})
 
     mocker_folder_by_path.assert_called_once_with('dummy@mailbox.com', "Phishing")
+
+
+@pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
+def test_fetch_incidents_with_full_body(
+    mocker, client, emails_data_full_body, expected_incident_full_body, last_run_data
+):
+    """
+    Given -
+        a flag to fetch the entire email body
+
+    When -
+        fetching incidents
+
+    Then -
+        Make sure that in the details section, there is the full email body content.
+    """
+    mocker.patch('MicrosoftGraphMail.get_now_utc', return_value='2019-11-12T15:01:00Z')
+    client.display_full_email_body = True
+    mocker.patch.object(client.ms_client, 'http_request', return_value=emails_data_full_body)
+    mocker.patch.object(demisto, "info")
+    result_next_run, result_incidents = client.fetch_incidents(last_run_data)
+
+    assert result_next_run.get('LAST_RUN_TIME') == '2019-11-12T15:00:30Z'
+    assert result_next_run.get('LAST_RUN_IDS') == ['dummy_id_1']
+    assert result_next_run.get('LAST_RUN_FOLDER_ID') == 'last_run_dummy_folder_id'
+    assert result_next_run.get('LAST_RUN_FOLDER_PATH') == 'Phishing'
+
+    result_incidents = result_incidents[0]
+    result_raw_json = json.loads(result_incidents.pop('rawJSON'))
+
+    expected_raw_json = expected_incident_full_body.pop('rawJSON', None)
+
+    assert result_raw_json == expected_raw_json
+    assert result_incidents == expected_incident_full_body
 
 
 @pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
