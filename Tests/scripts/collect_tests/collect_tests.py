@@ -14,10 +14,9 @@ from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
 from demisto_sdk.commands.common.tools import (find_type_by_path, run_command,
                                                str2bool)
 from exceptions import (DeprecatedPackException, EmptyMachineListException,
-                        NonexistentPackException, NonDictException,
-                        NoTestsConfiguredException, NothingToCollectException,
-                        NotUnderPackException, SkippedPackException,
-                        UnsupportedPackException)
+                        NonDictException, NoTestsConfiguredException,
+                        NothingToCollectException, NotUnderPackException,
+                        SkippedPackException, UnsupportedPackException)
 from git import Repo
 from id_set import IdSet
 from logger import logger
@@ -230,18 +229,6 @@ class TestCollector(ABC):
                 )
         return collected
 
-
-class ChangeBranch:
-    def __init__(self, branch: str, repo: Repo):
-        self.repo = repo
-        self.original = self.repo.active_branch.name
-        self.change_to = branch
-
-    def __enter__(self):
-        self.repo.git.checkout(self.change_to)
-
-    def __exit__(self):
-        self.repo.git.checkout(self.original)
 
 
 class BranchTestCollector(TestCollector):
@@ -546,13 +533,15 @@ def ui():  # todo put as real main
     options = parser.parse_args()
 
     match (options.nightly, marketplace := MarketplaceVersions(options.marketplace)):
-        case False, _:  # not nightly
-            collector = BranchTestCollector(marketplace=MarketplaceVersions.XSOAR, branch_name='master',
-                                            service_account=options.service_account)
         case True, MarketplaceVersions.XSOAR:
             collector = XSOARNightlyTestCollector()
         case True, MarketplaceVersions.MarketplaceV2:
             collector = XSIAMNightlyTestCollector()
+
+        case False, _:  # not nightly
+            collector = BranchTestCollector(marketplace=marketplace,
+                                            branch_name='master',  # todo branch name?
+                                            service_account=options.service_account)
         case _:
             raise ValueError(f"unexpected values of (either) {marketplace=}, {options.nightly=}")
 

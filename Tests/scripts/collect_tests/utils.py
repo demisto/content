@@ -5,8 +5,8 @@ from typing import Any, Optional
 
 from demisto_sdk.commands.common.constants import MarketplaceVersions
 from demisto_sdk.commands.common.tools import json, yaml
-from exceptions import (DeprecatedPackException, NonexistentPackException,
-                        InvalidPackNameException, NonDictException,
+from exceptions import (DeprecatedPackException, InvalidPackNameException,
+                        NonDictException, NonexistentPackException,
                         NoTestsConfiguredException, NotUnderPackException,
                         SkippedPackException, UnsupportedPackException)
 from logger import logger

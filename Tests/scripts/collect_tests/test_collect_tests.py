@@ -4,7 +4,8 @@ from typing import Callable, Iterable, Optional
 import collect_tests
 import pytest
 # importing Machine from collect_tests (rather than utils) to compare class member values
-from collect_tests import (Machine, XSIAMNightlyTestCollector,
+from collect_tests import (BranchTestCollector, Machine,
+                           XSIAMNightlyTestCollector,
                            XSOARNightlyTestCollector)
 
 from Tests.scripts.collect_tests.constants import XSOAR_SANITY_TEST_NAMES
@@ -119,9 +120,17 @@ def test_nightly_empty(mocker, run_master: bool, collector_class: Callable,
     given:  a content folder
     when:   collecting tests with a NightlyTestCollector
     then:   make sure sanity tests are collected for XSOAR, and that XSIAM tests are collected from conf.json
+            make sure master machine is added when necessary
     """
-    _test(mocker, run_nightly=True, run_master=run_master, collector_class=collector_class,
-          expected_tests=expected_tests, expected_packs=expected_packs, expected_machines=None)
+    _test(
+        mocker,
+        run_nightly=True,
+        run_master=run_master,
+        collector_class=collector_class,
+        expected_tests=expected_tests,
+        expected_packs=expected_packs,
+        expected_machines=None,
+    )
 
 
 NIGHTLY_EXPECTED_TESTS = {'myTestPlaybook', 'myOtherTestPlaybook'}
@@ -138,7 +147,7 @@ NIGHTLY_EXPECTED_TESTS = {'myTestPlaybook', 'myOtherTestPlaybook'}
         (MockerCases.C, XSIAMNightlyTestCollector, {'myXSIAMOnlyTestPlaybook'},
          {'myXSIAMOnlyPack', 'bothMarketplacesPackOnlyXSIAMIntegration'}, None),
         (MockerCases.D, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myPack'},
-         (Machine.V6_5,Machine.MASTER,Machine.NIGHTLY)),
+         (Machine.V6_5, Machine.MASTER, Machine.NIGHTLY)),
 ))
 def test_nightly(mocker, collector_class: Callable, expected_tests: set[str], expected_packs: tuple[str],
                  expected_machines: Optional[tuple[Machine]]):
@@ -149,5 +158,12 @@ def test_nightly(mocker, collector_class: Callable, expected_tests: set[str], ex
     """
     # noinspection PyTypeChecker
 
-    _test(mocker, run_nightly=True, run_master=True, collector_class=collector_class, expected_tests=expected_tests,
-          expected_packs=expected_packs, expected_machines=expected_machines)
+    _test(
+        mocker,
+        run_nightly=True,
+        run_master=True,
+        collector_class=collector_class,
+        expected_tests=expected_tests,
+        expected_packs=expected_packs,
+        expected_machines=expected_machines,
+    )
