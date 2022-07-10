@@ -468,9 +468,9 @@ class MsGraphClient:
             'body': MsGraphClient._build_body_input(body=body, body_type=body_type),
             'bodyPreview': body[:255],
             'importance': importance,
-            'flag': MsGraphClient._build_flag_input(flag)
-             'attachments': MsGraphClient._build_file_attachments_input(attach_ids, attach_names, attach_cids,
-                                                                        manual_attachments)
+            'flag': MsGraphClient._build_flag_input(flag),
+            'attachments': MsGraphClient._build_file_attachments_input(attach_ids, attach_names, attach_cids,
+                                                                       manual_attachments)
         }
 
         if internet_message_headers:
@@ -1470,13 +1470,8 @@ def send_email_command(client: MsGraphClient, args):
     """
     Sends email from user's mailbox, the sent message will appear in Sent Items folder
     """
-
     prepared_args = prepare_args('send-mail', args)
     email = args.get('from', client._mailbox_to_fetch)
-
-    create_upload_session(email, client)
-
-
     suffix_endpoint = f'/users/{email}/sendMail'
     message_content = MsGraphClient.build_message(**prepared_args)
     client.ms_client.http_request('POST', suffix_endpoint, json_data={'message': message_content}, resp_type="text")
