@@ -7,7 +7,7 @@ from test_data.test_variables import HTML_CONTENT, FEED_DATA, TEST_DATA_MAX_SIZE
 def side_effect_feed_url(mocker, client):
     feed_content_res = Response()
     type(feed_content_res).status_code = mocker.PropertyMock(return_value=200)
-    type(feed_content_res).text = mocker.PropertyMock(return_value='text_to_parse')
+    type(feed_content_res).content = mocker.PropertyMock(return_value='text_to_parse')
 
     client.feed_response = feed_content_res
 
@@ -63,7 +63,7 @@ def test_get_url_content(mocker):
 
     client = mock_client(mocker=mocker, dict_to_parse={})
     article_content_res = Response()
-    type(article_content_res).text = HTML_CONTENT
+    type(article_content_res).content = HTML_CONTENT
     mocker.patch.object(Client, '_http_request', return_value=article_content_res)
     assert client.get_url_content('test-link.com') == \
            "This is a dumped content of the article. Use the link under Publications field to read the full article. " \
@@ -76,6 +76,6 @@ def test_content_max_size(mocker, article_content, expected_output):
 
     client = mock_client(mocker=mocker, dict_to_parse={}, content_max_size=1)
     article_content_res = Response()
-    type(article_content_res).text = article_content
+    type(article_content_res).content = article_content
     mocker.patch.object(Client, '_http_request', return_value=article_content_res)
     assert client.get_url_content('test-link.com') == expected_output
