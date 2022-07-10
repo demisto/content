@@ -6,3 +6,5 @@ The newest MITRE Feed V2 Pack introduces the STIX format and ingests more Threat
 - Software as Tool or Malware
 - Mitigation as Course of Action
 - Note: Relationships is supported from version 6.2 and later.
+
+Note: When upgrading from v1 (MITRE IDs Feed) to v2 (MITRE ATT&CK) - disabling the MITRE IDs Feed indicator type, and instance are important for the smooth flow of the upgrade.
