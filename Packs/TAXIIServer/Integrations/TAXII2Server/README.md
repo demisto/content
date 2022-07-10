@@ -25,7 +25,7 @@ Use one of the following options:
 - **http://*demisto_address*:*listen_port*/{taxii2_api_endpoint}/**
 
 ## Access the TAXII Service by Instance Name
-To access the TAXII service by instance name, make sure ***Instance execute external*** is enabled. 
+To access the TAXII service by instance name, make sure *Instance execute external* is enabled. 
 
 1. In Cortex XSOAR, go to **Settings > About > Troubleshooting**.
 2. In the **Server Configuration** section, verify that the *instance.execute.external* key is set to *true*. If this key does not exist, click **+ Add Server Configuration**, add the *instance.execute.external* and set the value to *true*.
@@ -201,7 +201,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### taxii-server-list-collections
 ***
-Returns all the collections
+Returns all the collections.
 
 
 #### Base Command
@@ -215,10 +215,10 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TAXIIServer.Collection.id | String | The collection id | 
-| TAXIIServer.Collection.query | String | The collection query | 
-| TAXIIServer.Collection.title | String | The collection title | 
-| TAXIIServer.Collection.description | String | The collection description | 
+| TAXIIServer.Collection.id | String | The collection ID. | 
+| TAXIIServer.Collection.query | String | The collection query. | 
+| TAXIIServer.Collection.title | String | The collection title. | 
+| TAXIIServer.Collection.description | String | The collection description. | 
 
 #### Command example
 ```!taxii-server-list-collections```
@@ -266,8 +266,8 @@ There are no input arguments for this command.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | TAXIIServer.ServerInfo.title | String | The server title | 
-| TAXIIServer.ServerInfo.api_roots | Unknown | The server api roots urls | 
-| TAXIIServer.ServerInfo.default | String | The default url | 
+| TAXIIServer.ServerInfo.api_roots | Unknown | The server API roots URLs. | 
+| TAXIIServer.ServerInfo.default | String | The default URL. | 
 | TAXIIServer.ServerInfo.description | String | The server description | 
 
 #### Command example
@@ -290,7 +290,7 @@ There are no input arguments for this command.
 
 #### Human Readable Output
 
->**In case the default URL is incorrect, you can override it by setting "TAXII2 Service URL Address" field in the integration configuration**
+>**In case the default URL is incorrect, you can override it by setting the "TAXII2 Service URL Address" field in the integration configuration**
 >
 >### Server Info
 >|api_roots|default|description|title|
