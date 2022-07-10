@@ -3264,7 +3264,7 @@ Adds an email object to MISP.
 
 #### Human Readable Output
 
->Object has been added to MISP event ID 1655
+>Object has been added to MISP event ID 743
 
 ### misp-add-url-object
 ***
