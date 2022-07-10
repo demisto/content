@@ -209,7 +209,7 @@ def main():  # pragma: no cover
     """
     # get the service API url
     base_url = urljoin(demisto.params().get('url'), '/v1/public')
-    verify_certificate = not demisto.params().get('insecure', True)
+    verify_certificate = not demisto.params().get('insecure', False)
     api_key = demisto.params().get('apikey')
     app_user_id, app_user_secret = api_key.split(":")
     if not app_user_id or not app_user_secret:
