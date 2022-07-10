@@ -8,7 +8,7 @@
         "CrowdStrike Falcon Incident",
         "Microsoft Defender For Endpoint",
         "McAfee MVision CASB Alert",
-        "McAfee MVision CASB Threat",
+        "McAfee MVision CASB Threat"
     ],
     "breachScript": "",
     "caseInsensitive": true,

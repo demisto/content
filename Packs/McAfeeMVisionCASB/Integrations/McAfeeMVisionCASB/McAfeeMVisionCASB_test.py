@@ -3,7 +3,7 @@ import io
 import requests_mock
 from freezegun import freeze_time
 import demistomock as demisto
-from McAfeeMVisionCASB import main, Client
+from McAfeeMVisionCASB import main
 
 
 def util_load_json(path):

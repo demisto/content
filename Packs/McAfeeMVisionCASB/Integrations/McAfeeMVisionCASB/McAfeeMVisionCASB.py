@@ -85,7 +85,7 @@ def calculate_offset_and_limit(**kwargs) -> Tuple[int, int]:
     return 0, 50
 
 
-def convert_to_xsoar_severity(severity: str) -> int:
+def convert_to_xsoar_severity(severity: str) -> float:
     """Maps McAfee MVision severity to Cortex XSOAR severity
 
     Converts the McAfee MVision incident severity level to Cortex XSOAR incident severity (1 to 4)
@@ -95,7 +95,7 @@ def convert_to_xsoar_severity(severity: str) -> int:
     :param severity: severity as returned from the McAfee MVision API ('info', 'low', 'medium', 'high')
 
     :return: Cortex XSOAR Severity (int: 1 to 4)
-    :rtype: ``int``
+    :rtype: ``float``
     """
     return {
         'info': IncidentSeverity.INFO,
@@ -288,7 +288,7 @@ def policy_dictionary_list_command(client: Client, args: Dict) -> CommandResults
 def policy_dictionary_update_command(client: Client, args: Dict) -> CommandResults:
     dict_id = arg_to_number(args.get('dictionary_id'))
     name = str(args.get('name'))
-    content = args.get('content')
+    content = str(args.get('content'))
 
     result = client.policy_dictionary_update(dict_id, name, content)
 
