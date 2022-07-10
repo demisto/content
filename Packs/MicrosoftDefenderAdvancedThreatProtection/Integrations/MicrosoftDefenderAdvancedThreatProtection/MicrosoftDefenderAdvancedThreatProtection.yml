@@ -5727,7 +5727,7 @@ script:
     - contextPath: MicrosoftATP.MachineAction.MachineID
       description: The machine ID on which the action was executed.
       type: String
-  dockerimage: demisto/crypto:1.0.0.28507
+  dockerimage: demisto/crypto:1.0.0.31577
   feed: false
   isfetch: true
   longRunning: false

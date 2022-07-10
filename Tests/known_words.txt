@@ -189,3 +189,4 @@ dbotMirrorTags
 Parses
 html
 maxPages
+cs-fx-upload-file
