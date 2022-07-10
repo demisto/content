@@ -1,6 +1,6 @@
 {
-    "name": "Trend Micro",
-    "description": "Uses Trend Micro Deep Security",
+    "name": "Trend Micro (Deprecated)",
+    "description": "Deprecated. Use Trend Micro Deep Security instead",
     "support": "xsoar",
     "currentVersion": "1.0.5",
     "author": "Cortex XSOAR",
