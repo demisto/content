@@ -2020,7 +2020,7 @@ script:
       description: Object meta category.
       type: String
     - contextPath: MISP.Event.Object.Distribution
-      description: Distribution of object.
+      description: Distribution of the object.
       type: Number
     - contextPath: MISP.Event.Object.Name
       description: Name of the object.
@@ -2034,8 +2034,8 @@ script:
     - contextPath: MISP.Event.Object.TemplateUUID
       description: UUID of the template.
       type: String
-    - contextPath: MISP.Event.Object.Timestamp
-      description: Timestamp when the object was created.
+    - contextPath: MISP.Event.Object.LastChanged
+      description: Timestamp when the object was last changed.
       type: String
     - contextPath: MISP.Event.Object.Deleted
       description: Whether the object was deleted.
@@ -2052,8 +2052,8 @@ script:
     - contextPath: MISP.Event.Object.Attribute.EventID
       description: ID of the first event from which the object originated.
       type: Number
-    - contextPath: MISP.Event.Object.Attribute.Timestamp
-      description: Timestamp when the object was created.
+    - contextPath: MISP.Event.Object.Attribute.LastChanged
+      description: Attribute last changed timestamp.
       type: Date
     - contextPath: MISP.Event.Object.Attribute.Deleted
       description: Whether the object was deleted.
