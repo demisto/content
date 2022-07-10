@@ -14,7 +14,6 @@
     "editForm": true,
     "extractIndicatorTypesIDs": [],
     "fieldCalcScript": "",
-
     "group": 0,
     "hidden": false,
     "id": "incident_cvsscollateraldamagepotential",
