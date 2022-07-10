@@ -490,7 +490,7 @@ tasks:
     conditions:
     - label: Yes
       condition:
-      - - operator: containsGeneral
+      - - operator: containsString
           left:
             value:
               complex:
@@ -620,7 +620,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: image/png
+                  simple: image/jpeg
               ignorecase: true
             - operator: isEqualString
               left:
@@ -669,7 +669,7 @@ tasks:
     conditions:
     - label: Yes
       condition:
-      - - operator: containsGeneral
+      - - operator: containsString
           left:
             value:
               complex:
@@ -906,7 +906,7 @@ tasks:
     conditions:
     - label: Yes
       condition:
-      - - operator: containsGeneral
+      - - operator: containsString
           left:
             value:
               complex:
