@@ -9,7 +9,7 @@ requests.packages.urllib3.disable_warnings()
 UPDATE_REQ_RESPONSE = {'result': 'updated successfully!'}
 
 
-def get_jwt_token(app_user_id: str, app_user_secret: str, current_time: float = time.time(), expire_time_sec: int = 30):
+def get_jwt_token(app_user_id: str, app_user_secret: str, current_time: float = time.time(), expire_time_sec: int = 60):
     payload = {
         "issuer": app_user_id,  # REQUIRED - Generated in the UI
         "iat": current_time,  # REQUIRED - Issued time - current epoch timestamp
@@ -209,7 +209,7 @@ def main():  # pragma: no cover
     """
     # get the service API url
     base_url = urljoin(demisto.params().get('url'), '/v1/public')
-    verify_certificate = demisto.params().get('insecure', True)
+    verify_certificate = not demisto.params().get('insecure', True)
     api_key = demisto.params().get('apikey')
     app_user_id, app_user_secret = api_key.split(":")
     if not app_user_id or not app_user_secret:
