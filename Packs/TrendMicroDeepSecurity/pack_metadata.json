@@ -3,7 +3,7 @@
     "description": "Trend Micro Deep Security provides runtime security for workloads (physical, virtual, cloud, and containers).",
     "support": "xsoar",
     "currentVersion": "1.0.2",
-    "author": "",
+    "author": "Cortex XSOAR",
     "url": "",
     "email": "",
     "categories": [

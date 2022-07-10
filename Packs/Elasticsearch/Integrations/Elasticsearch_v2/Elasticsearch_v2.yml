@@ -320,7 +320,7 @@ script:
     name: get-mapping-fields
     description: Returns the schema of the index to fetch from. This commmand should
       be used for debugging purposes.
-  dockerimage: demisto/elasticsearch:1.0.0.30255
+  dockerimage: demisto/py3-tools:1.0.0.31193
   feed: false
   isfetch: true
   longRunning: false

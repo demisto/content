@@ -9,6 +9,16 @@ configuration:
   required: false
   type: 8
 - defaultvalue: All
+  display: Category
+  name: category
+  options:
+  - All
+  - Optimize
+  - Allow
+  - Default
+  required: false
+  type: 16
+- defaultvalue: All
   display: Regions
   name: regions
   options:
@@ -31,8 +41,7 @@ configuration:
   - All
   required: true
   type: 16
-- additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+- additionalinfo: Indicators from this integration instance will be marked with this reputation
   defaultvalue: Good
   display: Indicator Reputation
   name: feedReputation
@@ -44,7 +53,6 @@ configuration:
   required: false
   type: 18
 - additionalinfo: Reliability of the source providing the intelligence data
-  defaultvalue: A - Completely reliable
   display: Source Reliability
   name: feedReliability
   options:
@@ -56,9 +64,9 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  defaultvalue: A - Completely reliable
+- name: tlp_color
   display: Traffic Light Protocol Color
-  name: tlp_color
   options:
   - RED
   - AMBER
@@ -66,39 +74,38 @@ configuration:
   - WHITE
   required: false
   type: 15
+  additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
 - defaultvalue: suddenDeath
+  display: ''
   name: feedExpirationPolicy
-  display: ""
+  required: false
+  type: 17
   options:
   - never
   - interval
   - indicatorType
   - suddenDeath
-  required: false
-  type: 17
 - defaultvalue: '20160'
-  display: ""
+  display: ''
   name: feedExpirationInterval
   required: false
   type: 1
-- defaultvalue: '30'
-  display: Feed Fetch Interval
+- display: Feed Fetch Interval
   name: feedFetchInterval
   required: false
   type: 19
+  defaultvalue: '30'
 - additionalinfo: Supports CSV values.
   display: Tags
   name: feedTags
   required: false
   type: 0
-- additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
-  display: Bypass exclusion list
+- display: Bypass exclusion list
   name: feedBypassExclusionList
   required: false
   type: 8
-  defaultvalue: "true"
+  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  defaultvalue: 'true'
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -107,11 +114,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: The Office 365 IP Address and URL web service is a read-only API provided
-  by Microsoft to expose the URLs and IPs used by Office 365. The Office 365 Feed
-  integration fetches indicators from the service, with which you can create a list
-  (allow list, block list, EDL, etc.) for your SIEM or firewall service to ingest and
-  apply to its policy rules.
+description: The Office 365 IP Address and URL web service is a read-only API provided by Microsoft to expose the URLs and IPs used by Office 365. The Office 365 Feed integration fetches indicators from the service, with which you can create a list (allow list, block list, EDL, etc.) for your SIEM or firewall service to ingest and apply to its policy rules.
 display: Office 365 Feed
 name: Office 365 Feed
 script:
@@ -127,8 +130,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: IPs
-      description: The indicator type. Can be "IPs", "URLs", or "Both". The default
-        value is "IPs".
+      description: The indicator type. Can be "IPs", "URLs", or "Both". The default value is "IPs".
       isArray: false
       name: indicator_type
       predefined:
@@ -141,7 +143,7 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: office365-get-indicators
-  dockerimage: demisto/python3:3.10.4.29342
+  dockerimage: demisto/python3:3.10.4.31492
   feed: true
   isfetch: false
   longRunning: false
