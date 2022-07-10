@@ -133,11 +133,15 @@ class DictBased:
 
 class DictFileBased(DictBased):
     def __init__(self, path: Path, is_infrastructure: bool = False):
+        if not path.exists():
+            raise FileNotFoundError(path)
         try:
-            PackManager.relative_to_packs(path)  # raises ValueError if not relative
-        except ValueError:
-            if not is_infrastructure:
-                raise NotUnderPackException(path)
+            PackManager.relative_to_packs(path)
+        except NotUnderPackException as e:
+            if is_infrastructure:
+                pass
+            else:
+                raise  # todo remove
 
         if path.suffix not in ('.json', '.yml'):
             raise NonDictException(path)
@@ -219,7 +223,7 @@ class PackManager:
             path = Path(path)
         parts = path.parts
         if 'Packs' not in parts:
-            raise ValueError(f'path {path} is not relative to Packs')
+            raise NotUnderPackException(path)
         return Path(*path.parts[path.parts.index('Packs') + 1:])
 
     def validate_pack(self, pack: str) -> None:

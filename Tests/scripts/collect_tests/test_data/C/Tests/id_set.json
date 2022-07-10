@@ -33,7 +33,7 @@
       },
       "myXSOAROnlyTestPlaybook": {
         "name": "myXSOAROnlyTestPlaybook",
-        "file_path": "Packs/myXSOAROnlyPack/Integrations/TestPlaybooks/myXSOAROnlyTestPlaybook.yml",
+        "file_path": "Packs/myXSOAROnlyPack/TestPlaybooks/myXSOAROnlyTestPlaybook.yml",
         "pack": "myXSOAROnlyPack",
         "marketplaces": [
           "xsoar"

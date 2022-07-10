@@ -1,5 +1,10 @@
 {
-  "tests": [],
+  "tests": [
+    {
+      "integrations": "myIntegration",
+      "playbookID": "myOtherTestPlaybook"
+    }
+  ],
   "skipped_tests": [],
   "skipped_integrations": [],
   "unmockable_integrations": [],

@@ -38,7 +38,7 @@ class TestConf(DictFileBased):
         for test, integrations in self.tests_to_integrations.items():
             for integration in integrations:
                 result[integration].append(test)
-        return result
+        return dict(result)
 
     # def get_skipped_tests(self):  # todo is used?
     #     return tuple(self.get('skipped_tests', {}).keys())

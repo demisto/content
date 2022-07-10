@@ -5,7 +5,7 @@
     {
       "myTestPlaybook": {
         "name": "myTestPlaybook",
-        "file_path": "Packs/myXSIAMOnlyPack/Integrations/TestPlaybooks/myTestPlaybook.yml",
+        "file_path": "Packs/myXSIAMOnlyPack/TestPlaybooks/myTestPlaybook.yml",
         "pack": "myXSIAMOnlyPack",
         "marketplaces": [
           "marketplacev2"
@@ -13,7 +13,7 @@
       },
       "myOtherTestPlaybook": {
         "name": "myOtherTestPlaybook",
-        "file_path": "Packs/myXSIAMOnlyPack/Integrations/TestPlaybooks/myOtherTestPlaybook.yml",
+        "file_path": "Packs/myXSIAMOnlyPack/TestPlaybooks/myOtherTestPlaybook.yml",
         "pack": "myXSIAMOnlyPack",
         "marketplaces": [
           "marketplacev2"

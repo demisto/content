@@ -230,7 +230,6 @@ class TestCollector(ABC):
         return collected
 
 
-
 class BranchTestCollector(TestCollector):
     def __init__(self, branch_name: str,
                  marketplace: MarketplaceVersions,
@@ -251,14 +250,15 @@ class BranchTestCollector(TestCollector):
         return CollectedTests.union(collected)
 
     def _collect_yml(self, content_item_path: Path) -> CollectedTests:
-        yml = ContentItem(content_item_path.with_suffix('.yml'))
-        relative_path = PackManager.relative_to_packs(yml.path)
+        yml_path = content_item_path.with_suffix('.yml')
+        try:
+            yml = ContentItem(yml_path)
+        except FileNotFoundError:
+            raise FileNotFoundError(f'could not find yml matching {PackManager.relative_to_packs(yml_path)}')
 
-        # todo handle yml-free python files
-        if not yml.path.exists():
-            raise FileNotFoundError(f'could not find yml matching {PackManager.relative_to_packs(yml.path)}')
+        relative_path = PackManager.relative_to_packs(yml_path)
 
-        match containing_folder := yml.path.parents[1].name:
+        match containing_folder := yml_path.parents[1].name:
             case 'Integrations':
                 tests = self.conf.integrations_to_tests[yml.id_]
                 reason = CollectionReason.INTEGRATION_CHANGED
@@ -289,21 +289,24 @@ class BranchTestCollector(TestCollector):
                 raise RuntimeError(f'Unexpected content type original_file_path {containing_folder} '
                                    f'(expected `Integrations`, `Scripts`, etc)')
         # creating an object for each, as CollectedTests require #packs==#tests
-        return CollectedTests.union((CollectedTests(tests=(test,), packs=yml.pack_folder_name_tuple, reason=reason,
-                                                    version_range=yml.version_range,
-                                                    reason_description=f'{yml.id_=} ({relative_path})')
-                                     for test in tests))
+        return CollectedTests.union(
+            (CollectedTests(tests=(test,), packs=yml.pack_folder_name_tuple, reason=reason,
+                            version_range=yml.version_range, reason_description=f'{yml.id_=} ({relative_path})')
+             for test in tests))
 
     def _collect_single(self, path: Path) -> CollectedTests:
-        file_type = find_type_by_path(path)
-        reason_description = relative_path = PackManager.relative_to_packs(path)
+        if not path.exists():
+            raise FileNotFoundError(path)
 
+        file_type = find_type_by_path(path)
         try:
+            reason_description = relative_path = PackManager.relative_to_packs(path)
             content_item = ContentItem(path)
         except NonDictException:  # for `.py`, `.md`, etc., that are not dictionary-based. Suitable logic follows.
             content_item = None
+            reason_description = str(path)
         except NotUnderPackException:
-            if path.parent == PATHS.content_path and path.name in PATHS.excluded_files:
+            if path in PATHS.excluded_files:
                 raise NothingToCollectException(path, 'not under a pack')  # infrastructure files that are ignored
             raise  # todo is this the expected behavior?
 
@@ -533,15 +536,16 @@ def ui():  # todo put as real main
     options = parser.parse_args()
 
     match (options.nightly, marketplace := MarketplaceVersions(options.marketplace)):
+        case False, _:  # not nightly
+            collector = BranchTestCollector(
+                marketplace=marketplace,
+                branch_name='master',  # todo branch name?
+                service_account=options.service_account
+            )
         case True, MarketplaceVersions.XSOAR:
             collector = XSOARNightlyTestCollector()
         case True, MarketplaceVersions.MarketplaceV2:
             collector = XSIAMNightlyTestCollector()
-
-        case False, _:  # not nightly
-            collector = BranchTestCollector(marketplace=marketplace,
-                                            branch_name='master',  # todo branch name?
-                                            service_account=options.service_account)
         case _:
             raise ValueError(f"unexpected values of (either) {marketplace=}, {options.nightly=}")
 
@@ -553,14 +557,11 @@ def ui():  # todo put as real main
     PATHS.output_packs_file.write_text('\n'.join(collected.packs))
 
 
-def debug():  # todo remove
-    # collector = XSIAMNightlyTestCollector()
-    # collector = BranchTestCollector(marketplace=MarketplaceVersions.XSOAR, branch_name='master', service_account=None)
-    collector = XSOARNightlyTestCollector()
-    print(collector.collect(True, True))
+# def debug():  # todo remove
+#     collector = XSOARNightlyTestCollector()
+#     print(collector.collect(True, True))
 
 
 if __name__ == '__main__':
     sys.path.append(str(PATHS.content_path))
-    debug()
-    # raise NotImplementedError('see the debug() function instead')
+    raise NotImplementedError()

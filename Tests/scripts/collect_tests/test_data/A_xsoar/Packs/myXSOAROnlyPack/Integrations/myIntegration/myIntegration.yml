@@ -9,7 +9,7 @@ type: python
 
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: ipinfo_v2
+  id: myIntegration
   version: -1
 configuration:
 - name: credentials
