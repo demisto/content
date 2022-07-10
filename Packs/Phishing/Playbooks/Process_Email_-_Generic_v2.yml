@@ -236,7 +236,7 @@ tasks:
       {
         "position": {
           "x": -20,
-          "y": 3450
+          "y": 3590
         }
       }
     note: false
@@ -277,7 +277,7 @@ tasks:
       {
         "position": {
           "x": -260,
-          "y": 3670
+          "y": 3810
         }
       }
     note: false
@@ -304,7 +304,7 @@ tasks:
       {
         "position": {
           "x": -20,
-          "y": 3900
+          "y": 4040
         }
       }
     note: false
@@ -334,7 +334,7 @@ tasks:
       {
         "position": {
           "x": -20,
-          "y": 3320
+          "y": 3460
         }
       }
     note: false
@@ -699,7 +699,7 @@ tasks:
       {
         "position": {
           "x": 920,
-          "y": 3150
+          "y": 3290
         }
       }
     note: false
@@ -1081,7 +1081,7 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '55'
+      - '56'
     scriptarguments:
       key:
         simple: Email.Attachment.Hash
@@ -2132,10 +2132,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '55':
     id: '55'
-    taskid: 6ecc35e5-07f8-4bf3-8236-5a028d485c9a
+    taskid: 046e3e54-f1c9-4e5a-891d-3582e2aa2ebc
     type: regular
     task:
-      id: 6ecc35e5-07f8-4bf3-8236-5a028d485c9a
+      id: 046e3e54-f1c9-4e5a-891d-3582e2aa2ebc
       version: -1
       name: Set incident attachments
       description: Copies a file from this incident to the specified incident. The file is recorded as an entry in the specified incident’s War Room.
@@ -2149,24 +2149,23 @@ tasks:
     scriptarguments:
       entryID:
         complex:
-          root: File.EntryID
+          root: File
           filters:
           - - operator: notIn
               left:
                 value:
-                  simple: File.EntryID
+                  simple: File.MD5
                 iscontext: true
               right:
                 value:
-                  simple: IncidentFiles.EntryID
+                  simple: IncidentFiles.MD5
                 iscontext: true
           - - operator: isNotEmpty
               left:
                 value:
-                  simple: File.EntryID
+                  simple: File.MD5
                 iscontext: true
-          transformers:
-          - operator: uniq
+          accessor: EntryID
       incidentID:
         complex:
           root: incident
@@ -2177,6 +2176,62 @@ tasks:
     view: |-
       {
         "position": {
+          "x": 1720,
+          "y": 3120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '56':
+    id: '56'
+    taskid: 46824165-a72f-4831-87fb-f6eb73f6b43a
+    type: condition
+    task:
+      id: 46824165-a72f-4831-87fb-f6eb73f6b43a
+      version: -1
+      name: Check Whether to add attachments
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '19'
+      yes:
+      - '55'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File
+                filters:
+                - - operator: notIn
+                    left:
+                      value:
+                        simple: File.MD5
+                      iscontext: true
+                    right:
+                      value:
+                        simple: IncidentFiles.MD5
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: File.MD5
+                      iscontext: true
+                accessor: EntryID
+            iscontext: true
+    view: |-
+      {
+        "position": {
           "x": 1727.5,
           "y": 2960
         }
@@ -2184,7 +2239,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: true
+    skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -2196,11 +2251,12 @@ view: |-
       "39_22_yes": 0.31,
       "41_3_#default#": 0.35,
       "41_42_yes": 0.5,
-      "4_5_yes": 0.57
+      "4_5_yes": 0.57,
+      "56_19_#default#": 0.33
     },
     "paper": {
       "dimensions": {
-        "height": 4475,
+        "height": 4615,
         "width": 3800,
         "x": -470,
         "y": -510
