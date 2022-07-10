@@ -3666,7 +3666,7 @@ def main() -> None:  # pragma: no cover
             return_results(get_modified_remote_data_command(client, params, args))
 
         elif command == 'qradar-get-events-polling':
-            return_results(qradar_get_events_polling_command(client, args))
+            return_results(qradar_get_events_polling_command(client, params, args))
         else:
             raise NotImplementedError(f'''Command '{command}' is not implemented.''')
 
