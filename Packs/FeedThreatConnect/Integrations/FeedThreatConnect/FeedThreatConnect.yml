@@ -184,7 +184,7 @@ script:
   - deprecated: false
     description: Get availble indicators owners.
     execution: false
-    name: tc-get-owntc-get-owners
+    name: tc-get-owners
   dockerimage: demisto/threatconnect-tcex:1.0.0.11353
   feed: true
   isfetch: false

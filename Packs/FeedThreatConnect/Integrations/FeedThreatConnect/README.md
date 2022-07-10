@@ -53,14 +53,14 @@ Gets indicators from ThreatConnect.
 #### Context Output
 
 There is no context output for this command.
-### tc-get-owntc-get-owners
+### tc-get-owners
 ***
 Get availble indicators owners.
 
 
 #### Base Command
 
-`tc-get-owntc-get-owners`
+`tc-get-owners`
 #### Input
 
 There are no input arguments for this command.
