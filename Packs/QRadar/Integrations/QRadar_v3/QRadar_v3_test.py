@@ -539,12 +539,15 @@ def test_enrich_offense_with_events(mocker, offense: Dict, fetch_mode, mock_sear
     poll_events_mock = mocker.patch.object(QRadar_v3, "poll_offense_events_with_retry",
                                            return_value=poll_events_response)
 
-    enriched_offense = enrich_offense_with_events(client, offense, fetch_mode, event_columns_default_value,
-                                                  events_limit=events_limit)
+    enriched_offense, is_success = enrich_offense_with_events(client, offense, fetch_mode, event_columns_default_value,
+                                                              events_limit=events_limit)
     assert 'mirroring_events_message' in enriched_offense
     del enriched_offense['mirroring_events_message']
     if mock_search_response:
+        assert is_success
         assert poll_events_mock.call_args[0][1] == mock_search_response['search_id']
+    else:
+        assert not is_success
     assert enriched_offense == expected_offense
 
 
@@ -1240,7 +1243,7 @@ def test_integration_context_during_run(test_case_data, mocker):
     set_integration_context(init_context)
     if test_case_data['offenses_first_loop']:
         first_loop_offenses = ctx_test_data['offenses_first_loop']
-        first_loop_offenses_with_events = [dict(offense, events=ctx_test_data['events']) for offense in
+        first_loop_offenses_with_events = [(dict(offense, events=ctx_test_data['events']), True) for offense in
                                            first_loop_offenses]
         mocker.patch.object(client, 'offenses_list', return_value=first_loop_offenses)
         mocker.patch.object(QRadar_v3, 'enrich_offenses_result', return_value=first_loop_offenses)
@@ -1278,7 +1281,7 @@ def test_integration_context_during_run(test_case_data, mocker):
 
     if test_case_data['offenses_second_loop']:
         second_loop_offenses = ctx_test_data['offenses_second_loop']
-        second_loop_offenses_with_events = [dict(offense, events=ctx_test_data['events']) for offense in
+        second_loop_offenses_with_events = [(dict(offense, events=ctx_test_data['events']), True) for offense in
                                             second_loop_offenses]
         mocker.patch.object(client, 'offenses_list', return_value=second_loop_offenses)
         mocker.patch.object(QRadar_v3, 'enrich_offenses_result', return_value=second_loop_offenses)
