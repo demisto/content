@@ -1399,7 +1399,7 @@ script:
       description: Object meta category.
       type: String
     - contextPath: MISP.Event.Object.Distribution
-      description: Distribution of the object.
+      description: Distribution of object.
       type: Number
     - contextPath: MISP.Event.Object.Name
       description: Name of the object.
@@ -1432,7 +1432,7 @@ script:
       description: ID of the first event from which the object originated.
       type: Number
     - contextPath: MISP.Event.Object.Attribute.Timestamp
-      description: Timestamp of object creation
+      description: Timestamp when the object was created.
       type: Date
     - contextPath: MISP.Event.Object.Attribute.Deleted
       description: Whether the object was deleted.
