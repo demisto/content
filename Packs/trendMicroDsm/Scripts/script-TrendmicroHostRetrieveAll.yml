@@ -21,7 +21,8 @@ type: python
 subtype: python2
 tags:
 - Trend Micro
-comment: Get all hosts info
+deprecated: true
+comment: Deprecated. No available replacement.
 system: true
 scripttarget: 0
 dependson:
