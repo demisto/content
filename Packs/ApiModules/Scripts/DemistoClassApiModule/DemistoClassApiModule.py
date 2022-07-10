@@ -259,8 +259,10 @@ class Demisto:
             {'type': 'executeCommand', 'command': '_apiCall', 'args': {'name': name, 'params': params, 'data': data}})
 
     def params(self):
-        self.raise_exception_if_not_implemented(INTEGRATION, 'params')
-        return self.callingContext.get(u'params', {})
+        if self.is_integration:
+            return self.callingContext.get(u'params', {})
+        else:
+            return {}
 
     def command(self):
         self.raise_exception_if_not_implemented(INTEGRATION, 'command')
