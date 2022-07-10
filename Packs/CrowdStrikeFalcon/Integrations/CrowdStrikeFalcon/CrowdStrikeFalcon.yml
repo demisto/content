@@ -3342,7 +3342,7 @@ script:
       is only used for debugging purposes and will not update the current incident or detection.
     execution: false
     name: update-remote-system
-  dockerimage: demisto/python3:3.10.4.30607
+  dockerimage: demisto/python3:3.10.4.31492
   feed: false
   isfetch: true
   ismappable: true
