@@ -5,29 +5,28 @@ description: |-
   Enrich a file using one or more integrations.
 
   - Provide threat information
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 00109219-5fc8-4bbb-881e-e597ec3b7439
     type: start
     task:
       id: 00109219-5fc8-4bbb-881e-e597ec3b7439
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "25"
-      - "29"
+      - '31'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 735,
-          "y": -90
+          "x": 470,
+          "y": -130
         }
       }
     note: false
@@ -35,8 +34,10 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "7":
-    id: "7"
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '7':
+    id: '7'
     taskid: 89ce26db-58e9-4a6d-88f2-d6810e458ee2
     type: title
     task:
@@ -45,14 +46,14 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 735,
-          "y": 620
+          "x": 470,
+          "y": 870
         }
       }
     note: false
@@ -60,8 +61,10 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "25":
-    id: "25"
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '25':
+    id: '25'
     taskid: 339fc232-e5d0-468b-87ea-cf8d41ea0ca6
     type: condition
     task:
@@ -71,18 +74,18 @@ tasks:
       description: Check if there is a SHA256 hash in context.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "7"
-      "yes":
-      - "27"
+      - '7'
+      yes:
+      - '27'
     scriptarguments:
       value:
         simple: ${File.SHA256}
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -94,7 +97,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": 50
+          "y": 180
         }
       }
     note: false
@@ -102,8 +105,10 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "27":
-    id: "27"
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '27':
+    id: '27'
     taskid: 0783a3a6-5d8b-48f1-8dee-f3f0ef62defc
     type: condition
     task:
@@ -113,15 +118,15 @@ tasks:
       description: Checks if there is an active instance of the Cylance Protect v2 integration enabled.
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "7"
-      "yes":
-      - "28"
+      - '7'
+      yes:
+      - '28'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -153,7 +158,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": 250
+          "y": 380
         }
       }
     note: false
@@ -161,8 +166,10 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "28":
-    id: "28"
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '28':
+    id: '28'
     taskid: ff014724-3ad2-4ce2-8578-5106c126e76b
     type: regular
     task:
@@ -176,7 +183,7 @@ tasks:
       brand: Cylance Protect v2
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
     scriptarguments:
       sha256:
         complex:
@@ -190,7 +197,7 @@ tasks:
       {
         "position": {
           "x": 470,
-          "y": 450
+          "y": 590
         }
       }
     note: false
@@ -198,33 +205,35 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "29":
-    id: "29"
-    taskid: e5eae00a-9da2-4d93-8ed2-693e0c6c2c89
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '29':
+    id: '29'
+    taskid: be6126b7-0676-4b5f-88d2-a257f8dfa4e3
     type: playbook
     task:
-      id: e5eae00a-9da2-4d93-8ed2-693e0c6c2c89
+      id: be6126b7-0676-4b5f-88d2-a257f8dfa4e3
       version: -1
       name: File Enrichment - Virus Total Private API
       description: Get file information using the Virus Total Private API integration.
       playbookName: File Enrichment - Virus Total Private API
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 0
     view: |-
       {
         "position": {
-          "x": 990,
-          "y": 50
+          "x": 940,
+          "y": 180
         }
       }
     note: false
@@ -232,21 +241,144 @@ tasks:
     ignoreworker: false
     skipunavailable: true
     quietmode: 0
-system: true
+    scriptarguments:
+      MD5:
+        complex:
+          root: inputs.MD5
+      SHA1:
+        complex:
+          root: inputs.SHA1
+      SHA256:
+        complex:
+          root: inputs.SHA256
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '30':
+    id: '30'
+    taskid: f030af26-2985-453a-88bf-4f1dcc536fab
+    type: playbook
+    task:
+      id: f030af26-2985-453a-88bf-4f1dcc536fab
+      version: -1
+      name: File Enrichment - Virus Total API_v3
+      description: Get file information using the Virus Total API integration.
+      playbookName: File Enrichment - Virus Total API_v3
+      type: playbook
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '7'
+    scriptarguments:
+      FileHash:
+        complex:
+          root: inputs.SHA256
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: inputs.SHA1
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: inputs.MD5
+                iscontext: true
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1390,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '31':
+    id: '31'
+    taskid: cf0cb24c-31c1-4d7d-815b-d203e44b1f44
+    type: condition
+    task:
+      id: cf0cb24c-31c1-4d7d-815b-d203e44b1f44
+      version: -1
+      name: Is there a file hash?
+      description: Check if there is a SHA256 hash in context.
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '7'
+      yes:
+      - '25'
+      - '29'
+      - '30'
+    scriptarguments:
+      value:
+        simple: ${File.SHA256}
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.SHA256
+            iscontext: true
+          right:
+            value: {}
+        - operator: isExists
+          left:
+            value:
+              simple: inputs.SHA1
+            iscontext: true
+        - operator: isExists
+          left:
+            value:
+              simple: inputs.MD5
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
       "25_27_yes": 0.59,
-      "25_7_#default#": 0.44,
+      "25_7_#default#": 0.16,
       "27_28_yes": 0.57,
-      "27_7_#default#": 0.63
+      "27_7_#default#": 0.21,
+      "31_7_#default#": 0.13
     },
     "paper": {
       "dimensions": {
-        "height": 775,
-        "width": 900,
+        "height": 1065,
+        "width": 1300,
         "x": 470,
-        "y": -90
+        "y": -130
       }
     }
   }
@@ -254,30 +386,45 @@ inputs:
 - key: MD5
   value:
     complex:
-      root: File
-      accessor: MD5
+      root: File.MD5
       transformers:
       - operator: uniq
+      filters:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.MD5
+            iscontext: true
   required: false
   description: File MD5 hash to enrich.
   playbookInputQuery:
 - key: SHA256
   value:
     complex:
-      root: File
-      accessor: SHA256
+      root: File.SHA256
       transformers:
       - operator: uniq
+      filters:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SHA256
+            iscontext: true
   required: false
   description: The file SHA256 hash to enrich.
   playbookInputQuery:
 - key: SHA1
   value:
     complex:
-      root: File
-      accessor: SHA1
+      root: File.SHA1
       transformers:
       - operator: uniq
+      filters:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.SHA1
+            iscontext: true
   required: false
   description: The file SHA1 hash to enrich.
   playbookInputQuery:
@@ -324,3 +471,5 @@ outputs:
 fromversion: 5.0.0
 tests:
 - File Enrichment - Generic v2 - Test
+contentitemexportablefields:
+  contentitemfields: {}
