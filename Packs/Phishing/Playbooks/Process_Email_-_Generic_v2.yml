@@ -235,8 +235,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -20,
-          "y": 3450
+          "x": 290,
+          "y": 3500
         }
       }
     note: false
@@ -276,8 +276,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -260,
-          "y": 3670
+          "x": 50,
+          "y": 3720
         }
       }
     note: false
@@ -303,8 +303,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -20,
-          "y": 3900
+          "x": 290,
+          "y": 3950
         }
       }
     note: false
@@ -333,8 +333,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -20,
-          "y": 3320
+          "x": 290,
+          "y": 3370
         }
       }
     note: false
@@ -466,6 +466,7 @@ tasks:
     nexttasks:
       '#none#':
       - '11'
+      - '57'
     scriptarguments:
       attachmentcount:
         complex:
@@ -699,7 +700,7 @@ tasks:
       {
         "position": {
           "x": 920,
-          "y": 3150
+          "y": 3200
         }
       }
     note: false
@@ -936,7 +937,6 @@ tasks:
       - '29'
       - '30'
       - '31'
-      - '53'
     separatecontext: false
     view: |-
       {
@@ -2131,90 +2131,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '53':
-    id: '53'
-    taskid: c47ecfaf-7dd1-4be0-8842-37d5ff4ff430
-    type: condition
-    task:
-      description: ''
-      id: c47ecfaf-7dd1-4be0-8842-37d5ff4ff430
-      version: -1
-      name: Was the reported email attached?
-      type: condition
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#default#':
-      - '19'
-      yes:
-      - '54'
-    separatecontext: false
-    conditions:
-    - label: yes
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: ReportedEmailOrigin
-            iscontext: true
-          right:
-            value:
-              simple: Attached
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Demisto REST API
-            iscontext: true
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Demisto REST API
-                accessor: state
-            iscontext: true
-          right:
-            value:
-              simple: active
-    view: |-
-      {
-        "position": {
-          "x": 3360,
-          "y": 2800
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  '54':
-    id: '54'
-    taskid: d3e4ef95-744f-4b03-85f6-b1a18a415f75
+  '55':
+    id: '55'
+    taskid: d92b905f-b6f6-408c-896b-6910ed0f9251
     type: regular
     task:
-      id: d3e4ef95-744f-4b03-85f6-b1a18a415f75
+      id: d92b905f-b6f6-408c-896b-6910ed0f9251
       version: -1
       name: Set incident attachments
       description: Copies a file from this incident to the specified incident. The file is recorded as an entry in the specified incident’s War Room.
@@ -2224,22 +2146,29 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '19'
+      - '6'
     scriptarguments:
       entryID:
         complex:
           root: File
           filters:
-          - - operator: isEqualString
+          - - operator: notIn
               left:
                 value:
                   simple: File.MD5
                 iscontext: true
               right:
                 value:
-                  simple: Email.Attachment.Hash
+                  simple: IncidentFiles.MD5
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: File.MD5
                 iscontext: true
           accessor: EntryID
+          transformers:
+          - operator: uniq
       incidentID:
         complex:
           root: incident
@@ -2250,14 +2179,102 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3360,
-          "y": 2980
+          "x": 1400,
+          "y": 3700
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '56':
+    id: '56'
+    taskid: 6ed6697b-5d7a-4700-8b04-41bf375be00f
+    type: condition
+    task:
+      id: 6ed6697b-5d7a-4700-8b04-41bf375be00f
+      version: -1
+      name: Check Whether to add attachments
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '6'
+      yes:
+      - '55'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File
+                filters:
+                - - operator: notIn
+                    left:
+                      value:
+                        simple: File.MD5
+                      iscontext: true
+                    right:
+                      value:
+                        simple: IncidentFiles.MD5
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: File.MD5
+                      iscontext: true
+                accessor: EntryID
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '57':
+    id: '57'
+    taskid: 6c2b45b8-9f84-49ed-81d4-75205b0d5aff
+    type: title
+    task:
+      id: 6c2b45b8-9f84-49ed-81d4-75205b0d5aff
+      version: -1
+      name: Add email files and attachments to the layout
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '56'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 3370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -2270,12 +2287,12 @@ view: |-
       "41_3_#default#": 0.35,
       "41_42_yes": 0.5,
       "4_5_yes": 0.57,
-      "53_19_#default#": 0.1
+      "56_55_yes": 0.46
     },
     "paper": {
       "dimensions": {
-        "height": 4475,
-        "width": 4210,
+        "height": 4525,
+        "width": 3800,
         "x": -470,
         "y": -510
       }
@@ -2463,5 +2480,6 @@ outputs:
   description: The file object.
   type: string
 tests:
-- Process Email - Generic - Test - Incident Starter
+- Phishing v3 - Get Original Email + Search & Delete - Test
+- Phishing v3 - DomainSquatting+EML+MaliciousIndicators - Test
 fromversion: 6.0.0
