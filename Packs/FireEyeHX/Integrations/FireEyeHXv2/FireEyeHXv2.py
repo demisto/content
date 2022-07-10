@@ -840,7 +840,7 @@ class Client(BaseClient):
             url_suffix=f'host_sets/{host_set_id}',
             return_empty_response=True
         )
-    
+
     def create_static_host_set_request(self, host_set_name: str, hosts_ids: List[str]):
         body = self.create_static_host_body_request(host_set_name, hosts_ids, [])
 
@@ -849,8 +849,8 @@ class Client(BaseClient):
             url_suffix='/host_sets/static',
             json_data=body
         )
-    
-    def update_static_host_set_request(self,host_set_id, host_set_name, add_host_ids, remove_host_ids):
+
+    def update_static_host_set_request(self, host_set_id, host_set_name, add_host_ids, remove_host_ids):
         body = self.create_static_host_body_request(host_set_name, add_host_ids, remove_host_ids)
 
         return self._http_request(
@@ -858,7 +858,7 @@ class Client(BaseClient):
             url_suffix=f'/host_sets/static/{host_set_id}',
             json_data=body
         )
-    
+
     def create_dynamic_host_set_request(self, host_set_name, query, query_key, query_value, query_operator):
         body = self.create_dynamic_host_body_request(host_set_name, query, query_key, query_value, query_operator)
 
@@ -867,7 +867,7 @@ class Client(BaseClient):
             url_suffix='/host_sets/static',
             json_data=body
         )
-            
+
     def update_dynamic_host_set_request(self, host_set_name, query, query_key, query_value, query_operator):
         body = self.create_dynamic_host_body_request(host_set_name, query, query_key, query_value, query_operator)
 
@@ -881,7 +881,7 @@ class Client(BaseClient):
     def create_static_host_body_request(host_set_name: str, host_ids_to_add: list, host_ids_to_remove: list):
         body = {
             'name': host_set_name,
-            'changes':[
+            'changes': [
                 {
                     'command': 'change',
                     'add': host_ids_to_add,
@@ -901,7 +901,7 @@ class Client(BaseClient):
         if query:
             body['query'] = query
         else:
-            body['query'] = [ # type: ignore
+            body['query'] = [  # type: ignore
                 {
                     'key': query_key,
                     'value': query_value,
@@ -910,7 +910,7 @@ class Client(BaseClient):
             ]
 
         return body
-        
+
     """
     ACQUISITION REQUEST
     """

@@ -2524,3 +2524,22 @@ Updates dynamic host set.
 #### Human Readable Output
 
 >Updating Host Set failed, check if you have the necessary permissions
+### fireeye-hx-delete-host-set-policy
+***
+Deletes a Host Set policy.
+
+
+#### Base Command
+
+`fireeye-hx-delete-host-set-policy`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| hostSetId | The host set ID. | Required | 
+| policyId | The policy ID. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
