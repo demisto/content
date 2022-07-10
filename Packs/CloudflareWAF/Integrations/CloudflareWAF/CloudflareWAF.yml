@@ -27,11 +27,13 @@ configuration:
 - name: proxy
   display: Use system proxy settings
   required: false
+  defaultvalue: 'false'
   type: 8
   additionalinfo:
 - name: insecure
   display: Trust any certificate (not secure)
   required: false
+  defaultvalue: 'false'
   type: 8
   additionalinfo: ''
 description: Cloudflare WAF integration allows customers to manage firewall rules, filters, and IP-lists. It also allows to retrieve zones list for each account.
@@ -101,7 +103,7 @@ script:
       isArray: false
       name: ref
       required: false
-    - description: Zone identifier. The initialization will override the value set in the instance.
+    - description: Zone identifier. The initialization will override the value set in the instance. Zone ID field is required for this command.
       isArray: false
       name: zone_id
       required: false
@@ -190,7 +192,7 @@ script:
       isArray: false
       name: ref
       required: false
-    - description: Zone identifier. The initialization will override the value set in the instance.
+    - description: Zone identifier. The initialization will override the value set in the instance. Zone ID field is required for this command.
       isArray: false
       name: zone_id
       required: false
@@ -204,7 +206,7 @@ script:
       isArray: false
       name: id
       required: true
-    - description: Zone identifier. The initialization will override the value set in the instance.
+    - description: Zone identifier. The initialization will override the value set in the instance. Zone ID field is required for this command.
       isArray: false
       name: zone_id
       required: false
@@ -258,7 +260,7 @@ script:
       isArray: false
       name: limit
       required: false
-    - description: Zone identifier. The initialization will override the value set in the instance.
+    - description: Zone identifier. The initialization will override the value set in the instance. Zone ID field is required for this command.
       isArray: false
       name: zone_id
       required: false
@@ -315,7 +317,7 @@ script:
       isArray: false
       name: description
       required: false
-    - description: Zone identifier. The initialization will override the value set in the instance.
+    - description: Zone identifier. The initialization will override the value set in the instance. Zone ID field is required for this command.
       isArray: false
       name: zone_id
       required: false
@@ -367,7 +369,7 @@ script:
       isArray: false
       name: description
       required: false
-    - description: Zone identifier. The initialization will override the value set in the instance.
+    - description: Zone identifier. The initialization will override the value set in the instance. Zone ID field is required for this command.
       isArray: false
       name: zone_id
       required: false
@@ -381,7 +383,7 @@ script:
       isArray: false
       name: filter_id
       required: true
-    - description: Zone identifier. The initialization will override the value set in the instance.
+    - description: Zone identifier. The initialization will override the value set in the instance. Zone ID field is required for this command.
       isArray: false
       name: zone_id
       required: false
@@ -438,7 +440,7 @@ script:
       isArray: false
       name: limit
       required: false
-    - description: Zone identifier. If provided, it will override the value set in the instance.
+    - description: Zone identifier. The initialization will override the value set in the instance. Zone ID field is required for this command.
       isArray: false
       name: zone_id
       required: false
@@ -806,9 +808,13 @@ script:
       isArray: false
       name: list_id
       required: true
-    - description: Retrieve details for an individual item Id.
+    - description: Retrieve details for an individual item ID. Note that the item_id field can only be provided if item_ip is not provided and vice versa.
       isArray: false
       name: item_id
+      required: false
+    - description: Retrieve details for an individual item IP. Note that the item_ip field can only be provided if item_id is not provided and vice versa.
+      isArray: false
+      name: item_ip
       required: false
     - description: |-
         Page number of paginated results.
@@ -826,7 +832,7 @@ script:
       name: limit
       required: false
     deprecated: false
-    description: List all items in the List or details of individual item by ID.
+    description: List all items in the List or details of individual item by ID or IP. This command may take a long time, you can set the 'execution-timeout' field if necessary.
     execution: false
     name: cloudflare-waf-ip-list-item-list
     outputs:
@@ -836,7 +842,7 @@ script:
     - contextPath: CloudflareWAF.IpListItem.list_id
       description: The list ID.
       type: String
-  dockerimage: demisto/python3:3.10.4.30607
+  dockerimage: demisto/python3:3.10.5.31797
   feed: false
   isfetch: false
   longRunning: false
