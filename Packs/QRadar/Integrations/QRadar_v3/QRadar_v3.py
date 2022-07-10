@@ -3402,6 +3402,48 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
     return GetModifiedRemoteDataResponse(list(new_modified_records_ids))
 
 
+def qradar_get_events_polling_command(client, params, args):
+    ScheduledCommand.raise_error_if_not_supported()
+    # run_polling_command
+    interval_in_secs = int(args.get('interval_in_seconds', 60))
+    offense_id = args.get('offense_id')
+    if 'search_id' not in args:
+        search_id = create_events_search(client, params.get('fetch_mode'), params.get('events_columns'),
+                                         params.get('events_limit'), offense_id)
+        if search_id == QueryStatus.ERROR.value:
+            return_error('Failed to create search for offense ID: {offense_id}'.format(offense_id=offense_id))
+        polling_args = {
+            'search_id': search_id,
+            'interval_in_seconds': interval_in_secs,
+            'polling': True,
+            **args
+        }
+        scheduled_command = ScheduledCommand('qradar_get_events_polling_command',
+                                             interval_in_secs,
+                                             polling_args,
+                                             timeout_in_seconds=600)
+        return CommandResults(scheduled_command=scheduled_command)
+    search_id = args.get('search_id')
+    try:
+        return qradar_search_results_get_command(client, args)
+    except Exception as e:
+        print_debug_msg(f'Failed to get search results for search ID: {search_id}. Error: {e}')
+        polling_args = {
+            'af_cookie': search_id,
+            'interval_in_seconds': interval_in_secs,
+            'polling': True,
+            **args
+        }
+        scheduled_command = ScheduledCommand(
+            command='qradar_get_events_polling_command',
+            next_run_in_seconds=interval_in_secs,
+            args=polling_args,
+            timeout_in_seconds=600)
+
+        # result with scheduled_command only - no update to the war room
+        return CommandResults(scheduled_command=scheduled_command)
+
+
 def migrate_integration_ctx(ctx: dict) -> dict:
     """Migrates the old context to the current context
 
@@ -3623,6 +3665,8 @@ def main() -> None:  # pragma: no cover
             validate_integration_context()
             return_results(get_modified_remote_data_command(client, params, args))
 
+        elif command == 'qradar-get-events-polling':
+            return_results(qradar_get_events_polling_command(client, args))
         else:
             raise NotImplementedError(f'''Command '{command}' is not implemented.''')
 
@@ -3634,4 +3678,3 @@ def main() -> None:  # pragma: no cover
 
 
 ''' ENTRY POINT '''
-
