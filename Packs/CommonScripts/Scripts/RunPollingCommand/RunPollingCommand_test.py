@@ -6,8 +6,8 @@ from RunPollingCommand import prepare_arg_dict
 IDS_ARGS = [
     # sanity
     (
-        ('ids', ['a', 'b', 'c'], None, None),
-        {'ids': 'a,b,c'},
+        ('ids', ['a', 'b', 'c'], None, None, 'SomeIntegration'),
+        {'ids': 'a,b,c', 'using': 'SomeIntegration'},
     ),
     # single ID
     (
