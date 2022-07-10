@@ -31,7 +31,7 @@ class Client(BaseClient):
         self.read_timeout = read_timeout
 
     def request_feed_url(self):
-        return self._http_request(method='GET', resp_type='response', timeout=self.read_timeout)
+        return self._http_request(method='GET', resp_type='response', timeout=self.read_timeout, full_url=self._base_url)
 
     def parse_feed_data(self, feed_response):
         try:
