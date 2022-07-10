@@ -1606,11 +1606,10 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
     failure_message = ''
     search_id = create_search_with_retry(client, fetch_mode, offense, events_columns,
                                          events_limit)
-    context_data, version = get_integration_context_with_version()
+    is_success = True
     if search_id == QueryStatus.ERROR.value:
         failure_message = 'Search for events was failed.'
-        context_data[MIRRORED_OFFENSES_QUERIED_CTX_KEY][offense_id] = search_id
-        safely_update_context_data(context_data, version, offense_ids=[offense_id])
+        is_success = False
     else:
         events, failure_message = poll_offense_events_with_retry(client, search_id, int(offense_id))
     events_fetched = sum(int(event.get('eventcount', 1)) for event in events)
@@ -1620,9 +1619,8 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
         offense['events'] = events
     else:
         print_debug_msg(f'No events were fetched for offense {offense_id}'
-                        'Adding to mirroring queue to be queried again.')
-        context_data[MIRRORED_OFFENSES_QUERIED_CTX_KEY][offense_id] = search_id
-        safely_update_context_data(context_data, version, offense_ids=[offense_id])
+                        f'Adding to mirroring queue to be queried again.')
+        is_success = False
     mirroring_events_message = update_events_mirror_message(mirror_options=MIRROR_OFFENSE_AND_EVENTS,
                                                             events_limit=events_limit,
                                                             fetch_mode=fetch_mode,
@@ -1634,7 +1632,7 @@ def enrich_offense_with_events(client: Client, offense: Dict, fetch_mode: str, e
                                                             )
     offense['mirroring_events_message'] = mirroring_events_message
 
-    return offense
+    return offense, is_success
 
 
 def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int, user_query: str, fetch_mode: str,
@@ -1697,7 +1695,16 @@ def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int
                     events_columns=events_columns,
                     events_limit=events_limit,
                 ))
-            offenses = [future.result(timeout=DEFAULT_EVENTS_TIMEOUT * 60) for future in futures]
+            offenses_with_success = [future.result(timeout=DEFAULT_EVENTS_TIMEOUT * 60) for future in futures]
+            offenses = [offense for offense, _ in offenses_with_success]
+            ctx, version = get_integration_context_with_version()
+            changed_offense_ids = []
+            for offense, is_success in offenses_with_success:
+                if not is_success:
+                    offense_id = str(offense['id'])
+                    ctx[MIRRORED_OFFENSES_QUERIED_CTX_KEY][offense_id] = QueryStatus.WAIT.value
+                    changed_offense_ids.append(offense_id)
+            safely_update_context_data(ctx, version, offense_ids=changed_offense_ids)
         except concurrent.futures.TimeoutError as e:
             demisto.error(
                 f"Error while enriching offenses with events: {str(e)} \n {traceback.format_exc()}")
@@ -3627,6 +3634,3 @@ def main() -> None:  # pragma: no cover
 
 ''' ENTRY POINT '''
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
-    register_signal_handler_profiling_dump(profiling_dump_rows_limit=PROFILING_DUMP_ROWS_LIMIT)
-    main()
