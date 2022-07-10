@@ -1,5 +1,6 @@
 id: MISP V3 Test
 version: 2
+fromversion: 5.0.0
 vcShouldKeepItemLegacyProdMachine: false
 name: MISP V3 Test
 description: Test playbook for MISP V3 integration
