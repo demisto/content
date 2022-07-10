@@ -87,7 +87,7 @@ def expected_jwt_token(api_key, current_time):
     payload = {
         "issuer": app_user_id,  # REQUIRED - Generated in the UI
         "iat": current_time,  # REQUIRED - Issued time - current epoch timestamp
-        "exp": current_time + 30
+        "exp": current_time + 60
     }
     return jwt.encode(payload, app_user_secret, algorithm="HS256")
 
