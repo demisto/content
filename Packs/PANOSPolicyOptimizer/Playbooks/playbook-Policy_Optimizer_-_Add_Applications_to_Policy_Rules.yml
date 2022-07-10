@@ -223,7 +223,7 @@ tasks:
       version: -1
       name: PAN-OS - Edit rule
       description: Edits a policy rule.
-      script: '|||panorama-edit-rule'
+      script: '|||pan-os-edit-rule'
       type: regular
       iscommand: true
       brand: ""
