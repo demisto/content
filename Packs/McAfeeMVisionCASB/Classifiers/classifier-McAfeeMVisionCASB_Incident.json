@@ -2,7 +2,7 @@
     "defaultIncidentType": "McAfee MVision CASB Alert",
     "description": "",
     "feed": false,
-    "id": "McAfee Mvision Casb Incident",
+    "id": "McAfee MVision CASB Incident",
     "keyTypeMap": {
         "Alert": "McAfee MVision CASB Alert",
         "Threat": "McAfee MVision CASB Threat"

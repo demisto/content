@@ -54,7 +54,7 @@
                 "Device External IP": {
                     "simple": "information.device.ip"
                 },
-                "Device Type": {
+                "McAfee MVision CASB Device Type": {
                     "simple": "information.device.device_type"
                 },
                 "Event ID": {
