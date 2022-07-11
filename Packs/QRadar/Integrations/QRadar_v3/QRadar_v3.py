@@ -3417,7 +3417,7 @@ def qradar_get_events_polling_command(client, params, args):
             'polling': True,
             **args
         }
-        scheduled_command = ScheduledCommand('qradar_get_events_polling_command',
+        scheduled_command = ScheduledCommand('qradar-get-events-polling',
                                              interval_in_secs,
                                              polling_args,
                                              timeout_in_seconds=600)
@@ -3434,7 +3434,7 @@ def qradar_get_events_polling_command(client, params, args):
             **args
         }
         scheduled_command = ScheduledCommand(
-            command='qradar_get_events_polling_command',
+            command='qradar-get-events-polling',
             next_run_in_seconds=interval_in_secs,
             args=polling_args,
             timeout_in_seconds=600)
