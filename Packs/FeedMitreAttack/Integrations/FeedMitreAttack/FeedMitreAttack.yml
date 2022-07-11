@@ -157,5 +157,7 @@ script:
   feed: true
   runonce: false
   subtype: python3
+tests:
+- No test
 fromversion: 5.5.0
 autoUpdateDockerImage: false
