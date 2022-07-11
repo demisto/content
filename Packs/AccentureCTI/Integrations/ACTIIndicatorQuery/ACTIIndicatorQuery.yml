@@ -187,6 +187,138 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
+  - name: acti-get-fundamentals-by-uuid
+    description: Checks reputation of a specific Malware Family/ Threat Campaign/ Threat Group/ Threat Actor.
+    arguments:
+    - name: uuid
+      required: true
+      default: true
+      isArray: false
+      description: Unique ID of the specific Malware Family/ Threat Campaign/ Threat Group/ Threat Actor.
+    outputs:
+    - contextPath: ACTI_MalwareFamily.display_text
+      description: The display text of the Malware Family, for example, 'Artemis'
+      type: String
+    - contextPath: ACTI_MalwareFamily.threat_types
+      description: The threat type of the Malware Family.
+      type: String
+    - contextPath: ACTI_MalwareFamily.type
+      description: The type of fundamental i.e. an Malware Family , for example, 'malware_family'
+      type: String
+    - contextPath: ACTI_MalwareFamily.last_published
+      description: The last published date of the Malware Family, for example, '2022-02-11T17:24:03.604Z'
+      type: String
+    - contextPath: ACTI_MalwareFamily.last_modified
+      description: The last modified date of the Malware Family, for example, '2022-02-11T17:24:03.604Z'
+      type: String
+    - contextPath: ACTI_MalwareFamily.index_timestamp
+      description: The index timestamp of the Malware Family, for example, '2022-02-11T17:24:03.604Z'
+      type: String
+    - contextPath: ACTI_MalwareFamily.created_on
+      description: The creation timestamp of the Malware Family, for example, '2020-03-12T22:22:25.000Z'
+      type: String
+    - contextPath: ACTI_MalwareFamily.description
+      description: The description of the Malware Family
+      type: String
+    - contextPath: ACTI_MalwareFamily.analysis
+      description: The analysis of the Malware Family
+      type: String
+    - contextPath: ACTI_ThreatGroup.display_text
+      description: The display text of the Threat Group, for example, 'Black Shadow'
+      type: String
+    - contextPath: ACTI_ThreatGroup.threat_types
+      description: The threat type of the Threat Group.
+      type: String
+    - contextPath: ACTI_ThreatGroup.type
+      description: The type of fundamental i.e. an Threat Group, for example, 'threat_group'
+      type: String
+    - contextPath: ACTI_ThreatGroup.last_published
+      description: The last published date of the Threat Group, for example, '2022-02-11T17:24:03.604Z'
+      type: String
+    - contextPath: ACTI_ThreatGroup.last_modified
+      description: The last modified date of the Threat Group, for example, '2022-02-11T17:24:03.604Z'
+      type: String
+    - contextPath: ACTI_ThreatGroup.index_timestamp
+      description: The index timestamp of the Threat Group, for example, '2022-02-11T17:24:03.604Z'
+      type: String
+    - contextPath: ACTI_ThreatGroup.created_on
+      description: The creation timestamp of the Threat Group, for example, '2020-03-12T22:22:25.000Z'
+      type: String
+    - contextPath: ACTI_ThreatGroup.description
+      description: The description of the Threat Group
+      type: String
+    - contextPath: ACTI_ThreatGroup.analysis
+      description: The analysis of the Threat Group
+      type: String
+    - contextPath: ACTI_ThreatActor.display_text
+      description: The display text of the Threat Actor, for example, 'RastaFarEye'
+      type: String
+    - contextPath: ACTI_ThreatActor.threat_types
+      description: The threat type of the Threat Actor.
+      type: String
+    - contextPath: ACTI_ThreatActor.type
+      description: The type of fundamental i.e. an Threat Actor, for example, 'threat_actor'
+      type: String
+    - contextPath: ACTI_ThreatActor.last_published
+      description: The last published date of the Threat Actor, for example, '2022-02-11T17:24:03.604Z'
+      type: String
+    - contextPath: ACTI_ThreatActor.last_modified
+      description: The last modified date of the Threat Actor, for example, '2022-02-11T17:24:03.604Z'
+      type: String
+    - contextPath: ACTI_ThreatActor.index_timestamp
+      description: The index timestamp of the Threat Actor, for example, '2022-02-11T17:24:03.604Z'
+      type: String
+    - contextPath: ACTI_ThreatActor.created_on
+      description: The creation timestamp of the Threat Actor, for example, '2020-03-12T22:22:25.000Z'
+      type: String
+    - contextPath: ACTI_ThreatActor.description
+      description: The description of the Threat Actor
+      type: String
+    - contextPath: ACTI_ThreatActor.analysis
+      description: The analysis of the Threat Actor
+      type: String
+    - contextPath: ACTI_ThreatCampaign.display_text
+      description: The display text of the Threat Campaign, for example, 'FBI Flash CU-000141-MW'
+      type: String
+    - contextPath: ACTI_ThreatCampaign.threat_types
+      description: The threat type of the Threat Campaign.
+      type: String
+    - contextPath: ACTI_ThreatCampaign.type
+      description: The type of fundamental i.e. an Threat Campaign , for example, 'threat_campaign'
+      type: String
+    - contextPath: ACTI_ThreatCampaign.last_published
+      description: The last published date of the Threat Campaign, for example, '2022-02-11T17:24:03.604Z'
+      type: String
+    - contextPath: ACTI_ThreatCampaign.last_modified
+      description: The last modified date of the Threat Campaign, for example, '2022-02-11T17:24:03.604Z'
+      type: String
+    - contextPath: ACTI_ThreatCampaign.index_timestamp
+      description: The index timestamp of the Threat Campaign, for example, '2022-02-11T17:24:03.604Z'
+      type: String
+    - contextPath: ACTI_ThreatCampaign.created_on
+      description: The creation timestamp of the Threat Campaign, for example, '2020-03-12T22:22:25.000Z'
+      type: String
+    - contextPath: ACTI_ThreatCampaign.description
+      description: The description of the Threat Campaign
+      type: String
+    - contextPath: ACTI_ThreatCampaign.analysis
+      description: The analysis of the Threat Campaign
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Reliability
+      description: Reliability of the source providing the intelligence data.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
   - name: acti-getThreatIntelReport
     description: Fetches Intelligence Alerts & Intelligence Reports.
     arguments:
@@ -272,7 +404,7 @@ script:
       description: The actual score.
       type: String
 
-  dockerimage: demisto/python3:3.10.4.28442
+  dockerimage: demisto/python3:3.10.4.29342
   feed: false
   isfetch: false
   longRunning: false

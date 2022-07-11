@@ -1,0 +1,61 @@
+commonfields:
+  id: APIMetricsValidation
+  version: -1
+name: APIMetricsValidation
+display: APIMetricsValidation
+category: Utilities
+description: This integration runs through all scenarios as defined in the API Metrics expected results guide.
+configuration:
+- display: This is not needed
+  name: testing
+  defaultvalue: okay
+  type: 0
+  required: true
+script:
+  script: ''
+  type: python
+  commands:
+  - name: test-scenario-one
+    arguments: []
+    description: Test Scenario One - All 10 Pass on first try
+    polling: true
+  - name: test-scenario-two
+    arguments: []
+    description: Test Scenario Two - 5 Pass on first try, 5 error on quota and are scheduled
+    polling: true
+  - name: test-scenario-three
+    arguments: []
+    description: Test Scenario Three - 5 Fail on second try
+    polling: true
+  - name: test-scenario-four
+    arguments: []
+    description: Test Scenario Four - 2 Succeed, 3 Fail on retry
+    polling: true
+  - name: test-scenario-five
+    arguments: []
+    description: Test Scenario Five - 10 IPs as a string, 1 success
+    polling: true
+  - name: test-scenario-six
+    arguments: []
+    description: Test Scenario Six - 10 items are in 1 call. 1 fail.
+    polling: true
+  - name: test-scenario-seven
+    arguments: []
+    description: Test Scenario Seven - 10 items are in 1 call. 1 fail. No metrics are returned.
+    polling: true
+  - name: test-scenario-eight
+    arguments: []
+    description: Test Scenario Eight - 10 items are in 1 call. 1 fail. No metrics returned. Timeout.
+    polling: true
+  - name: test-scenario-nine
+    arguments: []
+    description: This is the test PB scenario
+  - name: test-scenario-ten
+    arguments: []
+    description: This command is executed five times in the PB
+  dockerimage: demisto/python3:3.10.4.30607
+  runonce: false
+  subtype: python3
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)

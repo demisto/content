@@ -27,18 +27,19 @@ if not demisto.params()['proxy']:
     del os.environ['https_proxy']
 
 ''' GLOBAL VARS '''
-URL = demisto.params()['server'][:-1] if demisto.params()['server'].endswith('/') else demisto.params()['server']
+DEMISTO_PARAMS = demisto.params()
+URL = DEMISTO_PARAMS['server'][:-1] if DEMISTO_PARAMS['server'].endswith('/') else DEMISTO_PARAMS['server']
 # Remove the http/s from the url (It's added automatically later)
 URL = URL.replace('http://', '').replace('https://', '')
 # Split the URL into two parts hostname & port
-SERVER, PORT = URL.rsplit(":", 1)
-ORG_NAME = demisto.params()['org']
-USERNAME = demisto.params().get('credentials', {}).get('identifier')
-PASSWORD = demisto.params().get('credentials', {}).get('password')
-API_KEY_ID = demisto.params().get('api_key_id')
-API_KEY_SECRET = demisto.params().get('api_key_secret')
-USE_SSL = not demisto.params().get('insecure', False)
-FETCH_TIME = demisto.params().get('fetch_time', '')
+SERVER, PORT = URL.rsplit(":", 1) if ':' in URL else (URL, '443')
+ORG_NAME = DEMISTO_PARAMS['org']
+USERNAME = DEMISTO_PARAMS.get('credentials', {}).get('identifier')
+PASSWORD = DEMISTO_PARAMS.get('credentials', {}).get('password')
+API_KEY_ID = DEMISTO_PARAMS.get('api_key_id')
+API_KEY_SECRET = DEMISTO_PARAMS.get('api_key_secret')
+USE_SSL = not DEMISTO_PARAMS.get('insecure', False)
+FETCH_TIME = DEMISTO_PARAMS.get('fetch_time', '')
 TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 if FETCH_TIME:
     if FETCH_TIME[-1] != 'Z':

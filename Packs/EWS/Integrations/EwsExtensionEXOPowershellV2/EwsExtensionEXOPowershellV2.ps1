@@ -1,3 +1,4 @@
+. $PSScriptRoot\CommonServerPowerShell.ps1
 <# IMPORTANT NOTICE
 # When conencting to ExchangeOnline - only needed command between CreateSession
 # and DisconnectSession and let also the `finally` term to disconnect (it will do nothing if everything is fine).
@@ -7,6 +8,9 @@
 # should be called before returning results to the server.
 #>
 Import-Module ExchangeOnlineManagement
+
+# Disable PowerShell progress bars, as they aren't helpful in a non-interactive script
+$Global:ProgressPreference = 'SilentlyContinue'
 
 $COMMAND_PREFIX = "ews"
 $INTEGRATION_ENTRY_CONTEXT = "EWS"
@@ -47,11 +51,11 @@ class ExchangeOnlinePowershellV2Client
             "Organization" = $this.organization
             "Certificate" = $this.certificate
         }
-        Connect-ExchangeOnline @cmd_params -ShowBanner:$false -SkipImportSession -WarningAction:SilentlyContinue | Out-Null
+        Connect-ExchangeOnline @cmd_params -ShowBanner:$false -CommandName New-TenantAllowBlockListItems,Get-TenantAllowBlockListItems,Remove-TenantAllowBlockListItems -WarningAction:SilentlyContinue | Out-Null
     }
     DisconnectSession()
     {
-        Disconnect-ExchangeOnline -Confirm:$false -WarningAction:SilentlyContinue | Out-Null
+        Disconnect-ExchangeOnline -Confirm:$false -WarningAction:SilentlyContinue 6>$null | Out-Null
     }
     [PSObject]
     GetEXOCASMailbox(
@@ -315,6 +319,180 @@ class ExchangeOnlinePowershellV2Client
 
             #>
     }
+
+    [PSObject]
+    EXONewTenantAllowBlockList(
+            [string]$entries,
+            [string]$list_type,
+            [string]$list_subtype,
+            [string]$action,
+            [string]$notes,
+            [bool]$no_expiration,
+            [string]$expiration_date
+    )
+    {
+        $cmd_params = @{ }
+        $entries_array = @()
+        if ($entries.Contains(','))
+        {
+            $entries_array = $entries -split ','
+        }
+        if ($entries -and -not $entries_array)
+        {
+            $entries_array += $entries
+            $cmd_params.Entries = $entries_array
+        }
+        else
+        {
+            $cmd_params.Entries = $entries_array
+        }
+        if ($list_type)
+        {
+            $cmd_params.ListType = $list_type
+        }
+        if ($list_subtype)
+        {
+            $cmd_params.ListSubType = $list_subtype
+        }
+        if ($notes)
+        {
+            $cmd_params.Notes = $notes
+        }
+        if ($no_expiration)
+        {
+            $cmd_params.NoExpiration = $null
+        }
+        if ($expiration_date)
+        {
+            $cmd_params.ExpirationDate = $expiration_date
+        }
+        if ($action -eq "Block")
+        {
+            $cmd_params.Block = $null
+        }
+        if ($action -eq "Allow")
+        {
+            $cmd_params.Allow = $null
+        }
+        $this.CreateSession()
+        $results = New-TenantAllowBlockListItems @cmd_params
+        $this.DisconnectSession()
+        return $results
+        <#
+            .DESCRIPTION
+            Use the New-TenantAllowBlockListItems cmdlet to add new entries to the Tenant Allow/Block Lists for your organization.
+            This cmdlet returns all new entries created, details about them, and their status
+
+        #>
+    }
+
+    [PSObject]
+    EXORemoveTenantAllowBlockList(
+            [string]$entries,
+            [string]$ids,
+            [string]$list_type,
+            [string]$list_subtype
+    )
+    {
+        $cmd_params = @{ }
+        $entries_array = @()
+        $ids_array = @()
+        if ($entries.Contains(','))
+        {
+            $entries_array = $entries -split ','
+        }
+        if ($entries -and -not $entries_array)
+        {
+            $entries_array += $entries
+            $cmd_params.Entries = $entries_array
+        }
+        elseif ($entries_array)
+        {
+            $cmd_params.Entries = $entries_array
+        }
+        if ($ids -and $ids.Contains(','))
+        {
+            $ids_array = $ids -split ','
+        }
+        if ($ids -and -not $ids_array)
+        {
+            $ids_array += $ids
+            $cmd_params.Ids = $ids_array
+        }
+        elseif ($ids_array)
+        {
+            $cmd_params.Ids = $ids_array
+        }
+        if ($list_type)
+        {
+            $cmd_params.ListType = $list_type
+        }
+        if ($list_subtype)
+        {
+            $cmd_params.ListSubType = $list_subtype
+        }
+        $this.CreateSession()
+        $results = Remove-TenantAllowBlockListItems @cmd_params
+        $this.DisconnectSession()
+        return $results
+        <#
+            .DESCRIPTION
+            Use the New-TenantAllowBlockListItems cmdlet to add new entries to the Tenant Allow/Block Lists for your organization.
+            This cmdlet returns all new entries created, details about them, and their status
+
+        #>
+    }
+
+    [PSObject]
+    EXOGetTenantAllowBlockList(
+            [string]$entry,
+            [string]$list_type,
+            [string]$list_subtype,
+            [string]$action,
+            [bool]$no_expiration,
+            [string]$expiration_date
+    )
+    {
+        $cmd_params = @{ }
+        if ($entry)
+        {
+            $cmd_params.Entry = $entry
+        }
+        if ($list_type)
+        {
+            $cmd_params.ListType = $list_type
+        }
+        if ($list_subtype)
+        {
+            $cmd_params.ListSubType = $list_subtype
+        }
+        if ($no_expiration)
+        {
+            $cmd_params.NoExpiration = $null
+        }
+        if ($expiration_date)
+        {
+            $cmd_params.ExpirationDate = $expiration_date
+        }
+        if ($action -eq "Block")
+        {
+            $cmd_params.Block = $null
+        }
+        if ($action -eq "Allow")
+        {
+            $cmd_params.Allow = $null
+        }
+        $this.CreateSession()
+        $results = Get-TenantAllowBlockListItems @cmd_params
+        $this.DisconnectSession()
+        return $results
+        <#
+            .DESCRIPTION
+            Use the Get-TenantAllowBlockListItems cmdlet to retrieve current entries in the Tenant Allow/Block Lists for your organization.
+            This cmdlet returns current entries and details about them.
+
+        #>
+    }
 }
 
 function GetEXORecipientCommand
@@ -398,6 +576,96 @@ function GetEXOCASMailboxCommand
     $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.CASMailbox(obj.Guid === val.Guid)" = $raw_response }
     Write-Output $human_readable, $entry_context, $raw_response
 }
+
+function EXONewTenantAllowBlockListCommand
+{
+    [CmdletBinding()]
+    Param (
+        [Parameter(Mandatory)][ExchangeOnlinePowershellV2Client]$client,
+        [hashtable]$kwargs
+    )
+    $entries = $kwargs.entries
+    $list_type = $kwargs.list_type
+    $list_subtype = $kwargs.list_subtype
+    $action = $kwargs.action
+    $notes = $kwargs.notes
+    $no_expiration = if ($kwargs.no_expiration -eq "true") { $true } else { $false }
+    $expiration_date = $kwargs.expiration_date
+    $raw_response = $client.EXONewTenantAllowBlockList(
+        $entries, $list_type, $list_subtype, $action, $notes, $no_expiration, $expiration_date
+    )
+    $human_readable = TableToMarkdown $raw_response "Results of $command"
+    $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.NewTenantBlocks" = $raw_response }
+    Write-Output $human_readable, $entry_context, $raw_response
+
+}
+
+function EXOGetTenantAllowBlockListCommand
+{
+    [CmdletBinding()]
+    Param (
+        [Parameter(Mandatory)][ExchangeOnlinePowershellV2Client]$client,
+        [hashtable]$kwargs
+    )
+    $entry = $kwargs.entry
+    $list_type = $kwargs.list_type
+    $list_subtype = $kwargs.list_subtype
+    $action = $kwargs.action
+    $no_expiration = if ($kwargs.no_expiration -eq "true") { $true } else { $false }
+    $expiration_date = $kwargs.expiration_date
+    $raw_response = $client.EXOGetTenantAllowBlockList(
+        $entry, $list_type, $list_subtype, $action, $no_expiration, $expiration_date
+    )
+    $human_readable = TableToMarkdown $raw_response "Results of $command"
+    $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.CurrentTenantBlocks" = $raw_response }
+    Write-Output $human_readable, $entry_context, $raw_response
+}
+
+function EXOCountTenantAllowBlockListCommand
+{
+    [CmdletBinding()]
+    Param (
+        [Parameter(Mandatory)][ExchangeOnlinePowershellV2Client]$client,
+        [hashtable]$kwargs
+    )
+    $list_type = $kwargs.list_type
+    $list_subtype = $kwargs.list_subtype
+    $m = $client.EXOGetTenantAllowBlockList($null, $list_type, $list_subtype, $null, $null, $null) | Measure-Object
+    $raw_response = [PSCustomObject]@{
+        ListType = $list_type
+        ListSubType = $list_subtype
+        Count = $m.Count
+    }
+    $human_readable = TableToMarkdown $raw_response "Results of $command"
+    $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.CurrentListCount" = $raw_response }
+    Write-Output $human_readable, $entry_context, $raw_response
+
+}
+
+function EXORemoveTenantAllowBlockListCommand
+{
+    [CmdletBinding()]
+    Param (
+        [Parameter(Mandatory)][ExchangeOnlinePowershellV2Client]$client,
+        [hashtable]$kwargs
+    )
+    $entries = $kwargs.entries
+    $ids = $kwargs.ids
+    $list_type = $kwargs.list_type
+    $list_subtype = $kwargs.list_subtype
+    if ($entries -and $ids)
+    {
+        ReturnError "Error: Please provide either entries by value OR IDs, not both."
+    }
+    $raw_response = $client.EXORemoveTenantAllowBlockList(
+        $entries, $ids, $list_type, $list_subtype
+    )
+    $human_readable = TableToMarkdown $raw_response "Results of $command"
+    $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.RemovedTenantBlocks" = $raw_response }
+    Write-Output $human_readable, $entry_context, $raw_response
+
+}
+
 function TestModuleCommand($client)
 {
     try
@@ -458,6 +726,18 @@ function Main
             }
             "$script:COMMAND_PREFIX-recipient-list" {
                 ($human_readable, $entry_context, $raw_response) = GetEXORecipientCommand $exo_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-new-tenant-allow-block-list-items" {
+                ($human_readable, $entry_context, $raw_response) = EXONewTenantAllowBlockListCommand $exo_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-get-tenant-allow-block-list-items" {
+                ($human_readable, $entry_context, $raw_response) = EXOGetTenantAllowBlockListCommand $exo_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-get-tenant-allow-block-list-count" {
+                ($human_readable, $entry_context, $raw_response) = EXOCountTenantAllowBlockListCommand $exo_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-remove-tenant-allow-block-list-items" {
+                ($human_readable, $entry_context, $raw_response) = EXORemoveTenantAllowBlockListCommand $exo_client $command_arguments
             }
             default {
                 ReturnError "Could not recognize $command"

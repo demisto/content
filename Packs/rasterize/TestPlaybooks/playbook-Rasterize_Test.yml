@@ -1,27 +1,28 @@
 id: Rasterize Test
 version: -1
 name: Rasterize Test
-starttaskid: "0"
+starttaskid: '0'
 fromversion: 5.0.0
 tasks:
-  "0":
-    id: "0"
-    taskid: e47b5a1b-b1a4-4b38-818f-599d02e14e44
+  '0':
+    id: '0'
+    taskid: 6c45208e-15e1-455d-87b4-bb0a677c248e
     type: start
     task:
-      id: e47b5a1b-b1a4-4b38-818f-599d02e14e44
+      id: 6c45208e-15e1-455d-87b4-bb0a677c248e
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "10"
+      - '10'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 50
         }
       }
@@ -30,43 +31,38 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "1":
-    id: "1"
-    taskid: cb9f2404-8bcd-4c60-88cc-9fbf1ec10bc6
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
+    taskid: ba5e5f80-3845-4a7a-8906-21ce49ef43aa
     type: regular
     task:
-      id: cb9f2404-8bcd-4c60-88cc-9fbf1ec10bc6
+      id: ba5e5f80-3845-4a7a-8906-21ce49ef43aa
       version: -1
       name: get vaild email
       description: Sends http request. Returns the response as json.
       scriptName: http
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
-      body: {}
       filename:
         simple: valid_email-rasterize
-      headers: {}
-      insecure: {}
       method:
         simple: GET
-      password: {}
-      proxy: {}
       saveAsFile:
-        simple: "yes"
-      unsecure: {}
+        simple: yes
       url:
         simple: https://raw.githubusercontent.com/demisto/content/master/TestData/valid_email-rasterize.eml
-      username: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 895
         }
       }
@@ -75,26 +71,29 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "2":
-    id: "2"
-    taskid: 02ec5945-0854-4f54-88e9-695330981a8e
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '2':
+    id: '2'
+    taskid: 512e25a8-358a-4c17-8777-9b195ee52886
     type: playbook
     task:
-      id: 02ec5945-0854-4f54-88e9-695330981a8e
+      id: 512e25a8-358a-4c17-8777-9b195ee52886
       version: -1
       name: Process Email - Generic for Rasterize
       playbookName: Process Email - Generic for Rasterize
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     separatecontext: true
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1070
         }
       }
@@ -103,34 +102,32 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "3":
-    id: "3"
-    taskid: a3d0b053-32d1-46bd-88ca-534bae1d5aa0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '3':
+    id: '3'
+    taskid: 50f3e8b8-8c87-4726-8b57-5bd9c8211f97
     type: regular
     task:
-      id: a3d0b053-32d1-46bd-88ca-534bae1d5aa0
+      id: 50f3e8b8-8c87-4726-8b57-5bd9c8211f97
       version: -1
       name: Delete Context
       description: Delete field from context
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
     scriptarguments:
       all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
+        simple: yes
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1245
         }
       }
@@ -139,34 +136,32 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "5":
-    id: "5"
-    taskid: 1ac04388-32f8-48c5-8e9e-5db265c29856
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '5':
+    id: '5'
+    taskid: f3ae18bc-ae99-49c7-8f3c-fa8bfcff9f34
     type: regular
     task:
-      id: 1ac04388-32f8-48c5-8e9e-5db265c29856
+      id: f3ae18bc-ae99-49c7-8f3c-fa8bfcff9f34
       version: -1
       name: Delete Context
       description: Delete field from context
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
     scriptarguments:
       all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
+        simple: yes
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1770
         }
       }
@@ -175,43 +170,38 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "6":
-    id: "6"
-    taskid: fde94430-5e57-41e6-8f97-39c2cf3905e5
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
+    taskid: 55b844aa-8776-4f2a-866a-8c39b7ab0d8c
     type: regular
     task:
-      id: fde94430-5e57-41e6-8f97-39c2cf3905e5
+      id: 55b844aa-8776-4f2a-866a-8c39b7ab0d8c
       version: -1
       name: get corrupt email
       description: Sends http request. Returns the response as json.
       scriptName: http
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "9"
+      - '9'
     scriptarguments:
-      body: {}
       filename:
         simple: corrupt_email-rasterize
-      headers: {}
-      insecure: {}
       method:
         simple: GET
-      password: {}
-      proxy: {}
       saveAsFile:
-        simple: "yes"
-      unsecure: {}
+        simple: yes
       url:
         simple: https://raw.githubusercontent.com/demisto/content/master/TestData/corrupt_email-rasterize.eml
-      username: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1420
         }
       }
@@ -220,26 +210,29 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "7":
-    id: "7"
-    taskid: 6b33a3fc-2c80-4519-81e1-67a2b15df645
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '7':
+    id: '7'
+    taskid: f50c22a9-395e-4d9a-87cc-d673de8b8d20
     type: playbook
     task:
-      id: 6b33a3fc-2c80-4519-81e1-67a2b15df645
+      id: f50c22a9-395e-4d9a-87cc-d673de8b8d20
       version: -1
       name: Process Email - Generic for Rasterize
       playbookName: Process Email - Generic for Rasterize
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "16"
+      - '16'
     separatecontext: true
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 2120
         }
       }
@@ -248,43 +241,38 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "8":
-    id: "8"
-    taskid: 4db251ce-d185-4e23-83b7-14debfa0709f
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '8':
+    id: '8'
+    taskid: 2642202d-0b1b-450f-8f00-1e2e270ada3d
     type: regular
     task:
-      id: 4db251ce-d185-4e23-83b7-14debfa0709f
+      id: 2642202d-0b1b-450f-8f00-1e2e270ada3d
       version: -1
       name: get valid Image
       description: Sends http request. Returns the response as json.
       scriptName: http
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
     scriptarguments:
-      body: {}
       filename:
         simple: corrupt_email-rasterize
-      headers: {}
-      insecure: {}
       method:
         simple: GET
-      password: {}
-      proxy: {}
       saveAsFile:
-        simple: "yes"
-      unsecure: {}
+        simple: yes
       url:
         simple: https://raw.githubusercontent.com/demisto/content/master/TestData/test_image.png
-      username: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1945
         }
       }
@@ -293,26 +281,29 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "9":
-    id: "9"
-    taskid: 3a2d7aff-c2cd-49d0-86c5-89caa8b6715f
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '9':
+    id: '9'
+    taskid: 6e02b9b1-8e9f-4efe-8e4c-3d5175d01ce5
     type: playbook
     task:
-      id: 3a2d7aff-c2cd-49d0-86c5-89caa8b6715f
+      id: 6e02b9b1-8e9f-4efe-8e4c-3d5175d01ce5
       version: -1
       name: Process Email - Generic for Rasterize
       playbookName: Process Email - Generic for Rasterize
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     separatecontext: true
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1595
         }
       }
@@ -321,34 +312,32 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "10":
-    id: "10"
-    taskid: 6c6fc53c-da73-4101-85ba-085e1105bfb1
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '10':
+    id: '10'
+    taskid: 2ca315d5-9412-4ca1-8322-a2b783c2b641
     type: regular
     task:
-      id: 6c6fc53c-da73-4101-85ba-085e1105bfb1
+      id: 2ca315d5-9412-4ca1-8322-a2b783c2b641
       version: -1
       name: Delete Context
       description: Delete field from context
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "12"
+      - '12'
     scriptarguments:
       all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
+        simple: yes
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 195
         }
       }
@@ -357,23 +346,26 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "11":
-    id: "11"
-    taskid: 7c3c015e-8cda-4295-8652-88c524e20e62
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '11':
+    id: '11'
+    taskid: ca6be82e-ec82-414a-80f6-f9f2b001b739
     type: title
     task:
-      id: 7c3c015e-8cda-4295-8652-88c524e20e62
+      id: ca6be82e-ec82-414a-80f6-f9f2b001b739
       version: -1
       name: Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3015
+          "x": 480,
+          "y": 3695
         }
       }
     note: false
@@ -381,36 +373,36 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "12":
-    id: "12"
-    taskid: 5533a172-35f4-4612-8221-ecba2c82d365
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '12':
+    id: '12'
+    taskid: 6e47f34d-c15a-4922-8148-b47d1a5dc33d
     type: regular
     task:
-      id: 5533a172-35f4-4612-8221-ecba2c82d365
+      id: 6e47f34d-c15a-4922-8148-b47d1a5dc33d
       version: -1
       name: Rasterize URL to PNG (Google)
       description: Rasterize a URL into image or PDF
       script: '|||rasterize'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "14"
+      - '14'
     scriptarguments:
-      height: {}
       type:
         simple: png
       url:
         simple: https://google.com
       wait_time:
-        simple: "5"
-      width: {}
+        simple: '5'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 370
         }
       }
@@ -419,22 +411,24 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "14":
-    id: "14"
-    taskid: db1f0295-28c5-4faa-8f23-6cb0c84cf716
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '14':
+    id: '14'
+    taskid: 3ce30b08-b738-4769-817f-a8bf5d4f7a52
     type: regular
     task:
-      id: db1f0295-28c5-4faa-8f23-6cb0c84cf716
+      id: 3ce30b08-b738-4769-817f-a8bf5d4f7a52
       version: -1
       name: Test Image (ImageOCR)
       description: Extracts text from an image.
       script: '|||image-ocr-extract-text'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "15"
+      - '15'
     scriptarguments:
       entryid:
         complex:
@@ -461,12 +455,11 @@ tasks:
           accessor: EntryID
           transformers:
           - operator: uniq
-      langs: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 545
         }
       }
@@ -475,27 +468,29 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "15":
-    id: "15"
-    taskid: 5f70c824-d895-433d-8791-7aaa635e5d52
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '15':
+    id: '15'
+    taskid: 31cf58bd-9309-4a85-8918-660a449ee296
     type: condition
     task:
-      id: 5f70c824-d895-433d-8791-7aaa635e5d52
+      id: 31cf58bd-9309-4a85-8918-660a449ee296
       version: -1
       name: Check Text
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "20"
-      "Yes":
-      - "1"
+      - '20'
+      Yes:
+      - '1'
     separatecontext: false
     conditions:
-    - label: "Yes"
+    - label: Yes
       condition:
-      - - operator: containsGeneral
+      - - operator: containsString
           left:
             value:
               complex:
@@ -510,7 +505,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 720
         }
       }
@@ -519,35 +514,33 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "16":
-    id: "16"
-    taskid: 01233f35-0927-4a2c-85a1-358e27d18af4
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '16':
+    id: '16'
+    taskid: 8d0e16d4-67e9-4467-8bd7-ca193c4a41d4
     type: regular
     task:
-      id: 01233f35-0927-4a2c-85a1-358e27d18af4
+      id: 8d0e16d4-67e9-4467-8bd7-ca193c4a41d4
       version: -1
       name: Delete Context
       description: Delete field from context
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "17"
+      - '17'
     scriptarguments:
       all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
+        simple: yes
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2300
+          "x": 265,
+          "y": 2295
         }
       }
     note: false
@@ -555,12 +548,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "17":
-    id: "17"
-    taskid: 3e20f135-e655-44d7-8c64-3b62a4f6c299
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '17':
+    id: '17'
+    taskid: b373c305-7f7f-4d8e-8097-56607d089c26
     type: regular
     task:
-      id: 3e20f135-e655-44d7-8c64-3b62a4f6c299
+      id: b373c305-7f7f-4d8e-8097-56607d089c26
       version: -1
       name: Rasterize Large HTML
       description: Converts the body of an email to an image file or a PDF file.
@@ -570,400 +565,24 @@ tasks:
       brand: Rasterize
     nexttasks:
       '#none#':
-      - "18"
+      - '18'
     scriptarguments:
-      height: {}
       htmlBody:
-        simple: "<head>\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\n<meta
-          content=\"text/html; charset=utf-8\">\n<meta content=\"width=device-width,
-          initial-scale=1\" name=\"viewport\">\n<meta name=\"x-apple-disable-message-reformatting\">\n<meta
-          content=\"IE=edge\">\n<meta content=\"telephone=no\" name=\"format-detection\">\n<style
-          type=\"text/css\">\n<!--\n#outlook a\n\t{padding:0}\n.ExternalClass\n\t{width:100%}\n.ExternalClass,
-          .ExternalClass p, .ExternalClass span, .ExternalClass font, .ExternalClass
-          td, .ExternalClass div\n\t{line-height:100%}\n.es-button\n\t{text-decoration:none!important}\na[x-apple-data-detectors]\n\t{color:inherit!important;\n\ttext-decoration:none!important;\n\tfont-size:inherit!important;\n\tfont-family:inherit!important;\n\tfont-weight:inherit!important;\n\tline-height:inherit!important}\n.es-desk-hidden\n\t{display:none;\n\tfloat:left;\n\toverflow:hidden;\n\twidth:0;\n\tmax-height:0;\n\tline-height:0}\nhtml,
-          body\n\t{width:100%;\n\tfont-family:'arial','helvetica neue','helvetica','sans-serif'}\ntable\n\t{border-collapse:collapse;\n\tborder-spacing:0px}\ntable
-          td, html, body, .es-wrapper\n\t{padding:0;\n\tmargin:0}\n.es-content, .es-header,
-          .es-footer\n\t{table-layout:fixed!important;\n\twidth:100%}\nimg\n\t{display:block;\n\tborder:0;\n\toutline:none;\n\ttext-decoration:none}\ntable
-          tr\n\t{border-collapse:collapse}\np, hr\n\t{margin:0}\nh1, h2, h3, h4, h5\n\t{margin:0;\n\tline-height:120%;\n\tfont-family:tahoma,verdana,segoe,sans-serif}\np,
-          ul li, ol li, a\n\t{}\n.es-left\n\t{float:left}\n.es-right\n\t{float:right}\n.es-p5\n\t{padding:5px}\n.es-p5t\n\t{padding-top:5px}\n.es-p5b\n\t{padding-bottom:5px}\n.es-p5l\n\t{padding-left:5px}\n.es-p5r\n\t{padding-right:5px}\n.es-p10\n\t{padding:10px}\n.es-p10t\n\t{padding-top:10px}\n.es-p10b\n\t{padding-bottom:10px}\n.es-p10l\n\t{padding-left:10px}\n.es-p10r\n\t{padding-right:10px}\n.es-p15\n\t{padding:15px}\n.es-p15t\n\t{padding-top:15px}\n.es-p15b\n\t{padding-bottom:15px}\n.es-p15l\n\t{padding-left:15px}\n.es-p15r\n\t{padding-right:15px}\n.es-p20\n\t{padding:20px}\n.es-p20t\n\t{padding-top:20px}\n.es-p20b\n\t{padding-bottom:20px}\n.es-p20l\n\t{padding-left:20px}\n.es-p20r\n\t{padding-right:20px}\n.es-p25\n\t{padding:25px}\n.es-p25t\n\t{padding-top:25px}\n.es-p25b\n\t{padding-bottom:25px}\n.es-p25l\n\t{padding-left:25px}\n.es-p25r\n\t{padding-right:25px}\n.es-p30\n\t{padding:30px}\n.es-p30t\n\t{padding-top:30px}\n.es-p30b\n\t{padding-bottom:30px}\n.es-p30l\n\t{padding-left:30px}\n.es-p30r\n\t{padding-right:30px}\n.es-p35\n\t{padding:35px}\n.es-p35t\n\t{padding-top:35px}\n.es-p35b\n\t{padding-bottom:35px}\n.es-p35l\n\t{padding-left:35px}\n.es-p35r\n\t{padding-right:35px}\n.es-p40\n\t{padding:40px}\n.es-p40t\n\t{padding-top:40px}\n.es-p40b\n\t{padding-bottom:40px}\n.es-p40l\n\t{padding-left:40px}\n.es-p40r\n\t{padding-right:40px}\n.es-menu
-          td\n\t{border:0}\n.es-menu td a img\n\t{display:inline-block!important}\na\n\t{font-family:'arial','helvetica
-          neue','helvetica','sans-serif';\n\tfont-size:14px;\n\ttext-decoration:none}\nh1\n\t{font-size:30px;\n\tfont-style:normal;\n\tfont-weight:normal;\n\tcolor:#333333}\nh1
-          a\n\t{font-size:30px;\n\ttext-align:left}\nh2\n\t{font-size:24px;\n\tfont-style:normal;\n\tfont-weight:normal;\n\tcolor:#333333}\nh2
-          a\n\t{font-size:24px;\n\ttext-align:left}\nh3\n\t{font-size:20px;\n\tfont-style:normal;\n\tfont-weight:normal;\n\tcolor:#333333}\nh3
-          a\n\t{font-size:20px;\n\ttext-align:left}\np, ul li, ol li\n\t{font-size:14px;\n\tfont-family:'arial','helvetica
-          neue','helvetica','sans-serif';\n\tline-height:150%}\nul li, ol li\n\t{margin-bottom:15px}\n.es-menu
-          td a\n\t{text-decoration:none;\n\tdisplay:block}\n.es-wrapper\n\t{width:100%;\n\theight:100%;\n\tbackground-image:;\n\tbackground-repeat:repeat;\n\tbackground-position:center
-          top}\n.es-wrapper-color\n\t{background-color:#fefefe}\n.es-content-body\n\t{background-color:#ffffff}\n.es-content-body
-          p, .es-content-body ul li, .es-content-body ol li\n\t{color:#333333}\n.es-content-body
-          a\n\t{color:#34265f}\n.es-header\n\t{background-color:transparent;\n\tbackground-image:;\n\tbackground-repeat:repeat;\n\tbackground-position:center
-          top}\n.es-header-body\n\t{background-color:#E0E1E3}\n.es-header-body p,
-          .es-header-body ul li, .es-header-body ol li\n\t{color:#ffffff;\n\tfont-size:14px}\n.es-header-body
-          a\n\t{color:#ffffff;\n\tfont-size:14px}\n.es-footer\n\t{background-color:transparent;\n\tbackground-image:;\n\tbackground-repeat:repeat;\n\tbackground-position:center
-          top}\n.es-footer-body\n\t{background-color:transparent}\n.es-footer-body
-          p, .es-footer-body ul li, .es-footer-body ol li\n\t{color:#333333;\n\tfont-size:12px}\n.es-footer-body
-          a\n\t{color:#34265f;\n\tfont-size:12px}\n.es-infoblock, .es-infoblock p,
-          .es-infoblock ul li, .es-infoblock ol li\n\t{line-height:120%;\n\tfont-size:12px;\n\tcolor:#999999}\n.es-infoblock
-          a\n\t{font-size:12px;\n\tcolor:#999999}\na.es-button\n\t{border-style:solid;\n\tborder-color:#34265f;\n\tborder-width:10px
-          20px 10px 20px;\n\tdisplay:inline-block;\n\tbackground:#34265f;\n\tborder-radius:5px;\n\tfont-size:18px;\n\tfont-family:'arial','helvetica
-          neue','helvetica','sans-serif';\n\tfont-weight:normal;\n\tfont-style:normal;\n\tline-height:120%;\n\tcolor:#ffffff;\n\ttext-decoration:none;\n\twidth:auto;\n\ttext-align:center}\n.es-button-border\n\t{border-style:solid
-          solid solid solid;\n\tborder-color:transparent transparent transparent transparent;\n\tbackground:#2cb543;\n\tborder-width:0px
-          0px 0px 0px;\n\tdisplay:inline-block;\n\tborder-radius:5px;\n\twidth:auto}\n@media
-          only screen and (max-width: 600px) {\np, ul li, ol li, a\n\t{font-size:16px!important;\n\tline-height:150%!important}\nh1\n\t{font-size:30px!important;\n\ttext-align:center;\n\tline-height:120%!important}\nh2\n\t{font-size:26px!important;\n\ttext-align:center;\n\tline-height:120%!important}\nh3\n\t{font-size:20px!important;\n\ttext-align:center;\n\tline-height:120%!important}\nh1
-          a\n\t{font-size:30px!important;\n\ttext-align:center}\nh2 a\n\t{font-size:24px!important;\n\ttext-align:center}\nh3
-          a\n\t{font-size:20px!important;\n\ttext-align:center}\n.es-menu td a\n\t{font-size:16px!important}\n.es-header-body
-          p, .es-header-body ul li, .es-header-body ol li, .es-header-body a\n\t{font-size:16px!important}\n.es-footer-body
-          p, .es-footer-body ul li, .es-footer-body ol li, .es-footer-body a\n\t{font-size:16px!important}\n.es-infoblock
-          p, .es-infoblock ul li, .es-infoblock ol li, .es-infoblock a\n\t{font-size:12px!important}\n*[class=\"gmail-fix\"]\n\t{display:none!important}\n.es-m-txt-c,
-          .es-m-txt-c h1, .es-m-txt-c h2, .es-m-txt-c h3\n\t{text-align:center!important}\n.es-m-txt-r,
-          .es-m-txt-r h1, .es-m-txt-r h2, .es-m-txt-r h3\n\t{text-align:right!important}\n.es-m-txt-l,
-          .es-m-txt-l h1, .es-m-txt-l h2, .es-m-txt-l h3\n\t{text-align:left!important}\n.es-m-txt-r
-          img, .es-m-txt-c img, .es-m-txt-l img\n\t{display:inline!important}\n.es-button-border\n\t{display:block!important}\na.es-button\n\t{font-size:20px!important;\n\tdisplay:block!important;\n\tborder-width:10px
-          0px 10px 0px!important}\n.es-btn-fw\n\t{border-width:10px 0px!important;\n\ttext-align:center!important}\n.es-adaptive
-          table, .es-btn-fw, .es-btn-fw-brdr, .es-left, .es-right\n\t{width:100%!important}\n.es-content
-          table, .es-header table, .es-footer table, .es-content, .es-footer, .es-header\n\t{width:100%!important;\n\tmax-width:600px!important}\n.es-adapt-td\n\t{display:block!important;\n\twidth:100%!important}\n.adapt-img\n\t{width:100%!important;\n\theight:auto!important}\n.es-m-p0\n\t{padding:0px!important}\n.es-m-p0r\n\t{padding-right:0px!important}\n.es-m-p0l\n\t{padding-left:0px!important}\n.es-m-p0t\n\t{padding-top:0px!important}\n.es-m-p0b\n\t{padding-bottom:0!important}\n.es-m-p20b\n\t{padding-bottom:20px!important}\n.es-mobile-hidden,
-          .es-hidden\n\t{display:none!important}\n.es-desk-hidden\n\t{display:table-row!important;\n\twidth:auto!important;\n\toverflow:visible!important;\n\tfloat:none!important;\n\tmax-height:inherit!important;\n\tline-height:inherit!important}\n.es-desk-menu-hidden\n\t{display:table-cell!important}\ntable.es-table-not-adapt,
-          .esd-block-html table\n\t{width:auto!important}\ntable.es-social\n\t{display:inline-block!important}\ntable.es-social
-          td\n\t{display:inline-block!important}\n\n\t}\n-->\n</style>\n</head>\n<body
-          style=\"width:100%; font-family:'arial','helvetica neue','helvetica','sans-serif';
-          padding:0; margin:0\">\n<div style=\"border:1px solid; margin:10px 0px;
-          padding:15px 10px 15px 50px; background-repeat:no-repeat; background-position:10px
-          center; color:#9F6000; background-color:#FEEFB3; font-family:Arial,Helvetica,sans-serif\">\n<p
-          style=\"font-size:18px\">Unsubscribe</p>\n<p style=\"font-size:13px\">It
-          appears that you have subscribed to commercial messages from this sender.
-          To stop receiving such messages from this sender, please\n<a href=\"http://secure-web.cisco.com/1xW8Ef3dPL6Nds64nl9QLOT-OKB5eH8Qd5MdoQA3QdNovTkln-kr_9OQt_NpE2IR9Ibu1ydumkqEnAMY3Hw1Uf35Qm-ufimmxlKbxvhAU8Uwou7lCu-oM2_BHZpOzP2Bie4sBK4JwdfF1rCHnnWDNzUO0m_m7sZI74N2n_A-067Z8ToO8boDjAZXuCV40S5Nq7at1LAtU9la5Gonjl_oOPV3_Vm-3EzwWa8o6SCmnCfPgr9C5CnCXJ0I2I1Lpcbd1kYEwMbbmNuCjrTvxcXOqLj4-AOYO42dOfAzvKN7owrqvdLoWwQss3G0QENUesVFv_3_WVsHz8hwOegGXCMpv8Ar-JZAQ6FSQA8swljSBJ8pvgnfdMNqt3RgiOxgbnVpaxfRxtXV8bNep7-gkNJGgD-JFviAtCg6GwjwVGpK3dFvKJzvPDck2LdHYsV8MpY4lr6uO3yplQj2cVYlWkFYepg3sAzOksBy_CocKzUxbu1zSQ4k1N8wGpRYZChDLudRl/l92%3Amailto%3Aadmin%2B9z2zlfi0vabmibpgetls08kclfpgf0dnt5o1ptrtpm8%40em.usw-mail.com%3Fsubject%3Dunsubscribe98%3Ahttp%3A%2F%2Fem.usw-mail.com%2Fprefs%2F9z2zugodama5puc57hkgusv0kv3g49j267oblt00ab8%3Fsubscribe%3Doptout%26submit%3Dy304%3Ahttp%3A%2F%2Fem.usw-mail.com%2Frd%2F9z2zri5shagn89qnraj4684t6qpjejigg1pi8elmua8_rp2ash2s8gb2sbgebjqf99lmeinctrlkmq39cdjkorrbdt0e9qj6djnkjhf4onlesrr2d1lmgqm0tbm6ljm1dln6lr76s36mdr6ecb4sap66pr7m8or2s30cgp31pv56mq39cdnqgoj2cjlsmq34tljklo72ttjm08rashieipffcdjkorrbcp6elp3cthieip3adf7m1onfdbhecj7ashlmionbpjle8qr9cbi4noe\">\nunsubscribe</a></p>\n</div>\n<div
-          class=\"es-wrapper-color\" style=\"background-color:#fefefe\">\n<table class=\"es-wrapper\"
-          border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" style=\"border-collapse:collapse;
-          border-spacing:0px; padding:0; margin:0; width:100%; height:100%; background-repeat:repeat;
-          background-position:center top\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td
-          class=\"esd-email-paddings\" valign=\"top\" style=\"padding:0; margin:0\">\n<table
-          class=\"es-content es-preheader esd-header-popover\" align=\"center\" border=\"0\"
-          cellspacing=\"0\" cellpadding=\"0\" style=\"border-collapse:collapse; border-spacing:0px;
-          width:100%; table-layout:fixed!important\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td
-          class=\"es-adaptive esd-stripe\" align=\"center\" style=\"padding:0; margin:0\">\n<table
-          class=\"es-content-body\" align=\"center\" border=\"0\" cellspacing=\"0\"
-          cellpadding=\"0\" width=\"600\" style=\"background-color:#dbdcde; border-collapse:collapse;
-          border-spacing:0px\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td
-          class=\"esd-structure es-p10\" align=\"left\" style=\"padding:10px; margin:0\">\n<table
-          class=\"es-left\" align=\"left\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"
-          style=\"border-collapse:collapse; border-spacing:0px; float:left\">\n<tbody>\n<tr
-          style=\"border-collapse:collapse\">\n<td class=\"esd-container-frame\" align=\"left\"
-          width=\"280\" style=\"padding:0; margin:0\">\n<table border=\"0\" cellspacing=\"0\"
-          cellpadding=\"0\" width=\"100%\" style=\"border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr
-          style=\"border-collapse:collapse\">\n<td class=\"es-infoblock esd-block-text\"
-          align=\"left\" style=\"padding:0; margin:0; line-height:120%; font-size:12px;
-          color:#999999\">\n<p style=\"margin:0; font-size:12px; font-family:'arial','helvetica
-          neue','helvetica','sans-serif'; line-height:120%; color:#999999\">\n&nbsp;</p>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n<table
-          class=\"es-right\" align=\"right\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"
-          style=\"border-collapse:collapse; border-spacing:0px; float:right\">\n<tbody>\n<tr
-          style=\"border-collapse:collapse\">\n<td class=\"esd-container-frame\" align=\"left\"
-          width=\"280\" style=\"padding:0; margin:0\">\n<table border=\"0\" cellspacing=\"0\"
-          cellpadding=\"0\" width=\"100%\" style=\"border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr
-          style=\"border-collapse:collapse\">\n<td class=\"es-infoblock esd-block-text\"
-          align=\"right\" style=\"padding:0; margin:0; line-height:120%; font-size:12px;
-          color:#999999\">\n<p style=\"margin:0; font-size:12px; font-family:'arial','helvetica
-          neue','helvetica','sans-serif'; line-height:120%; color:#999999\">\n<a href=\"http://em.usw-mail.com/rd/9z2zoh8ctktug7npu6tpvd2a40cm8k9teen8c5beba0\"
-          target=\"_blank\" style=\"font-family:'arial','helvetica neue','helvetica','sans-serif';
-          font-size:12px; text-decoration:none; color:#999999\">View in browser</a></p>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n<table
-          class=\"es-header\" align=\"center\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"
-          style=\"border-collapse:collapse; border-spacing:0px; width:100%; background-color:transparent;
-          background-repeat:repeat; background-position:center top; table-layout:fixed!important\">\n<tbody>\n<tr
-          style=\"border-collapse:collapse\">\n<td class=\"esd-stripe\" align=\"center\"
-          style=\"padding:0; margin:0\">\n<table class=\"es-header-body\" align=\"center\"
-          border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"600\" style=\"border-collapse:collapse;
-          border-spacing:0px; background-color:#e0e1e3\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td
-          class=\"esd-structure es-p20t es-p20b es-p20r es-p20l\" align=\"left\" style=\"padding:20px;
-          margin:0\">\n<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\"
-          style=\"border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td
-          class=\"esd-container-frame\" align=\"center\" width=\"560\" valign=\"top\"
-          style=\"padding:0; margin:0\">\n<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\"
-          width=\"100%\" style=\"border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr
-          style=\"border-collapse:collapse\">\n<td class=\"esd-block-image es-m-txt-c\"
-          align=\"center\" style=\"padding:0; margin:0\">\n<a href=\"http://em.usw-mail.com/rd/9z2zuu15vpdp7mtveu28t6o8javbdl5hvfuf18of1bg\"
-          target=\"_blank\" style=\"font-family:'arial','helvetica neue','helvetica','sans-serif';
-          font-size:14px; text-decoration:none; color:#ffffff\"><img src=\"http://em.usw-mail.com/rd/9z2z1squsc89c3efmahbmq38gn7sk5vj4mto49gfmb0\"
-          alt=\"Marquis Who's Who Logo\" width=\"220\" title=\"Marquis Who's Who Logo\"
-          style=\"display:block; border:0; outline:none; text-decoration:none\"></a></td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n<tr
-          style=\"border-collapse:collapse\">\n<td class=\"esd-structure\" align=\"left\"
-          style=\"padding:0; margin:0\">\n<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\"
-          width=\"100%\" style=\"border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr
-          style=\"border-collapse:collapse\">\n<td class=\"esd-container-frame\" align=\"center\"
-          width=\"600\" valign=\"top\" style=\"padding:0; margin:0\">\n<table border=\"0\"
-          cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" style=\"border-collapse:collapse;
-          border-spacing:0px\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td
-          class=\"esd-block-text es-p10b es-p10t\" align=\"center\" style=\"padding:0;
-          margin:0; padding-top:10px; padding-bottom:10px\">\n<h2 style=\"color:#1556a3;
-          margin:0; line-height:120%; font-family:tahoma,verdana,segoe,sans-serif;
-          font-size:24px; font-style:normal; font-weight:normal\">\n<b>Mark Upton
-          </b></h2>\n</td>\n</tr>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-block-text
-          es-p10b es-m-txt-c\" align=\"center\" style=\"padding:0; margin:0; padding-bottom:10px\">\n<h3
-          style=\"color:#333333; margin:0; line-height:120%; font-family:tahoma,verdana,segoe,sans-serif;
-          font-size:20px; font-style:normal; font-weight:normal\">\nYou've been nominated
-          for Who's Who in America!</h3>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n<table
-          class=\"es-content\" align=\"center\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"
-          style=\"border-collapse:collapse; border-spacing:0px; width:100%; table-layout:fixed!important\">\n<tbody>\n<tr
-          style=\"border-collapse:collapse\">\n<td class=\"esd-stripe\" align=\"center\"
-          style=\"padding:0; margin:0\">\n<table class=\"es-content-body\" align=\"center\"
-          border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"600\" bgcolor=\"#E0E1E3\"
-          style=\"background-color:#e0e1e3; border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr
-          style=\"border-collapse:collapse\">\n<td class=\"esd-structure es-p5t es-p20r
-          es-p20l\" align=\"right\" style=\"padding:0; margin:0; padding-top:5px;
-          padding-left:20px; padding-right:20px\">\n<table align=\"left\" border=\"0\"
-          cellspacing=\"0\" cellpadding=\"0\" style=\"border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr
-          style=\"border-collapse:collapse\">\n<td class=\"esd-container-frame\" align=\"left\"
-          width=\"240\" style=\"padding:0; margin:0\">\n<table border=\"0\" cellspacing=\"0\"
-          cellpadding=\"0\" width=\"100%\" style=\"border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr
-          style=\"border-collapse:collapse\">\n<td class=\"esd-block-image\" align=\"left\"
-          style=\"padding:0; margin:0\"><a target=\"_blank\" style=\"font-family:'arial','helvetica
-          neue','helvetica','sans-serif'; font-size:14px; text-decoration:none; color:#34265f\"><img
-          width=\"240\" title=\"Marquis Who's Who Expanded Biographies\" class=\"adapt-img\"
-          src=\"https://gallery.mailchimp.com/68ba95ed59b32297bb7798af8/images/49b28122-ced3-45df-a99f-ebe557e46c4f.png\"
-          style=\"display:block; border:0; outline:none; text-decoration:none\">\n</a></td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n<table
-          class=\"es-left\" align=\"right\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"
-          style=\"border-collapse:collapse; border-spacing:0px; float:left\">\n<tbody>\n<tr
-          style=\"border-collapse:collapse\">\n<td class=\"es-m-p0r es-m-p20b esd-container-frame\"
-          align=\"center\" width=\"300\" valign=\"top\" style=\"padding:0; margin:0\">\n<table
-          border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" style=\"border-collapse:collapse;
-          border-spacing:0px\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td
-          class=\"esd-block-text es-p10b es-p10t\" align=\"left\" style=\"padding:0;
-          margin:0; padding-top:10px; padding-bottom:10px\">\n&nbsp;</td>\n</tr>\n<tr
-          style=\"border-collapse:collapse\">\n<td class=\"esd-block-text es-p10b\"
-          align=\"left\" style=\"padding:0; margin:0; padding-bottom:10px\">\n<p style=\"font-size:16px;
-          margin:0; font-family:'arial','helvetica neue','helvetica','sans-serif';
-          line-height:150%; color:#333333\">\nTo accept this nomination and begin
-          the review process, we kindly ask that you use the\n<b>secure link below</b>
-          to provide us with the details about your credentials and accomplishments.</p>\n</td>\n</tr>\n<tr
-          style=\"border-collapse:collapse\">\n<td class=\"esd-block-button es-m-txt-c
-          es-p10b\" align=\"center\" style=\"padding:0; margin:0; padding-bottom:10px\">\n<span
-          class=\"es-button-border\" style=\"border-radius:10px; border-style:solid;
-          border-width:0px; border-color:transparent; background:#8B0F12 none repeat
-          scroll 0% 0%; display:inline-block; width:auto\"><a href=\"http://em.usw-mail.com/rd/9z2zv9cvn7saq7cen3ksa0u8lu4ulqpt839r60amm30\"
-          target=\"_blank\" class=\"es-button\" style=\"font-size:14px; border-radius:10px;
-          background:#8B0F12 none repeat scroll 0% 0%; border-color:#8B0F12; font-family:'arial','helvetica
-          neue','helvetica','sans-serif'; text-decoration:none!important; color:#ffffff;
-          border-style:solid; border-width:10px 20px 10px 20px; display:inline-block;
-          font-weight:normal; font-style:normal; line-height:120%; width:auto; text-align:center\"><b>Click\n
-          here - Accept your nomination!</b></a> </span></td>\n</tr>\n<tr style=\"border-collapse:collapse\">\n<td
-          class=\"esd-block-text es-m-txt-c\" align=\"center\" style=\"padding:0;
-          margin:0\">\n<p style=\"font-size:12px; color:#1556a3; margin:0; font-family:'arial','helvetica
-          neue','helvetica','sans-serif'; line-height:150%\">\nPlease respond within
-          the <b>next 10 days</b> to ensure that your biography is considered for
-          inclusion in 2019!</p>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n<tr
-          style=\"border-collapse:collapse\">\n<td class=\"esd-structure\" align=\"left\"
-          style=\"padding:0; margin:0\">\n<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\"
-          width=\"100%\" style=\"border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr
-          style=\"border-collapse:collapse\">\n<td class=\"esd-container-frame\" align=\"center\"
-          width=\"600\" valign=\"top\" style=\"padding:0; margin:0\">\n<table border=\"0\"
-          cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" bgcolor=\"#ffffff\" style=\"background-color:#1556a3;
-          border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td
-          class=\"esd-block-image\" align=\"center\" style=\"padding:0; margin:0\"><a
-          target=\"_blank\" style=\"font-family:'arial','helvetica neue','helvetica','sans-serif';
-          font-size:14px; text-decoration:none; color:#34265f\"><img width=\"600\"
-          class=\"adapt-img\" src=\"https://gallery.mailchimp.com/68ba95ed59b32297bb7798af8/images/172e5f39-9388-4b08-acec-c5a661f2c628.png\"
-          style=\"display:block; border:0; outline:none; text-decoration:none\">\n</a></td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n<table
-          class=\"es-content\" align=\"center\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"
-          style=\"border-collapse:collapse; border-spacing:0px; width:100%; table-layout:fixed!important\">\n<tbody>\n<tr
-          style=\"border-collapse:collapse\">\n<td class=\"esd-stripe\" align=\"center\"
-          style=\"padding:0; margin:0\">\n<table class=\"es-content-body\" align=\"center\"
-          border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"600\" bgcolor=\"#ededed\"
-          style=\"background-color:#1556a3; border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr
-          style=\"border-collapse:collapse\">\n<td class=\"esd-structure es-p15t es-p20r
-          es-p20l\" align=\"left\" style=\"padding:0; margin:0; padding-top:15px;
-          padding-left:20px; padding-right:20px\">\n&nbsp;\n<table class=\"es-right\"
-          align=\"right\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"border-collapse:collapse;
-          border-spacing:0px; float:right\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td
-          class=\"esd-container-frame\" align=\"left\" width=\"270\" style=\"padding:0;
-          margin:0\">\n<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\"
-          style=\"border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td
-          class=\"esd-block-image\" align=\"center\" style=\"padding:0; margin:0\"><a
-          target=\"_blank\" style=\"font-family:'arial','helvetica neue','helvetica','sans-serif';
-          font-size:14px; text-decoration:none; color:#34265f\"><img src=\"https://gallery.mailchimp.com/68ba95ed59b32297bb7798af8/images/d6f8e19f-3fde-4510-87be-7758087342d6.png\"
-          alt=\"Marquis Who's Who Biographee\" width=\"155\" title=\"Marquis Who's
-          Who Biographee\" style=\"display:block; border:0; outline:none; text-decoration:none\">\n</a></td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n<table
-          class=\"es-content\" align=\"center\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"
-          style=\"border-collapse:collapse; border-spacing:0px; width:100%; table-layout:fixed!important\">\n<tbody>\n<tr
-          style=\"border-collapse:collapse\">\n<td class=\"esd-stripe\" align=\"center\"
-          style=\"padding:0; margin:0\">\n<table class=\"es-content-body\" align=\"center\"
-          border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"600\" bgcolor=\"#ffffff\"
-          style=\"background-color:#1556a3; border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr
-          style=\"border-collapse:collapse\">\n<td class=\"esd-structure es-p10t es-p20r\"
-          align=\"left\" style=\"padding:0; margin:0; padding-top:10px; padding-right:20px\">\n<table
-          class=\"es-left\" align=\"left\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"
-          style=\"border-collapse:collapse; border-spacing:0px; float:left\">\n<tbody>\n<tr
-          style=\"border-collapse:collapse\">\n<td class=\"es-m-p0r es-m-p20b esd-container-frame\"
-          align=\"center\" width=\"150\" valign=\"top\" style=\"padding:0; margin:0\">\n<table
-          border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" style=\"border-collapse:collapse;
-          border-spacing:0px\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td
-          class=\"esd-block-image es-m-txt-c es-p5t es-p5r\" align=\"right\" style=\"padding:0;
-          margin:0; padding-top:5px; padding-right:5px\">\n<a target=\"_blank\" style=\"font-family:'arial','helvetica
-          neue','helvetica','sans-serif'; font-size:14px; text-decoration:none; color:#34265f\"><img
-          title=\"About Marquis Who's Who\" width=\"80\" alt=\"About Marquis Who's
-          Who\" src=\"https://gallery.mailchimp.com/68ba95ed59b32297bb7798af8/images/bb624e00-f2c7-4d90-9eb5-5d72baaa07c3.png\"
-          style=\"display:block; border:0; outline:none; text-decoration:none\">\n</a></td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n<table
-          align=\"right\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"border-collapse:collapse;
-          border-spacing:0px\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td
-          class=\"esd-container-frame\" align=\"left\" width=\"410\" style=\"padding:0;
-          margin:0\">\n<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\"
-          style=\"border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td
-          class=\"esd-block-text es-p5b es-p20l es-m-txt-c\" align=\"left\" style=\"padding:0;
-          margin:0; padding-bottom:5px; padding-left:20px\">\n<h4 style=\"color:#ffffff;
-          margin:0; line-height:120%; font-family:tahoma,verdana,segoe,sans-serif\">\nAbout
-          Marquis Who's Who</h4>\n</td>\n</tr>\n<tr style=\"border-collapse:collapse\">\n<td
-          class=\"esd-block-text es-m-txt-c es-p20l\" align=\"left\" style=\"padding:0;
-          margin:0; padding-left:20px\">\n<p style=\"color:#ffffff; margin:0; font-size:14px;
-          font-family:'arial','helvetica neue','helvetica','sans-serif'; line-height:150%\">\nMarquis
-          Who's Who is the World's preeminent biographical publisher. Since 1898,
-          Who's Who in America has been relied upon by librarians, students, employers,
-          and researchers of all types. Inclusion in Who's Who can have a significant
-          impact on your personal\n branding, visibility, and credibility.</p>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n<tr
-          style=\"border-collapse:collapse\">\n<td class=\"esd-structure es-p10t es-p20r\"
-          align=\"left\" style=\"padding:0; margin:0; padding-top:10px; padding-right:20px\">\n<table
-          class=\"es-left\" align=\"left\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"
-          style=\"border-collapse:collapse; border-spacing:0px; float:left\">\n<tbody>\n<tr
-          style=\"border-collapse:collapse\">\n<td class=\"es-m-p0r es-m-p20b esd-container-frame\"
-          align=\"center\" width=\"150\" valign=\"top\" style=\"padding:0; margin:0\">\n<table
-          border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" style=\"border-collapse:collapse;
-          border-spacing:0px\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td
-          class=\"esd-block-image es-m-txt-c es-p5t es-p5r\" align=\"right\" style=\"padding:0;
-          margin:0; padding-top:5px; padding-right:5px\">\n<a target=\"_blank\" style=\"font-family:'arial','helvetica
-          neue','helvetica','sans-serif'; font-size:14px; text-decoration:none; color:#34265f\"><img
-          width=\"90\" title=\"About The Nomination Process\" src=\"https://gallery.mailchimp.com/68ba95ed59b32297bb7798af8/images/c63cb0d2-07e4-4615-8af8-96a9e2d21913.png\"
-          alt=\"About The Nomination Process\" style=\"display:block; border:0; outline:none;
-          text-decoration:none\">\n</a></td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n<table
-          align=\"right\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"border-collapse:collapse;
-          border-spacing:0px\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td
-          class=\"esd-container-frame\" align=\"left\" width=\"410\" style=\"padding:0;
-          margin:0\">\n<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\"
-          style=\"border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td
-          class=\"esd-block-text es-p5b es-p20l es-m-txt-c\" align=\"left\" style=\"padding:0;
-          margin:0; padding-bottom:5px; padding-left:20px\">\n<h4 style=\"color:#ffffff;
-          margin:0; line-height:120%; font-family:tahoma,verdana,segoe,sans-serif\">\nAbout
-          The Nomination Process</h4>\n</td>\n</tr>\n<tr style=\"border-collapse:collapse\">\n<td
-          class=\"esd-block-text es-m-txt-c es-p20l\" align=\"left\" style=\"padding:0;
-          margin:0; padding-left:20px\">\n<p class=\"es-p20b\" style=\"color:#ffffff;
-          margin:0; font-size:14px; font-family:'arial','helvetica neue','helvetica','sans-serif';
-          line-height:150%; padding-bottom:20px\">\nNominations are received by several
-          means including personal referrals, industry surveys, review of significant
-          publications, and through our continual monitoring of newspapers, magazines,
-          awards, grants, educational and corporate records.</p>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n<tr
-          style=\"border-collapse:collapse\">\n<td class=\"esd-structure es-p10t es-p20r\"
-          align=\"left\" style=\"padding:0; margin:0; padding-top:10px; padding-right:20px\">\n<table
-          class=\"es-left\" align=\"left\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"
-          style=\"border-collapse:collapse; border-spacing:0px; float:left\">\n<tbody>\n<tr
-          style=\"border-collapse:collapse\">\n<td class=\"es-m-p0r es-m-p20b esd-container-frame\"
-          align=\"center\" width=\"150\" valign=\"top\" style=\"padding:0; margin:0\">\n<table
-          border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" style=\"border-collapse:collapse;
-          border-spacing:0px\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td
-          class=\"esd-block-image es-m-txt-c es-p5t es-p5r\" align=\"right\" style=\"padding:0;
-          margin:0; padding-top:5px; padding-right:5px\">\n<a target=\"_blank\" style=\"font-family:'arial','helvetica
-          neue','helvetica','sans-serif'; font-size:14px; text-decoration:none; color:#34265f\"><img
-          alt=\"About The Standards of Acceptance\" src=\"https://gallery.mailchimp.com/68ba95ed59b32297bb7798af8/images/d8c613bf-23d9-4b3d-b44a-0a4d89e47d93.png\"
-          title=\"About The Standards of Acceptance\" width=\"70\" style=\"display:block;
-          border:0; outline:none; text-decoration:none\">\n</a></td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n<table
-          align=\"right\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"border-collapse:collapse;
-          border-spacing:0px\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td
-          class=\"esd-container-frame\" align=\"left\" width=\"410\" style=\"padding:0;
-          margin:0\">\n<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\"
-          style=\"border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td
-          class=\"esd-block-text es-p5b es-p20l es-m-txt-c\" align=\"left\" style=\"padding:0;
-          margin:0; padding-bottom:5px; padding-left:20px\">\n<h4 style=\"color:#ffffff;
-          margin:0; line-height:120%; font-family:tahoma,verdana,segoe,sans-serif\">\nAbout
-          The Standards of Acceptance</h4>\n</td>\n</tr>\n<tr style=\"border-collapse:collapse\">\n<td
-          class=\"esd-block-text es-m-txt-c es-p20l\" align=\"left\" style=\"padding:0;
-          margin:0; padding-left:20px\">\n<p style=\"color:#ffffff; margin:0; font-size:14px;
-          font-family:'arial','helvetica neue','helvetica','sans-serif'; line-height:150%\">\nUsing
-          the standards that Marquis has developed over 120 years of biographical
-          publishing, we select individuals for inclusion based on professional and
-          personal accomplishments, education, contributions to society, and involvement
-          with important institutions\n or events.</p>\n</td>\n</tr>\n<tr style=\"border-collapse:collapse\">\n<td
-          class=\"esd-block-button es-m-txt-c es-p15b es-p15t es-p20l\" align=\"left\"
-          style=\"padding:0; margin:0; padding-top:15px; padding-bottom:15px; padding-left:20px\">\n<span
-          class=\"es-button-border\" style=\"border-radius:10px; border-style:solid;
-          border-width:0px; border-color:transparent; background:#8b0f12 none repeat
-          scroll 0% 0%; display:inline-block; width:auto\"><a href=\"http://em.usw-mail.com/rd/9z2z20gh98mahc0hh2e0l1o6cidi09kcdv1n13pnm98\"
-          target=\"_blank\" class=\"es-button\" style=\"font-size:14px; border-radius:10px;
-          background:#8b0f12 none repeat scroll 0% 0%; border-color:#8b0f12; font-family:'arial','helvetica
-          neue','helvetica','sans-serif'; text-decoration:none!important; color:#ffffff;
-          border-style:solid; border-width:10px 20px 10px 20px; display:inline-block;
-          font-weight:normal; font-style:normal; line-height:120%; width:auto; text-align:center\"><b>I\n
-          accept this nomination!</b></a> </span></td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n<tr
-          style=\"border-collapse:collapse\">\n<td class=\"esd-structure\" align=\"left\"
-          style=\"padding:0; margin:0\">\n<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\"
-          width=\"100%\" style=\"border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr
-          style=\"border-collapse:collapse\">\n<td class=\"esd-container-frame\" align=\"center\"
-          width=\"600\" valign=\"top\" style=\"padding:0; margin:0\">\n<table border=\"0\"
-          cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" bgcolor=\"#34265f\" style=\"background-color:#e0e1e3;
-          border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td
-          class=\"esd-block-image\" align=\"center\" style=\"padding:0; margin:0\"><a
-          target=\"_blank\" style=\"font-family:'arial','helvetica neue','helvetica','sans-serif';
-          font-size:14px; text-decoration:none; color:#34265f\"><img src=\"https://gallery.mailchimp.com/68ba95ed59b32297bb7798af8/images/77c5e1f7-97c1-4a24-8bc6-232a72839450.png\"
-          width=\"600\" class=\"adapt-img\" style=\"display:block; border:0; outline:none;
-          text-decoration:none\"></a></td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n<table
-          class=\"es-content\" align=\"center\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"
-          style=\"border-collapse:collapse; border-spacing:0px; width:100%; table-layout:fixed!important\">\n<tbody>\n<tr
-          style=\"border-collapse:collapse\">\n<td class=\"esd-stripe\" align=\"center\"
-          style=\"padding:0; margin:0\">\n<table class=\"es-content-body\" align=\"center\"
-          border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"600\" bgcolor=\"#ffffff\"
-          style=\"background-color:#e0e1e3; border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr
-          style=\"border-collapse:collapse\">\n<td class=\"esd-structure es-p10t es-p20r\"
-          align=\"left\" style=\"padding:0; margin:0; padding-top:10px; padding-right:20px\">\n<table
-          class=\"es-left\" align=\"left\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\"
-          style=\"border-collapse:collapse; border-spacing:0px; float:left\">\n<tbody>\n<tr
-          style=\"border-collapse:collapse\">\n<td class=\"es-m-p0r es-m-p20b esd-container-frame\"
-          align=\"center\" width=\"150\" valign=\"top\" style=\"padding:0; margin:0\">\n<table
-          border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" style=\"border-collapse:collapse;
-          border-spacing:0px\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td
-          class=\"esd-block-image es-m-txt-c es-p20t es-p5r\" align=\"right\" style=\"padding:0;
-          margin:0; padding-right:5px; padding-top:20px\">\n&nbsp;</td>\n</tr>\n<tr
-          style=\"border-collapse:collapse\">\n<td class=\"esd-block-image es-m-txt-c
-          es-p5r\" align=\"right\" style=\"padding:0; margin:0; padding-right:5px\">\n<a
-          target=\"_blank\" style=\"font-family:'arial','helvetica neue','helvetica','sans-serif';
-          font-size:14px; text-decoration:none; color:#34265f\"><img alt=\"About Marquis
-          Who's Who\" src=\"https://gallery.mailchimp.com/68ba95ed59b32297bb7798af8/images/68c14001-d211-459b-9189-4ce402dc04f9.png\"
-          title=\"About Marquis Who's Who\" width=\"120\" style=\"display:block; border:0;
-          outline:none; text-decoration:none\">\n</a></td>\n</tr>\n<tr style=\"border-collapse:collapse\">\n<td
-          class=\"esd-block-image es-m-txt-c es-p20t es-p5r\" align=\"right\" style=\"padding:0;
-          margin:0; padding-right:5px; padding-top:20px\">\n&nbsp;</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n<table
-          align=\"right\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"border-collapse:collapse;
-          border-spacing:0px\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td
-          class=\"esd-container-frame es-p10b\" align=\"left\" width=\"410\" style=\"padding:0;
-          margin:0; padding-bottom:10px\">\n<table border=\"0\" cellspacing=\"0\"
-          cellpadding=\"0\" width=\"100%\" style=\"border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr
-          style=\"border-collapse:collapse\">\n<td class=\"esd-block-text es-m-txt-c
-          es-p5b\" align=\"left\" style=\"padding:0; margin:0; padding-bottom:5px\">\n<p
-          style=\"font-size:12px; margin:0; font-family:'arial','helvetica neue','helvetica','sans-serif';
-          line-height:150%; color:#333333\">\n<b>Please note: If you have previously
-          submitted your biography to Marquis, or been included in any prior Marquis
-          Publications, you may disregard this message.</b></p>\n</td>\n</tr>\n<tr
-          style=\"border-collapse:collapse\">\n<td class=\"esd-block-text es-p5b\"
-          align=\"left\" style=\"padding:0; margin:0; padding-bottom:5px\">\n<p style=\"font-size:12px;
-          margin:0; font-family:'arial','helvetica neue','helvetica','sans-serif';
-          line-height:150%; color:#333333\">\nCopyright © 2019 by Marquis Publications.
-          All rights reserved.<br>\nAt Marquis, we respect your privacy. <a href=\"http://em.usw-mail.com/rd/9z2zrtjg92nv5dbvqshddrggr8s9dg1b58pporaj4r8\"
-          target=\"_blank\" style=\"font-size:12px; text-decoration:underline; font-family:'arial','helvetica
-          neue','helvetica','sans-serif'; color:#34265f\">\nClick here</a> to view
-          our privacy policy.<br>\n<br>\n100 Campus Town Circle, Suite 103 #2018<br>\nEwing,
-          New Jersey 08638 908-279-0100</p>\n</td>\n</tr>\n<tr style=\"border-collapse:collapse\">\n<td
-          class=\"esd-block-text es-p5b\" align=\"left\" style=\"padding:0; margin:0;
-          padding-bottom:5px\">\n<p style=\"font-size:12px; margin:0; font-family:'arial','helvetica
-          neue','helvetica','sans-serif'; line-height:150%; color:#333333\">\n&nbsp;</p>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n<div>\n<div
-          style=\"font-size:9pt; font-family:arial,san-serif; padding:10px 15px; margin:5px;
-          line-height:12pt; text-align:center\">\n<p>If you do not wish to receive
-          these emails in the future you may unsubscribe here:\n<a href=\"http://secure-web.cisco.com/1shuI_d8ReudZFKNtwCMVTnjypEprq1ERvbD5W9m_1niZ3xXPsJ02oxpkwrZZetH1Ob01mGeXr-jhhzGq0mp0N6ikDsrxLkQbbhtmUoRJD3wPFuyvHCTk_1yjVlKvNsknffmuAFFQkCpbE4N5-3s5-1S9aamz4uWDsNKpnGuVRl3hjIYzp13MlHg82PmozrIBVnslbYcADGjTiB4UEAieidYU9QM61By4yeEvn5tALWmTT4GVNVJ5mD1wWUdaiSSEVziJQoNFO7jnqqFK40vJyeqtK4PxTbxAaNwIKTxikgSaJHgGXqAwEX4h0UPRu7t9nAA0R0ITOH8DJr60kyy2eTcucB6W_Y_KU9VDv8OzNoBeqmAEPhfnEmzemDmq1Iy2Ewid6JO70hj1W8t1m32iU0-r78UMATQNcVJhGEJa638KQX_qv9_K3mWDK4FD97NDvvZUtyo8pZIvx9838YslN8-qZXTIN822IOFO6oBKodHfEsrpUXTWfB5rTOdr32VU/l304%3Ahttp%3A%2F%2Fem.usw-mail.com%2Frd%2F9z2zri5shagn89qnraj4684t6qpjejigg1pi8elmua8_rp2ash2s8gb2sbgebjqf99lmeinctrlkmq39cdjkorrbdt0e9qj6djnkjhf4onlesrr2d1lmgqm0tbm6ljm1dln6lr76s36mdr6ecb4sap66pr7m8or2s30cgp31pv56mq39cdnqgoj2cjlsmq34tljklo72ttjm08rashieipffcdjkorrbcp6elp3cthieip3adf7m1onfdbhecj7ashlmionbpjle8qr9cbi4noe\">\nUnsubscribe</a></p>\n<p>You
-          have been identified as not living within the European Union. If your location
-          has changed and you<br>\nnow reside within the European Union please <a
-          href=\"http://em.usw-mail.com/rd/9z2zdcmvr5h59pthfd41g5bvvln7cnr1anuk7rlc12o_rp2ash2s8gb2sbgebjqf99lmeinctrlkmq39cdjkorrbdt0e9qj6djnkjhf4onlesrr2d1lmgqm0tbm6ljm1dln6lr76s36mdr6ecb4sap66pr7m8or2s30cgp31pv56mq39cdnqgoj2cjlsmq34tljklo72ttjm08rashieipffcdjkorrbcp6elp3cthieip3adf7m1onfdbhecj7ashlmionbpjle8qr9cbi4no\">\nclick
-          here</a> and we will remove your information<br>\nimmediately. This message
-          is being sent to you as a business professional.</p>\n</div>\n</div>\n<br
-          clear=\"all\">\n<div class=\"ipost-opt-out\">\n<p></p>\n</div>\n</body>\n</html>\""
-      offline: {}
-      type: {}
-      width: {}
+        simple: "<head>\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\n<meta content=\"text/html; charset=utf-8\">\n<meta content=\"width=device-width, initial-scale=1\" name=\"viewport\">\n<meta name=\"x-apple-disable-message-reformatting\">\n<meta content=\"IE=edge\">\n<meta content=\"telephone=no\" name=\"format-detection\">\n<style type=\"text/css\">\n<!--\n#outlook a\n\t{padding:0}\n.ExternalClass\n\t{width:100%}\n.ExternalClass, .ExternalClass p, .ExternalClass span, .ExternalClass font, .ExternalClass td, .ExternalClass div\n\t{line-height:100%}\n.es-button\n\t{text-decoration:none!important}\na[x-apple-data-detectors]\n\t{color:inherit!important;\n\ttext-decoration:none!important;\n\tfont-size:inherit!important;\n\tfont-family:inherit!important;\n\tfont-weight:inherit!important;\n\tline-height:inherit!important}\n.es-desk-hidden\n\t{display:none;\n\tfloat:left;\n\toverflow:hidden;\n\twidth:0;\n\tmax-height:0;\n\tline-height:0}\nhtml, body\n\t{width:100%;\n\tfont-family:'arial','helvetica neue','helvetica','sans-serif'}\ntable\n\t{border-collapse:collapse;\n\tborder-spacing:0px}\ntable td, html, body, .es-wrapper\n\t{padding:0;\n\tmargin:0}\n.es-content, .es-header, .es-footer\n\t{table-layout:fixed!important;\n\twidth:100%}\nimg\n\t{display:block;\n\tborder:0;\n\toutline:none;\n\ttext-decoration:none}\ntable tr\n\t{border-collapse:collapse}\np, hr\n\t{margin:0}\nh1, h2, h3, h4, h5\n\t{margin:0;\n\tline-height:120%;\n\tfont-family:tahoma,verdana,segoe,sans-serif}\np, ul li, ol li, a\n\t{}\n.es-left\n\t{float:left}\n.es-right\n\t{float:right}\n.es-p5\n\t{padding:5px}\n.es-p5t\n\t{padding-top:5px}\n.es-p5b\n\t{padding-bottom:5px}\n.es-p5l\n\t{padding-left:5px}\n.es-p5r\n\t{padding-right:5px}\n.es-p10\n\t{padding:10px}\n.es-p10t\n\t{padding-top:10px}\n.es-p10b\n\t{padding-bottom:10px}\n.es-p10l\n\t{padding-left:10px}\n.es-p10r\n\t{padding-right:10px}\n.es-p15\n\t{padding:15px}\n.es-p15t\n\t{padding-top:15px}\n.es-p15b\n\t{padding-bottom:15px}\n.es-p15l\n\t{padding-left:15px}\n.es-p15r\n\t{padding-right:15px}\n.es-p20\n\t{padding:20px}\n.es-p20t\n\t{padding-top:20px}\n.es-p20b\n\t{padding-bottom:20px}\n.es-p20l\n\t{padding-left:20px}\n.es-p20r\n\t{padding-right:20px}\n.es-p25\n\t{padding:25px}\n.es-p25t\n\t{padding-top:25px}\n.es-p25b\n\t{padding-bottom:25px}\n.es-p25l\n\t{padding-left:25px}\n.es-p25r\n\t{padding-right:25px}\n.es-p30\n\t{padding:30px}\n.es-p30t\n\t{padding-top:30px}\n.es-p30b\n\t{padding-bottom:30px}\n.es-p30l\n\t{padding-left:30px}\n.es-p30r\n\t{padding-right:30px}\n.es-p35\n\t{padding:35px}\n.es-p35t\n\t{padding-top:35px}\n.es-p35b\n\t{padding-bottom:35px}\n.es-p35l\n\t{padding-left:35px}\n.es-p35r\n\t{padding-right:35px}\n.es-p40\n\t{padding:40px}\n.es-p40t\n\t{padding-top:40px}\n.es-p40b\n\t{padding-bottom:40px}\n.es-p40l\n\t{padding-left:40px}\n.es-p40r\n\t{padding-right:40px}\n.es-menu td\n\t{border:0}\n.es-menu td a img\n\t{display:inline-block!important}\na\n\t{font-family:'arial','helvetica neue','helvetica','sans-serif';\n\tfont-size:14px;\n\ttext-decoration:none}\nh1\n\t{font-size:30px;\n\tfont-style:normal;\n\tfont-weight:normal;\n\tcolor:#333333}\nh1 a\n\t{font-size:30px;\n\ttext-align:left}\nh2\n\t{font-size:24px;\n\tfont-style:normal;\n\tfont-weight:normal;\n\tcolor:#333333}\nh2 a\n\t{font-size:24px;\n\ttext-align:left}\nh3\n\t{font-size:20px;\n\tfont-style:normal;\n\tfont-weight:normal;\n\tcolor:#333333}\nh3 a\n\t{font-size:20px;\n\ttext-align:left}\np, ul li, ol li\n\t{font-size:14px;\n\tfont-family:'arial','helvetica neue','helvetica','sans-serif';\n\tline-height:150%}\nul li, ol li\n\t{margin-bottom:15px}\n.es-menu td a\n\t{text-decoration:none;\n\tdisplay:block}\n.es-wrapper\n\t{width:100%;\n\theight:100%;\n\tbackground-image:;\n\tbackground-repeat:repeat;\n\tbackground-position:center top}\n.es-wrapper-color\n\t{background-color:#fefefe}\n.es-content-body\n\t{background-color:#ffffff}\n.es-content-body p, .es-content-body ul li, .es-content-body ol li\n\t{color:#333333}\n.es-content-body a\n\t{color:#34265f}\n.es-header\n\t{background-color:transparent;\n\tbackground-image:;\n\tbackground-repeat:repeat;\n\tbackground-position:center top}\n.es-header-body\n\t{background-color:#E0E1E3}\n.es-header-body p, .es-header-body ul li, .es-header-body ol li\n\t{color:#ffffff;\n\tfont-size:14px}\n.es-header-body a\n\t{color:#ffffff;\n\tfont-size:14px}\n.es-footer\n\t{background-color:transparent;\n\tbackground-image:;\n\tbackground-repeat:repeat;\n\tbackground-position:center top}\n.es-footer-body\n\t{background-color:transparent}\n.es-footer-body p, .es-footer-body ul li, .es-footer-body ol li\n\t{color:#333333;\n\tfont-size:12px}\n.es-footer-body a\n\t{color:#34265f;\n\tfont-size:12px}\n.es-infoblock, .es-infoblock p, .es-infoblock ul li, .es-infoblock ol li\n\t{line-height:120%;\n\tfont-size:12px;\n\tcolor:#999999}\n.es-infoblock a\n\t{font-size:12px;\n\tcolor:#999999}\na.es-button\n\t{border-style:solid;\n\tborder-color:#34265f;\n\tborder-width:10px\
+          \ 20px 10px 20px;\n\tdisplay:inline-block;\n\tbackground:#34265f;\n\tborder-radius:5px;\n\tfont-size:18px;\n\tfont-family:'arial','helvetica neue','helvetica','sans-serif';\n\tfont-weight:normal;\n\tfont-style:normal;\n\tline-height:120%;\n\tcolor:#ffffff;\n\ttext-decoration:none;\n\twidth:auto;\n\ttext-align:center}\n.es-button-border\n\t{border-style:solid solid solid solid;\n\tborder-color:transparent transparent transparent transparent;\n\tbackground:#2cb543;\n\tborder-width:0px 0px 0px 0px;\n\tdisplay:inline-block;\n\tborder-radius:5px;\n\twidth:auto}\n@media only screen and (max-width: 600px) {\np, ul li, ol li, a\n\t{font-size:16px!important;\n\tline-height:150%!important}\nh1\n\t{font-size:30px!important;\n\ttext-align:center;\n\tline-height:120%!important}\nh2\n\t{font-size:26px!important;\n\ttext-align:center;\n\tline-height:120%!important}\nh3\n\t{font-size:20px!important;\n\ttext-align:center;\n\tline-height:120%!important}\nh1 a\n\t{font-size:30px!important;\n\ttext-align:center}\nh2 a\n\t{font-size:24px!important;\n\ttext-align:center}\nh3 a\n\t{font-size:20px!important;\n\ttext-align:center}\n.es-menu td a\n\t{font-size:16px!important}\n.es-header-body p, .es-header-body ul li, .es-header-body ol li, .es-header-body a\n\t{font-size:16px!important}\n.es-footer-body p, .es-footer-body ul li, .es-footer-body ol li, .es-footer-body a\n\t{font-size:16px!important}\n.es-infoblock p, .es-infoblock ul li, .es-infoblock ol li, .es-infoblock a\n\t{font-size:12px!important}\n*[class=\"gmail-fix\"]\n\t{display:none!important}\n.es-m-txt-c, .es-m-txt-c h1, .es-m-txt-c h2, .es-m-txt-c h3\n\t{text-align:center!important}\n.es-m-txt-r, .es-m-txt-r h1, .es-m-txt-r h2, .es-m-txt-r h3\n\t{text-align:right!important}\n.es-m-txt-l, .es-m-txt-l h1, .es-m-txt-l h2, .es-m-txt-l h3\n\t{text-align:left!important}\n.es-m-txt-r img, .es-m-txt-c img, .es-m-txt-l img\n\t{display:inline!important}\n.es-button-border\n\t{display:block!important}\na.es-button\n\t{font-size:20px!important;\n\tdisplay:block!important;\n\tborder-width:10px 0px 10px 0px!important}\n.es-btn-fw\n\t{border-width:10px 0px!important;\n\ttext-align:center!important}\n.es-adaptive table, .es-btn-fw, .es-btn-fw-brdr, .es-left, .es-right\n\t{width:100%!important}\n.es-content table, .es-header table, .es-footer table, .es-content, .es-footer, .es-header\n\t{width:100%!important;\n\tmax-width:600px!important}\n.es-adapt-td\n\t{display:block!important;\n\twidth:100%!important}\n.adapt-img\n\t{width:100%!important;\n\theight:auto!important}\n.es-m-p0\n\t{padding:0px!important}\n.es-m-p0r\n\t{padding-right:0px!important}\n.es-m-p0l\n\t{padding-left:0px!important}\n.es-m-p0t\n\t{padding-top:0px!important}\n.es-m-p0b\n\t{padding-bottom:0!important}\n.es-m-p20b\n\t{padding-bottom:20px!important}\n.es-mobile-hidden, .es-hidden\n\t{display:none!important}\n.es-desk-hidden\n\t{display:table-row!important;\n\twidth:auto!important;\n\toverflow:visible!important;\n\tfloat:none!important;\n\tmax-height:inherit!important;\n\tline-height:inherit!important}\n.es-desk-menu-hidden\n\t{display:table-cell!important}\ntable.es-table-not-adapt, .esd-block-html table\n\t{width:auto!important}\ntable.es-social\n\t{display:inline-block!important}\ntable.es-social td\n\t{display:inline-block!important}\n\n\t}\n-->\n</style>\n</head>\n<body style=\"width:100%; font-family:'arial','helvetica neue','helvetica','sans-serif'; padding:0; margin:0\">\n<div style=\"border:1px solid; margin:10px 0px; padding:15px 10px 15px 50px; background-repeat:no-repeat; background-position:10px center; color:#9F6000; background-color:#FEEFB3; font-family:Arial,Helvetica,sans-serif\">\n<p style=\"font-size:18px\">Unsubscribe</p>\n<p style=\"font-size:13px\">It appears that you have subscribed to commercial messages from this sender. To stop receiving such messages from this sender, please\n<a href=\"http://secure-web.cisco.com/1xW8Ef3dPL6Nds64nl9QLOT-OKB5eH8Qd5MdoQA3QdNovTkln-kr_9OQt_NpE2IR9Ibu1ydumkqEnAMY3Hw1Uf35Qm-ufimmxlKbxvhAU8Uwou7lCu-oM2_BHZpOzP2Bie4sBK4JwdfF1rCHnnWDNzUO0m_m7sZI74N2n_A-067Z8ToO8boDjAZXuCV40S5Nq7at1LAtU9la5Gonjl_oOPV3_Vm-3EzwWa8o6SCmnCfPgr9C5CnCXJ0I2I1Lpcbd1kYEwMbbmNuCjrTvxcXOqLj4-AOYO42dOfAzvKN7owrqvdLoWwQss3G0QENUesVFv_3_WVsHz8hwOegGXCMpv8Ar-JZAQ6FSQA8swljSBJ8pvgnfdMNqt3RgiOxgbnVpaxfRxtXV8bNep7-gkNJGgD-JFviAtCg6GwjwVGpK3dFvKJzvPDck2LdHYsV8MpY4lr6uO3yplQj2cVYlWkFYepg3sAzOksBy_CocKzUxbu1zSQ4k1N8wGpRYZChDLudRl/l92%3Amailto%3Aadmin%2B9z2zlfi0vabmibpgetls08kclfpgf0dnt5o1ptrtpm8%40em.usw-mail.com%3Fsubject%3Dunsubscribe98%3Ahttp%3A%2F%2Fem.usw-mail.com%2Fprefs%2F9z2zugodama5puc57hkgusv0kv3g49j267oblt00ab8%3Fsubscribe%3Doptout%26submit%3Dy304%3Ahttp%3A%2F%2Fem.usw-mail.com%2Frd%2F9z2zri5shagn89qnraj4684t6qpjejigg1pi8elmua8_rp2ash2s8gb2sbgebjqf99lmeinctrlkmq39cdjkorrbdt0e9qj6djnkjhf4onlesrr2d1lmgqm0tbm6ljm1dln6lr76s36mdr6ecb4sap66pr7m8or2s30cgp31pv56mq39cdnqgoj2cjlsmq34tljklo72ttjm08rashieipffcdjkorrbcp6elp3cthieip3adf7m1onfdbhecj7ashlmionbpjle8qr9cbi4noe\">\nunsubscribe</a></p>\n\
+          </div>\n<div class=\"es-wrapper-color\" style=\"background-color:#fefefe\">\n<table class=\"es-wrapper\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" style=\"border-collapse:collapse; border-spacing:0px; padding:0; margin:0; width:100%; height:100%; background-repeat:repeat; background-position:center top\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-email-paddings\" valign=\"top\" style=\"padding:0; margin:0\">\n<table class=\"es-content es-preheader esd-header-popover\" align=\"center\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"border-collapse:collapse; border-spacing:0px; width:100%; table-layout:fixed!important\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td class=\"es-adaptive esd-stripe\" align=\"center\" style=\"padding:0; margin:0\">\n<table class=\"es-content-body\" align=\"center\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"600\" style=\"background-color:#dbdcde; border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-structure es-p10\" align=\"left\" style=\"padding:10px; margin:0\">\n<table class=\"es-left\" align=\"left\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"border-collapse:collapse; border-spacing:0px; float:left\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-container-frame\" align=\"left\" width=\"280\" style=\"padding:0; margin:0\">\n<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" style=\"border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td class=\"es-infoblock esd-block-text\" align=\"left\" style=\"padding:0; margin:0; line-height:120%; font-size:12px; color:#999999\">\n<p style=\"margin:0; font-size:12px; font-family:'arial','helvetica neue','helvetica','sans-serif'; line-height:120%; color:#999999\">\n&nbsp;</p>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n<table class=\"es-right\" align=\"right\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"border-collapse:collapse; border-spacing:0px; float:right\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-container-frame\" align=\"left\" width=\"280\" style=\"padding:0; margin:0\">\n<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" style=\"border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td class=\"es-infoblock esd-block-text\" align=\"right\" style=\"padding:0; margin:0; line-height:120%; font-size:12px; color:#999999\">\n<p style=\"margin:0; font-size:12px; font-family:'arial','helvetica neue','helvetica','sans-serif'; line-height:120%; color:#999999\">\n<a href=\"http://em.usw-mail.com/rd/9z2zoh8ctktug7npu6tpvd2a40cm8k9teen8c5beba0\" target=\"_blank\" style=\"font-family:'arial','helvetica neue','helvetica','sans-serif'; font-size:12px; text-decoration:none; color:#999999\">View in browser</a></p>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n<table class=\"es-header\" align=\"center\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"border-collapse:collapse; border-spacing:0px; width:100%; background-color:transparent; background-repeat:repeat; background-position:center top; table-layout:fixed!important\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-stripe\" align=\"center\" style=\"padding:0; margin:0\">\n<table class=\"es-header-body\" align=\"center\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"600\" style=\"border-collapse:collapse; border-spacing:0px; background-color:#e0e1e3\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-structure es-p20t es-p20b es-p20r es-p20l\" align=\"left\" style=\"padding:20px; margin:0\">\n<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" style=\"border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-container-frame\" align=\"center\" width=\"560\" valign=\"top\" style=\"padding:0; margin:0\">\n<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" style=\"border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-block-image es-m-txt-c\" align=\"center\" style=\"padding:0; margin:0\">\n<a href=\"http://em.usw-mail.com/rd/9z2zuu15vpdp7mtveu28t6o8javbdl5hvfuf18of1bg\" target=\"_blank\" style=\"font-family:'arial','helvetica neue','helvetica','sans-serif'; font-size:14px; text-decoration:none; color:#ffffff\"><img src=\"http://em.usw-mail.com/rd/9z2z1squsc89c3efmahbmq38gn7sk5vj4mto49gfmb0\" alt=\"Marquis Who's Who Logo\" width=\"220\" title=\"Marquis Who's Who Logo\" style=\"display:block; border:0; outline:none; text-decoration:none\"></a></td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n\
+          <tr style=\"border-collapse:collapse\">\n<td class=\"esd-structure\" align=\"left\" style=\"padding:0; margin:0\">\n<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" style=\"border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-container-frame\" align=\"center\" width=\"600\" valign=\"top\" style=\"padding:0; margin:0\">\n<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" style=\"border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-block-text es-p10b es-p10t\" align=\"center\" style=\"padding:0; margin:0; padding-top:10px; padding-bottom:10px\">\n<h2 style=\"color:#1556a3; margin:0; line-height:120%; font-family:tahoma,verdana,segoe,sans-serif; font-size:24px; font-style:normal; font-weight:normal\">\n<b>Mark Upton </b></h2>\n</td>\n</tr>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-block-text es-p10b es-m-txt-c\" align=\"center\" style=\"padding:0; margin:0; padding-bottom:10px\">\n<h3 style=\"color:#333333; margin:0; line-height:120%; font-family:tahoma,verdana,segoe,sans-serif; font-size:20px; font-style:normal; font-weight:normal\">\nYou've been nominated for Who's Who in America!</h3>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n<table class=\"es-content\" align=\"center\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"border-collapse:collapse; border-spacing:0px; width:100%; table-layout:fixed!important\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-stripe\" align=\"center\" style=\"padding:0; margin:0\">\n<table class=\"es-content-body\" align=\"center\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"600\" bgcolor=\"#E0E1E3\" style=\"background-color:#e0e1e3; border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-structure es-p5t es-p20r es-p20l\" align=\"right\" style=\"padding:0; margin:0; padding-top:5px; padding-left:20px; padding-right:20px\">\n<table align=\"left\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-container-frame\" align=\"left\" width=\"240\" style=\"padding:0; margin:0\">\n<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" style=\"border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-block-image\" align=\"left\" style=\"padding:0; margin:0\"><a target=\"_blank\" style=\"font-family:'arial','helvetica neue','helvetica','sans-serif'; font-size:14px; text-decoration:none; color:#34265f\"><img width=\"240\" title=\"Marquis Who's Who Expanded Biographies\" class=\"adapt-img\" src=\"https://gallery.mailchimp.com/68ba95ed59b32297bb7798af8/images/49b28122-ced3-45df-a99f-ebe557e46c4f.png\" style=\"display:block; border:0; outline:none; text-decoration:none\">\n</a></td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n<table class=\"es-left\" align=\"right\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"border-collapse:collapse; border-spacing:0px; float:left\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td class=\"es-m-p0r es-m-p20b esd-container-frame\" align=\"center\" width=\"300\" valign=\"top\" style=\"padding:0; margin:0\">\n<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" style=\"border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-block-text es-p10b es-p10t\" align=\"left\" style=\"padding:0; margin:0; padding-top:10px; padding-bottom:10px\">\n&nbsp;</td>\n</tr>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-block-text es-p10b\" align=\"left\" style=\"padding:0; margin:0; padding-bottom:10px\">\n<p style=\"font-size:16px; margin:0; font-family:'arial','helvetica neue','helvetica','sans-serif'; line-height:150%; color:#333333\">\nTo accept this nomination and begin the review process, we kindly ask that you use the\n<b>secure link below</b> to provide us with the details about your credentials and accomplishments.</p>\n</td>\n</tr>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-block-button es-m-txt-c es-p10b\" align=\"center\" style=\"padding:0; margin:0; padding-bottom:10px\">\n<span class=\"es-button-border\" style=\"border-radius:10px; border-style:solid; border-width:0px; border-color:transparent; background:#8B0F12 none repeat scroll 0% 0%; display:inline-block; width:auto\"><a href=\"http://em.usw-mail.com/rd/9z2zv9cvn7saq7cen3ksa0u8lu4ulqpt839r60amm30\" target=\"_blank\" class=\"es-button\" style=\"font-size:14px; border-radius:10px; background:#8B0F12 none repeat scroll 0% 0%; border-color:#8B0F12; font-family:'arial','helvetica neue','helvetica','sans-serif';\
+          \ text-decoration:none!important; color:#ffffff; border-style:solid; border-width:10px 20px 10px 20px; display:inline-block; font-weight:normal; font-style:normal; line-height:120%; width:auto; text-align:center\"><b>Click\n here - Accept your nomination!</b></a> </span></td>\n</tr>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-block-text es-m-txt-c\" align=\"center\" style=\"padding:0; margin:0\">\n<p style=\"font-size:12px; color:#1556a3; margin:0; font-family:'arial','helvetica neue','helvetica','sans-serif'; line-height:150%\">\nPlease respond within the <b>next 10 days</b> to ensure that your biography is considered for inclusion in 2019!</p>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-structure\" align=\"left\" style=\"padding:0; margin:0\">\n<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" style=\"border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-container-frame\" align=\"center\" width=\"600\" valign=\"top\" style=\"padding:0; margin:0\">\n<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" bgcolor=\"#ffffff\" style=\"background-color:#1556a3; border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-block-image\" align=\"center\" style=\"padding:0; margin:0\"><a target=\"_blank\" style=\"font-family:'arial','helvetica neue','helvetica','sans-serif'; font-size:14px; text-decoration:none; color:#34265f\"><img width=\"600\" class=\"adapt-img\" src=\"https://gallery.mailchimp.com/68ba95ed59b32297bb7798af8/images/172e5f39-9388-4b08-acec-c5a661f2c628.png\" style=\"display:block; border:0; outline:none; text-decoration:none\">\n</a></td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n<table class=\"es-content\" align=\"center\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"border-collapse:collapse; border-spacing:0px; width:100%; table-layout:fixed!important\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-stripe\" align=\"center\" style=\"padding:0; margin:0\">\n<table class=\"es-content-body\" align=\"center\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"600\" bgcolor=\"#ededed\" style=\"background-color:#1556a3; border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-structure es-p15t es-p20r es-p20l\" align=\"left\" style=\"padding:0; margin:0; padding-top:15px; padding-left:20px; padding-right:20px\">\n&nbsp;\n<table class=\"es-right\" align=\"right\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"border-collapse:collapse; border-spacing:0px; float:right\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-container-frame\" align=\"left\" width=\"270\" style=\"padding:0; margin:0\">\n<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" style=\"border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-block-image\" align=\"center\" style=\"padding:0; margin:0\"><a target=\"_blank\" style=\"font-family:'arial','helvetica neue','helvetica','sans-serif'; font-size:14px; text-decoration:none; color:#34265f\"><img src=\"https://gallery.mailchimp.com/68ba95ed59b32297bb7798af8/images/d6f8e19f-3fde-4510-87be-7758087342d6.png\" alt=\"Marquis Who's Who Biographee\" width=\"155\" title=\"Marquis Who's Who Biographee\" style=\"display:block; border:0; outline:none; text-decoration:none\">\n</a></td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n<table class=\"es-content\" align=\"center\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"border-collapse:collapse; border-spacing:0px; width:100%; table-layout:fixed!important\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-stripe\" align=\"center\" style=\"padding:0; margin:0\">\n<table class=\"es-content-body\" align=\"center\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"600\" bgcolor=\"#ffffff\" style=\"background-color:#1556a3; border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-structure es-p10t es-p20r\" align=\"left\" style=\"padding:0; margin:0; padding-top:10px; padding-right:20px\">\n<table class=\"es-left\" align=\"left\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"border-collapse:collapse; border-spacing:0px; float:left\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td class=\"es-m-p0r es-m-p20b esd-container-frame\" align=\"center\" width=\"150\" valign=\"top\" style=\"padding:0; margin:0\">\n<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" style=\"border-collapse:collapse;\
+          \ border-spacing:0px\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-block-image es-m-txt-c es-p5t es-p5r\" align=\"right\" style=\"padding:0; margin:0; padding-top:5px; padding-right:5px\">\n<a target=\"_blank\" style=\"font-family:'arial','helvetica neue','helvetica','sans-serif'; font-size:14px; text-decoration:none; color:#34265f\"><img title=\"About Marquis Who's Who\" width=\"80\" alt=\"About Marquis Who's Who\" src=\"https://gallery.mailchimp.com/68ba95ed59b32297bb7798af8/images/bb624e00-f2c7-4d90-9eb5-5d72baaa07c3.png\" style=\"display:block; border:0; outline:none; text-decoration:none\">\n</a></td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n<table align=\"right\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-container-frame\" align=\"left\" width=\"410\" style=\"padding:0; margin:0\">\n<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" style=\"border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-block-text es-p5b es-p20l es-m-txt-c\" align=\"left\" style=\"padding:0; margin:0; padding-bottom:5px; padding-left:20px\">\n<h4 style=\"color:#ffffff; margin:0; line-height:120%; font-family:tahoma,verdana,segoe,sans-serif\">\nAbout Marquis Who's Who</h4>\n</td>\n</tr>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-block-text es-m-txt-c es-p20l\" align=\"left\" style=\"padding:0; margin:0; padding-left:20px\">\n<p style=\"color:#ffffff; margin:0; font-size:14px; font-family:'arial','helvetica neue','helvetica','sans-serif'; line-height:150%\">\nMarquis Who's Who is the World's preeminent biographical publisher. Since 1898, Who's Who in America has been relied upon by librarians, students, employers, and researchers of all types. Inclusion in Who's Who can have a significant impact on your personal\n branding, visibility, and credibility.</p>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-structure es-p10t es-p20r\" align=\"left\" style=\"padding:0; margin:0; padding-top:10px; padding-right:20px\">\n<table class=\"es-left\" align=\"left\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"border-collapse:collapse; border-spacing:0px; float:left\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td class=\"es-m-p0r es-m-p20b esd-container-frame\" align=\"center\" width=\"150\" valign=\"top\" style=\"padding:0; margin:0\">\n<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" style=\"border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-block-image es-m-txt-c es-p5t es-p5r\" align=\"right\" style=\"padding:0; margin:0; padding-top:5px; padding-right:5px\">\n<a target=\"_blank\" style=\"font-family:'arial','helvetica neue','helvetica','sans-serif'; font-size:14px; text-decoration:none; color:#34265f\"><img width=\"90\" title=\"About The Nomination Process\" src=\"https://gallery.mailchimp.com/68ba95ed59b32297bb7798af8/images/c63cb0d2-07e4-4615-8af8-96a9e2d21913.png\" alt=\"About The Nomination Process\" style=\"display:block; border:0; outline:none; text-decoration:none\">\n</a></td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n<table align=\"right\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-container-frame\" align=\"left\" width=\"410\" style=\"padding:0; margin:0\">\n<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" style=\"border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-block-text es-p5b es-p20l es-m-txt-c\" align=\"left\" style=\"padding:0; margin:0; padding-bottom:5px; padding-left:20px\">\n<h4 style=\"color:#ffffff; margin:0; line-height:120%; font-family:tahoma,verdana,segoe,sans-serif\">\nAbout The Nomination Process</h4>\n</td>\n</tr>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-block-text es-m-txt-c es-p20l\" align=\"left\" style=\"padding:0; margin:0; padding-left:20px\">\n<p class=\"es-p20b\" style=\"color:#ffffff; margin:0; font-size:14px; font-family:'arial','helvetica neue','helvetica','sans-serif'; line-height:150%; padding-bottom:20px\">\nNominations are received by several means including personal referrals, industry surveys, review of significant publications, and through our continual monitoring of newspapers, magazines, awards, grants, educational and corporate records.</p>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-structure es-p10t es-p20r\" align=\"left\" style=\"padding:0; margin:0; padding-top:10px; padding-right:20px\"\
+          >\n<table class=\"es-left\" align=\"left\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"border-collapse:collapse; border-spacing:0px; float:left\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td class=\"es-m-p0r es-m-p20b esd-container-frame\" align=\"center\" width=\"150\" valign=\"top\" style=\"padding:0; margin:0\">\n<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" style=\"border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-block-image es-m-txt-c es-p5t es-p5r\" align=\"right\" style=\"padding:0; margin:0; padding-top:5px; padding-right:5px\">\n<a target=\"_blank\" style=\"font-family:'arial','helvetica neue','helvetica','sans-serif'; font-size:14px; text-decoration:none; color:#34265f\"><img alt=\"About The Standards of Acceptance\" src=\"https://gallery.mailchimp.com/68ba95ed59b32297bb7798af8/images/d8c613bf-23d9-4b3d-b44a-0a4d89e47d93.png\" title=\"About The Standards of Acceptance\" width=\"70\" style=\"display:block; border:0; outline:none; text-decoration:none\">\n</a></td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n<table align=\"right\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-container-frame\" align=\"left\" width=\"410\" style=\"padding:0; margin:0\">\n<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" style=\"border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-block-text es-p5b es-p20l es-m-txt-c\" align=\"left\" style=\"padding:0; margin:0; padding-bottom:5px; padding-left:20px\">\n<h4 style=\"color:#ffffff; margin:0; line-height:120%; font-family:tahoma,verdana,segoe,sans-serif\">\nAbout The Standards of Acceptance</h4>\n</td>\n</tr>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-block-text es-m-txt-c es-p20l\" align=\"left\" style=\"padding:0; margin:0; padding-left:20px\">\n<p style=\"color:#ffffff; margin:0; font-size:14px; font-family:'arial','helvetica neue','helvetica','sans-serif'; line-height:150%\">\nUsing the standards that Marquis has developed over 120 years of biographical publishing, we select individuals for inclusion based on professional and personal accomplishments, education, contributions to society, and involvement with important institutions\n or events.</p>\n</td>\n</tr>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-block-button es-m-txt-c es-p15b es-p15t es-p20l\" align=\"left\" style=\"padding:0; margin:0; padding-top:15px; padding-bottom:15px; padding-left:20px\">\n<span class=\"es-button-border\" style=\"border-radius:10px; border-style:solid; border-width:0px; border-color:transparent; background:#8b0f12 none repeat scroll 0% 0%; display:inline-block; width:auto\"><a href=\"http://em.usw-mail.com/rd/9z2z20gh98mahc0hh2e0l1o6cidi09kcdv1n13pnm98\" target=\"_blank\" class=\"es-button\" style=\"font-size:14px; border-radius:10px; background:#8b0f12 none repeat scroll 0% 0%; border-color:#8b0f12; font-family:'arial','helvetica neue','helvetica','sans-serif'; text-decoration:none!important; color:#ffffff; border-style:solid; border-width:10px 20px 10px 20px; display:inline-block; font-weight:normal; font-style:normal; line-height:120%; width:auto; text-align:center\"><b>I\n accept this nomination!</b></a> </span></td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-structure\" align=\"left\" style=\"padding:0; margin:0\">\n<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" style=\"border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-container-frame\" align=\"center\" width=\"600\" valign=\"top\" style=\"padding:0; margin:0\">\n<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" bgcolor=\"#34265f\" style=\"background-color:#e0e1e3; border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-block-image\" align=\"center\" style=\"padding:0; margin:0\"><a target=\"_blank\" style=\"font-family:'arial','helvetica neue','helvetica','sans-serif'; font-size:14px; text-decoration:none; color:#34265f\"><img src=\"https://gallery.mailchimp.com/68ba95ed59b32297bb7798af8/images/77c5e1f7-97c1-4a24-8bc6-232a72839450.png\" width=\"600\" class=\"adapt-img\" style=\"display:block; border:0; outline:none; text-decoration:none\"></a></td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n<table class=\"es-content\" align=\"center\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"border-collapse:collapse; border-spacing:0px; width:100%; table-layout:fixed!important\">\n<tbody>\n<tr style=\"border-collapse:collapse\"\
+          >\n<td class=\"esd-stripe\" align=\"center\" style=\"padding:0; margin:0\">\n<table class=\"es-content-body\" align=\"center\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"600\" bgcolor=\"#ffffff\" style=\"background-color:#e0e1e3; border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-structure es-p10t es-p20r\" align=\"left\" style=\"padding:0; margin:0; padding-top:10px; padding-right:20px\">\n<table class=\"es-left\" align=\"left\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"border-collapse:collapse; border-spacing:0px; float:left\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td class=\"es-m-p0r es-m-p20b esd-container-frame\" align=\"center\" width=\"150\" valign=\"top\" style=\"padding:0; margin:0\">\n<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" style=\"border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-block-image es-m-txt-c es-p20t es-p5r\" align=\"right\" style=\"padding:0; margin:0; padding-right:5px; padding-top:20px\">\n&nbsp;</td>\n</tr>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-block-image es-m-txt-c es-p5r\" align=\"right\" style=\"padding:0; margin:0; padding-right:5px\">\n<a target=\"_blank\" style=\"font-family:'arial','helvetica neue','helvetica','sans-serif'; font-size:14px; text-decoration:none; color:#34265f\"><img alt=\"About Marquis Who's Who\" src=\"https://gallery.mailchimp.com/68ba95ed59b32297bb7798af8/images/68c14001-d211-459b-9189-4ce402dc04f9.png\" title=\"About Marquis Who's Who\" width=\"120\" style=\"display:block; border:0; outline:none; text-decoration:none\">\n</a></td>\n</tr>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-block-image es-m-txt-c es-p20t es-p5r\" align=\"right\" style=\"padding:0; margin:0; padding-right:5px; padding-top:20px\">\n&nbsp;</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n<table align=\"right\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" style=\"border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-container-frame es-p10b\" align=\"left\" width=\"410\" style=\"padding:0; margin:0; padding-bottom:10px\">\n<table border=\"0\" cellspacing=\"0\" cellpadding=\"0\" width=\"100%\" style=\"border-collapse:collapse; border-spacing:0px\">\n<tbody>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-block-text es-m-txt-c es-p5b\" align=\"left\" style=\"padding:0; margin:0; padding-bottom:5px\">\n<p style=\"font-size:12px; margin:0; font-family:'arial','helvetica neue','helvetica','sans-serif'; line-height:150%; color:#333333\">\n<b>Please note: If you have previously submitted your biography to Marquis, or been included in any prior Marquis Publications, you may disregard this message.</b></p>\n</td>\n</tr>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-block-text es-p5b\" align=\"left\" style=\"padding:0; margin:0; padding-bottom:5px\">\n<p style=\"font-size:12px; margin:0; font-family:'arial','helvetica neue','helvetica','sans-serif'; line-height:150%; color:#333333\">\nCopyright © 2019 by Marquis Publications. All rights reserved.<br>\nAt Marquis, we respect your privacy. <a href=\"http://em.usw-mail.com/rd/9z2zrtjg92nv5dbvqshddrggr8s9dg1b58pporaj4r8\" target=\"_blank\" style=\"font-size:12px; text-decoration:underline; font-family:'arial','helvetica neue','helvetica','sans-serif'; color:#34265f\">\nClick here</a> to view our privacy policy.<br>\n<br>\n100 Campus Town Circle, Suite 103 #2018<br>\nEwing, New Jersey 08638 908-279-0100</p>\n</td>\n</tr>\n<tr style=\"border-collapse:collapse\">\n<td class=\"esd-block-text es-p5b\" align=\"left\" style=\"padding:0; margin:0; padding-bottom:5px\">\n<p style=\"font-size:12px; margin:0; font-family:'arial','helvetica neue','helvetica','sans-serif'; line-height:150%; color:#333333\">\n&nbsp;</p>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</td>\n</tr>\n</tbody>\n</table>\n</div>\n<div>\n<div style=\"font-size:9pt; font-family:arial,san-serif; padding:10px 15px; margin:5px; line-height:12pt; text-align:center\">\n<p>If you do not wish to receive these emails in the future you may unsubscribe here:\n<a href=\"http://secure-web.cisco.com/1shuI_d8ReudZFKNtwCMVTnjypEprq1ERvbD5W9m_1niZ3xXPsJ02oxpkwrZZetH1Ob01mGeXr-jhhzGq0mp0N6ikDsrxLkQbbhtmUoRJD3wPFuyvHCTk_1yjVlKvNsknffmuAFFQkCpbE4N5-3s5-1S9aamz4uWDsNKpnGuVRl3hjIYzp13MlHg82PmozrIBVnslbYcADGjTiB4UEAieidYU9QM61By4yeEvn5tALWmTT4GVNVJ5mD1wWUdaiSSEVziJQoNFO7jnqqFK40vJyeqtK4PxTbxAaNwIKTxikgSaJHgGXqAwEX4h0UPRu7t9nAA0R0ITOH8DJr60kyy2eTcucB6W_Y_KU9VDv8OzNoBeqmAEPhfnEmzemDmq1Iy2Ewid6JO70hj1W8t1m32iU0-r78UMATQNcVJhGEJa638KQX_qv9_K3mWDK4FD97NDvvZUtyo8pZIvx9838YslN8-qZXTIN822IOFO6oBKodHfEsrpUXTWfB5rTOdr32VU/l304%3Ahttp%3A%2F%2Fem.usw-mail.com%2Frd%2F9z2zri5shagn89qnraj4684t6qpjejigg1pi8elmua8_rp2ash2s8gb2sbgebjqf99lmeinctrlkmq39cdjkorrbdt0e9qj6djnkjhf4onlesrr2d1lmgqm0tbm6ljm1dln6lr76s36mdr6ecb4sap66pr7m8or2s30cgp31pv56mq39cdnqgoj2cjlsmq34tljklo72ttjm08rashieipffcdjkorrbcp6elp3cthieip3adf7m1onfdbhecj7ashlmionbpjle8qr9cbi4noe\"\
+          >\nUnsubscribe</a></p>\n<p>You have been identified as not living within the European Union. If your location has changed and you<br>\nnow reside within the European Union please <a href=\"http://em.usw-mail.com/rd/9z2zdcmvr5h59pthfd41g5bvvln7cnr1anuk7rlc12o_rp2ash2s8gb2sbgebjqf99lmeinctrlkmq39cdjkorrbdt0e9qj6djnkjhf4onlesrr2d1lmgqm0tbm6ljm1dln6lr76s36mdr6ecb4sap66pr7m8or2s30cgp31pv56mq39cdnqgoj2cjlsmq34tljklo72ttjm08rashieipffcdjkorrbcp6elp3cthieip3adf7m1onfdbhecj7ashlmionbpjle8qr9cbi4no\">\nclick here</a> and we will remove your information<br>\nimmediately. This message is being sent to you as a business professional.</p>\n</div>\n</div>\n<br clear=\"all\">\n<div class=\"ipost-opt-out\">\n<p></p>\n</div>\n</body>\n</html>\""
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2480
+          "x": 265,
+          "y": 2470
         }
       }
     note: false
@@ -971,22 +590,263 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "18":
-    id: "18"
-    taskid: 02ac271b-e918-4014-8cb2-e263082d4d7f
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '18':
+    id: '18'
+    taskid: 5a401cde-5abe-401a-88e7-c930fe994975
     type: regular
     task:
-      id: 02ac271b-e918-4014-8cb2-e263082d4d7f
+      id: 5a401cde-5abe-401a-88e7-c930fe994975
       version: -1
       name: Test Image (ImageOCR)
       description: Extracts text from an image.
       script: '|||image-ocr-extract-text'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "19"
+      - '19'
+    scriptarguments:
+      entryid:
+        complex:
+          root: InfoFile
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: InfoFile.Info
+                iscontext: true
+              right:
+                value:
+                  simple: image/jpeg
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: InfoFile.Info
+                iscontext: true
+              right:
+                value:
+                  simple: url.png
+              ignorecase: true
+          accessor: EntryID
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '19':
+    id: '19'
+    taskid: 40467f3f-29d3-42b6-8694-ba24482c960e
+    type: condition
+    task:
+      id: 40467f3f-29d3-42b6-8694-ba24482c960e
+      version: -1
+      name: Check Text
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '21'
+      Yes:
+      - '22'
+    separatecontext: false
+    conditions:
+    - label: Yes
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: File
+                accessor: Text
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: nominated
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '20':
+    id: '20'
+    taskid: e927f3cb-c7f5-4d62-83d7-b01aee555f39
+    type: regular
+    task:
+      id: e927f3cb-c7f5-4d62-83d7-b01aee555f39
+      version: -1
+      name: Error
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ''
+    scriptarguments:
+      message:
+        simple: Github url image not verified
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '21':
+    id: '21'
+    taskid: 5dc92b5b-c267-442e-85bf-11d1e8cddfec
+    type: regular
+    task:
+      id: 5dc92b5b-c267-442e-85bf-11d1e8cddfec
+      version: -1
+      name: Error Text Validation
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ''
+    scriptarguments:
+      message:
+        simple: Error of image not verified
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '22':
+    id: '22'
+    taskid: 68d0870b-467b-4671-8489-42567bf02161
+    type: regular
+    task:
+      id: 68d0870b-467b-4671-8489-42567bf02161
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '23'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '23':
+    id: '23'
+    taskid: 2fd9c5c8-e0cf-46bd-81e1-68a515a88d61
+    type: regular
+    task:
+      id: 2fd9c5c8-e0cf-46bd-81e1-68a515a88d61
+      version: -1
+      name: 'Rasterize URL -  Full_Screen '
+      description: Rasterize a URL into image or PDF
+      script: '|||rasterize'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '24'
+    scriptarguments:
+      full_screen:
+        simple: 'True'
+      type:
+        simple: png
+      url:
+        simple: https://en.wikipedia.org/wiki/Main_Page
+      wait_time:
+        simple: '5'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '24':
+    id: '24'
+    taskid: 7f1edc1f-17e1-41e9-8c47-933245d8198f
+    type: regular
+    task:
+      id: 7f1edc1f-17e1-41e9-8c47-933245d8198f
+      version: -1
+      name: Test Image (ImageOCR)
+      description: Extracts text from an image.
+      script: '|||image-ocr-extract-text'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '25'
     scriptarguments:
       entryid:
         complex:
@@ -1013,13 +873,12 @@ tasks:
           accessor: EntryID
           transformers:
           - operator: uniq
-      langs: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2660
+          "x": 480,
+          "y": 3345
         }
       }
     note: false
@@ -1027,27 +886,27 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "19":
-    id: "19"
-    taskid: 82de6ee7-5ddd-44c9-8ebf-3505c4f5fc52
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '25':
+    id: '25'
+    taskid: f5d0254a-c7d7-49ee-8b9d-bcee9b98e6a8
     type: condition
     task:
-      id: 82de6ee7-5ddd-44c9-8ebf-3505c4f5fc52
+      id: f5d0254a-c7d7-49ee-8b9d-bcee9b98e6a8
       version: -1
       name: Check Text
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      '#default#':
-      - "21"
-      "Yes":
-      - "11"
+      Yes:
+      - '11'
     separatecontext: false
     conditions:
-    - label: "Yes"
+    - label: Yes
       condition:
-      - - operator: containsGeneral
+      - - operator: containsString
           left:
             value:
               complex:
@@ -1058,12 +917,12 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: nominated
+              simple: wikipedia
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2830
+          "x": 480,
+          "y": 3520
         }
       }
     note: false
@@ -1071,71 +930,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "20":
-    id: "20"
-    taskid: 8cc3bfe2-56c2-46cd-8dc2-6deebbfb406a
-    type: regular
-    task:
-      id: 8cc3bfe2-56c2-46cd-8dc2-6deebbfb406a
-      version: -1
-      name: Error
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      message:
-        simple: Github url image not verified
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 580,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "21":
-    id: "21"
-    taskid: 0a94e058-ce3c-4cce-8c4f-9f60a4b191f7
-    type: regular
-    task:
-      id: 0a94e058-ce3c-4cce-8c4f-9f60a4b191f7
-      version: -1
-      name: Error Text Validation
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      message:
-        simple: Error of image not verified
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 2980
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3030,
-        "width": 910,
+        "height": 3710,
+        "width": 1025,
         "x": 50,
         "y": 50
       }
@@ -1143,3 +946,4 @@ view: |-
   }
 inputs: []
 outputs: []
+description: ''

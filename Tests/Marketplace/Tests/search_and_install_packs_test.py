@@ -333,9 +333,12 @@ GCP_TIMEOUT_EXCEPTION_RESPONSE_BODY = '{"id":"errInstallContentPack","status":40
                                       ' \"https://storage.googleapis.com/marketplace-ci-build/content/builds' \
                                       '/master%2F2788053%2Fxsoar/content/packs/pack2/1.0.2/pack2.zip\": http2: ' \
                                       'timeout awaiting response headers","encrypted":false,"multires":null}'
+
 MALFORMED_PACK_RESPONSE_BODY = '{"id":"errGetContentPack","status":400,"title":"Failed getting content pack",' \
                                '"detail":"Failed getting content pack","error":"Item not found (8), pack id: ' \
                                '[pack1]","encrypted":false,"multires":null}'
+
+ERROR_AS_LIST_RESPONSE_BODY = '{"errors":[{"SystemError":null,"id":8,"detail":"Item not found"}]}'
 
 MALFORMED_PACK_RESPONSE_BODY_TWO_PACKS = '{"id":"errGetContentPack","status":400,"title":"Failed getting ' \
                                          'content pack", "detail":"Failed getting content pack","error":"Item not ' \
@@ -381,6 +384,7 @@ class TestInstallPacks:
 def test_malformed_pack_id():
     assert script.find_malformed_pack_id(MALFORMED_PACK_RESPONSE_BODY) == ['pack1']
     assert script.find_malformed_pack_id(MALFORMED_PACK_RESPONSE_BODY_TWO_PACKS) == ['pack1', 'pack2']
+    assert script.find_malformed_pack_id(ERROR_AS_LIST_RESPONSE_BODY) == []
 
 
 def test_get_pack_id_from_error_with_gcp_path():

@@ -18,7 +18,8 @@ def load_test_data(json_path):
 
 
 def get_incident_by_status(incident_id_list=None, lte_modification_time=None, gte_modification_time=None,
-                           lte_creation_time=None, gte_creation_time=None, status=None, sort_by_modification_time=None,
+                           lte_creation_time=None, gte_creation_time=None, starred=None,
+                           starred_incidents_fetch_window=None, status=None, sort_by_modification_time=None,
                            sort_by_creation_time=None, page_number=0, limit=100, gte_creation_time_milliseconds=0):
     """
         The function simulate the client.get_incidents method for the test_fetch_incidents_filtered_by_status
@@ -256,6 +257,112 @@ def test_get_incident_extra_data(requests_mock):
               'Hostname': 'AAAAAA'}]
     }
     assert expected_output == outputs
+
+
+class TestFetchStarredIncident:
+
+    def test_get_starred_incident_list(self, requests_mock):
+        from CortexXDRIR import get_incidents_command, Client
+
+        get_incidents_list_response = load_test_data('./test_data/get_starred_incidents_list.json')
+        requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/get_incidents/', json=get_incidents_list_response)
+
+        client = Client(
+            base_url=f'{XDR_URL}/public_api/v1', headers={}
+        )
+        args = {
+            'incident_id_list': '1 day',
+            'starred': True,
+            'starred_incidents_fetch_window': '3 days'
+        }
+        _, outputs, _ = get_incidents_command(client, args)
+
+        assert outputs['PaloAltoNetworksXDR.Incident(val.incident_id==obj.incident_id)'][0]['starred'] is True
+
+    def test_get_starred_incident_list_with_limit(self, mocker):
+        """
+        Given:
+            - List of two starred incidents to fetch
+        When
+            - Running starred fetch_incident with limit of 1
+        Then
+            - Verify the returned result is as we expected and the fetch incident is getting new incident in each call.
+        """
+        from CortexXDRIR import get_incidents_command, Client
+        get_incidents_list_response = load_test_data('./test_data/get_starred_incidents_list.json')
+        request_side_effect = [{'reply': {'incidents': [get_incidents_list_response['reply']['incidents'][0]]}},
+                               {'reply': {'incidents': [get_incidents_list_response['reply']['incidents'][0],
+                                                        get_incidents_list_response['reply']['incidents'][1]]}}]
+        mocker.patch.object(Client, '_http_request', side_effect=request_side_effect)
+        mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
+        getLastRun_side_effect = [{'fetched_starred_incidents': {}},
+                                  {'fetched_starred_incidents': {'3': True}}]
+        mocker.patch.object(demisto, 'getLastRun', side_effect=getLastRun_side_effect)
+
+        client = Client(
+            base_url=f'{XDR_URL}/public_api/v1', headers={}
+        )
+        args = {
+            'incident_id_list': '1 day',
+            'starred': True,
+            'limit': 1,
+            'starred_incidents_fetch_window': '3 days'
+        }
+        _, outputs, _ = get_incidents_command(client, args)
+        res = outputs['PaloAltoNetworksXDR.Incident(val.incident_id==obj.incident_id)']
+        assert len(res) == 1 and res[0]['incident_id'] == '3'
+
+        _, outputs, _ = get_incidents_command(client, args)
+        res = outputs['PaloAltoNetworksXDR.Incident(val.incident_id==obj.incident_id)']
+        assert len(res) == 1 and res[0]['incident_id'] == '4'
+
+    def test_fetch_only_starred_incidents(self, mocker):
+        """
+        Given:
+            - List of fetched incidents
+        When
+            - Running fetch_incident with "only fetch starred incidents" flag
+        Then
+            - Verify the returned result is as we expected. First fetch two starred incidents are fetched and on second fetch,
+            (same fetch window) incidents are filtered out since they have been fetched already.
+        """
+        from CortexXDRIR import fetch_incidents, Client
+
+        get_incidents_list_response = load_test_data('./test_data/get_starred_incidents_list.json')
+        last_run_obj = {}
+        no_incident_mock_response = {}
+        mocker.patch.object(demisto, 'params', return_value={"extra_data": True, "mirror_direction": "Incoming"})
+        mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
+        mocker.patch.object(Client, 'save_modified_incidents_to_integration_context')
+        mocker.patch.object(Client, 'save_modified_incidents_to_integration_context')
+        mocker.patch('CortexXDRIR.get_incident_extra_data_command', side_effect=return_extra_data_result)
+
+        request_side_effect = [get_incidents_list_response,
+                               no_incident_mock_response,
+                               no_incident_mock_response,
+                               no_incident_mock_response]
+        mocker.patch.object(Client, '_http_request', side_effect=request_side_effect)
+
+        client = Client(
+            base_url=f'{XDR_URL}/public_api/v1', headers={}
+        )
+        next_run, incidents = fetch_incidents(client, '3 month', 'MyInstance', last_run_obj.get('next_run'),
+                                              starred=True,
+                                              starred_incidents_fetch_window='3 days')
+        assert len(incidents) == 2
+        assert incidents[0]['name'] == "XDR Incident 3 - 'Local Analysis Malware' generated by XDR Agent detected on host" \
+                                       " AAAAA involving user Administrator"
+
+        last_run_obj = {'next_run': next_run,
+                        'fetched_starred_incidents': {'3': True, '4': True}
+                        }
+        mocker.patch.object(demisto, 'getLastRun', return_value=last_run_obj)
+
+        next_run, incidents = fetch_incidents(client, '3 month', 'MyInstance', last_run_obj.get('next_run'),
+                                              starred=True,
+                                              starred_incidents_fetch_window='3 days')
+
+        assert not incidents
 
 
 def test_insert_parsed_alert(requests_mock):
@@ -619,3 +726,51 @@ def test_get_modified_remote_data_command(requests_mock):
     response = get_modified_remote_data_command(client, args)
 
     assert response.modified_incident_ids == ['1', '2']
+
+
+def test_get_contributing_event_command(requests_mock):
+    from CortexXDRIR import get_contributing_event_command, Client
+
+    contributing_events = load_test_data('./test_data/contributing_events.json')
+    requests_mock.post(f'{XDR_URL}/public_api/v1/alerts/get_correlation_alert_data/', json=contributing_events)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    args = {
+        "alert_ids": "[1111]",
+    }
+
+    response = get_contributing_event_command(client, args)
+
+    assert response.outputs[0].get('alertID') == args.get('alert_ids').strip('[]')
+    assert len(response.outputs[0].get('events')) == 1
+
+
+def test_replace_featured_field_command(requests_mock):
+    from CortexXDRIR import replace_featured_field_command, Client
+
+    replace_featured_field = load_test_data('./test_data/replace_featured_field.json')
+    requests_mock.post(f'{XDR_URL}/public_api/v1/featured_fields/replace_ad_groups', json=replace_featured_field)
+    expected_response = {
+        'fieldType': 'ad_groups',
+        'fields': [
+            {'value': 'new value', 'comment': 'this is a comment', 'type': 'ou'},
+            {'value': 'one new value', 'comment': '', 'type': ''}
+        ]
+    }
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    args = {
+        "ad_type": "[\"ou\"]",
+        "comments": "[\"this is a comment\"]",
+        "field_type": "ad_groups",
+        "values": "[\"new value\", \"one new value\"]",
+    }
+
+    response = replace_featured_field_command(client, args)
+
+    assert response.outputs == expected_response
+    assert len(response.outputs.get('fields')) == 2

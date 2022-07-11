@@ -2,9 +2,10 @@ commonfields:
   id: Moloch
   version: -1
 name: Moloch
-display: Moloch
+display: Moloch (Deprecated)
+deprecated: true
 category: Network Security
-description: Uses the Moloch viewer API
+description: Deprecated. Use Arkime instead.
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: server
