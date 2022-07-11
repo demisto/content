@@ -2492,7 +2492,6 @@ def panorama_get_url_category(url_cmd: str, url: str, target: Optional[str] = No
         'key': API_KEY,
         'cmd': f'<test><{url_cmd}>{url}</{url_cmd}></test>'
     }
-    categories = []
 
     if target:
         params['target'] = target
@@ -2506,10 +2505,7 @@ def panorama_get_url_category(url_cmd: str, url: str, target: Optional[str] = No
     if 'Failed to query the cloud' in result:
         raise Exception('Failed to query the cloud. Please check your URL Filtering license.')
 
-    for url_category in PAN_DB_URL_FILTERING_CATEGORIES:
-        if url_category in result:
-            categories.append(url_category)
-    return categories
+    return [url_category for url_category in PAN_DB_URL_FILTERING_CATEGORIES if url_category in result]
 
 
 def populate_url_filter_category_from_context(category: str):
