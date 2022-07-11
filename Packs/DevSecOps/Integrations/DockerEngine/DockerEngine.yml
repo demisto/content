@@ -1983,7 +1983,7 @@ script:
     - contextPath: Docker.ImageTag.Status Code
       description: Image Tag Result
       type: String
-  dockerimage: demisto/python3:3.10.5.31797
+  dockerimage: demisto/python3:3.10.5.31928
   feed: false
   isfetch: false
   longRunning: false
