@@ -170,7 +170,7 @@ def build_client(base_url, collection, crt, key, proxies, tags, verify_certifica
     try:
         if not verify_certificate:
             demisto.debug(f'{verify_certificate=}, setting it with env vars')
-            verify_certificate: Optional[Union[str, bool]] = os.getenv('SSL_CERT_FILE') or os.getenv('REQUESTS_CA_BUNDLE')
+            verify_certificate = os.getenv('SSL_CERT_FILE') or os.getenv('REQUESTS_CA_BUNDLE')
             if not verify_certificate:
                 demisto.debug(f'{verify_certificate=}, setting it with default certificate')
                 verify_certificate = Taxii2FeedClient.build_certificate(CA)
