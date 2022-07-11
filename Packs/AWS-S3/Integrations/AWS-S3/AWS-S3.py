@@ -318,7 +318,8 @@ def main():
         if command == 'test-module':
             client = aws_client.aws_session(service=SERVICE)
             response = client.list_buckets()
-            if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+            if response['ResponseMetadata']['HTTPStatusCode'] == 200:  # this is just for testing
+                demisto.info('test')
                 demisto.results('ok')
 
         elif command == 'aws-s3-create-bucket':
