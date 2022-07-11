@@ -1,12 +1,8 @@
 {
 	"name": "XSOAR Content",
-	"build": {
-		"dockerfile": "Dockerfile",
-		"args": {
-			"IMAGENAME": "devdemisto/content-dev:31677"
-		}
-	},
-	"containerUser": "root",
+	"dockerComposeFile": "docker-compose.yml",
+	"service": "content",
+	"workspaceFolder": "/workspaces/content",
 	"settings": {
 		"terminal.integrated.defaultProfile.linux": "zsh",
 		"terminal.integrated.profiles.linux": {
@@ -15,7 +11,6 @@
 			}
 		},
 		"python.defaultInterpreterPath": "/usr/local/bin/python",
-		"python.venvFolders": ["~/.cache/pypoetry/virtualenvs"],
 		"python.linting.enabled": true,
 		"python.linting.flake8Enabled": true,
 		"python.linting.mypyEnabled": true,
@@ -29,13 +24,14 @@
 			"--namespace-packages"
 		],
 		"python.testing.pytestEnabled": true,
-		"python.testing.pytestArgs": ["."],
+		"python.testing.pytestArgs": [
+			"."
+		],
 		"python.testing.cwd": "${localWorkspaceFolder}/Packs/HelloWorld/Integrations/HelloWorld"
 	},
 	"extensions": [
 		"cortexxsoarext.xsoar",
 		"ms-python.python",
-		"ms-python.vscode-pylance",
 		"ms-vscode.PowerShell",
 		"ms-toolsai.jupyter",
 		"timonwong.shellcheck",
@@ -51,8 +47,8 @@
 		"Gruntfuggly.todo-tree",
 		"redhat.vscode-yaml",
 		"PKief.material-icon-theme"
-		],
-	"containerEnv": {
+	],
+	"remoteEnv": {
 		"LOCAL_WORKSPACE_PATH": "${localWorkspaceFolder}",
 		"CONTENT": "${containerWorkspaceFolder}",
 		"PYTHONPATH": "${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerPython/:${containerWorkspaceFolder}/Packs/Base/Scripts/CommonServerUserPython/:${containerWorkspaceFolder}/Tests/demistomock/:${containerEnv:PYTHONPATH}",
@@ -60,12 +56,13 @@
 		"DEMISTO_BASE_URL": "${localEnv:DEMISTO_BASE_URL}",
 		"DEMISTO_USERNAME": "${localEnv:DEMISTO_USERNAME}",
 		"DEMISTO_PASSWORD": "${localEnv:DEMISTO_PASSWORD}",
-		"DEMISTO_VERIFY_SSL": "${localEnv:DEMISTO_VERIFY_SSL}"
+		"DEMISTO_VERIFY_SSL": "${localEnv:DEMISTO_VERIFY_SSL}",
+		"DEMISTO_API_KEY": "${localEnv:DEMISTO_API_KEY}"
 	},
 	"features": {
 		"docker-in-docker": "latest",
 		"git": "os-provided",
 		"github-cli": "latest"
 	},
-	"onCreateCommand": "echo 'export PYTHONPATH=$(printf '%s: ' ${containerWorkspaceFolder}/Packs/ApiModules/Scripts/*):$PYTHONPATH' >> ~/.zshrc && echo 'export MYPYPATH=$(printf '%s: ' ${containerWorkspaceFolder}/Packs/ApiModules/Scripts/*):$MYPYPATH' >> ~/.zshrc"
+	"onCreateCommand": "touch ${containerWorkspaceFolder}/CommonServerUserPython.py && echo 'export PYTHONPATH=$(printf '%s: ' ${containerWorkspaceFolder}/Packs/ApiModules/Scripts/*):$PYTHONPATH' >> ~/.zshrc && echo 'export MYPYPATH=$(printf '%s: ' ${containerWorkspaceFolder}/Packs/ApiModules/Scripts/*):$MYPYPATH' >> ~/.zshrc"
 }
