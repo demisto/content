@@ -3420,7 +3420,7 @@ def qradar_get_events_polling_command(client, params, args):
         scheduled_command = ScheduledCommand('qradar-get-events-polling',
                                              interval_in_secs,
                                              polling_args,
-                                             timeout_in_seconds=600)
+                                             timeout_in_seconds=6000)
         return CommandResults(scheduled_command=scheduled_command)
     search_id = args.get('search_id')
     try:
@@ -3677,3 +3677,4 @@ def main() -> None:  # pragma: no cover
 
 
 ''' ENTRY POINT '''
+main()
