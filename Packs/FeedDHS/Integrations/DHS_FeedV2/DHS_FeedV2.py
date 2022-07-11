@@ -200,7 +200,7 @@ def build_client(base_url, collection, crt, key, proxies, tags, verify_certifica
                                   certificate=crt,
                                   key=key)
         client.initialise()
-        demisto.debug(f'fix_rsa_data on key worked, proceeding')
+        demisto.debug('fix_rsa_data on key worked, proceeding')
 
     return client
 
