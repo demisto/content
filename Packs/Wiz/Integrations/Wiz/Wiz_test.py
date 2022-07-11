@@ -1,12 +1,22 @@
+import copy
+import random
+
 import pytest
 from unittest.mock import patch
 import demistomock as demisto
+from CommonServerPython import DemistoException
 
 integration_params = {
     'url': 'http://test.io',
     'credentials': {'identifier': 'test', 'password': 'pass'},
     'fetch_time': '7 days',
+    'max_fetch': 5
 }
+
+TEST_TOKEN = '123456789'
+SIMILAR_COMMANDS = ['wiz-issue-in-progress', 'wiz-reopen-issue', 'wiz-reject-issue', 'wiz-get-issues',
+                    'wiz-set-issue-note', 'wiz-clear-issue-note', 'wiz-get-issue-evidence', 'wiz-set-issue-due-date',
+                    'wiz-clear-issue-due-date', 'wiz-rescan-machine-disk', 'wiz-get-project-team']
 
 
 @pytest.fixture(autouse=True)
@@ -182,8 +192,125 @@ test_reopen_issue_response = {
 }
 
 
+@patch('Wiz.return_error', side_effect=Exception('no command'))
+def test_main_without_params(return_error, capfd):
+    from Wiz import main
+    try:
+        main()
+    except Exception as e:
+        assert str(e) == 'no command'
+    captured = capfd.readouterr()
+    assert 'Unrecognized command' in captured.out
+
+
+def test_no_command(mocker):
+    from Wiz import main
+    try:
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch('Wiz.get_token', return_value=TEST_TOKEN)
+        mocker.patch('Wiz.checkAPIerrors', return_value=test_set_issue_reopen_fail_response)
+        main()
+    except Exception as e:
+        assert str(e) == 'no command'
+
+
+INVALID_RESPONSE_ERROR = 'blabla error blabla'
+
+
+VALID_RESPONSE_JSON = {
+    "data": {
+        "issues": {
+            "nodes": [
+                {
+                    "id": "123456-test-id-1",
+                    "name": "test-1",
+                    "createdAt": "2022-07-06T11:21:28.372924Z",
+                    "type": "CORTEX_XSOAR",
+                    "status": "SUCCESS",
+                    "project": None,
+                    "isAccessibleToAllProjects": True,
+                    "params": {
+                        "url": "https://bla.bla",
+                        "authentication": {
+                            "username": "A",
+                            "password": "__secret_content__"
+                        },
+                        "clientCertificate": None,
+                        "body": "{}"
+                    },
+                    "usedByRules": []
+                },
+                {
+                    "id": "123456-test-id-2",
+                    "name": "test-2",
+                    "createdAt": "2022-07-06T11:21:28.372924Z",
+                    "type": "CORTEX_XSOAR",
+                    "status": "SUCCESS",
+                    "project": None,
+                    "isAccessibleToAllProjects": True,
+                    "params": {
+                        "url": "https://bla.bla",
+                        "authentication": {
+                            "username": "A",
+                            "password": "__secret_content__"
+                        },
+                        "clientCertificate": None,
+                        "body": "{}"
+                    },
+                    "usedByRules": []
+                }
+            ],
+            "pageInfo": {
+                "hasNextPage": False,
+                "endCursor": None
+            },
+            "totalCount": 2
+        },
+        "graphSearch": {
+            "nodes": [{"entities": [{"id": "test_id"}]}]
+        },
+        "issue": {
+            "note": None,
+            "control": {
+                "query": "blabla"
+            },
+            "status": "CRITICAL",
+            "resolutionReason": "blabla reason"
+        },
+        "projects": {
+            "nodes": [{
+                "projectOwners": "owner-test",
+                "securityChampions": "champion-test"
+            }]
+        }
+    }
+}
+
+
+def test_fetch_incidents(mocker):
+    from Wiz import main
+    try:
+        mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
+        mocker.patch('Wiz.checkAPIerrors', return_value=VALID_RESPONSE_JSON)
+        main()
+    except Exception as e:
+        assert str(e) == 'no command'
+
+
+DEMISTO_ARGS = {
+    'issue_type': 'Publicly exposed VM instance with effective global admin permissions',
+    'resource_id': 'test-id',
+    'severity': 'CRITICAL',
+    'reject_note': 'reject_note_test',
+    'issue_id': 123456,
+    'reject_reason': 'reject_reason_test',
+    'reopen_note': 'reopen_note_test',
+    'note': 'test-note'
+}
+
+
 @patch('Wiz.checkAPIerrors', return_value=test_reopen_issue_response)
-def test_reopen_issue(checkAPIerrors):
+def test_reopen_issue_direct(checkAPIerrors):
     from Wiz import reopen_issue
 
     res = reopen_issue('12345678-2222-3333-1111-ff5fa2ff7f78', 'blah_note')
@@ -231,6 +358,90 @@ test_issue_in_progress_response = {
         }
     }
 }
+
+
+@pytest.mark.parametrize("command_name", SIMILAR_COMMANDS)
+def test_main_command(mocker, capfd, command_name):
+    from Wiz import main
+    try:
+        with capfd.disabled():
+            mocker.patch.object(demisto, 'command', return_value=command_name)
+            mocker.patch.object(demisto, 'args', return_value=DEMISTO_ARGS)
+            mocker.patch('Wiz.checkAPIerrors', return_value=VALID_RESPONSE_JSON)
+            mocker.patch('CommonServerPython.tableToMarkdown', return_value=[])
+            main()
+
+    except Exception as e:
+        assert str(e) == 'no command'
+
+
+def test_has_next_page(mocker, capfd):
+    from Wiz import fetch_issues
+    with capfd.disabled():
+        valid_json_paging = copy.deepcopy(VALID_RESPONSE_JSON)
+        valid_json_paging['data']['issues']['pageInfo']['hasNextPage'] = True
+        valid_json_paging['data']['issues']['pageInfo']['endCursor'] = 'test'
+        mocker.patch('Wiz.checkAPIerrors', side_effect=[valid_json_paging, VALID_RESPONSE_JSON])
+        mocker.patch('CommonServerPython.tableToMarkdown', return_value=[])
+        fetch_issues(450)
+
+
+def test_get_project_team(mocker, capfd):
+    from Wiz import get_project_team
+    with capfd.disabled():
+        mocker.patch('Wiz.checkAPIerrors', return_value=VALID_RESPONSE_JSON)
+        project = get_project_team('test_project')
+        assert project['projectOwners'] == 'owner-test'
+        assert project['securityChampions'] == 'champion-test'
+
+        mocker.patch('Wiz.checkAPIerrors', side_effect=DemistoException('demisto exception'))
+        project = get_project_team('test_project')
+        assert not project
+
+
+def test_rescan_machine_disk(mocker, capfd):
+    from Wiz import rescan_machine_disk
+    with capfd.disabled():
+        mocker.patch('Wiz.checkAPIerrors', return_value=VALID_RESPONSE_JSON)
+        machine_disk = rescan_machine_disk('test_id_1234')
+        assert machine_disk
+
+        mocker.patch('Wiz.checkAPIerrors', side_effect=DemistoException('demisto exception'))
+        machine_disk = rescan_machine_disk('test_id_1234')
+        assert not machine_disk
+
+
+@pytest.mark.parametrize("severity", ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'INFORMATIONAL'])
+def test_get_filtered_issues_good_severity(mocker, capfd, severity):
+    from Wiz import get_filtered_issues
+    with capfd.disabled():
+        valid_json_paging = copy.deepcopy(VALID_RESPONSE_JSON)
+        valid_json_paging['data']['issues']['pageInfo']['hasNextPage'] = True
+        valid_json_paging['data']['issues']['pageInfo']['endCursor'] = 'test'
+        mocker.patch('Wiz.checkAPIerrors', side_effect=[valid_json_paging, VALID_RESPONSE_JSON])
+        get_filtered_issues(issue_type='virtualMachine', resource_id='', severity=severity, limit=500)
+
+
+@pytest.mark.parametrize("severity", ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'INFORMATIONAL'])
+def test_get_filtered_issues_good_severity_resource(mocker, capfd, severity):
+    from Wiz import get_filtered_issues
+    with capfd.disabled():
+        valid_json_paging = copy.deepcopy(VALID_RESPONSE_JSON)
+        valid_json_paging['data']['issues']['pageInfo']['hasNextPage'] = True
+        valid_json_paging['data']['issues']['pageInfo']['endCursor'] = 'test'
+        mocker.patch('Wiz.checkAPIerrors', side_effect=[valid_json_paging, VALID_RESPONSE_JSON])
+        get_filtered_issues(issue_type='', resource_id='test_resource', severity=severity, limit=500)
+
+
+def test_get_filtered_issues_bad_severity(mocker, capfd):
+    from Wiz import get_filtered_issues
+    with capfd.disabled():
+        mocker.patch('Wiz.checkAPIerrors', return_value=VALID_RESPONSE_JSON)
+        issue = get_filtered_issues(issue_type='virtualMachine', resource_id='test', severity='BAD', limit=500)
+        assert issue == 'You should (only) pass either issue_type or resource_id filters'
+        issue = get_filtered_issues(issue_type='virtualMachine', resource_id='', severity='BAD', limit=500)
+        assert issue == 'You should only use these severity types: CRITICAL, HIGH, MEDIUM, LOW or ' \
+                        'INFORMATIONAL in upper or lower case.'
 
 
 @patch('Wiz.checkAPIerrors', return_value=test_issue_in_progress_response)
@@ -493,21 +704,79 @@ def test_clear_issue_due_date_no_issue_id(checkAPIerrors, capfd):
         assert res == "Could not find Issue with ID 12345678-2222-3333-1111-ff5fa2ff7f71"
 
 
-test_bad_token_repsonse = {
+test_bad_token_response = {
     "error": "access_denied",
     "error_description": "Unauthorized"
 }
+
+
+def mocked_requests_get(json, status):
+    class MockResponse:
+        def __init__(self, json, status_code):
+            self.json_data = json
+            self.status_code = status_code
+
+        def json(self):
+            return self.json_data
+
+    return MockResponse(json, status)
 
 
 def test_bad_get_token(capfd):
     with capfd.disabled():
         with patch('requests.post') as mocked_request:
             with pytest.raises(Exception):
-                mocked_request().return_value = test_bad_token_repsonse
+                mocked_request().return_value = test_bad_token_response
                 from Wiz import get_token
 
                 res = get_token()
-                assert res == test_bad_token_repsonse
+                assert res == test_bad_token_response
+
+
+def test_good_token(capfd, mocker):
+    with capfd.disabled():
+        good_token = str(random.randint(1, 1000))
+        mocker.patch('requests.post', return_value=mocked_requests_get({"access_token": good_token}, 200))
+
+        from Wiz import get_token
+        res = get_token()
+        assert res == good_token
+
+
+def test_token_no_access(capfd, mocker):
+    with capfd.disabled():
+        mocker.patch('requests.post', return_value=mocked_requests_get({}, 200))
+        try:
+            from Wiz import get_token
+            get_token()
+        except Exception as e:
+            assert str(e) == 'Could not retrieve token from Wiz: None'
+
+
+def test_check_api_access(capfd, mocker):
+    with capfd.disabled():
+        good_token = str(random.randint(1, 1000))
+        mocker.patch('requests.post', return_value=mocked_requests_get({"access_token": good_token}, 200))
+        from Wiz import checkAPIerrors
+        checkAPIerrors(query='test', variables='test')
+
+        try:
+            mocker.patch('Wiz.get_token', return_value=TEST_TOKEN)
+            mocker.patch('requests.post', side_effect=Exception('bad request'))
+            checkAPIerrors(query='test', variables='test')
+        except Exception as e:
+            assert str(e) == 'bad request'
+
+
+def test_check_api_access_bad_gw(capfd, mocker):
+    with capfd.disabled():
+        from Wiz import checkAPIerrors
+        mocker.patch('requests.post', side_effect=Exception('502: Bad Gateway'))
+
+        try:
+            checkAPIerrors(query='test', variables='test')
+        except Exception as e:
+            assert '502: Bad Gateway' in str(e)
 
 
 test_issue_severity_crit_response = {
