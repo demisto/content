@@ -2706,3 +2706,43 @@ def test_check_latest_version_hr(mocker):
     command_res: CommandResults = panorama_check_latest_panos_software_command()
 
     assert markdown_assert == command_res.readable_output
+
+
+def test_pan_os_get_running_config(mocker):
+    """
+    Given -
+        A target serial number
+    When -
+        Returning the running config
+    Then -
+        File returned should be called 'running_config'
+        The contents should be XML and not JSON
+    """
+    from Panorama import pan_os_get_running_config
+
+    return_mock = """
+    <response status='error' code='13'><msg><line>SOME_SERIAL_NUMBER not connected</line></msg></response>
+    """
+    mocker.patch("Panorama.http_request", return_value=return_mock)
+    created_file = pan_os_get_running_config({"target": "SOME_SERIAL_NUMBER"})
+    assert created_file['File'] == 'running_config'
+
+
+def test_pan_os_get_merged_config(mocker):
+    """
+    Given -
+        A target serial number
+    When -
+        Returning the merged config
+    Then -
+        File returned should be called 'merged_config'
+        The contents should be XML and not JSON
+    """
+    from Panorama import pan_os_get_merged_config
+
+    return_mock = """
+    <response status='error' code='13'><msg><line>SOME_SERIAL_NUMBER not connected</line></msg></response>
+    """
+    mocker.patch("Panorama.http_request", return_value=return_mock)
+    created_file = pan_os_get_merged_config({"target": "SOME_SERIAL_NUMBER"})
+    assert created_file['File'] == 'merged_config'
