@@ -22,26 +22,26 @@
  "content": true,
  "group": 0,
  "hidden": false,
-"associatedTypes": [
-	"GDPR Data Breach",
-	"IAM - New Hire",
-	"IAM - Terminate User",
-	"IAM - Update User",
-	"User Profile",
-	"IAM - Sync User",
-    "IAM - Rehire User",
-    "McAfee MVision CASB Alert",
-    "McAfee MVision CASB Threat"
-],
-"systemAssociatedTypes":[
-	"GDPR Data Breach",
-	"IAM - New Hire",
-	"IAM - Terminate User",
-	"IAM - Update User",
-	"User Profile",
-	"IAM - Sync User",
-	"IAM - Rehire User"
-],
+ "associatedTypes": [
+     "GDPR Data Breach",
+     "IAM - New Hire",
+     "IAM - Terminate User",
+     "IAM - Update User",
+     "User Profile",
+     "IAM - Sync User",
+     "IAM - Rehire User",
+     "McAfee MVision CASB Alert",
+     "McAfee MVision CASB Threat"
+ ],
+ "systemAssociatedTypes":[
+     "GDPR Data Breach",
+     "IAM - New Hire",
+     "IAM - Terminate User",
+     "IAM - Update User",
+     "User Profile",
+     "IAM - Sync User",
+     "IAM - Rehire User"
+ ],
  "associatedToAll": false,
  "unmapped": false,
  "unsearchable": false,
