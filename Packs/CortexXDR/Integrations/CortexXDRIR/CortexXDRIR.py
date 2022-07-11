@@ -992,6 +992,13 @@ def get_endpoints_by_status_command(client: Client, args: Dict) -> CommandResult
         raw_response=raw_res)
 
 
+def file_details_results(client: Client, args: Dict, add_to_context: bool) -> None:
+    return_entry, file_results = retrieve_file_details_command(client, args, add_to_context)
+    demisto.results(return_entry)
+    if file_results:
+        demisto.results(file_results)
+
+
 def get_contributing_event_command(client: Client, args: Dict) -> CommandResults:
 
     if alert_ids := argToList(args.get('alert_ids')):
@@ -1290,22 +1297,31 @@ def main():  # pragma: no cover
             return_results(retrieve_files_command(client, args))
 
         elif command == 'xdr-file-retrieve':
-            return_results(run_polling_command(client=client,
-                                               args=args,
-                                               cmd="xdr-file-retrieve",
-                                               command_function=retrieve_files_command,
-                                               command_decision_field="action_id",
-                                               results_function=action_status_get_command,
-                                               polling_field="status",
-                                               polling_value=["PENDING",
-                                                              "IN_PROGRESS",
-                                                              "PENDING_ABORT"]))
+            polling = run_polling_command(client=client,
+                                          args=args,
+                                          cmd="xdr-file-retrieve",
+                                          command_function=retrieve_files_command,
+                                          command_decision_field="action_id",
+                                          results_function=action_status_get_command,
+                                          polling_field="status",
+                                          polling_value=["PENDING",
+                                                         "IN_PROGRESS",
+                                                         "PENDING_ABORT"])
+            raw = polling.raw_response
+            # raw is the response returned by the get-action-status
+            if polling.scheduled_command:
+                return_results(polling)
+                return
+            status = raw[0].get('status')  # type: ignore
+            if status == 'COMPLETED_SUCCESSFULLY':
+                file_details_results(client, args, True)
+            else:  # status is not in polling value and operation was not COMPLETED_SUCCESSFULLY
+                polling.outputs_prefix = f'{args.get("integration_context_brand", "CoreApiModule")}' \
+                                         f'.RetrievedFiles(val.action_id == obj.action_id)'
+                return_results(polling)
 
         elif command == 'xdr-retrieve-file-details':
-            return_entry, file_results = retrieve_file_details_command(client, args)
-            demisto.results(return_entry)
-            if file_results:
-                demisto.results(file_results)
+            file_details_results(client, args, False)
 
         elif command == 'xdr-get-scripts':
             return_outputs(*get_scripts_command(client, args))

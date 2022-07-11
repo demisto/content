@@ -170,22 +170,26 @@ class Client(BaseClient):
                 f.write(response.text)
 
     def get_batches_from_file(self, limit):
+        # we do this try to make sure the file gets deleted at the end
+        try:
+            file_stream = open("response.txt", 'rt')
+            columns = file_stream.readline()  # get the headers from the csv file.
+            columns = columns.replace("\"", "").strip().split(",")  # type:ignore  # '"a","b"\n' -> ["a", "b"]
 
-        file_stream = open("response.txt", 'rt')
-        columns = file_stream.readline()  # get the headers from the csv file.
-        columns = columns.replace("\"", "").strip().split(",")  # '"a","b"\n' -> ["a", "b"]
+            batch_size = limit if limit else BATCH_SIZE
+            while True:
 
-        batch_size = limit if limit else BATCH_SIZE
-        while True:
+                feed_batch = [feed for _, feed in zip(range(batch_size + 1), file_stream) if feed]
 
-            feed_batch = [feed for _, feed in zip(range(batch_size + 1), file_stream) if feed]
-
-            if not feed_batch:
-                file_stream.close()
+                if not feed_batch:
+                    file_stream.close()
+                    return
+                yield csv.DictReader(feed_batch, fieldnames=columns)
+        finally:
+            try:
                 os.remove("response.txt")
-                return
-
-            yield csv.DictReader(feed_batch, fieldnames=columns)
+            except OSError:
+                pass
 
     def calculate_indicator_score(self, risk_from_feed):
         """Calculates the Dbot score of an indicator based on its Risk value from the feed.
@@ -425,7 +429,7 @@ def fetch_indicators_command(client, indicator_type, risk_rule: Optional[str] = 
             yield indicators
 
 
-def get_indicators_command(client, args) -> Tuple[str, Dict[Any, Any], List[Dict]]:
+def get_indicators_command(client, args) -> Tuple[str, Dict[Any, Any], List[Dict]]:  # pragma: no cover
     """Retrieves indicators from the Recorded Future feed to the war-room.
         Args:
             client(Client): Recorded Future Feed client.
@@ -494,7 +498,7 @@ def get_risk_rules_command(client: Client, args) -> Tuple[str, dict, dict]:
     return hr, {'RecordedFutureFeed.RiskRule(val.Name == obj.Name)': entry_result}, result
 
 
-def main():
+def main():  # pragma: no cover
     params = demisto.params()
     client = Client(RF_INDICATOR_TYPES[params.get('indicator_type')], params.get('api_token'), params.get('services'),
                     params.get('risk_rule'), params.get('fusion_file_path'), params.get('insecure'),

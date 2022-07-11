@@ -92,7 +92,35 @@ Expires the password of an Active Directory user.
 
 There is no context output for this command.
 
-### 2. Create an AD user
+### 2. Set password to never expire
+
+Modifies the AD account attribute "Password never expire".  
+
+##### Base Command
+
+`ad-modify-password-never-expire`
+
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| username | The username (sAMAccountName) of the user to modify. | Required |
+| value | Value to set "Password Never Expire" (default is false). | Required |
+
+##### Context Output
+
+There is no context output for this command.
+
+##### Command Example
+```
+!ad-modify-password-never-expire username=jack value=true
+```
+##### Human Readable Output
+```
+AD account jack has set "password never expire" attribute. Value is set to True
+```
+
+### 3. Create an AD user
 
 Creates a user in Active Directory.
 
@@ -127,7 +155,7 @@ ad-create-user username="jack" password="1q2w3e4r!" user-dn="cn=jack,dc=demisto,
 Created user with DN: cn=jack,dc=demisto,dc=int
 ```
 
-### 3. Perform a search in Active Directory
+### 4. Perform a search in Active Directory
 
 Runs queries in Active Directory.
 
@@ -185,7 +213,7 @@ ad-search filter="(&(objectCategory=person)(objectClass=user)(!(cn=andy)))"
 >| CN=Guest,CN=Users,DC=demisto,DC=int  |
 
 
-### 4. Add an AD user or computer to a group
+### 5. Add an AD user or computer to a group
 
 Adds an Active Directory user or computer to a group.
 
@@ -217,7 +245,7 @@ ad-add-to-group username="Jack" group-cn="Users"
 Object with dn CN=jack,DC=demisto,DC=int was added to group Users
 ```
 
-### 5. Remove an AD user or computer from a group
+### 6. Remove an AD user or computer from a group
 
 Removes an Active Directory user or computer from a group.
 
@@ -248,7 +276,7 @@ ad-remove-from-group username="jack" group-cn="Users"
 Object with dn CN=jack,DC=demisto,DC=int removed from group Users
 ```
 
-### 6. Update attributes for an AD user
+### 7. Update attributes for an AD user
 
 Updates attributes of an existing Active Directory user.
 
@@ -279,7 +307,7 @@ There is no context output for this command.
 Updated user's description to Samurai
 ```
 
-### 7. Delete an AD user
+### 8. Delete an AD user
 
 Deletes an Active Directory user.
 
@@ -307,7 +335,7 @@ There is no context output for this command.
 Deleted object with dn cn=jack,dc=demisto,dc=int
 ```
 
-### 8. Create an AD contact
+### 9. Create an AD contact
 
 Creates an Active Directory contact.
 
@@ -342,7 +370,7 @@ There is no context output for this command.
 Created contact with DN: cn=jack,dc=demisto,dc=int
 ```
 
-### 9. Update attributes of an AD contact
+### 10. Update attributes of an AD contact
 
 Updates attributes of an existing Active Directory contact.
 
@@ -373,7 +401,7 @@ ad-update-contact contact-dn="cn=Jack,dc=demisto,dc=int" attribute-name="display
 Updated contact’s displayName to: Jack H.
 ```
 
-### 10. Disable an AD user account
+### 11. Disable an AD user account
 
 Disables an Active Directory user account.
 
@@ -405,7 +433,7 @@ ad-disable-account username="jack"
 User “CN=jack,DC=demisto,DC=int” has been disabledUser jack was disabled
 ```
 
-### 11. Enable an AD user account
+### 12. Enable an AD user account
 
 Enables a previously disabled Active Directory account.
 
@@ -438,7 +466,7 @@ ad-enable-account username="jack"
 User jack was enabledUser “CN=jack,DC=demisto,DC=int” has been enabled
 ```
 
-### 12. Unlock an AD user account
+### 13. Unlock an AD user account
 
 Unlocks a previously locked Active Directory user account.
 
@@ -468,7 +496,7 @@ There is no context output for this command.
 User "CN=mooncake,CN=Users,DC=demisto,DC=int" has been unlocked
 ```
 
-### 13. Set a new password for an AD user account
+### 14. Set a new password for an AD user account
 
 Sets a new password for an Active Directory user. This command requires a secure connection (SSL,TLS).
 
@@ -499,7 +527,7 @@ There is no context output for this command.
 User password successfully set
 ```
 
-### 14. Modify the computer organizational unit in a domain
+### 15. Modify the computer organizational unit in a domain
 
 Modifies the computer organizational unit within a domain.
 
@@ -533,7 +561,7 @@ There is no context output for this command.
 "mike" was successfully moved to "OU=Sarah,DC=demisto,DC=int"
 ```
 
-### 15. Get information for an AD user account
+### 16. Get information for an AD user account
 
 Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
 
@@ -612,7 +640,7 @@ Retrieves detailed information about a user account. The user can be specified b
 >| CN=Guest,CN=Users,DC=demisto,DC=int |  |  |  | CN=Guests,CN=Builtin,DC=demisto,DC=int | Guest | Guest | 66082 |
 
 
-### 16. Get information for a computer account
+### 17. Get information for a computer account
 
 Retrieves detailed information about a computer account. The computer can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filters are provided, all computers are returned.
 
@@ -669,7 +697,7 @@ ad-get-computer name=noapc
 >| CN=noapc,OU=Shani,DC=demisto,DC=int | CN=Exchange Servers,OU=Microsoft Exchange Security Groups,DC=demisto,DC=int | noapc |
 
 
-### 17. Get a list of users or computers for a group
+### 18. Get a list of users or computers for a group
 
 Retrieves the list of users or computers that are members of the specified group.
 
@@ -738,7 +766,7 @@ Retrieves the list of users or computers that are members of the specified group
 >| 671,OU=DemistoMng,DC=demisto,DC=int | User 671  | | | CN=Group2,OU=DemistoMng,DC=demisto,DC=int | User 671 | User 671User 671 | 514
 
 
-### 18. Create an AD user
+### 19. Create an AD user
 
 Create an AD user.
 Used in the IAM premium pack.
@@ -785,7 +813,7 @@ Used in the IAM premium pack.
 
 
 
-### 19. Update an AD user
+### 20. Update an AD user
 
 Updates an existing AD user with the data passed in the user-profile argument.
 Used in the IAM premium pack.
@@ -831,7 +859,7 @@ Used in the IAM premium pack.
 
 
 
-### 20. Update an AD user
+### 21. Update an AD user
 
 Retrieves a single AD user resource.
 Used in the IAM premium pack.

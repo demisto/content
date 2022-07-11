@@ -324,7 +324,7 @@ def main():  # pragma: no cover
                                                               "PENDING_ABORT"]))
 
         elif command == 'core-retrieve-file-details':
-            return_entry, file_results = retrieve_file_details_command(client, args)
+            return_entry, file_results = retrieve_file_details_command(client, args, False)
             demisto.results(return_entry)
             if file_results:
                 demisto.results(file_results)
