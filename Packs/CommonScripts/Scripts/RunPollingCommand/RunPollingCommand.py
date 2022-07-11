@@ -25,7 +25,7 @@ def prepare_arg_dict(ids_arg_name, ids, additional_arg_names, additional_arg_val
     return args
 
 
-def main(args):
+def main(args):     # pragma: no cover
     try:
         encoded_id = args.get('ids').encode('utf-8') if type(args.get('ids')) != int else args.get('ids')
 
