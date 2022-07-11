@@ -9,11 +9,11 @@ TEST_DATA_URL = {
             {"Data": "http://portal-digitalshadows.com.still.valid/learn/risk-profiles/MARKED_DOCUMENT"},
             {"Data": "https://http://microsoft365cpmsetup.com/triage/alerts/BGWZC"},
             {
-                "Data": "https://http://microsoft365cpmsetup.com/api/external/resources/2de38dac-bba5-46c9-9ceb"
+                "Data": "https://http://microsoft365cpmsetup.com/api/external/resources/2de38dac-bba5-46c9-9ceb" +
                         "-e0fd72944a11"
             },
             {
-                "Data": "https://http://microsoft365cpmsetup.com/api/external/resources/2de38dac-bba5-46c9-9ceb"
+                "Data": "https://http://microsoft365cpmsetup.com/api/external/resources/2de38dac-bba5-46c9-9ceb" +
                         "-e0fd72944a11"
             },
             {
@@ -23,10 +23,10 @@ TEST_DATA_URL = {
     },
 }
 TEST_DATA_URL_EXPECTED = [
-    "http://microsoft365cpmsetup.com OR https://http://microsoft365cpmsetup.com/triage/alerts/BGWZC OR "
-    "https://http://GermDetectives.com/learn/risk-profiles/IMPERSONATING_DOMAIN OR "
+    "http://microsoft365cpmsetup.com OR https://http://microsoft365cpmsetup.com/triage/alerts/BGWZC OR " +
+    "https://http://GermDetectives.com/learn/risk-profiles/IMPERSONATING_DOMAIN OR " +
     "http://portal-digitalshadows.com.still.valid/learn/risk-profiles/MARKED_DOCUMENT",
-    "https://http://microsoft365cpmsetup.com/api/external/resources/2de38dac-bba5-46c9-9ceb-e0fd72944a11 OR "
+    "https://http://microsoft365cpmsetup.com/api/external/resources/2de38dac-bba5-46c9-9ceb-e0fd72944a11 OR " +
     "https://http://microsoft365cpmsetup.com/api/external/resources/2de38dac-bba5-46c9-9ceb-e0fd72944a11",
 ]
 
@@ -87,7 +87,7 @@ TEST_DATA_DOMAIN = {
     },
 }
 TEST_DATA_DOMAIN_EXPECTED = [
-    "GermDetectives.com OR TutorialFriend.com OR LessIsFull.com OR SaveJam.com OR SaveItDay.com OR "
+    "GermDetectives.com OR TutorialFriend.com OR LessIsFull.com OR SaveJam.com OR SaveItDay.com OR " +
     "portal-digitalshadows.com.still.valid"
 ]
 TEST_DATA_DOMAIN_SINGLE = {
@@ -111,7 +111,7 @@ TEST_DATA_FILE_SHA1 = {
     },
 }
 TEST_DATA_FILE_SHA1_EXPECTED = [
-    "fd340743293eae593da4796e868ce57dfabf4147 OR fd340743293eae593da4796e868ce57dfabf4147 OR "
+    "fd340743293eae593da4796e868ce57dfabf4147 OR fd340743293eae593da4796e868ce57dfabf4147 OR " +
     "4eeff478822995573f4a5c45e746f01f93e23f28"
 ]
 TEST_DATA_FILE_SHA1_SINGLE = {
@@ -138,7 +138,7 @@ TEST_DATA_FILE_SHA256 = {
     },
 }
 TEST_DATA_FILE_SHA256_EXPECTED = [
-    "57b0ed216fac388b6d99774d256fa5542d32cfdfe72a45b32fd7932ec154731d OR "
+    "57b0ed216fac388b6d99774d256fa5542d32cfdfe72a45b32fd7932ec154731d OR " +
     "8dca20e35098837cc003b54f17688386aabd9a5640884f5e4397e755ca8bc606"
 ]
 TEST_DATA_FILE_SHA256_SINGLE = {

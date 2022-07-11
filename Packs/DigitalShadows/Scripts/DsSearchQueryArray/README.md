@@ -7,7 +7,7 @@ Combines an array of queries to as few as possible whilst staying under the maxi
 | --- | --- |
 | Script Type | python3 |
 | Tags | transformer |
-| Cortex XSOAR Version | 5.5.0 |
+| Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
 ---
