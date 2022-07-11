@@ -2223,7 +2223,231 @@ script:
       description: QueryId.
     description: Ping a Deep Visibility Power Query using the queryId if results have not returned from an initial Power Query or a previous ping
     name: sentinelone-ping-power-query
-  dockerimage: demisto/python3:3.10.4.30607
+  - arguments:
+    - name: status
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - in_progress
+      - resolved
+      - unresolved
+      description: Incident status. Can be "in_progress", "resolved", "unresolved"
+    - name: threat_ids
+      required: true
+      description: A comma-separated list of threat IDs.
+      isArray: true
+    description: Updates the incident status to a group of threats that match
+      the specified input filter.
+    name: sentinelone-update-threats-status
+    outputs:
+    - contextPath: SentinelOne.Threat.ID
+      description: The threat ID.
+      type: String
+    - contextPath: SentinelOne.Threat.Updated
+      description: Whether the threat was successfully updated or not
+      type: Boolean
+    - contextPath: SentinelOne.Threat.Status
+      description: Name of the status performed on the threats.
+      type: String
+  - arguments:
+    - name: status
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - in_progress
+      - resolved
+      - unresolved
+      description: Incident status. Can be "in_progress", "resolved", "unresolved"
+    - name: alert_ids
+      required: true
+      description: A comma-separated list of alert IDs.
+      isArray: true
+    description: Updates the incident status to a group of alerts that match
+      the specified input filter.
+    name: sentinelone-update-alerts-status
+    outputs:
+    - contextPath: SentinelOne.Alert.ID
+      description: The alert ID.
+      type: String
+    - contextPath: SentinelOne.Alert.Updated
+      description: Whether the alert was successfully updated or not
+      type: Boolean
+    - contextPath: SentinelOne.Alert.Status
+      description: Name of the status performed on the alerts.
+      type: String
+  - arguments:
+    - name: site_id
+      required: true
+      description: Provide valid Site ID
+    description: Expire the Site of the given ID
+    name: sentinelone-expire-site
+    outputs:
+    - contextPath: SentinelOne.Site.ID
+      description: The Site ID.
+      type: String
+    - contextPath: SentinelOne.Site.Name
+      description: The Site Name.
+      type: String
+    - contextPath: SentinelOne.Site.State
+      description: The Site State.
+      type: String
+    - contextPath: SentinelOne.Site.SKU
+      description: The sku of product features active for this site.
+      type: String
+    - contextPath: SentinelOne.Site.Site Type
+      description: The Site type.
+      type: String
+    - contextPath: SentinelOne.Site.Suite
+      description: The Site Suite.
+      type: String
+    - contextPath: SentinelOne.Site.Total Licences
+      description: The Total Licences.
+      type: String
+    - contextPath: SentinelOne.Site.Account ID
+      description: The Account ID.
+      type: String
+    - contextPath: SentinelOne.Site.Creator
+      description: Full name of the creating user.
+      type: String
+    - contextPath: SentinelOne.Site.Creator ID
+      description: Id of the creating user.
+      type: String
+    - contextPath: SentinelOne.Site.Description
+      description: Description.
+      type: String
+    - contextPath: SentinelOne.Site.Expiration
+      description: Expiration.
+      type: String
+  - arguments:
+    - name: threat_ids
+      required: true
+      description: A comma-separated list of threat IDs.
+    - name: password
+      description: File encryption password (Aleast 10 characters, three of these uppercase,lowercase,digits and symbols. Maximum length is 256 characters)
+    - name: time_to_sleep
+      description: The time to sleep the command to fetch the timeline of particular threat, But it's defaulted to 30 seconds.
+    name: sentinelone-fetch-threat-file
+    description: Fetch a file associated with the threat that matches the filter. 
+    outputs:
+    - contextPath: SentinelOne.Threat.ID
+      description: The threat ID.
+      type: String
+    - contextPath: SentinelOne.Threat.Downloadable
+      description: The file is downlable or not
+      type: Boolean
+    - contextPath: SentinelOne.Threat.Download URL
+      description: Download URL for the fetched threat file.
+      type: String
+  - arguments:
+    - name: created_from
+      required: true
+      description: 'Created at greater or equal than. Example: "2018-02-27T04:49:26.257525Z".'
+    - name: created_until
+      required: true
+      description: 'Created at lesser or equal than. Example: "2018-02-27T04:49:26.257525Z".'
+    - name: ruleName
+      description: 'Free-text filter by rule name. Example: "rule1".'
+    - name: incidentStatus
+      description: 'Incident status. Example: "IN_PROGRESS".'
+    - name: analystVerdict
+      description: 'Analyst verdict. Example: "TRUE_POSITIVE".'
+    - name: alert_ids
+      description: A comma-separated list of alert IDs.
+    - name: limit
+      description: 'Limit number of returned items (1-1000). Example: "10". But defaulted to 1000'
+    - name: site_ids
+      description: 'List of Site IDs to filter by. Example: "225494730938493804,225494730938493915".'
+    name: sentinelone-get-alerts
+    description: Get the list of alerts that matches the filter provided.
+    outputs:
+    - contextPath: SentinelOne.Alert.EventType
+      description: Event type
+      type: String
+    - contextPath: SentinelOne.Alert.RuleName
+      description: The RuleName.
+      type: String
+    - contextPath: SentinelOne.Alert.SrcProcUser
+      description: User
+      type: String
+    - contextPath: SentinelOne.Alert.SrcProcName
+      description: Name.
+      type: String
+    - contextPath: SentinelOne.Alert.SrcProcPath
+      description: File path
+      type: String
+    - contextPath: SentinelOne.Alert.SrcProcCommandline
+      description: command line
+      type: String
+    - contextPath: SentinelOne.Alert.SrcProcSHA1
+      description: File hash sha1
+      type: String
+    - contextPath: SentinelOne.Alert.SrcProcStartTime
+      description: Pid starttime
+      type: String
+    - contextPath: SentinelOne.Alert.SrcProcStorylineId
+      description: Storyline
+      type: String
+    - contextPath: SentinelOne.Alert.SrcParentProcName
+      description: Name.
+      type: String
+    - contextPath: SentinelOne.Alert.SrcParentProcPath
+      description: File path
+      type: String
+    - contextPath: SentinelOne.Alert.SrcParentProcCommandline
+      description: command line
+      type: String
+    - contextPath: SentinelOne.Alert.SrcParentProcStartTime
+      description: Pid starttime
+      type: String
+    - contextPath: SentinelOne.Alert.SrcParentProcUser
+      description: User
+      type: String
+    - contextPath: SentinelOne.Alert.SrcParentProcSHA1
+      description: File hash sha1
+      type: String
+    - contextPath: SentinelOne.Alert.SrcProcSignerIdentity
+      description: File signer identity
+      type: String
+    - contextPath: SentinelOne.Alert.SrcParentProcSignerIdentity
+      description: File signer identity
+      type: String
+    - contextPath: SentinelOne.Alert.AlertCreatedAt
+      description: Alert created at
+      type: String
+    - contextPath: SentinelOne.Alert.AlertId
+      description: Alert Id
+      type: String
+    - contextPath: SentinelOne.Alert.AnalystVerdict
+      description: AnalystVerdict
+      type: String
+    - contextPath: SentinelOne.Alert.IncidentStatus
+      description: Incident status
+      type: String
+    - contextPath: SentinelOne.Alert.EndpointName
+      description: Endpoint name
+      type: String
+    - contextPath: SentinelOne.Alert.AgentId
+      description: Agent Id
+      type: String
+    - contextPath: SentinelOne.Alert.AgentUUID
+      description: Agent UUID
+      type: String
+    - contextPath: SentinelOne.Alert.dvEventId
+      description: DV event id
+      type: String
+    - contextPath: SentinelOne.Alert.AgentOS
+      description: Agent OS
+      type: String
+    - contextPath: SentinelOne.Alert.AgentVersion
+      description: Agent Version
+      type: String
+    - contextPath: SentinelOne.Alert.SiteId
+      description: Site Id
+      type: String
+    - contextPath: SentinelOne.Alert.RuleId
+      description: Rule Id
+      type: String  
+  dockerimage: demisto/python3:3.10.5.31797
   isfetch: true
   longRunning: false
   longRunningPort: false

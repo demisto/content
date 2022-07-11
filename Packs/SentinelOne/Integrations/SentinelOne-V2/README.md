@@ -2392,3 +2392,178 @@ The context outputs are based on the power query
 
 #### Command Example
 ```!sentinelone-ping-power-query queryId="pqe18ccaaa69fedc65889eb155dbe039"```
+
+
+### sentinelone-expire-site
+***
+Expire the Site of the given ID.
+
+#### Base Command
+
+`sentinelone-expire-site`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| site_id | Provide valid Site ID | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.Site.ID | String | The Site ID. | 
+| SentinelOne.Site.Name | String | The Site Name. | 
+| SentinelOne.Site.State | String | The Site State. | 
+| SentinelOne.Site.SKU | String | The sku of product features active for this site. |
+| SentinelOne.Site.Site Type | String | The Site type. | 
+| SentinelOne.Site.Suite | String | The Site Suite. |
+| SentinelOne.Site.Total Licences | String | The Total Licences. | 
+| SentinelOne.Site.Account ID | String | The Account ID. | 
+| SentinelOne.Site.Creator | String | Full name of the creating user. | 
+| SentinelOne.Site.Creator ID | String | Id of the creating user. |
+| SentinelOne.Site.Description | String | Description. | 
+| SentinelOne.Site.Expiration | String | Expiration. |
+
+#### Command Example
+```!sentinelone-expire-site site_id=55106802961889425793```
+
+### sentinelone-fetch-threat-file
+***
+Fetch a file associated with the threat that matches the filter. 
+
+
+#### Base Command
+
+`sentinelone-fetch-threat-file`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| threat_ids | A comma-separated list of threat IDs. | Required | 
+| password | File encryption password (Aleast 10 characters, three of these uppercase,lowercase,digits and symbols. Maximum length is 256 characters) | Optional | 
+| time_to_sleep | The time to sleep the command to fetch the timeline of particular threat, But it's defaulted to 30 seconds. | Optional |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.Threat.ID | String | The threat ID. | 
+| SentinelOne.Threat.Downloadable | Boolean | The file is downlable or not | 
+| SentinelOne.Threat.Download URL | String | Download URL for the fetched threat file. |
+
+#### Command Example
+```!sentinelone-fetch-threat-file threat_ids=106802961889425793 password=Mypassword1!```
+
+
+### sentinelone-update-threats-status
+***
+Updates the incident status to a group of threats that match the specified input filter.
+
+#### Base Command
+
+`sentinelone-update-threats-status`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| status | Incident status. Can be "in_progress", "resolved", "unresolved" | Required | 
+| threat_ids | A comma-separated list of threat IDs. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.Threat.ID | String | The threat ID. | 
+| SentinelOne.Threat.Updated | Boolean | Whether the threat was successfully updated or not | 
+| SentinelOne.Threat.Status | String | Name of the status performed on the threats. |
+
+#### Command Example
+```!sentinelone-update-threats-status status=in_progress threat_ids=67683743445454363```
+
+
+### sentinelone-update-alerts-status
+***
+Updates the incident status to a group of alerts that match the specified input filter.
+
+#### Base Command
+
+`sentinelone-update-alerts-status`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| status | Incident status. Can be "in_progress", "resolved", "unresolved" | Required | 
+| alert_ids | A comma-separated list of alert IDs. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.Alert.ID | String | The alert ID. | 
+| SentinelOne.Alert.Updated | Boolean | Whether the alert was successfully updated or not | 
+| SentinelOne.Alert.Status | String | Name of the status performed on the alerts. |
+
+#### Command Example
+```!sentinelone-update-alerts-status status=in_progress alert_ids=36386764344636343```
+
+
+### sentinelone-get-alerts
+***
+Get a list of alerts for a given scope
+
+#### Base Command
+
+`sentinelone-get-alerts`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| created_from | Created at greater or equal than. Example: "2018-02-27T04:49:26.257525Z". | Required | 
+| created_until | Created at lesser or equal than. Example: "2018-02-27T04:49:26.257525Z". | Required | 
+| ruleName | Free-text filter by rule name. Example: "rule1". | Optional |
+| incidentStatus | Incident status. Example: "IN_PROGRESS". | Optional | 
+| analystVerdict | Analyst verdict. Example: "TRUE_POSITIVE". | Optional | 
+| alert_ids | A comma-separated list of alert IDs. | Optional |
+| limit | Limit number of returned items (1-1000). Example: "10". But defaulted to 1000 | Optional |
+| site_ids | List of Site IDs to filter by. Example: "225494730938493804,225494730938493915". | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.Alert.EventType | String | Event type | 
+| SentinelOne.Alert.RuleName | String | The RuleName. | 
+| SentinelOne.Alert.SrcProcUser | String | User | 
+| SentinelOne.Alert.SrcProcName | String | Name. | 
+| SentinelOne.Alert.SrcProcPath | String | File path | 
+| SentinelOne.Alert.SrcProcCommandline | String | command line | 
+| SentinelOne.Alert.SrcProcSHA1 | String | File hash sha1 | 
+| SentinelOne.Alert.SrcProcStartTime | String | Pid starttime | 
+| SentinelOne.Alert.SrcProcStorylineId | String | Storyline | 
+| SentinelOne.Alert.SrcParentProcName | String | Name. | 
+| SentinelOne.Alert.SrcParentProcPath | String | File path | 
+| SentinelOne.Alert.SrcParentProcCommandline | String | command line | 
+| SentinelOne.Alert.SrcParentProcStartTime | String | Pid starttime | 
+| SentinelOne.Alert.SrcParentProcUser | String | User | 
+| SentinelOne.Alert.SrcParentProcSHA1 | String | File hash sha1 | 
+| SentinelOne.Alert.SrcProcSignerIdentity | String | File signer identity | 
+| SentinelOne.Alert.SrcParentProcSignerIdentity | String | File signer identity | 
+| SentinelOne.Alert.AlertCreatedAt | String | Alert created at | 
+| SentinelOne.Alert.AlertId | String | Alert Id | 
+| SentinelOne.Alert.AnalystVerdict | String | AnalystVerdict | 
+| SentinelOne.Alert.IncidentStatus | String | Incident status | 
+| SentinelOne.Alert.EndpointName | String | Endpoint name | 
+| SentinelOne.Alert.AgentId | String | Agent Id | 
+| SentinelOne.Alert.AgentUUID | String | Agent UUID | 
+| SentinelOne.Alert.dvEventId | String | DV event id | 
+| SentinelOne.Alert.AgentOS | String | Agent OS | 
+| SentinelOne.Alert.AgentVersion | String | Agent Version | 
+| SentinelOne.Alert.SiteId | String | Site Id | 
+| SentinelOne.Alert.RuleId | String | Rule Id | 
+
+#### Command Example
+```!sentinelone-get-alerts created_from=2012-02-27T04:49:26.257525Z created_until=2012-05-27T04:49:26.257525Z```
+
