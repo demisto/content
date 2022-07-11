@@ -113,7 +113,7 @@ class CrowdStrikeClient(BaseClient):
             :return: Token
         """
         now = datetime.now()
-        ctx = demisto.getIntegrationContext()
+        ctx = get_integration_context()
         if not ctx or force_gen_new_token:
             # new token is needed
             auth_token = self._generate_token()
@@ -126,7 +126,7 @@ class CrowdStrikeClient(BaseClient):
                 # token expired
                 auth_token = self._generate_token()
 
-        demisto.setIntegrationContext({'auth_token': auth_token, 'generation_time': now.strftime("%Y-%m-%dT%H:%M:%S")})
+        set_integration_context({'auth_token': auth_token, 'generation_time': now.strftime("%Y-%m-%dT%H:%M:%S")})
         return auth_token
 
     def _generate_token(self) -> str:
