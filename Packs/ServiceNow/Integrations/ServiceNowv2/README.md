@@ -268,7 +268,7 @@ You can set up any source integration to create a ServiceNow ticket based on a f
     - **Out** - Mirrors changes on the Cortex XSOAR ticket to the ServiceNow ticket.
     - **Both** - Mirrors changes both in and out on both tickets.
 13. Set the **Timestamp field to query as part of the mirroring flow**. This defines the ticket_last_update - the epoch timestamp when the ServiceNow incident was last updated. The default is sys_updated_on.
-14. Enter the relevant **Comment Entry Tag**, **Work Note Entry Tag**, **File Entry Tag To ServiceNow** and **File Entry Tag From ServiceNow** values.  
+14. Enter the relevant **Comment Entry Tag**, **Work Note Entry Tag**, **File Entry Tag To ServiceNow** and **File Entry Tag From ServiceNow** values.
 These values are mapped to the **dbotMirrorTags** incident field in Cortex XSOAR, which defines how Cortex XSOAR handles comments when you tag them in the War Room.  
 **Note:**  
 These tags work only for mirroring comments from Cortex XSOAR to ServiceNow.
@@ -296,7 +296,8 @@ Any modifications require that the mappers be cloned before any changes can be a
     - **dbotMirrorInstance** - determines the ServiceNow instance with which to mirror. This should match the instance configuration.
     - **dbotMirrorLastSync** - determines the field by which to indicate the last time that the systems synchronized.
     - **dbotMirrorTags** - determines the tags that you need to add in Cortex XSOAR for entries to be pushed to ServiceNow. They should be copied from the tags in the instance configuration. These are also the tags that must be put on the War Room record in order for it to sync.
-      - To mirror files, use the **ForServiceNow** tag. 
+      - To mirror files from XSOAR to ServiceNow, use the **ForServiceNow** tag. 
+      - To mirror files from ServiceNow to XSOAR use the **FromServiceNow** tag.
       - To mirror general notes, use the **comments** tag.
       - To mirror private notes that can be read only by users with the necessary permissions, use the **work_notes** tag.
     - Configure any custom fields you want mapped to Cortex XSOAR. Custom fields start with “u_” and are available for ServiceNow v2 version 2.2.10 and later. These must be added to the integration instance **Custom Fields to Mirror** setting.  
