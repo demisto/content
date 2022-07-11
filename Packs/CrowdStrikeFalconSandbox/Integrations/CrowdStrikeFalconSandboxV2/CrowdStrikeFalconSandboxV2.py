@@ -463,7 +463,7 @@ def main() -> None:
     args: Dict[str, Any] = demisto.args()
 
     verify_certificate = not params.get('insecure', False)
-    SERVER_URL = params.get('serverUrl', '') + '/api/v2'
+    server_url = params.get('serverUrl', '') + '/api/v2'
 
     proxy = params.get('proxy', False)
 
@@ -476,7 +476,7 @@ def main() -> None:
         }
 
         client = Client(
-            base_url=SERVER_URL,
+            base_url=server_url,
             verify=verify_certificate,
             headers=headers,
             proxy=proxy)
