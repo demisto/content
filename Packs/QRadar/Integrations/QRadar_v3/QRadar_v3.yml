@@ -2676,6 +2676,7 @@ script:
     deprecated: false
     description: Polling command to search for events of a specific offense.
     name: qradar-get-events-polling
+    polling: true
     outputs:
       - contextPath: QRadar.Search.Result
         description: The result of the search.
