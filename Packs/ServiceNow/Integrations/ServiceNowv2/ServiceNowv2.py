@@ -2023,6 +2023,7 @@ def get_mirroring():
         'mirror_tags': [
             params.get('comment_tag'),
             params.get('file_tag_to_service_now'),
+            params.get('file_tag_from_service_now'),
             params.get('work_notes_tag')
         ],
         'mirror_instance': demisto.integrationInstance()
