@@ -2,6 +2,9 @@
   "tests": [
     {
       "playbookID": "myOtherTestPlaybook"
+    },
+    {
+      "playbookID": "myTestPlaybook"
     }
   ],
   "skipped_tests": [],

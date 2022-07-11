@@ -207,10 +207,11 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
              ('Packs/myXSIAMOnlyPack/Integrations/myIntegration/myIntegration.py',)),
 
             (MockerCases.B_xsoar, ('myOtherTestPlaybook',), ('myXSOAROnlyPack',), None, XSOAR_BRANCH_ARGS, (
-                'Packs/myXSOAROnlyPack/TestPlaybooks/myOtherTestPlaybook.yml',
+                    'Packs/myXSOAROnlyPack/TestPlaybooks/myOtherTestPlaybook.yml',
             )),
-
-            (MockerCases.B_xsoar, ('myOtherTestPlaybook',), ('myXSOAROnlyPack',), None, XSOAR_BRANCH_ARGS, ()),
+            (MockerCases.B_xsoar, ('myOtherTestPlaybook', 'myTestPlaybook'), ('myXSOAROnlyPack',), None,
+             XSOAR_BRANCH_ARGS, ('Packs/myXSOAROnlyPack/TestPlaybooks/myTestPlaybook.yml',
+                                 'Packs/myXSOAROnlyPack/TestPlaybooks/myOtherTestPlaybook.yml',)),
 
     ))
 def test_branch(

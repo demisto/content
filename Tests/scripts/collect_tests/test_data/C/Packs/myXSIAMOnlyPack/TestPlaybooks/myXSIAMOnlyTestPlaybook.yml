@@ -2,7 +2,7 @@ id: myXSIAMOnlyTestPlaybook
 version: -1
 fromversion: 5.5.0
 vcShouldKeepItemLegacyProdMachine: false
-name: IPInfo_v2Test
+name: myXSIAMOnlyTestPlaybook
 starttaskid: "0"
 tasks:
   "0":

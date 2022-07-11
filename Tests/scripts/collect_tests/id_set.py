@@ -12,7 +12,7 @@ from Tests.scripts.collect_tests.utils import (DictBased, DictFileBased,
 class IdSetItem(DictBased):
     def __init__(self, id_: Optional[str], dict_: dict):
         super().__init__(dict_)
-        self.id_: str = id_  # None for packs, as they don't have it.
+        self.id_: Optional[str] = id_  # None for packs, as they don't have it.
         self.file_path: str = self.get('file_path', warn_if_missing=False)  # packs have no file_path value
         self.name: str = self.get('name', '', warning_comment=Path(self.file_path or '').name)
 
