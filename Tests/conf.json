@@ -3625,7 +3625,7 @@
             "integrations": "QualysV2",
             "playbookID": "QualysVulnerabilityManagement-Test",
             "fromversion": "5.5.0",
-            "timeout": 4000
+            "timeout": 3500
         },
         {
             "integrations": "ThreatExchange v2",
@@ -5300,6 +5300,8 @@
         "Process Email - Generic - Test - Actual Incident": "Issue 45227",
         "Jira-v2-Test": "Issue 33313",
         "Tanium Threat Response V2 Test": "Issue 44201",
+        "Tanium Threat Response Test": "Issue CRTX-58729",
+        "Tanium Threat Response - Create Connection v2 - Test": "Issue CRTX-58729",
         "AzureADTest": "Issue 40131",
         "whois_test": "Issue 25648",
         "Autoextract - Test": "Issue 45293",
