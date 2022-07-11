@@ -16,7 +16,7 @@ requests.packages.urllib3.disable_warnings()
 
 
 class Client(BaseClient):
-    def __init__(self, base_url, username, password, client_id, client_secret, object_name, key_field, query_filter,
+    def __init__(self, base_url, username, password, date_field, client_id, client_secret, object_name, key_field, query_filter,
                  fields, history, verify, proxy, feedReputation, ok_codes=[], headers=None, auth=None):
         super().__init__(base_url, verify=verify, proxy=proxy, ok_codes=ok_codes, headers=headers, auth=auth)
         self.username = username
@@ -34,6 +34,7 @@ class Client(BaseClient):
         self.object_name = object_name
         self.key_field = key_field
         self.query_filter = query_filter
+        self.date_field = date_field
         self.fields = fields
         self.history = history
         self.feedReputation = feedReputation
@@ -93,7 +94,7 @@ class Client(BaseClient):
         return res
 
 
-def fetch_indicators_command(client, manual_run=False):
+def fetch_indicators_command(client: Client, manual_run: bool = False):
 
     indicators_unparsed: List[Dict] = list()
     indicators = list()
@@ -105,11 +106,14 @@ def fetch_indicators_command(client, manual_run=False):
     last_run = demisto.getLastRun().get('lastRun')
     object_fields = None
 
+    # If there are client fields provided, use them
     if client.fields:
         object_fields = client.fields.split(",")
+    # Otherwise, pull the object schema from salesforce
     else:
         object_fields = sorted([x['name'] for x in client.get_object_description()['fields']])
 
+    # Ensure that at least the id, created date and modified date are in the fields
     if "id" not in object_fields and "Id" not in object_fields:
         object_fields.append("id")
     if "CreatedDate" not in object_fields and "CreatedDate" not in object_fields:
@@ -117,20 +121,23 @@ def fetch_indicators_command(client, manual_run=False):
     if "LastModifiedDate" not in object_fields and "LastModifiedDate" not in object_fields:
         object_fields.append("LastModifiedDate")
 
-    # Define whether to use a user provided query
+    # If the user has provided a filter, then use it as the primary search criteria.
     if client.query_filter:
         search_criteria = f"{client.query_filter}"
 
-        # If there is a last run date, use it if there is not already one specified
-        if last_run and "LastModifiedDate" not in client.query_filter:
-            search_criteria = f"LastModifiedDate >= {last_run} AND {client.query_filter}"
+        # If there is a last run date, use it only if there is not already one specified
+        # This ensures that the client query always succeeds and limits results if they
+        # have not provided a LastModifiedDate or CreatedDate filter.
+        if last_run and "LastModifiedDate" not in client.query_filter and "CreatedDate" not in client.query_filter:
+            search_criteria = f"{client.date_field} >= {last_run} AND {client.query_filter}"
 
+    # If there is no serach criteria, then use the lastRun with the preferred date field.
     else:
-        # Define which date range to use if there is no user criteria
+        # Define which date range to use (if there is a last run or not).
         if last_run:
-            search_criteria = f"LastModifiedDate >= {last_run}"
+            search_criteria = f"{client.date_field} >= {last_run}"
         else:
-            search_criteria = f"CreatedDate >= {date_filter}"
+            search_criteria = f"{client.date_field} >= {date_filter}"
 
     indicators_raw = client.query_object(object_fields, client.object_name, search_criteria)
     if indicators_raw.get('totalSize', 0) > 0:
@@ -146,7 +153,7 @@ def fetch_indicators_command(client, manual_run=False):
 
             more_records = True if indicators_raw.get('nextRecordsUrl', None) else False
     if indicators_unparsed and len(indicators_unparsed) > 0:
-        mod_date = sorted([x.get('LastModifiedDate')for x in indicators_unparsed], reverse=True)[0]  # type: ignore
+        mod_date = sorted([x.get(client.date_field)for x in indicators_unparsed], reverse=True)[0]  # type: ignore
         latest_mod_date = dateparser.parse(mod_date)  # type: ignore
     for item in indicators_unparsed:
         try:
@@ -193,6 +200,7 @@ def main():
     credentials = params.get('credentials')
     username = credentials.get('identifier')
     password = credentials.get('password')
+    date_field = params.get('date_field', "LastModifiedDate")
     client_id = params.get('clientID')
     client_secret = params.get('clientSecret')
     object_name = params.get('object')
@@ -204,7 +212,7 @@ def main():
 
     command = demisto.command()
 
-    client = Client(url, username, password, client_id, client_secret, object_name, key_field,
+    client = Client(url, username, password, date_field, client_id, client_secret, object_name, key_field,
                     query_filter, fields, history, verify_certificate, proxies, reputation)
 
     if command == 'test-module':

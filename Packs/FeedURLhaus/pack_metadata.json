@@ -1,0 +1,23 @@
+{
+    "name": "URLhaus Feed",
+    "description": "Indicators feed from URLhaus",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2022-04-04T16:04:45Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": ["TIM"],
+    "useCases": [],
+    "keywords": [
+        "URLhaus",
+        "Feed"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}
