@@ -10,7 +10,7 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "cti"
+        "Threat Intelligence"
     ],
     "useCases": [],
     "keywords": [],
@@ -19,7 +19,8 @@
         "marketplacev2"
     ],
     "devEmail": [
-        "contact@sekoia.io"
+        "partners@sekoia.io",
+        "support@sekoia.io"
     ],
     "githubUser": []
 }

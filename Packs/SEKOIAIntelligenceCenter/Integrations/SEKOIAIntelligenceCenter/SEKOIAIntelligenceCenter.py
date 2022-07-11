@@ -549,7 +549,7 @@ def get_indicator_command(client: Client, args: Dict[str, Any]) -> CommandResult
     else:
         markdown = (
             f'### Indicator {result["items"][0].get("name")}'
-            'is categorized as {result["items"][0].get("indicator_types")}\n\n'
+            f'is categorized as {result["items"][0].get("indicator_types")}\n\n'
         )
         markdown += result["items"][0].get("description", "")
         table_headers = ["kill_chain_name", "phase_name"]

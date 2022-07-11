@@ -38,6 +38,7 @@ def client():
     "input, output",
     [
         ("[network-traffic:dst_ref.value = 'buike.duckdns.org']", "buike.duckdns.org"),
+        ("[ipv4-addr:value = '198.51.100.1/32' OR ipv4-addr:value = '203.0.113.33/32']", "198.51.100.1/32"),
         (
             "[network-traffic:dst_ref.value = 'buike.duckdns.org' AND network-traffic:dst_port = 30303]",
             "buike.duckdns.org",

@@ -53,34 +53,34 @@ script:
       description: SEKOIA.IO returned data
       type: String
     - contextPath: SEKOIAIntelligenceCenter.has_more
-      description: 'Is more information available'
+      description: Is more information available
       type: Boolean
     - contextPath: SEKOIAIntelligenceCenter.total
-      description: 'Total number of object returned'
+      description: Total number of object returned
       type: Number
     - contextPath: SEKOIAIntelligenceCenter.items.x_inthreat_short_display
-      description: 'Short display name of the observable'
+      description: Short display name of the observable
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.modified
-      description: 'Modification date of the observable'
+      description: Modification date of the observable
       type: Date
     - contextPath: SEKOIAIntelligenceCenter.items.spec_version
-      description: 'STIX specification version'
+      description: STIX specification version
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.created
-      description: 'Observable creation date'
+      description: Observable creation date
       type: Date
     - contextPath: SEKOIAIntelligenceCenter.items.type
-      description: 'Observable type'
+      description: Observable type
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.x_inthreat_sources_refs
-      description: 'Unique identifier of the observable source'
+      description: Unique identifier of the observable source
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.value
-      description: 'Value of the item'
+      description: Value of the item
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.id
-      description: 'Unique identifier of the item'
+      description: Unique identifier of the item
       type: String
   - arguments:
     - default: false
@@ -101,73 +101,73 @@ script:
     name: GetIndicator
     outputs:
     - contextPath: SEKOIAIntelligenceCenter.has_more
-      description: 'Is more information available'
+      description: Is more information available
       type: Boolean
     - contextPath: SEKOIAIntelligenceCenter.items.lang
-      description: 'Language of the indicator data'
+      description: Language of the indicator data
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.x_ic_is_in_flint
-      description: 'Is this indicator from a SEKOIA FLINT report'
+      description: Is this indicator from a SEKOIA FLINT report
       type: Boolean
     - contextPath: SEKOIAIntelligenceCenter.items.kill_chain_phases.kill_chain_name
-      description: 'Name of the kill chain used'
+      description: Name of the kill chain used
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.kill_chain_phases.phase_name
-      description: 'Name of the kill chain phase'
+      description: Name of the kill chain phase
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.name
-      description: 'Name of the item'
+      description: Name of the item
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.valid_until
-      description: 'Expiration date of the item'
+      description: Expiration date of the item
       type: Date
     - contextPath: SEKOIAIntelligenceCenter.items.x_ic_deprecated
-      description: 'Is the item deprecated'
+      description: Is the item deprecated
       type: Boolean
     - contextPath: SEKOIAIntelligenceCenter.items.x_inthreat_sources_refs
-      description: 'Source references of the observable'
+      description: Source references of the observable
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.spec_version
-      description: 'STIX specification version used'
+      description: STIX specification version used
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.description
-      description: 'Item description'
+      description: Item description
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.modified
-      description: 'Last modification date of the item'
+      description: Last modification date of the item
       type: Date
     - contextPath: SEKOIAIntelligenceCenter.items.id
-      description: 'Unique identifier of the item'
+      description: Unique identifier of the item
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.created_by_ref
-      description: 'Unique identifier of the creator of the item'
+      description: Unique identifier of the creator of the item
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.pattern
-      description: 'STIX pattern of the item'
+      description: STIX pattern of the item
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.pattern_type
-      description: 'STIX pattern type'
+      description: STIX pattern type
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.valid_from
-      description: 'Beginning of the item validity date'
+      description: Beginning of the item validity date
       type: Date
     - contextPath: SEKOIAIntelligenceCenter.items.x_ic_observable_types
-      description: 'Intelligence Center observable types'
+      description: Intelligence Center observable types
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.type
-      description: 'STIX Object type'
+      description: STIX Object type
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.revoked
-      description: 'Is this item revoked'
+      description: Is this item revoked
       type: Boolean
     - contextPath: SEKOIAIntelligenceCenter.items.object_marking_refs
-      description: 'Unique identifier of the marking reference (TLP)'
+      description: Unique identifier of the marking reference (TLP)
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.created
-      description: 'Creation date of the item'
+      description: Creation date of the item
       type: Date
     - contextPath: SEKOIAIntelligenceCenter.items.indicator_types
-      description: 'STIX indicator types'
+      description: STIX indicator types
       type: String
   - arguments:
     - default: false
@@ -188,154 +188,154 @@ script:
     name: GetIndicatorContext
     outputs:
     - contextPath: SEKOIAIntelligenceCenter.items.type
-      description: 'Observable type'
+      description: Observable type
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.id
       description: ''
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.valid_from
-      description: 'Unique identifier of the item'
+      description: Unique identifier of the item
       type: Date
     - contextPath: SEKOIAIntelligenceCenter.items.objects.x_inthreat_sources_refs
-      description: 'Unique identifier of the observable source'
+      description: Unique identifier of the observable source
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.spec_version
-      description: 'STIX specification version'
+      description: STIX specification version
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.x_ic_is_in_flint
-      description: 'Is this indicator from a SEKOIA FLINT report'
+      description: Is this indicator from a SEKOIA FLINT report
       type: Boolean
     - contextPath: SEKOIAIntelligenceCenter.items.objects.lang
-      description: 'Language of the indicator data'
+      description: Language of the indicator data
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.x_ic_impacted_locations
-      description: 'UUID of the impacted locations'
+      description: UUID of the impacted locations
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.id
-      description: 'UUID of the objects'
+      description: UUID of the objects
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.created_by_ref
-      description: 'Unique identifier of the creator of the item'
+      description: Unique identifier of the creator of the item
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.modified
-      description: 'Modification date of the observable'
+      description: Modification date of the observable
       type: Date
     - contextPath: SEKOIAIntelligenceCenter.items.objects.type
-      description: 'STIX Object type'
+      description: STIX Object type
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.revoked
-      description: 'Is this item revoked'
+      description: Is this item revoked
       type: Boolean
     - contextPath: SEKOIAIntelligenceCenter.items.objects.created
-      description: 'Creation date of the item'
+      description: Creation date of the item
       type: Date
     - contextPath: SEKOIAIntelligenceCenter.items.objects.x_ic_observable_types
-      description: 'Intelligence Center observable types'
+      description: Intelligence Center observable types
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.pattern_type
-      description: 'STIX pattern type'
+      description: STIX pattern type
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.name
-      description: 'Name of the item'
+      description: Name of the item
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.pattern
-      description: 'STIX pattern'
+      description: STIX pattern
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.indicator_types
-      description: 'STIX indicator types'
+      description: STIX indicator types
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.object_marking_refs
-      description: 'Unique identifier of the Object Marking reference (TLP)'
+      description: Unique identifier of the Object Marking reference (TLP)
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.x_ic_impacted_sectors
-      description: 'UUID of the impacted sectors'
+      description: UUID of the impacted sectors
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.kill_chain_phases.kill_chain_name
-      description: 'Name of the kill chain used'
+      description: Name of the kill chain used
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.kill_chain_phases.phase_name
-      description: 'Name of the kill chain phase'
+      description: Name of the kill chain phase
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.confidence
-      description: 'Indicator confidence score'
+      description: Indicator confidence score
       type: Number
     - contextPath: SEKOIAIntelligenceCenter.items.objects.x_ic_deprecated
-      description: 'Is the item deprecated'
+      description: Is the item deprecated
       type: Boolean
     - contextPath: SEKOIAIntelligenceCenter.items.objects.valid_until
-      description: 'Expiration date of the item'
+      description: Expiration date of the item
       type: Date
     - contextPath: SEKOIAIntelligenceCenter.items.objects.x_ic_external_refs
-      description: 'External references'
+      description: External references
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.first_seen
-      description: 'Item first seen date'
+      description: Item first seen date
       type: Date
     - contextPath: SEKOIAIntelligenceCenter.items.objects.aliases
-      description: 'Item aliases names'
+      description: Item aliases names
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.is_family
-      description: 'Is the item part of a family'
+      description: Is the item part of a family
       type: Boolean
     - contextPath: SEKOIAIntelligenceCenter.items.objects.external_references.description
-      description: 'Object external references description'
+      description: Object external references description
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.external_references.source_name
-      description: 'Object external references source name'
+      description: Object external references source name
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.external_references.url
-      description: 'Object external references URL'
+      description: Object external references URL
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.capabilities
-      description: 'Malware capabilities'
+      description: Malware capabilities
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.malware_types
-      description: 'Malware type'
+      description: Malware type
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.implementation_languages
-      description: 'Malware implementation languages'
+      description: Malware implementation languages
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.description
-      description: 'Item description'
+      description: Item description
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.stop_time
-      description: 'Stop time date'
+      description: Stop time date
       type: Date
     - contextPath: SEKOIAIntelligenceCenter.items.objects.relationship_type
-      description: 'STIX object relationship type'
+      description: STIX object relationship type
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.target_ref
-      description: 'Target reference UUID'
+      description: Target reference UUID
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.source_ref
-      description: 'Source reference UUID'
+      description: Source reference UUID
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.start_time
-      description: 'Object start time'
+      description: Object start time
       type: Date
     - contextPath: SEKOIAIntelligenceCenter.items.objects.x_ic_is_sector
-      description: 'Is the object a sector'
+      description: Is the object a sector
       type: Boolean
     - contextPath: SEKOIAIntelligenceCenter.items.objects.contact_information
-      description: 'Object contact information'
+      description: Object contact information
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.x_ic_is_source
-      description: 'Is the object a source'
+      description: Is the object a source
       type: Boolean
     - contextPath: SEKOIAIntelligenceCenter.items.objects.sectors
-      description: 'Associated sectors'
+      description: Associated sectors
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.identity_class
-      description: 'Object identity class'
+      description: Object identity class
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.definition_type
-      description: 'Object definition type'
+      description: Object definition type
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.definition.tlp
-      description: 'TLP type'
+      description: TLP type
       type: String
     - contextPath: SEKOIAIntelligenceCenter.has_more
-      description: 'Is more information available'
+      description: Is more information available
       type: Boolean
     - contextPath: IP.Address
       description: IP address
@@ -366,7 +366,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.4.31492
+  dockerimage: demisto/stix2:1.0.0.30255
 fromversion: 6.2.0
 tests:
 - No tests (auto formatted)
