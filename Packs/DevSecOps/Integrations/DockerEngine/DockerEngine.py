@@ -2894,7 +2894,6 @@ def main():
     url = params.get('url')
     client_cert = params.get('client_certificate')
     client_key = params.get('client_key', {}).get('credentials', {}).get('sshkey')
-    demisto.debug(client_key)
     ca_cert = params.get('ca_certificate')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
