@@ -20,6 +20,6 @@ The integration takes the client certificate, private key, and CA's certificate 
 
 If a CA cert is not provided, the Docker server certificate will be validated using the public CA's included in [Python Requests](https://pypi.org/project/requests/). Or not validated at all if `Trust any certificate (not secure)` is selected.
 
-
+Note: The Docker private key must be first stored into XSOAR as a credential attribute of a [saved credential](https://xsoar.pan.dev/docs/reference/articles/managing-credentials#configure-cortex-xsoar-credentials), and this credential must be selected as the auth key.
 ### Docker Registry Authentication
 Authentication for registries is handled by the integration not the Docker Server. This is configured as a integration parameter. This can be in the form of either a identitytoken or Username/Password/Serveraddress. These four parameters are optional and if none authentication credentials are provided the integration will function in "Anonymous mode". Some Commands may not function as a result.

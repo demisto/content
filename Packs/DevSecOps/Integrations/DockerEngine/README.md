@@ -19,6 +19,8 @@ This integration was integrated and tested with version 20.10.17 ([API Version 1
     | Registry Password | False |
     | Registry Server Address (e.g. docker.io) | False |
 
+Note: The Docker private key must be first stored into XSOAR as a credential attribute of a [saved credential](https://xsoar.pan.dev/docs/reference/articles/managing-credentials#configure-cortex-xsoar-credentials), and this credential must be selected as the auth key.
+
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Docker Engine
