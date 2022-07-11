@@ -297,7 +297,7 @@ Any modifications require that the mappers be cloned before any changes can be a
     - **dbotMirrorLastSync** - determines the field by which to indicate the last time that the systems synchronized.
     - **dbotMirrorTags** - determines the tags that you need to add in Cortex XSOAR for entries to be pushed to ServiceNow. They should be copied from the tags in the instance configuration. These are also the tags that must be put on the War Room record in order for it to sync.
       - To mirror files from XSOAR to ServiceNow, use the **ForServiceNow** tag. 
-      - To mirror files from ServiceNow to XSOAR use the **FromServiceNow** tag.
+      - Mirrored files from ServiceNow to XSOAR will be tagged by *default* with the **FromServiceNow** tag.
       - To mirror general notes, use the **comments** tag.
       - To mirror private notes that can be read only by users with the necessary permissions, use the **work_notes** tag.
     - Configure any custom fields you want mapped to Cortex XSOAR. Custom fields start with “u_” and are available for ServiceNow v2 version 2.2.10 and later. These must be added to the integration instance **Custom Fields to Mirror** setting.  
