@@ -2022,7 +2022,7 @@ def get_mirroring():
         'mirror_direction': MIRROR_DIRECTION.get(params.get('mirror_direction')),
         'mirror_tags': [
             params.get('comment_tag'),
-            params.get('file_tag_to_service_now'),
+            params.get('file_tag'),  # file tag to service now
             params.get('file_tag_from_service_now'),
             params.get('work_notes_tag')
         ],
@@ -2747,7 +2747,7 @@ def main():
     add_custom_fields(params)
 
     file_tag_from_service_now, file_tag_to_service_now = (
-        params.get('file_tag_from_service_now'), params.get('file_tag_to_service_now')
+        params.get('file_tag_from_service_now'), params.get('file_tag')
     )
 
     if file_tag_from_service_now == file_tag_to_service_now:

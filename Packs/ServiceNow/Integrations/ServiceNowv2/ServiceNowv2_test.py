@@ -717,7 +717,9 @@ def test_incident_name_is_initialized(mocker, requests_mock):
                 'identifier': 'identifier',
                 'password': 'password',
             },
-            'incident_name': None
+            'incident_name': None,
+            'file_tag_from_service_now': 'FromServiceNow',
+            'file_tag_to_service_now': 'ToServiceNow'
         }
     )
     mocker.patch.object(demisto, 'command', return_value='test-module')
@@ -754,7 +756,7 @@ def test_file_tags_names_are_the_same_main_flow(mocker):
     mocker.patch.object(
         demisto,
         'params',
-        return_value={'file_tag_from_service_now': 'ServiceNow', 'file_tag_to_service_now': "ServiceNow"}
+        return_value={'file_tag_from_service_now': 'ServiceNow', 'file_tag_to_service_now': 'ServiceNow'}
     )
     mocker.patch.object(ServiceNowv2, 'get_server_url', return_value='test')
     with pytest.raises(
@@ -898,7 +900,9 @@ def test_oauth_authentication(mocker, requests_mock):
                 'identifier': 'client_id',
                 'password': 'client_secret'
             },
-            'use_oauth': True
+            'use_oauth': True,
+            'file_tag_from_service_now': 'FromServiceNow',
+            'file_tag': 'ForServiceNow'
         }
     )
     ServiceNowClient.get_access_token = MagicMock()
