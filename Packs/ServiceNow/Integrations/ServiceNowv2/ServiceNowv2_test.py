@@ -756,7 +756,7 @@ def test_file_tags_names_are_the_same_main_flow(mocker):
     mocker.patch.object(
         demisto,
         'params',
-        return_value={'file_tag_from_service_now': 'ServiceNow', 'file_tag_to_service_now': 'ServiceNow'}
+        return_value={'file_tag_from_service_now': 'ServiceNow', 'file_tag': 'ServiceNow'}
     )
     mocker.patch.object(ServiceNowv2, 'get_server_url', return_value='test')
     with pytest.raises(
