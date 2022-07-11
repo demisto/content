@@ -1,0 +1,31 @@
+commonfields:
+  id: OletoolsScript
+  version: -1
+name: OletoolsScript
+script: ''
+type: python
+args:
+- default: false
+  description: The ole command to activate.
+  isArray: false
+  name: ole_command
+  required: true
+  secret: false
+  predefined:
+    - 'oleid'
+    - 'oleobj'
+- default: false
+  description: The file to activate the oletools analysis on.
+  isArray: false
+  name: attach_id
+  required: true
+  secret: false
+comment: 'This is an automation to run oletools malware analysis for office files. Ole tools is a open source code and is subjected to changes'
+outputs:
+- contextPath: Oletools.Oleid
+  description: The indicators output from the oleid command
+subtype: python3
+dockerimage: demisto/parse-emails:1.0.0.30171
+tests:
+- No tests (auto formatted)
+fromversion: 6.1.0
