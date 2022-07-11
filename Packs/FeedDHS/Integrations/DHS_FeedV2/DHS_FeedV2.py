@@ -166,11 +166,11 @@ def get_first_fetch(first_fetch_string: str) -> str:
         raise DemistoException('first_fetch is not in the correct format (e.g. <number> <time unit>).')
 
 
-def build_client(base_url, collection, crt, key, proxies, tags, verify_certificate: Union[str, bool]):
+def build_client(base_url, collection, crt, key, proxies, tags, verify_certificate):
     try:
         if not verify_certificate:
             demisto.debug(f'{verify_certificate=}, setting it with env vars')
-            verify_certificate = os.getenv('SSL_CERT_FILE') or os.getenv('REQUESTS_CA_BUNDLE')
+            verify_certificate: Optional[Union[str, bool]] = os.getenv('SSL_CERT_FILE') or os.getenv('REQUESTS_CA_BUNDLE')
             if not verify_certificate:
                 demisto.debug(f'{verify_certificate=}, setting it with default certificate')
                 verify_certificate = Taxii2FeedClient.build_certificate(CA)
@@ -181,7 +181,7 @@ def build_client(base_url, collection, crt, key, proxies, tags, verify_certifica
         client = Taxii2FeedClient(url=base_url,
                                   collection_to_fetch=collection,
                                   proxies=proxies,
-                                  verify=verify_certificate,
+                                  verify=verify_certificate,  # type: ignore
                                   objects_to_fetch=['indicator'],
                                   tags=tags,
                                   certificate=crt,
@@ -219,7 +219,7 @@ def main():
         client = build_client(base_url, collection, crt, key, proxies, tags, verify_certificate)
 
         command = demisto.command()
-        demisto.info(f"Command being called in {CONTEXT_PREFIX} is {command}")
+        demisto.info(f"Command being called is {command}")
 
         if command == 'fetch-indicators':
             last_run_indicators = get_feed_last_run()
