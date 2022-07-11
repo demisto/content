@@ -1,5 +1,6 @@
 import functools
 import uuid
+import json
 from typing import Callable
 from flask import Flask, request, make_response, jsonify, Response
 from urllib.parse import ParseResult, urlparse
@@ -198,17 +199,16 @@ class TAXII2Server:
         self._collections_resource = collections_resource
         self.collections_by_id = collections_by_id
 
-    def get_discovery_service(self) -> dict:
+    def get_discovery_service(self, instance_execute=False) -> dict:
         """
         Handle discovery request.
 
         Returns:
             The discovery response.
         """
-        request_headers = request.headers
         if self._service_address:
             service_address = self._service_address
-        elif request_headers and '/instance/execute' in request_headers.get('X-Request-URI', ''):
+        elif instance_execute or (request.headers and '/instance/execute' in request.headers.get('X-Request-URI', '')):
             # if the server rerouting is used, then the X-Request-URI header is added to the request by the server
             # and we should use the /instance/execute endpoint in the address
             self._url_scheme = 'https'
@@ -882,7 +882,7 @@ def taxii2_server_discovery() -> Response:
     return handle_response(HTTP_200_OK, discovery_response)
 
 
-@APP.route('/<api_root>/', methods=['GET'])
+@APP.route('/<api_root>', methods=['GET'], strict_slashes=False)
 @taxii_validate_request_headers
 @taxii_validate_url_param
 def taxii2_api_root(api_root: str) -> Response:
@@ -906,7 +906,7 @@ def taxii2_api_root(api_root: str) -> Response:
     return handle_response(HTTP_200_OK, api_root_response)
 
 
-@APP.route('/<api_root>/status/<status_id>/', methods=['GET'])
+@APP.route('/<api_root>/status/<status_id>', methods=['GET'], strict_slashes=False)
 @taxii_validate_request_headers
 @taxii_validate_url_param
 def taxii2_status(api_root: str, status_id: str) -> Response:  # noqa: F841
@@ -921,7 +921,7 @@ def taxii2_status(api_root: str, status_id: str) -> Response:  # noqa: F841
                                                                'access to the resource'})
 
 
-@APP.route('/<api_root>/collections/', methods=['GET'])
+@APP.route('/<api_root>/collections', methods=['GET'], strict_slashes=False)
 @taxii_validate_request_headers
 @taxii_validate_url_param
 def taxii2_collections(api_root: str) -> Response:
@@ -945,7 +945,7 @@ def taxii2_collections(api_root: str) -> Response:
     return handle_response(HTTP_200_OK, collections_response)
 
 
-@APP.route('/<api_root>/collections/<collection_id>/', methods=['GET'])
+@APP.route('/<api_root>/collections/<collection_id>', methods=['GET'], strict_slashes=False)
 @taxii_validate_request_headers
 @taxii_validate_url_param
 def taxii2_collection_by_id(api_root: str, collection_id: str) -> Response:
@@ -970,7 +970,7 @@ def taxii2_collection_by_id(api_root: str, collection_id: str) -> Response:
     return handle_response(HTTP_200_OK, collection_response)  # type: ignore[arg-type]
 
 
-@APP.route('/<api_root>/collections/<collection_id>/manifest/', methods=['GET'])
+@APP.route('/<api_root>/collections/<collection_id>/manifest', methods=['GET'], strict_slashes=False)
 @taxii_validate_request_headers
 @taxii_validate_url_param
 def taxii2_manifest(api_root: str, collection_id: str) -> Response:
@@ -1020,7 +1020,7 @@ def taxii2_manifest(api_root: str, collection_id: str) -> Response:
     )
 
 
-@APP.route('/<api_root>/collections/<collection_id>/objects/', methods=['GET'])
+@APP.route('/<api_root>/collections/<collection_id>/objects', methods=['GET'], strict_slashes=False)
 @taxii_validate_request_headers
 @taxii_validate_url_param
 def taxii2_objects(api_root: str, collection_id: str) -> Response:
@@ -1079,6 +1079,35 @@ def test_module(params: dict) -> str:
     return 'ok'
 
 
+def get_server_info_command(integration_context):
+    server_info = integration_context.get('server_info', None)
+
+    metadata = '**In case the default/api_roots URL is incorrect, you can override it by setting' \
+               '"TAXII2 Service URL Address" field in the integration configuration**\n\n'
+    hr = tableToMarkdown('Server Info', server_info, metadata=metadata)
+
+    result = CommandResults(
+        outputs=server_info,
+        outputs_prefix='TAXIIServer.ServerInfo',
+        readable_output=hr
+    )
+
+    return result
+
+
+def get_server_collections_command(integration_context):
+    collections = integration_context.get('collections', None)
+    markdown = tableToMarkdown('Collections', collections, headers=['id', 'title', 'query', 'description'])
+    result = CommandResults(
+        outputs=collections,
+        outputs_prefix='TAXIIServer.Collection',
+        outputs_key_field='id',
+        readable_output=markdown
+    )
+
+    return result
+
+
 def main():  # pragma: no cover
     """
     Main
@@ -1124,10 +1153,25 @@ def main():  # pragma: no cover
                               types_for_indicator_sdo)
 
         if command == 'long-running-execution':
+            # save TAXII server info in the integration context to make it available later for other commands
+            integration_context = get_integration_context(True)
+            integration_context['collections'] = SERVER.get_collections().get('collections', [])
+            integration_context['server_info'] = SERVER.get_discovery_service(instance_execute=True)
+
+            set_integration_context(integration_context)
+
             run_long_running(params)
 
         elif command == 'test-module':
             return_results(test_module(params))
+
+        elif command == 'taxii-server-list-collections':
+            integration_context = get_integration_context(True)
+            return_results(get_server_collections_command(integration_context))
+
+        elif command == 'taxii-server-info':
+            integration_context = get_integration_context(True)
+            return_results(get_server_info_command(integration_context))
 
     except Exception as e:
         err_msg = f'Error in {INTEGRATION_NAME} Integration [{e}]'

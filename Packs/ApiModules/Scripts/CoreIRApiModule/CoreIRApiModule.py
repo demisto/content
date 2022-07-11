@@ -190,6 +190,7 @@ class CoreClient(BaseClient):
                       sort_by_first_seen=None,
                       sort_by_last_seen=None,
                       status=None,
+                      username=None,
                       no_filter=False
                       ):
 
@@ -221,6 +222,13 @@ class CoreClient(BaseClient):
                     'field': 'endpoint_status',
                     'operator': 'IN',
                     'value': [status]
+                })
+
+            if username:
+                filters.append({
+                    'field': 'username',
+                    'operator': 'IN',
+                    'value': username
                 })
 
             if endpoint_id_list:
@@ -1807,6 +1815,8 @@ def get_endpoints_command(client, args):
         sort_by_first_seen = args.get('sort_by_first_seen')
         sort_by_last_seen = args.get('sort_by_last_seen')
 
+        username = argToList(args.get('username'))
+
         endpoints = client.get_endpoints(
             endpoint_id_list=endpoint_id_list,
             dist_name=dist_name,
@@ -1824,7 +1834,8 @@ def get_endpoints_command(client, args):
             last_seen_lte=last_seen_lte,
             sort_by_first_seen=sort_by_first_seen,
             sort_by_last_seen=sort_by_last_seen,
-            status=status
+            status=status,
+            username=username
         )
 
     integration_name = args.get("integration_name", "CoreApiModule")
