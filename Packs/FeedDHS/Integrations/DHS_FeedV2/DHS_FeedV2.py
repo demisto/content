@@ -58,13 +58,12 @@ def command_test_module(client: Taxii2FeedClient, first_fetch: str):
         return 'Could not connect to server'
 
 
-def fetch_indicators_command(client: Taxii2FeedClient, last_run_ctx: Dict, tlp_color: Optional[str] = None,
+def fetch_indicators_command(client: Taxii2FeedClient, last_run_ctx: Dict,
                              initial_interval: str = '24 hours') -> Tuple[list, dict]:
     """
     Fetch indicators from TAXII 2 server
     :param client: Taxii2FeedClient
     :param last_run_ctx: last run dict with {collection_id: last_run_time string}
-    :param (Optional) tlp_color: Traffic Light Protocol Color to filter by
     :param initial_interval: initial interval in parse_date_range format
     :return: indicators in cortex TIM format
     """
@@ -75,9 +74,6 @@ def fetch_indicators_command(client: Taxii2FeedClient, last_run_ctx: Dict, tlp_c
         indicators, last_run_ctx = fetch_one_collection(client, initial_interval, last_run_ctx)
     else:
         indicators, last_run_ctx = fetch_all_collections(client, initial_interval, last_run_ctx)
-
-    if tlp_color:
-        indicators = filter_indicators_by_tlp_color(indicators, tlp_color)
 
     return indicators, last_run_ctx
 
@@ -120,14 +116,12 @@ def get_indicators_results(indicators: List[Dict]):
     )
 
 
-def get_indicators_command(client: Taxii2FeedClient, limit: int = 20, added_after: str = '20 days',
-                           tlp_color: Optional[str] = None):
+def get_indicators_command(client: Taxii2FeedClient, limit: int = 20, added_after: str = '20 days'):
     """
     Fetch indicators from TAXII 2 server
     :param client: Taxii2FeedClient
     :param limit: upper limit of indicators to fetch
     :param (Optional) added_after: added after time string in parse_date_range format
-    :param (Optional) tlp_color: Traffic Light Protocol Color to filter by
     :return: indicators in cortex TIM format
     """
     if added_after:
@@ -150,9 +144,6 @@ def get_indicators_command(client: Taxii2FeedClient, limit: int = 20, added_afte
     else:
         indicators = client.build_iterator(limit, added_after=added_after)
 
-    if tlp_color:
-        indicators = filter_indicators_by_tlp_color(indicators, tlp_color)
-
     if not indicators:
         return CommandResults(readable_output='No results')
 
@@ -164,11 +155,6 @@ def get_indicators_command(client: Taxii2FeedClient, limit: int = 20, added_afte
         outputs=indicators,
         raw_response=indicators
     )
-
-
-def filter_indicators_by_tlp_color(indicators: List[Dict], tlp_color: str):
-    # todo check if indicators need to be filtered by tlp_color, or tlp_color needs to be added to indicators
-    return [indicator for indicator in indicators if indicator["fields"].get('trafficlightprotocol') == tlp_color]
 
 
 def get_first_fetch(first_fetch_string: str) -> str:
@@ -227,7 +213,6 @@ def main():
     tags = argToList(params['tags']) if params.get('tags') else None
     base_url = params.get('base_url', 'https://ais2.cisa.dhs.gov')
     verify_certificate = not params.get('insecure', False)
-    tlp_color = params.get('tlp_color')
     proxies = handle_proxy()
 
     try:
@@ -240,7 +225,6 @@ def main():
             last_run_indicators = get_feed_last_run()
             indicators, last_run_indicators = fetch_indicators_command(client,
                                                                        last_run_ctx=last_run_indicators,
-                                                                       tlp_color=tlp_color,
                                                                        initial_interval=params.get('first_fetch', '24 hours'))
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
@@ -250,7 +234,7 @@ def main():
         elif command == 'dhs-get-indicators':
             args = demisto.args()
             limit: int = arg_to_number(args.get('limit', 20))  # type: ignore
-            command_results = get_indicators_command(client, limit=limit, tlp_color=tlp_color)
+            command_results = get_indicators_command(client, limit=limit)
             return_results(command_results)
 
         elif command == 'test-module':
