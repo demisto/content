@@ -46,69 +46,6 @@ TEST_EVENTS_INCLUDE_DETECTED_TAG = [("2", ['149', '145', '144']),  # 3 events in
                                     (None, []),  # no tag was detected, no event returns
                                     ("104", ['149'])]  # 1 event includes the detected event's tag
 
-EXPECTED_ADD_OBJECT_OUTPUT = {'Object': {'ID': '39958', 'Name': 'email', 'MetaCategory': 'network',
-                                         'Description': 'Email object describing an email with meta-information',
-                                         'TemplateUUID': 'a0c666e0-fc65-4be8-b48f-3423d788b552', 'TemplateVersion': '15',
-                                         'EventID': '21342', 'UUID': 'b0bb6140-ac13-4e7f-a155-c0a777bb2ffd', 'LastChanged':
-                                         '2022-07-07T13:50:06Z', 'Distribution': '5', 'SharingGroupID': '0', 'Comment': '',
-                                         'Deleted': False, 'first_seen': None, 'last_seen': None,
-                                         'Attribute': [{'ID': '290720', 'EventID': '21342', 'ObjectID': '39958',
-                                                        'ObjectRelation': 'eml', 'Category': 'External analysis', 'Type':
-                                                        'attachment', 'value1': 'Full email.eml', 'value2': '', 'ToIDs': False,
-                                                        'UUID': 'cf0c5d6e-04d2-495b-a514-ef030f00de24', 'LastChanged':
-                                                        '2022-07-07T13:50:06Z', 'Distribution': '5', 'SharingGroupID': '0',
-                                                        'Comment': '', 'Deleted': False, 'DisableCorrelation': True,
-                                                        'first_seen': None, 'last_seen': None, 'Value': 'Full email.eml'},
-                                                       {'Comment': '', 'Distribution': '5', 'SharingGroupID': '0', 'value1':
-                                                        '<CAPz_z5hBQLj98G50S_ST8UDRiW8b0Umtd1K-iVWPDTFKbzhN4g@mail.gmail.com>',
-                                                        'ID': '290721', 'EventID': '21342', 'ObjectID': '39958',
-                                                        'ObjectRelation': 'message-id', 'Category': 'Payload delivery',
-                                                        'Type': 'email-message-id', 'value2': '', 'ToIDs': False, 'UUID':
-                                                        'b37dc62b-c1e8-4a11-9142-1e4d16a0ad04', 'LastChanged':
-                                                        '2022-07-07T13:50:06Z', 'Deleted': False, 'DisableCorrelation': True,
-                                                        'first_seen': None, 'last_seen': None, 'Value':
-                                                        '<CAPz_z5hBQLj98G50S_ST8UDRiW8b0Umtd1K-iVWPDTFKbzhN4g@mail.gmail.com>'},
-                                                       {'ID': '290722', 'EventID': '21342', 'ObjectID': '39958', 'ObjectRelation':
-                                                        'to', 'Category': 'Payload delivery', 'Type': 'email-dst', 'ToIDs': True,
-                                                        'value1': 'test receiver <fake_mail_receiver@test.com>', 'value2': '',
-                                                        'UUID': 'a6d5fcb8-5262-40c6-9f04-2ac6cb886bfb', 'Distribution': '5',
-                                                        'LastChanged': '2022-07-07T13:50:06Z', 'SharingGroupID': '0', 'Comment':
-                                                        '', 'Deleted': False, 'DisableCorrelation': True, 'first_seen': None,
-                                                        'last_seen': None, 'Value':
-                                                        'test receiver <fake_mail_receiver@test.com>'},
-                                                       {'ID': '290723', 'EventID': '21342', 'ObjectID': '39958',
-                                                        'ObjectRelation': 'subject', 'Category': 'Payload delivery', 'Type':
-                                                        'email-subject', 'value1': 'test email object', 'value2': '', 'ToIDs':
-                                                        False, 'UUID': '66a1e20d-6122-45ca-9fcb-5b67be123f72', 'LastChanged':
-                                                        '2022-07-07T13:50:06Z', 'Distribution': '5', 'SharingGroupID': '0',
-                                                        'Comment': '', 'Deleted': False, 'DisableCorrelation': False,
-                                                        'first_seen': None, 'last_seen': None, 'Value': 'test email object'},
-                                                       {'ID': '290724', 'EventID': '21342', 'ObjectID': '39958',
-                                                        'ObjectRelation': 'from', 'Category': 'Payload delivery', 'Type':
-                                                        'email-src', 'value1': 'test sender <fake_mail_sender@test.com>',
-                                                        'value2': '', 'ToIDs': True, 'LastChanged': '2022-07-07T13:50:06Z',
-                                                        'UUID': '568f7d28-9e14-4c62-8a22-84084240e02f', 'Distribution': '5',
-                                                        'SharingGroupID': '0', 'Comment': '', 'Deleted': False,
-                                                        'DisableCorrelation': False, 'first_seen': None, 'last_seen': None,
-                                                        'Value': 'test sender <fake_mail_sender@test.com>'},
-                                                       {'ID': '290725', 'EventID': '21342', 'ObjectID': '39958',
-                                                        'ObjectRelation': 'return-path', 'Category': 'Payload delivery', 'Type':
-                                                        'email-src', 'value1': '<fake_mail_sender@test.com>', 'value2': '',
-                                                        'ToIDs': True, 'UUID': '87a10898-31d2-439f-b293-d268ab3e5b42',
-                                                        'LastChanged': '2022-07-07T13:50:06Z', 'Distribution': '5',
-                                                        'SharingGroupID': '0', 'Comment': '', 'Deleted': False,
-                                                        'DisableCorrelation': False, 'first_seen': None, 'last_seen': None,
-                                                        'Value': '<fake_mail_sender@test.com>'},
-                                                       {'ID': '290726', 'EventID': '21342',
-                                                        'ObjectID': '39958', 'ObjectRelation': 'mime-boundary', 'Category':
-                                                        'Payload delivery', 'Type': 'email-mime-boundary', 'value1':
-                                                        '00000000000049d09105dc4c2b77', 'value2': '', 'ToIDs': False, 'UUID':
-                                                        '2551c290-d2a9-4119-9dc5-c66562f938a9', 'LastChanged':
-                                                        '2022-07-07T13:50:06Z', 'Distribution': '5', 'SharingGroupID': '0',
-                                                        'Comment': '', 'Deleted': False, 'DisableCorrelation': True,
-                                                        'first_seen': None, 'last_seen': None, 'Value':
-                                                        '00000000000049d09105dc4c2b77'}]}, 'ID': 1231}
-
 
 def util_load_json(path):
     with io.open(path, mode="r", encoding="utf-8") as f:
@@ -687,7 +624,7 @@ def test_warninglist_response(mocker):
     assert warninglist_command(demisto_args).to_context()['HumanReadable'] == warninglist_expected_output
 
 
-def get_response(status_code, mocker):
+def get_response(status_code, mocker, mock_response_key):
     the_response = Response()
     the_response.status_code = status_code
     the_response.request = mocker.patch.object(
@@ -698,82 +635,44 @@ def get_response(status_code, mocker):
             'headers': json.dumps({'key': 'value'})
         }
     )
+    file = util_load_json("test_data/response_mock_add_email_object_test.json")[mock_response_key]
 
     def json_func():
-        return {'Object': {'id': '39958', 'name': 'email', 'meta-category': 'network', 'description':
-                           'Email object describing an email with meta-information', 'template_uuid':
-                           'a0c666e0-fc65-4be8-b48f-3423d788b552', 'template_version': '15', 'event_id': '21342', 'uuid':
-                           'b0bb6140-ac13-4e7f-a155-c0a777bb2ffd', 'timestamp': '1657201806', 'distribution': '5',
-                           'sharing_group_id': '0', 'comment': '', 'deleted': False, 'first_seen': None, 'last_seen': None,
-                           'Attribute': [{'id': '290720', 'event_id': '21342', 'object_id': '39958', 'object_relation': 'eml',
-                                          'category': 'External analysis', 'type': 'attachment', 'value1': 'Full email.eml',
-                                          'value2': '', 'to_ids': False, 'uuid': 'cf0c5d6e-04d2-495b-a514-ef030f00de24',
-                                          'timestamp': '1657201806', 'distribution': '5', 'sharing_group_id': '0', 'comment': '',
-                                          'deleted': False, 'disable_correlation': True, 'first_seen': None, 'last_seen': None,
-                                          'value': 'Full email.eml'},
-                                         {'id': '290721', 'event_id': '21342', 'object_id': '39958', 'object_relation':
-                                          'message-id', 'category': 'Payload delivery', 'type': 'email-message-id', 'value1':
-                                          '<CAPz_z5hBQLj98G50S_ST8UDRiW8b0Umtd1K-iVWPDTFKbzhN4g@mail.gmail.com>', 'value2': '',
-                                          'to_ids': False, 'uuid': 'b37dc62b-c1e8-4a11-9142-1e4d16a0ad04',
-                                          'timestamp': '1657201806', 'distribution': '5', 'sharing_group_id': '0', 'comment': '',
-                                          'deleted': False, 'disable_correlation': True, 'first_seen': None, 'last_seen': None,
-                                          'value': '<CAPz_z5hBQLj98G50S_ST8UDRiW8b0Umtd1K-iVWPDTFKbzhN4g@mail.gmail.com>'},
-                                         {'id': '290722', 'event_id': '21342', 'object_id': '39958', 'object_relation': 'to',
-                                          'category': 'Payload delivery', 'type': 'email-dst', 'value1':
-                                          'test receiver <fake_mail_receiver@test.com>', 'value2': '', 'to_ids': True, 'uuid':
-                                          'a6d5fcb8-5262-40c6-9f04-2ac6cb886bfb', 'timestamp': '1657201806', 'distribution': '5',
-                                          'sharing_group_id': '0', 'comment': '', 'deleted': False, 'disable_correlation': True,
-                                          'first_seen': None, 'last_seen': None, 'value':
-                                          'test receiver <fake_mail_receiver@test.com>'},
-                                         {'id': '290723', 'event_id': '21342', 'object_id': '39958', 'object_relation':
-                                          'subject', 'category': 'Payload delivery', 'type': 'email-subject', 'value1':
-                                          'test email object', 'value2': '', 'to_ids': False, 'uuid':
-                                          '66a1e20d-6122-45ca-9fcb-5b67be123f72', 'timestamp': '1657201806', 'distribution': '5',
-                                          'sharing_group_id': '0', 'comment': '', 'deleted': False, 'disable_correlation': False,
-                                          'first_seen': None, 'last_seen': None, 'value': 'test email object'},
-                                         {'id': '290724', 'event_id': '21342', 'object_id': '39958', 'object_relation': 'from',
-                                          'category': 'Payload delivery', 'type': 'email-src', 'value1':
-                                          'test sender <fake_mail_sender@test.com>', 'value2': '', 'to_ids': True, 'uuid':
-                                          '568f7d28-9e14-4c62-8a22-84084240e02f', 'timestamp': '1657201806', 'distribution': '5',
-                                          'sharing_group_id': '0', 'comment': '', 'deleted': False, 'disable_correlation': False,
-                                          'first_seen': None, 'last_seen': None, 'value':
-                                          'test sender <fake_mail_sender@test.com>'},
-                                         {'id': '290725', 'event_id': '21342', 'object_id': '39958', 'object_relation':
-                                          'return-path', 'category': 'Payload delivery', 'type': 'email-src', 'value1':
-                                          '<fake_mail_sender@test.com>', 'value2': '', 'to_ids': True, 'uuid':
-                                          '87a10898-31d2-439f-b293-d268ab3e5b42', 'timestamp': '1657201806', 'distribution': '5',
-                                          'sharing_group_id': '0', 'comment': '', 'deleted': False, 'disable_correlation': False,
-                                          'first_seen': None, 'last_seen': None, 'value': '<fake_mail_sender@test.com>'},
-                                         {'id': '290726', 'event_id': '21342', 'object_id': '39958', 'object_relation':
-                                          'mime-boundary', 'category': 'Payload delivery', 'type': 'email-mime-boundary',
-                                          'value1': '00000000000049d09105dc4c2b77', 'value2': '', 'to_ids': False, 'uuid':
-                                          '2551c290-d2a9-4119-9dc5-c66562f938a9', 'timestamp': '1657201806', 'distribution': '5',
-                                          'sharing_group_id': '0', 'comment': '', 'deleted': False, 'disable_correlation': True,
-                                          'first_seen': None, 'last_seen': None, 'value': '00000000000049d09105dc4c2b77'}]}}
+        return file
     the_response.json = json_func
     return the_response
 
 
-@pytest.mark.parametrize('expected_output', [(EXPECTED_ADD_OBJECT_OUTPUT)])
-def test_add_email_object(expected_output, mocker):
+@pytest.mark.parametrize('file_path, expected_output_key, mock_response_key', [
+    ("test_data/test_add_email_object_case_1.eml", "expected_output_case_1", "response_mock_case_1"),
+    ("test_data/test_add_email_object_case_2.eml", "expected_output_case_2", "response_mock_case_2"),
+    ("test_data/test_add_email_object_case_3.eml", "expected_output_case_3", "response_mock_case_3")])
+def test_add_email_object(file_path, expected_output_key, mock_response_key, mocker):
     """
     Given:
-    - entry & event id
+    - file path to a .eml file.
+    - case 1: regular gmail format mail.
+    - case 2: mail from TPB.
+    - case 3: mail with attachments.
     When:
     - Running add_email_object command.
     Then:
-    - Ensure that the extraction of the information occured correctly.
+    - Ensure that the extraction of the information occured correctly and in the right format.
+    - case 1: should return true.
+    - case 2: should return true.
+    - case 3: should return true.
     """
     from MISPV3 import add_email_object
     import pymisp
     event_id = 1231
     demisto_args: dict = {'entry_id': "", 'event_id': event_id}
     mocker.patch.object(demisto, "getFilePath", return_value={
-                        "path": "test_data/test email object.eml"
+                        "path": file_path
                         })
-    mocker.patch.object(pymisp.api.PyMISP, "_prepare_request", return_value=get_response(200, mocker))
+    mocker.patch.object(pymisp.api.PyMISP, "_prepare_request", return_value=get_response(200, mocker, mock_response_key))
     pymisp.ExpandedPyMISP.global_pythonify = False
     output = add_email_object(demisto_args).outputs
+    expected_output = util_load_json("test_data/response_mock_add_email_object_test.json")[expected_output_key]
     assert output == expected_output
 
 
@@ -792,9 +691,9 @@ def test_fail_to_add_email_object(mocker):
     event_id = 1231
     demisto_args: dict = {'entry_id': "", 'event_id': event_id}
     mocker.patch.object(demisto, "getFilePath", return_value={
-                        "path": "test_data/test email object.eml"
+                        "path": "test_data/test_add_email_object_case_1.eml"
                         })
-    mocker.patch.object(pymisp.api.PyMISP, "_prepare_request", return_value=get_response(404, mocker))
+    mocker.patch.object(pymisp.api.PyMISP, "_prepare_request", return_value=get_response(404, mocker, "response_mock_case_1"))
     pymisp.ExpandedPyMISP.global_pythonify = True
     try:
         add_email_object(demisto_args)

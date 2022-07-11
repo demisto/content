@@ -3003,7 +3003,7 @@ script:
     - contextPath: MISP.Warninglist.Lists
       description: Name of warninglists where the value was found.
       type: string
-  dockerimage: devdemisto/pymisp2:1.0.0.31710
+  dockerimage: demisto/pymisp2:1.0.0.31860
   feed: false
   isfetch: false
   longRunning: false
