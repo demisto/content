@@ -27,47 +27,77 @@ script:
   - arguments:
     - default: true
       description: Username to unlock.
+      isArray: false
       name: username
       required: true
+      secret: false
+    deprecated: false
     description: Unlocks a single user.
     execution: true
     name: okta-unlock-user
   - arguments:
-    - description: Username to deactivate.
+    - default: false
+      description: Username to deactivate.
+      isArray: false
       name: username
       required: true
+      secret: false
+    deprecated: false
     description: Deactivates a single user.
+    execution: false
     name: okta-deactivate-user
   - arguments:
     - default: true
       description: Username to activate.
+      isArray: false
       name: username
       required: true
+      secret: false
+    deprecated: false
     description: Activates a single user.
+    execution: false
     name: okta-activate-user
   - arguments:
     - default: true
       description: Username to suspend.
+      isArray: false
       name: username
       required: true
+      secret: false
+    deprecated: false
     description: Suspends a single user. This operation can only be performed on users
       with an ACTIVE status. After the porcess is completed, the user's status is
       SUSPENDED.
+    execution: false
     name: okta-suspend-user
   - arguments:
     - default: true
       description: Username to change the status to ACTIVE.
+      isArray: false
       name: username
       required: true
+      secret: false
+    deprecated: false
     description: Returns a single user to ACTIVE status. This operation can only be
       performed on users that have a SUSPENDED status.
+    execution: false
     name: okta-unsuspend-user
   - arguments:
-    - description: Username for which to return all enrolled factors.
+    - default: false
+      description: Username for which to return all enrolled factors.
+      isArray: false
       name: username
-    - description: User ID of the user for which to get all enrolled factors.
+      required: false
+      secret: false
+    - default: false
+      description: User ID of the user for which to get all enrolled factors.
+      isArray: false
       name: userId
+      required: false
+      secret: false
+    deprecated: false
     description: Returns all the enrolled factors for the specified user.
+    execution: false
     name: okta-get-user-factors
     outputs:
     - contextPath: Account.ID
@@ -89,55 +119,114 @@ script:
       description: Okta account factor status.
       type: Unknown
   - arguments:
-    - description: The user ID
+    - default: false
+      description: The user ID
+      isArray: false
       name: userId
-    - description: Username for which to un-enroll an existing factor.
+      required: false
+      secret: false
+    - default: false
+      description: Username for which to un-enroll an existing factor.
+      isArray: false
       name: username
-    - description: The ID of the factor to reset.
+      required: false
+      secret: false
+    - default: false
+      description: The ID of the factor to reset.
+      isArray: false
       name: factorId
       required: true
+      secret: false
+    deprecated: false
     description: Un-enrolls an existing factor for the specified user. This enables
       the user to enroll a new factor.
+    execution: false
     name: okta-reset-factor
   - arguments:
     - default: true
       description: Okta username for which to set the password.
+      isArray: false
       name: username
       required: true
-    - description: The new password to set for the user.
+      secret: false
+    - default: false
+      description: The new password to set for the user.
+      isArray: false
       name: password
       required: true
+      secret: false
+    deprecated: false
     description: Sets passwords without validating existing user credentials.
     execution: true
     name: okta-set-password
   - arguments:
-    - description: ID of the user to add to the group.
+    - default: false
+      description: ID of the user to add to the group.
+      isArray: false
       name: userId
-    - description: Name of the user to add to the group.
+      required: false
+      secret: false
+    - default: false
+      description: Name of the user to add to the group.
+      isArray: false
       name: username
-    - description: ID of the group to add the user to.
+      required: false
+      secret: false
+    - default: false
+      description: ID of the group to add the user to.
+      isArray: false
       name: groupId
-    - description: Name of the group to add the user to.
+      required: false
+      secret: false
+    - default: false
+      description: Name of the group to add the user to.
+      isArray: false
       name: groupName
+      required: false
+      secret: false
+    deprecated: false
     description: Adds a user to a group with OKTA_GROUP type.
+    execution: false
     name: okta-add-to-group
   - arguments:
-    - description: ID of the user to remove from the group.
+    - default: false
+      description: ID of the user to remove from the group.
+      isArray: false
       name: userId
-    - description: Name of the user to remove from the group.
+      required: false
+      secret: false
+    - default: false
+      description: Name of the user to remove from the group.
+      isArray: false
       name: username
-    - description: ID of the group to remove the user from.
+      required: false
+      secret: false
+    - default: false
+      description: ID of the group to remove the user from.
+      isArray: false
       name: groupId
-    - description: Name of the group to remove the user from.
+      required: false
+      secret: false
+    - default: false
+      description: Name of the group to remove the user from.
+      isArray: false
       name: groupName
+      required: false
+      secret: false
+    deprecated: false
     description: Removes a user from a group with OKTA_GROUP type
+    execution: false
     name: okta-remove-from-group
   - arguments:
     - default: true
       description: Username in Okta for which to get the associated groups.
+      isArray: false
       name: username
       required: true
+      secret: false
+    deprecated: false
     description: Returns all user groups associated with a specified user.
+    execution: false
     name: okta-get-groups
     outputs:
     - contextPath: Account.Group
@@ -175,13 +264,21 @@ script:
       description: Name of the group.
       type: String
   - arguments:
-    - description: The ID of the user to enroll and verify.
+    - default: false
+      description: The ID of the user to enroll and verify.
+      isArray: false
       name: userId
       required: true
-    - description: The push factor ID.
+      secret: false
+    - default: false
+      description: The push factor ID.
+      isArray: false
       name: factorId
       required: true
+      secret: false
+    deprecated: false
     description: Enrolls and verifies a push factor for the specified user.
+    execution: false
     name: okta-verify-push-factor
     outputs:
     - contextPath: Account.ID
@@ -194,20 +291,32 @@ script:
     - default: true
       description: Term by which to search. Can be a first name, last name, or email
         address.
+      isArray: false
       name: term
       required: true
-    - description: The maximum number of results to return. The default and maximum
+      secret: false
+    - default: false
+      description: The maximum number of results to return. The default and maximum
         is 200.
+      isArray: false
       name: limit
+      required: false
+      secret: false
     - auto: PREDEFINED
+      default: false
       defaultValue: 'false'
       description: Whether to return details of users that match the found term. Can
         be "true" or "false". The default is "false".
+      isArray: false
       name: verbose
       predefined:
       - 'true'
       - 'false'
+      required: false
+      secret: false
+    deprecated: false
     description: Searches for Okta users.
+    execution: false
     name: okta-search
     outputs:
     - contextPath: Account.ID
@@ -241,20 +350,34 @@ script:
       description: Timestamp for when the user's password was last changed.
       type: Date
   - arguments:
-    - description: Okta username for which to get information.
+    - default: false
+      description: Okta username for which to get information.
+      isArray: false
       name: username
-    - description: User ID of the user for which to get information.
+      required: false
+      secret: false
+    - default: false
+      description: User ID of the user for which to get information.
+      isArray: false
       name: userId
+      required: false
+      secret: false
     - auto: PREDEFINED
+      default: false
       defaultValue: 'false'
       description: Whether to return extended user information. Can be "true" or "false".
         The default is "false".
+      isArray: false
       name: verbose
       predefined:
       - 'true'
       - 'false'
+      required: false
+      secret: false
+    deprecated: false
     description: Fetches information for a single user. You must enter one or more
       parameters for the command to run.
+    execution: false
     name: okta-get-user
     outputs:
     - contextPath: Account.ID
@@ -286,14 +409,20 @@ script:
       type: Date
   - arguments:
     - auto: PREDEFINED
+      default: false
       defaultValue: 'false'
       description: Whether to return extended user information. Can be "true" or "false".
         The default is "false".
+      isArray: false
       name: verbose
       predefined:
       - 'true'
       - 'false'
+      required: false
+      secret: false
+    deprecated: false
     description: Lists users in your organization.
+    execution: false
     name: okta-list-users
     outputs:
     - contextPath: Account.ID
@@ -324,84 +453,218 @@ script:
       description: Timestamp for when the user's password was last changed.
       type: Date
   - arguments:
-    - description: First name of the user (givenName).
+    - default: false
+      description: First name of the user (givenName).
+      isArray: false
       name: firstName
       required: true
-    - description: Family name of the user (familyName).
+      secret: false
+    - default: false
+      description: Family name of the user (familyName).
+      isArray: false
       name: lastName
       required: true
-    - description: Primary email address of the user.
+      secret: false
+    - default: false
+      description: Primary email address of the user.
+      isArray: false
       name: email
       required: true
-    - description: Unique identifier for the user (username).
+      secret: false
+    - default: false
+      description: Unique identifier for the user (username).
+      isArray: false
       name: login
       required: true
-    - description: Secondary email address of user. Usually used for account recovery.
+      secret: false
+    - default: false
+      description: Secondary email address of user. Usually used for account recovery.
+      isArray: false
       name: secondEmail
-    - description: Middle name(s) of the user.
+      required: false
+      secret: false
+    - default: false
+      description: Middle name(s) of the user.
+      isArray: false
       name: middleName
-    - description: A comma-separated list of honorific prefix(es) of the user, or
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of honorific prefix(es) of the user, or
         title in most Western languages.
+      isArray: false
       name: honorificPrefix
-    - description: A comma-separated list of honorific suffix(es) of the user.
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of honorific suffix(es) of the user.
+      isArray: false
       name: honorificSuffix
-    - description: User's title. for example, Vice President.
+      required: false
+      secret: false
+    - default: false
+      description: User's title. for example, Vice President.
+      isArray: false
       name: title
-    - description: Display name of the user.
+      required: false
+      secret: false
+    - default: false
+      description: Display name of the user.
+      isArray: false
       name: displayName
-    - description: Casual way to address the user (nick name).
+      required: false
+      secret: false
+    - default: false
+      description: Casual way to address the user (nick name).
+      isArray: false
       name: nickName
-    - description: URL of the user online profile. For example, a web page.
+      required: false
+      secret: false
+    - default: false
+      description: URL of the user online profile. For example, a web page.
+      isArray: false
       name: profileUrl
-    - description: Primary phone number of the user.
+      required: false
+      secret: false
+    - default: false
+      description: Primary phone number of the user.
+      isArray: false
       name: primaryPhone
-    - description: Mobile phone number of the user.
+      required: false
+      secret: false
+    - default: false
+      description: Mobile phone number of the user.
+      isArray: false
       name: mobilePhone
-    - description: Full street address component of the user's address.
+      required: false
+      secret: false
+    - default: false
+      description: Full street address component of the user's address.
+      isArray: false
       name: streetAddress
-    - description: City or locality component of the user's address (locality).
+      required: false
+      secret: false
+    - default: false
+      description: City or locality component of the user's address (locality).
+      isArray: false
       name: city
-    - description: State or region component of the user's address (region).
+      required: false
+      secret: false
+    - default: false
+      description: State or region component of the user's address (region).
+      isArray: false
       name: state
-    - description: Zip code or postal code component of the user's address (postalCode).
+      required: false
+      secret: false
+    - default: false
+      description: Zip code or postal code component of the user's address (postalCode).
+      isArray: false
       name: zipCode
-    - description: Country name component of the user's address (country).
+      required: false
+      secret: false
+    - default: false
+      description: Country name component of the user's address (country).
+      isArray: false
       name: countryCode
-    - description: Mailing address component of the user's address.
+      required: false
+      secret: false
+    - default: false
+      description: Mailing address component of the user's address.
+      isArray: false
       name: postalAddress
-    - description: User's preferred written or spoken languages.
+      required: false
+      secret: false
+    - default: false
+      description: User's preferred written or spoken languages.
+      isArray: false
       name: preferredLanguage
-    - description: User's default location, for purposes of localizing items such
+      required: false
+      secret: false
+    - default: false
+      description: User's default location, for purposes of localizing items such
         as currency, date-time format, numerical representations, etc.
+      isArray: false
       name: locale
-    - description: User's time zone.
+      required: false
+      secret: false
+    - default: false
+      description: User's time zone.
+      isArray: false
       name: timezone
-    - description: The user type, which is used to identify the organization-to-user
+      required: false
+      secret: false
+    - default: false
+      description: The user type, which is used to identify the organization-to-user
         relationship such as "Employee" or "Contractor".
+      isArray: false
       name: userType
-    - description: Organization or company assigned unique identifier for the user.
+      required: false
+      secret: false
+    - default: false
+      description: Organization or company assigned unique identifier for the user.
+      isArray: false
       name: employeeNumber
-    - description: Name of a cost center the user is assigned to.
+      required: false
+      secret: false
+    - default: false
+      description: Name of a cost center the user is assigned to.
+      isArray: false
       name: costCenter
-    - description: Name of the user's organization.
+      required: false
+      secret: false
+    - default: false
+      description: Name of the user's organization.
+      isArray: false
       name: organization
-    - description: Name of the user's division.
+      required: false
+      secret: false
+    - default: false
+      description: Name of the user's division.
+      isArray: false
       name: division
-    - description: Name of the user's department.
+      required: false
+      secret: false
+    - default: false
+      description: Name of the user's department.
+      isArray: false
       name: department
-    - description: ID of the user's manager.
+      required: false
+      secret: false
+    - default: false
+      description: ID of the user's manager.
+      isArray: false
       name: managerId
-    - description: Display name of the user's manager.
+      required: false
+      secret: false
+    - default: false
+      description: Display name of the user's manager.
+      isArray: false
       name: manager
-    - description: Password for the new user.
+      required: false
+      secret: false
+    - default: false
+      description: Password for the new user.
+      isArray: false
       name: password
-    - description: Password question for the new user.
+      required: false
+      secret: false
+    - default: false
+      description: Password question for the new user.
+      isArray: false
       name: passwordQuestion
-    - description: Password answer for question.
+      required: false
+      secret: false
+    - default: false
+      description: Password answer for question.
+      isArray: false
       name: passwordAnswer
+      required: false
+      secret: false
     - auto: PREDEFINED
+      default: false
       description: The provider type. Can be "OKTA", "ACTIVE_DIRECTORY", "LDAP", "FEDERATION",
         or "SOCIAL".
+      isArray: false
       name: providerType
       predefined:
       - OKTA
@@ -409,18 +672,33 @@ script:
       - LDAP
       - FEDERATION
       - SOCIAL
-    - description: Name of the provider.
+      required: false
+      secret: false
+    - default: false
+      description: Name of the provider.
+      isArray: false
       name: providerName
-    - description: IDs of groups that the user will be immediately added to at time
+      required: false
+      secret: false
+    - default: false
+      description: IDs of groups that the user will be immediately added to at time
         of creation (does Not include default group).
+      isArray: false
       name: groupIds
+      required: false
+      secret: false
     - auto: PREDEFINED
+      default: false
       description: Whether to activate the lifecycle operation when creating the user.
         Can be "true" or "false".
+      isArray: false
       name: activate
       predefined:
       - 'true'
       - 'false'
+      required: false
+      secret: false
+    deprecated: false
     description: Creates a new user with an option of setting a password, recovery
       question, and answer. The new user will immediately be able to log in after
       activation with the assigned password. This flow is common when developing a
@@ -459,109 +737,271 @@ script:
       description: Timestamp for when the user's password was last changed.
       type: Date
   - arguments:
-    - description: First name of the user (given name).
+    - default: false
+      description: First name of the user (given name).
+      isArray: false
       name: firstName
-    - description: Family name of the user.
+      required: false
+      secret: false
+    - default: false
+      description: Family name of the user.
+      isArray: false
       name: lastName
-    - description: Primary email address of the user.
+      required: false
+      secret: false
+    - default: false
+      description: Primary email address of the user.
+      isArray: false
       name: email
-    - description: Unique identifier for the user (login).
+      required: false
+      secret: false
+    - default: false
+      description: Unique identifier for the user (login).
+      isArray: false
       name: username
       required: true
-    - description: Secondary email address of the user (typically used for account
+      secret: false
+    - default: false
+      description: Secondary email address of the user (typically used for account
         recovery.
+      isArray: false
       name: secondEmail
-    - description: Middle name(s) of the user.
+      required: false
+      secret: false
+    - default: false
+      description: Middle name(s) of the user.
+      isArray: false
       name: middleName
-    - description: Honorific prefix(es) of the user, or title in most Western languages.
+      required: false
+      secret: false
+    - default: false
+      description: Honorific prefix(es) of the user, or title in most Western languages.
+      isArray: false
       name: honorificPrefix
-    - description: Honorific suffix(es) of the user.
+      required: false
+      secret: false
+    - default: false
+      description: Honorific suffix(es) of the user.
+      isArray: false
       name: honorificSuffix
-    - description: User's title. For example, Vice President.
+      required: false
+      secret: false
+    - default: false
+      description: User's title. For example, Vice President.
+      isArray: false
       name: title
-    - description: Display name of the user.
+      required: false
+      secret: false
+    - default: false
+      description: Display name of the user.
+      isArray: false
       name: displayName
-    - description: Casual way to address the user in real life (nick name).
+      required: false
+      secret: false
+    - default: false
+      description: Casual way to address the user in real life (nick name).
+      isArray: false
       name: nickName
-    - description: URL of the user's online profile. For example, a web page.
+      required: false
+      secret: false
+    - default: false
+      description: URL of the user's online profile. For example, a web page.
+      isArray: false
       name: profileUrl
-    - description: Primary phone number of the user.
+      required: false
+      secret: false
+    - default: false
+      description: Primary phone number of the user.
+      isArray: false
       name: primaryPhone
-    - description: Mobile phone number of the user.
+      required: false
+      secret: false
+    - default: false
+      description: Mobile phone number of the user.
+      isArray: false
       name: mobilePhone
-    - description: Full street address component of the user's address.
+      required: false
+      secret: false
+    - default: false
+      description: Full street address component of the user's address.
+      isArray: false
       name: streetAddress
-    - description: City or locality component of the user's address (locality).
+      required: false
+      secret: false
+    - default: false
+      description: City or locality component of the user's address (locality).
+      isArray: false
       name: city
-    - description: State or region component of the user's address (region).
+      required: false
+      secret: false
+    - default: false
+      description: State or region component of the user's address (region).
+      isArray: false
       name: state
-    - description: Zip code or postal code component of the user's address (postalCode).
+      required: false
+      secret: false
+    - default: false
+      description: Zip code or postal code component of the user's address (postalCode).
+      isArray: false
       name: zipCode
-    - description: Country name component of the user's address (country).
+      required: false
+      secret: false
+    - default: false
+      description: Country name component of the user's address (country).
+      isArray: false
       name: countryCode
-    - description: Mailing address component of the user's address.
+      required: false
+      secret: false
+    - default: false
+      description: Mailing address component of the user's address.
+      isArray: false
       name: postalAddress
-    - description: User's preferred written or spoken languages.
+      required: false
+      secret: false
+    - default: false
+      description: User's preferred written or spoken languages.
+      isArray: false
       name: preferredLanguage
-    - description: User's default location for purposes of localizing items such as
+      required: false
+      secret: false
+    - default: false
+      description: User's default location for purposes of localizing items such as
         currency, date-time format, numerical representations, etc.
+      isArray: false
       name: locale
-    - description: User time zone.
+      required: false
+      secret: false
+    - default: false
+      description: User time zone.
+      isArray: false
       name: timezone
-    - description: The user type, which is used to identify the organization-to-user
+      required: false
+      secret: false
+    - default: false
+      description: The user type, which is used to identify the organization-to-user
         relationship such as "Employee" or "Contractor".
+      isArray: false
       name: userType
-    - description: Organization or company assigned unique identifier for the user.
+      required: false
+      secret: false
+    - default: false
+      description: Organization or company assigned unique identifier for the user.
+      isArray: false
       name: employeeNumber
-    - description: Name of a cost center the user is assigned to.
+      required: false
+      secret: false
+    - default: false
+      description: Name of a cost center the user is assigned to.
+      isArray: false
       name: costCenter
-    - description: Name of the user's organization.
+      required: false
+      secret: false
+    - default: false
+      description: Name of the user's organization.
+      isArray: false
       name: organization
-    - description: Name of the user's division.
+      required: false
+      secret: false
+    - default: false
+      description: Name of the user's division.
+      isArray: false
       name: division
-    - description: Name of the user's department.
+      required: false
+      secret: false
+    - default: false
+      description: Name of the user's department.
+      isArray: false
       name: department
-    - description: ID of the user's manager.
+      required: false
+      secret: false
+    - default: false
+      description: ID of the user's manager.
+      isArray: false
       name: managerId
-    - description: Display name of the user's manager.
+      required: false
+      secret: false
+    - default: false
+      description: Display name of the user's manager.
+      isArray: false
       name: manager
-    - description: New password for the specified user.
+      required: false
+      secret: false
+    - default: false
+      description: New password for the specified user.
+      isArray: false
       name: password
-    - description: Password question for the specified user.
+      required: false
+      secret: false
+    - default: false
+      description: Password question for the specified user.
+      isArray: false
       name: passwordQuestion
-    - description: Password answer for the question.
+      required: false
+      secret: false
+    - default: false
+      description: Password answer for the question.
+      isArray: false
       name: passwordAnswer
+      required: false
+      secret: false
     - auto: PREDEFINED
+      default: false
       description: The provider type. Can be "OKTA", "ACTIVE_DIRECTORY", "LDAP", "FEDERATION",
         or "SOCIAL".
+      isArray: false
       name: providerType
       predefined:
       - OKTA
       - ACTIVE_DIRECTORY
       - FEDERATION
       - SOCIAL
-    - description: Name of the provider.
+      required: false
+      secret: false
+    - default: false
+      description: Name of the provider.
+      isArray: false
       name: providerName
+      required: false
+      secret: false
+    deprecated: false
     description: Updates a user with a given login. All fields are optional. Fields
       which are not set, will not be overwritten.
     execution: true
     name: okta-update-user
   - arguments:
-    - description: ID of the group.
+    - default: false
+      description: ID of the group.
+      isArray: false
       name: groupId
-    - description: The maximum number of results to return.
+      required: false
+      secret: false
+    - default: false
+      description: The maximum number of results to return.
+      isArray: false
       name: limit
+      required: false
+      secret: false
     - auto: PREDEFINED
+      default: false
       defaultValue: 'false'
       description: Whether to print extended user details. Can be "true" or "false".
         The default is "false".
+      isArray: false
       name: verbose
       predefined:
       - 'true'
       - 'false'
-    - description: Name of the group.
+      required: false
+      secret: false
+    - default: false
+      description: Name of the group.
+      isArray: false
       name: groupName
+      required: false
+      secret: false
+    deprecated: false
     description: Enumerates all users that are members of a group.
+    execution: false
     name: okta-get-group-members
     outputs:
     - contextPath: Account.ID
@@ -595,23 +1035,37 @@ script:
       description: Timestamp for when the user's password was last changed.
       type: Date
   - arguments:
-    - description: Searches the name property of groups for matching values.
+    - default: false
+      description: Searches the name property of groups for matching values.
+      isArray: false
       name: query
-    - description: "Useful for performing structured queries where constraints on\
+      required: false
+      secret: false
+    - default: false
+      description: "Useful for performing structured queries where constraints on\
         \ group attribute values can be explicitly targeted. \nThe following expressions\
         \ are supported(among others) for groups with the filter query parameter:\
-        \ \ntype eq \"OKTA_GROUP\" - Groups that have a type of OKTA_GROUP; lastUpdated\
+        \ \ntype eq \"OKTA_GROUP\" - Groups that have a\_type\_of\_OKTA_GROUP; lastUpdated\
         \ lt \"yyyy-MM-dd''T''HH:mm:ss.SSSZ\" - Groups with profile last updated before\
         \ a specific timestamp; lastMembershipUpdated eq \"yyyy-MM-dd''T''HH:mm:ss.SSSZ\"\
         \ - Groups with memberships last updated at a specific timestamp; id eq \"\
         00g1emaKYZTWRYYRRTSK\" - Group with a specified ID. For more information about\
         \ filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering"
+      isArray: false
       name: filter
-    - defaultValue: '200'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '200'
       description: The maximum number of results to return. The default is 200.
+      isArray: false
       name: limit
+      required: false
+      secret: false
+    deprecated: false
     description: Lists groups in your organization. A subset of groups can be returned
       that match a supported filter expression or query.
+    execution: false
     name: okta-list-groups
     outputs:
     - contextPath: Okta.Group.ID
@@ -640,23 +1094,41 @@ script:
       description: Description of the group.
       type: String
   - arguments:
-    - description: 'Filters the lower time bound of the log events in the Internet
+    - default: false
+      description: 'Filters the lower time bound of the log events in the Internet
         Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
+      isArray: false
       name: since
-    - description: 'Filters the upper time bound of the log events in the Internet
+      required: false
+      secret: false
+    - default: false
+      description: 'Filters the upper time bound of the log events in the Internet
         Date/Time Format profile of ISO 8601. An example: 2017-05-03T16:22:18Z'
+      isArray: false
       name: until
+      required: false
+      secret: false
     - auto: PREDEFINED
+      default: false
       defaultValue: ASCENDING
       description: The order of the returned events. Can be "ASCENDING" or "DESCENDING".
         The default is "ASCENDING".
+      isArray: false
       name: sortOrder
       predefined:
       - ASCENDING
       - DESCENDING
-    - description: The maximum number of results to return. The default is 100.
+      required: false
+      secret: false
+    - default: false
+      description: The maximum number of results to return. The default is 100.
+      isArray: false
       name: limit
+      required: false
+      secret: false
+    deprecated: false
     description: Returns failed login events.
+    execution: false
     name: okta-get-failed-logins
     outputs:
     - contextPath: Okta.Logs.Events.actor.alternateId
@@ -769,40 +1241,66 @@ script:
       description: Display name of a target.
       type: String
   - arguments:
-    - description: "Useful for performing structured queries where constraints on\
+    - default: false
+      description: "Useful for performing structured queries where constraints on\
         \ LogEvent attribute values can be explicitly targeted.  \nThe following expressions\
         \ are supported for events with the filter query parameter: eventType eq \"\
         \ :eventType\" \n-Events that have a specific action; eventType target.id\
         \ eq \":id\" \n- Events published with a specific target id; actor.id eq \"\
         :id\"\n- Events published with a specific actor ID. For more information about\
         \ filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering"
+      isArray: false
       name: filter
-    - description: "The query parameter can be used to perform keyword matching against\
+      required: false
+      secret: false
+    - default: false
+      description: "The query parameter can be used to perform keyword matching against\
         \ a LogEvents object’s attribute values. To satisfy the constraint, all supplied\
         \ keywords must be matched exactly. Note that matching is case-insensitive.\
         \  The following are some examples of common keyword filtering: \nEvents that\
         \ mention a specific city: query=San Francisco; \nEvents that mention a specific\
         \ url: query=interestingURI.com; \nEvents that mention a specific person:\
         \ query=firstName lastName."
+      isArray: false
       name: query
-    - description: 'Filters the lower time bound of the log events in the Internet
+      required: false
+      secret: false
+    - default: false
+      description: 'Filters the lower time bound of the log events in the Internet
         Date/Time Format profile of ISO 8601. For example: 2017-05-03T16:22:18Z.'
+      isArray: false
       name: since
-    - description: 'Filters the upper  time bound of the log events in the Internet
+      required: false
+      secret: false
+    - default: false
+      description: 'Filters the upper  time bound of the log events in the Internet
         Date/Time Format profile of ISO 8601. For example: 2017-05-03T16:22:18Z.'
+      isArray: false
       name: until
+      required: false
+      secret: false
     - auto: PREDEFINED
+      default: false
       defaultValue: ASCENDING
       description: The order of the returned events. Can be "ASCENDING" or "DESCENDING".
         The default is "ASCENDING".
+      isArray: false
       name: sortOrder
       predefined:
       - ASCENDING
       - DESCENDING
-    - defaultValue: '100'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
       description: The maximum number of results to return. The default is 100.
+      isArray: false
       name: limit
+      required: false
+      secret: false
+    deprecated: false
     description: Gets logs by providing optional filters.
+    execution: false
     name: okta-get-logs
     outputs:
     - contextPath: Okta.Logs.Events.actor.alternateId
@@ -916,24 +1414,42 @@ script:
       description: Display name of a target.
       type: String
   - arguments:
-    - description: Filters the lower time bound of the log event in the Internet Date\Time
+    - default: false
+      description: Filters the lower time bound of the log event in the Internet Date\Time
         format profile of ISO 8601. For example, 2020-02-14T16:00:18Z.
+      isArray: false
       name: since
-    - description: Filters the upper time bound of the log event in the Internet Date\Time
+      required: false
+      secret: false
+    - default: false
+      description: Filters the upper time bound of the log event in the Internet Date\Time
         format profile of ISO 8601. For example, 2020-02-14T16:00:18Z.
+      isArray: false
       name: until
+      required: false
+      secret: false
     - auto: PREDEFINED
+      default: false
       defaultValue: ASCENDING
       description: The order of the returned events. Can be "ASCENDING" or "DESCENDING".
         The default is "ASCENDING".
+      isArray: false
       name: sortOrder
       predefined:
       - ASCENDING
       - DESCENDING
-    - defaultValue: '100'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
       description: The maximum number of results to return. The default is 100.
+      isArray: false
       name: limit
+      required: false
+      secret: false
+    deprecated: false
     description: Gets events for when a user was added to a group.
+    execution: false
     name: okta-get-group-assignments
     outputs:
     - contextPath: Okta.Logs.Events.actor.alternateId
@@ -1047,24 +1563,42 @@ script:
       description: Display name of a target.
       type: String
   - arguments:
-    - description: Filters the lower time bound of the log event in the Internet Date\Time
+    - default: false
+      description: Filters the lower time bound of the log event in the Internet Date\Time
         format profile of ISO 8601. For example, 2020-02-14T16:00:18Z.
+      isArray: false
       name: since
-    - description: Filters the upper time bound of the log event in the Internet Date\Time
+      required: false
+      secret: false
+    - default: false
+      description: Filters the upper time bound of the log event in the Internet Date\Time
         format profile of ISO 8601. For example, 2020-02-14T16:00:18Z.
+      isArray: false
       name: until
+      required: false
+      secret: false
     - auto: PREDEFINED
+      default: false
       defaultValue: ASCENDING
       description: The order of the returned events. Can be "ASCENDING" or "DESCENDING".
         The default is "ASCENDING".
+      isArray: false
       name: sortOrder
       predefined:
       - ASCENDING
       - DESCENDING
-    - defaultValue: '100'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
       description: The maximum number of results to return. The default is 100.
+      isArray: false
       name: limit
+      required: false
+      secret: false
+    deprecated: false
     description: Returns events for when a user was assigned to an application.
+    execution: false
     name: okta-get-application-assignments
     outputs:
     - contextPath: Okta.Logs.Events.actor.alternateId
@@ -1178,24 +1712,42 @@ script:
       description: Display name of a target.
       type: String
   - arguments:
-    - description: Filters the lower time bound of the log event in the Internet Date\Time
+    - default: false
+      description: Filters the lower time bound of the log event in the Internet Date\Time
         format profile of ISO 8601. For example, 2020-02-14T16:00:18Z.
+      isArray: false
       name: since
-    - description: Filters the upper time bound of the log event in the Internet Date\Time
+      required: false
+      secret: false
+    - default: false
+      description: Filters the upper time bound of the log event in the Internet Date\Time
         format profile of ISO 8601. For example, 2020-02-14T16:00:18Z.
+      isArray: false
       name: until
+      required: false
+      secret: false
     - auto: PREDEFINED
+      default: false
       defaultValue: ASCENDING
       description: The order of the returned events. Can be "ASCENDING" or "DESCENDING".
         The default is "ASCENDING".
+      isArray: false
       name: sortOrder
       predefined:
       - ASCENDING
       - DESCENDING
-    - defaultValue: '100'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '100'
       description: The maximum number of results to return. The default is 100.
+      isArray: false
       name: limit
+      required: false
+      secret: false
+    deprecated: false
     description: Returns logs using specified filters.
+    execution: false
     name: okta-get-application-authentication
     outputs:
     - contextPath: Okta.Logs.Events.actor.alternateId
@@ -1309,24 +1861,46 @@ script:
       description: Display name of a target.
       type: String
   - arguments:
-    - description: Okta User ID.
+    - default: false
+      description: Okta User ID.
+      isArray: false
       name: userId
-    - description: Username of the user.
+      required: false
+      secret: false
+    - default: false
+      description: Username of the user.
+      isArray: false
       name: username
+      required: false
+      secret: false
+    deprecated: false
     description: Deletes the specified user.
     execution: true
     name: okta-delete-user
   - arguments:
-    - description: Okta User ID.
+    - default: false
+      description: Okta User ID.
+      isArray: false
       name: userId
       required: true
+      secret: false
+    deprecated: false
     description: |-
       Removes all active identity provider sessions. This forces the user to authenticate upon the next operation. Optionally revokes OpenID Connect and OAuth refresh and access tokens issued to the user.
       For more information and examples:
       https://developer.okta.com/docs/reference/api/users/#user-sessions
+    execution: false
     name: okta-clear-user-sessions
-  - arguments: []
+  - arguments:
+    - default: false
+      description: 'The maximum number of results to return.'
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
     description: Get an Okta Zone object
+    execution: false
     name: okta-list-zones
     outputs:
     - contextPath: Okta.Zone.created
@@ -1363,20 +1937,35 @@ script:
       description: Zone type, e.g., IP.
       type: String
   - arguments:
-    - description: Zone ID to update, e.g., nzoqsmcx1qWYJ6wYF0h7.
+    - default: false
+      description: Zone ID to update, e.g., nzoqsmcx1qWYJ6wYF0h7.
+      isArray: false
       name: zoneID
       required: true
-    - description: Updates the zone name.
+      secret: false
+    - default: false
+      description: Updates the zone name.
+      isArray: false
       name: zoneName
-    - description: 'Updates Gateway IP addresses: CIDR range (1.1.0.0/16) or single
+      required: false
+      secret: false
+    - default: false
+      description: 'Updates Gateway IP addresses: CIDR range (1.1.0.0/16) or single
         IP address (2.2.2.2).'
       isArray: true
       name: gatewayIPs
-    - description: 'Update Proxy IP addresses: CIDR range (1.1.0.0/16) or single IP
+      required: false
+      secret: false
+    - default: false
+      description: 'Update Proxy IP addresses: CIDR range (1.1.0.0/16) or single IP
         address (2.2.2.2).'
       isArray: true
       name: proxyIPs
+      required: false
+      secret: false
+    deprecated: false
     description: Update an Okta Zone
+    execution: false
     name: okta-update-zone
     outputs:
     - contextPath: Okta.Zone.created
@@ -1413,10 +2002,15 @@ script:
       description: Zone type, e.g., IP.
       type: String
   - arguments:
-    - description: Zone ID to get, e.g., nzoqsmcx1qWYJ6wYF0h.7
+    - default: false
+      description: Zone ID to get, e.g., nzoqsmcx1qWYJ6wYF0h.7
+      isArray: false
       name: zoneID
       required: true
+      secret: false
+    deprecated: false
     description: Get a Zone by its ID
+    execution: false
     name: okta-get-zone
     outputs:
     - contextPath: Okta.Zone.created
@@ -1453,49 +2047,92 @@ script:
       description: Zone type, e.g., IP.
       type: String
   - arguments:
-    - description: Zone name
+    - default: false
+      description: Zone name
+      isArray: false
       name: name
       required: true
-    - description: 'Update Gateway IP addresses: CIDR range (1.1.0.0/16) or single
+      secret: false
+    - default: false
+      description: 'Update Gateway IP addresses: CIDR range (1.1.0.0/16) or single
         IP address (2.2.2.2).'
+      isArray: false
       name: gateway_ips
-    - description: 'Update Proxy IP addresses: CIDR range (1.1.0.0/16) or single IP
+      required: false
+      secret: false
+    - default: false
+      description: 'Update Proxy IP addresses: CIDR range (1.1.0.0/16) or single IP
         address (2.2.2.2).'
+      isArray: false
       name: proxies
+      required: false
+      secret: false
+    deprecated: false
     description: Creates a Zone with the specified name
+    execution: false
     name: okta-create-zone
   - arguments:
-    - description: Name of the group to add.
+    - default: false
+      description: Name of the group to add.
+      isArray: false
       name: name
       required: true
-    - description: Description of the group to add.
+      secret: false
+    - default: false
+      description: Description of the group to add.
+      isArray: false
       name: description
+      required: false
+      secret: false
+    deprecated: false
     description: Create a new group in Okta tenant.
     execution: true
     name: okta-create-group
     outputs:
     - contextPath: OktaGroup.ID
       description: Group ID in Okta,
+      type: Unknown
     - contextPath: OktaGroup.Name
       description: Group name in Okta,
+      type: Unknown
     - contextPath: OktaGroup.Description
       description: Group description in Okta,
+      type: Unknown
     - contextPath: OktaGroup.Type
       description: Group type in Okta,
+      type: Unknown
   - arguments:
-    - description: Name of the group to assign to the app.
+    - default: false
+      description: Name of the group to assign to the app.
+      isArray: false
       name: groupName
-    - description: ID of the group to assign to the app.
+      required: false
+      secret: false
+    - default: false
+      description: ID of the group to assign to the app.
+      isArray: false
       name: groupId
-    - description: Friendly name of the app that the group will be assigned to.
+      required: false
+      secret: false
+    - default: false
+      description: Friendly name of the app that the group will be assigned to.
+      isArray: false
       name: appName
+      required: false
+      secret: false
+    deprecated: false
     description: Assign a group to an application
+    execution: false
     name: okta-assign-group-to-app
   dockerimage: demisto/python3:3.10.4.30607
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
   runonce: false
-  script: ''
+  script: '-'
   subtype: python3
   type: python
-fromversion: 5.0.0
 tests:
 - OktaV2-Test
+fromversion: 5.0.0
