@@ -31,16 +31,6 @@ configuration:
   options:
   - AIS
   - CISCP
-- additionalinfo: The Traffic Light Protocol (TLP) designation to fetch from the feed.
-  display: Filter by Traffic Light Protocol Color
-  name: tlp_color
-  options:
-  - RED
-  - AMBER
-  - GREEN
-  - WHITE
-  required: false
-  type: 15
 - additionalinfo: Indicators from this integration instance will be marked with this reputation.
   defaultvalue: Bad
   display: Indicator Reputation
@@ -128,18 +118,6 @@ script:
       isArray: false
       name: limit
       required: true
-      secret: false
-    - default: false
-      auto: PREDEFINED
-      predefined:
-      - RED
-      - AMBER
-      - GREEN
-      - WHITE
-      description: 'The TLP color by which to filter the results. Possible values: "RED", "AMBER", "GREEN", "WHITE".'
-      isArray: false
-      name: tlp_color
-      required: false
       secret: false
     deprecated: false
     description: Get the indicators.
