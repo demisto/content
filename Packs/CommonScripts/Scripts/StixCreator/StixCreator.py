@@ -26,7 +26,7 @@ SCOs: dict[str, str] = {
     "username": "user-account:account_login",
     "domain": "domain-name:value",
     "hostname": "domain-name:value",
-    "registry key": "windows-registry-key:key]"
+    "registry key": "windows-registry-key:key"
 }
 
 SDOs: dict[str, Callable] = {
