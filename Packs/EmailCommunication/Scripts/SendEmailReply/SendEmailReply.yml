@@ -12,7 +12,7 @@ args:
   name: service_mail
   required: false
 - defaultValue: false
-  description: test.
+  description: Rather to sign the message.
   auto: PREDEFINED
   predefined:
   - 'true'
@@ -20,7 +20,7 @@ args:
   name: sign_only
   required: false
 - defaultValue: false
-  description: test.
+  description: Rather to sign and encrypt the message.
   auto: PREDEFINED
   predefined:
   - 'true'

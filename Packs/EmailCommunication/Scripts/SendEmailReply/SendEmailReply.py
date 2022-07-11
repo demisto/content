@@ -8,9 +8,6 @@ from datetime import datetime as dt
 ERROR_TEMPLATE = 'ERROR: SendEmailReply - {function_name}: {reason}'
 
 
-# TODO add docstring to args and description in yml
-
-
 def get_utc_now():
     """ A wrapper function for datetime.utcnow
     Helps handle tests
@@ -409,8 +406,8 @@ def get_reply_body(notes, incident_id, attachments, sign_only, sign_and_encrypt)
         notes (list): The notes of the email.
         incident_id (str): The incident id.
         attachments (list): The email's attachments.
-        sign_only:
-        sign_and_encrypt:
+        sign_only (boolean): Rather to sign the message
+        sign_and_encrypt (boolean): Rather to sign and encrypt the message
     Returns:
         The reply body and the html body.
     """
@@ -593,8 +590,8 @@ def resend_first_contact(email_selected_thread, email_thread, incident_id, new_e
         service_mail: Address the email is sent from
         mail_sender_instance: The service email (sender address)
         new_attachment_names: List of attachment file names
-        sign_only:
-        sign_and_encrypt:
+        sign_only: Rather to sign the message
+        sign_and_encrypt: Rather to sign and encrypt the message
     Returns: Results from send_new_email function
     """
     # Verify the selected thread ID matches this dict
@@ -625,12 +622,11 @@ def format_body(new_email_body, sign_only, sign_and_encrypt):
         Converts markdown included in the email body to HTML
     Args:
         new_email_body (str): Email body text with or without markdown formatting included\
-        sign_only:
-        sign_and_encrypt:
+        sign_only (boolean): Rather to sign the message
+        sign_and_encrypt (boolean): Rather to sign and encrypt the message
     Returns: (str) HTML email body
     """
     # Replace newlines with <br> element to preserve line breaks
-    # TODO test with mike?
     body = use_smime(sign_only, sign_and_encrypt, new_email_body)
     new_email_body = body if body else new_email_body
     new_email_body = new_email_body.replace('\n', '<br>')
@@ -659,8 +655,8 @@ def single_thread_reply(email_code, incident_id, email_cc, add_cc, notes, attach
         service_mail: The service mail (mail listener).
         email_latest_message: The latest message ID in the email thread to reply to.
         mail_sender_instance: The name of the mail sender integration instance
-        sign_only:
-        sign_and_encrypt:
+        sign_only: Rather to sign the message
+        sign_and_encrypt: Rather to sign and encrypt the message
     Returns:
         String containing result message from send_reply function
     """
@@ -702,8 +698,8 @@ def multi_thread_new(new_email_subject, new_email_recipients, new_email_body, in
         new_email_attachments: Files to attach to the new email message
         mail_sender_instance: The name of the mail sender integration instance
         new_attachment_names: File names of attachments being sent on the email
-        sign_only:
-        sign_and_encrypt:
+        sign_only: Rather to sign the message
+        sign_and_encrypt: Rather to sign and encrypt the message
     Returns:
         String containing result message from send_new_email function
         """
@@ -844,8 +840,8 @@ def multi_thread_reply(new_email_body, incident_id, email_selected_thread, new_e
         new_email_attachments: Files to attach to the new email message
         mail_sender_instance: The name of the mail sender integration instance
         new_attachment_names: File names of attachments being sent on the email
-        sign_only:
-        sign_and_encrypt:
+        sign_only: Rather to sign the message
+        sign_and_encrypt: Rather to sign and encrypt the message
     Returns:
         String containing result message from resend_first_contact function or the send_reply function, whichever
         is required by the applicable case
