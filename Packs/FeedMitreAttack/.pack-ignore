@@ -9,3 +9,6 @@ ignore=BA101
 
 [file:playbook-Mitre_Attack_List_2_Indicators_Feed_Test.yml]
 ignore=auto-test
+
+[file:MITRE_ATT&CK.json]
+ignore=BA101
