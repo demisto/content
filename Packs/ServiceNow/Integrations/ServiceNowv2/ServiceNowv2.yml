@@ -97,8 +97,14 @@ configuration:
   type: 0
 - additionalinfo: Choose the tag to add to an entry to mirror it as a file in ServiceNow.
   defaultvalue: ForServiceNow
-  display: File Entry Tag
-  name: file_tag
+  display: File Entry Tag To ServiceNow
+  name: file_tag_to_service_now
+  required: false
+  type: 0
+- additionalinfo: Choose the tag to add to an entry to mirror it as a file from ServiceNow.
+  defaultvalue: FromServiceNow
+  display: File Entry Tag From ServiceNow
+  name: file_tag_from_service_now
   required: false
   type: 0
 - additionalinfo: According to the timestamp in this field, records will be queried

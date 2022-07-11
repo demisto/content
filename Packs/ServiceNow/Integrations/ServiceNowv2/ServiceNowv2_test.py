@@ -1,3 +1,5 @@
+import re
+
 import pytest
 import json
 import io
@@ -737,6 +739,33 @@ def test_incident_name_is_initialized(mocker, requests_mock):
     assert str(e.value) == 'The field [number] does not exist in the ticket.'
 
 
+def test_file_tags_names_are_the_same_main_flow(mocker):
+    """
+    Given:
+     - file tags from service now & file tag to service now that are identical
+
+    When:
+     - running main flow
+
+    Then:
+     - make sure an exception is raised
+    """
+    import ServiceNowv2
+    mocker.patch.object(
+        demisto,
+        'params',
+        return_value={'file_tag_from_service_now': 'ServiceNow', 'file_tag_to_service_now': "ServiceNow"}
+    )
+    mocker.patch.object(ServiceNowv2, 'get_server_url', return_value='test')
+    with pytest.raises(
+        Exception,
+        match=re.escape(
+            'File Entry Tag To ServiceNow and File Entry Tag From ServiceNow cannot be the same name [ServiceNow].'
+        )
+    ):
+        main()
+
+
 def test_not_authenticated_retry_positive(requests_mock, mocker):
     """
     Given
@@ -1050,7 +1079,7 @@ def test_get_remote_data(mocker):
                     ticket_type='incident', get_attachments=False, incident_name='description')
 
     args = {'id': 'sys_id', 'lastUpdate': 0}
-    params = {}
+    params = {"file_tag_from_service_now": "FromServiceNow"}
     mocker.patch.object(client, 'get', return_value=RESPONSE_TICKET_MIRROR)
     mocker.patch.object(client, 'get_ticket_attachment_entries', return_value=RESPONSE_MIRROR_FILE_ENTRY)
     mocker.patch.object(client, 'query', return_value=MIRROR_COMMENTS_RESPONSE)
@@ -1058,6 +1087,7 @@ def test_get_remote_data(mocker):
 
     res = get_remote_data_command(client, args, params)
 
+    assert res[1]['Tags'] == ['FromServiceNow']
     assert res[1]['File'] == 'test.txt'
     assert res[2]['Contents'] == 'Type: comments\nCreated By: admin\nCreated On: 2020-08-17 06:31:49\nThis is a comment'
 
