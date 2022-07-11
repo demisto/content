@@ -1844,7 +1844,7 @@ script:
     - contextPath: QRadar.Asset.ID
       description: The ID of the asset.
       type: number
-    - contextPath: Endpoint.IPAddress
+    - contextPath: Endpoint.IPAddresspo
       description: IP address of the asset.
       type: Unknown
     - contextPath: QRadar.Asset.Name.Value
@@ -2668,6 +2668,18 @@ script:
     - contextPath: QRadar.LocalDestinationIP.SourceAddressIDs
       description: List of source address IDs associated with the destination address.
       type: Unknown
+  - arguments:
+    - name: offense_id
+      required: true
+      type: Number
+      description: The ID of the offense to retrieve.
+    deprecated: false
+    description: Polling command to search for events of a specific offense.
+    name: qradar-get-events-polling
+    outputs:
+      - contextPath: QRadar.Search.Result
+        description: The result of the search.
+        type: Unknown
   runonce: false
   script: '-'
   type: python

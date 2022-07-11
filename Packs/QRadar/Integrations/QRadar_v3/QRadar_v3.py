@@ -3404,14 +3404,13 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
 
 def qradar_get_events_polling_command(client, params, args):
     ScheduledCommand.raise_error_if_not_supported()
-    # run_polling_command
     interval_in_secs = int(args.get('interval_in_seconds', 60))
     offense_id = args.get('offense_id')
     if 'search_id' not in args:
         search_id = create_events_search(client, params.get('fetch_mode'), params.get('events_columns'),
                                          params.get('events_limit'), offense_id)
         if search_id == QueryStatus.ERROR.value:
-            return_error('Failed to create search for offense ID: {offense_id}'.format(offense_id=offense_id))
+            return_error(f'Failed to create search for offense ID: {offense_id}')
         polling_args = {
             'search_id': search_id,
             'interval_in_seconds': interval_in_secs,
@@ -3429,7 +3428,7 @@ def qradar_get_events_polling_command(client, params, args):
     except Exception as e:
         print_debug_msg(f'Failed to get search results for search ID: {search_id}. Error: {e}')
         polling_args = {
-            'af_cookie': search_id,
+            'search_id': search_id,
             'interval_in_seconds': interval_in_secs,
             'polling': True,
             **args
