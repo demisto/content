@@ -3696,4 +3696,6 @@ def main() -> None:  # pragma: no cover
 
 
 ''' ENTRY POINT '''
-main()
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    register_signal_handler_profiling_dump(profiling_dump_rows_limit=PROFILING_DUMP_ROWS_LIMIT)
+    main()
