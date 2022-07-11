@@ -3545,9 +3545,6 @@ def panorama_get_pcap_command(args: dict):
     # due to pcap file size limitation in the product. For more details, please see the documentation.
     if result.headers['Content-Type'] != 'application/octet-stream':
         json_result = json.loads(xml2json(result.text)).get('response', {})
-        if json_result.get('test'):
-            b = 123
-        demisto.debug(f'{b}')
         if (json_result.get('@status') or '') == 'error':
             errors = '\n'.join(
                 [f'{error_key}: {error_val}' for error_key, error_val in (json_result.get('msg') or {}).items()]
