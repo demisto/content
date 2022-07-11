@@ -186,3 +186,8 @@ dbotMirrorDirection
 dbotMirrorId
 dbotMirrorInstance
 dbotMirrorTags
+Parses
+html
+maxPages
+cs-fx-upload-file
+lookback
