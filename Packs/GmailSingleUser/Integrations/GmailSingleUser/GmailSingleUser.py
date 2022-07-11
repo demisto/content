@@ -241,30 +241,30 @@ class Client:
 
         return body, html, attachments
 
-    # def get_attachments(self, user_id, _id):
-    #     mail_args = {
-    #         'userId': user_id,
-    #         'id': _id,
-    #         'format': 'full',
-    #     }
-    #     service = self.get_service(
-    #         'gmail',
-    #         'v1')
-    #     result = service.users().messages().get(**mail_args).execute()
-    #     result = self.get_email_context(result, user_id)[0]
-    #
-    #     command_args = {
-    #         'userId': user_id,
-    #         'messageId': _id,
-    #     }
-    #     files = []
-    #     for attachment in result['Attachments']:
-    #         command_args['id'] = attachment['ID']
-    #         result = service.users().messages().attachments().get(**command_args).execute()
-    #         file_data = base64.urlsafe_b64decode(result['data'].encode('ascii'))
-    #         files.append((attachment['Name'], file_data))
-    #
-    #     return files
+    def get_attachments(self, user_id, _id):
+        mail_args = {
+            'userId': user_id,
+            'id': _id,
+            'format': 'full',
+        }
+        service = self.get_service(
+            'gmail',
+            'v1')
+        result = service.users().messages().get(**mail_args).execute()
+        result = self.get_email_context(result, user_id)[0]
+
+        command_args = {
+            'userId': user_id,
+            'messageId': _id,
+        }
+        files = []
+        for attachment in result['Attachments']:
+            command_args['id'] = attachment['ID']
+            result = service.users().messages().attachments().get(**command_args).execute()
+            file_data = base64.urlsafe_b64decode(result['data'].encode('ascii'))
+            files.append((attachment['Name'], file_data))
+
+        return files
 
     @staticmethod
     def get_date_from_email_header(header: str) -> Optional[datetime]:
@@ -1019,14 +1019,14 @@ def reply_mail_command(client):
     return client.sent_mail_to_entry('Email sent:', [result], emailto, emailfrom, cc, bcc, htmlBody, body, subject)
 
 
-# def get_attachments_command(client):
-#     args = demisto.args()
-#     user_id = args.get('user-id')
-#     _id = args.get('message-id')
-#
-#     attachments = client.get_attachments(user_id, _id)
-#
-#     return [fileResult(name, data) for name, data in attachments]
+def get_attachments_command(client):
+    args = demisto.args()
+    user_id = args.get('user-id')
+    _id = args.get('message-id')
+
+    attachments = client.get_attachments(user_id, _id)
+
+    return [fileResult(name, data) for name, data in attachments]
 
 
 '''FETCH INCIDENTS'''
@@ -1159,7 +1159,7 @@ def main():
         'fetch-incidents': fetch_incidents,
         'gmail-auth-link': auth_link_command,
         'gmail-auth-test': auth_test_command,
-        # 'gmail-get-attachments': get_attachments_command,
+        'gmail-get-attachments': get_attachments_command,
     }
 
     try:

@@ -385,6 +385,24 @@ script:
     arguments: []
     description: Tests that Gmail auth is configured properly. Use this command after completing the OAuth2 authentication process.
     outputs: []
+  - arguments:
+    - default: false
+      description: The ID of the message to retrieve.
+      isArray: false
+      name: message-id
+      required: true
+      secret: false
+    - default: false
+      description: The user's email address. The "me" special value can be used to
+        indicate the authenticated user.
+      isArray: false
+      name: user-id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves attachments from a sent Gmail message.
+    execution: false
+    name: gmail-get-attachments
   dockerimage: demisto/google-api-py3:1.0.0.31603
   isfetch: true
   longRunning: false
