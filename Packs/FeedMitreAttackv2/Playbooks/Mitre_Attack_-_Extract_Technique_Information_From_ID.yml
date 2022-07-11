@@ -235,4 +235,6 @@ outputs:
 - contextPath: MITREATTACK
   description: Full MITRE data for the attack pattern.
   type: string
+tests:
+- FeedMitreAttackv2_test
 fromversion: 6.2.0
