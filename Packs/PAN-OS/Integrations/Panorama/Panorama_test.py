@@ -2549,3 +2549,155 @@ class TestObjectFunctions:
                 mock_single_device_topology, "AddressObject", object_name="test-address-(\d+", use_regex="true"
             )
             assert not result
+
+
+@pytest.mark.parametrize('expected_request_params, target',
+                         [pytest.param(
+                             {
+                                 'type': 'op',
+                                 'cmd': '<show><system><info/></system></show>',
+                                 'key': 'fakeAPIKEY!',
+                                 'target': 'fake-target'
+                             },
+                             'fake-target',
+                         ),
+                             pytest.param(
+                                 {
+                                     'type': 'op',
+                                     'cmd': '<show><system><info/></system></show>',
+                                     'key': 'fakeAPIKEY!',
+                                 },
+                                 None,
+                         ),
+                         ])
+def test_add_target_arg(mocker, expected_request_params, target):
+    """
+    Given:
+        - a call to the function with or without the target args
+    When:
+        - panorama_show_device_version_command - (or any other function with the target arg)
+    Then:
+        - Assert that the target param was added or not to the https request
+    """
+    import Panorama
+    from Panorama import panorama_show_device_version
+
+    Panorama.API_KEY = 'fakeAPIKEY!'
+    Panorama.DEVICE_GROUP = 'fakeDeviceGroup'
+    request_mock = mocker.patch.object(Panorama, 'http_request',
+                                       return_value={'response': {'result': {'system': 'fake_data'}}})
+
+    panorama_show_device_version(target)
+    called_request_params = request_mock.call_args.kwargs['params']
+    assert called_request_params == expected_request_params
+
+
+@pytest.mark.parametrize('rule , expected_result',
+                         [pytest.param({'target':
+                                        {'devices':
+                                         {'entry':
+                                          [{'@name': 'fw1'},
+                                           {'@name': 'fw2'}]
+                                          }
+                                         }
+                                        },
+                                       True
+                                       ),
+                          pytest.param(
+                              {'target':
+                               {'devices':
+                                {'entry': {'@name': 'fw1'}}
+                                }
+                               },
+                              True),
+                          pytest.param({'target':
+                                        {'devices':
+                                         {'entry': {'@name': 'fw2'}
+                                          }
+                                         }
+                                        },
+                                       False),
+                          pytest.param({'target':
+                                        {'devices':
+                                         {'entry': [{'@name': 'fw1'}]}
+                                         }
+                                        },
+                                       True),
+
+                          ]
+                         )
+def test_target_filter(rule, expected_result):
+    """
+    Given:
+        - a rule (dict) and a target (str) - 'fw1'
+    When:
+        - filtering rules by target
+    Then:
+        - return True if the rule contains the target and False otherwise
+    """
+    from Panorama import target_filter
+    assert target_filter(rule, 'fw1') == expected_result
+
+
+def test_check_latest_version_hr(mocker):
+    """
+    Given:
+        - a response from panorma of latest version
+    When:
+        - calling the command - pan-os-check-latest-panos-software
+    Then:
+        - filter the 5 latest results and present in a markdown
+    """
+    from Panorama import panorama_check_latest_panos_software_command
+    import requests
+    with open('test_data/latest_versions.xml') as xml_file:
+        text = xml_file.read()
+    with open('test_data/5_latest_version.md') as md_file:
+        markdown_assert = md_file.read()
+    mr = MockedResponse(text=text,
+                        status_code=200,
+                        reason='')
+    mocker.patch.object(requests, 'request', return_value=mr)
+    command_res: CommandResults = panorama_check_latest_panos_software_command()
+
+    assert markdown_assert == command_res.readable_output
+
+
+def test_pan_os_get_running_config(mocker):
+    """
+    Given -
+        A target serial number
+    When -
+        Returning the running config
+    Then -
+        File returned should be called 'running_config'
+        The contents should be XML and not JSON
+    """
+    from Panorama import pan_os_get_running_config
+
+    return_mock = """
+    <response status='error' code='13'><msg><line>SOME_SERIAL_NUMBER not connected</line></msg></response>
+    """
+    mocker.patch("Panorama.http_request", return_value=return_mock)
+    created_file = pan_os_get_running_config({"target": "SOME_SERIAL_NUMBER"})
+    assert created_file['File'] == 'running_config'
+
+
+def test_pan_os_get_merged_config(mocker):
+    """
+    Given -
+        A target serial number
+    When -
+        Returning the merged config
+    Then -
+        File returned should be called 'merged_config'
+        The contents should be XML and not JSON
+    """
+    from Panorama import pan_os_get_merged_config
+
+    return_mock = """
+    <response status='error' code='13'><msg><line>SOME_SERIAL_NUMBER not connected</line></msg></response>
+    """
+    mocker.patch("Panorama.http_request", return_value=return_mock)
+    created_file = pan_os_get_merged_config({"target": "SOME_SERIAL_NUMBER"})
+    assert created_file['File'] == 'merged_config'

@@ -41,9 +41,3 @@ To perform actions on mailboxes of other users, and to execute searches on the E
 | Impersonation	| A single account needs to access multiple mailboxes. |
 | eDiscovery | Search the Exchange server. |	
 | Compliance Search | Perform searches across mailboxes and get an estimate of the results. |
-### Pack Contributors:
-
----
- - Mike Rizzo
-
-Contributions are welcome and appreciated. For more info, visit our [Contribution Guide](https://xsoar.pan.dev/docs/contributing/contributing).
