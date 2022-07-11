@@ -1732,7 +1732,8 @@ def test_create_dynamic_host_set_command(mocker):
 @pytest.mark.parametrize('args, expected_results', [({'query': 'query'}, 'Host Set name is required.'),
                                                     ({'host_set_name': 'host_set_name',
                                                       'query': 'query',
-                                                      'query_key': 'query_key'}, 'Cannot use free text query with other query operators, Please use one.'),
+                                                      'query_key': 'query_key'},
+                                                       'Cannot use free text query with other query operators, Please use one.'),
                                                     ({'host_set_name': 'host_set_name'},
                                                      'Please provide a free text query, or add all of the query operators toghether.')])
 def test_create_dynamic_host_set_command_failed(args, expected_results):
@@ -1812,7 +1813,8 @@ def test_update_dynamic_host_set_command(mocker):
 @pytest.mark.parametrize('args, expected_results', [({'query': 'query'}, 'Host Set name is required.'),
                                                     ({'host_set_name': 'host_set_name',
                                                       'query': 'query',
-                                                      'query_key': 'query_key'}, 'Cannot use free text query with other query operators, Please use one.'),
+                                                      'query_key': 'query_key'},
+                                                       'Cannot use free text query with other query operators, Please use one.'),
                                                     ({'host_set_name': 'host_set_name'},
                                                      'Please provide a free text query, or add all of the query operators toghether.')])
 def test_update_dynamic_host_set_command_failed(args, expected_results):
