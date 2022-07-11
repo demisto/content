@@ -3,50 +3,59 @@ Enrich a file using one or more integrations.
 - Provide threat information
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* File Enrichment - Virus Total API_v3
-* File Enrichment - Virus Total Private API
+
+- File Enrichment - Virus Total (API v3)
+- File Enrichment - Virus Total Private API
 
 ### Integrations
-* Cylance Protect v2
+
+- Cylance Protect v2
 
 ### Scripts
+
 This playbook does not use any scripts.
 
 ### Commands
-* cylance-protect-get-threat
+
+- cylance-protect-get-threat
 
 ## Playbook Inputs
+
 ---
 
-| **Name** | **Description** | **Default Value** | **Required** |
-| --- | --- | --- | --- |
-| MD5 | File MD5 hash to enrich. | File.MD5.None | Optional |
-| SHA256 | The file SHA256 hash to enrich. | File.SHA256.None | Optional |
-| SHA1 | The file SHA1 hash to enrich. | File.SHA1.None | Optional |
+| **Name** | **Description**                 | **Default Value** | **Required** |
+| -------- | ------------------------------- | ----------------- | ------------ |
+| MD5      | File MD5 hash to enrich.        | File.MD5.None     | Optional     |
+| SHA256   | The file SHA256 hash to enrich. | File.SHA256.None  | Optional     |
+| SHA1     | The file SHA1 hash to enrich.   | File.SHA1.None    | Optional     |
 
 ## Playbook Outputs
+
 ---
 
-| **Path** | **Description** | **Type** |
-| --- | --- | --- |
-| DBotScore.Indicator | The indicator that was tested. | string |
-| DBotScore.Type | The indicator type. | string |
-| File.SHA1 | SHA1 hash of the file. | string |
-| File.SHA256 | SHA256 hash of the file. | string |
-| File.Malicious.Vendor | For malicious files, the vendor that made the decision. | string |
-| File.MD5 | MD5 hash of the file. | string |
-| DBotScore | The DBotScore object. | unknown |
-| File | The file object | unknown |
-| DBotScore.Vendor | Vendor used to calculate the score. | string |
-| DBotScore.Score | The actual score. | number |
-| File.VirusTotal.Scans | The scan object. | unknown |
-| File.VirusTotal.Scans.Source | Vendor that scanned this hash. | unknown |
-| File.VirusTotal.Scans.Detected | Whether a scan was detected for this hash \(True/False\). | unknown |
-| File.VirusTotal.Scans.Result | Scan result for this hash - signature, etc. | unknown |
+| **Path**                       | **Description**                                           | **Type** |
+| ------------------------------ | --------------------------------------------------------- | -------- |
+| DBotScore.Indicator            | The indicator that was tested.                            | string   |
+| DBotScore.Type                 | The indicator type.                                       | string   |
+| File.SHA1                      | SHA1 hash of the file.                                    | string   |
+| File.SHA256                    | SHA256 hash of the file.                                  | string   |
+| File.Malicious.Vendor          | For malicious files, the vendor that made the decision.   | string   |
+| File.MD5                       | MD5 hash of the file.                                     | string   |
+| DBotScore                      | The DBotScore object.                                     | unknown  |
+| File                           | The file object                                           | unknown  |
+| DBotScore.Vendor               | Vendor used to calculate the score.                       | string   |
+| DBotScore.Score                | The actual score.                                         | number   |
+| File.VirusTotal.Scans          | The scan object.                                          | unknown  |
+| File.VirusTotal.Scans.Source   | Vendor that scanned this hash.                            | unknown  |
+| File.VirusTotal.Scans.Detected | Whether a scan was detected for this hash \(True/False\). | unknown  |
+| File.VirusTotal.Scans.Result   | Scan result for this hash - signature, etc.               | unknown  |
 
 ## Playbook Image
+
 ---
+
 ![File Enrichment - Generic v2](../doc_files/File_Enrichment_-_Generic_v2.png)

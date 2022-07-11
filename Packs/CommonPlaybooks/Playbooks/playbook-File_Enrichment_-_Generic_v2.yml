@@ -5,22 +5,22 @@ description: |-
   Enrich a file using one or more integrations.
 
   - Provide threat information
-starttaskid: '0'
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     taskid: 00109219-5fc8-4bbb-881e-e597ec3b7439
     type: start
     task:
       id: 00109219-5fc8-4bbb-881e-e597ec3b7439
       version: -1
-      name: ''
+      name: ""
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
+      description: ""
     nexttasks:
-      '#none#':
-      - '31'
+      "#none#":
+        - "31"
     separatecontext: false
     view: |-
       {
@@ -36,8 +36,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '7':
-    id: '7'
+  "7":
+    id: "7"
     taskid: 89ce26db-58e9-4a6d-88f2-d6810e458ee2
     type: title
     task:
@@ -46,8 +46,8 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ''
-      description: ''
+      brand: ""
+      description: ""
     separatecontext: false
     view: |-
       {
@@ -63,8 +63,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '25':
-    id: '25'
+  "25":
+    id: "25"
     taskid: 339fc232-e5d0-468b-87ea-cf8d41ea0ca6
     type: condition
     task:
@@ -74,25 +74,25 @@ tasks:
       description: Check if there is a SHA256 hash in context.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
-      '#default#':
-      - '7'
+      "#default#":
+        - "7"
       yes:
-      - '27'
+        - "27"
     scriptarguments:
       value:
         simple: ${File.SHA256}
     separatecontext: false
     conditions:
-    - label: yes
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: inputs.SHA256
-            iscontext: true
+      - label: yes
+        condition:
+          - - operator: isExists
+              left:
+                value:
+                  complex:
+                    root: inputs.SHA256
+                iscontext: true
     view: |-
       {
         "position": {
@@ -107,8 +107,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '27':
-    id: '27'
+  "27":
+    id: "27"
     taskid: 0783a3a6-5d8b-48f1-8dee-f3f0ef62defc
     type: condition
     task:
@@ -118,42 +118,42 @@ tasks:
       description: Checks if there is an active instance of the Cylance Protect v2 integration enabled.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
-      '#default#':
-      - '7'
+      "#default#":
+        - "7"
       yes:
-      - '28'
+        - "28"
     separatecontext: false
     conditions:
-    - label: yes
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: modules
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.brand
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Cylance Protect v2
-                    ignorecase: true
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: modules.state
-                      iscontext: true
-                    right:
-                      value:
-                        simple: active
-                    ignorecase: true
-                accessor: brand
-            iscontext: true
+      - label: yes
+        condition:
+          - - operator: isExists
+              left:
+                value:
+                  complex:
+                    root: modules
+                    filters:
+                      - - operator: isEqualString
+                          left:
+                            value:
+                              simple: modules.brand
+                            iscontext: true
+                          right:
+                            value:
+                              simple: Cylance Protect v2
+                          ignorecase: true
+                      - - operator: isEqualString
+                          left:
+                            value:
+                              simple: modules.state
+                            iscontext: true
+                          right:
+                            value:
+                              simple: active
+                          ignorecase: true
+                    accessor: brand
+                iscontext: true
     view: |-
       {
         "position": {
@@ -168,8 +168,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '28':
-    id: '28'
+  "28":
+    id: "28"
     taskid: ff014724-3ad2-4ce2-8578-5106c126e76b
     type: regular
     task:
@@ -182,14 +182,14 @@ tasks:
       iscommand: true
       brand: Cylance Protect v2
     nexttasks:
-      '#none#':
-      - '7'
+      "#none#":
+        - "7"
     scriptarguments:
       sha256:
         complex:
           root: inputs.SHA256
           transformers:
-          - operator: uniq
+            - operator: uniq
     reputationcalc: 1
     continueonerror: true
     separatecontext: false
@@ -207,8 +207,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '29':
-    id: '29'
+  "29":
+    id: "29"
     taskid: be6126b7-0676-4b5f-88d2-a257f8dfa4e3
     type: playbook
     task:
@@ -219,14 +219,14 @@ tasks:
       playbookName: File Enrichment - Virus Total Private API
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
-      '#none#':
-      - '7'
+      "#none#":
+        - "7"
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
       max: 0
     view: |-
@@ -253,43 +253,43 @@ tasks:
           root: inputs.SHA256
     isoversize: false
     isautoswitchedtoquietmode: false
-  '30':
-    id: '30'
+  "30":
+    id: "30"
     taskid: f030af26-2985-453a-88bf-4f1dcc536fab
     type: playbook
     task:
       id: f030af26-2985-453a-88bf-4f1dcc536fab
       version: -1
-      name: File Enrichment - Virus Total API_v3
+      name: File Enrichment - Virus Total (API v3)
       description: Get file information using the Virus Total API integration.
-      playbookName: File Enrichment - Virus Total API_v3
+      playbookName: File Enrichment - Virus Total (API v3)
       type: playbook
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
-      '#none#':
-      - '7'
+      "#none#":
+        - "7"
     scriptarguments:
       FileHash:
         complex:
           root: inputs.SHA256
           transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: inputs.SHA1
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: inputs.MD5
-                iscontext: true
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: inputs.SHA1
+                  iscontext: true
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: inputs.MD5
+                  iscontext: true
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ''
+      exitCondition: ""
       wait: 1
       max: 100
     view: |-
@@ -306,8 +306,8 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '31':
-    id: '31'
+  "31":
+    id: "31"
     taskid: cf0cb24c-31c1-4d7d-815b-d203e44b1f44
     type: condition
     task:
@@ -317,39 +317,39 @@ tasks:
       description: Check if there is a SHA256 hash in context.
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
-      '#default#':
-      - '7'
+      "#default#":
+        - "7"
       yes:
-      - '25'
-      - '29'
-      - '30'
+        - "25"
+        - "29"
+        - "30"
     scriptarguments:
       value:
         simple: ${File.SHA256}
     separatecontext: false
     conditions:
-    - label: yes
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: inputs.SHA256
-            iscontext: true
-          right:
-            value: {}
-        - operator: isExists
-          left:
-            value:
-              simple: inputs.SHA1
-            iscontext: true
-        - operator: isExists
-          left:
-            value:
-              simple: inputs.MD5
-            iscontext: true
+      - label: yes
+        condition:
+          - - operator: isExists
+              left:
+                value:
+                  complex:
+                    root: inputs.SHA256
+                iscontext: true
+              right:
+                value: {}
+            - operator: isExists
+              left:
+                value:
+                  simple: inputs.SHA1
+                iscontext: true
+            - operator: isExists
+              left:
+                value:
+                  simple: inputs.MD5
+                iscontext: true
     view: |-
       {
         "position": {
@@ -383,93 +383,93 @@ view: |-
     }
   }
 inputs:
-- key: MD5
-  value:
-    complex:
-      root: File.MD5
-      transformers:
-      - operator: uniq
-      filters:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: File.MD5
-            iscontext: true
-  required: false
-  description: File MD5 hash to enrich.
-  playbookInputQuery:
-- key: SHA256
-  value:
-    complex:
-      root: File.SHA256
-      transformers:
-      - operator: uniq
-      filters:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: File.SHA256
-            iscontext: true
-  required: false
-  description: The file SHA256 hash to enrich.
-  playbookInputQuery:
-- key: SHA1
-  value:
-    complex:
-      root: File.SHA1
-      transformers:
-      - operator: uniq
-      filters:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: File.SHA1
-            iscontext: true
-  required: false
-  description: The file SHA1 hash to enrich.
-  playbookInputQuery:
+  - key: MD5
+    value:
+      complex:
+        root: File.MD5
+        transformers:
+          - operator: uniq
+        filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: File.MD5
+                iscontext: true
+    required: false
+    description: File MD5 hash to enrich.
+    playbookInputQuery:
+  - key: SHA256
+    value:
+      complex:
+        root: File.SHA256
+        transformers:
+          - operator: uniq
+        filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: File.SHA256
+                iscontext: true
+    required: false
+    description: The file SHA256 hash to enrich.
+    playbookInputQuery:
+  - key: SHA1
+    value:
+      complex:
+        root: File.SHA1
+        transformers:
+          - operator: uniq
+        filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: File.SHA1
+                iscontext: true
+    required: false
+    description: The file SHA1 hash to enrich.
+    playbookInputQuery:
 outputs:
-- contextPath: DBotScore.Indicator
-  description: The indicator that was tested.
-  type: string
-- contextPath: DBotScore.Type
-  description: The indicator type.
-  type: string
-- contextPath: File.SHA1
-  description: SHA1 hash of the file.
-  type: string
-- contextPath: File.SHA256
-  description: SHA256 hash of the file.
-  type: string
-- contextPath: File.Malicious.Vendor
-  description: For malicious files, the vendor that made the decision.
-  type: string
-- contextPath: File.MD5
-  description: MD5 hash of the file.
-  type: string
-- contextPath: DBotScore
-  description: The DBotScore object.
-  type: unknown
-- contextPath: File
-  description: The file object
-  type: unknown
-- contextPath: DBotScore.Vendor
-  description: Vendor used to calculate the score.
-  type: string
-- contextPath: DBotScore.Score
-  description: The actual score.
-  type: number
-- contextPath: File.VirusTotal.Scans
-  description: The scan object.
-  type: unknown
-- contextPath: File.VirusTotal.Scans.Source
-  description: Vendor that scanned this hash.
-- contextPath: File.VirusTotal.Scans.Detected
-  description: Whether a scan was detected for this hash (True/False).
-- contextPath: File.VirusTotal.Scans.Result
-  description: Scan result for this hash - signature, etc.
+  - contextPath: DBotScore.Indicator
+    description: The indicator that was tested.
+    type: string
+  - contextPath: DBotScore.Type
+    description: The indicator type.
+    type: string
+  - contextPath: File.SHA1
+    description: SHA1 hash of the file.
+    type: string
+  - contextPath: File.SHA256
+    description: SHA256 hash of the file.
+    type: string
+  - contextPath: File.Malicious.Vendor
+    description: For malicious files, the vendor that made the decision.
+    type: string
+  - contextPath: File.MD5
+    description: MD5 hash of the file.
+    type: string
+  - contextPath: DBotScore
+    description: The DBotScore object.
+    type: unknown
+  - contextPath: File
+    description: The file object
+    type: unknown
+  - contextPath: DBotScore.Vendor
+    description: Vendor used to calculate the score.
+    type: string
+  - contextPath: DBotScore.Score
+    description: The actual score.
+    type: number
+  - contextPath: File.VirusTotal.Scans
+    description: The scan object.
+    type: unknown
+  - contextPath: File.VirusTotal.Scans.Source
+    description: Vendor that scanned this hash.
+  - contextPath: File.VirusTotal.Scans.Detected
+    description: Whether a scan was detected for this hash (True/False).
+  - contextPath: File.VirusTotal.Scans.Result
+    description: Scan result for this hash - signature, etc.
 fromversion: 5.0.0
 tests:
-- File Enrichment - Generic v2 - Test
+  - File Enrichment - Generic v2 - Test
 contentitemexportablefields:
   contentitemfields: {}
