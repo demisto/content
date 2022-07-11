@@ -10,7 +10,11 @@ There Are 2 integration flows:
 ## Steps to follow
 - Navigate to [service accounts](https://app.wiz.io/settings/service-accounts) to create a Service Account
 - Click on Add Service Account
-- Scope the permissions to read:issues
+- Scope the permissions for least privilege access:
+    - **Resources** > **read:resources**
+    - **Issues** > **read:issues**
+    - **Issues** > **update:issues** (for bi-directional Issue management)
+    - **Projects** > **read:projects**
 - In the Cortex XSOAR Integration instance configuration window:
     - Check **Fetches incidents** radio button
     - Choose **Wiz Classifier** as your classifier

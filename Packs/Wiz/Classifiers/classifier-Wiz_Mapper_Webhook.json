@@ -34,9 +34,54 @@
                     "complex": null,
                     "simple": "issue.id"
                 },
+				"Wiz Issue URL": {
+					"complex": {
+						"accessor": "id",
+						"filters": [],
+						"root": "issue",
+						"transformers": [
+							{
+								"args": {
+									"prefix": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": "https://app.wiz.io/issues#~(issue~'"
+										}
+									},
+									"suffix": {
+										"isContext": false,
+										"value": {
+											"complex": null,
+											"simple": ")"
+										}
+									}
+								},
+								"operator": "concat"
+							}
+						]
+					},
+					"simple": ""
+				},
                 "Wiz Issue Note": {
                     "complex": null,
                     "simple": "issue.note"
+                },
+				"Wiz Issue Projects": {
+					"complex": null,
+					"simple": "issue.projects"
+				},
+				"Wiz Project Owners": {
+					"complex": null,
+					"simple": "issue.projects.projectOwners"
+				},
+				"Wiz Project Security Champions": {
+					"complex": null,
+					"simple": "issue.projects.securityChampions"
+				},
+                "Wiz Resource Cloud ID": {
+                    "complex": null,
+                    "simple": "entitySnapshot.providerId"
                 },
                 "Wiz Resource ID": {
                     "complex": null,
@@ -162,7 +207,7 @@
                                         "isContext": false,
                                         "value": {
                                             "complex": null,
-                                            "simple": "0"
+                                            "simple": "0.5"
                                         }
                                     },
                                     "toReplace": {
