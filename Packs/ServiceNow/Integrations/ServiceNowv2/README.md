@@ -170,7 +170,7 @@ custom mapping, follow the instructions in STEP 3 and then select the custom map
     - **Out** - Mirrors changes on the Cortex XSOAR ticket to the ServiceNow ticket.
     - **Both** - Mirrors changes both in and out on both tickets.
 11. Set the Timestamp field to query as part of the mirroring flow. This defines the ticket_last_update - the epoch timestamp when the ServiceNow incident was last updated. The default is sys_updated_on.
-12. Enter the relevant **Comment Entry Tag**, **Work Note Entry Tag**, and **File Entry Tag** values.  
+12. Enter the relevant **Comment Entry Tag**, **Work Note Entry Tag**, and **File Entry Tag To ServiceNow**, **File Entry Tag From ServiceNow** values.  
 These values are mapped to the **dbotMirrorTags** incident field in Cortex XSOAR, which defines how Cortex XSOAR handles comments when you tag them in the War Room.  
 **Note:**  
 These tags work only for mirroring comments, work notes, and files from Cortex XSOAR to ServiceNow.
