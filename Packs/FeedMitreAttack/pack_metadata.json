@@ -1,8 +1,8 @@
 {
-    "name": "MITRE ATT&CK (Deprecated)",
+    "name": "MITRE IDs (Deprecated)",
     "description": "Deprecated. Use FeedMitreAttack v2 instead.",
     "support": "xsoar",
-    "currentVersion": "1.2.1",
+    "currentVersion": "1.2.2",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

@@ -278,6 +278,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 105. [Get the HA state and associated details from the given device and any other details.](#pan-os-platform-get-ha-state)
 106. [Get all the jobs from the devices in the environment, or a single job when ID is specified.](#pan-os-platform-get-jobs)
 107. [Download The provided software version onto the device.](#pan-os-platform-download-software)
+108. [Download the running configuration](#pan-os-get-running-config)
+109. [Download the merged configuration](#pan-os-get-merged-config)
 
 
 
@@ -7231,3 +7233,82 @@ Pushes the given PAN-OS template-stack to the given devices or all devices that 
 >|JobID|Status|
 >|---|---|
 >| 565 | Pending |
+
+
+### pan-os-get-running-config
+***
+Pull the running config file
+
+
+#### Base Command
+
+`pan-os-get-running-config`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| target | The target device. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-get-running-config target=00000000000```
+#### Context Example
+```json
+{
+    "File": {
+        "EntryID": "3678@268ee30b-69fa-4496-8ab8-51cdeb19c452",
+        "Info": "text/plain",
+        "MD5": "da7faf4c6440d87a3e50ef93536ed81a",
+        "Name": "running_config",
+        "SHA1": "7910271adc8b3e9de28b804442a11a5160d4adda",
+        "SHA256": "a4da4cbee7f3e411fbf76f2595d7dfcffce85bd6b3c000dac7a17e58747d1a2b",
+        "SHA512": "e90d995061b5771f068c07e727ece3b57eeabdac424dabe8f420848e482e2ad18411c030bd4b455f589d8cdae9a1dae942bfef1ebd038104dd975e168cfb7d19",
+        "SSDeep": "3072:KGH5vDQ4MEa4fM0EYRCmgQKQZyVlxgW0ITUj4MO2jCKH2:ZLMGyQKQZaw2",
+        "Size": 1284823,
+        "Type": "ASCII text, with very long lines"
+    }    
+}
+```
+
+
+### pan-os-get-merged-config
+***
+Pull the merged config file
+
+
+#### Base Command
+
+`pan-os-get-merged-config`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| target | The serial number of the device. | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!pan-os-get-merged-config target=0000000000```
+#### Context Example
+```json
+{
+    "File": {
+        "EntryID": "3682@268ee30b-69fa-4496-8ab8-51cdeb19c452",
+        "Info": "text/plain",
+        "MD5": "3204cc188e4b4a6616b449441d4d1ad4",
+        "Name": "merged_config",
+        "SHA1": "0b058a2ae4b595f80599ef0aeffda640ff386e95",
+        "SHA256": "7178b16cb30880c93345ff80810af4e1428573a28d1ee354d5c79b03372cc027",
+        "SHA512": "edf5b851eab40588e4e338071de3c18cc8d198d811ea0759670c0aa4c8028fa3b7870b9554c4b7d85f8429641d7cd6f6217a6b37500e24ad9c60b6cf39b39f3b",
+        "SSDeep": "3072:OGH5vDQ4MEa4fM0EYRCmgQKQZyVlxDW0ITUj4MO2jCKH2:tLMGyQKQZtw2",
+        "Size": 1322335,
+        "Type": "ASCII text, with very long lines"
+    }
+}
+```
+
