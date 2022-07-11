@@ -12,11 +12,12 @@ configuration:
   name: client_certificate
   required: true
   type: 12
-- display: Docker Client Private Key
+- displaypassword: Docker Client Private Key
   hidden: false
   name: client_key
   required: true
-  type: 12
+  type: 9
+  hiddenusername: true
 - display: CA Certificate
   name: ca_certificate
   required: false
@@ -33,15 +34,12 @@ configuration:
 - display: Registry Identity Token
   name: identitytoken
   required: false
-  type: 0
-- display: Registry Username
-  name: registry_username
-  required: false
-  type: 0
-- display: Registry Password
-  name: registry_password
-  required: false
   type: 4
+  hiddenusername: true
+- displaypassword: Registry Password
+  name: Registry Username
+  required: false
+  type: 9
 - display: Registry Server Address (e.g. docker.io)
   name: registry_serveraddress
   required: false
@@ -1891,7 +1889,8 @@ script:
       predefined:
       - 'false'
       - 'true'
-  - arguments:
+  - name: docker-image-create
+    arguments:
     - default: true
       description: Name of the image to pull. The name may include a tag or digest. This parameter may only be used when pulling an image. The pull is cancelled if the HTTP connection is closed.
       isArray: false
@@ -1931,12 +1930,12 @@ script:
     deprecated: false
     description: Create an image by either pulling it from a registry or importing it.
     execution: false
-    name: docker-image-create
     outputs:
     - contextPath: Docker.ImageCreate.Status
       description: Image Create result
       type: String
-  - arguments:
+  - name: docker-image-push
+    arguments:
     - default: false
       description: Image name or ID.
       isArray: false
@@ -1952,12 +1951,12 @@ script:
     deprecated: false
     description: Push an image to a registry. If you wish to push an image on to a private registry, that image must already have a tag which references the registry. For example, registry.example.com/myimage:latest. The push is cancelled if the HTTP connection is closed.
     execution: false
-    name: docker-image-push
     outputs:
     - contextPath: Docker.ImagePush
       description: Image Push Result
       type: String
-  - arguments:
+  - name: docker-image-tag
+    arguments:
     - default: false
       description: Image name or ID to tag.
       isArray: false
@@ -1979,7 +1978,7 @@ script:
     deprecated: false
     description: Tag an image so that it becomes part of a repository.
     execution: false
-    name: docker-image-tag
+    
     outputs:
     - contextPath: Docker.ImageTag.Status Code
       description: Image Tag Result
