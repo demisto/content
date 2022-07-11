@@ -198,7 +198,20 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
              ('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.yml',)),
 
             (MockerCases.A_xsoar, ('myOtherTestPlaybook',), ('myXSOAROnlyPack',), None, XSOAR_BRANCH_ARGS,
-             ('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.py',))
+             ('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.py',)),
+
+            (MockerCases.A_xsiam, ('myOtherTestPlaybook',), ('myXSIAMOnlyPack',), None, XSIAM_BRANCH_ARGS,
+             ('Packs/myXSIAMOnlyPack/Integrations/myIntegration/myIntegration.yml',)),
+
+            (MockerCases.A_xsiam, ('myOtherTestPlaybook',), ('myXSIAMOnlyPack',), None, XSIAM_BRANCH_ARGS,
+             ('Packs/myXSIAMOnlyPack/Integrations/myIntegration/myIntegration.py',)),
+
+            (MockerCases.B_xsoar, ('myOtherTestPlaybook',), ('myXSOAROnlyPack',), None, XSOAR_BRANCH_ARGS, (
+                'Packs/myXSOAROnlyPack/TestPlaybooks/myOtherTestPlaybook.yml',
+            )),
+
+            (MockerCases.B_xsoar, ('myOtherTestPlaybook',), ('myXSOAROnlyPack',), None, XSOAR_BRANCH_ARGS, ()),
+
     ))
 def test_branch(
         monkeypatch,

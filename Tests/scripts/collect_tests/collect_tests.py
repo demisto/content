@@ -249,6 +249,17 @@ class BranchTestCollector(TestCollector):
 
         return CollectedTests.union(collected)
 
+    @classmethod
+    def _find_yml_content_type(cls, yml_path: Path):
+        if yml_path.parent.name == 'TestPlaybooks':
+            return FileType.TEST_PLAYBOOK
+
+        if result := ({
+            'Integrations': FileType.INTEGRATION,
+            'Scripts': FileType.SCRIPT
+        }.get(yml_path.parents[1].name)):
+            return result
+
     def _collect_yml(self, content_item_path: Path) -> CollectedTests:
         yml_path = content_item_path.with_suffix('.yml')
         try:
@@ -258,27 +269,36 @@ class BranchTestCollector(TestCollector):
 
         relative_path = PackManager.relative_to_packs(yml_path)
 
-        match containing_folder := yml_path.parents[1].name:
-            case 'Integrations':
+        match actual_content_type := self._find_yml_content_type(yml_path):
+            case None:
+                raise ValueError(f'could not detect type for {yml_path}')
+
+            case FileType.TEST_PLAYBOOK:
+                if (test_id := yml.id_) in self.conf.test_ids:
+                    tests = test_id,
+                    reason = CollectionReason.TEST_PLAYBOOK_CHANGED
+                else:
+                    raise ValueError(f'{test_id} missing from conf.test_ids')
+
+            case FileType.INTEGRATION:
                 tests = self.conf.integrations_to_tests[yml.id_]
                 reason = CollectionReason.INTEGRATION_CHANGED
 
-            case 'Scripts' | 'Playbooks':
+            case FileType.SCRIPT | FileType.PLAYBOOK:
                 try:
-                    tests = yml.tests  # raises if 'no tests' in the tests field
+                    tests = yml.tests  # raises NoTestsConfiguredException if 'no tests' in the tests field
                     reason = CollectionReason.SCRIPT_PLAYBOOK_CHANGED
-
                 except NoTestsConfiguredException:
                     # collecting all tests that implement this script/playbook
                     reason = CollectionReason.SCRIPT_PLAYBOOK_CHANGED_NO_TESTS
 
-                    match containing_folder:
-                        case 'Scripts':
+                    match actual_content_type:
+                        case FileType.SCRIPT:
                             tests = self.id_set.implemented_scripts_to_tests.get(yml.id_)
-                        case 'Playbooks':
+                        case FileType.PLAYBOOK:
                             tests = self.id_set.implemented_playbooks_to_tests.get(yml.id_)
                         case _:
-                            raise RuntimeError(f'unexpected content type folder {containing_folder}')
+                            raise RuntimeError(f'unexpected content type folder {actual_content_type}')
 
                     if not tests:
                         original_type: str = find_type_by_path(content_item_path).value
@@ -286,8 +306,8 @@ class BranchTestCollector(TestCollector):
                         logger.warning(f'{original_type} {relative_path} '
                                        f'has `No Tests` configured, and no tests in id_set')
             case _:
-                raise RuntimeError(f'Unexpected content type original_file_path {containing_folder} '
-                                   f'(expected `Integrations`, `Scripts`, etc)')
+                raise RuntimeError(f'Unexpected content type {actual_content_type} for {content_item_path}'
+                                   f'(expected `Integrations`, `Scripts` or `Playbooks`)')
         # creating an object for each, as CollectedTests require #packs==#tests
         return CollectedTests.union(
             (CollectedTests(tests=(test,), packs=yml.pack_folder_name_tuple, reason=reason,
@@ -325,13 +345,6 @@ class BranchTestCollector(TestCollector):
             if path.name.endswith('Tests.ps1'):
                 path = path.with_name(path.name.replace('.Tests.ps1', '.ps1'))
             return self._collect_yml(path)
-
-        elif file_type == FileType.TEST_PLAYBOOK:
-            if (test_id := content_item.id_) in self.conf.test_ids:
-                tests = test_id,
-                reason = CollectionReason.TEST_PLAYBOOK_CHANGED
-            else:
-                raise ValueError(f'{test_id} not in self.conf.test_ids')
 
         elif file_type == FileType.REPUTATION:
             tests = DEFAULT_REPUTATION_TESTS
@@ -527,11 +540,13 @@ class UploadCollector(BranchTestCollector):
         return collected
 
 
+# todo install_logging, see destroy_instances
+
 def ui():  # todo put as real main
     parser = ArgumentParser(description='Utility CircleCI usage')  # todo (?)
     parser.add_argument('-n', '--nightly', type=str2bool, help='Is nightly')
-    parser.add_argument('-p', '--changed_pack_path', type=str, help='A string representing the changed files')
-    parser.add_argument('-mp', '--marketplace', help='marketplace version.', default='xsoar')
+    parser.add_argument('-p', '--changed_pack_path', type=str, help='A string representing the changed files')  # todo
+    parser.add_argument('-mp', '--marketplace', help='marketplace version', default='xsoar')
     parser.add_argument('--service_account', help="Path to gcloud service account")
     options = parser.parse_args()
 
