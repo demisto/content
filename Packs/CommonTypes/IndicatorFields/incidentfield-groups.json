@@ -15,7 +15,7 @@
     "unmapped": false,
     "hidden": false,
     "type": "markdown",
-    "breachScript": "",
+    "breachScript": "in server < 6.8, if type is longText and not markdown, the CommonTypes pack should be re-installed for the type to be changed",
     "editForm": true,
     "description": "",
     "associatedToAll": false,
