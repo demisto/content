@@ -1393,8 +1393,8 @@ def test_get_url_category__multiple_categories_for_url(mocker):
         'response': {
             '@cmd': 'status',
             '@status': 'success',
-            'result': 'https://pixabay.com not-resolved (Base db) expires in 5 seconds\n'
-                      'https://pixabay.com shareware-and-freeware online-storage-and-backup low-risk (Cloud db)'
+            'result': 'https://someURL.com not-resolved (Base db) expires in 5 seconds\n'
+                      'https://someURL.com shareware-and-freeware online-storage-and-backup low-risk (Cloud db)'
         }
     }
     mocked_res_obj = requests.Response()
