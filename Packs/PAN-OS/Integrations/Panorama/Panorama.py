@@ -615,6 +615,7 @@ def panorama_commit_command(args: dict):
 
 @logger
 def panorama_commit_status(args: dict):
+    d = {}
     params = {
         'type': 'op',
         'cmd': f'<show><jobs><id>{args.get("job_id")}</id></jobs></show>',
