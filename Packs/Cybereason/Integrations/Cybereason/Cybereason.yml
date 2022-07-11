@@ -793,11 +793,11 @@ script:
     description: Return a batch id for files waiting for download
     name: cybereason-fetchfile-progress
     outputs:
-    - contextPath: Download.progress.fileName
+    - contextPath: Cybereason.Download.Progress.FileName
       description: Filename for tha given malop
-    - contextPath: Download.progress.status
+    - contextPath: Cybereason.Download.Progress.Status
       description: Status for batch ID
-    - contextPath: Download.progress.batchID
+    - contextPath: Cybereason.Download.Progress.BatchID
       description: Unique batch id
   - arguments:
     - default: true
