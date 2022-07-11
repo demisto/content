@@ -5188,7 +5188,7 @@
             "integrations": "Arkime",
             "playbookID": "Arkime Test playbook",
             "fromversion": "6.2.0"
-        }
+        },
         {
             "integrations": "McAfee MVision CASB",
             "playbookID": "McAfee MVision CASB Test Play Book",
