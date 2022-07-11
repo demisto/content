@@ -89,7 +89,7 @@ If MFA is enabled for your user, follow the next steps:
 | mirror_direction | Choose whenever to mirror the incident. You can mirror only In (from ServiceNow to XSOAR), only out (from XSOAR to ServiceNow), or both directions. | False |
 | comment_tag | Choose the tag to add to an entry to mirror it as a comment in ServiceNow. | False |
 | work_notes_tag | Choose the tag to add to an entry to mirror it as a work note in ServiceNow. | False |
-| file_tag_to_service_now | Choose the tag to add to an entry to mirror it as a file in ServiceNow. | False |
+| file_tag | Choose the tag to add to an entry to mirror it as a file in ServiceNow. | False |
 | file_tag_from_service_now | Choose the tag to add to an entry to mirror it as a file from ServiceNow. | False |
 | update_timestamp_field | Timestamp field to query for updates as part of the mirroring flow. | False |
 | mirror_limit | The maximum number of incidents to mirror incoming each time | False |
