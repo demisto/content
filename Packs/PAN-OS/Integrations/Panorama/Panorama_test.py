@@ -756,16 +756,16 @@ class TestPcap:
     @pytest.mark.parametrize(
         'api_response, expected_context, expected_markdown_table', [
             (
-                    '<?xml version="1.0"?>\n<response status="success">\n  <result>\n    <dir-listing>\n      '
-                    '<file>/pcap</file>\n      <file>/pcap_test</file>\n    </dir-listing>\n  </result>\n</response>\n',
-                    ['pcap', 'pcap_test'],
-                    '### List of Pcaps:\n|Pcap name|\n|---|\n| pcap |\n| pcap_test |\n'
+                '<?xml version="1.0"?>\n<response status="success">\n  <result>\n    <dir-listing>\n      '
+                '<file>/pcap</file>\n      <file>/pcap_test</file>\n    </dir-listing>\n  </result>\n</response>\n',
+                ['pcap', 'pcap_test'],
+                '### List of Pcaps:\n|Pcap name|\n|---|\n| pcap |\n| pcap_test |\n'
             ),
             (
-                    '<?xml version="1.0"?>\n<response status="success">\n  <result>\n    <dir-listing>\n      '
-                    '<file>/pcap_test</file>\n    </dir-listing>\n  </result>\n</response>\n',
-                    ['pcap_test'],
-                    '### List of Pcaps:\n|Pcap name|\n|---|\n| pcap_test |\n'
+                '<?xml version="1.0"?>\n<response status="success">\n  <result>\n    <dir-listing>\n      '
+                '<file>/pcap_test</file>\n    </dir-listing>\n  </result>\n</response>\n',
+                ['pcap_test'],
+                '### List of Pcaps:\n|Pcap name|\n|---|\n| pcap_test |\n'
             )
         ]
     )
@@ -2612,8 +2612,7 @@ class TestObjectFunctions:
                                      'cmd': '<show><system><info/></system></show>',
                                      'key': 'fakeAPIKEY!',
                                  },
-                                 None,
-                             ),
+                                 None,),
                          ])
 def test_add_target_arg(mocker, expected_request_params, target):
     """
@@ -2638,39 +2637,60 @@ def test_add_target_arg(mocker, expected_request_params, target):
 
 
 @pytest.mark.parametrize('rule , expected_result',
-                         [pytest.param({'target':
-                                            {'devices':
-                                                 {'entry':
-                                                      [{'@name': 'fw1'},
-                                                       {'@name': 'fw2'}]
-                                                  }
+                         [pytest.param({
+                             'target': {
+                                 'devices': {
+                                     'entry': [
+                                         {
+                                             '@name': 'fw1'
+                                         },
+                                         {
+                                             '@name': 'fw2'
+                                         }
+                                     ]
+                                 }
+                             }
+                         },
+                             True
+                         ),
+                             pytest.param(
+                                 {
+                                     'target': {
+                                         'devices': {
+                                             'entry': {
+                                                 '@name': 'fw1'
                                              }
-                                        },
-                                       True
-                                       ),
-                          pytest.param(
-                              {'target':
-                                   {'devices':
-                                        {'entry': {'@name': 'fw1'}}
-                                    }
-                               },
-                              True),
-                          pytest.param({'target':
-                                            {'devices':
-                                                 {'entry': {'@name': 'fw2'}
-                                                  }
+                                         }
+                                     }
+                                 },
+                                 True),
+                             pytest.param(
+                                 {
+                                     'target': {
+                                         'devices': {
+                                             'entry': {
+                                                 '@name': 'fw2'
                                              }
-                                        },
-                                       False),
-                          pytest.param({'target':
-                                            {'devices':
-                                                 {'entry': [{'@name': 'fw1'}]}
-                                             }
-                                        },
-                                       True),
-
-                          ]
-                         )
+                                         }
+                                     }
+                                 },
+                                 False),
+                             pytest.param(
+                                 {
+                                     'target':
+                                         {
+                                             'devices':
+                                                 {
+                                                     'entry': [
+                                                         {
+                                                             '@name': 'fw1'
+                                                         }
+                                                     ]
+                                                 }
+                                         }
+                                 },
+                                 True),
+                         ])
 def test_target_filter(rule, expected_result):
     """
     Given:
