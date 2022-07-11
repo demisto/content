@@ -1,7 +1,7 @@
 Trend Micro Deep Security
 This integration was integrated and tested with version 20.0 of Trend Micro Deep Security, and v1 of the API.
 
-## Changes compared to V1
+## Changes compared to TrendMicroDsm
 # Changes in commands
 1. trendmicro-create-computer - New command.
 2. trendmicro-search-computers - New command.
