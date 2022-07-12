@@ -1,3 +1,4 @@
+This playbook is part of the 'Malware Investigation And Response' flow. For more information, please refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
 This Playbook handles true-positive incident closure for Cortex XDR - Malware Investigation.
 
 ## Dependencies

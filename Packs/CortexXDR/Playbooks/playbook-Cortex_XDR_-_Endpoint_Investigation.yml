@@ -2,7 +2,8 @@ contentitemexportablefields:
   contentitemfields:
     propagationLabels:
     - all
-description: "This playbook handles all the endpoint investigation actions available with Cortex XSIAM, including the following tasks:\n
+description: " This playbook is part of the 'Malware Investigation And Response' flow. For more information, please refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+This playbook handles all the endpoint investigation actions available with Cortex XSIAM, including the following tasks:\n
 * Pre-defined MITRE Tactics\n
 * Host fields (Host ID)\n
 * Attacker fields (Attacker IP, External host)\n

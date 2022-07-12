@@ -1,7 +1,9 @@
 id: Cortex XDR - Get File Path from alerts by hash
 version: -1
 name: Cortex XDR - Get File Path from alerts by hash
-description: This playbook assists in retrieving file paths from the Cortex XDR incident by hash.
+description: |-
+  This playbook is part of the 'Malware Investigation And Response' flow. For more information, please refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+  This playbook assists in retrieving file paths from the Cortex XDR incident by hash.
 starttaskid: '0'
 tasks:
   '0':

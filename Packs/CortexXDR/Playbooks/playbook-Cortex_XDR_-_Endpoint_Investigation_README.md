@@ -1,3 +1,4 @@
+This playbook is part of the 'Malware Investigation And Response' flow. For more information, please refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
 This playbook handles all the endpoint investigation actions available with Cortex XSIAM, including the following tasks:
 * Pre-defined MITRE Tactics
 * Host fields (host ID)
