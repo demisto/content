@@ -80,8 +80,10 @@ def test_module_connection_failure(requests_mock):
         headers={'x-api-key': API_KEY},
         proxy=False
     )
-    msg = test_module(client)
-    assert msg == 'Configuration Error'
+    try:
+        test_module(client)
+    except Exception as e:
+        assert e.message == 'Configuration Error'
 
 
 def test_fetch_feed_dates():
