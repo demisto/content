@@ -22,7 +22,7 @@ for sensorId in sensorList:
         if remaining:
             remaining -= 1
         else:
-            sleep(waitSeconds)
+            sleep(waitSeconds)  # pylint: disable=sleep-exists
             remaining = burstSize
         resCmd = demisto.executeCommand("protectwise-observation-pcap-download", dArgs)
         try:

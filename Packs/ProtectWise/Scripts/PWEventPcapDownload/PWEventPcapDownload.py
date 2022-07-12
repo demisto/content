@@ -18,7 +18,7 @@ for eid in eventIDs:
     if remaining:
         remaining -= 1
     else:
-        sleep(waitSeconds)
+        sleep(waitSeconds)  # pylint: disable=sleep-exists
         remaining = burstSize
     resCmd = demisto.executeCommand("protectwise-event-pcap-download", dArgs)
     try:

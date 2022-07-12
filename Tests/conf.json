@@ -6,6 +6,10 @@
             "playbookID": "IndicatorFormatterFilterTest"
         },
         {
+            "integrations": "FeedURLhaus",
+            "playbookID": "playbook-urlhaus-feed_Test"
+        },
+        {
             "integrations": "RSANetWitnessv115",
             "playbookID": "RSANetWitnessv115-Test"
         },
@@ -3621,7 +3625,7 @@
             "integrations": "QualysV2",
             "playbookID": "QualysVulnerabilityManagement-Test",
             "fromversion": "5.5.0",
-            "timeout": 4000
+            "timeout": 3500
         },
         {
             "integrations": "ThreatExchange v2",
@@ -4399,7 +4403,7 @@
         {
             "playbookID": "CrowdStrike_Falcon_X_-Test-Detonate_File",
             "fromversion": "6.1.0",
-            "memory_threshold": 90,
+            "memory_threshold": 95,
             "integrations": [
                 "CrowdStrike Falcon X"
             ],
@@ -4408,7 +4412,7 @@
         {
             "playbookID": "CrowdStrike_FalconX_Test",
             "fromversion": "6.1.0",
-            "memory_threshold": 90,
+            "memory_threshold": 91,
             "integrations": [
                 "CrowdStrike Falcon X"
             ]
@@ -5136,7 +5140,7 @@
         },
         {
             "integrations": "CloudflareWAF",
-            "playbookID": "TestCloudflareWAFPlaybook",
+            "playbookID": "playbook-TestCloudflareWAFPlaybook_Test",
             "fromversion": "6.2.0"
         },
         {
@@ -5187,6 +5191,8 @@
         }
     ],
     "skipped_tests": {
+        "Panorama Query Logs - Test": "issues with firewall environment configuration - CIAC-3459",
+        "palo_alto_firewall_test_pb": "issues with firewall environment configuration - CIAC-3459",
         "Test - CrowdStrike Falcon": "to merge https://github.com/demisto/content/pull/19250",
         "MISP V2 Test": "The integration is deprecated as we released MISP V3",
         "Github IAM - Test Playbook": "Issue 32383",
@@ -5294,6 +5300,8 @@
         "Process Email - Generic - Test - Actual Incident": "Issue 45227",
         "Jira-v2-Test": "Issue 33313",
         "Tanium Threat Response V2 Test": "Issue 44201",
+        "Tanium Threat Response Test": "Issue CRTX-58729",
+        "Tanium Threat Response - Create Connection v2 - Test": "Issue CRTX-58729",
         "AzureADTest": "Issue 40131",
         "whois_test": "Issue 25648",
         "Autoextract - Test": "Issue 45293",

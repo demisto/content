@@ -3,6 +3,9 @@ on:
   schedule:
     # runs every day at midnight (UTC time).
     - cron:  '0 0 * * *'
+permissions:
+  contents: read
+
 jobs:
   handle_contributor_stale_branches:
     runs-on: ubuntu-latest
