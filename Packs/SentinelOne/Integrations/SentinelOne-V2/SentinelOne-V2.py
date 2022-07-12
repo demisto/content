@@ -1687,7 +1687,7 @@ def fetch_threat_file(client: Client, args: dict) -> CommandResults:
     context_entries = []
 
     # Get Arguments
-    threat_ids = argToList(args.get('threat_ids'))
+    threat_ids = argToList(args.get('threat_id'))
     password = args.get('password')
     time_to_sleep = int(args.get('time_to_sleep',30))
 
