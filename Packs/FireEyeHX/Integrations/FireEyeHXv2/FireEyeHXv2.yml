@@ -1,6 +1,6 @@
 category: Endpoint
 commonfields:
-  id: FireEyeHX v2 - May
+  id: FireEyeHX v2
   version: -1
 configuration:
 - display: Server URL (e.g. https://192.168.0.1:3000)
@@ -46,8 +46,8 @@ configuration:
   required: false
   type: 19
 description: FireEye Endpoint Security is an integrated solution that detects and protects endpoints against known and unknown threats. This integration provides access to information about endpoints, acquisitions, alerts, indicators, and containment. You can extract critical data and effectively operate the security operations automated playbook.
-display: FireEye Endpoint Security (HX) v2 - May
-name: FireEyeHX v2 - May
+display: FireEye Endpoint Security (HX) v2
+name: FireEyeHX v2
 script:
   commands:
   - arguments:
@@ -446,6 +446,9 @@ script:
     - contextPath: FireEyeHX.HostSets.url
       description: The FireEye URL of the host set.
       type: string
+    - contextPath: FireEyeHX.HostSets.deleted
+      description: Was the host set deleted.
+      type: boolean
     deprecated: false
     execution: false
   - arguments:
@@ -2314,6 +2317,12 @@ script:
       description: Was the host set deleted.
       type: Boolean
   - arguments:
+    - default: false
+      description: The host set id.
+      isArray: false
+      name: host_set_id
+      required: true
+      secret: false
     - default: false
       description: The host set name.
       isArray: false

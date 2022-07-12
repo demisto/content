@@ -1816,7 +1816,7 @@ def test_update_static_host_set_command(mocker):
 def test_update_dynamic_host_set_command(mocker):
     """
     Given:
-        - Host set name, query
+        - Host set name, query and host set id
 
     When:
         - Calling the update_dynamic_host_set command
@@ -1827,6 +1827,7 @@ def test_update_dynamic_host_set_command(mocker):
     from FireEyeHXv2 import update_dynamic_host_set_command, Client
     base_url = 'https://example.com'
     args = {'host_set_name': 'host_set_name',
+            'host_set_id': 'host_set_id',
             'query': 'query'}
 
     mocker.patch.object(Client, 'get_token_request', return_value='')

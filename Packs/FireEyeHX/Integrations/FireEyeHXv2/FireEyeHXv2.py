@@ -864,16 +864,16 @@ class Client(BaseClient):
 
         return self._http_request(
             method='POST',
-            url_suffix='/host_sets/static',
+            url_suffix='/host_sets/dynamic',
             json_data=body
         )
 
-    def update_dynamic_host_set_request(self, host_set_name, query, query_key, query_value, query_operator):
+    def update_dynamic_host_set_request(self, host_set_id, host_set_name, query, query_key, query_value, query_operator):
         body = self.create_dynamic_host_request_body(host_set_name, query, query_key, query_value, query_operator)
 
         return self._http_request(
             method='PUT',
-            url_suffix='/host_sets/static',
+            url_suffix=f'/host_sets/dynamic/{host_set_id}',
             json_data=body
         )
 
@@ -901,13 +901,10 @@ class Client(BaseClient):
         if query:
             body['query'] = safe_load_json(query)
         else:
-            body['query'] = [
-                {
-                    'key': query_key,
-                    'value': query_value,
-                    'operator': query_operator
-                }
-            ]
+            body['query'] = {'key': query_key,
+                             'value': query_value,
+                             'operator': query_operator
+                             }
 
         return body
 
@@ -2065,7 +2062,9 @@ def delete_host_set_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
     return CommandResults(outputs_prefix='FireEyeHX.HostSets',
                           outputs_key_field="_id",
-                          outputs={'deleted': True},
+                          outputs={'deleted': True,
+                                   '_id': host_set_id
+                                   },
                           readable_output=message)
 
 
@@ -2088,7 +2087,6 @@ def create_static_host_set_command(client: Client, args: Dict[str, Any]) -> Comm
         if '409' in str(e):
             message = "Another host set has that name, please choose a different one."
         else:
-            print(str(e))
             message = "Creating Host Set failed, check if you have the necessary permissions."
 
     return CommandResults(
@@ -2105,9 +2103,9 @@ def update_static_host_set_command(client: Client, args: Dict[str, Any]) -> Comm
     add_host_ids = argToList(args.get('add_host_ids'))
     remove_host_ids = argToList(args.get('remove_host_ids'))
 
-    data = None
+    data = {}
     try:
-        response = client.update_static_host_set_request(host_set_name, host_set_id, add_host_ids, remove_host_ids)
+        response = client.update_static_host_set_request(host_set_id, host_set_name, add_host_ids, remove_host_ids)
         if data := response.get('data'):
             data['deleted'] = False
             message = f'Static Host Set {host_set_name} was updated successfully.'
@@ -2117,6 +2115,7 @@ def update_static_host_set_command(client: Client, args: Dict[str, Any]) -> Comm
         elif '404' in str(e):
             message = 'Host set was not found.'
         else:
+
             message = 'Updating Host Set failed, check if you have the necessary permissions.'
 
     return CommandResults(
@@ -2150,6 +2149,7 @@ def create_dynamic_host_set_command(client: Client, args: Dict[str, Any]) -> Com
         if '409' in str(e):
             message = "Another host set has that name, please choose a different one."
         else:
+
             message = "Creating Host Set failed, check if you have the necessary permissions."
 
     return CommandResults(
@@ -2162,6 +2162,7 @@ def create_dynamic_host_set_command(client: Client, args: Dict[str, Any]) -> Com
 
 def update_dynamic_host_set_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     host_set_name = args.get('host_set_name')
+    host_set_id = args.get('host_set_id')
     query = args.get('query')
     query_key = args.get('query_key')
     query_value = args.get('query_value')
@@ -2174,7 +2175,8 @@ def update_dynamic_host_set_command(client: Client, args: Dict[str, Any]) -> Com
 
     data = {}
     try:
-        response = client.update_dynamic_host_set_request(host_set_name, query, query_key, query_value, query_operator)
+        response = client.update_dynamic_host_set_request(host_set_id, host_set_name, query, query_key, query_value,
+                                                          query_operator)
         if data := response.get('data'):
             data['deleted'] = False
             message = f'Dynamic Host Set {host_set_name} was updated successfully.'
