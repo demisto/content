@@ -2,25 +2,39 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *
 from urllib.parse import urlparse
 
-options = ["IP.Address", "Domain.Name", "URL.Data", "File.MD5", "File.SHA256", "File.SHA1", "CVE.ID"]
 
 QUOTED_STRINGS_PATTERN = r'\"[^\"]*\"'
 KEYWORDS_PATTERN = " (AND|OR|NOT) "
 NON_WORD_PATTERN = "\W+"
 
 
-def append_arg(terms: Set, arg: Union[str, List[str]], filter_fn=lambda x: True):
-    if isinstance(arg, list):
-        ts = filter(filter_fn, arg)
-        terms.update(ts)
-    else:
-        # assume str
-        if filter_fn(arg):
-            terms.add(arg)
+def append_arg(terms: Set[str], arg: Union[str, List[str]], filter_fn=lambda _: True):
+    """
+    Append the given argument to the given set.
+
+    Handles the case where an arg is a list and applies a filter function to remove
+    unwanted search terms.
+
+    :param terms: set of terms to append new terms to
+    :param filter_fn: a function to be used with the builtin filter function to exclude unwanted terms
+    """
+    asList = argToList(arg)
+    new_terms: List[str] = list(filter(filter_fn, asList))
+    if len(new_terms):
+        terms.update(new_terms)
 
 
-def extract_terms(args: Dict[str, Any]):
-    terms = set()
+def extract_terms(args: Dict[str, Any]) -> Set[str]:
+    """
+    Extract terms for each type of supported argument.
+
+    Ensure this list remains up to date with the args declared in
+    the YML file.
+
+    :param args: dictionary of arguments passed to the command
+    :return: set of string terms
+    """
+    terms: Set[str] = set()
     if 'sha1' in args:
         append_arg(terms, args['sha1'])
     if 'md5' in args:
@@ -30,7 +44,7 @@ def extract_terms(args: Dict[str, Any]):
     if 'domain' in args:
         append_arg(terms, args['domain'], filter_fn=check_domain_name)
     if 'ip' in args:
-        append_arg(terms, args['ip'], filter_fn=lambda x: "0.0.0.0" != x)
+        append_arg(terms, args['ip'], filter_fn=check_ip)
     if 'url' in args:
         append_arg(terms, args['url'], filter_fn=check_url)
     if 'cve' in args:
@@ -39,6 +53,15 @@ def extract_terms(args: Dict[str, Any]):
 
 
 def convert_to_ds_query_array(args: Dict[str, Any]):
+    """
+    Convert the provided args into a list of Shadow Search queries.
+
+    Implements term-counting as Shadow Search has a maximum number of terms permitted
+    per query.
+
+    :param args: the arguments supplied to the command
+    :return: a list of Shadow Search query strings
+    """
     terms = extract_terms(args)
 
     res = list()
@@ -59,18 +82,32 @@ def convert_to_ds_query_array(args: Dict[str, Any]):
     return res
 
 
+def check_ip(ip):
+    """
+    Filter function that excludes the inet any address (0.0.0.0).
+    """
+    return "0.0.0.0" != ip
+
+
 def check_domain_name(domain):
+    """
+    Filter function that removes the Digital Shadows portal hostname and subdomains of it.
+    """
     if not domain.startswith("."):
         domain = "." + domain
     return not domain.endswith(".portal-digitalshadows.com")
 
 
 def check_url(url):
+    """
+    Filter function that removes URLs associated with Digital Shadows portal hostname and subdomains of it.
+    """
     domain = urlparse(url).netloc
     return check_domain_name(domain)
 
 
 def count_terms(query):
+    """Count the query terms in a given string"""
     query = re.sub(QUOTED_STRINGS_PATTERN, "x", query)
     query = re.sub(KEYWORDS_PATTERN, " ", query)
     query = re.sub(NON_WORD_PATTERN, " ", query)

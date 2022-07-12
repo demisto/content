@@ -46,7 +46,7 @@ def test_createSingleString(query, expected):
     from DsSearchQueryArray import convert_to_ds_query_array
 
     result = convert_to_ds_query_array(query)
-    for r, e in zip(result,expected):
+    for r, e in zip(result, expected):
         r_split = sorted(r.split(' OR '))
         e_split = sorted(e.split(' OR '))
         for r_term, e_term in zip(r_split, e_split):

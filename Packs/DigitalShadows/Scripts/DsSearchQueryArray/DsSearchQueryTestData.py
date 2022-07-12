@@ -1,8 +1,8 @@
 TEST_DATA_URL = {
     "url": [
         "https://http://GermDetectives.com/learn/risk-profiles/IMPERSONATING_DOMAIN",
-        "http://microsoft365cpmsetup.com",
-        "http://portal-digitalshadows.com.still.valid/learn/risk-profiles/MARKED_DOCUMENT",
+        "http://microsoft365cpmsetup.com",  # pylint: disable=W9013
+        "http://portal-digitalshadows.com.still.valid/learn/risk-profiles/MARKED_DOCUMENT",  # pylint: disable=W9013
         "https://http://microsoft365cpmsetup.com/triage/alerts/BGWZC",
         "https://http://microsoft365cpmsetup.com/api/external/resources/2de38dac-bba5-46c9-9ceb-e0fd72944a11",
         "https://http://microsoft365cpmsetup.com/api/external/resources/2de38dac-bba5-46c9-9ceb-e0fd72944a11",
@@ -10,9 +10,9 @@ TEST_DATA_URL = {
 }
 
 TEST_DATA_URL_EXPECTED = [
-    "http://microsoft365cpmsetup.com OR https://http://microsoft365cpmsetup.com/triage/alerts/BGWZC OR "
+    "http://microsoft365cpmsetup.com OR https://http://microsoft365cpmsetup.com/triage/alerts/BGWZC OR "  # pylint: disable=W9013
     + "https://http://GermDetectives.com/learn/risk-profiles/IMPERSONATING_DOMAIN OR "
-    + "http://portal-digitalshadows.com.still.valid/learn/risk-profiles/MARKED_DOCUMENT",
+    + "http://portal-digitalshadows.com.still.valid/learn/risk-profiles/MARKED_DOCUMENT",  # pylint: disable=W9013
     "https://http://microsoft365cpmsetup.com/api/external/resources/2de38dac-bba5-46c9-9ceb-e0fd72944a11",
 ]
 
