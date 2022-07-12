@@ -23,7 +23,7 @@ MD_HTTP_PORT = 10888
 SERVER_OBJECT = None
 MD_IMAGE_SUPPORT_MIN_VER = '6.5'
 TABLE_TEXT_MAX_LENGTH_SUPPORT_MIN_VER = '7.0'
-
+TENANT_ACCOUNT_NAME = get_tenant_account_name()
 
 def random_string(size=10):
     return ''.join(
@@ -74,7 +74,12 @@ def startServer():
     class fileHandler(http.server.BaseHTTPRequestHandler):
         def do_GET(self):
             demisto.debug(f'Handling MD Image request {self.path}')
-            if not self.path.startswith(MD_IMAGE_PATH):
+            if TENANT_ACCOUNT_NAME:
+                markdown_path_prefix = f"/{TENANT_ACCOUNT_NAME}{MD_IMAGE_PATH}"
+            else:
+                markdown_path_prefix = MD_IMAGE_PATH
+
+            if not self.path.startswith(markdown_path_prefix):
                 # not a standard xsoar markdown image endpoint
                 self.send_response(400)
                 self.flush_headers()
