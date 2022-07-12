@@ -2323,6 +2323,7 @@ script:
       required: true
       description: A comma-separated list of threat IDs.
     - name: password
+      required: true
       description: File encryption password (Aleast 10 characters, three of these uppercase,lowercase,digits and symbols. Maximum length is 256 characters)
     - name: time_to_sleep
       description: The time to sleep the command to fetch the timeline of particular threat, But it's defaulted to 30 seconds.
@@ -2447,7 +2448,7 @@ script:
     - contextPath: SentinelOne.Alert.RuleId
       description: Rule Id
       type: String  
-  dockerimage: demisto/python3:3.10.5.31797
+  dockerimage: demisto/python3:3.10.5.31928
   isfetch: true
   longRunning: false
   longRunningPort: false

@@ -2440,7 +2440,7 @@ Fetch a file associated with the threat that matches the filter.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | threat_ids | A comma-separated list of threat IDs. | Required | 
-| password | File encryption password (Aleast 10 characters, three of these uppercase,lowercase,digits and symbols. Maximum length is 256 characters) | Optional | 
+| password | File encryption password (Aleast 10 characters, three of these uppercase,lowercase,digits and symbols. Maximum length is 256 characters) | Required | 
 | time_to_sleep | The time to sleep the command to fetch the timeline of particular threat, But it's defaulted to 30 seconds. | Optional |
 
 
