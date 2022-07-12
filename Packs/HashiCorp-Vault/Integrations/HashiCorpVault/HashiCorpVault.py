@@ -24,6 +24,7 @@ if CREDENTIALS:
     PASSWORD = CREDENTIALS.get('password')
 VERIFY_SSL = not demisto.params().get('unsecure', False)
 TOKEN = demisto.params().get('token')
+NAMESPACE = demisto.params().get('namespace')
 USE_APPROLE_AUTH_METHOD = argToBoolean(demisto.params().get('use_approle', 'false') or 'false')
 
 
@@ -53,6 +54,9 @@ def get_headers():
 
     if TOKEN:
         headers['X-Vault-Token'] = TOKEN
+
+    if NAMESPACE:
+        headers['X-Vault-Namespace'] = NAMESPACE
 
     return headers
 

@@ -1,0 +1,33 @@
+{
+    "id": "incident_microsoftgraphidentityandaccessdetecteddatetime",
+    "version": -1,
+    "modified": "2021-08-10T10:47:05.734048Z",
+    "name": "Microsoft Graph Identity and Access Detected Date Time",
+    "ownerOnly": false,
+    "cliName": "microsoftgraphidentityandaccessdetecteddatetime",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Microsoft Graph Identity and Access"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.2.0",
+    "marketplaces": [
+        "xsoar"
+    ]
+}
