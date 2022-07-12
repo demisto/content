@@ -233,10 +233,19 @@
                             },
                             {
                                 "endCol": 2,
+                                "fieldId": "cicdreviewer",
+                                "height": 22,
+                                "id": "02014010-efdd-11ec-ad08-d9ee2c4fe234",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
                                 "fieldId": "cicdpullrequestlink",
                                 "height": 22,
                                 "id": "35fb1120-efdd-11ec-ad08-d9ee2c4fe212",
-                                "index": 2,
+                                "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -245,7 +254,7 @@
                                 "fieldId": "incident_cicdpullrequestreview",
                                 "height": 22,
                                 "id": "35fb1120-efdd-11ec-ad08-d9ee2c4fe669",
-                                "index": 3,
+                                "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }

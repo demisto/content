@@ -2,7 +2,7 @@
     "associatedToAll": false,
     "associatedTypes": [
         "Pull Request Creation",
-        "Pull Request Creation"
+        "Pull Request Update"
     ],
     "caseInsensitive": true,
     "cliName": "cicdpullrequestreview",
