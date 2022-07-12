@@ -913,6 +913,10 @@ tasks:
           root: PackName
       cicdpullrequestlink:
         simple: https://github.com/${GitHub.PR.Head.Repo.FullName}/pull/${GitHub.PR.Number}
+      cicdreviewer:
+        complex:
+          root: GitHub.PR.RequestedReviewer
+          accessor: Login
     separatecontext: false
     view: |-
       {
