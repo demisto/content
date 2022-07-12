@@ -8,7 +8,7 @@ configuration:
   name: feed
   required: false
   type: 8
-- defaultvalue: https://ais2.cisa.dhs.gov
+- defaultvalue: https://ais2.cisa.dhs.gov/taxii2/
   display: Base URL
   name: base_url
   required: true
