@@ -2319,9 +2319,9 @@ script:
       description: Expiration.
       type: String
   - arguments:
-    - name: threat_ids
+    - name: threat_id
       required: true
-      description: A comma-separated list of threat IDs.
+      description: 'Please provide the Valid Threat ID. Example: 14629133470822878.'
     - name: password
       required: true
       description: File encryption password (Aleast 10 characters, three of these uppercase,lowercase,digits and symbols. Maximum length is 256 characters)
