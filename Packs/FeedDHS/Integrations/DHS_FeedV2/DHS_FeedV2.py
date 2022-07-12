@@ -211,7 +211,7 @@ def main():
     crt = params.get('crt', '')
     collection = params.get('collection')
     tags = argToList(params['tags']) if params.get('tags') else None
-    base_url = params.get('base_url', 'https://ais2.cisa.dhs.gov')
+    base_url = params.get('base_url', 'https://ais2.cisa.dhs.gov/taxii2/')
     verify_certificate = not params.get('insecure', False)
     proxies = handle_proxy()
 
