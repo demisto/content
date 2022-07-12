@@ -149,4 +149,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
-description: Sanity check for a non-mocked integration
+description: Sanity check for a non-mocked  integration
