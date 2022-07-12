@@ -153,7 +153,7 @@ class TestCollector(ABC):
             packs=None,
             reason=CollectionReason.SANITY_TESTS,
             version_range=None,
-            reason_description=self.marketplace.value,
+            reason_description=str(self.marketplace.value),
         )
 
     @abstractmethod
@@ -260,7 +260,7 @@ class BranchTestCollector(TestCollector):
         }.get(yml_path.parents[1].name)):
             return result
 
-    def _collect_yml(self, content_item_path: Path) -> CollectedTests:
+    def _collect_yml(self, content_item_path: Path) -> Optional[CollectedTests]:
         yml_path = content_item_path.with_suffix('.yml')
         try:
             yml = ContentItem(yml_path)
@@ -301,7 +301,7 @@ class BranchTestCollector(TestCollector):
                             raise RuntimeError(f'unexpected content type folder {actual_content_type}')
 
                     if not tests:
-                        original_type: str = find_type_by_path(content_item_path).value
+                        original_type: str = actual_content_type.value
                         relative_path = str(PackManager.relative_to_packs(yml.path))
                         logger.warning(f'{original_type} {relative_path} '
                                        f'has `No Tests` configured, and no tests in id_set')
@@ -309,10 +309,11 @@ class BranchTestCollector(TestCollector):
                 raise RuntimeError(f'Unexpected content type {actual_content_type} for {content_item_path}'
                                    f'(expected `Integrations`, `Scripts` or `Playbooks`)')
         # creating an object for each, as CollectedTests require #packs==#tests
-        return CollectedTests.union(
-            (CollectedTests(tests=(test,), packs=yml.pack_folder_name_tuple, reason=reason,
-                            version_range=yml.version_range, reason_description=f'{yml.id_=} ({relative_path})')
-             for test in tests))
+        if tests:
+            return CollectedTests.union(
+                (CollectedTests(tests=(test,), packs=yml.pack_folder_name_tuple, reason=reason,
+                                version_range=yml.version_range, reason_description=f'{yml.id_=} ({relative_path})')
+                 for test in tests))
 
     def _collect_single(self, path: Path) -> CollectedTests:
         if not path.exists():
@@ -324,7 +325,7 @@ class BranchTestCollector(TestCollector):
             content_item = ContentItem(path)
         except NonDictException:  # for `.py`, `.md`, etc., that are not dictionary-based. Suitable logic follows.
             content_item = None
-            reason_description = str(path)
+            relative_path = reason_description = str(path)
         except NotUnderPackException:
             if path in PATHS.excluded_files:
                 raise NothingToCollectException(path, 'not under a pack')  # infrastructure files that are ignored
@@ -514,7 +515,7 @@ class XSIAMNightlyTestCollector(NightlyTestCollector):
 
     def _collect(self) -> Optional[CollectedTests]:
         return CollectedTests.union((
-            self._id_set_tests_matching_marketplace_value(only_value=True),
+            self._id_set_tests_matching_marketplace_value(only_value=True),  # todo both ?
             self._packs_matching_marketplace_value(only_value=True),
             self._packs_of_content_matching_marketplace_value(only_value=True)
         ))
