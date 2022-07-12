@@ -3332,7 +3332,7 @@ def create_events_search(client: Client,
                          events_limit: int,
                          offense_id: int,
                          offense_start_time: str = None,
-                         **kwargs,
+                         **_,  # so we can pass all the other params to the search
                          ) -> str:
     additional_where = ''' AND LOGSOURCETYPENAME(devicetype) = 'Custom Rule Engine' ''' \
         if fetch_mode == FetchMode.correlations_events_only.value else ''

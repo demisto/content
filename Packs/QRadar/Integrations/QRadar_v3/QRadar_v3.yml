@@ -2682,17 +2682,17 @@ script:
     name: qradar-get-events-polling
     polling: true
     outputs:
-      - contextPath: QRadar.SearchEvents.ID
-        description: The search id of the query.
-        type: Unknown
-      - contextPath: QRadar.SearchEvents.Events
-        description: The events from QRadar search.
-        type: Unknown
+    - contextPath: QRadar.SearchEvents.ID
+      description: The search id of the query.
+      type: Unknown
+    - contextPath: QRadar.SearchEvents.Events
+      description: The events from QRadar search.
+      type: Unknown
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.5.31797
+  dockerimage: demisto/python3:3.10.5.31928
   feed: false
   isfetch: false
   isremotesyncin: true
