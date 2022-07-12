@@ -267,8 +267,8 @@
           "priority": 2,
           "name": "EWS v2",
           "action": {
-            "existing": "Update your current instance to work with the new Phishing incident type: \n1. Enable fetching. \n2. Set the Incident type field to Phishing. \n3. Set the Mapper field to 'EWS v2-mapper'.",
-            "new": "Set up new 'EWS v2' instance to start fetching Phishing incidents: \n1. Enable fetching. \n2. Set the Incident type field to Phishing. \n3. Set the Mapper field to 'EWS v2-mapper'."
+            "existing": "Update your current instance to work with the new Phishing incident type: \n1. Enable fetching. \n2. Set the Incident type field to Phishing. \n3. Set the Mapper field to 'EWS - Incoming Mapper'.",
+            "new": "Set up new 'EWS v2' instance to start fetching Phishing incidents: \n1. Enable fetching. \n2. Set the Incident type field to Phishing. \n3. Set the Mapper field to 'EWS - Incoming Mapper'."
           },
           "description": "Set up the 'EWS v2' integration to work with your Phishing use case.",
            "incident_type": "Phishing"
