@@ -39,11 +39,8 @@ class Client(BaseClient):
 
 
 def test_module(client: Client) -> Any:
-    result = getIndicatorsCommand(client, {'limit': 2})
-    if type(result.raw_response) == list and len(result.raw_response) == 2:
-        return 'ok'
-    else:
-        return result.raw_response
+    getIndicatorsCommand(client, {'limit': 2})
+    return 'ok'
 
 
 def parseIndicators(feedJson: Dict) -> Any:
@@ -129,17 +126,17 @@ def getIndicatorsCommand(client: Client, args: Dict[str, int]) -> CommandResults
         )
         return command_result
     else:
-        result = None
+        msg = None
         try:
             if err_msg.res.status_code == 403:
-                result = 'Authorization Error: make sure API Key (or) Feed URL is correctly set'
+                msg = 'Authorization Error: make sure API Key (or) Feed URL is correctly set'
             elif err_msg.res.status_code == 401:
-                result = 'Authorization Error: API Key is expired'
+                msg = 'Authorization Error: API Key is expired'
             else:
-                result = 'Configuration Error'
+                msg = 'Configuration Error'
         except Exception:
-            result = 'Endpoint Error: Invalid Feed URL'
-        return CommandResults(outputs_prefix='', raw_response=result)
+            msg = 'Endpoint Error: Invalid Feed URL'
+        raise DemistoException(msg)
 
 
 def fetchThreatFeeds(client: Client, feed_date: Optional[str] = None) -> Any:
