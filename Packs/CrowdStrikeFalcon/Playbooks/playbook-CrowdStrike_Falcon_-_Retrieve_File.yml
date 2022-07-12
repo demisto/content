@@ -2,7 +2,9 @@ id: CrowdStrike Falcon - Retrieve File
 version: -1
 fromversion: 6.5.0
 name: CrowdStrike Falcon - Retrieve File
-description: This playbook retrieves and unzips files from CrowdStrike Falcon and returns a list of the files that were and were not retrieved.
+description: |-
+  This playbook is part of the 'Malware Investigation And Response' flow. For more information, please refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+  This playbook retrieves and unzips files from CrowdStrike Falcon and returns a list of the files that were and were not retrieved.
 starttaskid: '0'
 tasks:
   '0':

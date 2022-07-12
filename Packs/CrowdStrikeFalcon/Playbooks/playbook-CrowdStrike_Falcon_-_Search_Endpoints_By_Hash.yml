@@ -2,7 +2,8 @@ id: CrowdStrike Falcon - Search Endpoints By Hash
 version: -1
 fromversion: 6.5.0
 name: CrowdStrike Falcon - Search Endpoints By Hash
-description: "This playbook searches across the organization for other endpoints associated with a specific SHA256 hash."
+description: " This playbook is part of the 'Malware Investigation And Response' flow. For more information, please refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+This playbook searches across the organization for other endpoints associated with a specific SHA256 hash."
 starttaskid: "0"
 tasks:
   "0":

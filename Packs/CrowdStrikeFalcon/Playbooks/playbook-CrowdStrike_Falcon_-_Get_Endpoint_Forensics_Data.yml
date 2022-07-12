@@ -1,6 +1,8 @@
 id: CrowdStrike Falcon - Get Endpoint Forensics Data
 version: -1
-description: This playbook extracts data from the host using RTR commands. For example, commands for getting a list of running processes and network connections.
+description: |-
+  This playbook is part of the 'Malware Investigation And Response' flow. For more information, please refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+  This playbook extracts data from the host using RTR commands. For example, commands for getting a list of running processes and network connections.
 fromversion: 6.5.0
 name: CrowdStrike Falcon - Get Endpoint Forensics Data
 starttaskid: '0'
