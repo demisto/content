@@ -9,59 +9,60 @@ KEYWORDS_PATTERN = " (AND|OR|NOT) "
 NON_WORD_PATTERN = "\W+"
 
 
-def convert_to_ds_query_array(args: Dict[str, Any]):
-    if len(args["field"].split(".")) != 2:
-        raise Exception("Invalid field argument, make sure it follows the format \"Field.Property\"")
-
-    if args['field'] not in options:
-        raise Exception(f"{args['field']} is not a valid field")
-
-    field_type = args["field"].split(".")[0]
-    field_type_property = args["field"].split(".")[1]
-
-    data = args["value"][field_type]
-
-    def extractData(query_field):
-        return query_field[field_type_property]
-
-    if isinstance(data, list):
-        res = list()
-        query = [extractData(query_field) for query_field in data if field_type_property in query_field]
-        query = sorted(query, key=lambda x: count_terms(x))
-        init = list()  # type: List[str]
-        term_count = 0
-
-        for idx in range(len(query)):
-            if term_count + count_terms(query[idx]) > 35:
-                res.append(" OR ".join(init))
-                init = [query[idx]]
-                term_count = count_terms(query[idx])
-            elif not reject(field_type, query[idx]):
-                init.append(query[idx])
-                term_count += count_terms(query[idx])
-        res.append(" OR ".join(init))
+def append_arg(terms: Set, arg: Union[str, List[str]], filter_fn=lambda x: True):
+    if isinstance(arg, list):
+        ts = filter(filter_fn, arg)
+        terms.update(ts)
     else:
-        if not reject(field_type, data[field_type_property]):
-            return data[field_type_property]
-        return ""
+        # assume str
+        if filter_fn(arg):
+            terms.add(arg)
 
+
+def extract_terms(args: Dict[str, Any]):
+    terms = set()
+    if 'sha1' in args:
+        append_arg(terms, args['sha1'])
+    if 'md5' in args:
+        append_arg(terms, args['md5'])
+    if 'sha256' in args:
+        append_arg(terms, args['sha256'])
+    if 'domain' in args:
+        append_arg(terms, args['domain'], filter_fn=check_domain_name)
+    if 'ip' in args:
+        append_arg(terms, args['ip'], filter_fn=lambda x: "0.0.0.0" != x)
+    if 'url' in args:
+        append_arg(terms, args['url'], filter_fn=check_url)
+    if 'cve' in args:
+        append_arg(terms, args['cve'])
+    return terms
+
+
+def convert_to_ds_query_array(args: Dict[str, Any]):
+    terms = extract_terms(args)
+
+    res = list()
+    query = sorted(terms, key=lambda x: count_terms(x))
+    init = list()  # type: List[str]
+    term_count = 0
+
+    for q in query:
+        if term_count + count_terms(q) > 35:
+            res.append(" OR ".join(init))
+            init = [q]
+            term_count = count_terms(q)
+        else:
+            init.append(q)
+            term_count += count_terms(q)
+    if len(init):
+        res.append(" OR ".join(init))
     return res
-
-
-def reject(field, string):
-    return {
-        "IP": lambda x: "0.0.0.0" in x,
-        "Domain": check_domain_name,
-        "URL": check_url,
-        "File": lambda x: False,
-        "CVE": lambda x: False
-    }[field](string)
 
 
 def check_domain_name(domain):
     if not domain.startswith("."):
         domain = "." + domain
-    return domain.endswith(".portal-digitalshadows.com")
+    return not domain.endswith(".portal-digitalshadows.com")
 
 
 def check_url(url):
