@@ -25,6 +25,7 @@ MD_IMAGE_SUPPORT_MIN_VER = '6.5'
 TABLE_TEXT_MAX_LENGTH_SUPPORT_MIN_VER = '7.0'
 TENANT_ACCOUNT_NAME = get_tenant_account_name()
 
+
 def random_string(size=10):
     return ''.join(
         random.choices(string.ascii_uppercase + string.digits, k=size))
