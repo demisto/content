@@ -1,3 +1,4 @@
+This playbook is part of the 'Malware Investigation And Response' flow. For more information, please refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
 This playbook supports investigation actions for the analyst, including:  
 - Running a full AV scan for a specific endpoint.
 - Requesting an investigation package (a zip file containing forensic data with a size of ~ 15MB) from an endpoint.

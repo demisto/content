@@ -2,7 +2,9 @@ contentitemexportablefields:
   contentitemfields:
     propagationLabels:
     - all
-description: This Playbook handles closing a true positive incident for Microsoft Defender for Endpoint.
+description: |-
+  This playbook is part of the 'Malware Investigation And Response' flow. For more information, please refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+  This Playbook handles closing a true positive incident for Microsoft Defender for Endpoint.
 id: MDE - True Positive Incident Handling
 inputs:
 - description: 'The Cortex XSOAR investigation IDs to be closed. '

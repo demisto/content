@@ -2,7 +2,9 @@ contentitemexportablefields:
   contentitemfields:
     propagationLabels:
     - all
-description: 'This playbook handles closing false positive incidents for Microsoft Defender for Endpoint. '
+description: |-
+  This playbook is part of the 'Malware Investigation And Response' flow. For more information, please refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+  This playbook handles closing false positive incidents for Microsoft Defender for Endpoint.
 id: MDE - False Positive Incident Handling
 inputs:
 - description: 'Duplicate Cortex XSOAR investigation IDs to close. '
@@ -827,5 +829,5 @@ view: |-
     }
   }
 tests:
-  - No tests
+- No tests
 fromversion: 6.5.0
