@@ -1695,14 +1695,7 @@ def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int
                 ))
             offenses_with_success = [future.result(timeout=DEFAULT_EVENTS_TIMEOUT * 60) for future in futures]
             offenses = [offense for offense, _ in offenses_with_success]
-            ctx, version = get_integration_context_with_version()
-            changed_offense_ids = []
-            for offense, is_success in offenses_with_success:
-                if not is_success:
-                    offense_id = str(offense['id'])
-                    ctx[MIRRORED_OFFENSES_QUERIED_CTX_KEY][offense_id] = QueryStatus.WAIT.value
-                    changed_offense_ids.append(offense_id)
-            safely_update_context_data(ctx, version, offense_ids=changed_offense_ids)
+            prepare_context_for_failed_events(offenses_with_success)
         except concurrent.futures.TimeoutError as e:
             demisto.error(
                 f"Error while enriching offenses with events: {str(e)} \n {traceback.format_exc()}")
@@ -1719,6 +1712,16 @@ def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int
     final_offenses = sanitize_outputs(enriched_offenses)
     incidents = create_incidents_from_offenses(final_offenses, incident_type)
     return incidents, new_highest_offense_id
+
+def prepare_context_for_failed_events(offenses_with_success):
+    ctx, version = get_integration_context_with_version()
+    changed_offense_ids = []
+    for offense, is_success in offenses_with_success:
+        if not is_success:
+            offense_id = str(offense['id'])
+            ctx[MIRRORED_OFFENSES_QUERIED_CTX_KEY][offense_id] = QueryStatus.WAIT.value
+            changed_offense_ids.append(offense_id)
+    safely_update_context_data(ctx, version, offense_ids=changed_offense_ids)
 
 
 def update_missing_offenses_from_raw_offenses(raw_offenses: list, offenses: list):
@@ -3405,7 +3408,7 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
 def qradar_get_events_polling_command(client: Client,
                                       params,
                                       args,
-                                      ) -> CommandResults:  # pragma: no-cover (tested in test-playbook)
+                                      ) -> CommandResults:  # pragma: no cover (tested in test-playbook)
     """A polling command to get events from QRadar offense
 
     Args:
@@ -3425,16 +3428,13 @@ def qradar_get_events_polling_command(client: Client,
     search_id = args.get('search_id')
     if not search_id:
         search_id = create_events_search(client,
-                                         params.get('fetch_mode'),
-                                         params.get('events_columns'),
-                                         params.get('events_limit'),
-                                         offense_id)
+                                         offense_id=offense_id,
+                                         **params)
         if search_id == QueryStatus.ERROR.value:
             raise DemistoException(f'Failed to create search. for Offense {offense_id}')
         polling_args = {
             'search_id': search_id,
             'interval_in_seconds': interval_in_secs,
-            'polling': True,
             **args
         }
         scheduled_command = ScheduledCommand(
@@ -3443,24 +3443,35 @@ def qradar_get_events_polling_command(client: Client,
             args=polling_args,
             timeout_in_seconds=3600,
         )
+        
         return CommandResults(scheduled_command=scheduled_command,
-                              readable_output=f'Search ID: {search_id}')
-    try:
-        return qradar_search_results_get_command(client, args)
-    except Exception as e:
-        print_debug_msg(f'Failed to get search results for search ID: {search_id}. Error: {e}')
-        polling_args = {
-            'search_id': search_id,
-            'interval_in_seconds': interval_in_secs,
-            'polling': True,
-            **args
-        }
-        scheduled_command = ScheduledCommand(
-            command='qradar-get-events-polling',
-            next_run_in_seconds=interval_in_secs,
-            args=polling_args,
-        )
-        return CommandResults(scheduled_command=scheduled_command)
+                              readable_output=f'Search ID: {search_id}',
+                              outputs_prefix='QRadar.Search',
+                              outputs_key_field='ID',
+                              outputs={'ID': search_id}
+                              )
+    events, status = poll_offense_events(client, search_id, offense_id, should_get_events=True)
+    if status == QueryStatus.ERROR.value:
+        raise DemistoException(f'Polling for events for Offense {offense_id} failed')
+    if status == QueryStatus.SUCCESS.value:
+        return CommandResults(outputs_prefix='QRadar.Search',
+                              outputs={'Events': events},
+                              readable_output=tableToMarkdown(f'Events for offense {offense_id}',
+                                                              events,
+                                                              )
+                              )
+    print_debug_msg(f'Still polling for search results for search ID: {search_id}.')
+    polling_args = {
+        'search_id': search_id,
+        'interval_in_seconds': interval_in_secs,
+        **args
+    }
+    scheduled_command = ScheduledCommand(
+        command='qradar-get-events-polling',
+        next_run_in_seconds=interval_in_secs,
+        args=polling_args,
+    )
+    return CommandResults(scheduled_command=scheduled_command)
 
 
 def migrate_integration_ctx(ctx: dict) -> dict:

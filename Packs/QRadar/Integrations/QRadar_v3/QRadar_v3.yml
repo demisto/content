@@ -1844,7 +1844,7 @@ script:
     - contextPath: QRadar.Asset.ID
       description: The ID of the asset.
       type: number
-    - contextPath: Endpoint.IPAddresspo
+    - contextPath: Endpoint.IPAddress
       description: IP address of the asset.
       type: Unknown
     - contextPath: QRadar.Asset.Name.Value
@@ -2676,14 +2676,17 @@ script:
     - name: search_id
       required: false
       type: String
-      description: The search id to query the results
+      description: The search id to query the results.
     deprecated: false
     description: Polling command to search for events of a specific offense.
     name: qradar-get-events-polling
     polling: true
     outputs:
-      - contextPath: QRadar.Search.Result
-        description: The result of the search.
+      - contextPath: QRadar.Search.ID
+        description: The search id of the query.
+        type: Unknown
+      - contextPath: QRadar.Search.Events
+        description: The events from QRadar search.
         type: Unknown
   runonce: false
   script: '-'
