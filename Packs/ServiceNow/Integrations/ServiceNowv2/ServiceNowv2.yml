@@ -11,14 +11,12 @@ configuration:
   name: credentials
   required: false
   type: 9
-- additionalinfo: Select this checkbox if to use OAuth 2.0 authentication. See (?)
-    for more information.
+- additionalinfo: Select this checkbox if to use OAuth 2.0 authentication. See (?) for more information.
   display: Use OAuth Login
   name: use_oauth
   required: false
   type: 8
-- additionalinfo: 'The ticket type can be: incident, problem, change_request, sc_request,
-    sc_task or sc_req_item.'
+- additionalinfo: 'The ticket type can be: incident, problem, change_request, sc_request, sc_task or sc_req_item.'
   defaultvalue: incident
   display: Default ticket type for running ticket commands and fetching incidents
   name: ticket_type
@@ -43,8 +41,7 @@ configuration:
   required: false
   type: 0
 - defaultvalue: 10 minutes
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3
-    months, 1 year)
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: fetch_time
   required: false
   type: 0
@@ -56,8 +53,7 @@ configuration:
   required: false
   type: 0
 - defaultvalue: number
-  display: ServiceNow ticket column to be set as the incident name. Default is the
-    incident number
+  display: ServiceNow ticket column to be set as the incident name. Default is the incident number
   name: incident_name
   required: false
   type: 0
@@ -69,9 +65,7 @@ configuration:
   name: get_attachments
   required: false
   type: 8
-- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from ServiceNow
-    to XSOAR), Outgoing (from XSOAR to ServiceNow), or Incoming and Outgoing (from/to
-    XSOAR and ServiceNow).'
+- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from ServiceNow to XSOAR), Outgoing (from XSOAR to ServiceNow), or Incoming and Outgoing (from/to XSOAR and ServiceNow).'
   defaultvalue: None
   display: Incident Mirroring Direction
   name: mirror_direction
@@ -88,8 +82,7 @@ configuration:
   name: comment_tag
   required: false
   type: 0
-- additionalinfo: Choose the tag to add to an entry to mirror it as a work note in
-    ServiceNow.
+- additionalinfo: Choose the tag to add to an entry to mirror it as a work note in ServiceNow.
   defaultvalue: work_notes
   display: Work Note Entry Tag
   name: work_notes_tag
@@ -101,29 +94,24 @@ configuration:
   name: file_tag
   required: false
   type: 0
-- additionalinfo: According to the timestamp in this field, records will be queried
-    to check for updates.
+- additionalinfo: According to the timestamp in this field, records will be queried to check for updates.
   defaultvalue: sys_updated_on
   display: Timestamp field to query for updates as part of the mirroring flow
   name: update_timestamp_field
   required: false
   type: 0
-- additionalinfo: If a greater number of incidents than the limit were modified, then
-    they won't be mirrored in.
+- additionalinfo: If a greater number of incidents than the limit were modified, then they won't be mirrored in.
   defaultvalue: '100'
   display: How many incidents to mirror incoming each time
   name: mirror_limit
   required: false
   type: 0
-- additionalinfo: "Custom (user defined) fields in the format: u_fieldname1,u_fieldname2\
-    \ custom fields start with a 'u_'. These fields will be included in the mirroring\
-    \ capabilities, if added here."
+- additionalinfo: "Custom (user defined) fields in the format: u_fieldname1,u_fieldname2 custom fields start with a 'u_'. These fields will be included in the mirroring capabilities, if added here."
   display: Custom Fields to Mirror
   name: custom_fields
   required: false
   type: 12
-- additionalinfo: When selected, closing the ServiceNow ticket is mirrored in Cortex
-    XSOAR.
+- additionalinfo: When selected, closing the ServiceNow ticket is mirrored in Cortex XSOAR.
   defaultvalue: 'false'
   display: Close Mirrored XSOAR Incident
   name: close_incident
@@ -150,15 +138,13 @@ configuration:
   name: incidentFetchInterval
   required: false
   type: 19
-- defaultvalue: 0
+- defaultvalue: '0'
   display: 'Advanced: Minutes to look back when fetching'
-  additionalinfo: Use this parameter to determine how long backward to look in the search for incidents
-    that were created before the last run time and did not match the query when they were created.
+  additionalinfo: Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created.
   name: look_back
   required: false
   type: 0
-description: Use The ServiceNow IT Service Management (ITSM) solution to modernize
-  the way you manage and deliver services to your users.
+description: Use The ServiceNow IT Service Management (ITSM) solution to modernize the way you manage and deliver services to your users.
 display: ServiceNow v2
 name: ServiceNow v2
 script:
@@ -169,8 +155,7 @@ script:
       name: id
     - auto: PREDEFINED
       defaultValue: incident
-      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
-        "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
+      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
       name: ticket_type
       predefined:
       - incident
@@ -191,13 +176,11 @@ script:
       - 'false'
     - description: 'Custom fields on which to query. For example: state_code=AR;time_zone=PST.'
       name: custom_fields
-    - description: Additional fields to display in the War Room entry and incident
-        context.
+    - description: Additional fields to display in the War Room entry and incident context.
       isArray: true
       name: additional_fields
     - defaultValue: ;
-      description: The delimiter character to use as a separator for a list of fields
-        in an argument for this command. Default is ';'.
+      description: The delimiter character to use as a separator for a list of fields in an argument for this command. Default is ';'.
       name: fields_delimiter
     description: Retrieves ticket information by ticket ID.
     name: servicenow-get-ticket
@@ -266,18 +249,11 @@ script:
       description: Attachment MD5 hash.
       type: string
   - arguments:
-    - default: false
-      description: Short description of the ticket.
-      isArray: false
+    - description: Short description of the ticket.
       name: short_description
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: incident
-      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
-        "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
-      isArray: false
+      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
       name: ticket_type
       predefined:
       - incident
@@ -287,131 +263,59 @@ script:
       - sc_task
       - sc_req_item
       - sn_si_incident
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: Ticket urgency. You can either select from the predefined options
-        or enter another value. For example, "Urgent" or "5".
-      isArray: false
+      description: Ticket urgency. You can either select from the predefined options or enter another value. For example, "Urgent" or "5".
       name: urgency
       predefined:
       - 3 - Low
       - 2 - Medium
       - 1 - High
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: Ticket severity. You can either select from the predefined options
-        or enter another value. For example, "Urgent" or "5".
-      isArray: false
+      description: Ticket severity. You can either select from the predefined options or enter another value. For example, "Urgent" or "5".
       name: severity
       predefined:
       - 3 - Low
       - 2 - Medium
       - 1 - High
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Ticket impact.
-      isArray: false
       name: impact
       predefined:
       - 3 - Low
       - 2 - Medium
       - 1 - High
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether to set the ticket as Active. Can be "true" or "false".
-      isArray: false
       name: active
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: The ticket activity due date, in the format "2016-07-02 21:51:11".
-      isArray: false
+    - description: The ticket activity due date, in the format "2016-07-02 21:51:11".
       name: activity_due
-      required: false
-      secret: false
-    - default: false
-      description: List of users assigned to the ticket.
-      isArray: false
+    - description: List of users assigned to the ticket.
       name: additional_assignee_list
-      required: false
-      secret: false
-    - default: false
-      description: Ticket history approval.
-      isArray: false
+    - description: Ticket history approval.
       name: approval_history
-      required: false
-      secret: false
-    - default: false
-      description: The ticket approval set date, in the format "2016-07-02 21:51:11".
-      isArray: false
+    - description: The ticket approval set date, in the format "2016-07-02 21:51:11".
       name: approval_set
-      required: false
-      secret: false
-    - default: false
-      description: User assigned to the ticket.
-      isArray: false
+    - description: User assigned to the ticket.
       name: assigned_to
-      required: false
-      secret: false
-    - default: false
-      description: 'Business duration, in the format: YYYY-MM-DD HH:MM:SS.'
-      isArray: false
+    - description: 'Business duration, in the format: YYYY-MM-DD HH:MM:SS.'
       name: business_duration
-      required: false
-      secret: false
-    - default: false
-      description: Business service.
-      isArray: false
+    - description: Business service.
       name: business_service
-      required: false
-      secret: false
-    - default: false
-      description: Business source.
-      isArray: false
+    - description: Business source.
       name: business_stc
-      required: false
-      secret: false
-    - default: false
-      description: 'Calendar duration, in the format: YYYY-MM-DD HH:MM:SS.'
-      isArray: false
+    - description: 'Calendar duration, in the format: YYYY-MM-DD HH:MM:SS.'
       name: calendar_duration
-      required: false
-      secret: false
-    - default: false
-      description: Caller ID (UID format).
-      isArray: false
+    - description: Caller ID (UID format).
       name: caller_id
-      required: false
-      secret: false
-    - default: false
-      description: Category of the ticket.
-      isArray: false
+    - description: Category of the ticket.
       name: category
-      required: false
-      secret: false
-    - default: false
-      description: UID Format
-      isArray: false
+    - description: UID Format
       name: caused_by
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: Ticket's close code. Can be "Solved (Work Around)", "Solved (Permanently)",
-        "Solved Remotely (Work Around)", "Solved Remotely (Permanently)", "Not Solved
-        (Not Reproducible)", "Not Solved (Too Costly)", or "Closed/Resolved by Caller".
-      isArray: false
+      description: Ticket's close code. Can be "Solved (Work Around)", "Solved (Permanently)", "Solved Remotely (Work Around)", "Solved Remotely (Permanently)", "Not Solved (Not Reproducible)", "Not Solved (Too Costly)", or "Closed/Resolved by Caller".
       name: close_code
       predefined:
       - Solved (Work Around)
@@ -421,275 +325,100 @@ script:
       - Not Solved (Not Reproducible)
       - Not Solved (Too Costly)
       - Closed/Resolved by Caller
-      required: false
-      secret: false
-    - default: false
-      description: Close notes of the ticket.
-      isArray: false
+    - description: Close notes of the ticket.
       name: close_notes
-      required: false
-      secret: false
-    - default: false
-      description: 'When the ticket was closed, in the format: YYYY-MM-DD HH:MM:SS.'
-      isArray: false
+    - description: 'When the ticket was closed, in the format: YYYY-MM-DD HH:MM:SS.'
       name: closed_at
-      required: false
-      secret: false
-    - default: false
-      description: User who closed the ticket.
-      isArray: false
+    - description: User who closed the ticket.
       name: closed_by
-      required: false
-      secret: false
-    - default: false
-      description: UID Format.
-      isArray: false
+    - description: UID Format.
       name: cmdb_ci
-      required: false
-      secret: false
-    - default: false
-      description: Format type journal input.
-      isArray: false
+    - description: Format type journal input.
       name: comments
-      required: false
-      secret: false
-    - default: false
-      description: Format type journal input.
-      isArray: false
+    - description: Format type journal input.
       name: comments_and_work_notes
-      required: false
-      secret: false
-    - default: false
-      description: Company (UID format).
-      isArray: false
+    - description: Company (UID format).
       name: company
-      required: false
-      secret: false
-    - default: false
-      description: Contact type.
-      isArray: false
+    - description: Contact type.
       name: contact_type
-      required: false
-      secret: false
-    - default: false
-      description: Correlation display.
-      isArray: false
+    - description: Correlation display.
       name: correlation_display
-      required: false
-      secret: false
-    - default: false
-      description: Correlation ID.
-      isArray: false
+    - description: Correlation ID.
       name: correlation_id
-      required: false
-      secret: false
-    - default: false
-      description: Delivery plan (UID format).
-      isArray: false
+    - description: Delivery plan (UID format).
       name: delivery_plan
-      required: false
-      secret: false
-    - default: false
-      description: Ticket description.
-      isArray: false
+    - description: Ticket description.
       name: description
-      required: false
-      secret: false
-    - default: false
-      description: 'Ticket due date, in the format: YYYY-MM-DD HH:MM:SS.'
-      isArray: false
+    - description: 'Ticket due date, in the format: YYYY-MM-DD HH:MM:SS.'
       name: due_date
-      required: false
-      secret: false
-    - default: false
-      description: 'Expected start date/time, in the format: YYYY-MM-DD HH:MM:SS.'
-      isArray: false
+    - description: 'Expected start date/time, in the format: YYYY-MM-DD HH:MM:SS.'
       name: expected_start
-      required: false
-      secret: false
-    - default: false
-      description: 'Follow up date/time, in the format: YYYY-MM-DD HH:MM:SS.'
-      isArray: false
+    - description: 'Follow up date/time, in the format: YYYY-MM-DD HH:MM:SS.'
       name: follow_up
-      required: false
-      secret: false
-    - default: false
-      description: UID format list (group).
-      isArray: false
+    - description: UID format list (group).
       name: group_list
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: Whether the ticket is solved in the knowledge base. Can be "true"
-        or "false".
-      isArray: false
+      description: Whether the ticket is solved in the knowledge base. Can be "true" or "false".
       name: knowledge
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Location of the ticket.
-      isArray: false
+    - description: Location of the ticket.
       name: location
-      required: false
-      secret: false
-    - default: false
-      description: SLA of the ticket.
-      isArray: false
+    - description: SLA of the ticket.
       name: made_sla
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether to be notified about this ticket. Can be "1" or "0".
-      isArray: false
       name: notify
       predefined:
       - '1'
       - '0'
-      required: false
-      secret: false
-    - default: false
-      description: Order number.
-      isArray: false
+    - description: Order number.
       name: order
-      required: false
-      secret: false
-    - default: false
-      description: UID Format
-      isArray: false
+    - description: UID Format
       name: parent
-      required: false
-      secret: false
-    - default: false
-      description: UID Format
-      isArray: false
+    - description: UID Format
       name: parent_incident
-      required: false
-      secret: false
-    - default: false
-      description: UID Format
-      isArray: false
+    - description: UID Format
       name: problem_id
-      required: false
-      secret: false
-    - default: false
-      description: The number of users included in this ticket.
-      isArray: false
+    - description: The number of users included in this ticket.
       name: reassignment_count
-      required: false
-      secret: false
-    - default: false
-      description: How many times the ticket has been reopened.
-      isArray: false
+    - description: How many times the ticket has been reopened.
       name: reopen_count
-      required: false
-      secret: false
-    - default: false
-      description: 'The date/time that the ticket was resolved, in the format: YYYY-MM-DD
-        HH:MM:SS.'
-      isArray: false
+    - description: 'The date/time that the ticket was resolved, in the format: YYYY-MM-DD HH:MM:SS.'
       name: resolved_at
-      required: false
-      secret: false
-    - default: false
-      description: ID of the user that resolved the ticket.
-      isArray: false
+    - description: ID of the user that resolved the ticket.
       name: resolved_by
-      required: false
-      secret: false
-    - default: false
-      description: UID
-      isArray: false
+    - description: UID
       name: rfc
-      required: false
-      secret: false
-    - default: false
-      description: 'SLA due date/time, in the format: YYYY-MM-DD HH:MM:SS.'
-      isArray: false
+    - description: 'SLA due date/time, in the format: YYYY-MM-DD HH:MM:SS.'
       name: sla_due
-      required: false
-      secret: false
-    - default: false
-      description: Ticket subcategory.
-      isArray: false
+    - description: Ticket subcategory.
       name: subcategory
-      required: false
-      secret: false
-    - default: false
-      description: Last updated by.
-      isArray: false
+    - description: Last updated by.
       name: sys_updated_by
-      required: false
-      secret: false
-    - default: false
-      description: 'Last date/time that the system was updated, in the format: YYYY-MM-DD
-        HH:MM:SS.'
-      isArray: false
+    - description: 'Last date/time that the system was updated, in the format: YYYY-MM-DD HH:MM:SS.'
       name: sys_updated_on
-      required: false
-      secret: false
-    - default: false
-      description: Input from the end user.
-      isArray: false
+    - description: Input from the end user.
       name: user_input
-      required: false
-      secret: false
-    - default: false
-      description: A list of watched tickets.
-      isArray: false
+    - description: A list of watched tickets.
       name: watch_list
-      required: false
-      secret: false
-    - default: false
-      description: 'Format: YYYY-MM-DD HH:MM:SS'
-      isArray: false
+    - description: 'Format: YYYY-MM-DD HH:MM:SS'
       name: work_end
-      required: false
-      secret: false
-    - default: false
-      description: Format journal list
-      isArray: false
+    - description: Format journal list
       name: work_notes
-      required: false
-      secret: false
-    - default: false
-      description: List work notes UIDs.
-      isArray: false
+    - description: List work notes UIDs.
       name: work_notes_list
-      required: false
-      secret: false
-    - default: false
-      description: Date/time when work started on the ticket.
-      isArray: false
+    - description: Date/time when work started on the ticket.
       name: work_start
-      required: false
-      secret: false
-    - default: false
-      description: The sys_id of the group to assign.
-      isArray: false
+    - description: The sys_id of the group to assign.
       name: assignment_group
-      required: false
-      secret: false
-    - default: false
-      description: The number that represents the incident state.
-      isArray: false
+    - description: The number that represents the incident state.
       name: incident_state
-      required: false
-      secret: false
-    - default: false
-      description: Ticket number.
-      isArray: false
+    - description: Ticket number.
       name: number
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Priority of the ticket.
-      isArray: false
       name: priority
       predefined:
       - 5 - Planning
@@ -697,105 +426,48 @@ script:
       - 3 - Moderate
       - 2 - High
       - 1 - Critical
-      required: false
-      secret: false
-    - default: false
-      description: Template name to use as the basis to create new tickets.
-      isArray: false
+    - description: Template name to use as the basis to create new tickets.
       name: template
-      required: false
-      secret: false
-    - default: false
-      description: 'Custom (user defined) fields in the format: fieldname1=value;fieldname2=value;
-        custom fields start with a "u_".'
-      isArray: false
+    - description: 'Custom (user defined) fields in the format: fieldname1=value;fieldname2=value; custom fields start with a "u_".'
       name: custom_fields
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: normal
-      description: Type of Change Request ticket. Can be "normal", "standard", or
-        "emergency". Default is "normal".
-      isArray: false
+      description: Type of Change Request ticket. Can be "normal", "standard", or "emergency". Default is "normal".
       name: change_type
       predefined:
       - normal
       - standard
       - emergency
-      required: false
-      secret: false
-    - default: false
-      description: 'State of the ticket, for example: "Closed" or "7" or "7 - Closed".'
-      isArray: false
+    - description: 'State of the ticket, for example: "Closed" or "7" or "7 - Closed".'
       name: state
-      required: false
-      secret: false
-    - default: false
-      description: ' Date/time the ticket was opened, in the format: YYYY-MM-DD HH:MM:SS.'
-      isArray: false
+    - description: ' Date/time the ticket was opened, in the format: YYYY-MM-DD HH:MM:SS.'
       name: opened_at
-      required: false
-      secret: false
-    - default: false
-      description: Caller system ID.
-      isArray: false
+    - description: Caller system ID.
       name: caller
-      required: false
-      secret: false
-    - default: false
-      description: Ticket approval.
-      isArray: false
+    - description: Ticket approval.
       name: approval
-      required: false
-      secret: false
-    - default: false
-      description: 'Additional fields in the format: fieldname1=value;fieldname2=value;'
-      isArray: false
+    - description: 'Additional fields in the format: fieldname1=value;fieldname2=value;'
       name: additional_fields
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
-      description: Flag that indicates whether to set field values using the display
-        value or the actual value. 'true' treats input values as the display value.
-        'false' treats input values as actual values. Default is false.
-      isArray: false
+      description: Flag that indicates whether to set field values using the display value or the actual value. 'true' treats input values as the display value. 'false' treats input values as actual values. Default is false.
       name: input_display_value
       predefined:
       - 'false'
       - 'true'
-      required: false
-      secret: false
-    - default: false
-      defaultValue: ;
-      description: The delimiter character to use as a separator for a list of fields
-        in an argument for this command. Default is ';'.
-      isArray: false
+    - defaultValue: ;
+      description: The delimiter character to use as a separator for a list of fields in an argument for this command. Default is ';'.
       name: fields_delimiter
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Business criticallity of the ticket.
-      isArray: false
       name: business_criticality
       predefined:
-        - 3 - Non-Critical
-        - 2 - High
-        - 1 - Critical
-      required: false
-      secret: false
-    - default: false
-      description: Incident risk score.
-      isArray: false
+      - 3 - Non-Critical
+      - 2 - High
+      - 1 - Critical
+    - description: Incident risk score.
       name: risk_score
-      required: false
-      secret: false
-    deprecated: false
     description: Creates new ServiceNow ticket.
-    execution: false
     name: servicenow-create-ticket
     outputs:
     - contextPath: ServiceNow.Ticket.ID
@@ -838,18 +510,11 @@ script:
       description: Ticket close code.
       type: string
   - arguments:
-    - default: false
-      description: Short description of the ticket.
-      isArray: false
+    - description: Short description of the ticket.
       name: short_description
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: incident
-      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
-        "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
-      isArray: false
+      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
       name: ticket_type
       predefined:
       - incident
@@ -859,132 +524,59 @@ script:
       - sc_task
       - sc_req_item
       - sn_si_incident
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: Ticket urgency. You can either select from the predefined options
-        or enter another value. For example, "Urgent" or "5".
-      isArray: false
+      description: Ticket urgency. You can either select from the predefined options or enter another value. For example, "Urgent" or "5".
       name: urgency
       predefined:
       - 3 - Low
       - 2 - Medium
       - 1 - High
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: Ticket severity. You can either select from the predefined options
-        or enter another value. For example, "Urgent" or "5".
-      isArray: false
+      description: Ticket severity. You can either select from the predefined options or enter another value. For example, "Urgent" or "5".
       name: severity
       predefined:
       - 3 - Low
       - 2 - Medium
       - 1 - High
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Ticket impact.
-      isArray: false
       name: impact
       predefined:
       - 3 - Low
       - 2 - Medium
       - 1 - High
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether the ticket is Active. Can be "true" or "false".
-      isArray: false
       name: active
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: 'The ticket activity due date, in the format: "2016-07-02 21:51:11".'
-      isArray: false
+    - description: 'The ticket activity due date, in the format: "2016-07-02 21:51:11".'
       name: activity_due
-      required: false
-      secret: false
-    - default: false
-      description: List of users assigned to the ticket.
-      isArray: false
+    - description: List of users assigned to the ticket.
       name: additional_assignee_list
-      required: false
-      secret: false
-    - default: false
-      description: Ticket history approval.
-      isArray: false
+    - description: Ticket history approval.
       name: approval_history
-      required: false
-      secret: false
-    - default: false
-      description: 'The ticket approval set date/time, in the format: "2016-07-02
-        21:51:11".'
-      isArray: false
+    - description: 'The ticket approval set date/time, in the format: "2016-07-02 21:51:11".'
       name: approval_set
-      required: false
-      secret: false
-    - default: false
-      description: User assigned to the ticket.
-      isArray: false
+    - description: User assigned to the ticket.
       name: assigned_to
-      required: false
-      secret: false
-    - default: false
-      description: 'Business duration, in the format: YYYY-MM-DD HH:MM:SS.'
-      isArray: false
+    - description: 'Business duration, in the format: YYYY-MM-DD HH:MM:SS.'
       name: business_duration
-      required: false
-      secret: false
-    - default: false
-      description: Business service.
-      isArray: false
+    - description: Business service.
       name: business_service
-      required: false
-      secret: false
-    - default: false
-      description: Business source.
-      isArray: false
+    - description: Business source.
       name: business_stc
-      required: false
-      secret: false
-    - default: false
-      description: 'Calendar duration, in the format: YYYY-MM-DD HH:MM:SS.'
-      isArray: false
+    - description: 'Calendar duration, in the format: YYYY-MM-DD HH:MM:SS.'
       name: calendar_duration
-      required: false
-      secret: false
-    - default: false
-      description: Caller ID (UID format).
-      isArray: false
+    - description: Caller ID (UID format).
       name: caller_id
-      required: false
-      secret: false
-    - default: false
-      description: Category name.
-      isArray: false
+    - description: Category name.
       name: category
-      required: false
-      secret: false
-    - default: false
-      description: UID format.
-      isArray: false
+    - description: UID format.
       name: caused_by
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: Ticket's close code. Can be "Solved (Work Around)", "Solved (Permanently)",
-        "Solved Remotely (Work Around)", "Solved Remotely (Permanently)", "Not Solved
-        (Not Reproducible)", "Not Solved (Too Costly)", or "Closed/Resolved by Caller".
-      isArray: false
+      description: Ticket's close code. Can be "Solved (Work Around)", "Solved (Permanently)", "Solved Remotely (Work Around)", "Solved Remotely (Permanently)", "Not Solved (Not Reproducible)", "Not Solved (Too Costly)", or "Closed/Resolved by Caller".
       name: close_code
       predefined:
       - Solved (Work Around)
@@ -994,273 +586,100 @@ script:
       - Not Solved (Not Reproducible)
       - Not Solved (Too Costly)
       - Closed/Resolved by Caller
-      required: false
-      secret: false
-    - default: false
-      description: Close notes of the ticket.
-      isArray: false
+    - description: Close notes of the ticket.
       name: close_notes
-      required: false
-      secret: false
-    - default: false
-      description: 'Date/time the ticket was closed, in the format: YYYY-MM-DD HH:MM:SS.'
-      isArray: false
+    - description: 'Date/time the ticket was closed, in the format: YYYY-MM-DD HH:MM:SS.'
       name: closed_at
-      required: false
-      secret: false
-    - default: false
-      description: User who closed the ticket.
-      isArray: false
+    - description: User who closed the ticket.
       name: closed_by
-      required: false
-      secret: false
-    - default: false
-      description: UID Format.
-      isArray: false
+    - description: UID Format.
       name: cmdb_ci
-      required: false
-      secret: false
-    - default: false
-      description: Format type journal input.
-      isArray: false
+    - description: Format type journal input.
       name: comments
-      required: false
-      secret: false
-    - default: false
-      description: Format type journal input.
-      isArray: false
+    - description: Format type journal input.
       name: comments_and_work_notes
-      required: false
-      secret: false
-    - default: false
-      description: UID Format.
-      isArray: false
+    - description: UID Format.
       name: company
-      required: false
-      secret: false
-    - default: false
-      description: Contact type.
-      isArray: false
+    - description: Contact type.
       name: contact_type
-      required: false
-      secret: false
-    - default: false
-      description: Correlation display.
-      isArray: false
+    - description: Correlation display.
       name: correlation_display
-      required: false
-      secret: false
-    - default: false
-      description: Correlation ID.
-      isArray: false
+    - description: Correlation ID.
       name: correlation_id
-      required: false
-      secret: false
-    - default: false
-      description: UID Format.
-      isArray: false
+    - description: UID Format.
       name: delivery_plan
-      required: false
-      secret: false
-    - default: false
-      description: Ticket description.
-      isArray: false
+    - description: Ticket description.
       name: description
-      required: false
-      secret: false
-    - default: false
-      description: 'Ticket due date, in the format: YYYY-MM-DD HH:MM:SS.'
-      isArray: false
+    - description: 'Ticket due date, in the format: YYYY-MM-DD HH:MM:SS.'
       name: due_date
-      required: false
-      secret: false
-    - default: false
-      description: 'Expected start date/time, in the format: YYYY-MM-DD HH:MM:SS.'
-      isArray: false
+    - description: 'Expected start date/time, in the format: YYYY-MM-DD HH:MM:SS.'
       name: expected_start
-      required: false
-      secret: false
-    - default: false
-      description: 'Follow up date/time, in the format: YYYY-MM-DD HH:MM:SS.'
-      isArray: false
+    - description: 'Follow up date/time, in the format: YYYY-MM-DD HH:MM:SS.'
       name: follow_up
-      required: false
-      secret: false
-    - default: false
-      description: UID format list.
-      isArray: false
+    - description: UID format list.
       name: group_list
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: Whether the ticket is solved in the knowledge base. Can be "true"
-        or "false".
-      isArray: false
+      description: Whether the ticket is solved in the knowledge base. Can be "true" or "false".
       name: knowledge
       predefined:
       - 'true'
       - 'false'
-      required: false
-      secret: false
-    - default: false
-      description: Location of the ticket.
-      isArray: false
+    - description: Location of the ticket.
       name: location
-      required: false
-      secret: false
-    - default: false
-      description: SLA of the ticket.
-      isArray: false
+    - description: SLA of the ticket.
       name: made_sla
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Whether to be notified about this ticket. Can be "1" or "0".
-      isArray: false
       name: notify
       predefined:
       - '1'
       - '0'
-      required: false
-      secret: false
-    - default: false
-      description: Order number.
-      isArray: false
+    - description: Order number.
       name: order
-      required: false
-      secret: false
-    - default: false
-      description: Parent (UID format).
-      isArray: false
+    - description: Parent (UID format).
       name: parent
-      required: false
-      secret: false
-    - default: false
-      description: Parent incident (UID format).
-      isArray: false
+    - description: Parent incident (UID format).
       name: parent_incident
-      required: false
-      secret: false
-    - default: false
-      description: Problem ID (UID format).
-      isArray: false
+    - description: Problem ID (UID format).
       name: problem_id
-      required: false
-      secret: false
-    - default: false
-      description: The number of users included in this ticket.
-      isArray: false
+    - description: The number of users included in this ticket.
       name: reassignment_count
-      required: false
-      secret: false
-    - default: false
-      description: The number of times the ticket has been reopened.
-      isArray: false
+    - description: The number of times the ticket has been reopened.
       name: reopen_count
-      required: false
-      secret: false
-    - default: false
-      description: 'Date/time the ticket was resolved, in the format: YYYY-MM-DD HH:MM:SS.'
-      isArray: false
+    - description: 'Date/time the ticket was resolved, in the format: YYYY-MM-DD HH:MM:SS.'
       name: resolved_at
-      required: false
-      secret: false
-    - default: false
-      description: Resolved by (UID format).
-      isArray: false
+    - description: Resolved by (UID format).
       name: resolved_by
-      required: false
-      secret: false
-    - default: false
-      description: UID
-      isArray: false
+    - description: UID
       name: rfc
-      required: false
-      secret: false
-    - default: false
-      description: 'SLA due date/time, in the format: YYYY-MM-DD HH:MM:SS.'
-      isArray: false
+    - description: 'SLA due date/time, in the format: YYYY-MM-DD HH:MM:SS.'
       name: sla_due
-      required: false
-      secret: false
-    - default: false
-      description: Ticket subcategory.
-      isArray: false
+    - description: Ticket subcategory.
       name: subcategory
-      required: false
-      secret: false
-    - default: false
-      description: Last updated by
-      isArray: false
+    - description: Last updated by
       name: sys_updated_by
-      required: false
-      secret: false
-    - default: false
-      description: Date/time the system was last updated.
-      isArray: false
+    - description: Date/time the system was last updated.
       name: sys_updated_on
-      required: false
-      secret: false
-    - default: false
-      description: Input from the end user.
-      isArray: false
+    - description: Input from the end user.
       name: user_input
-      required: false
-      secret: false
-    - default: false
-      description: A list of watched tickets.
-      isArray: false
+    - description: A list of watched tickets.
       name: watch_list
-      required: false
-      secret: false
-    - default: false
-      description: 'Format: YYYY-MM-DD HH:MM:SS'
-      isArray: false
+    - description: 'Format: YYYY-MM-DD HH:MM:SS'
       name: work_end
-      required: false
-      secret: false
-    - default: false
-      description: Format journal list.
-      isArray: false
+    - description: Format journal list.
       name: work_notes
-      required: false
-      secret: false
-    - default: false
-      description: Comma-separated list of work notes UIDs.
-      isArray: false
+    - description: Comma-separated list of work notes UIDs.
       name: work_notes_list
-      required: false
-      secret: false
-    - default: false
-      description: Date/time when work started on the ticket.
-      isArray: false
+    - description: Date/time when work started on the ticket.
       name: work_start
-      required: false
-      secret: false
-    - default: false
-      description: Assignment group UID.
-      isArray: false
+    - description: Assignment group UID.
       name: assignment_group
-      required: false
-      secret: false
-    - default: false
-      description: Number representing the incident state.
-      isArray: false
+    - description: Number representing the incident state.
       name: incident_state
-      required: false
-      secret: false
-    - default: false
-      description: Ticket number.
-      isArray: false
+    - description: Ticket number.
       name: number
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Priority of the ticket.
-      isArray: false
       name: priority
       predefined:
       - 5 - Planning
@@ -1268,113 +687,57 @@ script:
       - 3 - Moderate
       - 2 - High
       - 1 - Critical
-      required: false
-      secret: false
-    - default: false
-      description: System ID of the ticket to update.
-      isArray: false
+    - description: System ID of the ticket to update.
       name: id
       required: true
-      secret: false
-    - default: false
-      description: 'Custom (user defined) fields in the format: fieldname1=value;fieldname2=value;
-        custom fields start with a "u_".'
-      isArray: false
+    - description: 'Custom (user defined) fields in the format: fieldname1=value;fieldname2=value; custom fields start with a "u_".'
       name: custom_fields
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: normal
-      description: Type of Change Request ticket. Can be "normal", "standard", or
-        "emergency". Default is "normal".
-      isArray: false
+      description: Type of Change Request ticket. Can be "normal", "standard", or "emergency". Default is "normal".
       name: change_type
       predefined:
       - normal
       - standard
       - emergency
-      required: false
-      secret: false
-    - default: false
-      description: 'State of the ticket, for example: "Closed" or "7" or "7 - Closed".'
-      isArray: false
+    - description: 'State of the ticket, for example: "Closed" or "7" or "7 - Closed".'
       name: state
-      required: false
-      secret: false
-    - default: false
-      description: Caller system ID.
-      isArray: false
+    - description: Caller system ID.
       name: caller
-      required: false
-      secret: false
-    - default: false
-      description: Ticket approval.
-      isArray: false
+    - description: Ticket approval.
       name: approval
-      required: false
-      secret: false
-    - default: false
-      description: 'Additional fields in the format: fieldname1=value;fieldname2=value;'
-      isArray: false
+    - description: 'Additional fields in the format: fieldname1=value;fieldname2=value;'
       name: additional_fields
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       defaultValue: 'false'
-      description: Flag that indicates whether to set field values using the display
-        value or the actual value. 'true' treats input values as the display value.
-        'false' treats input values as actual values. Default is false.
-      isArray: false
+      description: Flag that indicates whether to set field values using the display value or the actual value. 'true' treats input values as the display value. 'false' treats input values as actual values. Default is false.
       name: input_display_value
       predefined:
       - 'false'
       - 'true'
-      required: false
-      secret: false
-    - default: false
-      defaultValue: ;
-      description: The delimiter character to use as a separator for a list of fields
-        in an argument for this command. Default is ';'.
-      isArray: false
+    - defaultValue: ;
+      description: The delimiter character to use as a separator for a list of fields in an argument for this command. Default is ';'.
       name: fields_delimiter
-      required: false
-      secret: false
-    - default: false
-      description: A comma-separated list of fields to clear.
+    - description: A comma-separated list of fields to clear.
       isArray: true
       name: clear_fields
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: Business criticallity of the ticket.
-      isArray: false
       name: business_criticality
       predefined:
-        - 3 - Non-Critical
-        - 2 - High
-        - 1 - Critical
-      required: false
-      secret: false
-    - default: false
-      description: Incident risk score.
-      isArray: false
+      - 3 - Non-Critical
+      - 2 - High
+      - 1 - Critical
+    - description: Incident risk score.
       name: risk_score
-      required: false
-      secret: false
-    deprecated: false
     description: Updates the specified ticket.
-    execution: false
     name: servicenow-update-ticket
   - arguments:
     - description: Ticket System ID
       name: id
       required: true
     - auto: PREDEFINED
-      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
-        "sc_task", "sc_req_item", or "sn_si_incident".
+      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", or "sn_si_incident".
       name: ticket_type
       predefined:
       - incident
@@ -1392,8 +755,7 @@ script:
       name: limit
     - auto: PREDEFINED
       defaultValue: incident
-      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
-        "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
+      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
       name: ticket_type
       predefined:
       - incident
@@ -1408,12 +770,10 @@ script:
     - defaultValue: '0'
       description: Starting record index from which to begin retrieving records.
       name: offset
-    - description: Additional fields to present in the War Room entry and incident
-        context. Can be nested (in the form of field1.field2).
+    - description: Additional fields to present in the War Room entry and incident context. Can be nested (in the form of field1.field2).
       isArray: true
       name: additional_fields
-    - description: 'System parameters in the format: fieldname1=value;fieldname2=value.
-        For example: "sysparm_display_value=true;sysparm_exclude_reference_link=True"'
+    - description: 'System parameters in the format: fieldname1=value;fieldname2=value. For example: "sysparm_display_value=true;sysparm_exclude_reference_link=True"'
       name: system_params
     description: Retrieves ticket information according to the supplied query.
     name: servicenow-query-tickets
@@ -1428,9 +788,7 @@ script:
       description: The date/time when the ticket was created.
       type: date
     - contextPath: Ticket.Assignee
-      description: Specifies the user assigned to complete the ticket. By default,
-        this field uses a reference qualifier to only display users with the ITIL
-        role.
+      description: Specifies the user assigned to complete the ticket. By default, this field uses a reference qualifier to only display users with the ITIL role.
       type: string
     - contextPath: Ticket.State
       description: Status of the ticket.
@@ -1442,8 +800,7 @@ script:
       description: The display value of the ticket.
       type: string
     - contextPath: Ticket.Active
-      description: Specifies whether work is still being done on a task or whether
-        the work for the task is complete.
+      description: Specifies whether work is still being done on a task or whether the work for the task is complete.
       type: boolean
     - contextPath: Ticket.AdditionalComments
       description: Comments about the task record.
@@ -1463,8 +820,7 @@ script:
       required: true
     - auto: PREDEFINED
       defaultValue: incident
-      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
-        "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
+      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
       name: ticket_type
       predefined:
       - incident
@@ -1473,12 +829,10 @@ script:
       - sc_request
       - sc_task
       - sn_si_incident
-    - description: The actual link to publish in ServiceNow ticket, in a valid URL
-        format, for example, http://www.demisto.com.
+    - description: The actual link to publish in ServiceNow ticket, in a valid URL format, for example, http://www.demisto.com.
       name: link
       required: true
-    - description: Whether to publish the link as comment on the ticket. Can be "true"
-        or "false". If false will publish the link as WorkNote.
+    - description: Whether to publish the link as comment on the ticket. Can be "true" or "false". If false will publish the link as WorkNote.
       name: post-as-comment
     - description: The text to represent the link.
       name: text
@@ -1490,8 +844,7 @@ script:
       required: true
     - auto: PREDEFINED
       defaultValue: incident
-      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
-        "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
+      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
       name: ticket_type
       predefined:
       - incident
@@ -1505,8 +858,7 @@ script:
       required: true
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Whether to publish the note as comment on the ticket. Can be "true"
-        or "false". Default is "false".
+      description: Whether to publish the note as comment on the ticket. Can be "true" or "false". Default is "false".
       name: post-as-comment
       predefined:
       - 'true'
@@ -1519,8 +871,7 @@ script:
       required: true
     - auto: PREDEFINED
       defaultValue: incident
-      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
-        "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
+      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
       name: ticket_type
       predefined:
       - incident
@@ -1532,8 +883,7 @@ script:
     - description: War Room entry ID that includes the file.
       name: file_id
       required: true
-    - description: Filename of the uploaded file to override the existing file name
-        in the entry.
+    - description: Filename of the uploaded file to override the existing file name in the entry.
       name: file_name
     description: Uploads a file to the specified ticket.
     name: servicenow-upload-file
@@ -1551,8 +901,7 @@ script:
     - description: Record System ID.
       name: id
       required: true
-    - description: Comma-separated list of table fields to display and output to the
-        context. For example, name,tag,company. ID field is added by default.
+    - description: Comma-separated list of table fields to display and output to the context. For example, name,tag,company. ID field is added by default.
       name: fields
     - description: The name of the table from which to get the record.
       name: table_name
@@ -1564,12 +913,10 @@ script:
       description: The unique record identifier for the record.
       type: string
     - contextPath: ServiceNow.Record.UpdatedBy
-      description: A string field that indicates the user who most recently updated
-        the record.
+      description: A string field that indicates the user who most recently updated the record.
       type: string
     - contextPath: ServiceNow.Record.UpdatedAt
-      description: A time-stamp field that indicates the date and time of the most
-        recent update.
+      description: A time-stamp field that indicates the date and time of the most recent update.
       type: date
     - contextPath: ServiceNow.Record.CreatedBy
       description: A string field that indicates the user who created the record.
@@ -1584,18 +931,15 @@ script:
     - defaultValue: '10'
       description: The maximum number of tickets to retrieve.
       name: limit
-    - description: The query to run. For more information about querying in ServiceNow,
-        see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
+    - description: The query to run. For more information about querying in ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
       name: query
-    - description: Comma-separated list of table fields to display and output to the
-        context. For example, name,tag,company. ID field is added by default.
+    - description: Comma-separated list of table fields to display and output to the context. For example, name,tag,company. ID field is added by default.
       isArray: true
       name: fields
     - defaultValue: '0'
       description: Starting record index from which to begin retrieving records.
       name: offset
-    - description: 'System parameters in the format: fieldname1=value;fieldname2=value.
-        For example: "sysparm_display_value=true&sysparm_exclude_reference_link=True"'
+    - description: 'System parameters in the format: fieldname1=value;fieldname2=value. For example: "sysparm_display_value=true&sysparm_exclude_reference_link=True"'
       name: system_params
     description: Queries the specified table in ServiceNow.
     name: servicenow-query-table
@@ -1604,12 +948,10 @@ script:
       description: The unique record identifier for the record.
       type: string
     - contextPath: ServiceNow.Results.UpdatedBy
-      description: A string field that indicates the user who most recently updated
-        the record.
+      description: A string field that indicates the user who most recently updated the record.
       type: string
     - contextPath: ServiceNow.Results.UpdatedAt
-      description: A time-stamp field that indicates the date and time of the most
-        recent update.
+      description: A time-stamp field that indicates the date and time of the most recent update.
       type: date
     - contextPath: ServiceNow.Results.CreatedBy
       description: A string field that indicates the user who created the record.
@@ -1621,23 +963,19 @@ script:
     - description: The name of the table in which to create a record.
       name: table_name
       required: true
-    - description: 'Fields and their values to create the record with, in the format:
-        fieldname1=value;fieldname2=value;...'
+    - description: 'Fields and their values to create the record with, in the format: fieldname1=value;fieldname2=value;...'
       name: fields
     - description: 'Custom (user defined) fields in the format: fieldname1=value;fieldname2=value;...'
       name: custom_fields
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Flag that indicates whether to set field values using the display
-        value or the actual value. 'true' treats input value as the display value.
-        'false' treats input values as actual values. Default is false.
+      description: Flag that indicates whether to set field values using the display value or the actual value. 'true' treats input value as the display value. 'false' treats input values as actual values. Default is false.
       name: input_display_value
       predefined:
       - 'false'
       - 'true'
     - defaultValue: ;
-      description: The delimiter character to use as a separator for a list of fields
-        in an argument for this command. Default is ';'.
+      description: The delimiter character to use as a separator for a list of fields in an argument for this command. Default is ';'.
       name: fields_delimiter
     description: Creates a new record in the specified ServiceNow table.
     name: servicenow-create-record
@@ -1646,12 +984,10 @@ script:
       description: The unique record identifier for the record.
       type: string
     - contextPath: ServiceNow.Record.UpdatedBy
-      description: A string field that indicates the user who most recently updated
-        the record.
+      description: A string field that indicates the user who most recently updated the record.
       type: string
     - contextPath: ServiceNow.Record.UpdatedAt
-      description: A time-stamp field that indicates the date and time of the most
-        recent update.
+      description: A time-stamp field that indicates the date and time of the most recent update.
       type: date
     - contextPath: ServiceNow.Record.CreatedBy
       description: A string field that indicates the user who created the record.
@@ -1666,24 +1002,19 @@ script:
     - description: The system ID of the ticket to update.
       name: id
       required: true
-    - description: 'Fields and their values to update in the record, in the format:
-        fieldname1=value;fieldname2=value;...'
+    - description: 'Fields and their values to update in the record, in the format: fieldname1=value;fieldname2=value;...'
       name: fields
-    - description: 'Custom (user defined) fields and their values to update in the
-        record, in the format: fieldname1=value;fieldname2=value;...'
+    - description: 'Custom (user defined) fields and their values to update in the record, in the format: fieldname1=value;fieldname2=value;...'
       name: custom_fields
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Flag that indicates whether to set field values using the display
-        value or the actual value. 'true' treats input value as the display value.
-        'false' treats input values as actual values. Default is false.
+      description: Flag that indicates whether to set field values using the display value or the actual value. 'true' treats input value as the display value. 'false' treats input values as actual values. Default is false.
       name: input_display_value
       predefined:
       - 'false'
       - 'true'
     - defaultValue: ;
-      description: The delimiter character to use as a separator for a list of fields
-        in an argument for this command. Default is ';'.
+      description: The delimiter character to use as a separator for a list of fields in an argument for this command. Default is ';'.
       name: fields_delimiter
     - description: A comma-separated list of fields to clear.
       isArray: true
@@ -1695,12 +1026,10 @@ script:
       description: The unique record identifier for the record.
       type: string
     - contextPath: ServiceNow.Record.UpdatedBy
-      description: A string field that indicates the user who most recently updated
-        the record.
+      description: A string field that indicates the user who most recently updated the record.
       type: string
     - contextPath: ServiceNow.Record.UpdatedAt
-      description: A time-stamp field that indicates the date and time of the most
-        recent update.
+      description: A time-stamp field that indicates the date and time of the most recent update.
       type: date
     - contextPath: ServiceNow.Record.CreatedBy
       description: A string field that indicates the user who created the record.
@@ -1732,8 +1061,7 @@ script:
       name: computer_id
     - description: Query by computer name.
       name: computer_name
-    - description: Query by specified query, for more information about querying in
-        ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
+    - description: Query by specified query, for more information about querying in ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
       name: query
     - description: Query by asset tag.
       name: asset_tag
@@ -1784,8 +1112,7 @@ script:
       name: group_id
     - description: Query by group name.
       name: group_name
-    - description: Query by specified query, for more information about querying in
-        ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
+    - description: Query by specified query, for more information about querying in ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
       name: query
     - defaultValue: '10'
       description: Maximum number of query results. Default is 10.
@@ -1816,8 +1143,7 @@ script:
       name: user_id
     - description: Query by username.
       name: user_name
-    - description: Query by specified query, for more information about querying in
-        ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
+    - description: Query by specified query, for more information about querying in ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
       name: query
     - defaultValue: '10'
       description: Maximum number of query results. Default is 10.
@@ -1847,8 +1173,7 @@ script:
       description: Date/time the user was last updated.
       type: date
   - arguments:
-    - description: 'The table label, for example: Asset, Incident, IP address, and
-        so on.'
+    - description: 'The table label, for example: Asset, Incident, IP address, and so on.'
       name: label
       required: true
     - defaultValue: '10'
@@ -1879,8 +1204,7 @@ script:
     - defaultValue: '0'
       description: Offset of the ticket notes.
       name: offset
-    description: Gets notes from the specified ServiceNow ticket. "Read permissions"
-      are required for the sys_journal_field table.
+    description: Gets notes from the specified ServiceNow ticket. "Read permissions" are required for the sys_journal_field table.
     name: servicenow-get-ticket-notes
     outputs:
     - contextPath: ServiceNow.Ticket.ID
@@ -1902,8 +1226,7 @@ script:
     - description: Ticket System ID.
       name: id
       required: true
-    - description: Tag system ID. Can be retrieved using the "!servicenow-query-table
-        table_name=label fields=name,active,sys_id" command.
+    - description: Tag system ID. Can be retrieved using the "!servicenow-query-table table_name=label fields=name,active,sys_id" command.
       name: tag_id
       required: true
     - description: 'Tag title. For example: "Incident - INC000001".'
@@ -1911,8 +1234,7 @@ script:
       required: true
     - auto: PREDEFINED
       defaultValue: incident
-      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request",
-        "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
+      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
       name: ticket_type
       predefined:
       - incident
@@ -1922,9 +1244,7 @@ script:
       - sc_task
       - sc_req_item
       - sn_si_incident
-    description: Adds a tag to a ticket. The added tag entry will be visible in the
-      label_entry table and can be retrieved using the "!servicenow-query-table table_name=label_entry
-      fields=title,table,sys_id,id_display,id_type" command.
+    description: Adds a tag to a ticket. The added tag entry will be visible in the label_entry table and can be retrieved using the "!servicenow-query-table table_name=label_entry fields=title,table,sys_id,id_display,id_type" command.
     name: servicenow-add-tag
     outputs:
     - contextPath: ServiceNow.Ticket.ID
@@ -1998,9 +1318,7 @@ script:
     - description: Quantity of the item to order.
       name: quantity
       required: true
-    - description: If there are mandatory variables defined for the item, they must
-        be passed to the endpoint. Can be retrieved using the !servicenow-get-item-details
-        command. For example, var1=value1;var2=value2.
+    - description: If there are mandatory variables defined for the item, they must be passed to the endpoint. Can be retrieved using the !servicenow-get-item-details command. For example, var1=value1;var2=value2.
       name: variables
     description: Orders the specified catalog item.
     name: servicenow-create-item-order
@@ -2012,8 +1330,7 @@ script:
       description: Number of the generated request.
       type: String
   - arguments:
-    - description: Queue ID. Can be retrieved using the "!servicenow-query-table table_name=awa_queue
-        fields=name,number,order" command.
+    - description: Queue ID. Can be retrieved using the "!servicenow-query-table table_name=awa_queue fields=name,number,order" command.
       name: queue_id
       required: true
     - defaultValue: incident
@@ -2022,9 +1339,7 @@ script:
     - description: Document ID.
       name: document_id
       required: true
-    description: Documents a route to a queue. Requires an installation of the Advanced
-      Work Assignments plugin. An active queue and service channel to the designated
-      table.
+    description: Documents a route to a queue. Requires an installation of the Advanced Work Assignments plugin. An active queue and service channel to the designated table.
     name: servicenow-document-route-to-queue
     outputs:
     - contextPath: ServiceNow.WorkItem.WorkItemID
@@ -2040,8 +1355,7 @@ script:
       description: Unique ID of the queue on which to route a document.
       type: String
     - contextPath: ServiceNow.WorkItem.DisplayName
-      description: 'Name of the document to be routed by this work item, for example:
-        case record.'
+      description: 'Name of the document to be routed by this work item, for example: case record.'
       type: String
   - arguments: []
     description: Returns the list of fields for an incident type.
@@ -2053,8 +1367,7 @@ script:
     - description: Retrieve entries that were created after lastUpdate.
       name: lastUpdate
       required: true
-    description: Get remote data from a remote incident. This method does not update
-      the current incident, and should be used for debugging purposes.
+    description: Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes.
     name: get-remote-data
   - arguments:
     - description: The username to use for login.
@@ -2065,21 +1378,15 @@ script:
       name: password
       required: true
       secret: true
-    description: This function should be used once before running any command when
-      using OAuth2 authentication.
+    description: This function should be used once before running any command when using OAuth2 authentication.
     name: servicenow-oauth-login
   - arguments: []
     description: Test the instance configuration when using OAuth2 authentication.
     name: servicenow-oauth-test
   - arguments:
-    - description: Date string in local time representing the last time the incident
-        was updated. The incident is only returned if it was modified after the last
-        update time.
+    - description: Date string in local time representing the last time the incident was updated. The incident is only returned if it was modified after the last update time.
       name: lastUpdate
-    description: Gets the list of incidents that were modified since the last update
-      time. Note that this method is here for debugging purposes. The get-modified-remote-data
-      command is used as part of a Mirroring feature, which is available from version
-      6.1.
+    description: Gets the list of incidents that were modified since the last update time. Note that this method is here for debugging purposes. The get-modified-remote-data command is used as part of a Mirroring feature, which is available from version 6.1.
     name: get-modified-remote-data
   - arguments:
     - description: Template for creating a standard change request.
@@ -2185,7 +1492,7 @@ script:
     - contextPath: ServiceNow.Generic.Response
       description: Generic response to servicenow api
       type: string
-  dockerimage: demisto/python3:3.10.4.30607
+  dockerimage: demisto/python3:3.10.5.31928
   isfetch: true
   ismappable: true
   isremotesyncin: true

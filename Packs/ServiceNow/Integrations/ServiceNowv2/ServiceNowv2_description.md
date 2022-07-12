@@ -34,6 +34,3 @@ If MFA is enabled for your user, follow the next steps:
 In case the **look-back** parameter is initialized with a certain value and during a time that incidents were fetched, if changing 
 the look back to a number that is greater than the previous value, then in the initial incident fetching there will be incidents duplications.
 If the integration was already set with look back > 0, and the look-back is not being increased at any point of time, then those incident duplications would not occur.
-
----
-[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/service-now-v2)

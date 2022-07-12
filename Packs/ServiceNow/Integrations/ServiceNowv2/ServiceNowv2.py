@@ -5,7 +5,6 @@ from urllib import parse
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -2685,6 +2684,7 @@ def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
+
     command = demisto.command()
     LOG(f'Executing command {command}')
 
