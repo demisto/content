@@ -21,6 +21,8 @@ Test Collection Unit-Test cases
 - `B` has a single pack, with only test playbooks. (they should be collected)
 - `C` has a pack supported by both marketplaces, and one only for marketplacev2 and one only for XSOAR.
 - `D` has a single pack with from_version == to_version == 6.5, for testing the version range. 
+- `E` has a single pack with a script tested using myTestPlaybook
+- `F` has a single pack with a script set up as `no tests`, and a conf where myTestPlaybook is set as the script's test.
 """
 
 
@@ -59,6 +61,8 @@ class MockerCases:
     B_xsoar = CollectTestsMocker(Path('test_data/B_xsoar'))
     C = CollectTestsMocker(Path('test_data/C'))
     D = CollectTestsMocker(Path('test_data/D'))
+    E = CollectTestsMocker(Path('test_data/E'))
+    F = CollectTestsMocker(Path('test_data/F'))
 
 
 def _test(monkeypatch, case_mocker: CollectTestsMocker, run_nightly: bool, run_master: bool, collector_class: Callable,
@@ -113,13 +117,7 @@ def _test(monkeypatch, case_mocker: CollectTestsMocker, run_nightly: bool, run_m
 @pytest.mark.parametrize('case_mocker,collector_class,expected_tests,expected_packs', (
         (MockerCases.empty, XSOARNightlyTestCollector, XSOAR_SANITY_TEST_NAMES, ()),
         (MockerCases.empty, XSIAMNightlyTestCollector, (), ()),
-        (MockerCases.empty_xsiam, XSIAMNightlyTestCollector, ('some_xsiam_test_only_mentioned_in_conf_json',), ()),
-
-        (MockerCases.C, XSOARNightlyTestCollector, ('myXSOAROnlyTestPlaybook', 'myTestPlaybook'),
-         ('bothMarketplacesPack', 'bothMarketplacesPackOnlyXSIAMIntegration', 'myXSOAROnlyPack')),
-
-        (MockerCases.C, XSIAMNightlyTestCollector,
-         ('myXSIAMOnlyTestPlaybook',), ('myXSIAMOnlyPack', 'bothMarketplacesPackOnlyXSIAMIntegration')),
+        (MockerCases.empty_xsiam, XSIAMNightlyTestCollector, ('some_xsiam_test_only_mentioned_in_conf_json',), ())
 ))
 @pytest.mark.parametrize('run_master', (True, False))
 def test_nightly_empty(monkeypatch, case_mocker, run_master: bool, collector_class: Callable,
@@ -150,13 +148,21 @@ NIGHTLY_EXPECTED_TESTS = {'myTestPlaybook', 'myOtherTestPlaybook'}
         (MockerCases.B_xsoar, XSOARNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSOAROnlyPack',), None),
         (MockerCases.A_xsiam, XSIAMNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSIAMOnlyPack',), None),
         (MockerCases.B_xsiam, XSIAMNightlyTestCollector, NIGHTLY_EXPECTED_TESTS, ('myXSIAMOnlyPack',), None),
+
         (MockerCases.C, XSOARNightlyTestCollector,
          {'myXSOAROnlyTestPlaybook', 'myTestPlaybook'},
          {'bothMarketplacesPack', 'bothMarketplacesPackOnlyXSIAMIntegration', 'myXSOAROnlyPack'}, None),
+
         (MockerCases.C, XSIAMNightlyTestCollector, {'myXSIAMOnlyTestPlaybook'},
          {'myXSIAMOnlyPack', 'bothMarketplacesPackOnlyXSIAMIntegration'}, None),
+
         (MockerCases.D, XSOARNightlyTestCollector, {'myTestPlaybook'}, {'myPack'},
          (Machine.V6_5, Machine.MASTER, Machine.NIGHTLY)),
+
+        (MockerCases.E, XSOARNightlyTestCollector, {'myTestPlaybook', 'myOtherTestPlaybook'}, {'myPack'}, None),
+        (MockerCases.E, XSIAMNightlyTestCollector, {}, {}, None),
+
+        (MockerCases.F, XSOARNightlyTestCollector, {'myTestPlaybook', 'myOtherTestPlaybook'}, {'myPack'}, None),
 ))
 def test_nightly(monkeypatch, case_mocker, collector_class: Callable, expected_tests: set[str],
                  expected_packs: tuple[str],
@@ -166,7 +172,6 @@ def test_nightly(monkeypatch, case_mocker, collector_class: Callable, expected_t
     when:   collecting tests with a NightlyTestCollector
     then:   make sure tests are collected from integration and id_set
     """
-    # noinspection PyTypeChecker
 
     _test(
         monkeypatch,
@@ -213,6 +218,12 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
              XSOAR_BRANCH_ARGS, ('Packs/myXSOAROnlyPack/TestPlaybooks/myTestPlaybook.yml',
                                  'Packs/myXSOAROnlyPack/TestPlaybooks/myOtherTestPlaybook.yml',)),
 
+            (MockerCases.E, ('myOtherTestPlaybook',), ('myPack',), None, XSOAR_BRANCH_ARGS, (
+                    'Packs/myPack/TestPlaybooks/myOtherTestPlaybook.yml',
+            )),
+            (MockerCases.F, ('myTestPlaybook',), ('myPack',), None, XSOAR_BRANCH_ARGS, (
+                    'Packs/myPack/Scripts/myScript/myScript.yml',
+            )),
     ))
 def test_branch(
         monkeypatch,
