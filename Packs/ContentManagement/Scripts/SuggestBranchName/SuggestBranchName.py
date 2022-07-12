@@ -11,13 +11,12 @@ def find_available_branch(pack_name):
     for i in range(ATTEMPS):
         if i > 0:
             branch_name = f'{pack_name}_{i}'
-        get_branch_res = demisto.executeCommand('GitHub-get-branch', {'branch_name': branch_name})
-        if is_error(get_branch_res):
-            get_branch_error = str(get_error(get_branch_res))
-            if 'Branch not found' in get_branch_error:
+        status, get_branch_res = execute_command('GitHub-get-branch', {'branch_name': branch_name}, fail_on_error=False)
+        if not status:
+            if 'Branch not found' in get_branch_res:
                 return branch_name
             else:
-                raise DemistoException(get_branch_error)
+                raise DemistoException(get_branch_res)
 
 
 ''' MAIN FUNCTION '''

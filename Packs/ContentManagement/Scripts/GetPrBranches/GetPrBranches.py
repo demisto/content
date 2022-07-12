@@ -9,11 +9,9 @@ def main():
     try:
         branches = ['']
 
-        res = demisto.executeCommand('GetIncidentsByQuery', {'incidentTypes': "Pull Request Creation"})
-        if isError(res):
-            return_error(f'Error occurred while trying to get incidents by query: {get_error(res)}')
+        res = execute_command('GetIncidentsByQuery', {'incidentTypes': "Pull Request Creation"})
 
-        incidents_from_query = json.loads(res[0]['Contents'])
+        incidents_from_query = json.loads(res)
         for incident in incidents_from_query:
             branch = incident.get('CustomFields', {}).get('cicdbranch')
             if branch:
