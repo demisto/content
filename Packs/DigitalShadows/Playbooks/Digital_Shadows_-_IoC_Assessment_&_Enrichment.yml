@@ -391,10 +391,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '47':
     id: '47'
-    taskid: 1afeae32-2d7b-4c33-8514-9345b0048fc2
+    taskid: 46fbcf9c-66fe-4ba7-8611-b46f252c56ec
     type: playbook
     task:
-      id: 1afeae32-2d7b-4c33-8514-9345b0048fc2
+      id: 46fbcf9c-66fe-4ba7-8611-b46f252c56ec
       version: -1
       name: Digital Shadows - IP_IoC Assessment & Enrichment
       playbookName: Digital Shadows - IP_IoC Assessment & Enrichment
@@ -424,13 +424,19 @@ tasks:
       IoC_IP:
         complex:
           root: .
-          filters:
           transformers:
           - operator: DsSearchQueryArray
             args:
-              field:
+              cve: {}
+              domain: {}
+              ip:
                 value:
                   simple: IP.Address
+                iscontext: true
+              md5: {}
+              sha1: {}
+              sha256: {}
+              url: {}
     loop:
       iscommand: false
       exitCondition: ''
@@ -439,10 +445,10 @@ tasks:
       forEach: true
   '48':
     id: '48'
-    taskid: b1489b05-e26b-48b6-8390-648530cdd313
+    taskid: 0675c44f-f006-471f-8fdb-408847659369
     type: playbook
     task:
-      id: b1489b05-e26b-48b6-8390-648530cdd313
+      id: 0675c44f-f006-471f-8fdb-408847659369
       version: -1
       name: Digital Shadows - CVE_IoC Assessment & Enrichment
       playbookName: Digital Shadows - CVE_IoC Assessment & Enrichment
@@ -486,10 +492,10 @@ tasks:
       forEach: true
   '49':
     id: '49'
-    taskid: 9252c827-7b00-44dc-8f5f-bbaabce3a356
+    taskid: d970da70-c59d-4ad0-8ed3-af2512fa68d3
     type: playbook
     task:
-      id: 9252c827-7b00-44dc-8f5f-bbaabce3a356
+      id: d970da70-c59d-4ad0-8ed3-af2512fa68d3
       version: -1
       name: Digital Shadows - Domain_IoC Assessment & Enrichment
       playbookName: Digital Shadows - Domain_IoC Assessment & Enrichment
@@ -522,9 +528,16 @@ tasks:
           transformers:
           - operator: DsSearchQueryArray
             args:
-              field:
+              cve: {}
+              domain:
                 value:
                   simple: Domain.Name
+                iscontext: true
+              ip: {}
+              md5: {}
+              sha1: {}
+              sha256: {}
+              url: {}
     loop:
       iscommand: false
       exitCondition: ''
@@ -533,10 +546,10 @@ tasks:
       forEach: true
   '50':
     id: '50'
-    taskid: a1183cfe-7523-470d-86c7-3f87a10d8095
+    taskid: 3cfe8a7d-df2b-4ec4-8c75-6f85dffebe9c
     type: playbook
     task:
-      id: a1183cfe-7523-470d-86c7-3f87a10d8095
+      id: 3cfe8a7d-df2b-4ec4-8c75-6f85dffebe9c
       version: -1
       name: Digital Shadows - URL_IoC Assessment & Enrichment
       playbookName: Digital Shadows - URL_IoC Assessment & Enrichment
@@ -569,9 +582,16 @@ tasks:
           transformers:
           - operator: DsSearchQueryArray
             args:
-              field:
+              cve: {}
+              domain: {}
+              ip: {}
+              md5: {}
+              sha1: {}
+              sha256: {}
+              url:
                 value:
                   simple: URL.Data
+                iscontext: true
     loop:
       iscommand: false
       exitCondition: ''
@@ -580,10 +600,10 @@ tasks:
       forEach: true
   '51':
     id: '51'
-    taskid: 09de8258-148c-4408-8619-6dd2b7e37a04
+    taskid: a4aabb83-b496-4fcf-8bfc-6354d80994b4
     type: playbook
     task:
-      id: 09de8258-148c-4408-8619-6dd2b7e37a04
+      id: a4aabb83-b496-4fcf-8bfc-6354d80994b4
       version: -1
       name: Digital Shadows - MD5_IoC Assessment & Enrichment
       playbookName: Digital Shadows - MD5_IoC Assessment & Enrichment
@@ -616,9 +636,16 @@ tasks:
           transformers:
           - operator: DsSearchQueryArray
             args:
-              field:
+              cve: {}
+              domain: {}
+              ip: {}
+              md5:
                 value:
                   simple: File.MD5
+                iscontext: true
+              sha1: {}
+              sha256: {}
+              url: {}
     loop:
       iscommand: false
       exitCondition: ''
@@ -627,10 +654,10 @@ tasks:
       forEach: true
   '52':
     id: '52'
-    taskid: cd1e0253-2b26-4cf1-8e35-d90e65e95886
+    taskid: 2e6d30df-c19a-40c8-81d5-7762a40507e6
     type: playbook
     task:
-      id: cd1e0253-2b26-4cf1-8e35-d90e65e95886
+      id: 2e6d30df-c19a-40c8-81d5-7762a40507e6
       version: -1
       name: Digital Shadows - SHA256_IoC Assessment & Enrichment
       playbookName: Digital Shadows - SHA256_IoC Assessment & Enrichment
@@ -663,9 +690,16 @@ tasks:
           transformers:
           - operator: DsSearchQueryArray
             args:
-              field:
+              cve: {}
+              domain: {}
+              ip: {}
+              md5: {}
+              sha1: {}
+              sha256:
                 value:
                   simple: File.SHA256
+                iscontext: true
+              url: {}
     loop:
       iscommand: false
       exitCondition: ''
@@ -674,10 +708,10 @@ tasks:
       forEach: true
   '53':
     id: '53'
-    taskid: 4f1cafa6-27a1-4f03-82b2-294fc227ffb7
+    taskid: 3b81c571-10c7-4334-8b6b-cae6275a0b10
     type: playbook
     task:
-      id: 4f1cafa6-27a1-4f03-82b2-294fc227ffb7
+      id: 3b81c571-10c7-4334-8b6b-cae6275a0b10
       version: -1
       name: Digital Shadows - SHA1_IoC Assessment & Enrichment
       playbookName: Digital Shadows - SHA1_IoC Assessment & Enrichment
@@ -710,9 +744,16 @@ tasks:
           transformers:
           - operator: DsSearchQueryArray
             args:
-              field:
+              cve: {}
+              domain: {}
+              ip: {}
+              md5: {}
+              sha1:
                 value:
                   simple: File.SHA1
+                iscontext: true
+              sha256: {}
+              url: {}
     loop:
       iscommand: false
       exitCondition: ''
