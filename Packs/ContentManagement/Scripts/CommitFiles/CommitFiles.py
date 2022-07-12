@@ -1,22 +1,12 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-import traceback
+import os
 import io
 from contextlib import redirect_stderr, redirect_stdout
 from demisto_sdk.commands.split.ymlsplitter import YmlSplitter
-
-
-TYPE_TO_FOLDER = {'playbook': 'Playbooks',
-                  'automation': 'Scripts',
-                  'integration': 'Integrations',
-                  'classifier': 'Classifiers',
-                  'incidenttype': 'IncidentTypes',
-                  'incidentfield': 'IncidentFields',
-                  'layoutscontainer': 'Layouts',
-                  'widget': 'Widgets',
-                  'dashboard': 'Dashboards'
-                  }
+from demisto_sdk.commands.common.constants import ENTITY_TYPE_TO_DIR
+from demisto_sdk.commands.common.tools import find_type
 
 PR_TEMPLATE = '### Pull Request created in Cortex XSOAR\n' \
               '**Created by:** {}\n' \
@@ -38,10 +28,10 @@ def commit_content_item(branch_name, content_file):
                    'branch_name': branch_name, 'file_text': content_file.file_text}
 
     # try to get the file from branch
-    list_files_res = demisto.executeCommand('Github-list-files', {'branch': branch_name, 'path': content_file.path_to_file})
+    status, list_files_res = execute_command('Github-list-files', {'branch': branch_name, 'path': content_file.path_to_file}, fail_on_error=False)
 
-    if not is_error(list_files_res):
-        for file in list_files_res[0]['Contents']:
+    if status:
+        for file in list_files_res:
             if file['name'] == content_file.file_name:
                 # if the file already exists - take the file sha1 value
                 file_sha = file['sha']
@@ -58,35 +48,34 @@ def commit_content_item(branch_name, content_file):
         # new file added
         new_files.append(content_file.file_name)
 
-    commit_res = demisto.executeCommand('Github-commit-file', commit_args)
-    if is_error(commit_res):
-        raise DemistoException(get_error(commit_res))
+    status, commit_res = execute_command('Github-commit-file', commit_args)
+    if not status:
+        raise DemistoException(commit_res)
 
 
 def split_yml_file(content_file):
-    file_object = demisto.getFilePath(content_file.entry_id)
-
-    if content_file.content_type == 'automation':
-        file_type = 'script'
+    if content_file.content_type == 'script':
         base_name = content_file.file_name.replace('automation-', '').replace('.yml', '')
     else:
-        file_type = 'integration'
         base_name = content_file.file_name.replace('integration-', '').replace('.yml', '')
 
     # create the yml file from entry id
-    with open(file_object['path'], 'r') as f:
-        file_contents = f.read()
-
     with open(content_file.file_name, "w") as f:
-        f.write(file_contents)
+        f.write(content_file.file_text)
 
     output_capture = io.StringIO()
 
     # split the yml file
-    yml_splitter = YmlSplitter(content_file.file_name, base_name=base_name, output=base_name, file_type=file_type,
+    yml_splitter = YmlSplitter(content_file.file_name, base_name=base_name, output=base_name, file_type=content_file.content_type,
                                no_pipenv=True, no_basic_fmt=True, no_logging=True, no_readme=True)
 
+
     script_type = yml_splitter.yml_data.get('type')
+    if not script_type:
+        script_type = yml_splitter.yml_data.get('script',{}).get('type')
+
+
+
     if script_type == 'python':
         script_extention = 'py'
     elif script_type == 'javascript':
@@ -148,10 +137,14 @@ class ContentFile:
             self.path_to_file = f'Packs/{pack_name}'
             self.content_type = 'metadata'
         else:
-            content_type = self.file_name.split('-')[0].lower()
-            folder = TYPE_TO_FOLDER[content_type]
+            with open(file_object['name'], "w") as f:
+                f.write(file_contents)
+
+            file_type = find_type(file_object['name'])
+            os.remove(file_object['name'])
+            self.content_type = file_type.value if file_type else file_type
+            folder = ENTITY_TYPE_TO_DIR.get(file_type, '')
             self.path_to_file = f'Packs/{pack_name}/{folder}'
-            self.content_type = content_type
 
 
 ''' MAIN FUNCTION '''
@@ -179,7 +172,7 @@ def main():
             # create ContentFile item
             content_file = ContentFile(pack_name=pack_name, file=file)
 
-            if content_file.content_type in ('automation', 'integration'):
+            if content_file.content_type in ('script', 'integration'):
                 # split automation file to yml and script files
                 yml_file, script_file = split_yml_file(content_file)
                 commit_content_item(branch_name, yml_file)
@@ -187,10 +180,10 @@ def main():
             else:
                 commit_content_item(branch_name, content_file)
 
-        inciden_url = demisto.demistoUrls().get('investigation')
+        incident_url = demisto.demistoUrls().get('investigation')
 
         # create the PR text
-        pr_body = PR_TEMPLATE.format(username, pack_name, branch_name, inciden_url, comment)
+        pr_body = PR_TEMPLATE.format(username, pack_name, branch_name, incident_url, comment)
         if new_files:
             pr_body = f'{pr_body}\n\n### New files\n- '
             pr_body = pr_body + '\n- '.join(new_files)
@@ -206,8 +199,7 @@ def main():
         ))
 
     except Exception as ex:
-        demisto.error(str(ex))  # print the traceback
-        return_error(f'Failed to execute CommitFiles script. Error: {str(traceback.format_exc())}')
+        return_error(f'Failed to execute CommitFiles script. Error: {ex}', error=ex)
 
 
 ''' ENTRY POINT '''
