@@ -10,11 +10,11 @@ This playbook does not use any sub-playbooks.
 This playbook does not use any integrations.
 
 ### Scripts
+* SetGridField
 * IdentifyAttachedEmail
 * Set
 * SetAndHandleEmpty
-* SetGridField
-* ParseEmailFiles
+* ParseEmailFilesV2
 
 ### Commands
 * setIncident
@@ -39,13 +39,13 @@ This playbook does not use any integrations.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| Email.HTML | The email HTML body, if it exists. | string |
-| Email | The email object. | unknown |
-| Email.CC | The email CC addresses. | string |
-| Email.From | The email 'from' sender. | string |
-| Email.Subject | The email subject. | string |
-| Email.To | The email 'to' addresses. | string |
-| Email.Text | The email text body, if it exists. | string |
+| Email.HTML | Email HTML body, if it exists. | string |
+| Email | Email object. | unknown |
+| Email.CC | Email CC addresses. | string |
+| Email.From | Email 'from' sender. | string |
+| Email.Subject | Email subject. | string |
+| Email.To | Email 'to' addresses. | string |
+| Email.Text | Email text body, if it exists. | string |
 | Email.Headers | The full email headers as a single string. | string |
 | Email.Attachments | The list of attachment names in the email. | string |
 | Email.Format | The format of the email, if available. | string |
