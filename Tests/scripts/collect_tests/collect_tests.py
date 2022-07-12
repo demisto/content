@@ -184,7 +184,7 @@ class TestCollector(ABC):
 
     def _validate_tests_in_id_set(self, tests: Iterable[str]):
         if not_found := ((set(tests) - self.sanity_tests.tests).difference(self.id_set.id_to_test_playbook.keys())):
-            not_found_string = '\n\t'.join(not_found)
+            not_found_string = ', '.join(sorted(item.id_ for item in not_found))
             logger.warning(f'{len(not_found)} tests were not found in id-set: \n{not_found_string}')
 
     # def _add_packs_used(self, tests: set[str]) -> list[CollectedTests]:  # todo is used?
@@ -265,7 +265,7 @@ class BranchTestCollector(TestCollector):
         try:
             yml = ContentItem(yml_path)
         except FileNotFoundError:
-            raise FileNotFoundError(f'could not find yml matching {PackManager.relative_to_packs(yml_path)}')
+            raise FileNotFoundError(f'could not find yml matching {PackManager.relative_to_packs(content_item_path)}')
 
         relative_path = PackManager.relative_to_packs(yml_path)
 
@@ -294,12 +294,14 @@ class BranchTestCollector(TestCollector):
 
                     match actual_content_type:
                         case FileType.SCRIPT:
-                            tests = self.id_set.implemented_scripts_to_tests.get(yml.id_)
+                            tests = tuple(test.name for test in
+                                          self.id_set.implemented_scripts_to_tests.get(yml.id_))
+
                         case FileType.PLAYBOOK:
-                            tests = self.id_set.implemented_playbooks_to_tests.get(yml.id_)
+                            tests = tuple(test.name for test in
+                                          self.id_set.implemented_playbooks_to_tests.get(yml.id_))
                         case _:
                             raise RuntimeError(f'unexpected content type folder {actual_content_type}')
-
                     if not tests:
                         original_type: str = actual_content_type.value
                         relative_path = str(PackManager.relative_to_packs(yml.path))

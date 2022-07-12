@@ -4,10 +4,7 @@
       "myScript": {
         "name": "myScript",
         "file_path": "Packs/myPack/Scripts/myScript/myScript.yml",
-        "pack": "myPack",
-        "tests": [
-          "myOtherTestPlaybook"
-        ]
+        "pack": "myPack"
       }
     }
   ],
@@ -21,6 +18,9 @@
         "marketplaces": [
           "xsoar",
           "marketplacev2"
+        ],
+        "implementing_scripts": [
+          "myScript"
         ]
       },
       "myOtherTestPlaybook": {
@@ -29,9 +29,6 @@
         "pack": "myPack",
         "marketplaces": [
           "xsoar"
-        ],
-        "implementing_scripts": [
-          "myScript"
         ]
       }
     }
