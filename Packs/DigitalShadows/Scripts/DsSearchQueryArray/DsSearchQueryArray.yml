@@ -10,9 +10,34 @@ comment: Combines an array of queries to as few as possible whilst staying under
   term count.
 enabled: true
 args:
-- description: Input field to extract data from for e.g. IP.Address
-  name: field
-  required: true
+- description: SHA-1 hashes to include in query string
+  name: sha1
+  required: false
+  isArray: true
+- description: MD5 terms to include in query string
+  name: md5
+  required: false
+  isArray: true
+- description: SHA-256 hashes to include in query string
+  name: sha256
+  required: false
+  isArray: true
+- description: domains to include in query string
+  name: domain
+  required: false
+  isArray: true
+- description: IP addresses to include in query string
+  name: ip
+  required: false
+  isArray: true
+- description: URLs to include in query string
+  name: url
+  required: false
+  isArray: true
+- description: CVE identifiers to include in query string
+  name: cve
+  required: false
+  isArray: true
 scripttarget: 0
 subtype: python3
 runonce: false
@@ -20,4 +45,4 @@ dockerimage: demisto/python3:3.10.5.31928
 runas: DBotWeakRole
 fromversion: 6.0.0
 tests:
-- No tests (auto formatted)
+- DsSearchQueryArray_test.py

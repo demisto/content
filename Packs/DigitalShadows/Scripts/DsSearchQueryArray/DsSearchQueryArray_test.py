@@ -21,15 +21,15 @@ def test_countTerms(query, output):
 
 
 @pytest.mark.parametrize(
-    "query, output",
+    "query, expected",
     [
         (TEST_DATA_URL, TEST_DATA_URL_EXPECTED),
         (TEST_DATA_URL_SINGLE, TEST_DATA_URL_SINGLE_EXPECTED),
-        (TEST_DATA_URL_SINGLE_FILTER, ""),
+        (TEST_DATA_URL_SINGLE_FILTER, []),
         (TEST_DATA_IP_SINGLE, TEST_DATA_IP_SINGLE_EXPECTED),
-        (TEST_DATA_IP_SINGLE_FILTER, ""),
+        (TEST_DATA_IP_SINGLE_FILTER, []),
         (TEST_DATA_DOMAIN_SINGLE, TEST_DATA_DOMAIN_SINGLE_EXPECTED),
-        (TEST_DATA_DOMAIN_FILTER, ""),
+        (TEST_DATA_DOMAIN_FILTER, []),
         (TEST_DATA_FILE_SHA1_SINGLE, TEST_DATA_FILE_SHA1_SINGLE_EXPECTED),
         (TEST_DATA_FILE_MD5_SINGLE, TEST_DATA_FILE_MD5_SINGLE_EXPECTED),
         (TEST_DATA_FILE_SHA256_SINGLE, TEST_DATA_FILE_SHA256_SINGLE_EXPECTED),
@@ -42,7 +42,12 @@ def test_countTerms(query, output):
         (TEST_DATA_CVE, TEST_DATA_CVE_EXPECTED),
     ],
 )
-def test_createSingleString(query, output):
+def test_createSingleString(query, expected):
     from DsSearchQueryArray import convert_to_ds_query_array
 
-    assert convert_to_ds_query_array(query) == output
+    result = convert_to_ds_query_array(query)
+    for r, e in zip(result, expected):
+        r_split = sorted(r.split(' OR '))
+        e_split = sorted(e.split(' OR '))
+        for r_term, e_term in zip(r_split, e_split):
+            assert r_term == e_term, f"{r} != {e}"
