@@ -1685,6 +1685,7 @@ class Pack(object):
 
         # Convert the RN entries to a Dict
         release_notes_dict = self.get_release_notes_dict(version, release_notes)
+        logging.info(f"[TEST] release_notes_dict - {release_notes_dict}")
 
         if self.release_notes_dont_contain_entities_sections(release_notes_str=release_notes,
                                                              release_notes_dict=release_notes_dict):
@@ -1692,8 +1693,11 @@ class Pack(object):
             return changelog_entry, False
 
         filtered_release_notes_from_tags = self.filter_headers_without_entries(release_notes_dict)  # type: ignore[arg-type]
+        logging.info(f"[TEST] filtered_release_notes_from_tags - {filtered_release_notes_from_tags}")
+
         filtered_release_notes = self.filter_release_notes_by_entities_display_name(filtered_release_notes_from_tags,
                                                                                     modified_files_data)
+        logging.info(f"[TEST] filtered_release_notes - {filtered_release_notes}")
 
         if modified_files_data and not filtered_release_notes:
             logging.debug(f"The pack {self._pack_name} does not have any release notes that are relevant to this "
@@ -1730,7 +1734,7 @@ class Pack(object):
 
             if filtered_release_notes_entries:
                 filtered_release_notes[rn_header] = filtered_release_notes_entries
-
+        logging.info(f"[TEST] filter_release_notes_by_entities_display_name - {filtered_release_notes}")
         return filtered_release_notes
 
     @staticmethod
@@ -1760,7 +1764,7 @@ class Pack(object):
                         rn_entry = rn_entry.replace(f'- **{name}**', '')
 
             filtered_entries[display_name] = rn_entry
-
+        logging.info(f"[TEST] filter_entries_by_display_name - {filtered_entries}")
         return filtered_entries
 
     @staticmethod

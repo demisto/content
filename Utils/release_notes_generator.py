@@ -132,7 +132,7 @@ def construct_entities_block(entities_data: dict) -> str:
                 release_notes += f'- **{name}**\n{description}\n'
             elif description.strip():
                 release_notes += f'##### {name}\n{description}\n'
-
+    logging.info(f"[TEST] release notes string - {release_notes}")
     return release_notes
 
 
@@ -327,6 +327,7 @@ def merge_version_blocks(pack_versions_dict: dict, return_str: bool = True) -> T
         # extract release notes sections by content types (all playbooks, all scripts, etc...)
         # assuming all entity titles start with level 4 header ("####") and then a list of all comments
         sections = ENTITY_TYPE_SECTION_REGEX.findall(version_release_notes)
+        logging.info(f"[TEST] release notes sections - {sections}")
         for section in sections:
             # one of scripts, playbooks, integrations, layouts, incident fields, etc...
             entity_type = section[0] or section[2]
@@ -338,6 +339,7 @@ def merge_version_blocks(pack_versions_dict: dict, return_str: bool = True) -> T
             # extract release notes comments by entity
             # assuming all entity titles start with level 5 header ("#####") and then a list of all comments
             entity_comments = ENTITY_SECTION_REGEX.findall(entity_section)
+            logging.info(f"[TEST] release notes entity comments - {entity_comments}")
             for entity in entity_comments:
                 # name of the script, integration, playbook, etc...
                 entity_name = entity[0] or entity[2] or entity[4]
