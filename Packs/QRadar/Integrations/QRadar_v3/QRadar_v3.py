@@ -1713,6 +1713,7 @@ def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int
     incidents = create_incidents_from_offenses(final_offenses, incident_type)
     return incidents, new_highest_offense_id
 
+
 def prepare_context_for_failed_events(offenses_with_success):
     ctx, version = get_integration_context_with_version()
     changed_offense_ids = []
@@ -3331,6 +3332,7 @@ def create_events_search(client: Client,
                          events_limit: int,
                          offense_id: int,
                          offense_start_time: str = None,
+                         **kwargs,
                          ) -> str:
     additional_where = ''' AND LOGSOURCETYPENAME(devicetype) = 'Custom Rule Engine' ''' \
         if fetch_mode == FetchMode.correlations_events_only.value else ''
@@ -3443,10 +3445,10 @@ def qradar_get_events_polling_command(client: Client,
             args=polling_args,
             timeout_in_seconds=3600,
         )
-        
+
         return CommandResults(scheduled_command=scheduled_command,
                               readable_output=f'Search ID: {search_id}',
-                              outputs_prefix='QRadar.Search',
+                              outputs_prefix='QRadar.SearchEvents',
                               outputs_key_field='ID',
                               outputs={'ID': search_id}
                               )
@@ -3454,8 +3456,9 @@ def qradar_get_events_polling_command(client: Client,
     if status == QueryStatus.ERROR.value:
         raise DemistoException(f'Polling for events for Offense {offense_id} failed')
     if status == QueryStatus.SUCCESS.value:
-        return CommandResults(outputs_prefix='QRadar.Search',
-                              outputs={'Events': events},
+        return CommandResults(outputs_prefix='QRadar.SearchEvents',
+                              outputs_key_field='ID',
+                              outputs={'Events': events, 'ID': search_id},
                               readable_output=tableToMarkdown(f'Events for offense {offense_id}',
                                                               events,
                                                               )

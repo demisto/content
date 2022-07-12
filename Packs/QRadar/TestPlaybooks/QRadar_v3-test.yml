@@ -2306,8 +2306,14 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: QRadar.Search.Result
+              simple: QRadar.SearchEvents.ID
             iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: QRadar.SearchEvents.Events
+            iscontext: true
+
     view: |-
       {
         "position": {

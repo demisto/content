@@ -2517,7 +2517,7 @@ Get Source IPs
 ### qradar-get-events-polling
 ***
 Polling command to search for events of a specific offense.
-
+This uses the instance parameters to create the AQL search query for the events. 
 
 #### Base Command
 
@@ -2534,13 +2534,15 @@ Polling command to search for events of a specific offense.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| QRadar.Search.Result | Unknown | The result of the search. | 
+| QRadar.SearchEvents.Events | Unknown | The events from QRadar search. | 
+| QRadar.SearchEvents.ID | String | The search id. | 
+
 
 #### Command example
 ```!qradar-get-events-polling offense_id=194```
 #### Human Readable Output
 
-### Search Results For Search ID b2afdb94-2c52-4cf8-be8c-a63431670072
+### Events for offense 194
 |categoryname_category|categoryname_highlevelcategory|credibility|destinationgeographiclocation|destinationip|destinationport|destinationv6|devicetime|eventDirection|eventcount|logsourcename_logsourceid|logsourcetypename_devicetype|magnitude|postNatDestinationIP|postNatDestinationPort|postNatSourceIP|postNatSourcePort|preNatDestinationPort|preNatSourceIP|preNatSourcePort|protocolname_protocolid|qiddescription_qid|qidname_qid|rulename_creEventList|severity|sourceMAC|sourcegeographiclocation|sourceip|sourceport|sourcev6|starttime|username|utf8_payload|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | Potential Windows Exploit | Potential Exploit | 10 | other | 1.1.1.1 | 0 | 0:0:0:0:0:0:0:0 | 2022-07-11T10:00:17.447000+00:00 | R2R | 1 | Custom Rule Engine-8 :: ip-172-31-41-4 | Custom Rule Engine | 8 | 0.0.0.0 | 0 | 0.0.0.0 | 0 | 0 | 0.0.0.0 | 0 | Reserved | Blacklisted hash detected in use | Blacklisted hash detected in use | Detected process with blacklist file hash,<br>BB:NetworkDefinition: Honeypot like Addresses,<br>BB:CategoryDefinition: Suspicious Event Categories,<br>BB:CategoryDefinition: Suspicious Events,<br>ECBB:CategoryDefinition: Destination IP is a Third Country/Region,<br>BB:CategoryDefinition: Medium Magnitude Events,<br>BB:CategoryDefinition: High Magnitude Events,<br>Source Asset Weight is Low,<br>Exploits Events with High Magnitude Become Offenses,<br>Source Address is a Bogon IP,<br>Destination Asset Weight is Low,<br>BB:NetworkDefinition: Darknet Addresses,<br>BB:BehaviorDefinition: Compromise Activities,<br>Load Basic Building Blocks | 10 | 00:00:00:00:00:00 | other | 1.1.1.1 | 0 | 0:0:0:0:0:0:0:0 | 2022-07-11T10:00:17.447000+00:00 | Administrator | <13>Jul 11 10:00:13 1.1.1.1 AgentDevice=WindowsLog	AgentLogFile=Microsoft-Windows-Sysmon/Operational	PluginVersion=1.1.1.1	Source=Microsoft-Windows-Sysmon	Computer=EC2AMAZ-ETKN6IA	OriginatingComputer=EC2AMAZ-ETKN6IA	User=SYSTEM	Domain=NT AUTHORITY	EventID=1	EventIDCode=1	EventType=4	EventCategory=1	RecordNumber=1062969	TimeGenerated=1657533610	TimeWritten=1657533610	Level=Informational	Keywords=0x8000000000000000	Task=SysmonTask-SYSMON_CREATE_PROCESS	Opcode=Info	Message=Process Create: RuleName:  UtcTime: 2022-07-11 10:00:10.023 ProcessGuid: {E3E61DAB-F4AA-62CB-0100-00105274F412} ProcessId: 2660 Image: C:\Program Files\Internet Explorer\iexplore.exe FileVersion: 11.00.14393.2007 (rs1_release.171231-1800) Description: Internet Explorer Product: Internet Explorer Company: Microsoft Corporation OriginalFileName: IEXPLORE.EXE CommandLine: "C:\Program Files\Internet Explorer\iexplore.exe"  CurrentDirectory: C:\Windows\system32\ User: EC2AMAZ-ETKN6IA\Administrator LogonGuid: {E3E61DAB-9C68-5F54-0000-0020EB970200} LogonId: 0x297EB TerminalSessionId: 2 IntegrityLevel: High Hashes: SHA1=D4ABAC114DBE28BAD8855C10D37F2B727177C9CA ParentProcessGuid: {E3E61DAB-F4A1-62CB-0100-0010B14FF412} ParentProcessId: 3248 ParentImage: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe ParentCommandLine: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.EXE -F "C:\Users\Administrator\Desktop\playbook.ps1"<br> |

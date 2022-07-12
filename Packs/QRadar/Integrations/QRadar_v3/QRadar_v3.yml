@@ -2682,10 +2682,10 @@ script:
     name: qradar-get-events-polling
     polling: true
     outputs:
-      - contextPath: QRadar.Search.ID
+      - contextPath: QRadar.SearchEvents.ID
         description: The search id of the query.
         type: Unknown
-      - contextPath: QRadar.Search.Events
+      - contextPath: QRadar.SearchEvents.Events
         description: The events from QRadar search.
         type: Unknown
   runonce: false
