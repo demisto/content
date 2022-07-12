@@ -3,6 +3,7 @@ from CommonServerPython import *  # noqa: F401
 
 import os
 import io
+from os.path import exists
 from contextlib import redirect_stderr, redirect_stdout
 from demisto_sdk.commands.split.ymlsplitter import YmlSplitter
 from demisto_sdk.commands.common.constants import ENTITY_TYPE_TO_DIR
@@ -54,6 +55,8 @@ def commit_content_item(branch_name, content_file):
 
 
 def split_yml_file(content_file):
+    content_files = []
+
     if content_file.content_type == 'script':
         base_name = content_file.file_name.replace('automation-', '').replace('.yml', '')
     else:
@@ -89,7 +92,8 @@ def split_yml_file(content_file):
 
     yml_file_path = f'{base_name}/{base_name}.yml'
     script_file_path = f'{base_name}/{base_name}.{script_extention}'
-    path_to_file = f'{content_file.path_to_file}/{base_name}'
+    path_to_file = f'{content_file.path_to_file}{base_name}'
+
 
     # read the py and yml files content
     with open(yml_file_path, 'r') as f:
@@ -98,18 +102,33 @@ def split_yml_file(content_file):
     with open(script_file_path, 'r') as f:
         script_txt = f.read()
 
-    # create the yml and script files
+    # create the yml file
     yml_file = ContentFile()
     yml_file.file_text = yml_txt
     yml_file.file_name = f'{base_name}.yml'
     yml_file.path_to_file = path_to_file
+    content_files.append(yml_file)
 
+    # create the script file
     script_file = ContentFile()
     script_file.file_text = script_txt
     script_file.file_name = f'{base_name}.{script_extention}'
     script_file.path_to_file = path_to_file
+    content_files.append(script_file)
 
-    return yml_file, script_file
+    # create the description file
+    description_file_path = f'{base_name}/{base_name}_description.md'
+    if exists(description_file_path):
+        with open(description_file_path, 'r') as f:
+            description_txt = f.read()
+
+        description_file = ContentFile()
+        description_file.file_text = description_txt
+        description_file.file_name = f'{base_name}_description.md'
+        description_file.path_to_file = path_to_file
+        content_files.append(description_file)
+
+    return content_files
 
 
 class ContentFile:
@@ -174,9 +193,10 @@ def main():
 
             if content_file.content_type in ('script', 'integration'):
                 # split automation file to yml and script files
-                yml_file, script_file = split_yml_file(content_file)
-                commit_content_item(branch_name, yml_file)
-                commit_content_item(branch_name, script_file)
+                content_files = split_yml_file(content_file)
+                for file in content_files:
+                    commit_content_item(branch_name, file)
+
             else:
                 commit_content_item(branch_name, content_file)
 
