@@ -10,7 +10,7 @@ This playbook does not use any sub-playbooks.
 * MitreCaldera
 
 ### Scripts
-This playbook does not use any scripts.
+* CalderaStartOperation
 
 ### Commands
 * caldera-create-operation

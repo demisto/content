@@ -325,7 +325,29 @@
                     {
                         "fieldId": "incident_owner",
                         "isVisible": true
-                    }
+                    },
+                    {
+						"fieldId": "incident_calderascheduleoperation",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_calderascheduledatetime",
+						"filters": [
+							[
+								{
+									"left": {
+										"isContext": true,
+										"value": {
+											"simple": "calderascheduleoperation"
+										}
+									},
+									"operator": "isTrue",
+									"type": "boolean"
+								}
+							]
+						],
+						"isVisible": true
+					}
                 ],
                 "isVisible": true,
                 "name": "Operation Details",
