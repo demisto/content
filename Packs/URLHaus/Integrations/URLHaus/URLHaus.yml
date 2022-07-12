@@ -52,16 +52,13 @@ configuration:
   name: compromised_is_malicious
   required: false
   type: 8
-- additionalinfo: Determines how many times a command should be retried before raising
-    an error.
+- additionalinfo: Determines how many times a command should be retried before raising an error.
   defaultvalue: '3'
   display: Number of retries
-  hidden: false
   name: retry
   required: false
   type: 0
-description: URLhaus has the goal of sharing malicious URLs that are being used for
-  malware distribution.
+description: URLhaus has the goal of sharing malicious URLs that are being used for malware distribution.
 display: URLhaus
 name: URLhaus
 script:
@@ -72,10 +69,7 @@ script:
       isArray: true
       name: url
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves URL information from URLhaus.
-    execution: false
     name: url
     outputs:
     - contextPath: URL.Data
@@ -165,10 +159,7 @@ script:
       isArray: true
       name: domain
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves domain information from URLhaus.
-    execution: false
     name: domain
     outputs:
     - contextPath: Domain.Name
@@ -231,10 +222,7 @@ script:
       isArray: true
       name: file
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves file information from URLhaus.
-    execution: false
     name: file
     outputs:
     - contextPath: File.Size
@@ -318,11 +306,8 @@ script:
   - arguments:
     - default: true
       description: SHA256 hash of the file to download.
-      isArray: false
       name: file
       required: true
-      secret: false
-    deprecated: false
     description: Downloads a malware sample from URLhaus.
     execution: true
     name: urlhaus-download-sample
@@ -357,13 +342,9 @@ script:
     - contextPath: File.Extension
       description: File extension.
       type: string
-  dockerimage: demisto/python3:3.10.4.29342
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/python3:3.10.5.31928
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
 tests:

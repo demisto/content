@@ -1,13 +1,16 @@
 from typing import Tuple
-from CommonServerPython import *
+
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
-import traceback
-import requests
-import zipfile
 import io
 import re
+import traceback
+import zipfile
 from datetime import datetime as dt
+
+import requests
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
