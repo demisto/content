@@ -574,7 +574,7 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
     if last_fetch_timestamp:
         next_run = datetime.fromtimestamp(last_fetch_timestamp)
     else:
-        next_run = dateparser.parse(first_fetch_time)
+        next_run = dateparser.parse(first_fetch_time)  # type: ignore
 
     last_fetch_timestamp_new = int(datetime.timestamp(next_run) * 1000)
     time_now = int(datetime.timestamp(datetime.now()) * 1000)

@@ -1,5 +1,5 @@
 <!-- HTML_DOC -->
-<p><span>Use the Palo Alto Networks Traps integration to initiate scans, retrieve files from events, isolate endpoints, quarantine files, and manage the allow list and block list.</span></p>
+<p><span>Deprecated. Use CortexXDR instead. Use the Palo Alto Networks Traps integration to initiate scans, retrieve files from events, isolate endpoints, quarantine files, and manage the allow list and block list.</span></p>
 <h2>Traps Playbooks</h2>
 <ul>
 <li>Traps Retrieve And Download Files</li>

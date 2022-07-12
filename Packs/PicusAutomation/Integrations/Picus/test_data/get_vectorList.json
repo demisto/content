@@ -1,0 +1,265 @@
+{
+    "data": {
+        "page_number": 1,
+        "size": 50,
+        "total_count": 9,
+        "vectors": [
+            {
+                "description": "",
+                "heartbeat_results": [
+                    {
+                        "is_successful": true,
+                        "module": "MalwareDownload",
+                        "result_time": "2020-06-15T13:37:27.140200143Z",
+                        "variant": "HTTP"
+                    },
+                    {
+                        "is_successful": true,
+                        "module": "MalwareDownload",
+                        "result_time": "2020-06-15T13:39:26.251932857Z",
+                        "variant": "HTTPS"
+                    },
+                    {
+                        "is_successful": false,
+                        "module": "Scenario",
+                        "result_time": "2021-12-07T07:45:41.957946754Z",
+                        "variant": "HTTP"
+                    }
+                ],
+                "is_disabled": true,
+                "name": "Picus_Attacker_1 - Win10-Det1",
+                "trusted": "Win10-Det1",
+                "type": "Endpoint",
+                "untrusted": "Picus_Attacker_1",
+                "users": null
+            },
+            {
+                "description": "",
+                "heartbeat_results": [
+                    {
+                        "is_successful": true,
+                        "module": "MalwareDownload",
+                        "result_time": "2021-12-07T16:26:44.110757206Z",
+                        "variant": "HTTP"
+                    },
+                    {
+                        "is_successful": true,
+                        "module": "MalwareDownload",
+                        "result_time": "2021-12-07T16:24:44.698784223Z",
+                        "variant": "HTTPS"
+                    },
+                    {
+                        "is_successful": true,
+                        "module": "Scenario",
+                        "result_time": "2021-12-07T14:02:47.577646756Z",
+                        "variant": "HTTP"
+                    }
+                ],
+                "is_disabled": false,
+                "name": "Picus_Attacker_2 - Win10-Det2",
+                "trusted": "Win10-Det2",
+                "type": "Endpoint",
+                "untrusted": "Picus_Attacker_2",
+                "users": null
+            },
+            {
+                "description": "",
+                "heartbeat_results": [
+                    {
+                        "is_successful": true,
+                        "module": "MalwareDownload",
+                        "result_time": "2021-09-09T11:17:10.023409722Z",
+                        "variant": "HTTP"
+                    },
+                    {
+                        "is_successful": true,
+                        "module": "MalwareDownload",
+                        "result_time": "2021-05-19T13:12:05.87330782Z",
+                        "variant": "HTTPS"
+                    },
+                    {
+                        "is_successful": true,
+                        "module": "Scenario",
+                        "result_time": "2021-12-07T16:29:46.347667644Z",
+                        "variant": "HTTP"
+                    }
+                ],
+                "is_disabled": false,
+                "name": "Picus_Attacker_3 - Win10-Det4",
+                "trusted": "Win10-Det4",
+                "type": "Endpoint",
+                "untrusted": "Picus_Attacker_3",
+                "users": null
+            },
+            {
+                "description": "",
+                "heartbeat_results": [
+                    {
+                        "is_successful": true,
+                        "module": "BiWAR",
+                        "result_time": "2021-11-30T09:49:21.393497334Z",
+                        "variant": "HTTP"
+                    },
+                    {
+                        "is_successful": true,
+                        "module": "BiWAR",
+                        "result_time": "2021-03-04T19:49:55.353512572Z",
+                        "variant": "HTTPS"
+                    },
+                    {
+                        "is_successful": true,
+                        "module": "DTS",
+                        "result_time": "2021-11-18T16:39:06.271479993Z",
+                        "variant": "HTTP"
+                    },
+                    {
+                        "is_successful": true,
+                        "module": "DTS",
+                        "result_time": "2021-03-04T20:07:55.11114595Z",
+                        "variant": "HTTPS"
+                    },
+                    {
+                        "is_successful": true,
+                        "module": "PTS",
+                        "result_time": "2021-11-30T10:30:43.424507491Z",
+                        "variant": "HTTP"
+                    },
+                    {
+                        "is_successful": true,
+                        "module": "PTS",
+                        "result_time": "2021-03-04T21:00:14.623953079Z",
+                        "variant": "HTTPS"
+                    }
+                ],
+                "is_disabled": true,
+                "name": "Picus_Attacker_1 - net1-det1",
+                "trusted": "net1-det1",
+                "type": "Network",
+                "untrusted": "Picus_Attacker_1",
+                "users": null
+            },
+            {
+                "description": "",
+                "heartbeat_results": [
+                    {
+                        "is_successful": true,
+                        "module": "IncomingEmail",
+                        "result_time": "2021-12-07T16:26:53.620882668Z",
+                        "variant": "Attachment"
+                    },
+                    {
+                        "is_successful": true,
+                        "module": "URLPhishing",
+                        "result_time": "2021-12-07T16:26:55.705071702Z",
+                        "variant": "URLPhishing"
+                    }
+                ],
+                "is_disabled": false,
+                "name": "Mail-Det1 - Mail-Det2",
+                "trusted": "Mail-Det2",
+                "type": "Email",
+                "untrusted": "Mail-Det1",
+                "users": null
+            },
+            {
+                "description": "",
+                "heartbeat_results": [
+                    {
+                        "is_successful": true,
+                        "module": "MalwareDownload",
+                        "result_time": "2021-07-28T08:53:09.348383857Z",
+                        "variant": "HTTP"
+                    },
+                    {
+                        "is_successful": true,
+                        "module": "MalwareDownload",
+                        "result_time": "2021-07-28T08:54:13.816240738Z",
+                        "variant": "HTTPS"
+                    },
+                    {
+                        "is_successful": true,
+                        "module": "Scenario",
+                        "result_time": "2021-12-07T14:03:00.741074305Z",
+                        "variant": "HTTP"
+                    }
+                ],
+                "is_disabled": true,
+                "name": "Picus_Attacker_3 - Win10-Det1",
+                "trusted": "Win10-Det1",
+                "type": "Endpoint",
+                "untrusted": "Picus_Attacker_3",
+                "users": null
+            },
+            {
+                "description": "",
+                "heartbeat_results": [
+                    {
+                        "is_successful": true,
+                        "module": "MalwareDownload",
+                        "result_time": "2021-09-06T13:41:41.377023663Z",
+                        "variant": "HTTP"
+                    },
+                    {
+                        "is_successful": true,
+                        "module": "MalwareDownload",
+                        "result_time": "2021-09-06T13:39:41.830498449Z",
+                        "variant": "HTTPS"
+                    },
+                    {
+                        "is_successful": true,
+                        "module": "Scenario",
+                        "result_time": "2021-12-07T16:28:03.35282052Z",
+                        "variant": "HTTP"
+                    }
+                ],
+                "is_disabled": false,
+                "name": "Picus_Attacker_2 - Win10-Det3",
+                "trusted": "Win10-Det3",
+                "type": "Endpoint",
+                "untrusted": "Picus_Attacker_2",
+                "users": null
+            },
+            {
+                "description": "",
+                "heartbeat_results": [
+                    {
+                        "is_successful": true,
+                        "module": "Scenario",
+                        "result_time": "2021-12-07T16:28:21.232878079Z",
+                        "variant": "HTTP"
+                    }
+                ],
+                "is_disabled": false,
+                "name": "Picus_Attacker_5 - Win10-Det6",
+                "trusted": "Win10-Det6",
+                "type": "Endpoint",
+                "untrusted": "Picus_Attacker_5",
+                "users": null
+            },
+            {
+                "description": "",
+                "heartbeat_results": [
+                    {
+                        "is_successful": true,
+                        "module": "IncomingEmail",
+                        "result_time": "2021-12-07T16:16:28.610854586Z",
+                        "variant": "Attachment"
+                    },
+                    {
+                        "is_successful": true,
+                        "module": "URLPhishing",
+                        "result_time": "2021-12-07T16:21:44.126160997Z",
+                        "variant": "URLPhishing"
+                    }
+                ],
+                "is_disabled": false,
+                "name": "Mail-Det3 - Mail-Det4",
+                "trusted": "Mail-Det4",
+                "type": "Email",
+                "untrusted": "Mail-Det3",
+                "users": null
+            }
+        ]
+    },
+    "success": true
+}

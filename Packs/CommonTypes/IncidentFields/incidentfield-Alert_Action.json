@@ -3,6 +3,7 @@
   "associatedTypes": [
     "FireEye NX IPS Event",
     "FireEye NX Alert",
+    "FireEye HX Alert",
     "FireEye EX Alert"
   ],
   "breachScript": "",

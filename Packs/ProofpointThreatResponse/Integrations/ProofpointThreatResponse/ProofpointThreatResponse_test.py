@@ -8,7 +8,9 @@ from ProofpointThreatResponse import (create_incident_field_context,
                                       get_new_incidents, get_time_delta,
                                       pass_abuse_disposition_filter,
                                       pass_sources_list_filter,
-                                      prepare_ingest_alert_request_body)
+                                      prepare_ingest_alert_request_body,
+                                      close_incident_command,
+                                      search_quarantine)
 
 MOCK_INCIDENT = {
     "id": 1,
@@ -390,3 +392,54 @@ def test_get_incident_command_expand_events_false(mocker, requests_mock):
     incident_result = results['EntryContext']['ProofPointTRAP.Incident(val.id === obj.id)'][0]
     assert not incident_result['events']
     assert incident_result['event_ids']
+
+
+def test_close_incident_command(mocker, requests_mock):
+    """
+    Given:
+    - Incident ID 3064 to close
+
+    When:
+    - Running close-incident command
+
+    Then:
+    - Ensure output is success message
+    """
+    base_url = 'https://server_url/'
+    requests_mock.post(f'{base_url}api/incidents/3064/close.json')
+    mocker.patch.object(demisto, 'results')
+    mocker.patch('ProofpointThreatResponse.BASE_URL', base_url)
+    mocker.patch.object(demisto, 'args', return_value={
+        'incident_id': '3064',
+        "summary": "summary",
+        "details": "details"
+    })
+    close_incident_command()
+    results = demisto.results.call_args[0][0]
+    assert 'success' in results['HumanReadable']
+
+
+def test_search_quarantine_command(mocker, requests_mock):
+    """
+    Given:
+    - Message ID, Recipient and Delivery Time (Email recived time)
+
+    When:
+    - Running search-quarantine command
+
+    Then:
+    - Ensure output is success message (at least one success).
+    """
+    base_url = 'https://server_url/'
+    with open('./test_data/incidents.json', 'r') as f:
+        incident = json.loads(f.read())
+    requests_mock.get(f'{base_url}api/incidents', json=incident)
+    mocker.patch('ProofpointThreatResponse.BASE_URL', base_url)
+    mocker.patch.object(demisto, 'args', return_value={
+        'message_id': "<XYZ_EAbcd-@test.test.com>",
+        "recipient": "sabrina.test@test.com",
+        "time": "2021-03-30T11:17:39Z"
+    })
+    res = search_quarantine()
+    quarantines_res = [x.get('quarantine').get('status') for x in res.outputs]
+    assert 'successful' in quarantines_res

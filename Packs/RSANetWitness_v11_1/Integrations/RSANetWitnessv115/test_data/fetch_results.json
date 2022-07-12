@@ -1,0 +1,160 @@
+{
+  "get_inc_response": {
+    "items": [
+      {
+        "id": "INC-39",
+        "title": "test",
+        "summary": null,
+        "priority": "Low",
+        "riskScore": 50,
+        "status": "New",
+        "alertCount": 1,
+        "averageAlertRiskScore": 50,
+        "sealed": false,
+        "totalRemediationTaskCount": 0,
+        "openRemediationTaskCount": 0,
+        "created": "2021-10-18T09:23:20.123Z",
+        "lastUpdated": "2021-10-18T09:23:20.123Z",
+        "lastUpdatedBy": null,
+        "assignee": null,
+        "sources": [
+          "NetWitness Investigate"
+        ],
+        "ruleId": null,
+        "firstAlertTime": null,
+        "categories": null,
+        "journalEntries": null,
+        "createdBy": "Admin",
+        "deletedAlertCount": 0,
+        "eventCount": 3,
+        "alertMeta": {
+          "SourceIp": [
+            ""
+          ],
+          "DestinationIp": [
+            ""
+          ]
+        }
+      },
+      {
+        "id": "INC-36",
+        "title": "Demo",
+        "summary": null,
+        "priority": "Low",
+        "riskScore": 50,
+        "status": "New",
+        "alertCount": 1,
+        "averageAlertRiskScore": 50,
+        "sealed": false,
+        "totalRemediationTaskCount": 0,
+        "openRemediationTaskCount": 0,
+        "created": "2021-09-08T11:36:10.030Z",
+        "lastUpdated": "2021-10-17T10:32:37.567Z",
+        "lastUpdatedBy": "Admin",
+        "assignee": null,
+        "sources": [
+          "NetWitness Investigate"
+        ],
+        "ruleId": null,
+        "firstAlertTime": null,
+        "categories": null,
+        "journalEntries": [
+          {
+            "id": "25",
+            "author": "Admin",
+            "notes": "demo journal",
+            "created": "2021-09-12T15:22:48.143Z",
+            "lastUpdated": "2021-09-12T15:22:48.143Z",
+            "milestone": "ActionOnObjective"
+          },
+          {
+            "id": "26",
+            "author": "Admin",
+            "notes": "This incident is contained.",
+            "created": "2021-10-18T09:39:09.839Z",
+            "lastUpdated": "2021-10-18T09:39:09.839Z",
+            "milestone": "Containment"
+          }
+        ],
+        "createdBy": "admin",
+        "deletedAlertCount": 0,
+        "eventCount": 1,
+        "alertMeta": {
+          "SourceIp": [
+            ""
+          ],
+          "DestinationIp": [
+            "1.1.1.1"
+          ]
+        }
+      }
+    ],
+    "pageNumber": 0,
+    "pageSize": 100,
+    "totalPages": 1,
+    "totalItems": 27,
+    "hasNext": false,
+    "hasPrevious": false
+  },
+  "get_inc_results": [
+    {
+      "id": "INC-36",
+      "title": "Demo",
+      "summary": null,
+      "priority": "Low",
+      "riskScore": 50,
+      "status": "New",
+      "alertCount": 1,
+      "averageAlertRiskScore": 50,
+      "sealed": false,
+      "totalRemediationTaskCount": 0,
+      "openRemediationTaskCount": 0,
+      "created": "2021-09-08T11:36:10.030Z",
+      "lastUpdated": "2021-10-17T10:32:37.567Z",
+      "lastUpdatedBy": "Admin",
+      "assignee": null,
+      "sources": [
+        "NetWitness Investigate"
+      ],
+      "ruleId": null,
+      "firstAlertTime": null,
+      "categories": null,
+      "journalEntries": [
+        {
+          "id": "25",
+          "author": "Admin",
+          "notes": "demo journal",
+          "created": "2021-09-12T15:22:48.143Z",
+          "lastUpdated": "2021-09-12T15:22:48.143Z",
+          "milestone": "ActionOnObjective"
+        },
+        {
+          "id": "26",
+          "author": "Admin",
+          "notes": "This incident is contained.",
+          "created": "2021-10-18T09:39:09.839Z",
+          "lastUpdated": "2021-10-18T09:39:09.839Z",
+          "milestone": "Containment"
+        }
+      ],
+      "createdBy": "admin",
+      "deletedAlertCount": 0,
+      "eventCount": 1,
+      "alertMeta": {
+        "SourceIp": [
+          ""
+        ],
+        "DestinationIp": [
+          "1.1.1.1"
+        ]
+      }
+    }
+  ],
+  "fetch_results": [
+    {
+      "name": "RSA NetWitness 11.5 INC-36 - Demo",
+      "occurred": "2021-09-08T11:36:10.030Z",
+      "rawJSON": "{\"id\": \"INC-36\", \"title\": \"Demo\", \"summary\": null, \"priority\": \"Low\", \"riskScore\": 50, \"status\": \"New\", \"alertCount\": 1, \"averageAlertRiskScore\": 50, \"sealed\": false, \"totalRemediationTaskCount\": 0, \"openRemediationTaskCount\": 0, \"created\": \"2021-09-08T11:36:10.030Z\", \"lastUpdated\": \"2021-10-17T10:32:37.567Z\", \"lastUpdatedBy\": \"Admin\", \"assignee\": null, \"sources\": [\"NetWitness Investigate\"], \"ruleId\": null, \"firstAlertTime\": null, \"categories\": null, \"journalEntries\": [{\"id\": \"25\", \"author\": \"Admin\", \"notes\": \"demo journal\", \"created\": \"2021-09-12T15:22:48.143Z\", \"lastUpdated\": \"2021-09-12T15:22:48.143Z\", \"milestone\": \"ActionOnObjective\"}, {\"id\": \"26\", \"author\": \"Admin\", \"notes\": \"This incident is contained.\", \"created\": \"2021-10-18T09:39:09.839Z\", \"lastUpdated\": \"2021-10-18T09:39:09.839Z\", \"milestone\": \"Containment\"}], \"createdBy\": \"admin\", \"deletedAlertCount\": 0, \"eventCount\": 1, \"alertMeta\": {\"SourceIp\": [\"\"], \"DestinationIp\": [\"1.1.1.1\"]}, \"incident_url\": \"http://test.com/respond/incident/INC-36\"}"
+    }
+  ]
+}

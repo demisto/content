@@ -48,8 +48,7 @@ configuration:
   - In
   - Out
   - Both
-  additionalinfo: Select whether you would like cases to mirror in, out, in both directions
-    or disabled.
+  additionalinfo: Select whether you would like cases to mirror in, out, in both directions or disabled.
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -365,8 +364,7 @@ script:
       - TruePositive
       - Other
       - Duplicated
-      description: Resolution status of the case (Indeterminate, FalsePositive, TruePositive,
-        Other or Duplicated).
+      description: Resolution status of the case (Indeterminate, FalsePositive, TruePositive, Other or Duplicated).
     - name: impactStatus
       auto: PREDEFINED
       predefined:
@@ -880,7 +878,7 @@ script:
     arguments:
     - name: id
       required: true
-      description: Case ID 
+      description: Case ID
     - name: title
       required: true
       description: Title of the case.
@@ -1420,18 +1418,14 @@ script:
     - name: lastUpdate
       required: true
       description: Retrieve entries that were created after lastUpdate.
-    description: Get remote data from a remote incident. This method does not update
-      the current incident, and should be used for debugging purposes.
+    description: Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes.
   - name: thehive-get-version
     arguments: []
     description: Displays the version of TheHive Project.
   - name: get-modified-remote-data
     arguments: []
-    description: Gets the list of incidents that were modified since the last update
-      time. Note that this method is here for debugging purposes. The get-modified-remote-data
-      command is used as part of a Mirroring feature, which is available from version
-      6.1.
-  dockerimage: demisto/python3:3.9.8.24399
+    description: Gets the list of incidents that were modified since the last update time. Note that this method is here for debugging purposes. The get-modified-remote-data command is used as part of a Mirroring feature, which is available from version 6.1.
+  dockerimage: demisto/python3:3.10.5.31797
   isfetch: true
   runonce: false
   subtype: python3

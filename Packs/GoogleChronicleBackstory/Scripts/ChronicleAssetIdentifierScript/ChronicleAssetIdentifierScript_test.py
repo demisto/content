@@ -1,5 +1,9 @@
 import pytest
 
+FIRST_ACCESSED_TIME = "2018-10-03T02:59:56Z"
+LAST_ACCESSED_TIME = "2020-07-02T20:42:30Z"
+ACCESSED_DOMAIN = "dummy-accessed-domain.com"
+
 
 @pytest.mark.parametrize('input_key, output', [('key1', True), ('key4', False)])
 def test_has_key(input_key, output):
@@ -18,12 +22,12 @@ def test_get_entry_context_for_hostname():
     from ChronicleAssetIdentifierScript import get_entry_context
 
     dummy_identifiers = {
-        "AccessedDomain": "dummy-accessed-domain.com",
-        "FirstAccessedTime": "2018-10-03T02:59:56Z",
+        "AccessedDomain": ACCESSED_DOMAIN,
+        "FirstAccessedTime": FIRST_ACCESSED_TIME,
         "HostName": "dummy-host-name",
         "IpAddress": "dummy-ip-addres",
         "MacAddress": "dummy-mac-id",
-        "LastAccessedTime": "2020-07-02T20:42:30Z"
+        "LastAccessedTime": LAST_ACCESSED_TIME
     }
 
     expected_ec = get_entry_context(dummy_identifiers)
@@ -35,11 +39,11 @@ def test_get_entry_context_for_ip_address():
     from ChronicleAssetIdentifierScript import get_entry_context
 
     dummy_identifiers = {
-        "AccessedDomain": "dummy-accessed-domain.com",
-        "FirstAccessedTime": "2018-10-03T02:59:56Z",
+        "AccessedDomain": ACCESSED_DOMAIN,
+        "FirstAccessedTime": FIRST_ACCESSED_TIME,
         "IpAddress": "dummy-ip-addres",
         "MacAddress": "dummy-mac-id",
-        "LastAccessedTime": "2020-07-02T20:42:30Z"
+        "LastAccessedTime": LAST_ACCESSED_TIME
     }
 
     expected_ec = get_entry_context(dummy_identifiers)
@@ -51,10 +55,10 @@ def test_get_entry_context_for_mac_address():
     from ChronicleAssetIdentifierScript import get_entry_context
 
     dummy_identifiers = {
-        "AccessedDomain": "dummy-accessed-domain.com",
-        "FirstAccessedTime": "2018-10-03T02:59:56Z",
+        "AccessedDomain": ACCESSED_DOMAIN,
+        "FirstAccessedTime": FIRST_ACCESSED_TIME,
         "MacAddress": "dummy-mac-id",
-        "LastAccessedTime": "2020-07-02T20:42:30Z"
+        "LastAccessedTime": LAST_ACCESSED_TIME
     }
 
     expected_ec = get_entry_context(dummy_identifiers)

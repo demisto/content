@@ -1,0 +1,142 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "PhishUp Gmail Mapper",
+    "mapping": {
+        "PhishUp": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Email Body": {
+                    "complex": {
+                        "filters": [
+
+                        ],
+                        "root": "Body",
+                        "transformers": [
+
+                        ]
+                    }
+                },
+                "Email Body Format": {
+                    "complex": {
+                        "filters": [
+
+                        ],
+                        "root": "Format",
+                        "transformers": [
+
+                        ]
+                    }
+                },
+                "Email Body HTML": {
+                    "complex": {
+                        "filters": [
+
+                        ],
+                        "root": "Html",
+                        "transformers": [
+
+                        ]
+                    }
+                },
+                "Email CC": {
+                    "complex": {
+                        "filters": [
+
+                        ],
+                        "root": "Cc",
+                        "transformers": [
+
+                        ]
+                    }
+                },
+                "Email From": {
+                    "complex": {
+                        "filters": [
+
+                        ],
+                        "root": "From",
+                        "transformers": [
+
+                        ]
+                    }
+                },
+                "Email Headers": {
+                    "complex": {
+                        "filters": [
+
+                        ],
+                        "root": "Headers",
+                        "transformers": [
+
+                        ]
+                    }
+                },
+                "Email Message ID": {
+                    "complex": {
+                        "filters": [
+
+                        ],
+                        "root": "ID",
+                        "transformers": [
+
+                        ]
+                    }
+                },
+                "Email Subject": {
+                    "complex": {
+                        "filters": [
+
+                        ],
+                        "root": "Subject",
+                        "transformers": [
+
+                        ]
+                    }
+                },
+                "Email To": {
+                    "complex": {
+                        "accessor": "Value",
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "Headers.Name"
+                                        }
+                                    },
+                                    "operator": "isEqualString",
+                                    "right": {
+                                        "value": {
+                                            "simple": "Delivered-To"
+                                        }
+                                    }
+                                }
+                            ]
+                        ],
+                        "root": "Headers",
+                        "transformers": [
+
+                        ]
+                    }
+                },
+                "sourceBrand": {
+                    "complex": {
+                        "filters": [
+
+                        ],
+                        "root": "Type",
+                        "transformers": [
+
+                        ]
+                    }
+                }
+            }
+        }
+    },
+    "name": "PhishUp Gmail Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

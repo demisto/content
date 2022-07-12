@@ -1,0 +1,17 @@
+commonfields:
+  id: emailFieldTriggered
+  version: -1
+name: emailFieldTriggered
+script: ''
+type: javascript
+tags:
+- field-change-triggered
+comment: Sends email to incident owner when selected field is triggered.
+enabled: true
+dependson:
+  must:
+  - send-mail
+scripttarget: 0
+fromversion: 5.0.0
+tests:
+- No tests

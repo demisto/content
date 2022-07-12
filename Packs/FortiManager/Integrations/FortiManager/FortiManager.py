@@ -3,7 +3,6 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 import urllib3
-import traceback
 from typing import Dict
 
 # Disable insecure warnings
@@ -50,6 +49,7 @@ class Client(BaseClient):
             "method": method,
             "verbose": 1,
             "params": [{
+                "option": "object member",
                 "url": url
             }],
         }
@@ -748,8 +748,7 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception:
-        demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{traceback.format_exc()}')
+        return_error(f'Failed to execute {demisto.command()} command.')
 
 
 ''' ENTRY POINT '''

@@ -5,10 +5,15 @@ import yaml
 import os
 import re
 from parinx import parser
-from demisto_sdk.commands.unify.yml_unifier import YmlUnifier
 import logging
 
 from Tests.scripts.utils.log_util import install_logging
+
+# temp handling of unifier import
+try:
+    from demisto_sdk.commands.unify.yml_unifier import YmlUnifier
+except:  # noqa
+    from demisto_sdk.commands.unify.integration_script_unifier import IntegrationScriptUnifier as YmlUnifier
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 CONTENT_DIR = os.path.abspath(SCRIPT_DIR + '/..')
@@ -26,7 +31,7 @@ PY_PRIVATE_FUNCS = ["raiseTable", "zoomField", "epochToTimestamp", "formatTimeCo
                     "BaseHTTPClient", "DemistoHandler", "DebugLogger", "FeedIndicatorType", "Indicator",
                     "IndicatorType", "EntryType", "EntryFormat", "abstractmethod",
                     "HTTPAdapter", "Retry", "Common", "randint", "GetDemistoVersion", "get_demisto_version",
-                    "BaseWidget", "UTC", "WarningsHandler"]
+                    "BaseWidget", "UTC", "WarningsHandler", "__line__", "_find_relevant_module"]
 
 PY_IRREGULAR_FUNCS = {"LOG": {"argList": ["message"]}}
 
@@ -141,6 +146,9 @@ def create_py_documentation(path, origin, language):
 
     with open(path, 'r') as file:
         py_script = YmlUnifier.clean_python_code(file.read(), remove_print_future=False)
+
+    logging.info("replacing DemistoClassApiModule: ")
+    py_script = re.sub(r'from DemistoClassApiModule import \*[ \t]*(#.*)?', "", py_script)
 
     code = compile(py_script, '<string>', 'exec')
     ns = {'demisto': demistomock}

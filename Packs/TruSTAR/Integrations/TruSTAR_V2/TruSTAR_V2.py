@@ -31,6 +31,7 @@ class Utils(object):
     @staticmethod
     def date_to_unix(timestamp):
         d = dateparser.parse(timestamp)
+        assert d is not None, f'could not parse {timestamp}'
         return int(d.strftime("%s")) * 1000
 
 

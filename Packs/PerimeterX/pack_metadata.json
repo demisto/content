@@ -1,0 +1,21 @@
+{
+    "name": "PerimeterX",
+    "description": "PerimeterX integration with Cortex XSOAR",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "PerimeterX",
+    "url": "http://www.perimeterx.com",
+    "email": "",
+    "created": "2020-06-30T19:01:57Z",
+    "categories": [
+        "Network Security"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

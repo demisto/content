@@ -22,8 +22,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 170,
-          "y": -100
+          "x": 152.5,
+          "y": 50
         }
       }
     note: false
@@ -58,8 +58,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -37.5,
-          "y": 205
+          "x": 265,
+          "y": 370
         }
       }
     note: false
@@ -94,8 +94,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -37.5,
-          "y": 380
+          "x": 265,
+          "y": 545
         }
       }
     note: false
@@ -107,10 +107,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 49187a43-5b02-492d-8823-6b80ab1b9046
+    taskid: c5c40bd8-435b-46d1-8e3e-ffb9e72954c2
     type: playbook
     task:
-      id: 49187a43-5b02-492d-8823-6b80ab1b9046
+      id: c5c40bd8-435b-46d1-8e3e-ffb9e72954c2
       version: -1
       name: GenericPolling
       description: Generic polling of qradar-get-search
@@ -120,7 +120,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "4"
+      - "8"
     scriptarguments:
       Ids:
         simple: ${QRadar.Search.ID}
@@ -133,7 +133,7 @@ tasks:
       Timeout:
         simple: ${inputs.timeout}
       dt:
-        simple: QRadar.Search(val.Status!=='COMPLETED' ).ID
+        simple: QRadar.Search(val.Status!=='COMPLETED' && val.Status!=='CANCELED').ID
     separatecontext: true
     loop:
       iscommand: false
@@ -143,8 +143,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -150,
-          "y": 730
+          "x": -200,
+          "y": 910
         }
       }
     note: false
@@ -183,8 +183,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -37.5,
-          "y": 905
+          "x": 300,
+          "y": 1300
         }
       }
     note: false
@@ -210,8 +210,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 170,
-          "y": 1080
+          "x": 152.5,
+          "y": 1570
         }
       }
     note: false
@@ -223,10 +223,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 5c1ca4d3-629a-4526-8749-dd1ef6d8f3b6
+    taskid: 3f799ca0-9bbb-4d1e-8010-f864a2d0325a
     type: condition
     task:
-      id: 5c1ca4d3-629a-4526-8749-dd1ef6d8f3b6
+      id: 3f799ca0-9bbb-4d1e-8010-f864a2d0325a
       version: -1
       name: Is search completed?
       description: Checks whether the search is completed
@@ -253,8 +253,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -37.5,
-          "y": 555
+          "x": 265,
+          "y": 720
         }
       }
     note: false
@@ -312,8 +312,82 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 170,
-          "y": 35
+          "x": 152.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 3719dd6d-f2ad-4744-8845-8b1c210522be
+    type: condition
+    task:
+      id: 3719dd6d-f2ad-4744-8845-8b1c210522be
+      version: -1
+      name: Is search canceled?
+      description: Checks whether the search was canceled
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: QRadar.Search.Status
+            iscontext: true
+          right:
+            value:
+              simple: CANCELED
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: d25ec92e-f69c-46e8-8c75-80c93f0af5b9
+    type: regular
+    task:
+      id: d25ec92e-f69c-46e8-8c75-80c93f0af5b9
+      version: -1
+      name: ERROR
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: 'Error in QRadar: qradar-get-search command returned with status ''CANCELED''. '
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -500,
+          "y": 1300
         }
       }
     note: false
@@ -325,13 +399,16 @@ tasks:
     isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "7_5_#default#": 0.55,
+      "8_4_#default#": 0.9
+    },
     "paper": {
       "dimensions": {
-        "height": 1245,
-        "width": 700,
-        "x": -150,
-        "y": -100
+        "height": 1585,
+        "width": 1180,
+        "x": -500,
+        "y": 50
       }
     }
   }
@@ -369,3 +446,6 @@ outputs:
 tests:
 - No tests (auto formatted)
 fromversion: 5.0.0
+contentitemexportablefields:
+  contentitemfields: {}
+system: true

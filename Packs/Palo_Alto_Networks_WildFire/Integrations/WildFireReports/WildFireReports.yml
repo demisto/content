@@ -21,7 +21,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Generates a Palo Alto Networks WildFire PDF report.
+description: Generates a Palo Alto Networks WildFire PDF report. For internal use
+  with the TIM Sample Analysis feature.
 display: Palo Alto Networks WildFire Reports
 name: WildFire-Reports
 defaultEnabled: true
@@ -43,7 +44,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.4.28442
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)

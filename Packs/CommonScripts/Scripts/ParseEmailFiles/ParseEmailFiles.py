@@ -23,7 +23,7 @@ from email.parser import HeaderParser
 from email.utils import getaddresses
 from struct import unpack
 
-import chardet
+import chardet  # type: ignore
 from olefile import OleFileIO, isOleFile
 
 import demistomock as demisto  # noqa: F401
@@ -36,29 +36,6 @@ MAX_DEPTH_CONST = 3
 
 """
 https://github.com/vikramarsid/msg_parser
-
-Copyright (c) 2009-2018 Vikram Arsid <vikramarsid@gmail.com>
-
-Redistribution and use in source and binary forms, with or without modification, are
-permitted provided that the following conditions are met:
-
-   1. Redistributions of source code must retain the above copyright notice, this list of
-      conditions and the following disclaimer.
-
-   2. Redistributions in binary form must reproduce the above copyright notice, this list
-   of conditions and the following disclaimer in the documentation and/or other materials
-   provided with the distribution.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS
-OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
-MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
-COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
-EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
-GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
-AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
-NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
-OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """
 
 DATA_TYPE_MAP = {
@@ -315,6 +292,21 @@ def get_time(data_value):
     ) + timedelta(
         microseconds=unpack('q', data_value)[0] / 10.0
     )
+
+
+def parse_nesting_level(nesting_level_to_return, output):
+    # if nesting_level_to_return == 'All files' leave as is
+    email = output[0]
+    if nesting_level_to_return == 'Outer file':
+        # return only the outer email info
+        output = output[0]
+
+    elif nesting_level_to_return == 'Inner file':
+        # the last file in list it is the inner attached file
+        email = output[-1]
+        output = output[-1]
+
+    return email, output
 
 
 def get_multi_value_offsets(data_value):
@@ -2703,7 +2695,7 @@ class Message(object):
     def _get_attachments_names(self):
         names = []
         for attachment in self.attachments:
-            names.append(attachment.DisplayName)
+            names.append(attachment.DisplayName or attachment.Filename)
 
         return names
 
@@ -3433,7 +3425,8 @@ def convert_to_unicode(s, is_msg_header=True):
                     res += replace_decoded
                 ENCODINGS_TYPES.add(encoding)
             else:
-                res += decoded_s
+                demisto.debug('Could not find the encoding type of the string, decoding by default with utf-8')
+                res += decoded_s.decode('utf-8', errors='replace').encode('utf-8')
         return res.strip()
     except Exception:
         for file_data in ENCODINGS_TYPES:
@@ -3467,7 +3460,7 @@ def handle_msg(file_path, file_name, parse_only_headers=False, max_depth=3):
         'Text': msg_dict['Text'],
         'Headers': headers,
         'HeadersMap': headers_map,
-        'Attachments': '',
+        'Attachments': msg_dict.get('Attachments'),
         'Format': mail_format_type,
         'Depth': MAX_DEPTH_CONST - max_depth
     }
@@ -3496,7 +3489,7 @@ def unfold(s):
     :param string s: a string to unfold
     :rtype: string
     """
-    return re.sub(r'[ \t]*[\r\n][ \t\r\n]*', ' ', s).strip(' ')
+    return re.sub(r'[ \t]*[\r\n][ \t\r\n]*', ' ', s).strip(' ') if s else s
 
 
 def decode_attachment_payload(message):
@@ -3529,6 +3522,15 @@ def decode_content(mime):
         return payload
 
 
+def save_file(file_name, file_content):
+    createdFile = fileResult(file_name, file_content)
+    fileID = createdFile.get('FileID')
+    attachment_internal_path = demisto.investigation().get('id') + '_' + fileID
+    demisto.results(createdFile)
+
+    return attachment_internal_path
+
+
 def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, max_depth=3, bom=False):
     global ENCODINGS_TYPES
 
@@ -3547,10 +3549,19 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
         parser = HeaderParser()
         headers = parser.parsestr(file_data)
 
+        # headers is a Message object implementing magic methods of set/get item and contains.
+        # message object 'contains' method transforms its keys to lower-case, hence there is not a difference when
+        # approaching it with any casing type, for example, 'message-id' or 'Message-ID' or 'Message-id' or
+        # 'MeSSage_Id' are all searching for the same key in the headers object.
+        if "message-id" in headers:
+            message_id_content = headers["message-id"]
+            del headers["message-id"]
+            headers["Message-ID"] = message_id_content
+
         header_list = []
         headers_map = {}  # type: dict
         for item in headers.items():
-            value = unfold(convert_to_unicode(item[1]))
+            value = unfold(convert_to_unicode(unfold(item[1])))
             item_dict = {
                 "name": item[0],
                 "value": value
@@ -3582,6 +3593,9 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
         html = ''
         text = ''
         attachment_names = []
+        attachment_content_ids = []
+        attachment_content_dispositions = []
+        attachment_internal_path = []
 
         attached_emails = []
         parts = [eml]
@@ -3595,6 +3609,8 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
             elif part.get_filename() or "attachment" in part.get("Content-Disposition", ""):
 
                 attachment_file_name = convert_to_unicode(part.get_filename())
+                attachment_content_id = part.get('Content-ID')
+                attachment_content_disposition = part.get('Content-Disposition')
                 if attachment_file_name is None and part.get('filename'):
                     attachment_file_name = os.path.normpath(part.get('filename'))
                     if os.path.isabs(attachment_file_name):
@@ -3631,7 +3647,7 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
 
                     if file_content:
                         # save the eml to war room as file entry
-                        demisto.results(fileResult(attachment_file_name, file_content))
+                        attachment_internal_path.append(save_file(attachment_file_name, file_content))
 
                     if file_content and max_depth - 1 > 0:
                         f = tempfile.NamedTemporaryFile(delete=False)
@@ -3650,7 +3666,11 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                                                outputs=None)
                         finally:
                             os.remove(f.name)
+                    if not file_content:
+                        attachment_internal_path.append(None)
                     attachment_names.append(attachment_file_name)
+                    attachment_content_ids.append(attachment_content_id)
+                    attachment_content_dispositions.append(attachment_content_disposition)
                 else:
                     # .msg and other files (png, jpeg)
                     if part.is_multipart() and max_depth - 1 > 0:
@@ -3662,17 +3682,23 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                             attached_emails.append(msg_info)
 
                             attachment_file_name = individual_message.get_filename()
+                            attachment_content_id = individual_message.get('Content-ID')
+                            attachment_content_disposition = individual_message.get('Content-Disposition')
                             if attachment_file_name is None:
                                 attachment_file_name = "unknown_file_name{}".format(i)
 
-                            demisto.results(fileResult(attachment_file_name, msg_info))
+                            attachment_internal_path.append(save_file(attachment_file_name, msg_info))
                             attachment_names.append(attachment_file_name)
+                            attachment_content_ids.append(attachment_content_id)
+                            attachment_content_dispositions.append(attachment_content_disposition)
 
                     else:
                         file_content = part.get_payload(decode=True)
+                        if attachment_file_name.endswith('.p7s') or not file_content:
+                            attachment_internal_path.append(None)
                         # fileResult will return an error if file_content is None.
                         if file_content and not attachment_file_name.endswith('.p7s'):
-                            demisto.results(fileResult(attachment_file_name, file_content))
+                            attachment_internal_path.append(save_file(attachment_file_name, file_content))
 
                         if attachment_file_name.endswith(".msg") and max_depth - 1 > 0:
                             f = tempfile.NamedTemporaryFile(delete=False)
@@ -3692,6 +3718,9 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                                 os.remove(f.name)
 
                         attachment_names.append(attachment_file_name)
+                        attachment_content_ids.append(attachment_content_id)
+                        attachment_content_dispositions.append(attachment_content_disposition)
+
                 demisto.setContext('AttachmentName', attachment_file_name)
 
             elif part.get_content_type() == 'text/html':
@@ -3714,12 +3743,20 @@ def handle_eml(file_path, b64=False, file_name=None, parse_only_headers=False, m
                 'To': extract_address_eml(eml, 'to'),
                 'CC': extract_address_eml(eml, 'cc'),
                 'From': extract_address_eml(eml, 'from'),
-                'Subject': convert_to_unicode(eml['Subject']),
+                'Subject': convert_to_unicode(unfold(eml['Subject'])),
                 'HTML': convert_to_unicode(html, is_msg_header=False),
                 'Text': convert_to_unicode(text, is_msg_header=False),
                 'Headers': header_list,
                 'HeadersMap': headers_map,
                 'Attachments': ','.join(attachment_names) if attachment_names else '',
+                'AttachmentsData': [
+                    {
+                        "Name": attachment_names[i],
+                        "Content-ID": attachment_content_ids[i],
+                        "Content-Disposition": attachment_content_dispositions[i],
+                        "FilePath": attachment_internal_path[i]
+                    } for i in range(len(attachment_names))
+                ],
                 'AttachmentNames': attachment_names if attachment_names else [],
                 'Format': eml.get_content_type(),
                 'Depth': MAX_DEPTH_CONST - max_depth
@@ -3755,6 +3792,7 @@ def main():
     file_type = ''
     entry_id = demisto.args()['entryid']
     max_depth = int(demisto.args().get('max_depth', '3'))
+    nesting_level_to_return = demisto.args().get('nesting_level_to_return', 'All files')
 
     # we use the MAX_DEPTH_CONST to calculate the depth of the email
     # each level will reduce the max_depth by 1
@@ -3779,7 +3817,7 @@ def main():
 
         file_metadata = result[0]['FileMetadata']
         file_type = file_metadata.get('info', '') or file_metadata.get('type', '')
-        if 'MIME entity text, ISO-8859 text' in file_type:
+        if 'MIME entity text, ISO-8859 text' in file_type or 'MIME entity, ISO-8859 text' in file_type:
             file_type = 'application/pkcs7-mime'
 
     except Exception as ex:
@@ -3849,7 +3887,8 @@ def main():
         output = recursive_convert_to_unicode(output)
         email = output  # output may be a single email
         if isinstance(output, list) and len(output) > 0:
-            email = output[0]
+            email, output = parse_nesting_level(nesting_level_to_return, output)
+
         return_outputs(
             readable_output=data_to_md(email, file_name, print_only_headers=parse_only_headers),
             outputs={

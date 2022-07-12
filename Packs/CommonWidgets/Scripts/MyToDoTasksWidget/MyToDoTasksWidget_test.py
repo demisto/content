@@ -64,3 +64,30 @@ def test_open_to_do_tasks_of_current_user(mocker):
 
     assert len(table) == 1
     assert table == expected_table
+
+
+def test_no_open_to_do_tasks(mocker):
+    '''
+    Given:
+        - Mock response of 'internalHttpRequest' to '/v2/statistics/widgets/query' that includes no open todo tasks
+    When:
+        - Running the MyToDoTasksWidget script
+
+    Then:
+        - Ensure the script runs successfully add returns empty response
+    '''
+    res_body = {
+        'data': None
+    }
+    mocker.patch.object(
+        demisto,
+        'internalHttpRequest',
+        return_value={
+            'statusCode': 200,
+            'body': json.dumps(res_body)
+        }
+    )
+
+    table = get_open_to_do_tasks_of_current_user()
+
+    assert len(table) == 0

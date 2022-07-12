@@ -15,7 +15,7 @@
     },
     "id": "24b8c823-873e-4153-81bf-a79d04743d28",
     "isPredefined": true,
-    "name": "Unit42 Blog Feed",
+    "name": "Unit 42 Blog Feed",
     "params": {
         "insecure": "true",
         "url": "https://unit42.paloaltonetworks.com/feed/"

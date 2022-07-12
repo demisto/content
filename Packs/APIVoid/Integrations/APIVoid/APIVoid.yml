@@ -16,22 +16,19 @@ configuration:
   defaultvalue: '10'
   type: 0
   required: true
-  additionalinfo: If the percentage of detections is BELOW this value, the indicator
-    is considered GOOD
+  additionalinfo: If the percentage of detections is BELOW this value, the indicator is considered GOOD
 - display: Suspicious Reputation (Percentage)
   name: suspicious
   defaultvalue: '30'
   type: 0
   required: true
-  additionalinfo: If the percentage of detections is ABOVE this value, the indicator
-    is considered SUSPICIOUS
+  additionalinfo: If the percentage of detections is ABOVE this value, the indicator is considered SUSPICIOUS
 - display: Bad Reputation (Percentage)
   name: bad
   defaultvalue: '60'
   type: 0
   required: true
-  additionalinfo: If the percentage of detections is ABOVE this value, the indicator
-    is considered BAD
+  additionalinfo: If the percentage of detections is ABOVE this value, the indicator is considered BAD
 - display: Malicious
   name: malicious
   defaultvalue: suspicious
@@ -43,12 +40,10 @@ configuration:
   additionalinfo: Consider the indicator malicious if either "suspicious" or "bad"
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ''
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ''
   type: 8
   required: false
 script:
@@ -76,15 +71,13 @@ script:
       description: Additional information about the location.
       type: string
     - contextPath: IP.Geo.Location
-      description: 'The geolocation where the IP address is located, in the format:
-        latitude:longitude.'
+      description: 'The geolocation where the IP address is located, in the format: latitude:longitude.'
       type: string
     - contextPath: IP.Hostname
       description: The hostname that is mapped to this IP address.
       type: string
     - contextPath: IP.PositiveDetections
-      description: The number of engines that positively detected the indicator as
-        malicious.
+      description: The number of engines that positively detected the indicator as malicious.
       type: number
     - contextPath: DBotScore
       description: ''
@@ -197,8 +190,7 @@ script:
       description: 'The domain name, for example: "google.com".'
       type: string
     - contextPath: Domain.PositiveDetections
-      description: The number of engines that positively detected the indicator as
-        malicious.
+      description: The number of engines that positively detected the indicator as malicious.
       type: number
     - contextPath: DBotScore
       description: ''
@@ -320,8 +312,7 @@ script:
       description: The total number of engines that checked the indicator.
       type: number
     - contextPath: URL.PositiveDetections
-      description: The number of engines that positively detected the indicator as
-        malicious.
+      description: The number of engines that positively detected the indicator as malicious.
       type: number
     - contextPath: DBotScore
       description: ''
@@ -669,15 +660,13 @@ script:
       description: Additional information about the location.
       type: string
     - contextPath: IP.Geo.Location
-      description: 'The geolocation where the IP address is located, in the format:
-        latitude:longitude.'
+      description: 'The geolocation where the IP address is located, in the format: latitude:longitude.'
       type: string
     - contextPath: IP.Hostname
       description: The hostname that is mapped to this IP address.
       type: string
     - contextPath: IP.PositiveDetections
-      description: The number of engines that positively detected the indicator as
-        malicious.
+      description: The number of engines that positively detected the indicator as malicious.
       type: number
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -710,8 +699,7 @@ script:
       description: 'The domain name, for example: "google.com".'
       type: string
     - contextPath: Domain.PositiveDetections
-      description: The number of engines that positively detected the indicator as
-        malicious.
+      description: The number of engines that positively detected the indicator as malicious.
       type: number
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -741,8 +729,7 @@ script:
       description: The total number of engines that checked the indicator.
       type: number
     - contextPath: URL.PositiveDetections
-      description: The number of engines that positively detected the indicator as
-        malicious.
+      description: The number of engines that positively detected the indicator as malicious.
       type: number
     - contextPath: URL.RiskScore
       description: ''
@@ -1097,8 +1084,7 @@ script:
     - contextPath: APIVoid.Email.score
       description: ''
       type: number
-    description: Checks if an email address is disposable, if it has MX records, and
-      more.
+    description: Checks if an email address is disposable, if it has MX records, and more.
   - name: apivoid-threatlog
     arguments:
     - name: host
@@ -1178,37 +1164,37 @@ script:
       description: URL to capture screenshot of
     outputs:
     - contextPath: File.Size
-      description: ''
+      description: 'The size of the file.'
       type: number
     - contextPath: File.SHA1
-      description: ''
+      description: 'The SHA1 hash of the file.'
       type: string
     - contextPath: File.SHA256
-      description: ''
+      description: 'The SHA256 hash of the file.'
       type: string
     - contextPath: File.SHA512
-      description: ''
+      description: 'The SHA512 hash of the file.'
       type: string
     - contextPath: File.Name
-      description: ''
+      description: 'The name of the file.'
       type: string
     - contextPath: File.SSDeep
-      description: ''
+      description: 'The SSDeep hash of the file.'
       type: string
     - contextPath: File.EntryID
-      description: ''
+      description: 'The EntryID of the file.'
       type: string
     - contextPath: File.Info
-      description: ''
+      description: 'Info regarding the file.'
       type: string
     - contextPath: File.Type
-      description: ''
+      description: 'The type of the file.'
       type: string
     - contextPath: File.MD5
-      description: ''
+      description: 'The MD5 hash of the file.'
       type: string
     - contextPath: File.Extension
-      description: ''
+      description: 'The extension of the file.'
       type: string
     description: Capture a high-quality screenshot of any website or URL
   - name: apivoid-url-to-pdf
@@ -1218,37 +1204,37 @@ script:
       description: URL to create PDF of
     outputs:
     - contextPath: File.Size
-      description: ''
+      description: 'The size of the file.'
       type: number
     - contextPath: File.SHA1
-      description: ''
+      description: 'The SHA1 hash of the file.'
       type: string
     - contextPath: File.SHA256
-      description: ''
+      description: 'The SHA256 hash of the file.'
       type: string
     - contextPath: File.SHA512
-      description: ''
+      description: 'The SHA512 hash of the file.'
       type: string
     - contextPath: File.Name
-      description: ''
+      description: 'The name of the file.'
       type: string
     - contextPath: File.SSDeep
-      description: ''
+      description: 'The SSDeep hash of the file.'
       type: string
     - contextPath: File.EntryID
-      description: ''
+      description: 'The EntryID of the file.'
       type: string
     - contextPath: File.Info
-      description: ''
+      description: 'Info regarding the file.'
       type: string
     - contextPath: File.Type
-      description: ''
+      description: 'The type of the file.'
       type: string
     - contextPath: File.MD5
-      description: ''
+      description: 'The MD5 hash of the file.'
       type: string
     - contextPath: File.Extension
-      description: ''
+      description: 'The extension of the file.'
       type: string
     description: Convert an URL info high-quality and printable PDF document
   - name: apivoid-url-to-html
@@ -1258,37 +1244,37 @@ script:
       description: URL to create PDF of
     outputs:
     - contextPath: File.Size
-      description: ''
+      description: 'The size of the file.'
       type: number
     - contextPath: File.SHA1
-      description: ''
+      description: 'The SHA1 hash of the file.'
       type: string
     - contextPath: File.SHA256
-      description: ''
+      description: 'The SHA256 hash of the file.'
       type: string
     - contextPath: File.SHA512
-      description: ''
+      description: 'The SHA512 hash of the file.'
       type: string
     - contextPath: File.Name
-      description: ''
+      description: 'The name of the file.'
       type: string
     - contextPath: File.SSDeep
-      description: ''
+      description: 'The SSDeep hash of the file.'
       type: string
     - contextPath: File.EntryID
-      description: ''
+      description: 'The EntryID of the file.'
       type: string
     - contextPath: File.Info
-      description: ''
+      description: 'Info regarding the file.'
       type: string
     - contextPath: File.Type
-      description: ''
+      description: 'The type of the file.'
       type: string
     - contextPath: File.MD5
-      description: ''
+      description: 'The MD5 hash of the file.'
       type: string
     - contextPath: File.Extension
-      description: ''
+      description: 'The extension of the file.'
       type: string
     description: Get the body of an html page after javascript has been executed
   - name: apivoid-site-trustworthiness
@@ -1599,7 +1585,7 @@ script:
       description: ''
       type: boolean
     description: A smart API that accurately checks a website's trustworthiness.
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.4.31492
   runonce: false
   subtype: python3
 fromversion: 5.0.0

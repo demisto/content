@@ -6,3 +6,9 @@ ignore=BA101
 
 [file:Darktrace.yml]
 ignore=IN145
+
+[file:Darktrace_image.png]
+ignore=IM111
+
+[file:classifier-Darktrace.json]
+ignore=BA101

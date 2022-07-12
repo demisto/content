@@ -1,12 +1,9 @@
-import demistomock as demisto
-from CommonServerPython import *
-
-''' IMPORTS '''
+import os
 
 import stomp
-import os
-import traceback
 
+import demistomock as demisto
+from CommonServerPython import *
 
 ''' GLOBAL VARS '''
 
@@ -52,11 +49,14 @@ def create_connection(client_cert, client_key, root_ca):
         with open(root_ca_path, 'wb') as file:
             file.write(root_ca)
 
+    conn = stomp.Connection([(HOSTNAME, PORT)])
     if client_cert or client_key or root_ca:
-        conn = stomp.Connection(host_and_ports=[(HOSTNAME, PORT)], use_ssl=True,
-                                ssl_key_file=client_key_path, ssl_cert_file=client_path)
-    else:
-        conn = stomp.Connection([(HOSTNAME, PORT)])
+        demisto.debug('adding ssl certificate')
+        conn.set_ssl(
+            for_hosts=[(HOSTNAME, PORT)],
+            key_file=client_key,
+            cert_file=client_path
+        )
 
     return conn
 
@@ -136,7 +136,7 @@ def subscribe(client, conn, subscription_id, topic_name, queue_name):
 def fetch_incidents(client, conn, subscription_id, queue_name, topic_name):
     if not queue_name and not topic_name:
         raise ValueError('To fetch incidents you must provide either Queue Name or Topic Name')
-    elif queue_name and topic_name:
+    if queue_name and topic_name:
         raise ValueError('Can\'t provide both Queue Name and Topic name.')
 
     # conn = stomp.Connection(heartbeats=(4000, 4000))
@@ -179,7 +179,7 @@ def main():
         root_ca=ROOT_CA
     )
 
-    LOG('command is %s' % (demisto.command(),))
+    LOG(f'command is {demisto.command()}')
 
     try:
         if demisto.command() == 'test-module':
@@ -217,7 +217,6 @@ def main():
             fetch_incidents(client, conn, subscription_id, queue_name, topic_name)
 
     except Exception as e:
-        demisto.error(traceback.format_exc())
         if demisto.command() == 'fetch-incidents':
             raise
 

@@ -204,10 +204,13 @@ def template_params():
     actualParams = {}
     paramsStr = demisto.getArg('templateParams')
     if paramsStr:
-        try:
-            params = json.loads(paramsStr)
-        except ValueError as e:
-            return_error_mail_sender('Unable to parse templateParams: %s' % (str(e)))
+        if isinstance(paramsStr, dict):
+            params = paramsStr
+        else:
+            try:
+                params = json.loads(paramsStr)
+            except (ValueError, TypeError) as e:
+                return_error_mail_sender('Unable to parse templateParams: %s' % (str(e)))
         # Build a simple key/value
         for p in params:
             if params[p].get('value'):

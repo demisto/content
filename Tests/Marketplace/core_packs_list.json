@@ -3,6 +3,7 @@
   "rasterize",
   "DemistoRESTAPI",
   "DemistoLocking",
+  "Malware",
   "ImageOCR",
   "WhereIsTheEgg",
   "AutoFocus",
@@ -21,8 +22,7 @@
   "TIM_Processing",
   "TIM_SIEM",
   "HelloWorld",
-  "ExportIndicators",
-  "Malware",
+  "EDL",
   "DefaultPlaybook",
   "AccessInvestigation",
   "ThreatIntelligenceManagement",
@@ -31,5 +31,6 @@
   "ipinfo",
   "FeedMitreAttackv2",
   "FeedUnit42v2",
-  "Palo_Alto_Networks_WildFire"
+  "Palo_Alto_Networks_WildFire",
+  "FiltersAndTransformers"
 ]

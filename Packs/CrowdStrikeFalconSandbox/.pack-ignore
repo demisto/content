@@ -4,5 +4,5 @@ ignore=BA101
 [file:README.md]
 ignore=RM104
 
-[file:integration-CrowdStrikeFalconSandbox.yml]
+[file:VxStream.yml]
 ignore=IN145

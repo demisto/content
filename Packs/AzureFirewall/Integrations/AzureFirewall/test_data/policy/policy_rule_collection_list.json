@@ -1,0 +1,144 @@
+{
+  "value": [
+    {
+      "properties": {
+        "priority": 100,
+        "ruleCollections": [
+          {
+            "ruleCollectionType": "FirewallPolicyNatRuleCollection",
+            "action": {
+              "type": "Dnat"
+            },
+            "rules": [
+              {
+                "ruleType": "NatRule",
+                "name": "my-nat-rule-1",
+                "translatedAddress": "189.160.40.11",
+                "translatedPort": "8081",
+                "ipProtocols": [
+                  "TCP",
+                  "UDP"
+                ],
+                "sourceAddresses": [
+                  "189.160.40.11"
+                ],
+                "sourceIpGroups": [
+                ],
+                "destinationAddresses": [
+                  "189.160.40.11"
+                ],
+                "destinationPorts": [
+                  "8080"
+                ]
+              }
+            ],
+            "name": "my-nat-collection",
+            "priority": 102
+          }
+        ],
+        "provisioningState": "Succeeded"
+      },
+      "id": "/subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/firewallPolicies/xsoar_policy/ruleCollectionGroups/DefaultDnatRuleCollectionGroup",
+      "name": "DefaultDnatRuleCollectionGroup",
+      "type": "Microsoft.Network/FirewallPolicies/RuleCollectionGroups",
+      "etag": "f84c641f-5fea-478f-b07f-c5c77d526d3b",
+      "location": "westeurope"
+    },
+    {
+      "properties": {
+        "priority": 200,
+        "ruleCollections": [
+          {
+            "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+            "action": {
+              "type": "Allow"
+            },
+            "rules": [
+              {
+                "ruleType": "NetworkRule",
+                "name": "mt-network-rule-1",
+                "ipProtocols": [
+                  "TCP",
+                  "UDP"
+                ],
+                "sourceAddresses": [
+                  "189.160.40.11"
+                ],
+                "sourceIpGroups": [
+                ],
+                "destinationAddresses": [
+                  "189.160.40.11"
+                ],
+                "destinationIpGroups": [
+                ],
+                "destinationFqdns": [
+                ],
+                "destinationPorts": [
+                  "405"
+                ]
+              }
+            ],
+            "name": "my-network-collection",
+            "priority": 105
+          }
+        ],
+        "provisioningState": "Succeeded"
+      },
+      "id": "/subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/firewallPolicies/xsoar_policy/ruleCollectionGroups/DefaultNetworkRuleCollectionGroup",
+      "name": "DefaultNetworkRuleCollectionGroup",
+      "type": "Microsoft.Network/FirewallPolicies/RuleCollectionGroups",
+      "etag": "183a5288-ab9e-44bb-8ba6-70de95a0c0db",
+      "location": "westeurope"
+    },
+    {
+      "properties": {
+        "priority": 300,
+        "ruleCollections": [
+          {
+            "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+            "action": {
+              "type": "Allow"
+            },
+            "rules": [
+              {
+                "ruleType": "ApplicationRule",
+                "name": "my-app-rule-1",
+                "protocols": [
+                  {
+                    "protocolType": "Http",
+                    "port": 80
+                  }
+                ],
+                "fqdnTags": [
+                ],
+                "webCategories": [
+                ],
+                "targetFqdns": [
+                  "microsoft.com"
+                ],
+                "targetUrls": [
+                ],
+                "terminateTLS": false,
+                "sourceAddresses": [
+                  "*"
+                ],
+                "destinationAddresses": [
+                ],
+                "sourceIpGroups": [
+                ]
+              }
+            ],
+            "name": "my-application-collection",
+            "priority": 205
+          }
+        ],
+        "provisioningState": "Succeeded"
+      },
+      "id": "/subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/firewallPolicies/xsoar_policy/ruleCollectionGroups/DefaultApplicationRuleCollectionGroup",
+      "name": "DefaultApplicationRuleCollectionGroup",
+      "type": "Microsoft.Network/FirewallPolicies/RuleCollectionGroups",
+      "etag": "13e0bd25-3bed-45e4-b34b-78f4e17791df",
+      "location": "westeurope"
+    }
+  ]
+}

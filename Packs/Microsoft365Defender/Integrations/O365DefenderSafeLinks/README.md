@@ -1,5 +1,5 @@
 Provides URL scanning and rewriting of inbound email messages in mail flow, and time-of-click verification of URLs and links in email messages and other locations.
-This integration was integrated and tested with [Defender for Office 365](https://docs.microsoft.com/en-us/powershell/module/exchange/?view=exchange-ps#defender-for-office-365). 
+This integration was integrated and tested with Exchange Online PowerShell V2 module, and [Defender for Office 365](https://docs.microsoft.com/en-us/powershell/module/exchange/?view=exchange-ps#defender-for-office-365). 
 
 [The Safe Links Product overview](https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/safe-links?view=o365-worldwide)
 
@@ -794,13 +794,12 @@ Update a given Safe Links rule.
 
 
 #### Command Example
-```!saas-security-incidents-get limit=11 app_ids=acf49b2389c09f26ad0ccd2b1a603328 from=2021-08-23T20:25:17.495Z state=open```
-
+```!o365-defender-safelinks-rule-update name=XSOAR Rule safe_links_policy=XSOAR Policy comments="Description of the updated rule" ```
 #### Context Example
 ```json
 {
   "O365Defender.SafeLinks.Rule(obj.Guid === val.Guid)": {
-    "Comments": null,
+    "Comments": "Description of the updated rule",
     "Conditions": [
       "Microsoft.Exchange.MessagingPolicies.Rules.Tasks.SentToPredicate"
     ],
@@ -815,7 +814,7 @@ Update a given Safe Links rule.
     "Identity": "XSOAR Policy",
     "ImmutableId": "e5764de3-5495-4512-93f5-fe96d579fbd9",
     "IsValid": true,
-    "Name": "XSOAR Policy",
+    "Name": "XSOAR Rule",
     "ObjectState": "Unchanged",
     "OrganizationId": "EURPR07A123.PROD.OUTLOOK.COM/Microsoft Exchange Hosted Organizations/xsoartest.onmicrosoft.com - EURPR07A123.PROD.OUTLOOK.COM/ConfigurationUnits/xsoartest.onmicrosoft.com/Configuration",
     "PSComputerName": "outlook.office365.com",

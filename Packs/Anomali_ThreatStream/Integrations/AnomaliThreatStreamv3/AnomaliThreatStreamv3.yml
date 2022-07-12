@@ -169,6 +169,9 @@ script:
     - contextPath: ThreatStream.IP.Tags
       description: Tags assigned to the IP.
       type: Unknown
+    - contextPath: ThreatStream.IP.IType
+      description: The iType of the indicator associated with the specified model.
+      type: String
     - contextPath: IP.Tags
       description: List of IP Tags.
       type: Unknown
@@ -281,6 +284,9 @@ script:
     - contextPath: ThreatStream.Domain.Tags
       description: Tags assigned to the domain.
       type: Unknown
+    - contextPath: ThreatStream.Domain.IType
+      description: The iType of the indicator associated with the specified model.
+      type: String
     - contextPath: Domain.Tags
       description: List of domain tags.
       type: Unknown
@@ -379,6 +385,9 @@ script:
     - contextPath: ThreatStream.File.Tags
       description: Tags assigned to the file.
       type: Unknown
+    - contextPath: ThreatStream.File.IType
+      description: The iType of the indicator associated with the specified model.
+      type: String
     - contextPath: File.Tags
       description: List of file tags.
       type: Unknown
@@ -1621,13 +1630,16 @@ script:
     - contextPath: ThreatStream.URL.Tags
       description: Tags assigned to the URL.
       type: Unknown
+    - contextPath: ThreatStream.URL.IType
+      description: The iType of the indicator associated with the specified model.
+      type: String
     - contextPath: URL.Tags
       description: List of URL tags.
       type: Unknown
     - contextPath: URL.ThreatTypes
       description: Threat types associated with the url.
       type: Unknown
-  dockerimage: demisto/emoji:1.0.0.24037
+  dockerimage: demisto/py3-tools:1.0.0.31193
   feed: false
   isfetch: false
   longRunning: false

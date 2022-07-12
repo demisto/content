@@ -1,5 +1,6 @@
 import demistomock as demisto
 import CommonServerPython
+from CommonServerPython import urljoin
 import pytest
 import json
 import requests_mock
@@ -9,6 +10,7 @@ class ResponseMock:
     def __init__(self, response):
         self._json = response
         self.content = json.dumps(response)
+        self.status_code = 200
 
     def json(self):
         return self._json
@@ -24,7 +26,8 @@ def run_command_test(command_func, args, response_path, expected_result_path, mo
     with open(response_path, 'r') as response_f:
         response = ResponseMock(json.load(response_f))
     mocker.patch('Zscaler.http_request', return_value=response)
-    if command_func.__name__ == 'url_lookup':
+    if command_func.__name__ in ['url_lookup', 'get_users_command', 'set_user_command',
+                                 'get_departments_command', 'get_usergroups_command']:
         res = command_func(args)
     else:
         res = command_func(**args)
@@ -62,6 +65,20 @@ def test_url_command(mocker):
                      response_path='test_data/responses/url.json',
                      expected_result_path='test_data/results/url.json',
                      mocker=mocker)
+
+
+def test_url_fails_unknown_error_code(mocker, requests_mock):
+    """url"""
+    import Zscaler
+    Zscaler.BASE_URL = 'http://cloud/api/v1'
+
+    requests_mock.post(urljoin(Zscaler.BASE_URL, 'urlLookup'), status_code=501)
+    args = {'url': 'https://www.demisto-news.com,https://www.demisto-search.com'}
+
+    try:
+        Zscaler.url_lookup(args)
+    except Exception as ex:
+        assert 'following error: 501' in str(ex)
 
 
 def test_url_command_with_urlClassificationsWithSecurityAlert(mocker):
@@ -464,3 +481,52 @@ def test_logout_command__context_expired(mocker):
     mocker.patch.object(Zscaler, 'logout', side_effect=Zscaler.AuthorizationError(''))
     raw_res = Zscaler.logout_command()
     assert raw_res.readable_output == "API session is not authenticated. No action was performed."
+
+
+def test_get_users_command(mocker):
+    """zscaler-get-users"""
+    import Zscaler
+    run_command_test(command_func=Zscaler.get_users_command,
+                     args={'pageSize': '100'},
+                     response_path='test_data/responses/get_users.json',
+                     expected_result_path='test_data/results/get_users.json',
+                     mocker=mocker)
+
+
+def test_set_user_command(mocker):
+    """zscaler-update-user"""
+    import Zscaler
+    user_json = """{
+    "department": {"id": "12","name": "user test"},
+    "email": "user@test.com",
+    "groups": [{"id": 13,"name": "name_test"}],
+    "id": 11,
+    "name": "name.test.com"
+    }"""
+
+    run_command_test(command_func=Zscaler.set_user_command,
+                     args={'id': '11',
+                           'user': user_json},
+                     response_path='test_data/responses/set_user.json',
+                     expected_result_path='test_data/results/set_user.json',
+                     mocker=mocker)
+
+
+def test_get_departments_command(mocker):
+    """zscaler-get-departments"""
+    import Zscaler
+    run_command_test(command_func=Zscaler.get_departments_command,
+                     args={'pageSize': '1'},
+                     response_path='test_data/responses/get_departments.json',
+                     expected_result_path='test_data/results/get_departments.json',
+                     mocker=mocker)
+
+
+def test_get_usergroups_command(mocker):
+    """zscaler-get-usergroups"""
+    import Zscaler
+    run_command_test(command_func=Zscaler.get_usergroups_command,
+                     args={'pageSize': '100'},
+                     response_path='test_data/responses/get_usergroups.json',
+                     expected_result_path='test_data/results/get_usergroups.json',
+                     mocker=mocker)

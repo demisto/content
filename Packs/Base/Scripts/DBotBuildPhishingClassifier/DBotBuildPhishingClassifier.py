@@ -40,7 +40,7 @@ def build_query_in_reepect_to_phishing_labels(args):
     tag_field = args['tagField']
     tags_union = ' '.join(['"{}"'.format(label) for label in mapping_dict])
     mapping_query = '{}:({})'.format(tag_field, tags_union)
-    if 'query' not in args:
+    if 'query' not in args or args['query'].strip() == '':
         args['query'] = mapping_query
     else:
         args['query'] = '({}) and ({})'.format(query, mapping_query)

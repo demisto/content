@@ -1,5 +1,7 @@
 LogRhythm security intelligence.
-This integration was integrated and tested with version 7.7 of LogRhythm Rest API
+This integration was integrated and tested with version 7.7 of LogRhythm Rest API. Previous versions that have been declared [EOL](https://docs.logrhythm.com/docs/enterprise/find-more-information/end-of-life-policy-for-software-and-hardware#EndofLifePolicyforSoftwareandHardware-Appendix:EndofLifeTables) by the vendor, are not supported.
+
+
 
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-logrhythmrest-v2).
@@ -339,6 +341,7 @@ Gets the alarm history details by ID and filter criteria.
 ### lr-alarm-events-list
 ***
 Gets a list of events for the specified alarm ID.
+Note: Currently, this command does not work as expected on LogRhythm's side. It always returns a list of one item, even if the given alarm ID is associated with more than one event.
 
 
 #### Base Command

@@ -10,9 +10,6 @@ Follow these steps to [create a private key and authorize the API](https://devel
 | Search user mailboxes | [https://www.googleapis.com/auth/gmail.readonly](https://www.googleapis.com/auth/gmail.readonly) |
 | Delete emails from user mailbox | [https://mail.google.com](https://mail.google.com), [https://www.googleapis.com/auth/gmail.modify](https://www.googleapis.com/auth/gmail.modify) |
 | Fetch user security tokens | [https://www.googleapis.com/auth/admin.directory.user.security](https://www.googleapis.com/auth/admin.directory.user.security) |
-| Fetch mobile info | [https://www.googleapis.com/auth/admin.directory.device.mobile.readonly](https://www.googleapis.com/auth/admin.directory.device.mobile.readonly) |
-| Perform actions on mobile devices | [https://www.googleapis.com/auth/admin.directory.device.mobile.action](https://www.googleapis.com/auth/admin.directory.device.mobile.action) |
-| Perform actions on Chrome devices | [https://www.googleapis.com/auth/admin.directory.device.chromeos](https://www.googleapis.com/auth/admin.directory.device.chromeos) |
 | Block email addresses | [https://www.googleapis.com/auth/gmail.settings.basic](https://www.googleapis.com/auth/gmail.settings.basic) |
 | Get auto-replay messages from a user | [https://mail.google.com](https://mail.google.com), [https://www.googleapis.com/auth/gmail.modify](https://www.googleapis.com/auth/gmail.modify), [https://www.googleapis.com/auth/gmail.readonly](https://www.googleapis.com/auth/gmail.readonly) and [https://www.googleapis.com/auth/gmail.settings.basic](https://www.googleapis.com/auth/gmail.settings.basic) |
 | Set auto-replay messages | [https://www.googleapis.com/auth/gmail.settings.basic](https://www.googleapis.com/auth/gmail.settings.basic) |
@@ -24,6 +21,14 @@ Follow these steps to [create a private key and authorize the API](https://devel
 | Add the forwarding address for the user | [https://www.googleapis.com/auth/gmail.settings.sharing](https://www.googleapis.com/auth/gmail.settings.sharing) |
 
 For the email user parameter, select a user with admin permissions and make sure that you follow the steps to perform Google Apps Domain-Wide Delegation of Authority.
+The required admin permissions are only used for user actions (i.e., creating users, getting user informations, deleting users):
+    - Organizational Units > Read
+    - Users
+    - Security > User Security Management
+    - Security > Security Settings
+Mailbox actions do not require admin previleges.
+If a non-admin user is the user for the integration's parameter, the test button will fail on a 403 error.
+This may also cause the ***gmail-search-all-mailboxes*** command to fail.
 
 ## Revoke/Fetch User Roles
 In order to revoke/fetch user role, you will need the Immutable Google Apps ID param.
@@ -34,4 +39,4 @@ To get an Immutable Google Apps ID (or customerId):
 There you will see URLs in the format:
 [https://accounts.google.com/o/saml2/idp?idpid=Cxxxxxxxx](https://accounts.google.com/o/saml2/idp?idpid=Cxxxxxxxx)
 Cxxxxxxxx is your Immutable Google Apps ID (customerId).
- 
+

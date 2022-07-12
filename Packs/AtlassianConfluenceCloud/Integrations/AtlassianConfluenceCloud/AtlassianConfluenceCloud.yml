@@ -22,8 +22,7 @@ configuration:
   name: insecure
   required: false
   type: 8
-description: Atlassian Confluence Cloud allows users to interact with confluence entities
-  like content, space, users, and groups. Users can also manage the space permissions.
+description: Atlassian Confluence Cloud allows users to interact with confluence entities like content, space, users, and groups. Users can also manage the space permissions.
 display: Atlassian Confluence Cloud
 name: Atlassian Confluence Cloud
 script:
@@ -198,8 +197,7 @@ script:
       description: Height in pixels of the user's profile picture to whom the space permission applies.
       type: Number
     - contextPath: ConfluenceCloud.Space.permissions.subjects.user.results.profilePicture.isDefault
-      description: Whether the profile picture of the user is the default picture to whom the space
-        permission applies.
+      description: Whether the profile picture of the user is the default picture to whom the space permission applies.
       type: Boolean
     - contextPath: ConfluenceCloud.Space.permissions.subjects.user.results.displayName
       description: Display name of the user to whom the space permission applies.
@@ -238,8 +236,7 @@ script:
       description: Whether anonymous users have permission to use the operation.
       type: Boolean
     - contextPath: ConfluenceCloud.Space.permissions.unlicensedAccess
-      description: Whether unlicensed users have access from JIRA Service Desk when
-        used with the read space operation.
+      description: Whether unlicensed users have access from JIRA Service Desk when used with the read space operation.
       type: Boolean
     - contextPath: ConfluenceCloud.Space.status
       description: Status of the space.
@@ -388,8 +385,7 @@ script:
       description: Status of the space that the content is being created in.
       type: String
     - contextPath: ConfluenceCloud.Content.space._links.webui
-      description: Web user interface link to the space that the content is being
-        created in.
+      description: Web user interface link to the space that the content is being created in.
       type: String
     - contextPath: ConfluenceCloud.Content.space._links.self
       description: Link to the space that the content is being created in.
@@ -461,8 +457,7 @@ script:
       description: Width in pixels of the profile picture of the user who last updated the content.
       type: Number
     - contextPath: ConfluenceCloud.Content.version.by.profilePicture.height
-      description: Height in pixels of the profile picture of the user who last updated the
-        content.
+      description: Height in pixels of the profile picture of the user who last updated the content.
       type: Number
     - contextPath: ConfluenceCloud.Content.version.by.profilePicture.isDefault
       description: Whether the profile picture is the default profile picture.
@@ -492,12 +487,10 @@ script:
       description: Whether the edit was minor.
       type: Boolean
     - contextPath: ConfluenceCloud.Content.version.confRev
-      description: The revision ID provided by Confluence to be used as a revision
-        in Synchrony.
+      description: The revision ID provided by Confluence to be used as a revision in Synchrony.
       type: String
     - contextPath: ConfluenceCloud.Content.version.contentTypeModified
-      description: True if the content type is modified in the version. (e.g., page
-        to blog)
+      description: True if the content type is modified in the version. (e.g., page to blog)
       type: Boolean
     - contextPath: ConfluenceCloud.Content.version._links.self
       description: Link to the new version of the content.
@@ -702,8 +695,7 @@ script:
       description: Status of the space that the comment is being created in.
       type: String
     - contextPath: ConfluenceCloud.Comment.space._links.webui
-      description: Web user interface link to the space that the comment is being
-        created in.
+      description: Web user interface link to the space that the comment is being created in.
       type: String
     - contextPath: ConfluenceCloud.Comment.space._links.self
       description: Link to the space that the comment is being created in.
@@ -775,8 +767,7 @@ script:
       description: Width in pixels of the profile picture of the user who last updated the comment.
       type: Number
     - contextPath: ConfluenceCloud.Comment.version.by.profilePicture.height
-      description: Height in pixels of the profile picture of the user who last updated the
-        comment.
+      description: Height in pixels of the profile picture of the user who last updated the comment.
       type: Number
     - contextPath: ConfluenceCloud.Comment.version.by.profilePicture.isDefault
       description: Whether the profile picture is the default profile picture.
@@ -806,12 +797,10 @@ script:
       description: Whether the edit was minor.
       type: Boolean
     - contextPath: ConfluenceCloud.Comment.version.confRev
-      description: The revision ID provided by Confluence to be used as a revision
-        in Synchrony.
+      description: The revision ID provided by Confluence to be used as a revision in Synchrony.
       type: String
     - contextPath: ConfluenceCloud.Comment.version.contentTypeModified
-      description: True if the comment type is modified in the version. (e.g., page
-        to blog).
+      description: True if the comment type is modified in the version. (e.g., page to blog).
       type: Boolean
     - contextPath: ConfluenceCloud.Comment.version._links.self
       description: Link to the new version of the comment.
@@ -935,9 +924,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: "Filter the results to list the spaces based on their status. \n\
-        Possible values: current, archived.\n\nNote: The term 'current' refers to\
-        \ the space that is currently active."
+      description: "Filter the results to list the spaces based on their status. \nPossible values: current, archived.\n\nNote: The term 'current' refers to the space that is currently active."
       isArray: false
       name: status
       predefined:
@@ -947,8 +934,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: "Filter the results to list the spaces based on their type. \n\
-        Possible values: global, personal."
+      description: "Filter the results to list the spaces based on their type. \nPossible values: global, personal."
       isArray: false
       name: type
       predefined:
@@ -969,9 +955,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: "Indicates which properties to expand. \nFor reference, visit https://developer.atlassian.com/cloud/confluence/rest/api-group-space/#api-wiki-rest-api-space-get.\n\
-        \nNote: To separate multiple values, use commas. Expanded properties will\
-        \ be populated in context data only."
+      description: "Indicates which properties to expand. \nFor reference, visit https://developer.atlassian.com/cloud/confluence/rest/api-group-space/#api-wiki-rest-api-space-get.\n\nNote: To separate multiple values, use commas. Expanded properties will be populated in context data only."
       isArray: true
       name: expand
       required: false
@@ -1000,7 +984,7 @@ script:
       description: The description of the space in plain format in plain format.
       type: String
     - contextPath: ConfluenceCloud.Space.description.plain.representation
-      description: Representation format of the description in plain format. 
+      description: Representation format of the description in plain format.
       type: String
     - contextPath: ConfluenceCloud.Space.homepage.id
       description: ID of the homepage of the space.
@@ -1060,8 +1044,7 @@ script:
       description: Height in pixels of the user's profile picture to whom the space permission applies.
       type: Number
     - contextPath: ConfluenceCloud.Space.permissions.subjects.user.results.profilePicture.isDefault
-      description: Whether the profile picture of the user is the default to whom the space
-        permission applies.
+      description: Whether the profile picture of the user is the default to whom the space permission applies.
       type: Boolean
     - contextPath: ConfluenceCloud.Space.permissions.subjects.user.results.displayName
       description: Display name of the user to whom the space permission applies.
@@ -1100,8 +1083,7 @@ script:
       description: Whether anonymous users have permission to use the operation.
       type: Boolean
     - contextPath: ConfluenceCloud.Space.permissions.unlicensedAccess
-      description: Whether unlicensed users have access from JIRA Service Desk when
-        used with the read space operation.
+      description: Whether unlicensed users have access from JIRA Service Desk when used with the read space operation.
       type: Boolean
     - contextPath: ConfluenceCloud.Space.status
       description: Status of the space.
@@ -1151,8 +1133,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: page
-      description: "The type to retrieve the contents. \nPossible values:\
-        \ page, blogpost."
+      description: "The type to retrieve the contents. \nPossible values: page, blogpost."
       isArray: false
       name: type
       predefined:
@@ -1269,8 +1250,7 @@ script:
       description: Status of the space that the content is being created in.
       type: String
     - contextPath: ConfluenceCloud.Content.space._links.webui
-      description: Web user interface link to the space that the content is being
-        created in.
+      description: Web user interface link to the space that the content is being created in.
       type: String
     - contextPath: ConfluenceCloud.Content.space._links.self
       description: Link to the space that the content is being created in.
@@ -1342,8 +1322,7 @@ script:
       description: Width in pixels of the profile picture of the user who last updated the content.
       type: Number
     - contextPath: ConfluenceCloud.Content.version.by.profilePicture.height
-      description: Height in pixels of the profile picture of the user who last updated the
-        content.
+      description: Height in pixels of the profile picture of the user who last updated the content.
       type: Number
     - contextPath: ConfluenceCloud.Content.version.by.profilePicture.isDefault
       description: Whether the profile picture is the default profile picture.
@@ -1373,12 +1352,10 @@ script:
       description: Whether the edit was minor.
       type: Boolean
     - contextPath: ConfluenceCloud.Content.version.confRev
-      description: The revision ID provided by Confluence to be used as a revision
-        in Synchrony.
+      description: The revision ID provided by Confluence to be used as a revision in Synchrony.
       type: String
     - contextPath: ConfluenceCloud.Content.version.contentTypeModified
-      description: True if the content type is modified in the version. (e.g., page
-        to blog)
+      description: True if the content type is modified in the version. (e.g., page to blog)
       type: Boolean
     - contextPath: ConfluenceCloud.Content.version._links.self
       description: Link to the new version of the content.
@@ -1599,8 +1576,7 @@ script:
       description: Status of the space that the content is being created in.
       type: String
     - contextPath: ConfluenceCloud.Content.space._links.webui
-      description: Web user interface link to the space that the content is being
-        created in.
+      description: Web user interface link to the space that the content is being created in.
       type: String
     - contextPath: ConfluenceCloud.Content.space._links.self
       description: Link to the space that the content is being created in.
@@ -1672,8 +1648,7 @@ script:
       description: Width in pixels of the profile picture of the user who last updated the content.
       type: Number
     - contextPath: ConfluenceCloud.Content.version.by.profilePicture.height
-      description: Height in pixels of the profile picture of the user who last updated the
-        content.
+      description: Height in pixels of the profile picture of the user who last updated the content.
       type: Number
     - contextPath: ConfluenceCloud.Content.version.by.profilePicture.isDefault
       description: Whether the profile picture is the default profile picture.
@@ -1703,12 +1678,10 @@ script:
       description: Whether the edit was minor.
       type: Boolean
     - contextPath: ConfluenceCloud.Content.version.confRev
-      description: The revision ID provided by Confluence to be used as a revision
-        in Synchrony.
+      description: The revision ID provided by Confluence to be used as a revision in Synchrony.
       type: String
     - contextPath: ConfluenceCloud.Content.version.contentTypeModified
-      description: True if the content type is modified in the version. (e.g., page
-        to blog)
+      description: True if the content type is modified in the version. (e.g., page to blog)
       type: Boolean
     - contextPath: ConfluenceCloud.Content.version._links.self
       description: Link to the new version of the content.
@@ -1793,8 +1766,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The CQL (Confluence Query Language) string that is used to find
-        the requested content.
+      description: The CQL (Confluence Query Language) string that is used to find the requested content.
       isArray: false
       name: query
       required: true
@@ -1822,8 +1794,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Retrieves the next page records for the given query (next_page_token
-        retrieved in previous content response).
+      description: Retrieves the next page records for the given query (next_page_token retrieved in previous content response).
       isArray: false
       name: next_page_token
       required: false
@@ -1892,8 +1863,7 @@ script:
       description: Status of the space that the content is being created in.
       type: String
     - contextPath: ConfluenceCloud.Content.space._links.webui
-      description: Web user interface link to the space that the content is being
-        created in.
+      description: Web user interface link to the space that the content is being created in.
       type: String
     - contextPath: ConfluenceCloud.Content.space._links.self
       description: Link to the space that the content is being created in.
@@ -1965,8 +1935,7 @@ script:
       description: Width in pixels of the profile picture of the user who last updated the content.
       type: Number
     - contextPath: ConfluenceCloud.Content.version.by.profilePicture.height
-      description: Height in pixels of the profile picture of the user who last updated the
-        content.
+      description: Height in pixels of the profile picture of the user who last updated the content.
       type: Number
     - contextPath: ConfluenceCloud.Content.version.by.profilePicture.isDefault
       description: Whether the profile picture is the default profile picture.
@@ -1996,12 +1965,10 @@ script:
       description: Whether the edit was minor.
       type: Boolean
     - contextPath: ConfluenceCloud.Content.version.confRev
-      description: The revision ID provided by Confluence to be used as a revision
-        in Synchrony.
+      description: The revision ID provided by Confluence to be used as a revision in Synchrony.
       type: String
     - contextPath: ConfluenceCloud.Content.version.contentTypeModified
-      description: True if the content type is modified in the version. (e.g., page
-        to blog)
+      description: True if the content type is modified in the version. (e.g., page to blog)
       type: Boolean
     - contextPath: ConfluenceCloud.Content.version._links.self
       description: Link to the new version of the content.
@@ -2173,7 +2140,7 @@ script:
     - contextPath: ConfluenceCloud.Group._links.self
       description: Link to the group.
       type: String
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.4.30607
   feed: false
   isfetch: false
   longRunning: false

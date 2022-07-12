@@ -203,3 +203,37 @@ def test_extract_tarfile():
     shutil.rmtree(_dir)
     # - ensure that the saved file has expected content data
     assert expected_data == actual_file_data, 'failed extracting ' + zipped_file_path
+
+
+ARGS_BOTH_PASSWORDS_IDENTICAL = {'password': 'aa', 'nonsensitive_password': 'aa'}
+ARGS_BOTH_PASSWORDS_NOT_IDENTICAL = {'password': 'aa', 'nonsensitive_password': 'bb'}
+ARGS_ONLY_PASSWORD = {'password': 'aa'}
+ARGS_ONLY_NONSENSITIVE_PASSWORD = {'nonsensitive_password': 'aa'}
+
+
+@pytest.mark.parametrize('args', [ARGS_BOTH_PASSWORDS_IDENTICAL, ARGS_ONLY_NONSENSITIVE_PASSWORD, ARGS_ONLY_PASSWORD])
+def test_get_password_valid(args):
+    """
+    Given
+    - arguments for the script
+    When
+    - running the script on a password locked file
+    Then
+    - ensure that only one of the arguments 'password' or 'nonsensitive_password' is given or if they are identical.
+    """
+    assert get_password(args) == 'aa'
+
+
+def test_get_password_invalid():
+    """
+    Given
+    - arguments for the script
+    When
+    - running the script on a password locked file
+    Then
+    - ensure that only one of the arguments 'password' or 'nonsensitive_password' is given or if they are identical.
+    """
+    with pytest.raises(ValueError) as e:
+        get_password(ARGS_BOTH_PASSWORDS_NOT_IDENTICAL)
+        if not e:
+            assert False

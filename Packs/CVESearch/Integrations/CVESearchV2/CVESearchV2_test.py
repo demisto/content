@@ -1,5 +1,8 @@
+import json
+import os
 from CVESearchV2 import cve_command, valid_cve_id_format, Client
-from CommonServerPython import DemistoException
+from CommonServerPython import DemistoException, argToList
+import pytest
 
 BASE_URL = 'https://cve.circl.lu/api/'
 
@@ -37,5 +40,31 @@ def test_cve_id_validation():
             f'validation results for {cve_id}: {valid_cve_id_format(cve_id)} != {is_valid}'
 
 
-def _get_results(raw_results):
-    return raw_results[1]['CVE(val.ID === obj.ID)']
+test_data = [
+    ({"cve_id": "cve-2000-1234,CVE-2020-155555"}, ['response.json', 'empty_response.json'], 2),
+    ({"cve_id": "cve-2000-1234"}, ['response.json'], 1),
+]
+
+
+@pytest.mark.parametrize("cve_id_arg,response_data,expected", test_data)
+def test_multiple_cve(cve_id_arg, response_data, expected, requests_mock):
+    """
+    Given:
+        a multiple or single CVE to fetch.
+
+    When:
+        cve_command is being called.
+
+    Then:
+        return a List of commandResults - each item representing a CVE.
+    """
+    cves = argToList(cve_id_arg.get('cve_id'))
+    for test_file, cve in zip(response_data, cves):
+        test_path_data = os.path.join(os.getcwd(), 'test_data', test_file)
+        with open(test_path_data) as js:
+            response = json.load(js)
+        url_for_mock = os.path.join('https://cve.circl.lu/api/cve', cve)
+        requests_mock.get(url_for_mock, json=response)
+    client = Client(base_url=BASE_URL)
+    command_results = cve_command(client, cve_id_arg)
+    assert len(command_results) == expected

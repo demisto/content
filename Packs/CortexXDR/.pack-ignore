@@ -2,7 +2,7 @@
 ignore=PA116
 
 [file:CortexXDRIR.yml]
-ignore=IN126,IN136,IN145
+ignore=IN126,IN136,IN145,IN124
 
 [file:XDR_iocs.yml]
 ignore=BA108,BA109,IN145
@@ -41,3 +41,16 @@ ignore=IF100
 
 [file:widget-Cortex_XDR_Disconnected_Endpoints.json]
 ignore=BA113
+
+[file:README.md]
+ignore=RM108
+
+[known_words]
+XDR
+CoreIRApiModule
+
+[file:classifier-PaloAltoNetworks_CortexXDR.json]
+ignore=BA101
+
+[file:classifier-PaloAltoNetworks_Cortex_XDR_Incident_Handler.json]
+ignore=BA101

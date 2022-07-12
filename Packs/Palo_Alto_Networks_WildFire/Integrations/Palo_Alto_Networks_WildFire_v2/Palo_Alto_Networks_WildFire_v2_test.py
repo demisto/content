@@ -1,13 +1,14 @@
 import json
 import io
-
 from requests import Response
+import pytest
 
 import demistomock as demisto
 from Palo_Alto_Networks_WildFire_v2 import prettify_upload, prettify_report_entry, prettify_verdict, \
     create_dbot_score_from_verdict, prettify_verdicts, create_dbot_score_from_verdicts, hash_args_handler, \
     file_args_handler, wildfire_get_sample_command, wildfire_get_report_command, run_polling_command, \
-    wildfire_upload_url_command
+    wildfire_upload_url_command, prettify_url_verdict, create_dbot_score_from_url_verdict, parse_file_report, \
+    parse_wildfire_object
 
 
 def test_will_return_ok():
@@ -36,6 +37,43 @@ def test_prettify_verdict():
     prettify_verdict_res = prettify_verdict(
         {'md5': "md5_hash", 'sha256': "sha256_hash", 'verdict': "1"})
     assert expected_verdict_dict == prettify_verdict_res
+
+
+def test_prettify_url_verdict():
+    """
+    Given:
+     - The verdict response.
+
+    When:
+     - Running prettify_url_verdict function.
+
+    Then:
+     - Verify that the dictionary is prettified.
+    """
+    expected_verdict_dict = dict({'URL': 'www.some-url.com', 'Verdict': '0', 'VerdictDescription': 'benign',
+                                  'Valid': 'Yes', 'AnalysisTime': '2021-12-13T11:30:55Z'})
+    prettify_verdict_res = prettify_url_verdict(
+        {'url': 'www.some-url.com', 'verdict': '0', 'analysis_time': '2021-12-13T11:30:55Z', 'valid': 'Yes'})
+    assert expected_verdict_dict == prettify_verdict_res
+
+
+def test_create_dbot_score_from_url_verdict():
+    """
+    Given:
+     - A dictionary to create the dbot score from.
+
+    When:
+     - Running create_dbot_score_from_url_verdict function.
+
+    Then:
+     - Verify that the expected dbot score has been returned.
+    """
+    expected_dbot_score = [
+        {'Indicator': 'www.some-url.com', 'Type': 'url', 'Vendor': 'WildFire', 'Score': 1,
+         'Reliability': 'B - Usually reliable'}
+    ]
+    dbot_score_dict = create_dbot_score_from_url_verdict({'URL': "www.some-url.com", 'Verdict': "0"})
+    assert expected_dbot_score == dbot_score_dict
 
 
 def test_create_dbot_score_from_verdict():
@@ -266,3 +304,230 @@ def test_running_polling_command_new_search(mocker):
                         'Status': 'Pending', 'URL': 'https://www.demisto.com'}
     assert command_results[0].outputs == expected_outputs
     assert command_results[0].scheduled_command is not None
+
+
+def test_parse_wildfire_object():
+
+    report = {"process_list": {
+              "process": {"@command": "C:\\Program Files\\Microsoft Office\\Office12\\WINWORD.EXE",
+                          "@name": "WINWORD.EXE",
+                          "@pid": "952",
+                          "file": "test",
+                          "java_api": "test",
+                          "service": None}}}
+    expected_results = {'ProcessCommand': 'C:\\Program Files\\Microsoft Office\\Office12\\WINWORD.EXE',
+                        'ProcessName': 'WINWORD.EXE',
+                        'ProcessPid': '952',
+                        'ProcessFile': 'test'}
+    keys = [("@command", "ProcessCommand"), ("@name", "ProcessName"),
+            ("@pid", "ProcessPid"), ("file", "ProcessFile"), ("service", "Service")]
+    results = parse_wildfire_object(report=report['process_list']['process'], keys=keys)
+
+    assert results == expected_results
+
+
+def test_parse_file_report_network():
+    """
+    Given:
+        - A report json from a WildFire response of the 'wildfire-report' command, that includes Network details.
+    When:
+        - Running 'parse_file_report' function.
+    Then:
+        - Verify that the Network details (TCP, UDP, DNS) are parsed correctly.
+    """
+    report = {
+        "evidence":
+            {
+                "file": None,
+                "mutex": None,
+                "process": None,
+                "registry": None
+            },
+        "malware": "yes",
+        "md5": "test",
+        "network":
+            {
+                "TCP":
+                    [
+                        {
+                            "@country": "US",
+                            "@ip": "1.1.1.1",
+                            "@ja3": "test",
+                            "@ja3s": "test",
+                            "@port": "443"
+                        },
+                        {
+                            "@country": "US",
+                            "@ip": "1.0.1.0",
+                            "@ja3": "test",
+                            "@ja3s": "",
+                            "@port": "80"
+                        }
+                    ],
+                "UDP":
+                    {
+                        "@country": "US",
+                        "@ip": "1.1.1.1",
+                        "@ja3": "test",
+                        "@ja3s": "test",
+                        "@port": "55"
+                    },
+                "dns":
+                    {
+                        "@query": "test.com",
+                        "@response": "1.1.1.1.",
+                        "@type": "A"
+                    },
+                "url":
+                    {
+                        "@host": "test1.com",
+                        "@method": "GET",
+                        "@uri": "/test/72t0jjhmv7takwvisfnz_eejvf_h6v2ix/",
+                        "@user_agent": "test"
+                    }
+            },
+        "platform": "60",
+        "process_list": {
+            "process": {
+                "@command": "C:\\Program Files\\Microsoft Office\\Office12\\WINWORD.EXE",
+                "@name": "WINWORD.EXE",
+                "@pid": "952",
+                "file": 'test',
+                "java_api": 'test',
+                "service": 'test'
+            }},
+        "process_tree": {
+            "process": {
+                "@name": "WINWORD.EXE",
+                "@pid": "952",
+                "@text": "C:\\Program Files\\Microsoft Office\\Office12\\WINWORD.EXE",
+                'child': {
+                    'process': {
+                        '@name': 'test',
+                        '@pid': 'test',
+                        '@text': 'test'
+                    }
+                }
+            }},
+        'summary': {
+            'entry': {
+                '#text': 'test',
+                '@details': 'test',
+                '@behavior': 'test'
+            }},
+        'extracted_urls': {
+            'entry': {
+                '@url': 'test',
+                '@verdict': 'test'
+            }},
+        'elf_info': {
+            'Shell_Commands': {
+                'entry': 'test'
+            }}
+    }
+    expected_outputs_network_info = {'TCP': [{'IP': '1.1.1.1',
+                                              'Port': '443',
+                                              'Country': 'US',
+                                              'JA3': 'test',
+                                              'JA3S': 'test'},
+                                             {'IP': '1.0.1.0',
+                                              'Port': '80',
+                                              'Country': 'US',
+                                              'JA3': 'test'}],
+                                     'UDP': [{'IP': '1.1.1.1', 'Port': '55', 'Country': 'US', 'JA3': 'test', 'JA3S': 'test'}],
+                                     'DNS': [{'Query': 'test.com', 'Response': '1.1.1.1.', 'Type': 'A'}],
+                                     'URL': [{'Host': 'test1.com',
+                                              'Method': 'GET',
+                                              'URI': '/test/72t0jjhmv7takwvisfnz_eejvf_h6v2ix/',
+                                              'UserAgent': 'test'}]}
+    expected_outputs_ProcessTree = [{'ProcessName': 'WINWORD.EXE',
+                                     'ProcessPid': '952',
+                                     'ProcessText': 'C:\\Program Files\\Microsoft Office\\Office12\\WINWORD.EXE',
+                                     'Process': {
+                                         'ChildName': 'test',
+                                         'ChildPid': 'test',
+                                         'ChildText': 'test'
+                                     }}]
+    expected_outputs_ProcessList = [{'ProcessCommand': 'C:\\Program Files\\Microsoft Office\\Office12\\WINWORD.EXE',
+                                     'ProcessName': 'WINWORD.EXE',
+                                     'ProcessPid': '952',
+                                     'ProcessFile': 'test',
+                                     'Service': 'test'}]
+    expected_outputs_Summary = [{
+        'Text': 'test',
+        'Details': 'test',
+        'Behavior': 'test'
+    }]
+    expected_outputs_elf = {'ShellCommands': ['test']}
+    outputs, feed_related_indicators, behavior, relationships = parse_file_report(file_hash='test',
+                                                                                  reports=report,
+                                                                                  file_info={},
+                                                                                  extended_data=True)
+    # assert expected_outputs_network == outputs.get('Network')
+    assert expected_outputs_network_info == outputs.get('NetworkInfo')
+    assert expected_outputs_ProcessTree == outputs.get('ProcessTree')
+    assert expected_outputs_ProcessList == outputs.get('ProcessList')
+    assert expected_outputs_Summary == outputs.get('Summary')
+    assert expected_outputs_elf == outputs.get('ELF')
+
+
+@pytest.mark.parametrize('response, expected_output', [
+    (b'<?xml version="1.0" encoding="UTF-8"?><wildfire><version>2.0</version><file_info>'
+     b'<file_signer>None</file_signer><malware>no</malware><sha1></sha1><filetype>PDF'
+     b'</filetype><sha256>'
+     b'8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51</sha256><md5>'
+     b'4b41a3475132bd861b30a878e30aa56a</md5><size>3028</size></file_info><task_info>'
+     b'<report><version>2.0</version><platform>100</platform><software>'
+     b'PDF Static Analyzer</software><sha256>'
+     b'8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51</sha256>'
+     b'<md5>4b41a3475132bd861b30a878e30aa56a</md5><malware>no</malware><summary/>'
+     b'</report></task_info></wildfire>', []),
+    (b'<?xml version="1.0" encoding="UTF-8"?><wildfire><version>2.0</version><file_info>'
+     b'<file_signer>None</file_signer><malware>yes</malware><sha1></sha1><filetype>PDF'
+     b'</filetype><sha256>'
+     b'8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51</sha256><md5>'
+     b'4b41a3475132bd861b30a878e30aa56a</md5><size>3028</size></file_info><task_info>'
+     b'<report><version>2.0</version><platform>100</platform><software>'
+     b'PDF Static Analyzer</software><sha256>'
+     b'8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51</sha256>'
+     b'<md5>4b41a3475132bd861b30a878e30aa56a</md5><malware>no</malware><summary/>'
+     b'</report></task_info></wildfire>', ['malware'])
+])
+def test_tags_file_report_response(mocker, response, expected_output):
+    """
+    Given:
+     - hash of a file with malware field which is set to no
+     - hash of a file with malware field which is set to yes
+
+    When:
+     - Running report command.
+
+    Then:
+    Added tag 'malware' only if the malware field in the file info is set to yes
+    - tags field is empty
+    - add 'malware' to tags field
+    """
+    mocker.patch.object(demisto, 'results')
+    get_sample_response = Response()
+    get_sample_response.status_code = 200
+    get_sample_response.headers = {
+        'Server': 'nginx',
+        'Date': 'Thu, 28 May 2020 15:03:35 GMT',
+        'Transfer-Encoding': 'chunked',
+        'Connection': 'keep-alive',
+        'x-envoy-upstream-service-time': '258'
+    }
+    get_sample_response._content = response
+    mocker.patch(
+        'requests.request',
+        return_value=get_sample_response
+    )
+    mocker.patch.object(demisto, "args",
+                        return_value={'hash': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51',
+                                      'format': 'xml'})
+    mocker.patch("Palo_Alto_Networks_WildFire_v2.URL", "https://wildfire.paloaltonetworks.com/publicapi")
+    command_results, status = wildfire_get_report_command(
+        {'hash': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51',
+         'format': 'xml'})
+
+    assert command_results[0].indicator.tags == expected_output

@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - defaultvalue: https://api.zerofox.com/1.0
-  display: URL (e.g. https://api.zerofox.com/1.0)
+  display: URL (e.g., https://api.zerofox.com/1.0)
   name: url
   required: true
   type: 0
@@ -215,7 +215,7 @@ script:
     - auto: PREDEFINED
       default: true
       defaultValue: add
-      description: Adds or removes tags. Can be "add" or "remove". The default is "add".
+      description: Adds or removes tags.
       isArray: false
       name: action
       predefined:
@@ -392,7 +392,7 @@ script:
       secret: false
     - default: true
       defaultValue: '10'
-      description: The maximum number of alerts to retrieve (0 - 100). The default is 10.
+      description: The maximum number of alerts to retrieve (0 - 100).
       isArray: false
       name: limit
       required: false
@@ -483,7 +483,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Risk rating of alert. Can be "Critical", "High", "Medium", "Low", of "Info".
+      description: Risk rating of alert.
       isArray: false
       name: risk_rating
       predefined:
@@ -670,8 +670,8 @@ script:
       secret: false
     - default: false
       description: |-
-        List of string tags for tagging the entity.
-        Seperated by a comma, for example:
+        Comma-separated list of string tags for tagging the entity. 
+        For example:
         label1,label2,label3
       isArray: false
       name: tags
@@ -848,7 +848,7 @@ script:
     description: Shows a table of all policy type names and IDs in the War Room.
     execution: false
     name: zerofox-get-policy-types
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.10.4.30607
   isfetch: true
   longRunning: false
   longRunningPort: false

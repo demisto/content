@@ -1,0 +1,31 @@
+{
+    "id": "incident_cybersixgillcvss31",
+    "version": -1,
+    "modified": "2022-03-22T10:56:33.737324347Z",
+    "name": "Cybersixgill CVSS 3.1",
+    "ownerOnly": false,
+    "description": "Cybersixgill CVSS 3.1",
+    "cliName": "cybersixgillcvss31",
+    "type": "number",
+    "closeForm": true,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Cybersixgill Actionable Alerts"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.5.0"
+}

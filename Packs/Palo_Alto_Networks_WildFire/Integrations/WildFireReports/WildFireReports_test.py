@@ -125,3 +125,10 @@ def test_empty_api_token(mocker):
     main()
 
     assert demisto_mock.call_args_list[0].args[0] == expected_description_error
+
+
+def test_user_secrets():
+    from WildFireReports import LOG, Client
+    client = Client(token='%%This_is_API_key%%', base_url='url')
+    res = LOG(client.token)
+    assert "%%This_is_API_key%%" not in res

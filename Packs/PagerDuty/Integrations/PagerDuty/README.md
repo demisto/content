@@ -6,15 +6,16 @@ This integration was integrated and tested with PagerDuty API v2.
 2. Search for PagerDuty v2.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | API Key | True |
-    | Service Key (for triggering events only) | False |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | Fetch incidents | False |
-    | Incident type | False |
-    | Initial Fetch Interval (In minutes, used only for the first fetch or after Reset last run) | False |
+    | **Parameter**                                                                              | **Required** |
+    |--------------| --- |
+    | API Key                                                                                    | True         |
+    | Service Key (for triggering events only)                                                   | False        |
+    | Trust any certificate (not secure)                                                         | False        |
+    | Use system proxy settings                                                                  | False        |
+    | Fetch incidents                                                                            | False        |
+    | Incident type                                                                              | False        |
+    | Default Requestor                                                                          | False        |
+    | Initial Fetch Interval (In minutes, used only for the first fetch or after Reset last run) | False        |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -36,6 +37,8 @@ After you successfully execute a command, a DBot message appears in the War Room
 9. [Acknowledge an event: PagerDuty-acknowledge-event](#pagerduty-acknowledge-event)
 10. [Get incident information: PagerDuty-get-incident-data](#pagerduty-get-incident-data)
 11. [Get service keys for each configured service: PagerDuty-get-service-keys](#pagerduty-get-service-keys)
+12. [Add responder to an incident: PagerDuty-add-responders](#pagerduty-add-responders)
+13. [Run response play to an incident: PagerDuty-run-response-play](#pagerduty-run-response-play)
 
 ### PagerDuty-get-all-schedules
 ***
@@ -786,8 +789,91 @@ There are no input arguments for this command.
 ```
 
 #### Human Readable Output
-
 >### Service List
 >|ID|Name|Status|Created At|Integration|
 >|---|---|---|---|---|
 >| someid | API Service | critical | 2016-03-20T14:00:55+02:00 | Name: API Service, Vendor: Missing Vendor information, Key: somekey<br/> |
+
+### PagerDuty-add-responders
+***
+Add responders to an incident
+
+#### Base Command
+
+`PagerDuty-add-responders`
+#### Input
+| **Argument Name** | **Description**                                                                  | **Required** |
+| --- |----------------------------------------------------------------------------------| --- |
+| incident_id | PagerDuty Incident ID to add responders to                                   | Required | 
+| requestor_id | UserID sending the request (if blank, uses the default for the integration) | Required | 
+| message | Message to send to responders                                                    | Optional | 
+| user_requests | Comma separated list of User IDs to request response from                  | Optional | 
+| escalation_policy_requests | Comma separated list of Escalation Policy IDs to request response from           | Optional | 
+
+
+#### Command Example
+```!PagerDuty-add-responders incident_id=PXP12GZ UserRequests=P09TT3C,PAIXXX  Message="Please join zoom meeting" ```
+
+#### Context Output
+
+| **Path** | **Type** | **Description**       |
+| --- | --- |-----------------------|
+| PagerDuty.ResponderRequests.ResponderID | string | ID of the Responder   | 
+| PagerDuty.ResponderRequests.ResponderName | string | Name of the Responder | 
+
+#### Context Example
+```json
+{
+    "PagerDuty": 
+    {
+        "ResponderRequests": [
+            {
+                "ID": "P09TT3C",
+                "IncidentID": "PXP12GZ",
+                "IncidentSummary": "[#31028] Test Incident for Demisto Integration - No Action",
+                "Message": "Please help with issue - join bridge at +1(234)-567-8910",
+                "RequesterID": "P09TT3C",
+                "ResponderName": "John Doe",
+                "ResponderType": "user_reference",
+                "Type": "user"
+            },
+            {
+                "ID": "PAIXXX",
+                "IncidentID": "PXP12GZ",
+                "IncidentSummary": "[#31028] Test Incident for Demisto Integration - No Action",
+                "Message": "Please help with issue - join bridge at +1(234)-567-8910",
+                "RequesterID": "P09TT3C",
+                "ResponderName": "Jane Doe",
+                "ResponderType": "user_reference",
+                "Type": "user"
+            }
+        ]
+    }
+}
+```
+
+
+### PagerDuty-run-response-play
+***
+Run a specified response play on a given incident.
+
+Response Plays are a package of Incident Actions that can be applied during an Incident's life cycle.
+
+
+#### Base Command
+
+`PagerDuty-run-response-play`
+#### Input
+| **Argument Name** | **Description**                                                                   | **Required** |
+| --- |-----------------------------------------------------------------------------------|--------------|
+| incident_id | PagerDuty Incident ID targeted to run the response play                           |  Required    | 
+| from_email | The email address of a valid user associated with the account making the request. | Required     | 
+| response_play_uuid | The response play ID of the response play associated with the request.            | required     | 
+
+
+#### Command Example
+```!PagerDuty-run-response-play incident_id="Q107XAAAAMBBR" from_email="john.doe@example.com" response_play_uuid="111111-88bb-bb37-181d-11111111110dewsq"```
+
+
+>#### Human Readable Output
+>Response play successfully run to the incident Q107XAAAAMBBR by john.doe@example.com

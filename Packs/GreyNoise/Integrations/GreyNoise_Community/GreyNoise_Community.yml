@@ -81,7 +81,7 @@ script:
     - contextPath: IP.Address
       description: IP address.
       type: String
-  dockerimage: demisto/greynoise:1.0.0.24037
+  dockerimage: demisto/greynoise:1.0.0.25543
   feed: false
   isfetch: false
   longRunning: false

@@ -1,0 +1,47 @@
+commonfields:
+  id: ShowScheduledEntries
+  version: -1
+name: ShowScheduledEntries
+script: ''
+type: javascript
+tags:
+- Utility
+comment: Show all scheduled entries for specific incident.
+enabled: true
+args:
+- name: incidentId
+  default: true
+  description: Incident ID to get tasks from
+outputs:
+- contextPath: ScheduledEntries
+  description: Entire scheduled entry object
+- contextPath: ScheduledEntries.id
+  description: Entry ID
+  type: string
+- contextPath: ScheduledEntries.contents
+  description: Entry contents (the scheduled command)
+  type: string
+- contextPath: ScheduledEntries.type
+  description: Entry type
+  type: number
+- contextPath: ScheduledEntries.investigationID
+  description: Entry's investigation ID
+  type: string
+- contextPath: ScheduledEntries.schedule.startDate
+  description: Entry schedule start date
+- contextPath: ScheduledEntries.schedule.EndingType
+  description: Entry schedule ending type (by / after)
+- contextPath: ScheduledEntries.schedule.Times
+  description: Entry schedule times until ends (when ending type is 'by')
+  type: number
+- contextPath: ScheduledEntries.schedule.EndingDate
+  description: Entry schedule end time (when ending type is 'after')
+- contextPath: ScheduledEntries.schedule.cron
+  description: Entry schedule cron
+  type: string
+- contextPath: ScheduledEntries.schedule.HumanCron
+  description: Entry schedule settings
+scripttarget: 0
+runonce: false
+sensitive: true
+fromversion: 5.0.0

@@ -1,0 +1,308 @@
+commonfields:
+  id: Autofocus
+  version: -1
+name: Autofocus
+display: Palo Alto AutoFocus (Deprecated)
+deprecated: true
+category: Data Enrichment & Threat Intelligence
+description: Deprecated. Use the Palo Alto Networks AutoFocus v2 integration instead.
+  Palo Alto Networks AutoFocus enables you to distinguish the most important threats
+  from everyday commodity attacks.
+configuration:
+- display: Server URL
+  name: server
+  defaultvalue: https://autofocus.paloaltonetworks.com/
+  type: 0
+  required: true
+- display: Version
+  name: version
+  defaultvalue: v1.0
+  type: 0
+  required: true
+- display: API Key
+  name: apiKey
+  defaultvalue: ""
+  type: 4
+  required: true
+- display: Use system proxy settings
+  name: useproxy
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: autofocus-search-samples
+    arguments:
+    - name: scope
+      auto: PREDEFINED
+      predefined:
+      - private
+      - public
+      - global
+      description: The scope for the search
+      defaultValue: public
+    - name: size
+      description: Number of results
+      defaultValue: "50"
+    - name: from
+      description: Sample number to start from
+      defaultValue: "0"
+    - name: sort
+      auto: PREDEFINED
+      predefined:
+      - app_name
+      - app_packagename
+      - filetype
+      - size
+      - finish_date
+      - create_date
+      - update_date
+      - md5
+      - sha1
+      - sha256
+      - ssdeep
+      description: Sort field
+    - name: order
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+      description: Order of sort
+    - name: query
+      required: true
+      description: The query to retrieve samples
+    - name: sleep
+      description: Time to sleep between checking for results
+      defaultValue: "3"
+    - name: checks
+      description: Number of checks before giving up on the query
+      defaultValue: "10"
+    - name: cookie
+      description: The af_cookie for retrieving previous search results
+    outputs:
+    - contextPath: Autofocus.Cookie
+      description: The cookie for the results
+      type: string
+    - contextPath: Autofocus.Samples.id
+      description: ID of sample
+      type: string
+    - contextPath: Autofocus.Samples.md5
+      description: MD5 of the sample
+      type: string
+    - contextPath: Autofocus.Samples.sha1
+      description: SHA1 of the sample
+      type: string
+    - contextPath: Autofocus.Samples.sha256
+      description: SHA256 of the sample
+      type: string
+    - contextPath: Autofocus.Samples.app_name
+      description: Application name (if exists)
+      type: string
+    - contextPath: Autofocus.Samples.size
+      description: The size of the sample
+      type: number
+    - contextPath: Autofocus.Samples.ssdeep
+      description: SSDeep of the sample
+      type: string
+    - contextPath: Autofocus.Samples.create_date
+      description: The create date for the sample
+      type: string
+    - contextPath: Autofocus.Samples.finish_date
+      description: The finish date for the sample
+      type: string
+    - contextPath: Autofocus.Samples.malware
+      description: A flag (0/1) if this is malware
+      type: string
+    - contextPath: Autofocus.Samples.app_packagename
+      description: The sample package name (if exists)
+      type: string
+    - contextPath: Autofocus.Samples.filetype
+      description: The sample type
+      type: string
+    - contextPath: Autofocus.Samples.region
+      description: Where have we seen this sample
+      type: number
+    - contextPath: Autofocus.Samples.tag
+      description: Sample tags
+      type: string
+    description: Search for samples on Autofocus
+  - name: autofocus-search-sessions
+    arguments:
+    - name: size
+      description: Number of results
+      defaultValue: "50"
+    - name: from
+      description: Sample number to start from
+      defaultValue: "0"
+    - name: sort
+      auto: PREDEFINED
+      predefined:
+      - app
+      - device_country
+      - device_countrycode
+      - device_hostname
+      - device_serial
+      - vsys
+      - dst_country
+      - dst_countrycode
+      - dst_ip
+      - dst_port
+      - emailsbjcharset
+      - device_industry
+      - src_country
+      - src_countrycode
+      - src_ip
+      - src_port
+      - sha256
+      - tstamp
+      - upload_src
+      description: Sort field
+    - name: order
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+      description: Order of sort
+    - name: query
+      required: true
+      description: The query to retrieve samples
+    - name: sleep
+      description: Time to sleep between checking for results
+      defaultValue: "3"
+    - name: checks
+      description: Number of checks before giving up on the query
+      defaultValue: "10"
+    - name: cookie
+      description: The af_cookie for retrieving previous search results
+    outputs:
+    - contextPath: Autofocus.Cookie
+      description: The cookie for the results
+      type: string
+    - contextPath: Autofocus.Sessions.id
+      description: ID of the session
+      type: string
+    - contextPath: Autofocus.Sessions.device_industry
+      description: Device industry
+      type: string
+    - contextPath: Autofocus.Sessions.filename
+      description: The name of the file
+      type: string
+    - contextPath: Autofocus.Sessions.region
+      description: Region for the session
+      type: string
+    - contextPath: Autofocus.Sessions.sha256
+      description: SHA256 of the file
+      type: string
+    - contextPath: Autofocus.Sessions.tstamp
+      description: Timestamp for session
+      type: string
+    - contextPath: Autofocus.Sessions.upload_src
+      description: Where did we get the file
+      type: string
+    description: Search for sessions on Autofocus
+  - name: autofocus-session
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: The session ID to retrieve details for
+    outputs:
+    - contextPath: Autofocus.Sessions.id
+      description: ID of the session
+      type: string
+    - contextPath: Autofocus.Sessions.device_industry
+      description: Device industry
+      type: string
+    - contextPath: Autofocus.Sessions.filename
+      description: The name of the file
+      type: string
+    - contextPath: Autofocus.Sessions.region
+      description: Region for the session
+      type: string
+    - contextPath: Autofocus.Sessions.sha256
+      description: SHA256 of the file
+      type: string
+    - contextPath: Autofocus.Sessions.tstamp
+      description: Timestamp for session
+      type: string
+    - contextPath: Autofocus.Sessions.upload_src
+      description: Where did we get the file
+      type: string
+    description: Get details of a specific session
+  - name: autofocus-sample-analysis
+    arguments:
+    - name: id
+      required: true
+      default: true
+      description: The sample id
+    - name: coverage
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Should we display coverage
+      defaultValue: "true"
+    - name: sections
+      description: 'comma-separated list of sections to display: apk_app_icon, apk_app_name,
+        apk_cert_file, apk_certificate_id, apk_defined_activity, apk_defined_intent_filter,
+        apk_defined_receiver, apk_defined_sensor, apk_defined_service, apk_digital_signer,
+        apk_embedded_library, apk_embeded_url, apk_internal_file, apk_isrepackaged,
+        apk_packagename, apk_requested_permission, apk_sensitive_api_call, apk_suspicious_behavior,
+        apk_suspicious_file, apk_suspicious_pattern, apk_suspicious_action_monitored,
+        apk_suspicious_file, apk_suspicious_string, apk_version_num, behavior_type,
+        connection, coverage, dns, file, http, japi, mac_embedded_url, misc, mutex,
+        process, registry, service, user_agent'
+      defaultValue: file
+    - name: platforms
+      description: 'comma-separated list of platforms: win7, winxp, android, staticAnalyzer,
+        mac'
+    description: Retrieve the sample analysis
+  - name: file
+    arguments:
+    - name: file
+      required: true
+      default: true
+      description: Hash of the file to query. Supports MD5, SHA1 and SHA256.
+    outputs:
+    - contextPath: File.MD5
+      description: File MD5 hash
+      type: string
+    - contextPath: File.SHA1
+      description: File SHA1 hash
+      type: string
+    - contextPath: File.SHA256
+      description: File SHA256 hash
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+      type: string
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason for the vendor to make the decision
+      type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the Score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: DBotScore.Description
+      description: The reason for the score (if any)
+      type: string
+    description: Check file reputation of the given hash
+  runonce: false
+tests:
+- No tests
+fromversion: 5.0.0

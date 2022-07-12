@@ -13,18 +13,17 @@ configuration:
   name: apikey
   required: true
   type: 4
-- defaultvalue: "false"
+- defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
-- defaultvalue: "false"
+- defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
   required: false
   type: 8
-description: 'USTA is an Cyber Intelligence Platform that responds directly and effectively
-  to today''s complex cyber threats. '
+description: "USTA is an Cyber Intelligence Platform that responds directly and effectively to today's complex cyber threats. "
 display: USTA
 name: USTA
 script:
@@ -43,12 +42,12 @@ script:
       name: url
     - auto: PREDEFINED
       default: true
-      defaultValue: "true"
+      defaultValue: 'true'
       description: You can search only those with or without domain name registration
       name: is_domain
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
     - description: Filtering by malicious type
       name: url_type
     - description: 'Filtering by tags. Example: tag=Keitaro'
@@ -148,13 +147,12 @@ script:
       name: start
     - description: 'End Date(Example: 2021-03-18-13-59 / yy-mm-dd-hh-mm)'
       name: end
-    description: With the Identity Leak API, you can access the hashed version of
-      the credentials added to the platform.SHA256(MD5(Identity_Number))
+    description: With the Identity Leak API, you can access the hashed version of the credentials added to the platform.SHA256(MD5(Identity_Number))
     outputs:
     - contextPath: Usta.IdentityLeaks.created
       description: Created date
     - contextPath: Usta.IdentityLeaks. signature
-      description: Signature  
+      description: Signature
     name: usta-get-identity-leaks
   - arguments:
     - description: Filtering by username
@@ -162,8 +160,7 @@ script:
     - description: Filtering by password
       name: password
     - auto: PREDEFINED
-      description: 'It allows to filter the stolen customer accounts detected according
-        to the source.Available values : malware, phishing_site, data_leak, clients'
+      description: 'It allows to filter the stolen customer accounts detected according to the source.Available values : malware, phishing_site, data_leak, clients'
       name: source
       predefined:
       - malware
@@ -174,8 +171,7 @@ script:
       name: start
     - description: 'End Date(Example: 2021-03-18-13-59 / yy-mm-dd-hh-mm)'
       name: end
-    description: You can access stolen customer accounts via Stolen-Client-accounts
-      API.
+    description: You can access stolen customer accounts via Stolen-Client-accounts API.
     outputs:
     - contextPath: Usta.StolenClientAccounts.created
       description: Created date
@@ -186,14 +182,13 @@ script:
     - contextPath: Usta.StolenClientAccounts.url
       description: URL
     - contextPath: Usta.StolenClientAccounts.username
-      description: Username  
+      description: Username
     name: usta-get-stolen-client-accounts
   - arguments:
     - description: Search with domain name
       name: domain
       required: true
-    description: If you want to get more detailed information about malicious domain
-      names, you can use this command.
+    description: If you want to get more detailed information about malicious domain names, you can use this command.
     outputs:
     - contextPath: Usta.Domain.asn_records
       description: ASN records
@@ -208,13 +203,12 @@ script:
     - contextPath: Usta.Domain.ssl_records
       description: SSL records
     - contextPath: Usta.Domain.whois_records
-      description: Whois records  
+      description: Whois records
     name: usta-get-domain
   - arguments:
     - description: Search with IP Address
       name: ip_address
-    description: If you want to get more detailed information about specific IP Address,
-      you can use this command.
+    description: If you want to get more detailed information about specific IP Address, you can use this command.
     outputs:
     - contextPath: Usta.IPAddress.asn_records
       description: ASN records
@@ -225,43 +219,39 @@ script:
     - contextPath: Usta.IPAddress.ssl_records
       description: SSL records
     - contextPath: Usta.IPAddress.whois_records
-      description: Whois records  
+      description: Whois records
     name: usta-get-ip-address
   - arguments:
     - description: 'URL Value. Example: http://www.google3.com'
       name: address
       required: true
-    description: You can search about the accuracy of the urls referring to your company's
-      websites.
+    description: You can search about the accuracy of the urls referring to your company's websites.
     outputs:
     - contextPath: Usta.Referrer.error
-      description: If any errors are received, it gives the details of the error  
+      description: If any errors are received, it gives the details of the error
     name: usta-send-referrer-url
   - arguments:
-    - description: 'Search with this identity number. You can search all identity
-        number with "," '
+    - description: 'Search with this identity number. You can search all identity number with "," '
       name: identity_number
       required: true
       isArray: true
-    description: 'With this command, you can search specific identity number that
-      hashed in leaks '
+    description: 'With this command, you can search specific identity number that hashed in leaks '
     outputs:
     - contextPath: Usta.SpecificLeaks.existing
       description: If the identity is leaked, you can see it in existing.
     - contextPath: Usta.SpecificLeaks.not_existing
-      description: If the identity is not leaked, you can see it in not_existing  
+      description: If the identity is not leaked, you can see it in not_existing
     name: usta-search-specific-identity-leaks
   - arguments:
     - description: Incident ID
       name: id
       required: true
-    description: You can close the notifications in the status of "In Progress" or
-      "Open", which are currently opened to your institution, via API.
+    description: You can close the notifications in the status of "In Progress" or "Open", which are currently opened to your institution, via API.
     outputs:
     - contextPath: Usta.CloseIncident.id
-      description: If the incident is closed, returns the id value that was closed.  
+      description: If the incident is closed, returns the id value that was closed.
     name: usta-close-incident
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.10.4.27798
   runonce: false
   script: ''
   subtype: python3

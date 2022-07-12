@@ -1,0 +1,94 @@
+{
+  "WITH_LABEL":[
+    {
+      "created": "0001-01-01T00:00:00Z",
+      "name": "Potential phishing I received",
+      "id": 1,
+      "occurred": "2021-11-29T17:51:12Z",
+      "attachment": [
+        {
+          "description": "",
+          "name": "test.eml",
+          "path": "example_path",
+          "showMediaFile": false,
+          "type": ""
+        }
+      ],
+      "labels": [
+        {
+          "type": "Email/subject",
+          "value": "Potential phishing I received"
+        },
+        {
+          "type": "Email",
+          "value": "example@example.com"
+        }
+      ]
+    }
+  ],
+  "WITHOUT_LABEL": [
+    {
+      "created": "0001-01-01T00:00:00Z",
+      "name": "Potential phishing I received",
+      "id": 1,
+      "occurred": "2021-11-29T17:51:12Z"
+    }
+  ],
+  "MULTIPLE_INCIDENTS": [
+    {
+      "created": "0001-01-01T00:00:00Z",
+      "name": "Potential phishing I received",
+      "id": 1,
+      "occurred": "2021-11-29T17:51:12Z",
+      "attachment": [
+        {
+          "description": "",
+          "name": "test.eml",
+          "path": "example_path",
+          "showMediaFile": false,
+          "type": ""
+        }
+      ]
+    },
+    {
+      "created": "0001-01-01T00:00:00Z",
+      "name": "Potential phishing I received 2",
+      "id": 2,
+      "occurred": "2021-11-29T17:51:12Z",
+      "attachment": [
+        {
+          "description": "",
+          "name": "test.eml",
+          "path": "example_path",
+          "showMediaFile": false,
+          "type": ""
+        }
+      ]
+    }
+  ],
+  "EMPTY_INCIDENTS": [],
+  "SINGLE_WITH_LABEL":
+    {
+      "created": "0001-01-01T00:00:00Z",
+      "name": "Potential phishing I received",
+      "id": 1,
+      "occurred": "2021-11-29T17:51:12Z",
+      "labels": [
+        {
+          "type": "Email/subject",
+          "value": "Potential phishing I received"
+        },
+        {
+          "type": "Email",
+          "value": "example@example.com"
+        }
+      ]
+    },
+  "SINGLE_WITHOUT_LABEL":
+    {
+      "created": "0001-01-01T00:00:00Z",
+      "name": "Potential phishing I received",
+      "id": 1,
+      "occurred": "2021-11-29T17:51:12Z"
+    }
+}

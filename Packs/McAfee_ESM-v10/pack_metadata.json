@@ -1,6 +1,6 @@
 {
-    "name": "McAfee ESM v10 and v11",
-    "description": "Run queries and receive alarms from Intel Security ESM. Support version 10 and above.",
+    "name": "McAfee ESM v10 and v11 (Deprecated)",
+    "description": "Deprecated. Use McAfee ESM instead.",
     "support": "xsoar",
     "currentVersion": "1.0.7",
     "author": "Cortex XSOAR",
@@ -12,5 +12,9 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

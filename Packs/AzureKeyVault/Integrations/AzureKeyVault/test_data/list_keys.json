@@ -1,0 +1,14 @@
+{
+  "value": [
+    {
+      "kid": "https://myvault.vault.azure.net/keys/sdktestkey",
+      "attributes": {
+        "enabled": true,
+        "created": 1493937656,
+        "updated": 1493937656,
+        "recoveryLevel": "Recoverable+Purgeable"
+      }
+    }
+  ],
+  "nextLink": null
+}

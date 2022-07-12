@@ -135,7 +135,7 @@ tasks:
       version: -1
       name: Upload content update to Panorama
       description: Uploads content file to Panorama
-      script: '|||panorama-upload-content-update-file'
+      script: '|||pan-os-upload-content-update-file'
       type: regular
       iscommand: true
       brand: ""
@@ -170,7 +170,7 @@ tasks:
       name: Install content update
       description: |
         Installs specific content update file. Please download the content update file for apps from https://support.paloaltonetworks.com/Updates/DynamicUpdates (choose apps from the dropdown menu , the file should be in similar structure :"panupv2-all-apps-8388-6599 " ).
-      script: '|||panorama-install-file-content-update'
+      script: '|||pan-os-install-file-content-update'
       type: regular
       iscommand: true
       brand: ""
@@ -206,7 +206,7 @@ tasks:
       version: -1
       name: Get installation status
       description: Gets the installation status of the PAN-OS software.
-      script: '|||panorama-install-panos-status'
+      script: '|||pan-os-install-panos-status'
       type: regular
       iscommand: true
       brand: ""
@@ -303,7 +303,7 @@ tasks:
       PollingCommandArgName:
         simple: job_id
       PollingCommandName:
-        simple: panorama-install-panos-status
+        simple: pan-os-install-panos-status
       Timeout:
         simple: "10"
       dt:

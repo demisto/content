@@ -4,23 +4,24 @@
 import pytest
 
 # Import local packages
-from AlienVault_OTX_v2 import calculate_dbot_score, Client, file_command, url_command, domain_command, ip_command
+from AlienVault_OTX_v2 import \
+    calculate_dbot_score, Client, file_command, url_command, domain_command, ip_command, \
+    delete_duplicated_entities
 from CommonServerPython import *
 import demistomock as demisto
 
 # DBot calculation Test
 arg_names_dbot = "pulse, score"
 
+
 arg_values_dbot = [
-    ({}, 0),
-    ({'count': -1}, 0),
-    ({'count': 0}, 0),
-    ({'count': 1}, 2),
-    ({'count': 2}, 3),
-    ({'count': 1000}, 3),
-    ({'count': 10}, 3),
-    ({'count': 10}, 3),
-]
+    ({'false_positive': [{"assessment": "accepted", "assessment_date": "2021-04-01"}]}, 1),
+    ({}, 1),
+    ({"validation": [1]}, 2),
+    ({'pulse_info': {'count': 5}, 'false_positive': [{"assessment": "pending", "assessment_date": "2021-04-01"}]}, 3),
+    ({'pulse_info': {'count': 1}}, 2),
+    ({'false_positive': [{"assessment": "pending", "assessment_date": "2021-04-01"}], 'pulse_info': {'count': 0}}, 0)]
+
 
 FILE_GENERAL_RAW_RESPONSE = {'indicator': '6c5360d41bd2b14b1565f5b18e5c203cf512e493',
                              'sections': ['general', 'analysis'],
@@ -56,8 +57,7 @@ FILE_EC_WITH_ANALYSIS = {
         'Malicious': {'PulseIDs': []}},
     'DBotScore(val.Indicator && val.Indicator == obj.Indicator &&'
     ' val.Vendor == obj.Vendor && val.Type == obj.Type)': [{
-        'Indicator': {
-            'file': '6c5360d41bd2b14b1565f5b18e5c203cf512e493'}, 'Type': 'file',
+        'Indicator': '6c5360d41bd2b14b1565f5b18e5c203cf512e493', 'Type': 'file',
         'Vendor': 'AlienVault OTX v2', 'Score': 0, 'Reliability': 'C - Fairly reliable'
     }]
 }
@@ -66,14 +66,20 @@ FILE_EC_WITHOUT_ANALYSIS = {
     'File(val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 ||'
     ' val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512 ||'
     ' val.CRC32 && val.CRC32 == obj.CRC32 || val.CTPH && val.CTPH == obj.CTPH ||'
-    ' val.SSDeep && val.SSDeep == obj.SSDeep)': {
-        'MD5': None, 'SHA1': None, 'SHA256': None, 'SSDeep': None, 'Size': None, 'Type': None,
-        'Malicious': {'PulseIDs': []}},
+    ' val.SSDeep && val.SSDeep == obj.SSDeep)': [
+        {'SHA1': '6c5360d41bd2b14b1565f5b18e5c203cf512e493',
+         'Hashes': [
+             {
+                 'type': 'SHA1',
+                 'value': '6c5360d41bd2b14b1565f5b18e5c203cf512e493'
+             }
+         ]
+         }
+    ],
     'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor &&'
-    ' val.Type == obj.Type)': [{
-        'Indicator': {'file': '6c5360d41bd2b14b1565f5b18e5c203cf512e493'}, 'Type': 'file',
-        'Vendor': 'AlienVault OTX v2', 'Score': 0, 'Reliability': 'C - Fairly reliable'
-    }]
+    ' val.Type == obj.Type)': [{'Indicator': '6c5360d41bd2b14b1565f5b18e5c203cf512e493', 'Type': 'file',
+                                'Vendor': '', 'Score': 0, 'Reliability': 'C - Fairly reliable',
+                                'Message': 'No results found.'}]
 }
 
 URL_RAW_RESPONSE = {
@@ -187,17 +193,21 @@ DOMAIN_RAW_RESPONSE = {
     "whois": "http://whois.domaintools.com/otx.alienvault.com"
 }
 
-DOMAIN_EC = {
-    'Domain(val.Name && val.Name == obj.Name)': [{
-        'Name': {'domain': 'otx.alienvault.com'}}],
-    'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor &&'
-    ' val.Type == obj.Type)': [{
-        'Indicator': {'domain': 'otx.alienvault.com'}, 'Type': 'domain', 'Vendor': 'AlienVault OTX v2', 'Score': 0,
-        'Reliability': 'C - Fairly reliable'}],
-    'AlienVaultOTX.Domain(val.Alexa && val.Alexa === obj.Alexa && val.Whois && val.Whois === obj.Whois)': {
-        'Name': 'otx.alienvault.com', 'Alexa': 'http://www.alexa.com/siteinfo/otx.alienvault.com',
-        'Whois': 'http://whois.domaintools.com/otx.alienvault.com'}
-}
+DOMAIN_DNS_RAW_RESPONSE = {'passive_dns': [], 'count': 0}
+
+DOMAIN_HASH_RAW_RESPONSE = {'data': [], 'size': 865426, 'count': 865426}
+
+DOMAIN_URL_RAW_RESPONSE = {'url_list': [], 'page_num': 1, 'limit': 10, 'paged': True, 'has_next': True,
+                           'full_size': 5494039, 'actual_size': 5494039}
+
+DOMAIN_EC = {'Domain(val.Name && val.Name == obj.Name)': [{'Name': {'domain': 'otx.alienvault.com'}}],
+             'DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type)':
+             [{'Indicator': {'domain': 'otx.alienvault.com'}, 'Type': 'domain', 'Vendor': 'AlienVault OTX v2', 'Score': 1,
+               'Reliability': 'C - Fairly reliable'}],
+             'AlienVaultOTX.Domain(val.Alexa && val.Alexa === obj.Alexa && val.Whois && val.Whois === obj.Whois)':
+             {'Name': 'otx.alienvault.com', 'Alexa': 'http://www.alexa.com/siteinfo/otx.alienvault.com',
+              'Whois': 'http://whois.domaintools.com/otx.alienvault.com'}}
+
 IP_404_RAW_RESPONSE = 404
 
 IP_RAW_RESPONSE = {
@@ -475,19 +485,47 @@ IP_EC_WITH_RELATIONSHIPS = {
     'AlienVaultOTX.IP(val.IP && val.IP === obj.IP)': {'IP': {'Reputation': 0, 'IP': '98.136.103.23'}}
 }
 
+IP_URL_RAW_RESPONSE = {'page_num': 1, 'limit': 10, 'paged': True, 'has_next': True, 'full_size': 7855, 'actual_size': 7855}
+
+IP_URL_RAW_RESPONSE_WITH_RELATIONSHIPS = {'url_list': [{'url': 'mojorojorestaurante.com', 'date': '2022-01-03T08:21:31',
+                                                        'domain': 'mojorojorestaurante.com',
+                                                        'hostname': 'mojorojorestaurante.com',
+                                                        'result': {'urlworker': {'ip': '8.8.8.8', 'http_code': 200},
+                                                                   'safebrowsing': {'matches': []}},
+                                                        'httpcode': 200, 'gsb': [], 'encoded':
+                                                        'https%3A//mojorojorestaurante.com'}], 'page_num': 1, 'limit': 10,
+                                          'paged': True, 'has_next': True, 'full_size': 7855, 'actual_size': 7855}
+
+IP_FILE_ANALYSIS_RAW_RESPONSE = {'size': 2189582, 'count': 2189582}
+
+IP_FILE_ANALYSIS_RAW_RESPONSE_WITH_RELATIONSHIPS = {'data': [{'datetime_int': 1508608939, 'hash':
+                                                    '0b4d4a7c35a185680bc5102bdd98218297e2cdf0a552bde10e377345f3622c1c',
+                                                              'detections': {'avast': 'Win32:Sinowal-GB\\ [Trj]', 'avg': None,
+                                                                             'clamav': 'Win.Downloader.50691-1',
+                                                                             'msdefender': 'Worm:Win32/VB'},
+                                                              'date': '2017-10-21T18:02:19'}], 'size': 2189582, 'count': 2189582}
+
+IP_DNS_RAW_RESPONSE_WITH_RELATIONSHIPS = {'passive_dns': [{'address': '8.8.8.8', 'first': '2022-01-04T08:25:39',
+                                                           'last': '2022-01-04T08:25:39', 'hostname': 'nguyenhoangai-4g.xyz',
+                                                           'record_type': 'A',
+                                                           'indicator_link': '/indicator/domain/nguyenhoangai-4g.xyz',
+                                                           'flag_url': 'assets/images/flags/us.png',
+                                                           'flag_title': 'United States', 'asset_type': 'domain',
+                                                           'asn': 'AS15169 GOOGLE'}], 'count': 1}
+
+IP_DNS_RAW_RESPONSE = {'count': 0}
+
 IP_RELATIONSHIPS = [
     {'name': 'indicator-of', 'reverseName': 'indicated-by', 'type': 'IndicatorToIndicator',
      'entityA': '98.136.103.23',
      'entityAFamily': 'Indicator', 'entityAType': 'IP', 'entityB': 'T1140 - Deobfuscate/Decode Files or Information',
      'entityBFamily': 'Indicator', 'entityBType': 'STIX Attack Pattern', 'fields': {},
      'reliability': 'C - Fairly reliable',
-     'brand': 'AlienVault OTX v2'
-     },
-    {
-        'name': 'indicator-of', 'reverseName': 'indicated-by', 'type': 'IndicatorToIndicator',
-        'entityA': '98.136.103.23', 'entityAFamily': 'Indicator', 'entityAType': 'IP',
-        'entityB': 'T1040 - Network Sniffing', 'entityBFamily': 'Indicator', 'entityBType': 'STIX Attack Pattern',
-        'fields': {}, 'reliability': 'C - Fairly reliable', 'brand': 'AlienVault OTX v2'},
+     'brand': 'AlienVault OTX v2'},
+    {'name': 'indicator-of', 'reverseName': 'indicated-by', 'type': 'IndicatorToIndicator',
+     'entityA': '98.136.103.23', 'entityAFamily': 'Indicator', 'entityAType': 'IP',
+     'entityB': 'T1040 - Network Sniffing', 'entityBFamily': 'Indicator', 'entityBType': 'STIX Attack Pattern',
+     'fields': {}, 'reliability': 'C - Fairly reliable', 'brand': 'AlienVault OTX v2'},
     {'name': 'indicator-of', 'reverseName': 'indicated-by', 'type': 'IndicatorToIndicator', 'entityA': '98.136.103.23',
      'entityAFamily': 'Indicator', 'entityAType': 'IP', 'entityB': 'T1053 - Scheduled Task/Job',
      'entityBFamily': 'Indicator', 'entityBType': 'STIX Attack Pattern', 'fields': {}, 'reliability': 'C - Fairly reliable',
@@ -499,7 +537,18 @@ IP_RELATIONSHIPS = [
     {'name': 'indicator-of', 'reverseName': 'indicated-by', 'type': 'IndicatorToIndicator', 'entityA': '98.136.103.23',
      'entityAFamily': 'Indicator', 'entityAType': 'IP', 'entityB': 'T1071 - Application Layer Protocol',
      'entityBFamily': 'Indicator', 'entityBType': 'STIX Attack Pattern', 'fields': {}, 'reliability': 'C - Fairly reliable',
-     'brand': 'AlienVault OTX v2'}]
+     'brand': 'AlienVault OTX v2'},
+    {'name': 'indicator-of', 'reverseName': 'indicated-by', 'type': 'IndicatorToIndicator', 'entityA': '98.136.103.23',
+     'entityAFamily': 'Indicator', 'entityAType': 'IP', 'entityB': 'mojorojorestaurante.com',
+     'entityBFamily': 'Indicator', 'entityBType': 'URL', 'fields': {}, 'reliability': 'C - Fairly reliable',
+     'brand': 'AlienVault OTX v2'},
+    {'name': 'indicator-of', 'reverseName': 'indicated-by', 'type': 'IndicatorToIndicator', 'entityA': '98.136.103.23',
+     'entityAFamily': 'Indicator', 'entityAType': 'IP',
+     'entityB': '0b4d4a7c35a185680bc5102bdd98218297e2cdf0a552bde10e377345f3622c1c', 'entityBFamily': 'Indicator',
+     'entityBType': 'File', 'fields': {}, 'reliability': 'C - Fairly reliable', 'brand': 'AlienVault OTX v2'},
+    {'name': 'indicator-of', 'reverseName': 'indicated-by', 'type': 'IndicatorToIndicator', 'entityA': '98.136.103.23',
+     'entityAFamily': 'Indicator', 'entityAType': 'IP', 'entityB': 'nguyenhoangai-4g.xyz', 'entityBFamily': 'Indicator',
+     'entityBType': 'Domain', 'fields': {}, 'reliability': 'C - Fairly reliable', 'brand': 'AlienVault OTX v2'}]
 
 INTEGRATION_NAME = 'AlienVault OTX v2'
 
@@ -509,6 +558,7 @@ client = Client(
     verify=False,
     proxy=False,
     default_threshold='2',
+    max_indicator_relationships=3,
     reliability=DBotScoreReliability.C,
     create_relationships=True
 )
@@ -516,6 +566,16 @@ client = Client(
 
 @pytest.mark.parametrize(argnames=arg_names_dbot, argvalues=arg_values_dbot)
 def test_dbot_score(pulse: dict, score: int):
+    """
+    Given:
+        - Raw Response with fields relevant for Dbot score calculation
+
+    When:
+        - Running the calculate dbot score command
+
+    Then:
+        - Ensure the score is calculated correctly
+    """
     assert calculate_dbot_score(client, pulse) == score, f"Error calculate DBot Score {pulse.get('count')}"
 
 
@@ -540,7 +600,7 @@ def test_file_command(mocker, raw_response_general, raw_response_analysis, expec
     - Validate that the File and DBotScore entry context have the proper values.
     """
     mocker.patch.object(client, 'query', side_effect=[raw_response_analysis, raw_response_general])
-    command_results = file_command(client, {'file': '6c5360d41bd2b14b1565f5b18e5c203cf512e493'})
+    command_results = file_command(client, file='6c5360d41bd2b14b1565f5b18e5c203cf512e493')
     # results is CommandResults list
     context = command_results[0].to_context()['EntryContext']
     assert expected == context
@@ -588,12 +648,12 @@ def test_url_command_not_found(mocker):
           'Q1cIqvNrOcRqvlAgWpdtwnHcouXXGS0c64jBnTCVM9X4Cd5n0ZizgP78tXM5VB2w0m0DiwLI_J2sI1s09Mb5WlOYhWuCjJ8-lUjUdQ9' \
           'TyxcDuXhHIapoSlpgOzqCddxTLM3cSCW9zRcHfK5b3yO7P0XOFOqG-kZyFOs9LA75fX-yJ-d-2jHzBzeXrFbc9GxWEw1W9yyTUzvCY8' \
           'cirtcm1_CG8NVhvfc5wnattncML1PF6zctl5JVX3kUHZZJoc2uUHbADiLAJ6K3mEHmH4EbS9oEFs10MF8BvT7n'
-    expected_result = f'No matches for URL {url}'
+    expected_result = 0
     mocker.patch.object(client, 'query', return_value=404)
 
     command_results = url_command(client, url)
 
-    assert command_results[0].to_context()['HumanReadable'] == expected_result
+    assert command_results[0].indicator.dbot_score.score == expected_result
 
 
 def test_url_command_uppercase_protocol(requests_mock):
@@ -617,10 +677,10 @@ def test_url_command_uppercase_protocol(requests_mock):
     assert res[0].indicator.to_context()['URL(val.Data && val.Data == obj.Data)']['Data'] == 'https://www.google.com'
 
 
-@pytest.mark.parametrize('raw_response,expected', [
-    (DOMAIN_RAW_RESPONSE, DOMAIN_EC)
+@pytest.mark.parametrize('raw_response,url_raw_response,file_raw_response,dns_raw_response,expected', [
+    (DOMAIN_RAW_RESPONSE, DOMAIN_DNS_RAW_RESPONSE, DOMAIN_HASH_RAW_RESPONSE, DOMAIN_URL_RAW_RESPONSE, DOMAIN_EC)
 ])
-def test_domain_command(mocker, raw_response, expected):
+def test_domain_command(mocker, raw_response, url_raw_response, file_raw_response, dns_raw_response, expected):
     """
     Given
     - A domain name.
@@ -631,18 +691,23 @@ def test_domain_command(mocker, raw_response, expected):
     Then
     - Validate that the Domain and DBotScore entry context have the proper values.
     """
-    mocker.patch.object(client, 'query', side_effect=[raw_response])
+    mocker.patch.object(client, 'query', side_effect=[raw_response, url_raw_response, file_raw_response, dns_raw_response])
     command_results = domain_command(client, {'domain': 'otx.alienvault.com'})
     # results is CommandResults list
     context = command_results[0].to_context()['EntryContext']
     assert expected == context
 
 
-@pytest.mark.parametrize('ip_,raw_response,expected_ec,expected_relationships', [
-    ('8.8.88.8', IP_RAW_RESPONSE, IP_EC, []),
-    ('98.136.103.23', IP_RAW_RESPONSE_WITH_RELATIONSHIPS, IP_EC_WITH_RELATIONSHIPS, IP_RELATIONSHIPS)
-])
-def test_ip_command(mocker, ip_, raw_response, expected_ec, expected_relationships):
+test_ip_command_input = 'ip_,raw_response,url_raw_response,file_raw_response,dns_raw_response,expected_ec,expected_relationships'
+
+
+@pytest.mark.parametrize(test_ip_command_input, [('8.8.88.8', IP_RAW_RESPONSE, IP_URL_RAW_RESPONSE,
+                         IP_FILE_ANALYSIS_RAW_RESPONSE, IP_DNS_RAW_RESPONSE, IP_EC, []), ('98.136.103.23',
+                         IP_RAW_RESPONSE_WITH_RELATIONSHIPS, IP_URL_RAW_RESPONSE_WITH_RELATIONSHIPS,
+                         IP_FILE_ANALYSIS_RAW_RESPONSE_WITH_RELATIONSHIPS, IP_DNS_RAW_RESPONSE_WITH_RELATIONSHIPS,
+                         IP_EC_WITH_RELATIONSHIPS, IP_RELATIONSHIPS)])
+def test_ip_command(mocker, ip_, raw_response, url_raw_response, file_raw_response, dns_raw_response,
+                    expected_ec, expected_relationships):
     """
     Given
     - An IPv4 address.
@@ -654,7 +719,7 @@ def test_ip_command(mocker, ip_, raw_response, expected_ec, expected_relationshi
     - Validate that the IP and DBotScore entry context have the proper values.
     - Validate that relationships where created if available in the raw response.
     """
-    mocker.patch.object(client, 'query', side_effect=[raw_response])
+    mocker.patch.object(client, 'query', side_effect=[raw_response, url_raw_response, file_raw_response, dns_raw_response])
     command_results = ip_command(client, ip_, 'IPv4')
     # results is CommandResults list
     all_context = command_results[0].to_context()
@@ -667,7 +732,7 @@ def test_ip_command(mocker, ip_, raw_response, expected_ec, expected_relationshi
 
 
 @pytest.mark.parametrize('ip_,raw_response,expected', [
-    ('8.8.88.8', IP_404_RAW_RESPONSE, 'IP 8.8.88.8 could not be found.'),
+    ('8.8.88.8', IP_404_RAW_RESPONSE, 0),
 ])
 def test_ip_command_on_404(mocker, ip_, raw_response, expected):
     """
@@ -682,4 +747,27 @@ def test_ip_command_on_404(mocker, ip_, raw_response, expected):
         """
     mocker.patch.object(client, 'query', side_effect=[raw_response])
     command_results = ip_command(client, ip_, 'IPv4')
-    assert command_results[0].readable_output == expected
+    assert command_results[0].indicator.dbot_score.score == expected
+
+
+@pytest.mark.parametrize('entities_list,field_name,expected_results', [
+    ([{'name': 'some_name'}, {'name': 'some_name1'}, {'name': 'some_name2'}, {'name': 'some_name3'}], 'name',
+     [{'name': 'some_name'}, {'name': 'some_name1'}, {'name': 'some_name2'}, {'name': 'some_name3'}]),
+    ([{'url': 'www.site1.com'}, {'url': 'www.site1.com'}, {'url': 'www.site2.com'}, {'url': 'www.site1.com'}], 'url',
+     [{'url': 'www.site1.com'}, {'url': 'www.site2.com'}]),
+])
+def test_delete_duplicated_entities(entities_list, field_name, expected_results):
+    """
+    Given
+    - Case 1: List containing 4 different entities and their field name.
+    - Case 2: List containing 2 different entities where one of them appear 3 times and their field name.
+
+    When
+    - Running delete_duplicated_entities on input.
+
+    Then
+    - Ensure the duplicated entities were deleted.
+    - Case 1: Should return the exact same list.
+    - Case 2: Should return a list of length two containing only 1 occurrence of each entity from the input.
+    """
+    assert delete_duplicated_entities(entities_list, field_name) == expected_results

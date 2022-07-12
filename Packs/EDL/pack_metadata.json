@@ -1,8 +1,8 @@
 {
-    "name": "Palo Alto Networks PAN-OS EDL Service",
-    "description": "This integration provides External Dynamic List (EDL) as a service for the system indicators (Outbound feed).",
+    "name": "Generic Export Indicators Service",
+    "description": "Use this pack to generate a list based on your Threat Intel Library, and export it to ANY other product in your network, such as your firewall, agent or SIEM. This pack is built for ongoing distribution of indicators from XSOAR to other products in the network, by creating an endpoint with a list of indicators that can be pulled by external vendors.",
     "support": "xsoar",
-    "currentVersion": "2.1.5",
+    "currentVersion": "3.1.5",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -14,6 +14,17 @@
     ],
     "created": "2020-04-14T00:00:00Z",
     "useCases": [],
-    "keywords": [],
-    "dependencies": {}
+    "keywords": [
+        "EDL",
+        "pan-os EDL",
+        "panos EDL",
+        "panos",
+        "export-indicators",
+        "export"
+    ],
+    "dependencies": {},
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

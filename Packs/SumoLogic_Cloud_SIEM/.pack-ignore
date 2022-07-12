@@ -1,2 +1,5 @@
 [file:SumoLogicCloudSIEM.yml]
 ignore=IN145
+
+[file:SumoLogicCloudSIEM_image.png]
+ignore=IM111

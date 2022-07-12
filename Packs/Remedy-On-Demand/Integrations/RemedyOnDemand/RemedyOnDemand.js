@@ -127,16 +127,18 @@ var createIncident = function(firstName, lastName, description, status, source, 
     var body = {
        "values" : {
            "z1D_Action" : "CREATE",
-           "First_Name" : firstName,
-           "Last_Name" : lastName,
-           "Description" : description,
-           "Status" : status,
-           "Reported Source": source,
-           "Service_Type" : serviceType,
-           "Impact" : impact,
-           "Urgency" : urgency
      }
     };
+
+    if (firstName) { body.values['First_Name'] = firstName; }
+    if (lastName) { body.values['Last_Name'] = lastName; }
+    if (description) { body.values['Description'] = description; }
+    if (status) { body.values['Status'] = status; }
+    if (source) { body.values['Reported Source'] = source; }
+    if (serviceType) { body.values['Service_Type'] = serviceType; }
+    if (impact) { body.values['Impact'] = impact; }
+    if (urgency) { body.values['Urgency'] = urgency; }
+
     if (customFields) {
         var customFieldsArr = customFields.split(',');
         for (var i = 0; i < customFieldsArr.length; i++) {
@@ -217,8 +219,10 @@ var fetchIncidentsToDemisto = function() {
             value: (new Date(nowDate.getTime() - 10*60*1000)).toISOString()
         };
     }
-    var query =  "'Create Date'>" + '"' + lastRun.value + '"';
+    logDebug("Last run value before starting to fetch: " + lastRun.value);
+    var query =  "'Submit Date'>" + '"' + lastRun.value + '"';
     var url = baseUrl + '/api/arsys/v1/entry/HPD:IncidentInterface/' + '?q=' + encodeURIComponent(query);
+    logDebug("This is the URL with the query for fetching the incidents: " + url);
     var token = login();
     var res = sendRequest(url, token);
     logout(token);
@@ -238,6 +242,8 @@ var fetchIncidentsToDemisto = function() {
             'rawJSON': JSON.stringify(incident)
         });
     });
+    var now = new Date().toISOString();
+    logDebug("Last run is set to: " + now);
     setLastRun({value: now});
     return JSON.stringify(incidents);
 };

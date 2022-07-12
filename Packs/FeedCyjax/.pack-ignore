@@ -3,3 +3,6 @@ ignore=RM104
 
 [file:FeedCyjax.yml]
 ignore=IN145
+
+[file:FeedCyjax_image.png]
+ignore=IM111

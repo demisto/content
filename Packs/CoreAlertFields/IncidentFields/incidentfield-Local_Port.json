@@ -1,0 +1,74 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "localport",
+    "closeForm": false,
+    "description": "If the alert triggered on network activity (the Event Type is Network Connection) this is the port on the endpoint that triggered the alert. If not, then N/A.",
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_localport",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Local Port",
+    "neverSetAsRequired": false,
+    "openEnded": true,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0",
+    "x2_fields": "action_local_port",
+    "Aliases": [
+        {
+            "cliName": "fireeyenxalertvictimport",
+            "type": "shortText",
+            "name": "FireEye NX Alert Victim Port"
+        },
+        {
+            "cliName": "fireeyenxeventvictimport",
+            "type": "shortText",
+            "name": "FireEye NX Event Victim Port"
+        },
+        {
+            "cliName": "sourceport",
+            "type": "shortText",
+            "name": "Source Port"
+        },
+        {
+            "cliName": "srcports",
+            "type": "shortText",
+            "name": "Src Ports"
+        },
+        {
+            "cliName": "f5silverlineclientport",
+            "type": "shortText",
+            "name": "F5 Silverline Client Port"
+        },
+        {
+            "cliName": "f5silverlinetranslatedsourceport",
+            "type": "shortText",
+            "name": "F5 Silverline Translated Source Port"
+        },
+        {
+            "cliName": "shadowitport",
+            "type": "number",
+            "name": "Shadow IT Port"
+        },
+        {
+            "cliName": "expanseport",
+            "type": "number",
+            "name": "Expanse Port"
+        }
+    ]
+}

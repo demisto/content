@@ -1,0 +1,792 @@
+id: NetskopeAPIv1 Test
+version: -1
+name: NetskopeAPIv1 Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 146c71dc-446e-4018-8466-81a4736bba85
+    type: start
+    task:
+      id: 146c71dc-446e-4018-8466-81a4736bba85
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "#none#":
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: de11dea9-b6e5-4184-85f6-eff094da50ef
+    type: regular
+    task:
+      id: de11dea9-b6e5-4184-85f6-eff094da50ef
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: ebc5331a-68b2-429d-8a0d-6b6b8d0294e1
+    type: regular
+    task:
+      id: ebc5331a-68b2-429d-8a0d-6b6b8d0294e1
+      version: -1
+      name: netskope-event-list
+      script: NetskopeAPIv1|||netskope-event-list
+      type: regular
+      iscommand: true
+      brand: NetskopeAPIv1
+    nexttasks:
+      "#none#":
+      - "3"
+    scriptarguments:
+      end_time: {}
+      event_type:
+        simple: application
+      insertion_end_time: {}
+      insertion_start_time: {}
+      limit:
+        simple: "1"
+      page: {}
+      query: {}
+      start_time: {}
+      timeperiod:
+        simple: Last 30 Days
+      unsorted: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 80161066-9e57-45af-859d-5268d185c3c4
+    type: condition
+    task:
+      id: 80161066-9e57-45af-859d-5268d185c3c4
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Event.event_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Event.timestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Event.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Event.access_method
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Event.traffic_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Event.count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Event.app
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Event.appcategory
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Event.url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Event.object
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Event.object_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Event.activity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Event.device
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Event.category
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: e846431e-49f6-48d5-8733-1520ab0508ed
+    type: regular
+    task:
+      id: e846431e-49f6-48d5-8733-1520ab0508ed
+      version: -1
+      name: netskope-alert-list
+      script: NetskopeAPIv1|||netskope-alert-list
+      type: regular
+      iscommand: true
+      brand: NetskopeAPIv1
+    nexttasks:
+      "#none#":
+      - "5"
+    scriptarguments:
+      acked: {}
+      alert_type: {}
+      end_time: {}
+      insertion_end_time: {}
+      insertion_start_time: {}
+      limit:
+        simple: "1"
+      page: {}
+      query: {}
+      start_time: {}
+      timeperiod:
+        simple: Last 30 Days
+      unsorted: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 1ce5b474-a037-4128-80e8-00521cf6aa9e
+    type: condition
+    task:
+      id: 1ce5b474-a037-4128-80e8-00521cf6aa9e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Alert.alert_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Alert.timestamp
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Alert.type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Alert.access_method
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Alert.traffic_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Alert.action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Alert.count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Alert.alert_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Alert.alert_type
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Netskope.Alert.acked
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Alert.policy
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Alert.app
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Alert.appcategory
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Alert.dlp_file
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Alert.dlp_profile
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Alert.dlp_rule
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Alert.category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Alert.cci
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 52f40e46-d021-45c7-847c-344b03fa5cab
+    type: regular
+    task:
+      id: 52f40e46-d021-45c7-847c-344b03fa5cab
+      version: -1
+      name: netskope-quarantined-file-list
+      script: NetskopeAPIv1|||netskope-quarantined-file-list
+      type: regular
+      iscommand: true
+      brand: NetskopeAPIv1
+    nexttasks:
+      "#none#":
+      - "7"
+    scriptarguments:
+      end_time: {}
+      limit:
+        simple: "1"
+      page: {}
+      start_time: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 6854463b-d1ee-4914-8d99-75a81299edc2
+    type: condition
+    task:
+      id: 6854463b-d1ee-4914-8d99-75a81299edc2
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Quarantine.quarantine_profile_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Quarantine.quarantine_profile_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Quarantine.file_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Quarantine.original_file_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Quarantine.policy
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Quarantine.quarantined_file_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Quarantine.user_id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: fa068284-5f38-4048-81d0-c2ddb795fbd3
+    type: regular
+    task:
+      id: fa068284-5f38-4048-81d0-c2ddb795fbd3
+      version: -1
+      name: netskope-quarantined-file-get
+      script: NetskopeAPIv1|||netskope-quarantined-file-get
+      type: regular
+      iscommand: true
+      brand: NetskopeAPIv1
+    nexttasks:
+      "#none#":
+      - "9"
+    scriptarguments:
+      file_id:
+        simple: ${Netskope.Quarantine.file_id}
+      quarantine_profile_id:
+        simple: ${Netskope.Quarantine.quarantine_profile_id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 2e340556-446f-4385-8256-1801d51c853e
+    type: condition
+    task:
+      id: 2e340556-446f-4385-8256-1801d51c853e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Size
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.EntryID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Info
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: File.Extension
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 2e71ea17-8d8a-44c9-8a04-f98edc6c9029
+    type: regular
+    task:
+      id: 2e71ea17-8d8a-44c9-8a04-f98edc6c9029
+      version: -1
+      name: netskope-client-list
+      script: NetskopeAPIv1|||netskope-client-list
+      type: regular
+      iscommand: true
+      brand: NetskopeAPIv1
+    nexttasks:
+      "#none#":
+      - "16"
+    scriptarguments:
+      limit:
+        simple: "1"
+      page: {}
+      query: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: 7c567444-3c10-43d2-8664-26e587ce895d
+    type: condition
+    task:
+      id: 7c567444-3c10-43d2-8664-26e587ce895d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Client.client_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Client.client_version
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Client.device_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Client.host_info
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Client.last_event
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Client.user_added_time
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.Client.users
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: c4ba0591-6f99-4eec-8cb7-16c26d77f001
+    type: regular
+    task:
+      id: c4ba0591-6f99-4eec-8cb7-16c26d77f001
+      version: -1
+      name: netskope-host-associated-user-list
+      script: NetskopeAPIv1|||netskope-host-associated-user-list
+      type: regular
+      iscommand: true
+      brand: NetskopeAPIv1
+    nexttasks:
+      "#none#":
+      - "18"
+    scriptarguments:
+      hostname:
+        simple: ${Netskope.Client.host_info.hostname}
+      limit:
+        simple: "1"
+      page: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 4aa5d965-b704-48f0-8e54-ce26d6c7856b
+    type: condition
+    task:
+      id: 4aa5d965-b704-48f0-8e54-ce26d6c7856b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.User.user_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.User.device_classification_status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.User.last_event
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.User.user_source
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Netskope.User.userkey
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Netskope.User.username
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 8a54e762-d6d7-4c54-88b7-3ab787b3b7c9
+    type: title
+    task:
+      id: 8a54e762-d6d7-4c54-88b7-3ab787b3b7c9
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2995,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.2.0
+description: Test playbook for Netskope integration (API V1)

@@ -7,7 +7,7 @@
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Service URL | The URL to the Taegis API | True |
+    | Taegis Environment | The environment to utilize | True |
     | Client ID | Client ID as described in the [Taegis Documentation](https://docs.ctpx.secureworks.com/apis/api_authenticate/) | True |
     | Client Secret | Client Secret as described in the [Taegis Documentation](https://docs.ctpx.secureworks.com/apis/api_authenticate/) | True |
     | Use system proxy settings | Defines whether the system proxy is used or not | False |
@@ -81,6 +81,35 @@ After you successfully execute a command, a DBot message appears in the War Room
             "severity": 0.5,
         }
     ]
+}
+```
+
+
+
+### taegis-execute-playbook
+
+#### Base Command
+`!taegis-execute-playbook`
+
+#### Inputs
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Playbook instance ID to execute | True |
+| inputs | JSON object of inputs to pass into the playbook execution | False |
+
+#### Command Example
+
+```
+!taegis-execute-playbook id=UGxheWJvb2tJbnN0YW5jZTphZDNmNzBlZi1mN2U0LTQ0OWYtODJiMi1hYWQwMjQzZTA2NTg=
+!taegis-execute-playbook id=UGxheWJvb2tJbnN0YW5jZTphZDNmNzBlZi1mN2U0LTQ0OWYtODJiMi1hYWQwMjQzZTA2NTg= inputs=`{'myvar': 'myval'}`
+```
+
+#### Context Example
+
+```
+{
+    "id": "UGxheWJvb2tFeGVjdXRpb246NGYwZDZiNGQtNWNiZS00NDkxLTg3YzYtMDZkNjkxYzMwMTg4"
 }
 ```
 
@@ -171,6 +200,48 @@ After you successfully execute a command, a DBot message appears in the War Room
         }
     ]
 }
+```
+
+
+### taegis-fetch-playbook-execution
+
+#### Base Command
+`!taegis-fetch-playbook-execution`
+
+#### Inputs
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Playbook execution ID to fetch | True |
+
+#### Command Example
+
+```
+!taegis-fetch-playbook-execution id=UGxheWJvb2tFeGVjdXRpb246NGYwZDZiNGQtNWNiZS00NDkxLTg3YzYtMDZkNjkxYzMwMTg4
+```
+
+#### Context Example
+
+```
+{
+            "createdAt": "2022-01-01T13:51:24Z",
+            "executionTime": 1442,
+            "id": "UGxheWJvb2tFeGVjdXRpb246NGYwZDZiNGQtNWNiZS00NDkxLTg3YzYtMDZkNjkxYzMwMTg4",
+            "inputs": {
+                "alert": {
+                    "message": "Test Alert",
+                }
+            },
+            "instance": {
+                "name": "Test Alert Instance",
+                "playbook": {
+                    "name": "Taegis.PagerDutyAlertEvent"
+                }
+            },
+            "outputs": "d6b65662-c1da-4109-8553-c5664918c952",
+            "state": "Completed",
+            "updatedAt": "2022-01-01T13:51:31Z"
+        }
 ```
 
 

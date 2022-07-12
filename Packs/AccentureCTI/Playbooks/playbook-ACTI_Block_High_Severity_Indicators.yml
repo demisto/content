@@ -1,0 +1,450 @@
+id: ACTI Block High Severity Indicators
+version: -1
+name: ACTI Block High Severity Indicators
+description: Deprecated. No available replacement.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: a8850535-59b1-4392-88f3-860af95e14c2
+    type: start
+    task:
+      id: a8850535-59b1-4392-88f3-860af95e14c2
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '5':
+    id: '5'
+    taskid: 888eb018-2021-4fec-8eed-ef16fcf2547e
+    type: playbook
+    task:
+      id: 888eb018-2021-4fec-8eed-ef16fcf2547e
+      version: -1
+      name: Block IP - Generic v2
+      description: |-
+        This playbook blocks malicious IPs using all integrations that are enabled.
+        Supported integrations for this playbook:
+        * Check Point Firewall
+        * Palo Alto Networks Minemeld
+        * Palo Alto Networks PAN-OS
+        * Zscaler
+        * FortiGate
+      playbookName: Block IP - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '8'
+    scriptarguments:
+      AutoCommit:
+        simple: No
+      CustomBlockRule:
+        simple: 'True'
+      IP:
+        simple: ${inputs.IP}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
+    taskid: 7f6dc456-8214-430c-8d0c-df6e35f18b36
+    type: playbook
+    task:
+      id: 7f6dc456-8214-430c-8d0c-df6e35f18b36
+      version: -1
+      name: Block URL - Generic
+      description: |-
+        This playbook blocks malicious URLs using all integrations that are enabled.
+        Supported integrations for this playbook:
+        * Palo Alto Networks Minemeld
+        * Palo Alto Networks PAN-OS
+        * Zscaler
+      playbookName: Block URL - Generic
+      type: playbook
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '8'
+    scriptarguments:
+      AutoCommit:
+        simple: No
+      CustomURLCategory:
+        simple: Demisto Remediation - Malicious URLs
+      URL:
+        simple: ${inputs.URL}
+      URLListName:
+        simple: Demisto Remediation - URL EDL
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '7':
+    id: '7'
+    taskid: 4e698be5-bb0b-4822-8907-0a3c024a1baf
+    type: playbook
+    task:
+      id: 4e698be5-bb0b-4822-8907-0a3c024a1baf
+      version: -1
+      name: Block Domain - Generic
+      description: |-
+        This playbook blocks malicious Domains using all integrations that are enabled.
+        Supported integrations for this playbook:
+        * Zscaler
+        * Symantec Messaging Gateway
+        * FireEye EX
+        * Trend Micro Apex One
+        * Proofpoint Threat Response
+      playbookName: Block Domain - Generic
+      type: playbook
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '8'
+    scriptarguments:
+      Domain:
+        simple: ${inputs.Domain}
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '8':
+    id: '8'
+    taskid: b1d239b3-9da1-4497-8645-0253b790a700
+    type: title
+    task:
+      id: b1d239b3-9da1-4497-8645-0253b790a700
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: Title
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '9':
+    id: '9'
+    taskid: 87a9378e-0548-4b40-8fa5-ec33b8640297
+    type: collection
+    task:
+      id: 87a9378e-0548-4b40-8fa5-ec33b8640297
+      version: -1
+      name: Blocking indicator user choice
+      type: collection
+      iscommand: false
+      brand: ''
+      description: User input required for blocking indicators if there are any.
+    nexttasks:
+      '#none#':
+      - '10'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 185
+        }
+      }
+    note: true
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: |-
+          Do you want to block these indicators:
+          ${inputs.IP}
+          ${inputs.URL}
+          ${inputs.Domain}
+      methods: []
+      format: ''
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: '0'
+        label: ''
+        labelarg:
+          simple: |-
+            Do you want to block these indicators:
+            ${inputs.IP}
+            ${inputs.URL}
+            ${inputs.Domain}
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: No
+        - simple: Yes
+        fieldassociated: ''
+        placeholder: ''
+        tooltip: ''
+        readonly: false
+      title: ACTIBlockChoice
+      description: ''
+      sender: ''
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '10':
+    id: '10'
+    taskid: 96b68ea3-5c51-490a-858e-220d79ec8e08
+    type: condition
+    task:
+      id: 96b68ea3-5c51-490a-858e-220d79ec8e08
+      version: -1
+      name: Branching condition for user choice
+      type: condition
+      iscommand: false
+      brand: ''
+      description: Branching condition based on user input (Yes/No).
+    nexttasks:
+      '#default#':
+      - '8'
+      yes:
+      - '5'
+      - '6'
+      - '7'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ACTIBlockChoice.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Yes
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 765,
+        "width": 1240,
+        "x": 50,
+        "y": 40
+      }
+    }
+  }
+inputs:
+- key: IP
+  value:
+    complex:
+      root: ${DBotScore
+      filters:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${DBotScore.Type}
+            iscontext: true
+          right:
+            value:
+              simple: ip
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: ${DBotScore.Score}
+            iscontext: true
+          right:
+            value:
+              simple: '3'
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${DBotScore.Vendor}
+            iscontext: true
+          right:
+            value:
+              simple: ACTI Indicator Query
+      accessor: Indicator}
+      transformers:
+      - operator: uniq
+  required: false
+  description: Considers IP(s) which have severity 5 or more
+  playbookInputQuery:
+- key: URL
+  value:
+    complex:
+      root: ${DBotScore
+      filters:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${DBotScore.Type}
+            iscontext: true
+          right:
+            value:
+              simple: url
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: ${DBotScore.Score}
+            iscontext: true
+          right:
+            value:
+              simple: '3'
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${DBotScore.Vendor}
+            iscontext: true
+          right:
+            value:
+              simple: ACTI Indicator Query
+      accessor: Indicator}
+      transformers:
+      - operator: uniq
+  required: false
+  description: Considers URL(s) which have severity 5 or more
+  playbookInputQuery:
+- key: Domain
+  value:
+    complex:
+      root: ${DBotScore
+      filters:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${DBotScore.Type}
+            iscontext: true
+          right:
+            value:
+              simple: domain
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: ${DBotScore.Score}
+            iscontext: true
+          right:
+            value:
+              simple: '3'
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${DBotScore.Vendor}
+            iscontext: true
+          right:
+            value:
+              simple: ACTI Indicator Query
+      accessor: Indicator}
+      transformers:
+      - operator: uniq
+  required: false
+  description: Considers Domain(s) which have severity 5 or more
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
+deprecated: true

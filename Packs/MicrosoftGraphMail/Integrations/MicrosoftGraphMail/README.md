@@ -5,7 +5,7 @@ For more details about the authentication used in this integration, see [Microso
 
 ### Required Permissions
 * Mail.ReadWrite - Application
-* User.Read - Application
+* User.Read - Delegated
 * Mail.Send - Application
 
 ### OData Usage
@@ -29,7 +29,9 @@ The query parameter '$filter' is not supported when using the 'search' parameter
 | url | The server URL. | True |
 | auth_id | The ID (received from the admin consent - see the Detailed Instructions (?) section). | True |
 | tenant_id | The token (received from the admin consent - see the Detailed Instructions (?) section). | True |
-| enc_key | The Key (received from the admin consent - see the Detailed Instructions (?) section). | True |
+| enc_key | The key (received from the admin consent - see the Detailed Instructions (?) section). | False |
+| Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app. | False |
+| Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
 | isFetch | The fetched incidents. | False |
 | mailbox_to_fetch | The email address from which to fetch incidents (e.g. "example<span\>>@demisto.com"). | False |
 | folder_to_fetch | The name of the folder from which to fetch incidents (supports Folder ID and sub-folders e.g. Inbox/Phishing). | False |
@@ -40,8 +42,19 @@ The query parameter '$filter' is not supported when using the 'search' parameter
 | proxy | Whether to use system proxy settings. | False |
 | self_deployed | Whether to use a self deployed Azure Application. | False |
 | incidentType | The incident type. | False |
+| display_full_email_body | Whether to fetch incidents with the entire email body, or just an email body preview, mark if the full email body is required. | False
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+### Using National Cloud
+Using a national cloud endpoint is supported by setting the *Server URL* parameter to one of the following options:
+* US Government GCC-High Endpoint: `https://graph.microsoft.us`
+* US Government Department of Defence (DoD) Endpoint: `https://dod-graph.microsoft.us`
+* Microsoft 365 Germany Endpoint: `https://graph.microsoft.de`
+* Microsoft Operated by 21Vianet Endpoint: `https://microsoftgraph.chinacloudapi.cn`
+
+Refer to [Microsoft Integrations - Using National Cloud](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud) for more information.
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -937,6 +950,10 @@ Creates a draft message in the specified user's mailbox.
 ***
 Sends an email using Microsoft Graph.
 
+**NOTE:**
+
+Attachments size is limited to 3 MB.
+
 ##### Required Permissions
 **The following permissions are required for this command:**
 - Mail.Send (Application)
@@ -962,7 +979,7 @@ Sends an email using Microsoft Graph.
 | attachCIDs | The comma-separated list of CIDs to embed attachments within the actual email. | Optional |
 | from | The email address from which to send the email. | Optional |
 | htmlBody | The content (body) of the email (in HTML format). | Optional |
-
+| replyTo | Email addresses that need to be used to reply to the message. Supports comma-separated values. | Optional |
 
 ##### Context Output
 
@@ -977,6 +994,7 @@ Sends an email using Microsoft Graph.
 | MicrosoftGraph.Email.toRecipients | String | The 'to' recipients of the email. |
 | MicrosoftGraph.Email.ccRecipients | String | The CC recipients of the email. |
 | MicrosoftGraph.Email.bccRecipients | String | The BCC recipients of the email. |
+| MicrosoftGraph.Email.replyTo | String | The replyTo recipients of the email. |
 
 
 ##### Command Example
@@ -1030,6 +1048,9 @@ Replies to the recipients of a message.
 | body | The comment of the replied message. | Required |
 | to | The comma-separated list of email addresses for the 'to' field. | Required |
 | from | The email address from which to reply. | Required |
+| attachIDs | A CSV list of War Room entry IDs that contain files, and are used to attach files to the outgoing email. For example: attachIDs=15@8,19@8. | Optional |
+| attachNames | A CSV list of names of attachments to send. Should be the same number of elements as attachIDs. | Optional |
+| attachCIDs | A CSV list of CIDs to embed attachments within the email itself. | Optional |
 
 
 ##### Context Output

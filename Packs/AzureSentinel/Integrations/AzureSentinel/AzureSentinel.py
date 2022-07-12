@@ -7,6 +7,7 @@ import json
 import requests
 import dateparser
 import uuid
+
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
@@ -17,13 +18,14 @@ APP_NAME = 'ms-azure-sentinel'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 API_VERSION = '2021-04-01'
+
 DEFAULT_AZURE_SERVER_URL = 'https://management.azure.com'
 
 NEXTLINK_DESCRIPTION = 'NextLink for listing commands'
 
 XSOAR_USER_AGENT = 'SentinelPartner-PaloAltoNetworks-CortexXsoar/1.0.0'
 
-AUTHORIZATION_ERROR_MSG = 'There was a problem in retrieving an updated access token.\n'\
+AUTHORIZATION_ERROR_MSG = 'There was a problem in retrieving an updated access token.\n' \
                           'The response from the server did not contain the expected content.'
 
 INCIDENT_HEADERS = ['ID', 'IncidentNumber', 'Title', 'Description', 'Severity', 'Status', 'IncidentUrl', 'AssigneeName',
@@ -36,12 +38,18 @@ COMMENT_HEADERS = ['ID', 'IncidentID', 'Message', 'AuthorName', 'AuthorEmail', '
 ENTITIES_RETENTION_PERIOD_MESSAGE = '\nNotice that in the current Azure Sentinel API version, the retention period ' \
                                     'for GetEntityByID is 30 days.'
 
+DEFAULT_LIMIT = 50
+
+DEFAULT_SOURCE = 'Azure Sentinel'
+
+THREAT_INDICATORS_HEADERS = ['Name', 'DisplayName', 'Values', 'Types', 'Source', 'Confidence', 'Tags']
+
 
 class AzureSentinelClient:
     def __init__(self, server_url: str, tenant_id: str, client_id: str,
                  client_secret: str, subscription_id: str,
-                 resource_group_name: str, workspace_name: str,
-                 verify: bool = True, proxy: bool = False):
+                 resource_group_name: str, workspace_name: str, certificate_thumbprint: Optional[str],
+                 private_key: Optional[str], verify: bool = True, proxy: bool = False):
         """
         AzureSentinelClient class that make use client credentials for authorization with Azure.
 
@@ -66,14 +74,20 @@ class AzureSentinelClient:
         :type workspace_name: ``str``
         :param workspace_name: The workspace name.
 
+        :type certificate_thumbprint: ``str``
+        :param certificate_thumbprint: The certificate thumbprint as appears in the AWS GUI.
+
+        :type private_key: ``str``
+        :param private_key: The certificate private key.
+
         :type verify: ``bool``
         :param verify: Whether the request should verify the SSL certificate.
 
         :type proxy: ``bool``
         :param proxy: Whether to run the integration using the system proxy.
         """
-        server_url = f'{server_url}/subscriptions/{subscription_id}/'\
-                     f'resourceGroups/{resource_group_name}/providers/Microsoft.OperationalInsights/workspaces/'\
+        server_url = f'{server_url}/subscriptions/{subscription_id}/' \
+                     f'resourceGroups/{resource_group_name}/providers/Microsoft.OperationalInsights/workspaces/' \
                      f'{workspace_name}/providers/Microsoft.SecurityInsights'
         self._client = MicrosoftClient(
             tenant_id=tenant_id,
@@ -85,7 +99,9 @@ class AzureSentinelClient:
             scope=Scopes.management_azure,
             ok_codes=(200, 201, 202, 204),
             verify=verify,
-            proxy=proxy
+            proxy=proxy,
+            certificate_thumbprint=certificate_thumbprint,
+            private_key=private_key,
         )
 
     def http_request(self, method, url_suffix=None, full_url=None, params=None, data=None):
@@ -116,14 +132,36 @@ class AzureSentinelClient:
 ''' INTEGRATION HELPER METHODS '''
 
 
+def get_error_kind(code):
+    """
+    Get the kind of the error based on the http error code.
+    """
+    if code == 400:
+        return 'BadRequest'
+    elif code == 401:
+        return 'UnAuthorized'
+    elif code == 403:
+        return 'Forbidden'
+    elif code == 404:
+        return 'NotFound'
+
+
 def error_handler(response: requests.Response):
     """
     raise informative exception in case of error response
     """
     if response.status_code in (400, 401, 403, 404):
-        res_json = response.json()
-        error_kind = res_json.get('error', {}).get('code', 'BadRequest')
-        error_msg = res_json.get('error', {}).get('message', res_json)
+        try:
+            error_json = response.json()
+        except json.JSONDecodeError:
+            error_json = {
+                'error': {
+                    'code': get_error_kind(code=response.status_code),
+                    'message': response.text
+                }
+            }
+        error_kind = error_json.get('error', {}).get('code', 'BadRequest')
+        error_msg = error_json.get('error', {}).get('message', error_json)
         raise ValueError(
             f'[{error_kind} {response.status_code}] {error_msg}'
         )
@@ -188,10 +226,10 @@ def watchlist_data_to_xsoar_format(watchlist_data):
         'Description': properties.get('description'),
         'Provider': properties.get('provider'),
         'Source': properties.get('source'),
-        "Created": format_date(properties.get('created')),
-        "Updated": format_date(properties.get('updated')),
-        "CreatedBy": properties.get('createdBy', {}).get('name'),
-        "UpdatedBy": properties.get('updatedBy', {}).get('name'),
+        'Created': format_date(properties.get('created')),
+        'Updated': format_date(properties.get('updated')),
+        'CreatedBy': properties.get('createdBy', {}).get('name'),
+        'UpdatedBy': properties.get('updatedBy', {}).get('name'),
         'Alias': properties.get('watchlistAlias'),
         'Label': properties.get('labels', []),
         'ItemsSearchKey': properties.get('itemsSearchKey')
@@ -212,11 +250,11 @@ def alert_data_to_xsoar_format(alert_data):
         'Tactic': properties.get('tactics'),
         'DisplayName': properties.get('alertDisplayName'),
         'Description': properties.get('description'),
-        "ConfidenceLevel": properties.get('confidenceLevel'),
-        "Severity": properties.get('severity'),
-        "VendorName": properties.get('vendorName'),
-        "ProductName": properties.get('productName'),
-        'ProductComponentName': properties.get('productComponentName')
+        'ConfidenceLevel': properties.get('confidenceLevel'),
+        'Severity': properties.get('severity'),
+        'VendorName': properties.get('vendorName'),
+        'ProductName': properties.get('productName'),
+        'ProductComponentName': properties.get('productComponentName'),
     }
     return formatted_data
 
@@ -231,11 +269,11 @@ def watchlist_item_data_to_xsoar_format(item_data):
     formatted_data = {
         'Name': item_data.get('name'),
         'ID': properties.get('watchlistItemId'),
-        "Created": format_date(properties.get('created')),
-        "Updated": format_date(properties.get('updated')),
-        "CreatedBy": demisto.get(properties, 'createdBy.name'),
-        "UpdatedBy": demisto.get(properties, 'updatedBy.name'),
-        'ItemsKeyValue': properties.get('itemsKeyValue')
+        'Created': format_date(properties.get('created')),
+        'Updated': format_date(properties.get('updated')),
+        'CreatedBy': demisto.get(properties, 'createdBy.name'),
+        'UpdatedBy': demisto.get(properties, 'updatedBy.name'),
+        'ItemsKeyValue': properties.get('itemsKeyValue'),
     }
     return formatted_data
 
@@ -257,7 +295,9 @@ def get_update_incident_request_data(client: AzureSentinelClient, args: Dict[str
     classification_comment = args.get('classification_comment')
     classification_reason = args.get('classification_reason')
     assignee_email = args.get('assignee_email')
+    user_principal_name = args.get('user_principal_name')
     labels = argToList(args.get('labels', ''))
+    owner = demisto.get(fetched_incident_data, 'properties.owner', {})
 
     if not title:
         title = demisto.get(fetched_incident_data, 'properties.title')
@@ -267,8 +307,10 @@ def get_update_incident_request_data(client: AzureSentinelClient, args: Dict[str
         severity = demisto.get(fetched_incident_data, 'properties.severity')
     if not status:
         status = demisto.get(fetched_incident_data, 'properties.status')
-    if not assignee_email:
-        assignee_email = demisto.get(fetched_incident_data, 'properties.owner.email')
+    if user_principal_name:
+        owner = {'userPrincipalName': user_principal_name}
+    if assignee_email:
+        owner['email'] = assignee_email
 
     existing_labels = demisto.get(fetched_incident_data, 'properties.labels')
     if not labels:  # not provided as arg
@@ -288,7 +330,7 @@ def get_update_incident_request_data(client: AzureSentinelClient, args: Dict[str
             'classificationComment': classification_comment,
             'classificationReason': classification_reason,
             'labels': labels_formatted,
-            'owner': {'email': assignee_email}
+            'owner': owner
         }
     }
     remove_nulls_from_dictionary(incident_data['properties'])
@@ -427,7 +469,15 @@ def test_module(client):
     return 'ok'
 
 
-def list_incidents_command(client, args, is_fetch_incidents=False):
+def list_incidents_command(client: AzureSentinelClient, args, is_fetch_incidents=False):
+    """ Retrieves incidents from Sentinel.
+    Args:
+        client: An AzureSentinelClient client.
+        args: Demisto args.
+        is_fetch_incidents: Is it part of a fetch incidents command.
+    Returns:
+        A CommandResult object with the array of incidents as output.
+    """
     filter_expression = args.get('filter')
     limit = None if is_fetch_incidents else min(200, int(args.get('limit')))
     next_link = args.get('next_link', '')
@@ -440,7 +490,7 @@ def list_incidents_command(client, args, is_fetch_incidents=False):
         params = {
             '$top': limit,
             '$filter': filter_expression,
-            '$orderby': 'properties/createdTimeUtc asc'
+            '$orderby': args.get('orderby', 'properties/createdTimeUtc asc')
         }
         remove_nulls_from_dictionary(params)
 
@@ -467,7 +517,6 @@ def list_incidents_command(client, args, is_fetch_incidents=False):
 
 
 def list_watchlists_command(client, args):
-
     url_suffix = 'watchlists'
     specific_watchlists_alias = args.get('watchlist_alias')
     if specific_watchlists_alias:
@@ -726,7 +775,6 @@ def incident_add_comment_command(client, args):
 
 
 def incident_delete_comment_command(client, args):
-
     inc_id = args.get('incident_id')
     comment_id = args.get('comment_id')
     url_suffix = f'incidents/{inc_id}/comments/{comment_id}'
@@ -747,6 +795,7 @@ def list_incident_entities_command(client, args):
     :param client: (AzureSentinelClient) The Azure Sentinel client to work with.
     :param args:  (dict) arguments for this command.
     """
+
     def xsoar_transformer(entity):
         return dict(
             ID=entity.get('name'),
@@ -830,56 +879,477 @@ def update_next_link_in_context(result: dict, outputs: dict):
     if next_link:
         next_link_item = {
             'Description': NEXTLINK_DESCRIPTION,
-            'URL': next_link
+            'URL': next_link,
         }
-        outputs[f'AzureSentinel.NextLink(val.Description == "{NEXTLINK_DESCRIPTION}")'] = next_link_item  # type: ignore
+        outputs[f'AzureSentinel.NextLink(val.Description == "{NEXTLINK_DESCRIPTION}")'] = next_link_item
 
 
-def fetch_incidents(client, last_run, first_fetch_time, min_severity):
+def fetch_incidents(client: AzureSentinelClient, last_run: dict, first_fetch_time: str, min_severity: int):
+    """Fetching incidents.
+    Args:
+        first_fetch_time: The first fetch time.
+        client: An AzureSentinelClient client.
+        last_run: An dictionary of the last run.
+        min_severity: A minimum severity of incidents to fetch.
+
+    Returns:
+        (tuple): 1. The LastRun object updated with the last run details.
+        2. An array of incidents.
+
+    """
     # Get the last fetch details, if exist
     last_fetch_time = last_run.get('last_fetch_time')
     last_fetch_ids = last_run.get('last_fetch_ids', [])
+    last_incident_number = last_run.get('last_incident_number')
+    demisto.debug(f"{last_fetch_time=}, {last_fetch_ids=}, {last_incident_number=}")
 
-    # Handle first time fetch
-    if last_fetch_time is None:
-        last_fetch_time_str, _ = parse_date_range(first_fetch_time, DATE_FORMAT)
-        last_fetch_time = dateparser.parse(last_fetch_time_str)
+    if last_fetch_time is None or last_incident_number is None:
+        demisto.debug("handle via timestamp")
+        if last_fetch_time is None:
+            last_fetch_time_str, _ = parse_date_range(first_fetch_time, DATE_FORMAT)
+            latest_created_time = dateparser.parse(last_fetch_time_str)
+        else:
+            latest_created_time = dateparser.parse(last_fetch_time)
+        assert latest_created_time, f'Got empty latest_created_time. {last_fetch_time_str=} {last_fetch_time=}'
+        latest_created_time_str = latest_created_time.strftime(DATE_FORMAT)
+        command_args = {
+            'filter': f'properties/createdTimeUtc ge {latest_created_time_str}',
+            'orderby': 'properties/createdTimeUtc asc',
+        }
+        raw_incidents = list_incidents_command(client, command_args, is_fetch_incidents=True).outputs
+
     else:
-        last_fetch_time = dateparser.parse(last_fetch_time)
+        demisto.debug("handle via id")
+        latest_created_time = dateparser.parse(last_fetch_time)
+        assert latest_created_time is not None, f"dateparser.parse(last_fetch_time):" \
+                                                f" {dateparser.parse(last_fetch_time)} couldnt be parsed"
+        command_args = {
+            'filter': f'properties/incidentNumber gt {last_incident_number}',
+            'orderby': 'properties/incidentNumber asc',
+        }
+        raw_incidents = list_incidents_command(client, command_args, is_fetch_incidents=True).outputs
 
-    latest_created_time = last_fetch_time
-    latest_created_time_str = latest_created_time.strftime(DATE_FORMAT)
-    command_args = {'filter': f'properties/createdTimeUtc ge {latest_created_time_str}'}
-    command_result = list_incidents_command(client, command_args, is_fetch_incidents=True)
-    items = command_result.outputs
+    return process_incidents(raw_incidents, last_fetch_ids, min_severity,
+                             latest_created_time, last_incident_number)  # type: ignore[attr-defined]
+
+
+def process_incidents(raw_incidents: list, last_fetch_ids: list, min_severity: int, latest_created_time: datetime,
+                      last_incident_number):
+    """Processing the raw incidents
+    Args:
+        raw_incidents: The incidents that were fetched from the API.
+        last_fetch_ids: The last fetch ids from the last run.
+        last_incident_number: The last incident number that was fetched.
+        latest_created_time: The latest created time.
+        min_severity: The minimum severity.
+
+    Returns:
+        A next_run dictionary, and an array of incidents.
+    """
+
     incidents = []
     current_fetch_ids = []
+    if not last_incident_number:
+        last_incident_number = 0
 
-    for incident in items:
+    for incident in raw_incidents:
         incident_severity = severity_to_level(incident.get('Severity'))
+        demisto.debug(f"{incident.get('ID')=}, {incident_severity=}, {incident.get('IncidentNumber')=}")
 
-        # fetch only incidents that weren't fetched in the last run and their severity is at least min_severity
-        if incident.get('ID') not in last_fetch_ids and incident_severity >= min_severity:
+        # create incident only for incidents that weren't fetched in the last run and their severity is at least min_severity
+        if incident.get('ID') not in last_fetch_ids:
             incident_created_time = dateparser.parse(incident.get('CreatedTimeUTC'))
-            xsoar_incident = {
-                'name': '[Azure Sentinel] ' + incident.get('Title'),
-                'occurred': incident.get('CreatedTimeUTC'),
-                'severity': incident_severity,
-                'rawJSON': json.dumps(incident)
-            }
-
-            incidents.append(xsoar_incident)
             current_fetch_ids.append(incident.get('ID'))
+            if incident_severity >= min_severity:
+                xsoar_incident = {
+                    'name': '[Azure Sentinel] ' + incident.get('Title'),
+                    'occurred': incident.get('CreatedTimeUTC'),
+                    'severity': incident_severity,
+                    'rawJSON': json.dumps(incident)
+                }
+                incidents.append(xsoar_incident)
+            else:
+                demisto.debug(f"drop creation of {incident.get('IncidentNumber')=} "
+                              "due to the {incident_severity=} is lower then {min_severity=}")
 
             # Update last run to the latest fetch time
+            assert incident_created_time is not None, f"incident.get('CreatedTimeUTC') : " \
+                                                      f"{incident.get('CreatedTimeUTC')} couldnt be parsed"
             if incident_created_time > latest_created_time:
                 latest_created_time = incident_created_time
+            if incident.get('IncidentNumber') > last_incident_number:
+                last_incident_number = incident.get('IncidentNumber')
 
     next_run = {
         'last_fetch_time': latest_created_time.strftime(DATE_FORMAT),
-        'last_fetch_ids': current_fetch_ids
+        'last_fetch_ids': current_fetch_ids,
+        'last_incident_number': last_incident_number,
     }
     return next_run, incidents
+
+
+def threat_indicators_data_to_xsoar_format(ind_data):
+    """
+    Convert the threat indicators data from the raw to XSOAR format.
+
+    :param ind_data: (dict) The incident raw data.
+    """
+
+    properties = ind_data.get('properties', {})
+    pattern = properties.get('parsedPattern', [])[0]
+
+    formatted_data = {
+        'ID': ind_data.get('id'),
+        'Name': ind_data.get('name'),
+        'ETag': ind_data.get('etag'),
+        'Type': ind_data.get('type'),
+        'Kind': ind_data.get('kind'),
+
+        'Confidence': properties.get('confidence', ''),
+        'Created': format_date(properties.get('created', '')),
+        'CreatedByRef': properties.get('createdByRef', ''),
+        'ExternalId': properties.get('externalId', ''),
+        'LastUpdatedTimeUtc': format_date(properties.get('lastUpdatedTimeUtc', '')),
+        'Revoked': properties.get('revoked', ''),
+        'Source': properties.get('source', ''),
+        'Tags': properties.get('threatIntelligenceTags', 'No Tags'),
+        'DisplayName': properties.get('displayName', ''),
+        'Description': properties.get('description', ''),
+        'Types': properties.get('threatTypes', ''),
+        'KillChainPhases': [{
+            'KillChainName': phase.get('killChainName'),
+            'PhaseName': phase.get('phaseName')
+        } for phase in properties.get('KillChainPhases', [])],
+
+        'ParsedPattern': {
+            'PatternTypeKey': pattern.get('patternTypeKey'),
+            'PatternTypeValues': {
+                'Value': pattern.get('patternTypeValues')[0].get('value'),
+                'ValueType': pattern.get('patternTypeValues')[0].get('valueType')
+            }
+        },
+
+        'Pattern': properties.get('pattern', ''),
+        'PatternType': properties.get('patternType', ''),
+        'ValidFrom': format_date(properties.get('validFrom', '')),
+        'ValidUntil': format_date(properties.get('validUntil', '')),
+        'Values': pattern.get('patternTypeValues')[0].get('value'),
+        'Deleted': False
+    }
+    remove_nulls_from_dictionary(formatted_data)
+
+    return formatted_data
+
+
+def build_query_filter(args):
+    filtering_args = {
+        'minConfidence': args.get('min_confidence', ''),
+        'maxConfidence': args.get('max_confidence', ''),
+        'minValidUntil': format_date(args.get('min_valid_from', '')),
+        'maxValidUntil': format_date(args.get('max_valid_from', '')),
+        'sources': argToList(args.get('sources')),
+        'keywords': argToList(args.get('keywords')),
+        'threatTypes': argToList(args.get('threat_types')),
+        'patternTypes': []
+    }
+
+    indicator_types = argToList(args.get('indicator_types'))
+    if indicator_types:
+        for ind_type in indicator_types:
+            if ind_type == 'ipv4':
+                filtering_args['patternTypes'].append('ipv4-address')
+            elif ind_type == 'ipv6':
+                filtering_args['patternTypes'].append('ipv6-address')
+            elif ind_type == 'domain':
+                filtering_args['patternTypes'].append('domain-name')
+            else:
+                filtering_args['patternTypes'].append(ind_type)
+
+    include_disabled = args.get('include_disabled', 'false') == 'true'
+    filtering_args['includeDisabled'] = include_disabled
+
+    remove_nulls_from_dictionary(filtering_args)
+
+    return filtering_args
+
+
+def build_threat_indicator_data(args):
+    value = args.get('value')
+
+    data = {
+        'displayName': args.get('display_name'),
+        'description': args.get('description'),
+        'revoked': args.get('revoked', ''),
+        'confidence': arg_to_number(args.get('confidence')),
+        'threatTypes': argToList(args.get('threat_types')),
+        'includeDisabled': args.get('include_disabled', ''),
+        'source': DEFAULT_SOURCE,
+        'threatIntelligenceTags': argToList(args.get('tags')),
+        'validFrom': format_date(args.get('valid_from', '')),
+        'validUntil': format_date(args.get('valid_until', '')),
+        'createdByRef': args.get('created_by', ''),
+    }
+
+    indicator_type = args.get('indicator_type')
+    if indicator_type == 'ipv4':
+        indicator_type = 'ipv4-addr'
+    elif indicator_type == 'ipv6':
+        indicator_type = 'ipv6-addr'
+    elif indicator_type == 'domain':
+        indicator_type = 'domain-name'
+
+    data['patternType'] = indicator_type
+
+    if indicator_type == 'file':
+        hash_type = args.get('hash_type')
+        data['hashType'] = hash_type
+        data['pattern'] = f"[file:hashes.'{hash_type}' = '{value}']"
+    else:
+        data['pattern'] = f"[{indicator_type}:value = '{value}']"
+
+    data['killChainPhases'] = []
+
+    kill_chains = argToList(args.get('kill_chains', []))
+    if kill_chains:
+        for kill_chain_phase in kill_chains:
+            data['killChainPhases'].append(
+                {'killChainName': kill_chain_phase,
+                 'phaseName': kill_chain_phase})
+
+    remove_nulls_from_dictionary(data)
+
+    return data
+
+
+def build_updated_indicator_data(new_ind_data, original_ind_data):
+    original_extracted_data = extract_original_data_from_indicator(original_ind_data.get('properties'))
+    new_data = build_threat_indicator_data(new_ind_data)
+
+    original_extracted_data.update(new_data)
+
+    return original_extracted_data
+
+
+def extract_original_data_from_indicator(original_data):
+    extracted_data = {
+        'description': original_data.get('description', ''),
+        'revoked': original_data.get('revoked', ''),
+        'confidence': arg_to_number(original_data.get('confidence')),
+        'threatTypes': argToList(original_data.get('threatTypes')),
+        'killChainPhases': argToList(original_data.get('killChainPhases')),
+        'threatIntelligenceTags': argToList(original_data.get('threatIntelligenceTags')),
+        'validFrom': original_data.get('validFrom', ''),
+        'validUntil': original_data.get('validUntil', ''),
+        'createdByRef': original_data.get('createdByRef', ''),
+        'created': original_data.get('created', ''),
+        'externalId': original_data.get('externalId'),
+        'displayName': original_data.get('displayName'),
+        'source': original_data.get('source')
+    }
+
+    remove_nulls_from_dictionary(extracted_data)
+    return extracted_data
+
+
+def list_threat_indicator_command(client, args):
+    url_suffix = 'threatIntelligence/main/indicators'
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))  # the default limit is 50
+
+    next_link = args.get('next_link', '')
+    if next_link:
+        next_link = next_link.replace('%20', ' ')  # OData syntax can't handle '%' character
+        result = client.http_request('GET', full_url=next_link)
+    else:
+        indicator_name = args.get('indicator_name')
+        if indicator_name:
+            url_suffix += f'/{indicator_name}'
+
+        result = client.http_request('GET', url_suffix, params={'$top': limit})
+
+    num_of_threat_indicators = 0
+    threat_indicators = []
+
+    if result.get('value'):
+        threat_indicators = [threat_indicators_data_to_xsoar_format(ind) for ind in result.get('value')]
+        num_of_threat_indicators = len(threat_indicators)
+
+    outputs = {'AzureSentinel.ThreatIndicator': threat_indicators}
+    update_next_link_in_context(result, outputs)
+
+    readable_output = tableToMarkdown(
+        f'Threat Indicators ({num_of_threat_indicators} results)',
+        threat_indicators,
+        headers=THREAT_INDICATORS_HEADERS,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=outputs,
+        outputs_key_field='ID',
+        raw_response=result
+    )
+
+
+def query_threat_indicators_command(client, args):
+    url_suffix = 'threatIntelligence/main/queryIndicators'
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))  # the default limit is 50
+    data = build_query_filter(args)
+    next_link = args.get('next_link', '')
+    if next_link:
+        next_link = next_link.replace('%20', ' ')  # OData syntax can't handle '%' character
+        result = client.http_request('POST', full_url=next_link, data=data)
+    else:
+
+        result = client.http_request('POST', url_suffix, params={'$top': limit}, data=data)
+
+    num_of_threat_indicators = 0
+    threat_indicators = []
+
+    if result.get('value') is not None:
+        threat_indicators = [threat_indicators_data_to_xsoar_format(ind) for ind in result.get('value')]
+        num_of_threat_indicators = len(threat_indicators)
+
+    outputs = {'AzureSentinel.ThreatIndicator': threat_indicators}
+    update_next_link_in_context(result, outputs)
+
+    readable_output = tableToMarkdown(
+        f'Threat Indicators ({num_of_threat_indicators} results)',
+        threat_indicators,
+        headers=THREAT_INDICATORS_HEADERS,
+        headerTransform=pascalToSpace,
+        removeNull=True
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=outputs,
+        outputs_key_field='ID',
+        raw_response=result
+    )
+
+
+def create_threat_indicator_command(client, args):
+    url_suffix = 'threatIntelligence/main/createIndicator'
+
+    data = {'kind': 'indicator', 'properties': build_threat_indicator_data(args)}
+
+    result = client.http_request('POST', url_suffix, data=data)
+
+    threat_indicators = [threat_indicators_data_to_xsoar_format(result)]
+
+    readable_output = tableToMarkdown('New threat Indicator was created', threat_indicators,
+                                      headers=THREAT_INDICATORS_HEADERS,
+                                      headerTransform=pascalToSpace,
+                                      removeNull=True)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='AzureSentinel.ThreatIndicator',
+        outputs=threat_indicators,
+        outputs_key_field='ID',
+        raw_response=result
+    )
+
+
+def update_threat_indicator_command(client, args):
+    indicator_name = args.get('indicator_name')
+    get_indicator_url_suffix = f'threatIntelligence/main/indicators/{indicator_name}'
+
+    original_data = client.http_request('GET', get_indicator_url_suffix)
+
+    updated_data = build_updated_indicator_data(args, original_data)
+
+    data = {
+        "kind": "indicator",
+        "properties": updated_data
+    }
+
+    update_indicator_url_suffix = f'threatIntelligence/main/indicators/{indicator_name}'
+
+    result = client.http_request('PUT', update_indicator_url_suffix, data=data)
+    threat_indicators = [threat_indicators_data_to_xsoar_format(result)]
+
+    readable_output = tableToMarkdown(f'Threat Indicator {indicator_name} was updated',
+                                      threat_indicators,
+                                      headers=THREAT_INDICATORS_HEADERS,
+                                      headerTransform=pascalToSpace,
+                                      removeNull=True)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='AzureSentinel.ThreatIndicator',
+        outputs=threat_indicators,
+        outputs_key_field='ID',
+        raw_response=result
+    )
+
+
+def delete_threat_indicator_command(client, args):
+    indicator_names = argToList(args.get('indicator_names'))
+    outputs = []
+
+    for indicator_name in indicator_names:
+        url_suffix = f'threatIntelligence/main/indicators/{indicator_name}'
+        client.http_request('DELETE', url_suffix)
+        outputs.append({
+            'Name': indicator_name,
+            'Deleted': True
+        })
+
+    return CommandResults(
+        readable_output='Threat Intelligence Indicators ' + ', '.join(indicator_names)
+                        + ' were deleted successfully',
+        outputs_prefix='AzureSentinel.ThreatIndicator',
+        outputs_key_field='Name',
+        outputs=outputs,
+        raw_response={},
+    )
+
+
+def append_tags_threat_indicator_command(client, args):
+    indicator_name = args.get('indicator_name')
+    tags = argToList(args.get('tags'))
+    url_suffix = f'threatIntelligence/main/indicators/{indicator_name}/appendTags'
+
+    data = {'threatIntelligenceTags': tags}
+
+    result = client.http_request('POST', url_suffix, data=data)
+
+    threat_indicators = [threat_indicators_data_to_xsoar_format(result)]
+
+    return CommandResults(
+        readable_output=f'Tags were appended to {indicator_name} Threat Indicator.',
+        outputs_prefix='AzureSentinel.ThreatIndicator',
+        outputs=threat_indicators,
+        outputs_key_field='ID',
+        raw_response=result
+    )
+
+
+def replace_tags_threat_indicator_command(client, args):
+    indicator_name = args.get('indicator_name')
+    tags = argToList(args.get('tags'))
+    url_suffix = f'threatIntelligence/main/indicators/{indicator_name}/replaceTags'
+
+    data = {
+        "properties": {
+            'threatIntelligenceTags': tags
+        }
+    }
+
+    result = client.http_request('POST', url_suffix, data=data)
+
+    threat_indicators = [threat_indicators_data_to_xsoar_format(result)]
+
+    return CommandResults(
+        readable_output=f'Tags were replaced to {indicator_name} Threat Indicator.',
+        outputs_prefix='AzureSentinel.ThreatIndicator',
+        outputs=threat_indicators,
+        outputs_key_field='ID',
+        raw_response=result
+    )
 
 
 def main():
@@ -889,16 +1359,24 @@ def main():
     params = demisto.params()
     LOG(f'Command being called is {demisto.command()}')
     try:
+        client_secret = params.get('credentials', {}).get('password')
+        certificate_thumbprint = params.get('certificate_thumbprint')
+        private_key = params.get('private_key')
+        if not client_secret and not (certificate_thumbprint and private_key):
+            raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
+
         client = AzureSentinelClient(
             server_url=params.get('server_url') or DEFAULT_AZURE_SERVER_URL,
             tenant_id=params.get('tenant_id', ''),
             client_id=params.get('credentials', {}).get('identifier'),
-            client_secret=params.get('credentials', {}).get('password'),
+            client_secret=client_secret,
             subscription_id=params.get('subscriptionID', ''),
             resource_group_name=params.get('resourceGroupName', ''),
             workspace_name=params.get('workspaceName', ''),
             verify=not params.get('insecure', False),
-            proxy=params.get('proxy', False)
+            proxy=params.get('proxy', False),
+            certificate_thumbprint=certificate_thumbprint,
+            private_key=private_key
         )
 
         commands = {
@@ -917,7 +1395,14 @@ def main():
             'azure-sentinel-watchlist-create-update': create_update_watchlist_command,
             'azure-sentinel-list-watchlist-items': list_watchlist_items_command,
             'azure-sentinel-delete-watchlist-item': delete_watchlist_item_command,
-            'azure-sentinel-create-update-watchlist-item': create_update_watchlist_item_command
+            'azure-sentinel-create-update-watchlist-item': create_update_watchlist_item_command,
+            'azure-sentinel-threat-indicator-list': list_threat_indicator_command,
+            'azure-sentinel-threat-indicator-query': query_threat_indicators_command,
+            'azure-sentinel-threat-indicator-create': create_threat_indicator_command,
+            'azure-sentinel-threat-indicator-update': update_threat_indicator_command,
+            'azure-sentinel-threat-indicator-delete': delete_threat_indicator_command,
+            'azure-sentinel-threat-indicator-tags-append': append_tags_threat_indicator_command,
+            'azure-sentinel-threat-indicator-tags-replace': replace_tags_threat_indicator_command,
         }
 
         if demisto.command() == 'test-module':
@@ -944,11 +1429,12 @@ def main():
             return_results(commands[demisto.command()](client, demisto.args()))  # type: ignore
 
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+        return_error(
+            f'Failed to execute {demisto.command()} command. Error: {str(e)}'
+        )
 
 
 from MicrosoftApiModule import *  # noqa: E402
-
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

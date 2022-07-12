@@ -1,0 +1,19 @@
+comment: Entry widget that returns the number of rules with unused applications found
+  by PAN-OS policy optimizer.
+commonfields:
+  id: EntryWidgetUnusedApplications
+  version: -1
+dockerimage: demisto/python3:3.9.8.24399
+enabled: true
+name: EntryWidgetUnusedApplications
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- dynamic-section
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

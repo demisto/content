@@ -1,4 +1,3 @@
-import json
 import pytest
 
 from unittest.mock import patch
@@ -910,3 +909,37 @@ class TestFilePermissionMethods:
 
         with pytest.raises(ValueError, match="SOME_ERROR"):
             file_permission_update_command(gsuite_client, args)
+
+    def test_upload_file_with_parent_command_success(self, mocker, gsuite_client):
+        """
+        Scenario: For google-drive-file-upload command with the 'parent' arg.
+
+        Given:
+        - Command args.
+
+        When:
+        - Calling google-drive-file-upload command with the parent arg.
+
+        Then:
+        - Ensure parent arg send as expected by Google API (in array).
+        """
+        import GoogleDrive
+        from GoogleDrive import file_upload_command
+        import demistomock as demisto
+
+        mocker.patch('googleapiclient.http.HttpRequest.execute')
+        mocker.patch('GoogleDrive.handle_response_file_single')
+        mocker.patch('GoogleDrive.assign_params', return_value={})
+        mocker.patch.object(demisto, 'getFilePath', return_value={'id': 'test_id',
+                                                                  'path': 'test_data/drive_changes_hr.txt',
+                                                                  'name': 'drive_changes_hr.txt'})
+
+        args = {
+            'parent': 'test_parent',
+            'entry_id': 'test_entry_id',
+            'file_name': 'test_file_name',
+            'parent': 'test_parent'
+
+        }
+        file_upload_command(gsuite_client, args)
+        assert GoogleDrive.assign_params.call_args[1]['parents'] == ['test_parent']

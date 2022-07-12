@@ -308,7 +308,7 @@ def test_get_indicators_with_relations():
                          {'name': 'resolved-from', 'reverseName': 'resolves-to', 'type': 'IndicatorToIndicator',
                           'entityA': 'test.com', 'entityAFamily': 'Indicator', 'entityAType': 'IP',
                           'entityB': 'Test', 'entityBFamily': 'Indicator', 'entityBType': 'IP',
-                          'fields': {}}]}], False)
+                          'fields': {}}]}], True)
 
     ip_ranges = 'test.com,Domain used by Test c&c,2021-04-22 06:03,https://test.com/manual/test-iplist.txt'
 
@@ -355,7 +355,7 @@ def test_get_indicators_without_relations():
                                         'https://test.com/manual/test-iplist.txt'],
                                  'type': 'IP'},
                       'fields': {'AAA': 'Domain used by Test c&c', 'relationship_entity_b': 'Test',
-                                 'tags': []}, 'relationships': []}], False)
+                                 'tags': []}, 'relationships': []}], True)
 
     ip_ranges = 'test.com,Domain used by Test c&c,2021-04-22 06:03,https://test.com/manual/test-iplist.txt'
 
@@ -406,6 +406,7 @@ def test_build_iterator_not_modified_header(mocker):
     - Ensure that the results are empty and No_update value is True.
     """
     mocker.patch.object(demisto, 'debug')
+    mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.5.0"})
     with requests_mock.Mocker() as m:
         m.get('https://api.github.com/meta', status_code=304)
 
@@ -419,6 +420,35 @@ def test_build_iterator_not_modified_header(mocker):
         assert result[0]['https://api.github.com/meta']['no_update']
         assert demisto.debug.call_args[0][0] == 'No new indicators fetched, ' \
                                                 'createIndicators will be executed with noUpdate=True.'
+
+
+def test_build_iterator_with_version_6_2_0(mocker):
+    """
+    Given
+    - server version 6.2.0
+
+    When
+    - Running build_iterator method.
+
+    Then
+    - Ensure that the no_update value is True
+    - Request is called without headers "If-None-Match" and "If-Modified-Since"
+    """
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
+
+    with requests_mock.Mocker() as m:
+        m.get('https://api.github.com/meta', status_code=304)
+
+        client = Client(
+            url='https://api.github.com/meta',
+            headers={}
+        )
+        result = client.build_iterator()
+        assert result[0]['https://api.github.com/meta']['no_update']
+        assert list(result[0]['https://api.github.com/meta']['result']) == []
+        assert 'If-None-Match' not in client.headers
+        assert 'If-Modified-Since' not in client.headers
 
 
 def test_get_no_update_value_without_headers(mocker):

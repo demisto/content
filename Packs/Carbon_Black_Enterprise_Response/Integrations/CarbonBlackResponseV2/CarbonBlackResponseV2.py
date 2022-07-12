@@ -705,42 +705,67 @@ def endpoint_command(client: Client, id: str = None, ip: str = None, hostname: s
     if not id and not ip and not hostname:
         raise Exception(f'{INTEGRATION_NAME} - In order to run this command, please provide valid id, ip or hostname')
 
-    try:
-        ips = argToList(ip)
-        res = []
-        if ips:
-            for current_ip in ips:
-                res += client.get_sensors(id=id, ipaddr=current_ip, hostname=hostname)[1]
-        else:
-            res += client.get_sensors(id=id, hostname=hostname)[1]
-        endpoints = []
-        command_results = []
-        for sensor in res:
-            is_isolated = _get_isolation_status_field(sensor['network_isolation_enabled'],
-                                                      sensor['is_isolating'])
-            endpoint = Common.Endpoint(
-                id=sensor.get('id'),
-                hostname=sensor.get('computer_name'),
-                ip_address=_parse_field(sensor.get('network_adapters', ''), index_after_split=0, chars_to_remove='|'),
-                mac_address=_parse_field(sensor.get('network_adapters', ''), index_after_split=1, chars_to_remove='|'),
-                os_version=sensor.get('os_environment_display_string'),
-                memory=sensor.get('physical_memory_size'),
-                status='Online' if sensor.get('status') else 'Offline',
-                is_isolated=is_isolated,
-                vendor='Carbon Black Response')
-            endpoints.append(endpoint)
+    # If multiple filters were given, we want to retrieve all results that match any filter ('OR', not 'AND')
+    # issue https://github.com/demisto/etc/issues/46353. Therefore, we make an API query for every filter separately.
+    ips = argToList(ip)
+    hostnames = argToList(hostname)
+    ids = argToList(id)
+    exceptions = []
+    res = []
+    if ips:
+        for current_ip in ips:
+            # Carbon Black returns an error in various scenarios (no results matching the query, etc.), wrapping with
+            # `try-except` to handle these exceptions here.
+            try:
+                res += client.get_sensors(ipaddr=current_ip)[1]
+            except Exception as e:
+                exceptions.append({'Query': f'ip: {current_ip}', 'Exception': str(e)})
+    if hostnames:
+        for current_hostname in hostnames:
+            try:
+                res += client.get_sensors(hostname=current_hostname)[1]
+            except Exception as e:
+                exceptions.append({'Query': f'hostname: {current_hostname}', 'Exception': str(e)})
+    if ids:
+        for current_id in ids:
+            try:
+                res += client.get_sensors(id=current_id)[1]
+            except Exception as e:
+                exceptions.append({'Query': f'id: {current_id}', 'Exception': str(e)})
 
-            endpoint_context = endpoint.to_context().get(Common.Endpoint.CONTEXT_PATH)
-            md = tableToMarkdown(f'{INTEGRATION_NAME} -  Endpoint: {sensor.get("id")}', endpoint_context)
+    # Remove duplicates by taking entries with unique `id`:
+    if res:
+        res = list({v['id']: v for v in res}.values())
 
-            command_results.append(CommandResults(
-                readable_output=md,
-                raw_response=res,
-                indicator=endpoint
-            ))
-        return command_results
-    except Exception as e:
-        return CommandResults(readable_output=f'{INTEGRATION_NAME} - Could not get endpoint (error- {e}')
+    endpoints = []
+    command_results = []
+    for sensor in res:
+        is_isolated = _get_isolation_status_field(sensor['network_isolation_enabled'],
+                                                  sensor['is_isolating'])
+        endpoint = Common.Endpoint(
+            id=sensor.get('id'),
+            hostname=sensor.get('computer_name'),
+            ip_address=_parse_field(sensor.get('network_adapters', ''), index_after_split=0, chars_to_remove='|'),
+            mac_address=_parse_field(sensor.get('network_adapters', ''), index_after_split=1, chars_to_remove='|'),
+            os_version=sensor.get('os_environment_display_string'),
+            memory=sensor.get('physical_memory_size'),
+            status='Online' if sensor.get('status') else 'Offline',
+            is_isolated=is_isolated,
+            vendor='Carbon Black Response')
+        endpoints.append(endpoint)
+
+        endpoint_context = endpoint.to_context().get(Common.Endpoint.CONTEXT_PATH)
+        md = tableToMarkdown(f'{INTEGRATION_NAME} -  Endpoint: {sensor.get("id")}', endpoint_context)
+
+        command_results.append(CommandResults(
+            readable_output=md,
+            raw_response=res,
+            indicator=endpoint
+        ))
+    if exceptions:
+        md = tableToMarkdown('The following queries resulted in an error: ', exceptions, headers=['Query', 'Exception'])
+        command_results.append(CommandResults(readable_output=md))
+    return command_results
 
 
 def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetch_time: str, status: str = None,
@@ -792,6 +817,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict, first_fetc
     demisto.debug(f'{INTEGRATION_NAME} - Got total of {len(alerts)} alerts from CB server.')
     for alert in alerts:
         incident_created_time = dateparser.parse(alert.get('created_time'))
+        assert incident_created_time is not None
         incident_created_time_ms = incident_created_time.timestamp()
 
         # to prevent duplicates, adding incidents with creation_time > last fetched incident

@@ -36,7 +36,7 @@ Execute an XQL query and retrieve results of an executed XQL query API. The comm
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | query | String of the XQL query. By default up to 100 results are returned. To retrieve more results, enter a custom limit in the query. | Required | 
-| time_frame | Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours. | Optional | 
+| time_frame | Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and between 2021-02-01 12:34:56 +02:00"). The default is the last 24 hours. | Optional | 
 | tenant_id | List of strings used for running APIs on local and Managed Security tenants. Valid values:<br/>For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).<br/>For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children. | Optional | 
 | interval_in_seconds | Interval in seconds between each poll. | Optional | 
 | max_fields | The maximum number of returned fields per result. Default is 20. | Optional | 
@@ -248,7 +248,7 @@ Query file events by the SHA256 file.
 | endpoint_id | XDR endpoint ID to run the query on. | Optional | 
 | file_sha256 | SHA256 file to run the query on. | Required | 
 | extra_fields | Extra fields to add to the query results. | Optional | 
-| time_frame | Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours. | Optional | 
+| time_frame | Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and between 2021-02-01 12:34:56 +02:00"). The default is the last 24 hours. | Optional | 
 | limit | Integer representing the maximum number of results to return. For example:<br/>If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.<br/>If limit = 100 and the query produced 50 results, only 50 results will be returned.<br/>If limit=5000, 5,000 results are returned.<br/>If limit=null or empty (default) up to 100 results are returned. . Default is 100. | Optional | 
 | tenant_id | List of strings used for running APIs on local and Managed Security tenants. Valid values:<br/><br/>For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).<br/><br/>For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children. | Optional | 
 | query_name | The name of the query. | Required |
@@ -308,7 +308,7 @@ Query process events by the SHA256 process.
 | endpoint_id | XDR endpoint ID to run the query on. | Optional | 
 | process_sha256 | The SHA256 hash of the primary involved process to search on the XDR dataset. | Required | 
 | extra_fields | Extra fields to add to the query results. | Optional | 
-| time_frame | Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours. | Optional | 
+| time_frame | Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and between 2021-02-01 12:34:56 +02:00"). The default is the last 24 hours. | Optional | 
 | limit | Integer representing the maximum number of results to return. For example:<br/>If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.<br/>If limit = 100 and the query produced 50 results, only 50 results will be returned.<br/>If limit=5000, 5,000 results are returned.<br/>If limit=null or empty (default) up to 100 results are returned. . Default is 100. | Optional | 
 | tenant_id | List of strings used for running APIs on local and Managed Security tenants. Valid values:<br/><br/>For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).<br/><br/>For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children. | Optional | 
 | query_name | The name of the query. | Required |
@@ -380,7 +380,7 @@ Query DLL module events by the SHA256 DLL.
 | endpoint_id | XDR endpoint ID to run the query on. | Optional | 
 | loaded_module_sha256 | SHA256 DLL module to search on the XDR dataset. | Required | 
 | extra_fields | Extra fields to add to the query results. | Optional | 
-| time_frame | Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours. | Optional | 
+| time_frame | Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and between 2021-02-01 12:34:56 +02:00"). The default is the last 24 hours. | Optional | 
 | limit | Integer representing the maximum number of results to return. For example:<br/>If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.<br/>If limit = 100 and the query produced 50 results, only 50 results will be returned.<br/>If limit=5000, 5,000 results are returned.<br/>If limit=null or empty (default) up to 100 results are returned. . Default is 100. | Optional | 
 | tenant_id | List of strings used for running APIs on local and Managed Security tenants. Valid values:<br/><br/>For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).<br/><br/>For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children. | Optional | 
 | query_name | The name of the query. | Required |
@@ -453,7 +453,7 @@ Query network connections between a source IP, destination IP and port.
 | remote_ip | Destination IP of the network connection query. | Required | 
 | port | Destination port of the network connection query. | Optional | 
 | extra_fields | Extra fields to add to the query results. | Optional | 
-| time_frame | Time in relative date format (for example: "1 day", "3 weeks ago").The default is the last 24 hours. | Optional | 
+| time_frame | Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and between 2021-02-01 12:34:56 +02:00").The default is the last 24 hours. | Optional | 
 | limit | Integer representing the maximum number of results to return. For example:<br/>If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.<br/>If limit = 100 and the query produced 50 results, only 50 results will be returned.<br/>If limit=5000, 5,000 results are returned.<br/>If limit=null or empty (default) up to 100 results are returned. . Default is 100. | Optional | 
 | tenant_id | List of strings used for running APIs on local and Managed Security tenants. Valid values:<br/><br/>For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).<br/><br/>For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children. | Optional | 
 | query_name | The name of the query. | Required |
@@ -524,7 +524,7 @@ Query windows registry by registry key name.
 | endpoint_id | XDR endpoint ID to run the query on. | Optional | 
 | reg_key_name | Registry key name to search (for example: HKEY_LOCAL_MACHINE\SYSTEM\ControlSet001\Control\Print\Environments\Windows x64\Drivers\Version-3\Remote Desktop Easy Print). | Required | 
 | extra_fields | Extra fields to add to the query results. | Optional | 
-| time_frame | Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours. | Optional | 
+| time_frame | Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and between 2021-02-01 12:34:56 +02:00"). The default is the last 24 hours. | Optional | 
 | limit | Integer representing the maximum number of results to return. For example:<br/>If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.<br/>If limit = 100 and the query produced 50 results, only 50 results will be returned.<br/>If limit=5000, 5,000 results are returned.<br/>If limit=null or empty (default) up to 100 results are returned. . Default is 100. | Optional | 
 | tenant_id | List of strings used for running APIs on local and Managed Security tenants. Valid values:<br/><br/>For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).<br/><br/>For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children. | Optional | 
 | query_name | The name of the query. | Required |
@@ -590,7 +590,7 @@ Query event logs by event ID.
 | endpoint_id | XDR endpoint ID to run the query on. | Optional | 
 | event_id | event log ID to search. - Windows: Event ID of the event-log - Linux: For action_evtlog_source = AuthLog, one of the following: 0 = Unknown 1 = Successful Login 2 = Failed Login 3 = Failed Password (Same as failed login, but should include a username) 4 = Logout. | Required | 
 | extra_fields | Extra fields to add to the query results. | Optional | 
-| time_frame | Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours. | Optional | 
+| time_frame | Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and between 2021-02-01 12:34:56 +02:00"). The default is the last 24 hours. | Optional | 
 | limit | Integer representing the maximum number of results to return. For example:<br/>If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.<br/>If limit = 100 and the query produced 50 results, only 50 results will be returned.<br/>If limit=5000, 5,000 results are returned.<br/>If limit=null or empty (default) up to 100 results are returned. . Default is 100. | Optional | 
 | tenant_id | List of strings used for running APIs on local and Managed Security tenants. Valid values:<br/><br/>For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).<br/><br/>For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children. | Optional | 
 | query_name | The name of the query. | Required |
@@ -656,7 +656,7 @@ Query by DNS query or domain name.
 | external_domain | Query by external domain name. | Optional | 
 | dns_query | Query by DNS query. | Optional | 
 | extra_fields | Extra fields to add to the query results. | Optional | 
-| time_frame | Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours. | Optional | 
+| time_frame | Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and between 2021-02-01 12:34:56 +02:00"). The default is the last 24 hours. | Optional | 
 | limit | Integer representing the maximum number of results to return. For example:<br/>If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.<br/>If limit = 100 and the query produced 50 results, only 50 results will be returned.<br/>If limit=5000, 5,000 results are returned.<br/>If limit=null or empty (default) up to 100 results are returned. . Default is 100. | Optional | 
 | tenant_id | List of strings used for running APIs on local and Managed Security tenants. Valid values:<br/><br/>For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).<br/><br/>For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children. | Optional | 
 | query_name | The name of the query. | Required |
@@ -732,7 +732,7 @@ Search for the process that wrote the given file, by its SHA256 or file path.
 | file_sha256 | SHA256 file to search on the XDR dataset. | Optional | 
 | file_path | File path to search on the XDR dataset. | Optional | 
 | extra_fields | Extra fields to add to the query results. | Optional | 
-| time_frame | Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours. | Optional | 
+| time_frame | Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and between 2021-02-01 12:34:56 +02:00"). The default is the last 24 hours. | Optional | 
 | limit | Integer representing the maximum number of results to return. For example:<br/>If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.<br/>If limit = 100 and the query produced 50 results, only 50 results will be returned.<br/>If limit=5000, 5,000 results are returned.<br/>If limit=null or empty (default) up to 100 results are returned. . Default is 100. | Optional | 
 | tenant_id | List of strings used for running APIs on local and Managed Security tenants. Valid values:<br/><br/>For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).<br/><br/>For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children. | Optional | 
 | query_name | The name of the query. | Required |
@@ -808,7 +808,7 @@ Search for network connection created by a given process instance ID.
 | endpoint_id | XDR endpoint ID to run the query on. | Optional | 
 | process_instance_id | Process instance ID to search on the XDR dataset. | Required | 
 | extra_fields | Extra fields to add to the query results. | Optional | 
-| time_frame | Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours. | Optional | 
+| time_frame | Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and between 2021-02-01 12:34:56 +02:00"). The default is the last 24 hours. | Optional | 
 | limit | Integer representing the maximum number of results to return. For example:<br/>If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.<br/>If limit = 100 and the query produced 50 results, only 50 results will be returned.<br/>If limit=5000, 5,000 results are returned.<br/>If limit=null or empty (default) up to 100 results are returned. . Default is 100. | Optional | 
 | tenant_id | List of strings used for running APIs on local and Managed Security tenants. Valid values:<br/><br/>For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).<br/><br/>For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children. | Optional | 
 | query_name | The name of the query. | Required |
@@ -883,7 +883,7 @@ Search for network connection created by a given process causality ID.
 | endpoint_id | XDR endpoint ID to run the query on. | Optional | 
 | process_causality_id | Process causality ID to search on the XDR dataset. | Required | 
 | extra_fields | Extra fields to add to the query results. | Optional | 
-| time_frame | Time in relative date format (for example: "1 day", "3 weeks ago"). The default is the last 24 hours. | Optional | 
+| time_frame | Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and between 2021-02-01 12:34:56 +02:00"). The default is the last 24 hours. | Optional | 
 | limit | Integer representing the maximum number of results to return. For example:<br/>If limit = 100 and the query produced 1,000 results, only the first 100 results will be returned.<br/>If limit = 100 and the query produced 50 results, only 50 results will be returned.<br/>If limit=5000, 5,000 results are returned.<br/>If limit=null or empty (default) up to 100 results are returned. . Default is 100. | Optional | 
 | tenant_id | List of strings used for running APIs on local and Managed Security tenants. Valid values:<br/><br/>For single tenant (local tenant) query, enter a single-item list with your tenant_id. Additional valid values are, empty list ([]) or null (default).<br/><br/>For multi-tenant investigations (Managed Security parent who investigate children and\or local), enter a multi-item list with the required tenant_id. List of IDs can contain the parent, children, or both parent and children. | Optional | 
 | query_name | The name of the query. | Required |

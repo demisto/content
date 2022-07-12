@@ -7,13 +7,18 @@ This Content Pack enables security teams to create an alert in SecurityScorecard
 - Manage (create, delete, list) score or threshold-based alerts.
 - Fetches SecurityScorecard alerts into Cortex XSOAR Incidents.
 - Retrieves current and historical security scores for organization with the ability to choose specific risk factors such as:
-  - **DNS health**: Measurement of DNS configuration presence.
-  - **IP Reputation**: Quantity and duration of malware infections.
-  - **Web Application Security**: Found web app vulnerabilities such as XSS/SQLi.
-  - **Hacker Chatter**: Collection of communications from multiple streams of underground chatter, including hard-to-access or private hacker forums.
-  - **Endpoint Security**: Protection involved regarding an organization’s devices that access that company’s network.
-  - **Patching Cadence**: How diligently a company is patching its operating systems.
-  - **Cubit Score**: Measures a collection of critical security and configuration issues related to exposed administrative portals.
+  - **Cloud Security**: Measures security of your cloud infrastructure.
+  - **Internal Security**: Measures security of your internal networks.
+  - **Network Security**: Detecting insecure network settings.
+  - **DNS Health**: Detecting DNS insecure configurations and vulnerabilities.
+  - **Patching Cadence**: Out of date company assets which may contain vulnerabilities or risks.
+  - **Endpoint Security**: Detecting unprotected endpoints or entry points of user tools, such as desktops, laptops, mobile devices, and virtual desktops.
+  - **IP Reputation**: Detecting suspicious activity, such as malware or spam, within your company network.
+  - **Application Security**: Detecting common website application vulnerabilities.
+  - **Cubit Score**: Proprietary algorithms checking for implementation of common security best practices.
+  - **Hacker Chatter**: Monitoring hacker sites for chatter about your company.
+  - **Information Leak**: Potentially confidential company information which may have been inadvertently leaked.
+  - **Social Engineering**: Measuring company awareness to a social engineering or phishing attack.
 
 - List portfolios and companies included within those portfolios.
 - List companies' 3rd-party services.

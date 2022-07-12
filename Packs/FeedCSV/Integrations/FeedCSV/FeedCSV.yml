@@ -70,7 +70,6 @@ configuration:
   name: feedBypassExclusionList
   required: false
   type: 8
-  defaultvalue: ""
 - additionalinfo: If selected, the indicator type will be auto detected for each indicator.
   defaultvalue: 'true'
   display: Auto detect indicator type
@@ -143,8 +142,7 @@ configuration:
   name: feedTags
   required: false
   type: 0
-- defaultvalue: ''
-  display: Trust any certificate (not secure)
+- display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
@@ -187,7 +185,7 @@ script:
     - contextPath: CSV.Indicator.rawJSON
       description: The indicator rawJSON value.
       type: Unknown
-  dockerimage: demisto/jmespath:1.0.0.23980
+  dockerimage: demisto/py3-tools:1.0.0.31193
   feed: true
   isfetch: false
   longRunning: false

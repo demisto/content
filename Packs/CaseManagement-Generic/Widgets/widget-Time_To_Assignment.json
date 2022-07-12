@@ -1,7 +1,7 @@
 {
   "id": "mean-time-to-assignment",
   "version": -1,
-  "fromVersion": "5.5",
+  "fromVersion": "5.5.0",
   "name": "Mean Time to Assignment (Time to Assignment)",
   "dataType": "incidents",
   "widgetType": "duration",

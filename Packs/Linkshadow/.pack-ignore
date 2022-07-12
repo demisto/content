@@ -1,2 +1,5 @@
 [file:Linkshadow.yml]
 ignore=IN145
+
+[file:Linkshadow_image.png]
+ignore=IM111

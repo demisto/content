@@ -6,3 +6,9 @@ ignore=BA101
 
 [file:GoogleDrive.yml]
 ignore=IN145
+
+[file:GoogleDrive_image.png]
+ignore=IM111
+
+[file:classifier-Google_Drive.json]
+ignore=BA101

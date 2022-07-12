@@ -9,23 +9,25 @@ from CommonServerPython import *
 urllib3.disable_warnings()
 INTEGRATION_NAME = 'Office 365'
 ALL_REGIONS_LIST = ['Worldwide', 'China', 'Germany', 'USGovDoD', 'USGovGCCHigh']
+ALL_CATEGORY_LIST = ['Optimize', 'Allow', 'Default']
 
 
-def build_region_list(config_region_list: list) -> list:
-    """Builds the region list for the feed.
-    If the config_region_list includes 'All',
-    it will add all the known regions to the list, and remove the string all.
+def build_region_or_category_list(param_list: list, all_config_list: list) -> list:
+    """Builds the region or category list for the feed.
+    If the param_list includes 'All',
+    it will add all the items from the 'all_config_list' to the list, and remove the string all.
 
     Args:
-        config_region_list: list of regions provided by integration configuration
+        param_list: list of regions or categories provided by integration configuration
+        all_config_list: list of all the regions or categories, to be added if All is chosen
 
     Returns:
-        list of regions
+        list of regions or categories
     """
-    if 'All' in config_region_list:
-        config_region_list.remove('All')
-        return list(set(config_region_list + ALL_REGIONS_LIST))
-    return config_region_list
+    if 'All' in param_list:
+        param_list.remove('All')
+        return list(set(param_list + all_config_list))
+    return param_list
 
 
 def build_urls_dict(regions_list: list, services_list: list, unique_id) -> List[Dict[str, Any]]:
@@ -63,7 +65,7 @@ class Client:
     https://techcommunity.microsoft.com/t5/Office-365-Blog/Announcing-Office-365-endpoint-categories-and-Office-365-IP/ba-p/177638
     """
 
-    def __init__(self, urls_list: list, insecure: bool = False, tags: Optional[list] = None,
+    def __init__(self, urls_list: list, category_list: list, insecure: bool = False, tags: Optional[list] = None,
                  tlp_color: Optional[str] = None):
         """
         Implements class for Office 365 feeds.
@@ -76,6 +78,7 @@ class Client:
         self.tags = [] if tags is None else tags
         self.tlp_color = tlp_color
         self._proxies = handle_proxy(proxy_param_name='proxy', checkbox_default_value=False)
+        self.category_list = category_list
 
     def build_iterator(self) -> List:
         """Retrieves all entries from the feed.
@@ -96,7 +99,9 @@ class Client:
                 )
                 response.raise_for_status()
                 data = response.json()
-                indicators = [i for i in data if 'ips' in i or 'urls' in i]  # filter empty entries and add metadata]
+                # filter empty entries and category param, add metadata
+                indicators = [i for i in data if ('ips' in i or 'urls' in i)
+                              and i.get('category') in self.category_list]
                 for i in indicators:  # add relevant fields of services
                     i.update({
                         'Region': region,
@@ -113,8 +118,7 @@ class Client:
                 raise Exception(f'Connection error in the API call to {INTEGRATION_NAME}.\n'
                                 f'Check your Server URL parameter.\n\n{err}')
             except requests.exceptions.HTTPError as err:
-                demisto.debug(str(err))
-                raise Exception(f'Connection error in the API call to {INTEGRATION_NAME}.\n')
+                demisto.debug(f'Got an error from {feed_url} while fetching indicators {(str(err))} ')
             except ValueError as err:
                 demisto.debug(str(err))
                 raise ValueError(f'Could not parse returned data to Json. \n\nError massage: {err}')
@@ -254,8 +258,9 @@ def main():
     """
     params = demisto.params()
     unique_id = str(uuid.uuid4())
-    regions_list = build_region_list(argToList(params.get('regions')))
+    regions_list = build_region_or_category_list(argToList(params.get('regions')), ALL_REGIONS_LIST)
     services_list = argToList(params.get('services'))
+    category_list = build_region_or_category_list(argToList(params.get('category', ['All'])), ALL_CATEGORY_LIST)
     urls_list = build_urls_dict(regions_list, services_list, unique_id)
     use_ssl = not params.get('insecure', False)
     tags = argToList(params.get('feedTags'))
@@ -265,7 +270,7 @@ def main():
     demisto.info(f'Command being called is {command}')
 
     try:
-        client = Client(urls_list, use_ssl, tags, tlp_color)
+        client = Client(urls_list, category_list, use_ssl, tags, tlp_color)
         commands: Dict[str, Callable[[Client, Dict[str, str]], Tuple[str, Dict[Any, Any], Dict[Any, Any]]]] = {
             'test-module': test_module,
             'office365-get-indicators': get_indicators_command

@@ -1,8 +1,8 @@
 # Instructions
 
-## Forescout Module Requirements
+## Forescout CounterACT Module Requirements
 Before you can use this integration in Cortex XSOAR, you need to enable certain modules in your Forescout environment.
-1. In the Forescout console, from the navigation bar select *Tools > Options*.
+1. In the Forescout CounterACT console, from the navigation bar select *Tools > Options*.
 2. In the dialog that appears, from the categories section on the left, click *Modules*. 
 3. In the main area of the dialog, from the drop-down menu, select *Open Integration Module*. 
 Make sure that the integration module and the following submodules are installed and enabled: *Data Exchange (DEX)* and *Web API* are all installed and enabled. If they aren't, install and enable them.
@@ -13,8 +13,8 @@ Make sure that the integration module and the following submodules are installed
 This is the network address of the Forescout Enterprise Manager or standalone Appliance. (The host on which the the Forescout Appliance is hosted.) For example, if the Forescout Appliance is hosted at the IP address *192.168.10.23*, then you enter *https://192.168.10.23*.
 
 **Web API Username** and **Password**  
-The credentials entered here should be those created in the Forescout console for the *Web API*.
-1. In the Forescout console, from the top navigation bar,  click *Tools > Options*. 
+The credentials entered here should be those created in the Forescout CounterACT console for the *Web API*.
+1. In the Forescout CounterACT console, from the top navigation bar,  click *Tools > Options*. 
 2. From the dialog that appears, in the categories section on the left, click *Web API*, and select *User Settings*.
 3. Create a username and password by clicking the *Add* button, and completing the fields. These are the credentials that you will enter when configuring the Cortex XSOAR-Forescout integration: *Web API Username* and *Password*. 
 4. Select *Client IPs* towards the top of the main area of the dialog, next to *User Settings*. 
@@ -22,14 +22,14 @@ The credentials entered here should be those created in the Forescout console fo
 5. Click the *Apply* button to save the changes you made.
 
 **Data Exchange (DEX) Username** and **Password**  
-The credentials entered here should be those created in the Forescout console for *Data Exchange (DEX)*.
-1. In the Forescout console, from the top navigation bar,  click *Tools > Options*.
+The credentials entered here should be those created in the Forescout CounterACT console for *Data Exchange (DEX)*.
+1. In the Forescout CounterACT console, from the top navigation bar,  click *Tools > Options*.
 2. From the dialog that appears, in the categories section on the left, click *Data Exchange (DEX)*. 
 3. Select *CounterACT Web Service > Accounts*. 
 4. Create a username and password by clicking the *Add* button, and completing the fields. **Note**: The value you entered for the *Name* field in the account-creation pop-up window is the value that you should enter for the *Data Exchange (DEX) Account* configuration parameter. 
 5. Click the *Apply* button to save the changes you made. 
 
-The username and password entered in the account-creation dialog are the credentials that you will enter when configuring the Cortex XSOAR-Forescout integration: *Data Exchange (DEX) Username* and *Password*.
+The username and password inserted in the account-creation dialog are the credentials that you will enter when configuring the Cortex XSOAR-Forescout integration: *Data Exchange (DEX) Username* and *Password*.
 
 **Data Exchange (DEX) Account**  
 The *Data Exchange (DEX)* credentials *Name* field. This can be found by navigating to *Tools > Options > Data Exchange (DEX) > CounterACT Web Service > Accounts*.

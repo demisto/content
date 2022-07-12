@@ -3,15 +3,18 @@ on:
   schedule:
     # runs every day at midnight (UTC time).
     - cron:  '0 0 * * *'
+permissions:
+  contents: read
+
 jobs:
   handle_contributor_stale_branches:
     runs-on: ubuntu-latest
     if: github.repository == 'demisto/content'
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: '3.9'
       - name: Install Python Dependencies
@@ -33,9 +36,9 @@ jobs:
     if: github.repository == 'demisto/content'
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: '3.9'
       - name: Install Python Dependencies

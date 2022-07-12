@@ -1,0 +1,144 @@
+{
+  "name": "xsoar-firewall",
+  "id": "/subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/azureFirewalls/xsoar-firewall",
+  "etag": "W/7f6bc42f-a4ba-4b83-b325-9a69ed66edc2R",
+  "type": "Microsoft.Network/azureFirewalls",
+  "location": "eastus",
+  "tags": {},
+  "properties": {
+    "provisioningState": "Succeeded",
+    "sku": {
+      "name": "AZFW_VNet",
+      "tier": "Standard"
+    },
+    "threatIntelMode": "Alert",
+    "additionalProperties": {},
+    "ipConfigurations": [
+      {
+        "name": "my-rules-public-ip",
+        "id": "/subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/azureFirewalls/xsoar-firewall/azureFirewallIpConfigurations/my-rules-public-ip",
+        "etag": "W/7f6bc42f-a4ba-4b83-b325-9a69ed66edc2",
+        "type": "Microsoft.Network/azureFirewalls/azureFirewallIpConfigurations",
+        "properties": {
+          "provisioningState": "Succeeded",
+          "privateIPAddress": "189.160.40.11",
+          "privateIPAllocationMethod": "Dynamic",
+          "publicIPAddress": {
+            "id": "/subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/publicIPAddresses/my-rules-public-ip"
+          },
+          "subnet": {
+            "id": "/subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/virtualNetworks/my-rules-v-n/subnets/AzureFirewallSubnet"
+          }
+        }
+      }
+    ],
+    "networkRuleCollections": [
+      {
+        "name": "my-network-rule-collection",
+        "id": "/subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/azureFirewalls/xsoar-firewall/networkRuleCollections/my-network-rule-collection",
+        "etag": "W/7f6bc42f-a4ba-4b83-b325-9a69ed66edc2",
+        "properties": {
+          "provisioningState": "Succeeded",
+          "priority": 201,
+          "action": {
+            "type": "Allow"
+          },
+          "rules": [
+            {
+              "name": "my-network-rule",
+              "protocols": [
+                "TCP",
+                "UDP"
+              ],
+              "sourceAddresses": [
+                "189.160.40.11"
+              ],
+              "destinationAddresses": [
+                "*"
+              ],
+              "sourceIpGroups": [],
+              "destinationIpGroups": [],
+              "destinationFqdns": [],
+              "destinationPorts": [
+                "8084"
+              ]
+            }
+          ]
+        },
+        "type": "Microsoft.Network/azureFirewalls/networkRuleCollections"
+      }
+    ],
+    "applicationRuleCollections": [
+      {
+        "name": "my-app-collection",
+        "id": "/subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/azureFirewalls/xsoar-firewall/applicationRuleCollections/my-app-collection",
+        "etag": "W/7f6bc42f-a4ba-4b83-b325-9a69ed66edc2",
+        "properties": {
+          "provisioningState": "Succeeded",
+          "priority": 201,
+          "action": {
+            "type": "Allow"
+          },
+          "rules": [
+            {
+              "name": "my-app-rule-1",
+              "priority": 0,
+              "direction": "Inbound",
+              "protocols": [
+                {
+                  "protocolType": "Http",
+                  "port": 80
+                }
+              ],
+              "fqdnTags": [],
+              "targetFqdns": [
+                "google.com"
+              ],
+              "actions": [],
+              "sourceAddresses": [
+                "*"
+              ],
+              "sourceIpGroups": []
+            }
+          ]
+        },
+        "type": "Microsoft.Network/azureFirewalls/applicationRuleCollections"
+      }
+    ],
+    "natRuleCollections": [
+      {
+        "name": "my-nat-collection",
+        "id": "/subscriptions/xsoar-subscription/resourceGroups/xsoar-resource-group/providers/Microsoft.Network/azureFirewalls/xsoar-firewall/natRuleCollections/my-nat-collection",
+        "etag": "W/7f6bc42f-a4ba-4b83-b325-9a69ed66edc2",
+        "properties": {
+          "provisioningState": "Succeeded",
+          "priority": 105,
+          "action": {
+            "type": "Dnat"
+          },
+          "rules": [
+            {
+              "name": "my-nat-rule-1",
+              "protocols": [
+                "TCP"
+              ],
+              "translatedAddress": "189.160.40.11",
+              "translatedPort": "8081",
+              "sourceAddresses": [
+                "189.160.40.11"
+              ],
+              "sourceIpGroups": [],
+              "destinationAddresses": [
+                "189.160.40.11"
+              ],
+              "destinationPorts": [
+                "8080"
+              ]
+            }
+          ]
+        },
+        "type": "Microsoft.Network/azureFirewalls/natRuleCollections"
+      }
+    ]
+  }
+}

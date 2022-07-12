@@ -18,3 +18,12 @@ ignore=RM106
 
 [file:playbook-PCAP_Parsing_And_Indicator_Enrichment_README.md]
 ignore=RM106
+
+[file:README.md]
+ignore=RM108
+
+[known_words]
+PcapExtractStreams
+pcap
+PcapFileExtractStreams
+PcapConvert

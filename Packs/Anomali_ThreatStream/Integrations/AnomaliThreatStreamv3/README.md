@@ -26,6 +26,21 @@ If you are upgrading from a previous version of this integration, see [Breaking 
     | Create relationships | Create relationships between indicators as part of enrichment. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+### Configure Indicator Threshold Parameters
+Each indicator has a threshold parameter and an integer `confidence` value that impacts the indicator's DBotScore calculation.  
+The indicator DBotScore is calculated as follows:  
+- If you do not specify the threshold parameter value in your instance configuration (recommended):  
+If the indicator `confidence` > 65, the DBotScore value is set to 3 (Malicious).  
+If the indicator `confidence` is between 25 and 65, the DBotScore value is set to 2 (Suspicious).  
+If the indicator `confidence` < 25, the DBotScore value is set to 1 (Good).  
+For example, 
+If the **IP threshold** value is not specified during configuration and the IP indicator `confidence` value is 45, the DBotScore value is set to 2 (Suspicious).  
+- If you configure the threshold parameter value:   
+If the indicator `confidence` value is above the threshold parameter value, the DBotScore is set to 3 (Malicious). Otherwise the DBotScore is set to 1 (Good).  
+**Note:** You cannot define a threshold that sets the DBotScore to 2 (Suspicious).  
+For example, if in the instance configuration you set **File threshold** to 10 and the `confidence` value  is 15, the DBotScore is set to 3 (Malicious).
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -68,6 +83,7 @@ Checks the reputation of the given IP address.
 | ThreatStream.IP.Status | String | The status assigned to the indicator. | 
 | ThreatStream.IP.Organization | String | The name of the business that owns the IP address associated with the indicator. | 
 | ThreatStream.IP.Source | String | The indicator source. | 
+| ThreatStream.IP.IType | String | The iType of the indicator associated with the specified model. | 
 | IP.Malicious.Vendor | String | The vendor that reported the indicator as malicious. | 
 | ThreatStream.IP.Tags | Unknown | Tags assigned to the IP. | 
 | IP.Tags | Unknown | List of IP Tags. | 
@@ -122,6 +138,7 @@ for time in UTC time. |
 | ThreatStream.Domain.Status | String | The status assigned to the indicator. | 
 | ThreatStream.Domain.Organization | String | The name of the business that owns the IP address associated with the indicator. | 
 | ThreatStream.Domain.Source | String | The indicator source. | 
+| ThreatStream.Domain.IType | String | The iType of the indicator associated with the specified model. | 
 | Domain.Malicious.Vendor | String | The vendor that reported the indicator as malicious. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Type | String | The indicator type. | 
@@ -193,7 +210,8 @@ for time in UTC time. |
             "Tags": [
                 "malware"
             ],
-            "Type": "domain"
+            "Type": "domain",
+            "IType": "spam_domain"
         }
     }
 }
@@ -249,6 +267,7 @@ Checks the reputation of the given hash of the file.
 for time in UTC time. | 
 | ThreatStream.File.Source | String | The indicator source. | 
 | ThreatStream.File.Tags | Unknown | Tags assigned to the file. | 
+| ThreatStream.File.IType | String | The iType of the indicator associated with the specified model. | 
 | File.Tags | Unknown | List of file tags. | 
 | File.ThreatTypes | Unknown | Threat types associated with the file. | 
 
@@ -289,7 +308,8 @@ for time in UTC time. |
             "Tags": [
                 "apt"
             ],
-            "Type": "SHA256"
+            "Type": "SHA256",
+            "IType": "apt_sha256"
         }
     }
 }
@@ -1319,6 +1339,7 @@ for time in UTC time. |
 | ThreatStream.URL.Source | String | The indicator source. | 
 | ThreatStream.URL.Severity | String | The indicator severity \("very-high", "high", "medium", or "low"\). | 
 | ThreatStream.URL.Tags | Unknown | Tags assigned to the URL. | 
+| ThreatStream.URL.IType | String | The iType of the indicator associated with the specified model. | 
 | URL.Tags | Unknown | List of URL tags. | 
 | URL.ThreatTypes | Unknown | Threat types associated with the url. | 
 

@@ -70,7 +70,6 @@ configuration:
   type: 19
 - display: Bypass exclusion list
   name: feedBypassExclusionList
-  defaultvalue: ""
   type: 8
   required: false
   additionalinfo: When selected, the exclusion list is ignored for indicators from
@@ -138,7 +137,7 @@ script:
     description: Gets the feed indicators.
     execution: false
     name: bambenek-get-indicators
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.4.30607
   feed: true
   isfetch: false
   longRunning: false

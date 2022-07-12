@@ -16,7 +16,7 @@ def parse_filter_field(filter_str):
     for f in filter_str.split(';'):
         match = regex.match(f)
         if match is None:
-            demisto.log('could not parse filter: %s' % (f,))
+            demisto.debug('could not parse filter: %s' % (f,))
             continue
 
         filters.append({
@@ -33,7 +33,7 @@ def parse_tag_field(tags_str):
     for f in tags_str.split(';'):
         match = regex.match(f)
         if match is None:
-            demisto.log('could not parse field: %s' % (f,))
+            demisto.debug('could not parse field: %s' % (f,))
             continue
 
         tags.append({
@@ -152,8 +152,8 @@ def describe_instances_command(args, aws_client):
             if 'KeyName' in instance:
                 data[i].update({'KeyName': instance['KeyName']})
 
-        instance.update({'Region': obj['_user_provided_options']['region_name']})
-        output.append(instance)
+            instance.update({'Region': obj['_user_provided_options']['region_name']})
+            output.append(instance)
 
     try:
         raw = json.loads(json.dumps(output, cls=DatetimeEncoder))
@@ -1544,7 +1544,7 @@ def authorize_security_group_ingress_command(args, aws_client):
         kwargs.update({'IpPermissions': IpPermissions})
 
     response = client.authorize_security_group_ingress(**kwargs)
-    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200 and response['Return']:
         demisto.results("The Security Group ingress rule was created")
 
 
@@ -1570,7 +1570,9 @@ def revoke_security_group_ingress_command(args, aws_client):
         kwargs.update({'SourceSecurityGroupName': args.get('sourceSecurityGroupName')})
 
     response = client.revoke_security_group_ingress(**kwargs)
-    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200 and response['Return']:
+        if 'UnknownIpPermissions' in response:
+            return_error("Security Group ingress rule not found.")
         demisto.results("The Security Group ingress rule was revoked")
 
 
@@ -1640,7 +1642,9 @@ def revoke_security_group_egress_command(args, aws_client):
         kwargs['IpPermissions'] = [IpPermissions_dict]
 
     response = client.revoke_security_group_egress(**kwargs)
-    if response['ResponseMetadata']['HTTPStatusCode'] == 200:
+    if response['ResponseMetadata']['HTTPStatusCode'] == 200 and response['Return']:
+        if 'UnknownIpPermissions' in response:
+            return_error("Security Group egress rule not found.")
         return_results("The Security Group egress rule was revoked")
     else:
         demisto.debug(response.message)
@@ -2330,7 +2334,7 @@ def describe_fleet_instances_command(args, aws_client):
         return
 
     for i, item in enumerate(response['ActiveInstances']):
-        demisto.log(str(item))
+        demisto.debug(str(item))
         data.append({
             'InstanceId': item['InstanceId'],
             'InstanceType': item['InstanceType'],

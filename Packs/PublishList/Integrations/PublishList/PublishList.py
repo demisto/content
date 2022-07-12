@@ -21,6 +21,7 @@ token_auth = APIKeyHeader(auto_error=False, name='Authorization')
 
 listsToPublish = [x.strip() for x in demisto.params().get('listsToPublish').split(',')]
 commaToLineBreak = demisto.params().get('commaToLineBreak')
+commentIfEmpty = demisto.params().get('add_comment_if_empty')
 
 
 def is_json(jstr):
@@ -82,6 +83,9 @@ async def handle_get(
 
     try:
         list_response = demisto.internalHttpRequest("GET", f"/lists/download/{xsoar_list}")
+        if len(list_response.get("body")) == 0 and commentIfEmpty:
+            return Response(content="# Empty list")
+
         # For normal lists (not json) that are essentially just a long comma separated list
         # this puts each entry on a new line
         if commaToLineBreak:

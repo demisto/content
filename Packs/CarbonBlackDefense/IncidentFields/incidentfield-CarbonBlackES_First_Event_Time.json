@@ -26,5 +26,8 @@
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "5.5.0"
+    "fromVersion": "5.5.0",
+    "marketplaces": [
+        "xsoar"
+    ]
 }

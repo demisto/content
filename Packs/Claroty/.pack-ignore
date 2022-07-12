@@ -6,3 +6,9 @@ ignore=RM104
 
 [file:classifier-mapper-incoming-Claroty.json]
 ignore=BA101
+
+[file:Claroty_image.png]
+ignore=IM111
+
+[file:classifier-Claroty.json]
+ignore=BA101

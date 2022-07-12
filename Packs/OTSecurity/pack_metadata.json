@@ -1,0 +1,20 @@
+{
+    "name": "OTSecurity",
+    "description": "An OT Security Automation Pack",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Ayman Mahmoud",
+    "url": "",
+    "email": "amahmoud@paloaltonetworks.com",
+    "categories": [
+        "Network Security"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

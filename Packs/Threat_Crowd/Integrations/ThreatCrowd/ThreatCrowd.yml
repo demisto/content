@@ -1,0 +1,136 @@
+commonfields:
+  id: Threat Crowd
+  version: -1
+name: Threat Crowd
+display: Threat Crowd (Deprecated)
+category: Data Enrichment & Threat Intelligence
+description: Deprecated. Use Threat Crowd v2 instead.
+defaultEnabled: false
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: server
+  defaultvalue: https://www.threatcrowd.org
+  type: 0
+  required: true
+- display: Version
+  name: version
+  defaultvalue: v2
+  type: 0
+  required: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: threat-crowd-email
+    arguments:
+    - name: email
+      required: true
+      default: true
+      description: Get a report of an email address.
+    outputs:
+    - contextPath: Account.Email.Address
+      description: The email address.
+    - contextPath: Account.Type
+      description: The type of the found email address.
+    - contextPath: Account.ThreatCrowd.Domains
+      description: The Threat Crowd domains linked to the account.
+    description: Get a report of an email address.
+  - name: threat-crowd-domain
+    arguments:
+    - name: domain
+      required: true
+      description: Get a report of a domain.
+    outputs:
+    - contextPath: Domain.Name
+      description: The domain name.
+    - contextPath: Domain.ThreatCrowd.Emails
+      description: The Threat Crowd emails.
+    - contextPath: Domain.ThreatCrowd.SubDomains
+      description: The Threat Crowd subdomains.
+    - contextPath: Domain.ThreatCrowd.References
+      description: The Threat Crowd references.
+    - contextPath: Domain.ThreatCrowd.Votes
+      description: The Threat Crowd vote results.
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+    - contextPath: DBotScore.Type
+      description: The type of the indicator.
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score of the domain.
+    - contextPath: DBotScore.Score
+      description: The score of the domain.
+    description: Get a report of a domain.
+  - name: threat-crowd-ip
+    arguments:
+    - name: ip
+      required: true
+      description: Get a report of an IP.
+    outputs:
+    - contextPath: IP.Address
+      description: The IP address.
+    - contextPath: IP.ThreatCrowd.Hashes
+      description: The Threat Crowd hashes.
+    - contextPath: IP.ThreatCrowd.References
+      description: The Threat Crowd references.
+    - contextPath: IP.ThreatCrowd.Resolutions
+      description: The Threat Crowd resolutions.
+    - contextPath: IP.ThreatCrowd.Votes
+      description: The vote results on Threat Crowd.
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+    - contextPath: DBotScore.Type
+      description: The type of the indicator.
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score of the IP.
+    - contextPath: DBotScore.Score
+      description: The score of the IP.
+    description: Get a report of an IP.
+  - name: threat-crowd-antivirus
+    arguments:
+    - name: antivirus
+      required: true
+      description: Get a report of an antivirus.
+    outputs:
+    - contextPath: ThreatCrowd.AntiVirus.Name
+      description: The name of the antivirus.
+    - contextPath: ThreatCrowd.AntiVirus.Hashes
+      description: The hashes of the antivirus.
+    - contextPath: ThreatCrowd.AntiVirus.References
+      description: The references of the antivirus.
+    description: Get a report of an antivirus.
+  - name: threat-crowd-file
+    arguments:
+    - name: file
+      required: true
+      description: Get a report of a hash.
+    outputs:
+    - contextPath: File.MD5
+      description: The MD5 hash of the of the file.
+    - contextPath: File.ThreatCrowd.IPs
+      description: The Threat Crowd IPs of the file.
+    - contextPath: File.ThreatCrowd.Domains
+      description: The Threat Crowd domains of the file.
+    - contextPath: File.ThreatCrowd.Resource
+      description: The Threat Crowd resources of the file.
+    - contextPath: File.ThreatCrowd.SHA1
+      description: The SHA1 hash of the of the file.
+    - contextPath: File.ThreatCrowd.References
+      description: The Threat Crowd references of the file.
+    - contextPath: File.ThreatCrowd.Scans
+      description: The Threat Crowd scans of the file.
+    description: Get a report of a file.
+hidden: false
+tests:
+- ThreatCrowd - Test
+fromversion: 5.0.0
+deprecated: true

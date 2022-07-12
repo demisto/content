@@ -44,5 +44,8 @@
     "unsearchable": false,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "5.5.0"
+    "fromVersion": "5.5.0",
+    "marketplaces": [
+       "xsoar"
+    ]
 }

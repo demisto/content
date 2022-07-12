@@ -10,6 +10,7 @@
 <strong>Name</strong>: a textual name for the integration instance.</li>
 <li><strong>Server URL (e.g. https://urlscan.io/api/v1/ )</strong></li>
 <li><strong>API Key (needed only for submitting URLs for scanning)</strong></li>
+<li><strong>Scan Visibility</strong>: Determines the visibility level of the scan. This will override the 'public submissions' setting.</li>
 <li><strong>Source Reliability.</strong> Reliability of the source providing the intelligence data. (The default value is C - Fairly reliable)</li>
 <li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy settings</strong></li>
@@ -46,6 +47,11 @@
 <td style="width: 145px;">searchParameter</td>
 <td style="width: 492px;">Enter a parameter to search as a string (IP, File name, sha256, url, domain)</td>
 <td style="width: 71px;">Required</td>
+</tr>
+<tr>
+<td style="width: 145px;">searchType</td>
+<td style="width: 492px;">Allows querying multiple search parameters</td>
+<td style="width: 71px;">Optional</td>
 </tr>
 </tbody>
 </table>
@@ -104,6 +110,7 @@
 <h5> </h5>
 <h5>Command Example</h5>
 <p><code>!urlscan-search searchParameter=8.8.8.8</code></p>
+<p><code>!urlscan-search searchType=advanced searchParameter="filename:logo.png AND date:>now-24h"</code></p>
 <h3 id="h_872696191351541575062805">2. (Deprecated) Submit a URL directly to urlscan.io</h3>
 <hr>
 <p>Submits a URL to urlscan.io.</p>
@@ -138,6 +145,11 @@
 <tr>
 <td style="width: 165px;">useragent</td>
 <td style="width: 446px;">User Agent used to perform scans</td>
+<td style="width: 97px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 165px;">scan_visibility</td>
+<td style="width: 446px;">The submission visibility. If specified, overrides the 'public' parameter</td>
 <td style="width: 97px;">Optional</td>
 </tr>
 </tbody>
@@ -261,6 +273,11 @@
 <td style="width: 166px;">useragent</td>
 <td style="width: 446px;">User Agent used to perform scans</td>
 <td style="width: 96px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 165px;">scan_visibility</td>
+<td style="width: 446px;">The submission visibility. If specified, overrides the 'public' parameter</td>
+<td style="width: 97px;">Optional</td>
 </tr>
 </tbody>
 </table>

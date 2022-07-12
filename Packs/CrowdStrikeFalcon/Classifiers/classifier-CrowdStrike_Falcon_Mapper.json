@@ -24,6 +24,9 @@
                 "Behaviour Tactic": {
                     "simple": "behaviors.tactic"
                 },
+                "Technique": {
+					"simple": "behaviors.technique"
+				},
                 "CMD line": {
                     "simple": "behaviors.cmdline"
                 },
@@ -136,6 +139,18 @@
                             }
                         ]
                     }
+                },
+				"dbotMirrorDirection": {
+					"simple": "mirror_direction"
+				},
+				"dbotMirrorId": {
+					"simple": "detection_id"
+				},
+				"dbotMirrorInstance": {
+					"simple": "mirror_instance"
+				},
+                "IncomingMirrorError": {
+                  "simple": "in_mirror_error"
                 }
             }
         },
@@ -193,12 +208,18 @@
                 "Start Time": {
                     "simple": "start"
                 },
+                "Source Status": {
+					"simple": "status"
+                },
                 "State": {
                     "simple": "state"
                 },
                 "Tactic": {
                     "simple": "tactics"
                 },
+                "Tags": {
+					"simple": "tags"
+				},
                 "Technique": {
                     "simple": "techniques"
                 },
@@ -225,35 +246,40 @@
                     }
                 },
                 "severity": {
-                    "complex": {
-                        "filters": [],
-                        "root": "fine_score",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "by": {
-                                        "value": {
-                                            "simple": "50"
-                                        }
-                                    }
-                                },
-                                "operator": "division"
-                            },
-                            {
-                                "args": {
-                                    "by": {
-                                        "value": {
-                                            "simple": "2"
-                                        }
-                                    }
-                                },
-                                "operator": "addition"
-                            },
-                            {
-                                "operator": "floor"
-                            }
-                        ]
-                    }
+					"complex": {
+						"filters": [],
+						"root": "fine_score",
+						"transformers": [
+							{
+								"args": {
+									"map_from": {
+										"value": {
+											"simple": "1-24,25-49,50-74,75-100"
+										}
+									},
+									"map_to": {
+										"value": {
+											"simple": "1,2,3,4"
+										}
+									},
+									"sep": {}
+								},
+								"operator": "MapRangeValues"
+							}
+						]
+					}
+				},
+                "dbotMirrorDirection": {
+					"simple": "mirror_direction"
+				},
+				"dbotMirrorId": {
+					"simple": "incident_id"
+				},
+				"dbotMirrorInstance": {
+					"simple": "mirror_instance"
+				},
+                "IncomingMirrorError": {
+                  "simple": "in_mirror_error"
                 }
             }
         },
@@ -278,5 +304,6 @@
     "name": "CrowdStrike Falcon Mapper",
     "type": "mapping-incoming",
     "version": -1,
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.0.0",
+    "toVersion": "6.4.9"
 }

@@ -1,0 +1,50 @@
+{
+    "name": "Cortex Attack Surface Management",
+    "description": "Content for working with Attack Surface Management (ASM).",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Threat Intelligence",
+        "Network",
+        "Security"
+    ],
+    "useCases": [
+        "Asset Management",
+        "Threat Intelligence Management",
+        "Vulnerability Management"
+    ],
+    "keywords": [
+        "Attack Surface Management",
+        "Cortex",
+        "ASM",
+        "Xpanse",
+        "Palo Alto Networks"
+    ],
+    "dependencies": {
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "Tenable_io": {
+            "mandatory": false,
+            "display_name": "Tenable.io"
+        },
+         "ServiceNow": {
+            "mandatory": false,
+            "display_name": "ServiceNow"
+        }
+    },
+    "marketplaces": [
+        "marketplacev2"
+    ]
+}

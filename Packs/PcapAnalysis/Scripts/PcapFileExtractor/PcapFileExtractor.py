@@ -41,7 +41,7 @@ class HashCalculator:
         Returns:
             A MD5 hash
         """
-        return cls._calculate_by_chunks(hashlib.md5(), file_path)
+        return cls._calculate_by_chunks(hashlib.md5(), file_path)   # nosec
 
     @classmethod
     def sha1(cls, file_path: str) -> str:
@@ -53,7 +53,7 @@ class HashCalculator:
         Returns:
             A SHA1 hash
         """
-        return cls._calculate_by_chunks(hashlib.sha1(), file_path)
+        return cls._calculate_by_chunks(hashlib.sha1(), file_path)  # nosec
 
     @classmethod
     def sha256(cls, file_path: str) -> str:

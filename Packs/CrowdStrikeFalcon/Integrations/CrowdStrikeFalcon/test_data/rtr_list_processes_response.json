@@ -1,0 +1,24 @@
+{
+  "meta": {
+    "query_time": 1.983392141,
+    "powered_by": "empower-api",
+    "trace_id": ""
+  },
+  "combined": {
+    "resources": {
+      "1": {
+        "session_id": "1",
+        "task_id": "e",
+        "complete": true,
+        "stdout": "example stdout",
+        "stderr": "",
+        "base_command": "netstat",
+        "aid": "1",
+        "errors": [],
+        "query_time": 1.982594034,
+        "offline_queued": false
+      }
+    }
+  },
+  "errors": []
+}

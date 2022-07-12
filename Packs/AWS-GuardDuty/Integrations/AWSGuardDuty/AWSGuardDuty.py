@@ -26,11 +26,11 @@ class DatetimeEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-def create_entry(title, data, ec):
+def create_entry(title, data, ec, raw_response=None):
     return {
         'ContentsFormat': formats['json'],
         'Type': entryTypes['note'],
-        'Contents': data,
+        'Contents': raw_response if raw_response else data,
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown(title, data) if data else 'No result were found',
         'EntryContext': ec
@@ -380,7 +380,7 @@ def get_findings(client, args):
         output = json.dumps(response['Findings'], cls=DatetimeEncoder)
         raw = json.loads(output)
         ec = {"AWS.GuardDuty.Findings(val.FindingId === obj.Id)": raw}
-        return create_entry('AWS GuardDuty Findings', data, ec)
+        return create_entry('AWS GuardDuty Findings', data, ec, raw)
 
     except Exception as e:
         return raise_error(e)

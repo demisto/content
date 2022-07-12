@@ -8,7 +8,7 @@ ignore=BA101
 ignore=BA101
 
 [file:Cymulate_v2.yml]
-ignore=BA108,BA109,IN145
+ignore=BA108,BA109,IN145,IN124
 
 [file:classifier-mapper-incoming-Cymulate.json]
 ignore=BA101
@@ -18,3 +18,16 @@ ignore=BA101
 
 [file:incidentfield-Cymulate_Cymulate_Test_Case.json]
 ignore=IF100
+
+
+[file:Cymulate_image.png]
+ignore=IM111
+
+[file:Cymulate_v2_image.png]
+ignore=IM111
+
+[file:classifier-Cymulate.json]
+ignore=BA101
+
+[file:classifier-Cymulate_v2.json]
+ignore=BA101

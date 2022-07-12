@@ -4,7 +4,7 @@ contentitemexportablefields:
   contentitemfields: {}
 name: Extract Indicators From File - Generic v2
 description: |-
-  Extracts indicators from a file.
+  This playbook extracts indicators from a file.
   Supported file types:
   - CSV
   - PDF
@@ -99,7 +99,7 @@ tasks:
       id: 5ba31bc7-84ab-4d1b-8c1a-501b04cfe9c6
       version: -1
       name: Set file to local context
-      description: Set the input file into local context.
+      description: Sets the input file into local context.
       scriptName: Set
       type: regular
       iscommand: false
@@ -148,7 +148,7 @@ tasks:
       {
         "position": {
           "x": 510,
-          "y": 2080
+          "y": 2340
         }
       }
     note: false
@@ -320,6 +320,14 @@ tasks:
                     right:
                       value:
                         simple: message/rfc822
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: File.Info
+                      iscontext: true
+                    right:
+                      value:
+                        simple: p7m
                 accessor: EntryID
                 transformers:
                 - operator: uniq
@@ -353,7 +361,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "19"
     scriptarguments:
       entryID:
         complex:
@@ -785,7 +793,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "3"
+      - "19"
     separatecontext: false
     view: |-
       {
@@ -816,7 +824,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "19"
     scriptarguments:
       entryID:
         complex:
@@ -957,7 +965,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "3"
+      - "19"
       "yes":
       - "14"
     separatecontext: false
@@ -1031,14 +1039,14 @@ tasks:
       id: 92e92794-63db-4875-88c3-89bd5a4ec179
       version: -1
       name: Is Image OCR enabled?
-      description: Checks whether there is an active instance of the Image OCR integration
+      description: Checks whether there is an active instance of the Image OCR integration.
         enabled.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "3"
+      - "19"
       "yes":
       - "12"
     separatecontext: false
@@ -1090,7 +1098,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "19"
     scriptarguments:
       entryid:
         complex:
@@ -1447,7 +1455,7 @@ tasks:
       id: 68c81da0-f91d-4ea4-8616-82a0e333eb6f
       version: -1
       name: Preview PDF files
-      description: Get a preview (image) of the PDF files.
+      description: Gets a preview (image) of the PDF files.
       tags:
       - PDF_Images
       script: '|||rasterize-pdf'
@@ -1508,7 +1516,7 @@ tasks:
       id: d3466327-cfe5-4364-8b19-187f67320432
       version: -1
       name: Is Rasterize enabled?
-      description: Check if Rasterize integration is enabled
+      description: Checks if the Rasterize integration is enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -1562,13 +1570,52 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 78c502fd-f7dd-4fa5-8cac-14a11bf176f7
+    type: regular
+    task:
+      id: 78c502fd-f7dd-4fa5-8cac-14a11bf176f7
+      version: -1
+      name: Set ExtractedURLsFromFiles
+      description: |-
+        Extracts URLs from files and stores them under the "ExtractedURLsFromFiles" key in the playbook output.
+        Parent playbooks can use this key to indicate which URLs were extracted.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      key:
+        simple: ExtractedURLsFromFiles
+      value:
+        complex:
+          root: URL
+          accessor: Data
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
       "12_14_yes": 0.55,
-      "12_3_#default#": 0.14,
       "13_12_yes": 0.55,
-      "13_3_#default#": 0.19,
       "15_10_#default#": 0.1,
       "15_16_yes": 0.38,
       "18_13_#default#": 0.41,
@@ -1583,7 +1630,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2155,
+        "height": 2415,
         "width": 2180,
         "x": -320,
         "y": -10
@@ -1596,44 +1643,65 @@ inputs:
     complex:
       root: File
   required: false
-  description: The file from which to extract indicators.
+  description: The file to extract indicators from.
   playbookInputQuery:
 outputs:
 - contextPath: Domain.Name
-  description: Extracted domains.
+  description: The extracted domains.
+  type: string
 - contextPath: Account.Email.Address
-  description: Extracted emails addresses.
+  description: The extracted email addresses.
+  type: string
 - contextPath: File.MD5
-  description: Extracted MD5 hash.
+  description: The extracted MD5 hash.
+  type: string
 - contextPath: File.SHA1
-  description: Extracted SHA1 hash.
+  description: The extracted SHA1 hash.
+  type: string
 - contextPath: File.SHA256
-  description: Extracted SHA256 hash.
+  description: The extracted SHA256 hash.
+  type: string
 - contextPath: IP.Address
-  description: Extracted IP addresses.
+  description: The extracted IP addresses.
+  type: string
 - contextPath: File.Text
   description: The text or images extracted from the PDF file.
+  type: string
 - contextPath: File.Producer
   description: The PDF file producer.
+  type: string
 - contextPath: File.Title
   description: The title of the PDF file.
+  type: string
 - contextPath: File.xap
-  description: The xap of the PDF file.
+  description: The XAP of the PDF file.
+  type: string
 - contextPath: File.Author
   description: The author of the file.
+  type: string
 - contextPath: File.dc
-  description: The dc of the file.
+  description: The DC of the file.
+  type: string
 - contextPath: File.xapmm
-  description: The xapmm of the file.
+  description: The XAPMM of the file.
+  type: string
 - contextPath: File.ModDate
-  description: The ModDate of the file.
+  description: The mod date of the file.
+  type: string
 - contextPath: File.CreationDate
-  description: The CreationDate of the file.
+  description: The creation date of the file.
+  type: string
 - contextPath: File.Pages
-  description: Number of pages in file.
+  description: The number of pages in the file.
+  type: string
 - contextPath: URL.Data
-  description: List of URLs that were extracted from the file.
-  type: unknown
+  description: The list of URLs that were extracted from the file.
+  type: string
+- contextPath: ExtractedURLsFromFiles
+  description: The list of URLs that were extracted from the file. This output is a
+    duplicate of the URL.Data output and it enables parent playbooks to identify
+    the URLs generated by this playbook.
+  type: String
 tests:
 - Field polling test
 - test-domain-indicator

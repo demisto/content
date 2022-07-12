@@ -28,7 +28,7 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- additionalinfo: The time range to consider for the initial data fetch. If timeout errors occur consider changing this value.
+- additionalinfo: The time range for the initial data fetch. If timeout errors occur, consider changing this value.
   defaultvalue: 12 hours
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   hidden: false
@@ -41,8 +41,8 @@ configuration:
   required: false
   type: 0
 - defaultvalue: '6 hours'
-  additionalinfo: The time range between create_after and created_before that is sent to the api when fetching
-    older incidents. If timeout errors occur consider changing this value.
+  additionalinfo: The time range between create_after and created_before that is sent to the API when fetching
+    older incidents. If timeout errors occur, consider changing this value.
   display: Fetch delta - The delta time in each batch. e.g. 1 hour, 3 minutes.
   name: fetch_delta
   required: false
@@ -78,7 +78,7 @@ script:
   commands:
   - arguments:
     - default: false
-      description: ID of the list.
+      description: The ID of the list.
       isArray: false
       name: list-id
       required: true
@@ -107,7 +107,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Expiration of the  member.
+      description: The member expiration.
       isArray: false
       name: expiration
       required: false
@@ -124,7 +124,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'Date and time when the supplied IP addresses should be removed from the block list, in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z'
+      description: 'The date and time the supplied IP addresses should be removed from the block list, in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z'
       isArray: false
       name: expiration
       required: false
@@ -147,7 +147,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'Date and time when the supplied IP addresses should be removed from the block list, in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z'
+      description: 'The date and time the supplied IP addresses should be removed from the block list, in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z'
       isArray: false
       name: expiration
       required: false
@@ -181,7 +181,7 @@ script:
     name: proofpoint-tr-search-indicator
   - arguments:
     - default: false
-      description: ID of the list from which to delete indicators.
+      description: The ID of the list from which to delete indicators.
       isArray: false
       name: list-id
       required: true
@@ -204,7 +204,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'Date and time when the supplied URLs should be removed from the block list, in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z'
+      description: 'The date and time the supplied URLs should be removed from the block list, in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z'
       isArray: false
       name: expiration
       required: false
@@ -227,7 +227,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'Date and time when the supplied file hashes should be removed from the block list, in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z'
+      description: 'The date and time the supplied file hashes should be removed from the block list, in the format YYYY-MM-DDTHH:MM:SSZ. For example: 2020-02-02T19:00:00Z'
       isArray: false
       name: expiration
       required: false
@@ -245,7 +245,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: State of the incidents to retrieve.
+      description: The state of the incidents to retrieve.
       isArray: false
       name: state
       predefined:
@@ -294,7 +294,7 @@ script:
       secret: false
     - default: false
       defaultValue: '50'
-      description: The maximum number of incidents to return. The default value is 50.
+      description: The maximum number of incidents to return.
       isArray: false
       name: limit
       required: true
@@ -311,16 +311,16 @@ script:
       description: The summary of the incident.
       type: String
     - contextPath: ProofPointTRAP.Incident.score
-      description: The score of the incident from ProofPoint.
+      description: The score of the incident from Proofpoint.
       type: Number
     - contextPath: ProofPointTRAP.Incident.state
       description: The state of the incident. Can be - Open, Closed, New, Assigned, Ignored.
       type: String
     - contextPath: ProofPointTRAP.Incident.created_at
-      description: The date that the incident was created.
+      description: The date the incident was created.
       type: Date
     - contextPath: ProofPointTRAP.Incident.updated_at
-      description: The date that the incident was last updated.
+      description: The date the incident was last updated.
       type: Date
     - contextPath: ProofPointTRAP.Incident.event_count
       description: The number of events attached to the incident.
@@ -425,7 +425,7 @@ script:
       description: The recipient email address.
       type: String
     - contextPath: ProofPointTRAP.Incident.quarantine_results.messageId
-      description: The message ID
+      description: The message ID.
       type: String
     - contextPath: ProofPointTRAP.Incident.quarantine_results.isRead
       description: Whether the message has been read.
@@ -489,16 +489,16 @@ script:
       description: The summary of the incident.
       type: String
     - contextPath: ProofPointTRAP.Incident.score
-      description: The score of the incident from ProofPoint.
+      description: The score of the incident from Proofpoint.
       type: Number
     - contextPath: ProofPointTRAP.Incident.state
       description: The state of the incident. Can be - Open, Closed, New, Assigned, Ignored.
       type: String
     - contextPath: ProofPointTRAP.Incident.created_at
-      description: The date that the incident was created.
+      description: The date the incident was created.
       type: Date
     - contextPath: ProofPointTRAP.Incident.updated_at
-      description: The date that the incident was last updated.
+      description: The date the incident was last updated.
       type: Date
     - contextPath: ProofPointTRAP.Incident.event_count
       description: The number of events attached to the incident.
@@ -555,7 +555,7 @@ script:
       description: The attack direction of the event
       type: String
     - contextPath: ProofPointTRAP.Incident.events.received
-      description: The date that the incident was received.
+      description: The date the incident was received.
       type: Date
     - contextPath: ProofPointTRAP.Incident.events.emails.sender
       description: The sender of the email.
@@ -567,7 +567,7 @@ script:
       description: The message ID of the email.
       type: String
     - contextPath: ProofPointTRAP.Incident.events.emails.message_delivery_time
-      description: The time that the message was delivered.
+      description: The time the message was delivered.
       type: Number
     - contextPath: ProofPointTRAP.Incident.events.attackers.location
       description: The location of the attacker.
@@ -690,10 +690,10 @@ script:
       description: The details of the comment.
       type: String
     - contextPath: ProofPointTRAP.IncidentComment.created_at
-      description: The date that the incident was created.
+      description: The date the incident was created.
       type: Date
     - contextPath: ProofPointTRAP.IncidentComment.updated_at
-      description: The date that the incident was last udpated.
+      description: The date the incident was last updated.
       type: Date
   - arguments:
     - default: false
@@ -719,6 +719,15 @@ script:
     execution: false
     name: proofpoint-tr-add-user-to-incident
   - arguments:
+    - description: The incident ID to close.
+      name: incident_id
+    - description: The incident closure details.
+      name: details
+    - description: The incident closure summary.
+      name: summary
+    description: Close a specified incident
+    name: proofpoint-tr-close-incident
+  - arguments:
     - default: false
       description: POST URL of the JSON alert source. You can find it by navigating to Sources -> JSON event source -> POST URL.
       isArray: false
@@ -728,7 +737,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: '2.0'
-      description: The Threat Response JSON version. Default is :"2.0".
+      description: The Threat Response JSON version.
       isArray: false
       name: json_version
       predefined:
@@ -737,7 +746,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'An attacker object in a json format : "{"attacker" : {...}}". The attacker object must contain one of ["ip_address", mac_address", "host_name", "url", "user"] keys. You can also add the "port" key to the object. For more information, please see Proofpoint TRAP documentation under "JSON Alert Source 2.0".'
+      description: 'An attacker object in JSON format : "{"attacker" : {...}}". The attacker object must contain one of ["ip_address", mac_address", "host_name", "url", "user"] keys. You can also add the "port" key to the object. For more information, see Proofpoint TRAP documentation under "JSON Alert Source 2.0".'
       isArray: false
       name: attacker
       required: false
@@ -764,25 +773,25 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The Command and Control host information in a JSON format : "{"cnc_hosts": [{"host" : "-", "port": "-"}, ...]}". Note: Every item of the "cnc_hosts" list is in JSON format. For more information, please see Proofpoint TRAP documentation under "JSON Alert Source 2.0".'
+      description: 'The Command and Control host information in JSON format : "{"cnc_hosts": [{"host" : "-", "port": "-"}, ...]}". Note: Every item of the "cnc_hosts" list is in JSON format. For more information, see Proofpoint TRAP documentation under "JSON Alert Source 2.0".'
       isArray: false
       name: cnc_hosts
       required: false
       secret: false
     - default: false
-      description: 'The threat detection tool such as Firewall and IPS/IDS systems (in the format: "{"detector" : {...}}"), which generated the original alert. To see all relevant JSON fields and for more information, please see Proofpoint TRAP documentation under "JSON Alert Source 2.0".'
+      description: 'The threat detection tool such as Firewall and IPS/IDS systems (in the format: "{"detector" : {...}}"), which generated the original alert. To see all relevant JSON fields and for more information, see Proofpoint TRAP documentation under "JSON Alert Source 2.0".'
       isArray: false
       name: detector
       required: false
       secret: false
     - default: false
-      description: 'The email metadata related to the alert, in a JSON format: "{"email": {...}}". To see all relevant JSON fields and for more information, please see Proofpoint TRAP documentation under "JSON Alert Source 2.0".'
+      description: 'The email metadata related to the alert, in JSON format: "{"email": {...}}". To see all relevant JSON fields and for more information, see Proofpoint TRAP documentation under "JSON Alert Source 2.0".'
       isArray: false
       name: email
       required: false
       secret: false
     - default: false
-      description: 'The forensics host information in a JSON format : "{"forensics_hosts": [{"host" : "-", "port": "-"}...]}". Note: Every item of the "forensics_hosts" list is in JSON format. For more information, please see Proofpoint TRAP documentation under "JSON Alert Source 2.0".'
+      description: 'The forensics host information in JSON format : "{"forensics_hosts": [{"host" : "-", "port": "-"}...]}". Note: Every item of the "forensics_hosts" list is in JSON format. For more information, see Proofpoint TRAP documentation under "JSON Alert Source 2.0".'
       isArray: false
       name: forensics_hosts
       required: false
@@ -836,19 +845,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The target host information in the JSON format : "{"target": {...}}". To see all relevant JSON fields and for more information, please see Proofpoint TRAP documentation under "JSON Alert Source 2.0".'
+      description: 'The target host information in JSON format : "{"target": {...}}". To see all relevant JSON fields and for more information, see Proofpoint TRAP documentation under "JSON Alert Source 2.0".'
       isArray: false
       name: target
       required: false
       secret: false
     - default: false
-      description: 'The threat information in a JSON format: "{"threat_info": {...}}". To see all relevant JSON fields and for more information, please see Proofpoint TRAP documentation under "JSON Alert Source 2.0".'
+      description: 'The threat information in JSON format: "{"threat_info": {...}}". To see all relevant JSON fields and for more information, see Proofpoint TRAP documentation under "JSON Alert Source 2.0".'
       isArray: false
       name: threat_info
       required: false
       secret: false
     - default: false
-      description: 'A JSON object for collecting custom name-value pairs as part of the JSON alert sent to Threat Response, in the format: "{"custom_fields": {..}}". Although there is no limit to the number of custom fields, Proofpoint recommends keeping it to 10 or fewer fields. To see all relevant JSON fields and for more information, please see Proofpoint TRAP documentation under "JSON Alert Source 2.0".'
+      description: 'A JSON object for collecting custom name-value pairs as part of the JSON alert sent to Threat Response, in the format: "{"custom_fields": {..}}". Although there is no limit to the number of custom fields, Proofpoint recommends keeping it to 10 or fewer fields. To see all relevant JSON fields and for more information, see Proofpoint TRAP documentation under "JSON Alert Source 2.0".'
       isArray: false
       name: custom_fields
       required: false
@@ -857,6 +866,28 @@ script:
     description: Ingest an alert into Threat Response.
     execution: false
     name: proofpoint-tr-ingest-alert
+  - arguments:
+      - description: The message ID of the email.
+        name: message_id
+        isArray: false
+        required: true
+        secret: false
+      - description: The recipient of the email.
+        name: recipient
+        isArray: false
+        required: true
+        secret: false
+      - description: The reception time of the email.
+        name: time
+        isArray: false
+        required: true
+        secret: false
+    outputs:
+      - contextPath: ProofPointTRAP.Quarantine
+        description: Results of the email quarantine operation.
+        type: String
+    description: Verify if an email has been quarantined.
+    name: proofpoint-tr-verify-quarantine
   feed: false
   isfetch: true
   longRunning: false
@@ -865,7 +896,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.9.7.24076
+  dockerimage: demisto/python3:3.10.4.30607
 tests:
 - No test - beta_integration
 beta: true

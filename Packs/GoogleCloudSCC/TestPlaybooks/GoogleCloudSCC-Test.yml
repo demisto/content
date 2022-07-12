@@ -7,10 +7,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 461475f6-e692-4729-877c-91cda6cb6ca0
+    taskid: bd8f3222-e0dc-461e-8813-0faa51d13238
     type: start
     task:
-      id: 461475f6-e692-4729-877c-91cda6cb6ca0
+      id: bd8f3222-e0dc-461e-8813-0faa51d13238
       version: -1
       name: ""
       iscommand: false
@@ -34,10 +34,10 @@ tasks:
     quietmode: 0
   "1":
     id: "1"
-    taskid: 23d8bf56-4148-4b40-8318-70712d7f0c61
+    taskid: 140a0e21-5236-4eb9-898c-a28680713d06
     type: regular
     task:
-      id: 23d8bf56-4148-4b40-8318-70712d7f0c61
+      id: 140a0e21-5236-4eb9-898c-a28680713d06
       version: -1
       name: DeleteContext
       script: DeleteContext
@@ -65,10 +65,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: b157efd8-6da3-4a27-8197-e80e1a3b74fe
+    taskid: 374ac656-a94a-4228-8ffc-570d4243ce21
     type: regular
     task:
-      id: b157efd8-6da3-4a27-8197-e80e1a3b74fe
+      id: 374ac656-a94a-4228-8ffc-570d4243ce21
       version: -1
       name: google-cloud-scc-asset-list
       script: '|||google-cloud-scc-asset-list'
@@ -79,17 +79,8 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      activeAssetsOnly: {}
-      compareDuration: {}
-      fieldMask: {}
-      filter: {}
-      orderBy: {}
       pageSize:
         simple: "1"
-      pageToken: {}
-      project: {}
-      readTime: {}
-      resourceType: {}
     separatecontext: false
     view: |-
       {
@@ -105,10 +96,10 @@ tasks:
     quietmode: 0
   "3":
     id: "3"
-    taskid: 5d0e7077-8ed4-4a18-8179-9d09440c8759
+    taskid: 00e4aac7-25c7-424a-84aa-abe0bbfe4f1d
     type: condition
     task:
-      id: 5d0e7077-8ed4-4a18-8179-9d09440c8759
+      id: 00e4aac7-25c7-424a-84aa-abe0bbfe4f1d
       version: -1
       name: Verify Outputs
       type: condition
@@ -195,10 +186,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: ed74e264-c360-4034-8704-5c967236e566
+    taskid: 38f65c3f-7335-4945-846b-b67b2c0b9019
     type: regular
     task:
-      id: ed74e264-c360-4034-8704-5c967236e566
+      id: 38f65c3f-7335-4945-846b-b67b2c0b9019
       version: -1
       name: google-cloud-scc-finding-list
       script: '|||google-cloud-scc-finding-list'
@@ -209,19 +200,8 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      category: {}
-      compareDuration: {}
-      fieldMask: {}
-      filter: {}
-      orderBy: {}
       pageSize:
         simple: "2"
-      pageToken: {}
-      readTime: {}
-      severity: {}
-      sourceType: {}
-      sourceTypeId: {}
-      status: {}
     separatecontext: false
     view: |-
       {
@@ -237,10 +217,10 @@ tasks:
     quietmode: 0
   "5":
     id: "5"
-    taskid: b15e5822-8c67-4818-8089-2337e95c7492
+    taskid: 00197b35-381c-4c8b-8604-da257c40058f
     type: condition
     task:
-      id: b15e5822-8c67-4818-8089-2337e95c7492
+      id: 00197b35-381c-4c8b-8604-da257c40058f
       version: -1
       name: Verify Outputs
       type: condition
@@ -281,11 +261,6 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: GoogleCloudSCC.Finding.externalUri
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
               simple: GoogleCloudSCC.Finding.createTime
             iscontext: true
       - - operator: isNotEmpty
@@ -297,16 +272,6 @@ tasks:
           left:
             value:
               simple: GoogleCloudSCC.Finding.resource.name
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: GoogleCloudSCC.Finding.resource.parentDisplayName
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: GoogleCloudSCC.Finding.resource.parentName
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -347,10 +312,10 @@ tasks:
     quietmode: 0
   "8":
     id: "8"
-    taskid: 9bebf0d3-740b-4b89-88fd-f9be76fba493
+    taskid: 1b56c21c-9a23-4232-8ae1-3cd1b7c8bc9b
     type: regular
     task:
-      id: 9bebf0d3-740b-4b89-88fd-f9be76fba493
+      id: 1b56c21c-9a23-4232-8ae1-3cd1b7c8bc9b
       version: -1
       name: google-cloud-scc-finding-update
       script: '|||google-cloud-scc-finding-update'
@@ -361,14 +326,8 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
-      eventTime: {}
-      externalUri: {}
       name:
         simple: ${GoogleCloudSCC.Finding.name}
-      severity: {}
-      sourceProperties: {}
-      state: {}
-      updateMask: {}
     separatecontext: false
     view: |-
       {
@@ -384,10 +343,10 @@ tasks:
     quietmode: 0
   "9":
     id: "9"
-    taskid: f172f436-debf-4b47-846f-ba3c7de5c696
+    taskid: 085c7ea1-0c8e-4c4b-80dc-6b80b3c6d1b1
     type: condition
     task:
-      id: f172f436-debf-4b47-846f-ba3c7de5c696
+      id: 085c7ea1-0c8e-4c4b-80dc-6b80b3c6d1b1
       version: -1
       name: Verify Outputs
       type: condition
@@ -395,7 +354,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "11"
+      - "14"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -424,11 +383,6 @@ tasks:
           left:
             value:
               simple: GoogleCloudSCC.Finding.category
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: GoogleCloudSCC.Finding.externalUri
             iscontext: true
       - - operator: isNotEmpty
           left:
@@ -464,10 +418,10 @@ tasks:
     quietmode: 0
   "10":
     id: "10"
-    taskid: 6216b8bb-dc5c-4a07-8a9c-da9c03290469
+    taskid: 350a85ee-c016-4523-82b2-bd6237d2b253
     type: title
     task:
-      id: 6216b8bb-dc5c-4a07-8a9c-da9c03290469
+      id: 350a85ee-c016-4523-82b2-bd6237d2b253
       version: -1
       name: Test Done
       type: title
@@ -479,7 +433,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 2470
         }
       }
     note: false
@@ -489,10 +443,10 @@ tasks:
     quietmode: 0
   "11":
     id: "11"
-    taskid: fbc4c3f0-2034-45a2-88f2-9603530caddf
+    taskid: 3073aac5-53f4-4899-82bb-2e3e01e73c9b
     type: regular
     task:
-      id: fbc4c3f0-2034-45a2-88f2-9603530caddf
+      id: 3073aac5-53f4-4899-82bb-2e3e01e73c9b
       version: -1
       name: google-cloud-scc-asset-resource-list
       description: Lists cloud asset's resources.
@@ -504,18 +458,14 @@ tasks:
       '#none#':
       - "12"
     scriptarguments:
-      assetTypes: {}
       pageSize:
         simple: "2"
-      pageToken: {}
-      parent: {}
-      readTime: {}
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1770
         }
       }
     note: false
@@ -525,10 +475,10 @@ tasks:
     quietmode: 0
   "12":
     id: "12"
-    taskid: d05f3caf-c6d3-4cd4-831b-f5b51221fa06
+    taskid: 61e347b2-beeb-4422-8c3c-130e2de1affd
     type: condition
     task:
-      id: d05f3caf-c6d3-4cd4-831b-f5b51221fa06
+      id: 61e347b2-beeb-4422-8c3c-130e2de1affd
       version: -1
       name: Verify Outputs
       type: condition
@@ -580,7 +530,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1945
         }
       }
     note: false
@@ -590,10 +540,10 @@ tasks:
     quietmode: 0
   "13":
     id: "13"
-    taskid: 023dea3b-b84b-4969-86d2-2f8215d0b12c
+    taskid: 7f893690-df00-4e2b-86cf-a0cbe0fe7168
     type: regular
     task:
-      id: 023dea3b-b84b-4969-86d2-2f8215d0b12c
+      id: 7f893690-df00-4e2b-86cf-a0cbe0fe7168
       version: -1
       name: google-cloud-scc-asset-owner-get
       description: Gets the owner information for the provided projects.
@@ -603,9 +553,8 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "10"
+      - "16"
     scriptarguments:
-      maxIteration: {}
       projectName:
         simple: projects/123456789
     separatecontext: false
@@ -613,7 +562,151 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 8e20fbce-e396-403c-8d6d-ca50163686c6
+    type: regular
+    task:
+      id: 8e20fbce-e396-403c-8d6d-ca50163686c6
+      version: -1
+      name: google-cloud-scc-finding-state-update
+      description: Update the state of organization's or source's finding.
+      script: '|||google-cloud-scc-finding-state-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      name:
+        complex:
+          root: GoogleCloudSCC.Finding
+          accessor: name
+      state:
+        complex:
+          root: GoogleCloudSCC.Finding
+          accessor: state
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: e66a7813-8997-40e2-8766-33251c8e2973
+    type: condition
+    task:
+      id: e66a7813-8997-40e2-8766-33251c8e2973
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudSCC.Finding.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudSCC.Finding.parent
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudSCC.Finding.resourceName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudSCC.Finding.state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudSCC.Finding.category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudSCC.Finding.createTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudSCC.Finding.eventTime
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudSCC.Finding.sourceProperties
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GoogleCloudSCC.Finding.securityMarks.name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: c22e9269-25ae-457c-8dff-bb477694ae80
+    type: regular
+    task:
+      id: c22e9269-25ae-457c-8dff-bb477694ae80
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
         }
       }
     note: false
@@ -626,7 +719,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1960,
+        "height": 2485,
         "width": 380,
         "x": 50,
         "y": 50

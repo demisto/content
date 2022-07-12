@@ -15,14 +15,12 @@ configuration:
   name: client_id
   required: true
   type: 0
-- defaultvalue: ""
-  display: Trust any certificate (not secure)
+- display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
   required: false
   type: 8
 - defaultvalue: 3 days
@@ -615,7 +613,7 @@ script:
     execution: false
     name: cherwell-run-one-step-action-on-business-object
     outputs: []
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.4.31492
   isfetch: true
   runonce: false
   script: '-'

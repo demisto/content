@@ -2,7 +2,7 @@
     "name": "Opsgenie v2",
     "description": "Create and read alerts, schedules and on-call information from OpsGenie.",
     "support": "community",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.4",
     "author": "Adam Baumeister",
     "url": "",
     "email": "",
@@ -12,5 +12,9 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

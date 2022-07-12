@@ -1025,3 +1025,5 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 5.5.0
+marketplaces:
+  - xsoar

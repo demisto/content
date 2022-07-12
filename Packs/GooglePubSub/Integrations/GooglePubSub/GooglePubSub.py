@@ -746,7 +746,7 @@ def get_publish_body(message_attributes, message_data):
     message = {}
     if message_data:
         # convert to base64 string
-        message["data"] = str(base64.b64encode(message_data.encode("utf8")))[2:-1]
+        message["data"] = base64.b64encode(message_data.encode("utf8")).decode('utf8')
     if message_attributes:
         message["attributes"] = attribute_pairs_to_dict(message_attributes)
     body = {"messages": [message]}
@@ -832,7 +832,7 @@ def extract_acks_and_msgs(raw_msgs, add_ack_to_msg=True):
             msg = raw_msg.get("message", {})
             decoded_data = str(msg.get("data", ""))
             try:
-                decoded_data = str(base64.b64decode(decoded_data))[2:-1]
+                decoded_data = base64.b64decode(decoded_data).decode("utf-8")
             except Exception:
                 # display message with b64 value
                 pass
@@ -1493,6 +1493,7 @@ def handle_fetch_results(
         last_run_time_dt = dateparser.parse(
             max_publish_time if max_publish_time else last_run_time
         )
+        assert last_run_time_dt is not None
         last_run_time = convert_datetime_to_iso_str(
             last_run_time_dt + timedelta(microseconds=1)
         )

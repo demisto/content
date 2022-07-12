@@ -2044,7 +2044,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Endpoint.agent_status
+                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_status
                 iscontext: true
               right:
                 value:
@@ -2052,11 +2052,11 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Endpoint.agent_type
+                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_type
                 iscontext: true
               right:
                 value:
-                  simple: Workstation
+                  simple: AGENT_TYPE_WORKSTATION
           accessor: endpoint_id
       windows_file_paths:
         simple: C:\Users\demisto\Desktop\demisto.txt
@@ -2214,7 +2214,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Endpoint.host_name
+                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_name
                 iscontext: true
               right:
                 value:
@@ -2439,7 +2439,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Endpoint.host_name
+                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_name
                 iscontext: true
               right:
                 value:
@@ -2488,7 +2488,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Endpoint.host_name
+                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_name
                 iscontext: true
               right:
                 value:
@@ -2536,7 +2536,7 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Endpoint.host_name
+                  simple: PaloAltoNetworksXDR.Endpoint.endpoint_name
                 iscontext: true
               right:
                 value:
@@ -2572,7 +2572,7 @@ tasks:
         or allow list
       description: Adds requested files to block list if they are not already added to the block list
         or allow list.
-      script: '|||xdr-blacklist-files'
+      script: '|||xdr-blocklist-files'
       type: regular
       iscommand: true
       brand: ""
@@ -2618,7 +2618,7 @@ tasks:
       - - operator: containsGeneral
           left:
             value:
-              simple: PaloAltoNetworksXDR.blackList.fileHash
+              simple: PaloAltoNetworksXDR.blocklist.added_hashes.fileHash
             iscontext: true
           right:
             value:
@@ -2706,7 +2706,185 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 10675
+          "y": 10665
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "77":
+    id: "77"
+    taskid: e1a04b1c-ab7c-44c4-88d7-101c119c8cbc
+    type: regular
+    task:
+      id: e1a04b1c-ab7c-44c4-88d7-101c119c8cbc
+      version: -1
+      name: xdr-get-contributing-event
+      description: Retrieves contributing events for a specific alert.
+      script: "|||xdr-get-contributing-event"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "78"
+    scriptarguments:
+      alert_ids:
+        simple: "33902"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 10840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: ab0e36ae-d446-4e3f-858c-48d95dc42f96
+    type: condition
+    task:
+      id: ab0e36ae-d446-4e3f-858c-48d95dc42f96
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+        - "79"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isEqualString
+              left:
+                value:
+                  complex:
+                    root: PaloAltoNetworksXDR.ContributingEvent
+                    accessor: alertID
+                iscontext: true
+              right:
+                value:
+                  simple: "33902"
+          - - operator: hasLength
+              left:
+                value:
+                  complex:
+                    root: PaloAltoNetworksXDR.ContributingEvent
+                    accessor: events
+                iscontext: true
+              right:
+                value:
+                  simple: "1"
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 11015
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "79":
+    id: "79"
+    taskid: 5acb16ed-2d79-4b21-8a5e-12d32d9f4aaf
+    type: regular
+    task:
+      id: 5acb16ed-2d79-4b21-8a5e-12d32d9f4aaf
+      version: -1
+      name: xdr-replace-featured-field
+      description:
+        Replace the featured hosts\users\ips\active-directory_groups listed
+        in your environment.
+      script: "|||xdr-replace-featured-field"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+        - "80"
+    scriptarguments:
+      comments:
+        simple: This is a test comment
+      field_type:
+        simple: ip_addresses
+      values:
+        simple: 1.1.1.1
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 11190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "80":
+    id: "80"
+    taskid: 239b90ed-f314-4ce2-8193-ee0cc9b73de2
+    type: condition
+    task:
+      id: 239b90ed-f314-4ce2-8193-ee0cc9b73de2
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+        - "25"
+    separatecontext: false
+    conditions:
+      - label: "yes"
+        condition:
+          - - operator: isEqualString
+              left:
+                value:
+                  complex:
+                    root: PaloAltoNetworksXDR.FeaturedField
+                    accessor: fieldType
+                iscontext: true
+              right:
+                value:
+                  simple: ip_addresses
+          - - operator: isEqualString
+              left:
+                value:
+                  complex:
+                    root: PaloAltoNetworksXDR.FeaturedField.fields
+                    accessor: value
+                iscontext: true
+              right:
+                value:
+                  simple: 1.1.1.1
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 11365
         }
       }
     note: false

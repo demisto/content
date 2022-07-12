@@ -15,25 +15,30 @@ configuration:
   type: 0
   required: true
 - display: API Username
-  name: username
-  defaultvalue: ""
-  type: 0
-  required: true
-- display: API Key
-  name: key
-  defaultvalue: ""
-  type: 4
-  required: true
+  displaypassword: API Key
+  name: credentials
+  type: 9
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ""
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
   type: 8
   required: false
+- display: API Key (Deprecated)
+  hidden: true
+  name: key
+  defaultvalue: ""
+  type: 4
+  required: false
+- display: API Username
+  name: username
+  defaultvalue: ""
+  type: 0
+  required: false
+  hidden: true
 script:
   script: ''
   type: javascript

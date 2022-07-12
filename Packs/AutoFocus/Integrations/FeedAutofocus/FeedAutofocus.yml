@@ -11,7 +11,6 @@ configuration:
 - display: Indicator Feed
   name: indicator_feeds
   options:
-  - Daily Threat Feed
   - Custom Feed
   - Samples Feed
   required: true
@@ -140,7 +139,7 @@ script:
     description: Gets the indicators from AutoFocus.
     execution: false
     name: autofocus-get-indicators
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.4.31492
   feed: true
   isfetch: false
   longRunning: false

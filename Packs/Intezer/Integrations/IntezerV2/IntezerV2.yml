@@ -47,6 +47,27 @@ script:
         - contextPath: Intezer.Analysis.Type
           description: type of the analysis
           type: string
+    - name: intezer-analyze-url
+      arguments:
+        - default: false
+          description: Url to query.
+          isArray: false
+          name: url
+          required: true
+          secret: false
+      deprecated: false
+      description: Checks reputation of an Url
+      execution: false
+      outputs:
+        - contextPath: Intezer.Analysis.ID
+          description: Intezer analysis id
+          type: string
+        - contextPath: Intezer.Analysis.Status
+          description: status of the analysis
+          type: string
+        - contextPath: Intezer.Analysis.Type
+          description: type of the analysis
+          type: string
     - name: intezer-get-latest-report
       arguments:
         - default: false
@@ -121,6 +142,7 @@ script:
           predefined:
             - File
             - Endpoint
+            - Url
           required: false
           secret: false
         - default: false
@@ -136,6 +158,18 @@ script:
         - contextPath: File.SHA256
           description: Hash SHA256
           type: string
+        - contextPath: Url.URL
+          description: The submitted Url
+          type: string
+        - contextPath: Url.Malicious.Vendor
+          description: For malicious Url, the vendor that made the decision
+          type: string
+        - contextPath: Url.Metadata
+          description: Metadata returned from Intezer analysis.
+          type: Unknown
+        - contextPath: Url.ExistsInIntezer
+          description: Does the url exists on intezer
+          type: Boolean
         - contextPath: File.Malicious.Vendor
           description: For malicious files, the vendor that made the decision
           type: string
@@ -257,7 +291,25 @@ script:
         - contextPath: Intezer.Analysis.SubAnalyses.Metadata
           description: A Sub Analysis metadata
           type: Unknown
-  dockerimage: demisto/intezer:1.0.0.24078
+    - name: intezer-get-analysis-iocs
+      arguments:
+        - default: false
+          description: The analysis ID we want to get the metadata for
+          isArray: false
+          name: analysis_id
+          required: true
+          secret: false
+      deprecated: false
+      description: Gets the list of network and files IOCs of a specific analysis id.
+      execution: false
+      outputs:
+        - contextPath: Intezer.Analysis.ID
+          description: The composed analysis ID
+          type: string
+        - contextPath: Intezer.Analysis.IOCs
+          description: The Analysis IOCs
+          type: Dict
+  dockerimage: demisto/py3-tools:0.0.1.30291
   isfetch: false
   runonce: false
   script: '-'

@@ -25,8 +25,10 @@ with open('test_data/id_to_object_test.json', 'r') as f:
     id_to_object = json.load(f)
 with open('test_data/parsed_stix_objects.json', 'r') as f:
     parsed_objects = json.load(f)
-with open('test_data/objects_envelopes.json', 'r') as f:
-    envelopes = json.load(f)
+with open('test_data/objects_envelopes_v21.json', 'r') as f:
+    envelopes_v21 = json.load(f)
+with open('test_data/objects_envelopes_v20.json', 'r') as f:
+    envelopes_v20 = json.load(f)
 
 
 class MockCollection:
@@ -110,7 +112,8 @@ class TestInitCollectionsToFetch:
         Then:
         - Ensure exception is raised with proper error message
         """
-        mock_client = Taxii2FeedClient(url='', collection_to_fetch='default', proxies=[], verify=False, objects_to_fetch=[])
+        mock_client = Taxii2FeedClient(url='', collection_to_fetch='default', proxies=[], verify=False,
+                                       objects_to_fetch=[])
         with pytest.raises(DemistoException, match="No collection is available for this user"):
             mock_client.init_collection_to_fetch('not_found')
 
@@ -119,6 +122,7 @@ class TestBuildIterator:
     """
     Scenario: Get indicators via build_iterator method
     """
+
     def test_no_collection_to_fetch(self):
         """
         Scenario: Fail to build iterator when there is no collection to fetch from
@@ -179,6 +183,7 @@ class TestInitServer:
     """
     Scenario: Initialize server
     """
+
     def test_default_v20(self):
         """
         Scenario: Intialize server with the default option
@@ -240,6 +245,7 @@ class TestFetchingStixObjects:
     """
     Scenario: Test load_stix_objects_from_envelope and parse_stix_objects
     """
+
     def test_21_empty(self):
         """
         Scenario: Test 21 envelope extract
@@ -333,12 +339,87 @@ class TestFetchingStixObjects:
         assert len(actual) == 14
         assert actual == expected
 
-    def test_load_stix_objects_from_envelope(self):
+    def test_load_stix_objects_from_envelope_v21(self):
+        """
+        Scenario: Test loading of STIX objects from envelope for v2.1
+
+        Given:
+        - Envelope with indicators, arranged by object type.
+
+        When:
+        - load_stix_objects_from_envelope is called
+
+        Then: - Load and parse objects from the envelope according to their object type and ignore
+        extension-definition objects.
+
+        """
         mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False, objects_to_fetch=[])
-        objects_envelopes = envelopes
+        objects_envelopes = envelopes_v21
         mock_client.id_to_object = id_to_object
 
         result = mock_client.load_stix_objects_from_envelope(objects_envelopes, -1)
-
         assert mock_client.id_to_object == id_to_object
         assert result == parsed_objects
+
+    def test_load_stix_objects_from_envelope_v20(self):
+        """
+        Scenario: Test loading of STIX objects from envelope for v2.0
+
+        Given:
+        - Envelope with indicators, arranged by object type.
+
+        When:
+        - parse_generator_type_envelope is called (skipping condition from load_stix_objects_from_envelope).
+
+        Then: - Load and parse objects from the envelope according to their object type and ignore
+        extension-definition objects.
+
+        """
+        mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False, objects_to_fetch=[])
+        objects_envelopes = envelopes_v20
+        mock_client.id_to_object = id_to_object
+
+        parse_stix_2_objects = {
+            "indicator": mock_client.parse_indicator,
+            "attack-pattern": mock_client.parse_attack_pattern,
+            "malware": mock_client.parse_malware,
+            "report": mock_client.parse_report,
+            "course-of-action": mock_client.parse_course_of_action,
+            "campaign": mock_client.parse_campaign,
+            "intrusion-set": mock_client.parse_intrusion_set,
+            "tool": mock_client.parse_tool,
+            "threat-actor": mock_client.parse_threat_actor,
+            "infrastructure": mock_client.parse_infrastructure
+        }
+        result = mock_client.parse_generator_type_envelope(objects_envelopes, parse_stix_2_objects)
+        assert mock_client.id_to_object == id_to_object
+        assert result == parsed_objects
+
+    @pytest.mark.parametrize('last_modifies_client, last_modifies_param, expected_modified_result', [
+        (None, None, None), (None, '2021-09-29T15:55:04.815Z', '2021-09-29T15:55:04.815Z'),
+        ('2021-09-29T15:55:04.815Z', '2022-09-29T15:55:04.815Z', '2022-09-29T15:55:04.815Z')
+    ])
+    def test_update_last_modified_indicator_date(self, last_modifies_client, last_modifies_param, expected_modified_result):
+        """
+               Scenario: Test updating the last_fetched_indicator__modified field of the client.
+
+               Given:
+                - A : An empty indicator_modified_str parameter.
+                - B : A client with empty last_fetched_indicator__modified field.
+                - C : A client with a value in last_fetched_indicator__modified
+                 and a valid indicator_modified_str parameter.
+
+               When:
+               - Calling the last_modified_indicator_date function with given parameter.
+
+               Then: Make sure the right value is updated in the client's last_fetched_indicator__modified field.
+               - A : last_fetched_indicator__modified field remains empty
+               - B : last_fetched_indicator__modified field remains empty
+               - C : last_fetched_indicator__modified receives new value
+        """
+
+        mock_client = Taxii2FeedClient(url='', collection_to_fetch='', proxies=[], verify=False, objects_to_fetch=[], )
+        mock_client.last_fetched_indicator__modified = last_modifies_client
+        mock_client.update_last_modified_indicator_date(last_modifies_param)
+
+        assert mock_client.last_fetched_indicator__modified == expected_modified_result

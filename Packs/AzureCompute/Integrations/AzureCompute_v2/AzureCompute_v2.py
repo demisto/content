@@ -243,17 +243,78 @@ def create_vm_parameters(args, subscription_id):
     return vm
 
 
+def create_nic_parameters(args, subscription_id):
+    """
+    Construct the NIC object
+
+    Use the actual parameters passed to the 'azure-vm-create-nic' command
+    to build a nic object that will be sent in the body of the command's associated
+    API call.
+
+    parameter: (dict) args
+        Dictionary that contains the actual parameters that were passed to the
+        'azure-vm-create-nic' command
+
+    returns:
+        NIC Object
+    """
+    # Retrieve relevant command arguments
+    resource_group = args.get('resource_group')
+    location = args.get('nic_location')
+    address_assignment_method = args.get('address_assignment_method')
+    private_ip_address = args.get('private_ip_address')
+    network_security_group = args.get('network_security_group')
+    vnet_name = args.get('vnet_name')
+    subnet_name = args.get('subnet_name')
+    ip_config_name = args.get('ip_config_name')
+    subnet_id = (f"/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers/Microsoft.Network/"
+                 f"virtualNetworks/{vnet_name}/subnets/{subnet_name}")
+
+    # Construct NIC object
+    nic = {
+        'location': location,
+        'properties': {
+            'ipConfigurations': [
+                {
+                    'name': ip_config_name,
+                    'properties': {
+                        'privateIPAllocationMethod': address_assignment_method,
+                        'subnet': {
+                            'id': subnet_id
+                        }
+                    }
+                }
+            ]
+        }
+    }
+
+    if address_assignment_method == "Static":
+        if not private_ip_address:
+            err_msg = 'You have chosen to assign a "Static" IP address value to the interface, ' \
+                      'so you must enter a value for the "private_ip_address" argument.'
+            raise Exception(err_msg)
+        nic['properties']['ipConfigurations'][0]['properties']['privateIPAddress'] = private_ip_address
+
+    if network_security_group:
+        network_security_group_id = (f"/subscriptions/{subscription_id}/resourceGroups/{resource_group}/providers"
+                                     f"/Microsoft.Network/networkSecurityGroups/{network_security_group}")
+        nic['properties']['networkSecurityGroup']['id'] = network_security_group_id
+
+    return nic
+
+
 class MsGraphClient:
     """
       Microsoft Graph Client enables authorized access to Create and Manage Azure Virtual Machines.
       """
 
     def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed, ok_codes, server,
-                 subscription_id):
+                 subscription_id, certificate_thumbprint, private_key):
 
         self.ms_client = MicrosoftClient(
             tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name, base_url=base_url, verify=verify,
-            proxy=proxy, self_deployed=self_deployed, ok_codes=ok_codes, scope=Scopes.management_azure)
+            proxy=proxy, self_deployed=self_deployed, ok_codes=ok_codes, scope=Scopes.management_azure,
+            certificate_thumbprint=certificate_thumbprint, private_key=private_key)
         self.server = server
         self.subscription_id = subscription_id
 
@@ -359,6 +420,27 @@ class MsGraphClient:
         elif provisioning_state.lower() in PROVISIONING_STATE_TO_ERRORS.keys():
             err_msg = PROVISIONING_STATE_TO_ERRORS.get(provisioning_state.lower())
             raise Exception(err_msg)
+
+    def get_network_interface(self, resource_group, interface_name):
+        url_suffix = f"{resource_group}/providers/Microsoft.Network/networkInterfaces/{interface_name}"
+        parameters = {'api-version': API_VERSION}
+        return self.ms_client.http_request(method='GET', url_suffix=url_suffix, params=parameters)
+
+    def get_public_ip_details(self, resource_group, address_name):
+        url_suffix = f"{resource_group}/providers/Microsoft.Network/publicIPAddresses/{address_name}"
+        parameters = {'api-version': API_VERSION}
+        return self.ms_client.http_request(method='GET', url_suffix=url_suffix, params=parameters)
+
+    def create_nic(self, args):
+        # Retrieve relevant command argument
+        resource_group = args.get('resource_group')
+        nic_name = args.get('nic_name')
+        url_suffix = f"{resource_group}/providers/Microsoft.Network/networkInterfaces/{nic_name}"
+        parameters = {'api-version': API_VERSION}
+
+        # Construct VM object utilizing parameters passed as command arguments
+        payload = create_nic_parameters(args, self.subscription_id)
+        return self.ms_client.http_request(method='PUT', url_suffix=url_suffix, params=parameters, json_data=payload)
 
 
 def test_module(client: MsGraphClient, args: dict):
@@ -482,9 +564,7 @@ def get_vm_command(client: MsGraphClient, args: dict):
     """
     resource_group = args.get('resource_group')
     vm_name = args.get('virtual_machine_name')
-
     response = client.get_vm(resource_group, vm_name)
-
     # Retrieve relevant properties to return to context
     vm_name = vm_name.lower()  # type: ignore
     properties = response.get('properties')
@@ -494,6 +574,7 @@ def get_vm_command(client: MsGraphClient, args: dict):
     os_type = os_disk.get('osType')
     provisioning_state = properties.get('provisioningState')
     location = response.get('location')
+    network_interfaces = properties.get('networkProfile', {}).get('networkInterfaces')
     statuses = properties.get('instanceView', {}).get('statuses')
     power_state = None
     for status in statuses:
@@ -510,7 +591,8 @@ def get_vm_command(client: MsGraphClient, args: dict):
         'ProvisioningState': provisioning_state,
         'Location': location,
         'PowerState': power_state,
-        'ResourceGroup': args.get('resource_group')
+        'ResourceGroup': args.get('resource_group'),
+        'NetworkInterfaces': network_interfaces
     }
 
     title = 'Properties of VM "{}"'.format(vm_name)
@@ -682,16 +764,235 @@ def poweroff_vm_command(client: MsGraphClient, args: dict):
     return human_readable, entry_context, vm
 
 
+def get_network_interface_command(client: MsGraphClient, args: dict):
+    """
+    Get the properties of a specified Network Interface
+
+    demisto parameter: (string) resource_group
+        Resource Group to which the network interface belongs
+
+    demisto parameter: (string) nic_name
+        Name of the network interface you wish to view the details of
+
+    returns:
+        Network Interface Object
+    """
+    resource_group = args.get('resource_group')
+    interface_name = args.get('nic_name')
+    response = client.get_network_interface(resource_group, interface_name)
+    interface_name = interface_name.lower()  # type: ignore
+    properties = response.get('properties')
+    interface_id = response.get('id')
+    mac_address = properties.get('macAddress', 'NA')
+    network_security_group = properties.get('networkSecurityGroup', 'NA')
+    is_primay_interface = properties.get('primary', 'NA')
+    attached_virtual_machine = properties.get('virtualMachine', {}).get('id', 'NA')
+    nic_type = properties.get('nicType', 'NA')
+    location = response.get('location')
+    dns_suffix = properties.get('dnsSettings', {}).get('internalDomainNameSuffix')
+
+    ip_configurations = properties.get('ipConfigurations', [])
+
+    ip_configs = []
+
+    for ip_configuration in ip_configurations:
+        ip_configs.append({
+            "ConfigName": ip_configuration.get('name', "NA"),
+            "ConfigID": ip_configuration.get('id', "NA"),
+            "PrivateIPAddress": ip_configuration.get('properties', {}).get('privateIPAddress', "NA"),
+            "PublicIPAddressID": ip_configuration.get('properties', {}).get('publicIPAddress', {}).get('id')
+        })
+
+    network_config = {
+        'Name': interface_name,
+        'ID': interface_id,
+        'MACAddress': mac_address,
+        'NetworkSecurityGroup': network_security_group,
+        'IsPrimaryInterface': is_primay_interface,
+        'Location': location,
+        'AttachedVirtualMachine': attached_virtual_machine,
+        'ResourceGroup': args.get('resource_group'),
+        'NICType': nic_type,
+        'DNSSuffix': dns_suffix,
+        'IPConfigurations': ip_configs
+    }
+
+    human_readable_network_config = {
+        'Name': interface_name,
+        'ID': interface_id,
+        'MACAddress': mac_address,
+        'PrivateIPAddresses': [ip.get("PrivateIPAddress") for ip in ip_configs],
+        'NetworkSecurityGroup': network_security_group,
+        'Location': location,
+        'NICType': nic_type,
+    }
+
+    title = 'Properties of Network Interface "{}"'.format(interface_name)
+    table_headers = ['Name', 'ID', 'MACAddress', 'PrivateIPAddresses', 'NetworkSecurityGroup', 'Location', 'NICType']
+    human_readable = tableToMarkdown(title, human_readable_network_config, headers=table_headers, removeNull=True)
+    entry_context = {'Azure.Network.Interfaces(val.ID === obj.ID)': network_config}
+    return human_readable, entry_context, response
+
+
+def get_public_ip_details_command(client: MsGraphClient, args: dict):
+    """
+    Get the properties of a specified Public IP Address
+
+    demisto parameter: (string) resource_group
+        Resource Group to which the public IP address belongs
+
+    demisto parameter: (string) address_name
+        Name of the public ip address you wish to view the details of
+
+    returns:
+        Public IP Address Object
+    """
+    resource_group = args.get('resource_group')
+    address_name = args.get('address_name')
+    response = client.get_public_ip_details(resource_group, address_name)
+    # Retrieve relevant properties to return to context
+    properties = response.get('properties')
+    address_id = response.get('id')
+    config_id = properties.get('ipConfiguration', {}).get('id')
+    ip_address = properties.get('ipAddress', 'NA')
+    ip_address_version = properties.get('publicIPAddressVersion', 'NA')
+    ip_address_allocation_method = properties.get('publicIPAllocationMethod', 'NA')
+    address_domain_name = properties.get('dnsSettings', {}).get('domainNameLabel', 'NA')
+    address_fqdn = properties.get('dnsSettings', {}).get('fqdn', 'NA')
+    config_name = response.get('name')
+    location = response.get('location')
+
+    ip_config = {
+        'PublicIPAddressID': address_id,
+        'PublicConfigName': config_name,
+        'Location': location,
+        'PublicConfigID': config_id,
+        'ResourceGroup': resource_group,
+        'PublicIPAddress': ip_address,
+        'PublicIPAddressVersion': ip_address_version,
+        'PublicIPAddressAllocationMethod': ip_address_allocation_method,
+        'PublicIPAddressDomainName': address_domain_name,
+        'PublicIPAddressFQDN': address_fqdn
+    }
+
+    human_readable_ip_config = {
+        'PublicConfigName': config_name,
+        'Location': location,
+        'PublicIPAddress': ip_address,
+        'PublicIPAddressVersion': ip_address_version,
+        'PublicIPAddressAllocationMethod': ip_address_allocation_method
+    }
+
+    title = 'Properties of Public Address "{}"'.format(address_name)
+    table_headers = ['PublicConfigName', 'Location', 'PublicIPAddress', 'PublicIPAddressVersion',
+                     'PublicIPAddressAllocationMethod']
+    human_readable = tableToMarkdown(title, human_readable_ip_config, headers=table_headers, removeNull=True)
+    entry_context = {'Azure.Network.IPConfigurations(val.PublicIPAddressID === '
+                     'obj.PublicIPAddressID)': ip_config}
+    return human_readable, entry_context, response
+
+
+def create_nic_command(client: MsGraphClient, args: dict):
+    """
+    Create a Network Interface with the specified interface parameters
+
+    demisto parameter: (string) resource_group
+        The resource group to which the new network interface will belong.
+
+    demisto parameter: (string) nic_name
+        The network interface name.
+
+    demisto parameter: (string) nic_location
+        The location in which to create the network interface.
+
+    demisto parameter: (string) vnet_name
+        The virtual network name of the inteface.
+
+    demisto parameter: (string) subnet_name
+        The subnet name of the inteface.
+
+    demisto parameter: (string) address_assignment_method
+         The address assignment method, the default is Dynamic.
+
+    demisto parameter: (string) private_ip_address
+        The private ip address of the interface incase you chose to use the static assignment method.
+
+    demisto parameter: (string) ip_config_name
+        The ip address config name.
+
+    demisto parameter: (string) network_security_group
+        The network security group of the interface.
+
+    returns:
+        Network Interface Object
+    """
+    response = client.create_nic(args)
+
+    # Retrieve relevant properties to return to context
+    nic_name = response.get('name').lower()
+    nic_id = response.get('id')
+    location = response.get('location')
+    properties = response.get('properties')
+    network_security_group = properties.get('networkSecurityGroup', {}).get('id', 'NA')
+    provisioning_state = properties.get('provisioningState', "NA")
+    ip_configurations = properties.get('ipConfigurations', [])
+    dns_suffix = properties.get('dnsSettings', {}).get('internalDomainNameSuffix')
+    resource_group = args.get('resource_group')
+
+    ip_configs = []
+    for ip_configuration in ip_configurations:
+        ip_configs.append({
+            "ConfigName": ip_configuration.get('name', "NA"),
+            "ConfigID": ip_configuration.get('id', "NA"),
+            "PrivateIPAddress": ip_configuration.get('properties', {}).get('privateIPAddress', "NA"),
+            "PublicIPAddressID": ip_configuration.get('properties', {}).get('publicIPAddress', {}).get('id', "NA"),
+            "SubNet": ip_configuration.get('properties', {}).get('subnet', {}).get('id', "NA"),
+        })
+
+    nic = {
+        'Name': nic_name,
+        'ID': nic_id,
+        'IPConfigurations': ip_configs,
+        'ProvisioningState': provisioning_state,
+        'Location': location,
+        'ResourceGroup': resource_group,
+        'NetworkSecurityGroup': network_security_group,
+        'DNSSuffix': dns_suffix
+    }
+
+    human_readable_nic = {
+        'Name': nic_name,
+        'ID': nic_id,
+        'PrivateIPAddresses': [ip.get("PrivateIPAddress") for ip in ip_configs],
+        'NetworkSecurityGroup': network_security_group,
+        'Location': location
+    }
+
+    title = f'Created Network Interface "{nic_name}"'
+    table_headers = ['Name', 'ID', 'PrivateIPAddresses', 'NetworkSecurityGroup', 'Location']
+    human_readable = tableToMarkdown(title, human_readable_nic, headers=table_headers, removeNull=True)
+    entry_context = {'Azure.Network.Interfaces(val.ID && val.Name === obj.ID)': nic}
+    return human_readable, entry_context, response
+
+
 def main():
     params: dict = demisto.params()
     server = params.get('host', 'https://management.azure.com').rstrip('/')
     tenant = params.get('tenant_id')
     auth_and_token_url = params.get('auth_id')
     enc_key = params.get('enc_key')
+    certificate_thumbprint = params.get('certificate_thumbprint')
+    private_key = params.get('private_key')
     verify = not params.get('unsecure', False)
     subscription_id = demisto.args().get('subscription_id') or demisto.params().get('subscription_id')
     proxy: bool = params.get('proxy', False)
     self_deployed: bool = params.get('self_deployed', False)
+    if not self_deployed and not enc_key:
+        raise DemistoException('Key must be provided. For further information see '
+                               'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
+    elif not enc_key and not (certificate_thumbprint and private_key):
+        raise DemistoException('Key or Certificate Thumbprint and Private Key must be providedFor further information see '
+                               'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
     ok_codes = (200, 201, 202, 204)
 
     commands = {
@@ -703,7 +1004,10 @@ def main():
         'azure-vm-create-instance': create_vm_command,
         'azure-vm-delete-instance': delete_vm_command,
         'azure-list-resource-groups': list_resource_groups_command,
-        'azure-list-subscriptions': list_subscriptions_command
+        'azure-list-subscriptions': list_subscriptions_command,
+        'azure-vm-get-nic-details': get_network_interface_command,
+        'azure-vm-get-public-ip-details': get_public_ip_details_command,
+        'azure-vm-create-nic': create_nic_command
     }
 
     '''EXECUTION'''
@@ -719,7 +1023,8 @@ def main():
         client = MsGraphClient(
             base_url=base_url, tenant_id=tenant, auth_id=auth_and_token_url, enc_key=enc_key, app_name=APP_NAME,
             verify=verify, proxy=proxy, self_deployed=self_deployed, ok_codes=ok_codes, server=server,
-            subscription_id=subscription_id)
+            subscription_id=subscription_id, certificate_thumbprint=certificate_thumbprint,
+            private_key=private_key)
 
         human_readable, entry_context, raw_response = commands[command](client, demisto.args())  # type: ignore
         return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=raw_response)

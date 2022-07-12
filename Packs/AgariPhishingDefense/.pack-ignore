@@ -7,3 +7,12 @@ ignore=IF100
 
 [file:AgariPhishingDefense.yml]
 ignore=IN145
+
+[file:AgariPhishingDefense_image.png]
+ignore=IM111
+
+[file:classifier-Agari_Phishing_Defense_-_Phishing_Alerts_-_Classifier.json]
+ignore=BA101
+
+[file:classifier-Agari_Phishing_Defense.json]
+ignore=BA101

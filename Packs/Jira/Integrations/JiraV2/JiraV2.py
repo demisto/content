@@ -130,7 +130,34 @@ def get_auth():
     )
 
 
-def run_query(query, start_at='', max_results=None):
+def get_custom_field_names():
+    """
+    This function returns all custom fields.
+    :return: dict of custom fields: id as key and name as value.
+    """
+    custom_id_name_mapping = {}
+    HEADERS['Accept'] = "application/json"
+    try:
+        res = requests.request(
+            method='GET',
+            url=BASE_URL + 'rest/api/latest/field',
+            headers=HEADERS,
+            verify=USE_SSL,
+            auth=get_auth(),
+        )
+    except Exception as e:
+        demisto.error(f'Could not get custom fields because got the next exception: {e}')
+    else:
+        if res.ok:
+            custom_fields_list = res.json()
+            custom_id_name_mapping = {field.get('id'): field.get('name') for field in custom_fields_list}
+        else:
+            demisto.error(f'Could not get custom fields. status code: {res.status_code}. reason: {res.reason}')
+    finally:
+        return custom_id_name_mapping
+
+
+def run_query(query, start_at='', max_results=None, extra_fields=None, nofields=None):
     # EXAMPLE
     """
     request = {
@@ -151,7 +178,16 @@ def run_query(query, start_at='', max_results=None):
         "startAt": start_at,
         "maxResults": max_results,
     }
-
+    if extra_fields:
+        fields = extra_fields.split(",")
+        fields_mapping_name_id = {k.lower(): v.lower() for k, v in get_custom_field_names().items()}
+        query_params['fields'] = [k for y in fields for k, v in fields_mapping_name_id.items() if v == y.lower()]
+        nofields.update({fieldextra for fieldextra in fields if fieldextra.lower() not in fields_mapping_name_id.values()})
+    if nofields:
+        if len(nofields) > 1:
+            return_warning(f'{",".join(nofields)} do not exist')
+        else:
+            return_warning(f'{",".join(nofields)} does not exist')
     try:
         result = requests.get(
             url=url,
@@ -237,36 +273,73 @@ def expand_urls(data, depth=0):
                     return expand_urls(value, depth + 1)
 
 
-def search_user(query: str, max_results: str = '50'):
+def search_user(query: str, max_results: str = '50', is_jirav2api: bool = False):
     """
         Search for user by name or email address.
     Args:
         query: A query string that is matched against user attributes ( displayName, and emailAddress) to find relevant users.
         max_results (str): The maximum number of items to return. default by the server: 50
+        is_jirav2api (bool): if the instance is connecting to a Jira Server that supports only the v2 REST API. default as False
+
 
     Returns:
         List of users.
     """
-    url = f"rest/api/latest/user/search?query={query}&maxResults={max_results}"
+
+    if is_jirav2api:
+        """
+        override user identifier for Jira v2 API
+        https://docs.atlassian.com/software/jira/docs/api/REST/8.13.15/#user-findUsers
+        """
+        url = f"rest/api/latest/user/search?username={query}&maxResults={max_results}"
+    else:
+        url = f"rest/api/latest/user/search?query={query}&maxResults={max_results}"
+
     res = jira_req('GET', url, resp_type='json')
     return res
 
 
-def get_account_id_from_attribute(attribute: str, max_results: str = '50') -> Union[CommandResults, str]:
+def get_account_id_from_attribute(
+        attribute: str,
+        max_results: str = '50',
+        is_jirav2api: str = 'false') -> Union[CommandResults, str]:
     """
     https://developer.atlassian.com/cloud/jira/platform/rest/v3/api-group-user-search/#api-rest-api-3-user-search-get
 
     Args:
         attribute (str): Username or Email address of a user.
         max_results (str): The maximum number of items to return. default by the server: 50
+        is_jirav2api (str): if the instance is connecting to a Jira Server that supports only the v2 REST API. default as false
     """
-    users = search_user(attribute, max_results)
-    account_ids = {
-        user.get('accountId') for user in users if (attribute.lower() in [user.get('displayName', '').lower(),
-                                                                          user.get('emailAddress', '').lower()])}
+
+    if is_jirav2api == 'true':
+        """
+        override user identifier for Jira v2 API
+        https://docs.atlassian.com/software/jira/docs/api/REST/8.13.15/#user-findUsers
+        """
+        users = list(search_user(attribute, max_results, is_jirav2api=True))
+        account_ids = {
+            user.get('name') for user in users if (attribute.lower() in [user.get('displayName', '').lower(),
+                                                                         user.get('emailAddress', '').lower()])}
+    else:
+        users = list(search_user(attribute, max_results))
+        account_ids = {
+            user.get('accountId') for user in users if (attribute.lower() in [user.get('displayName', '').lower(),
+                                                                              user.get('emailAddress', '').lower()])}
 
     if not account_ids:
-        return f'No Account ID was found for attribute: {attribute}.'
+        # The email address is a private account field and sometimes is blank. If there is only one result,
+        # then it is the one. If there are more results for the query, the user should try "DisplayName" attribute.
+        if not users:
+            return f'No Account ID was found for attribute: {attribute}.'
+        if len(users) == 1:
+            account_ids = {users[0].get('name')} if is_jirav2api == 'true' else {users[0].get('accountId')}
+        else:
+            demisto.debug(f'Multiple account IDs found, but it was not possible to resolve which one of them is most '
+                          f'relevant to attribute \"{attribute}\". Account ids: {account_ids}')
+            return f'Multiple account IDs found, but it was not possible to resolve which one of them is most ' \
+                   f'relevant to attribute \"{attribute}\".Please try to provide the "DisplayName" attribute.'
+
     if len(account_ids) > 1:
         return f'Multiple account IDs were found for attribute: {attribute}.\n' \
                f'Please try to provide the other attribute available - Email or DisplayName.'
@@ -285,7 +358,7 @@ def get_account_id_from_attribute(attribute: str, max_results: str = '50') -> Un
     )
 
 
-def generate_md_context_get_issue(data):
+def generate_md_context_get_issue(data, customfields=None, nofields=None):
     get_issue_obj: dict = {"md": [], "context": []}
     if not isinstance(data, list):
         data = [data]
@@ -297,6 +370,19 @@ def generate_md_context_get_issue(data):
         context_obj['Key'] = md_obj['key'] = demisto.get(element, 'key')
         context_obj['Summary'] = md_obj['summary'] = demisto.get(element, 'fields.summary')
         context_obj['Status'] = md_obj['status'] = demisto.get(element, 'fields.status.name')
+        context_obj['Priority'] = md_obj['priority'] = demisto.get(element, 'fields.priority.name')
+        context_obj['ProjectName'] = md_obj['project'] = demisto.get(element, 'fields.project.name')
+        context_obj['DueDate'] = md_obj['duedate'] = demisto.get(element, 'fields.duedate')
+        context_obj['Created'] = md_obj['created'] = demisto.get(element, 'fields.created')
+        # Parse custom fields into their original names
+        custom_fields = [i for i in demisto.get(element, "fields") if "custom" in i]
+        if custom_fields and customfields and not nofields:
+            field_mappings = get_custom_field_names()
+            for field_returned in custom_fields:
+                readable_field_name = field_mappings.get(field_returned)
+                if readable_field_name:
+                    context_obj[readable_field_name] = md_obj[readable_field_name] = \
+                        demisto.get(element, f"fields.{field_returned}")
 
         assignee = demisto.get(element, 'fields.assignee')
         context_obj['Assignee'] = md_obj['assignee'] = "{name}({email})".format(
@@ -316,15 +402,16 @@ def generate_md_context_get_issue(data):
             email=reporter.get('emailAddress', 'null')
         ) if reporter else 'null(null)'
 
+        context_obj.update({
+            'LastSeen': demisto.get(element, 'fields.lastViewed'),
+            'LastUpdate': demisto.get(element, 'fields.updated'),
+        })
+
         md_obj.update({
             'issueType': demisto.get(element, 'fields.issuetype.description'),
-            'priority': demisto.get(element, 'fields.priority.name'),
-            'project': demisto.get(element, 'fields.project.name'),
             'labels': demisto.get(element, 'fields.labels'),
             'description': demisto.get(element, 'fields.description'),
-            'duedate': demisto.get(element, 'fields.duedate'),
             'ticket_link': demisto.get(element, 'self'),
-            'created': demisto.get(element, 'fields.created'),
         })
         attachments = demisto.get(element, 'fields.attachment')
         if isinstance(attachments, list):
@@ -476,13 +563,13 @@ def get_issue_fields(issue_creating=False, mirroring=False, **issue_args):
     issue = {}  # type: dict
     if 'issue_json' in issue_args:
         try:
-            issue = json.loads(issue_args['issue_json'])
+            issue = json.loads(issue_args['issue_json'], strict=False)
         except TypeError as te:
             demisto.debug(str(te))
             return_error("issueJson must be in a valid json format")
     elif 'issueJson' in issue_args:
         try:
-            issue = json.loads(issue_args['issueJson'])
+            issue = json.loads(issue_args['issueJson'], strict=False)
         except TypeError as te:
             demisto.debug(str(te))
             return_error("issueJson must be in a valid json format")
@@ -595,11 +682,8 @@ def get_issue(issue_id, headers=None, expand_links=False, is_update=False, get_a
         get_attachments = False
 
     if get_attachments and attachments:
-        attachment_urls = [attachment['content'] for attachment in attachments]
-        for attachment_url in attachment_urls:
-            attachment = f"secure{attachment_url.split('/secure')[-1]}"
-            filename = attachment.split("/")[-1]
-            attachments_zip = jira_req(method='GET', resource_url=attachment).content
+        for attachment in attachments:
+            filename, attachments_zip = get_attachment_data(attachment)
             demisto.results(fileResult(filename=filename, data=attachments_zip))
 
     md_and_context = generate_md_context_get_issue(j_res)
@@ -613,14 +697,16 @@ def get_issue(issue_id, headers=None, expand_links=False, is_update=False, get_a
     return human_readable, outputs, contents
 
 
-def issue_query_command(query, start_at='', max_results=None, headers=''):
-    j_res = run_query(query, start_at, max_results)
+def issue_query_command(query, start_at='', max_results=None, headers='', extra_fields=None):
+    nofields: set = set()
+
+    j_res = run_query(query, start_at, max_results, extra_fields, nofields)
     if not j_res:
         outputs = contents = {}
         human_readable = 'No issues matched the query.'
     else:
         issues = demisto.get(j_res, 'issues')
-        md_and_context = generate_md_context_get_issue(issues)
+        md_and_context = generate_md_context_get_issue(issues, extra_fields, nofields)
         human_readable = tableToMarkdown(demisto.command(), t=md_and_context['md'], headers=argToList(headers))
         contents = j_res
         outputs = {'Ticket(val.Id == obj.Id)': md_and_context['context']}
@@ -642,29 +728,31 @@ def create_issue_command():
 
 
 def edit_issue_command(issue_id, mirroring=False, headers=None, status=None, transition=None, **kwargs):
-    url = f'rest/api/latest/issue/{issue_id}/'
     issue = get_issue_fields(mirroring=mirroring, **kwargs)
-    jira_req('PUT', url, json.dumps(issue))
     if status and transition:
         return_error("Please provide only status or transition, but not both.")
     elif status:
-        edit_status(issue_id, status)
+        edit_status(issue_id, status, issue)
     elif transition:
-        edit_transition(issue_id, transition)
-
+        edit_transition(issue_id, transition, issue)
+    else:
+        url = f'rest/api/latest/issue/{issue_id}/'
+        jira_req('PUT', url, json.dumps(issue))
     return get_issue(issue_id, headers, is_update=True)
 
 
-def edit_status(issue_id, status):
+def edit_status(issue_id, status, issue):
     # check for all authorized transitions available for this user
     # if the requested transition is available, execute it.
+    if not issue:
+        issue = {}
     j_res = list_transitions_data_for_issue(issue_id)
     transitions = [transition.get('name') for transition in j_res.get('transitions')]
     for i, transition in enumerate(transitions):
         if transition.lower() == status.lower():
             url = f'rest/api/latest/issue/{issue_id}/transitions?expand=transitions.fields'
-            json_body = {"transition": {"id": str(j_res.get('transitions')[i].get('id'))}}
-            return jira_req('POST', url, json.dumps(json_body))
+            issue['transition'] = {"id": str(j_res.get('transitions')[i].get('id'))}
+            return jira_req('POST', url, json.dumps(issue))
 
     return_error(f'Status "{status}" not found. \nValid transitions are: {transitions} \n')
 
@@ -679,20 +767,22 @@ def list_transitions_data_for_issue(issue_id):
     return jira_req('GET', url, resp_type='json')
 
 
-def edit_transition(issue_id, transition_name):
+def edit_transition(issue_id, transition_name, issue):
     """
     This function changes a transition for a given issue.
     :param issue_id: The ID of the issue.
     :param transition_name: The name of the new transition.
     :return: None
     """
+    if issue is None:
+        issue = {}
     j_res = list_transitions_data_for_issue(issue_id)
     transitions_data = j_res.get('transitions')
     for transition in transitions_data:
         if transition.get('name') == transition_name:
             url = f'rest/api/latest/issue/{issue_id}/transitions?expand=transitions.fields'
-            json_body = {"transition": {"id": transition.get("id")}}
-            return jira_req('POST', url, json.dumps(json_body))
+            issue['transition'] = {"id": transition.get("id")}
+            return jira_req('POST', url, json.dumps(issue))
 
     return_error(f'Transitions "{transition_name}" not found. \nValid transitions are: {transitions_data} \n')
 
@@ -819,7 +909,7 @@ def add_link_command(issue_id, title, url, summary=None, global_id=None, relatio
         link['application'] = {}
     if application_type:
         link['application']['type'] = application_type
-    if application_type:
+    if application_name:
         link['application']['name'] = application_name
 
     data = jira_req('POST', req_url, json.dumps(link), resp_type='json')
@@ -908,12 +998,13 @@ def fetch_incidents(query, id_offset, should_get_attachments, should_get_comment
     incidents, max_results = [], 50
     if fetch_by_created and last_created_time:
         last_issue_time = parse(last_created_time)
+        assert last_issue_time is not None, f'could not parse {last_created_time}'
         minute_to_fetch = last_issue_time - timedelta(minutes=2)
         formatted_minute_to_fetch = minute_to_fetch.strftime('%Y-%m-%d %H:%M')
         query = f'{query} AND created>=\"{formatted_minute_to_fetch}\"'
     else:
         if id_offset:
-            query = f'{query} AND id >= {id_offset}'
+            query = f'{query} AND id >= {id_offset} ORDER BY id ASC'
         if fetch_by_created:
             query = f'{query} AND created>-1m'
 
@@ -942,9 +1033,10 @@ def get_attachment_data(attachment):
     :param attachment: attachment metadata
     :return: attachment name and content
     """
-    attachment_url = f"secure{attachment['content'].split('/secure')[-1]}"
-    filename = attachment_url.split("/")[-1]
-    attachments_zip = jira_req(method='GET', resource_url=attachment_url).content
+    attachment_url = attachment.get('content')
+    filename = attachment.get('filename')
+    attachments_zip = jira_req(method='GET', resource_url=attachment_url, link=True).content
+
     return filename, attachments_zip
 
 
@@ -965,7 +1057,8 @@ def get_attachments(attachments, incident_modified_date, only_new=True):
                 file_results.append(fileResult(filename=filename, data=attachments_zip))
         else:
             for attachment in attachments:
-                attachment_modified_date: datetime = parse(dict_safe_get(attachment, ['created'], "", str))
+                attachment_modified_date: datetime = \
+                    parse(dict_safe_get(attachment, ['created'], "", str))  # type: ignore
                 if incident_modified_date < attachment_modified_date:
                     filename, attachments_zip = get_attachment_data(attachment)
                     file_results.append(fileResult(filename=filename, data=attachments_zip))
@@ -985,7 +1078,7 @@ def get_comments(comments, incident_modified_date, only_new=True):
     else:
         returned_comments = []
         for comment in comments:
-            comment_modified_date: datetime = parse(dict_safe_get(comment, ['updated'], "", str))
+            comment_modified_date: datetime = parse(dict_safe_get(comment, ['updated'], "", str))  # type: ignore
             if incident_modified_date < comment_modified_date:
                 returned_comments.append(comment)
         return returned_comments
@@ -1137,7 +1230,9 @@ def get_modified_remote_data_command(args):
             if not timezone_name:
                 demisto.error(f'Could not get Jira\'s time zone for get-modified-remote-data.Got unexpected reason:'
                               f' {res.json()}')
-            last_update: datetime = parse(remote_args.last_update, settings={'TIMEZONE': timezone_name})\
+            last_update_date = parse(remote_args.last_update, settings={'TIMEZONE': timezone_name})
+            assert last_update_date is not None, f'could not parse {remote_args.last_update}'
+            last_update: str = last_update_date \
                 .strftime('%Y-%m-%d %H:%M')
             demisto.debug(f'Performing get-modified-remote-data command. Last update is: {last_update}')
             _, _, context = issue_query_command(f'updated > "{last_update}"', max_results=100)
@@ -1175,9 +1270,10 @@ def get_remote_data_command(args) -> GetRemoteDataResponse:
         _, _, issue_raw_response = get_issue(issue_id=parsed_args.remote_incident_id)
         demisto.info('get remote data')
         # Timestamp - Issue last modified in jira server side
-        jira_modified_date: datetime = parse(dict_safe_get(issue_raw_response, ['fields', 'updated'], "", str))
+        jira_modified_date: datetime = \
+            parse(dict_safe_get(issue_raw_response, ['fields', 'updated'], "", str))  # type: ignore
         # Timestamp - Issue last sync in demisto server side
-        incident_modified_date: datetime = parse(parsed_args.last_update)
+        incident_modified_date: datetime = parse(parsed_args.last_update)  # type: ignore
         # Update incident only if issue modified in Jira server-side after the last sync
         demisto.info(f"jira_modified_date{jira_modified_date}")
         demisto.info(f"incident_modified_date{incident_modified_date}")

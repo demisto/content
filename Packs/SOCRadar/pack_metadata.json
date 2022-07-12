@@ -1,52 +1,56 @@
 {
-    "name": "SOCRadar",
-    "description": "Streamline remediation of alerts and incidents. Make quick, automated queries on ThreatFusion to get a risk reputation score.",
-    "support": "partner",
-    "currentVersion": "1.0.1",
-    "author": "SOCRadar Cyber Intelligence Inc.",
-    "url": "www.socradar.io",
-    "email": "xsoar@socradar.io",
-    "categories": [
-        "Analytics & SIEM",
-        "Data Enrichment & Threat Intelligence"
-    ],
-    "tags": [
-        "Threat Intelligence",
-        "Alerts",
-        "Incident Response"
-    ],
-    "useCases": [
-        "Incident Response",
-        "Threat Intelligence Management"
-    ],
-    "keywords": [
-        "Threat Intelligence",
-        "CTI",
-        "Digital Risk Protection"
-    ],
-    "devEmail": [
-        "xsoar@socradar.io"
-    ],
-    "githubUser": [
-        "socradar"
-    ],
-    "dependencies": {
-        "CommonPlaybooks": {
-            "mandatory": true,
-            "display_name": "Common Playbooks"
-        },
-        "CommonScripts": {
-            "mandatory": true,
-            "display_name": "Common Scripts"
-        },
-        "CommonTypes": {
-            "mandatory": true,
-            "display_name": "Common Types"
-        }
+  "name": "SOCRadar",
+  "description": "Streamline remediation of alerts and incidents. Make quick, automated queries on ThreatFusion to get a risk reputation score.",
+  "support": "partner",
+  "currentVersion": "2.0.0",
+  "author": "SOCRadar Cyber Intelligence Inc.",
+  "url": "www.socradar.io",
+  "email": "xsoar@socradar.io",
+  "categories": [
+    "Analytics & SIEM",
+    "Data Enrichment & Threat Intelligence"
+  ],
+  "tags": [
+    "Threat Intelligence",
+    "Alerts",
+    "Incident Response"
+  ],
+  "useCases": [
+    "Incident Response",
+    "Threat Intelligence Management"
+  ],
+  "keywords": [
+    "Threat Intelligence",
+    "CTI",
+    "Digital Risk Protection"
+  ],
+  "devEmail": [
+    "xsoar@socradar.io"
+  ],
+  "githubUser": [
+    "socradar"
+  ],
+  "dependencies": {
+    "CommonScripts": {
+      "mandatory": true,
+      "display_name": "Common Scripts"
     },
-    "displayedImages": [
-        "CommonPlaybooks",
-        "CommonScripts",
-        "CommonTypes"
-    ]
+    "CommonTypes": {
+      "mandatory": true,
+      "display_name": "Common Types"
+    },
+    "CommonPlaybooks": {
+      "mandatory": true,
+      "display_name": "Common Playbooks"
+    }
+  },
+  "displayedImages": [
+    "CommonScripts",
+    "CommonTypes",
+    "CommonPlaybooks"
+  ],
+  "marketplaces": [
+    "xsoar",
+    "marketplacev2"
+  ]
 }

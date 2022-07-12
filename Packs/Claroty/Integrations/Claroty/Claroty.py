@@ -551,7 +551,9 @@ def fetch_incidents(client: Client, last_run, first_fetch_time):
     # Check last queried item's timestamp
     latest_created_time = None
     if items:
-        latest_created_time = dateparser.parse(items[-1]['Timestamp']).replace(tzinfo=None).strftime(DATE_FORMAT)
+        parsed_date = dateparser.parse(items[-1]['Timestamp'])
+        assert parsed_date is not None, f"failed parsing {items[-1]['Timestamp']}"
+        latest_created_time = parsed_date.replace(tzinfo=None).strftime(DATE_FORMAT)
 
     # If timestamp stayed the same than get next 10
     if last_fetch == latest_created_time:
@@ -561,7 +563,9 @@ def fetch_incidents(client: Client, last_run, first_fetch_time):
 
     for item in items:
         # Make datetime object unaware of timezone for comparison
-        incident_created_time = dateparser.parse(item['Timestamp']).replace(tzinfo=None)
+        parsed_date = dateparser.parse(item['Timestamp'])
+        assert parsed_date is not None, f"failed parsing {item['Timestamp']}"
+        incident_created_time = parsed_date.replace(tzinfo=None)
 
         # Don't add duplicated incidents
         if item["ResourceID"] not in last_run_rids:

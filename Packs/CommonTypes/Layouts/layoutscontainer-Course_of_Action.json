@@ -56,7 +56,7 @@
                         "type": "relatedIncidents",
                         "w": 2,
                         "x": 0,
-                        "y": 7
+                        "y": 5
                     },
                     {
                         "displayType": "ROW",
@@ -130,7 +130,7 @@
                         "y": 0
                     },
                     {
-                        "h": 6,
+                        "h": 3,
                         "i": "main-acbc9a10-3d54-11ea-8f80-71a50769e869",
                         "items": null,
                         "maxW": 3,
@@ -142,7 +142,7 @@
                         "type": "indicatorTimeline",
                         "w": 1,
                         "x": 2,
-                        "y": 4
+                        "y": 5
                     },
                     {
                         "h": 3,
@@ -157,7 +157,7 @@
                         "type": "comments",
                         "w": 1,
                         "x": 2,
-                        "y": 10
+                        "y": 8
                     },
                     {
                         "displayType": "CARD",
@@ -235,7 +235,7 @@
                     },
                     {
                         "displayType": "ROW",
-                        "h": 2,
+                        "h": 3,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
                         "i": "main-a37f4790-cf12-11ea-99ca-719a20305a18",
@@ -258,7 +258,7 @@
                         "moved": false,
                         "name": "Course of Action Description",
                         "static": false,
-                        "w": 3,
+                        "w": 1,
                         "x": 0,
                         "y": 2
                     },
@@ -313,8 +313,8 @@
                         "static": false,
                         "type": "relationshipsTable",
                         "w": 2,
-                        "x": 0,
-                        "y": 4
+                        "x": 1,
+                        "y": 2
                     },
                     {
                         "displayType": "ROW",
@@ -349,7 +349,7 @@
                         "static": false,
                         "w": 2,
                         "x": 0,
-                        "y": 10
+                        "y": 8
                     }
                 ],
                 "type": "custom"

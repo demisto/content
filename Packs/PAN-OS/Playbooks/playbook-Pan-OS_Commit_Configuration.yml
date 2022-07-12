@@ -82,7 +82,7 @@ tasks:
       version: -1
       name: Commit to Panorama
       description: Commit Palo Alto Firewall or Panorama
-      script: '|||panorama-commit'
+      script: '|||pan-os-commit'
       type: regular
       iscommand: true
       brand: ''
@@ -129,7 +129,7 @@ tasks:
       PollingCommandArgName:
         simple: job_id
       PollingCommandName:
-        simple: panorama-commit-status
+        simple: pan-os-commit-status
       Timeout:
         simple: '60'
       dt:
@@ -169,7 +169,7 @@ tasks:
       version: -1
       name: Push rules to the Panorama device group
       description: Push rules from Palo Alto Panorama to the Palo Alto configured device group.
-      script: '|||panorama-push-to-device-group'
+      script: '|||pan-os-push-to-device-group'
       type: regular
       iscommand: true
       brand: ''
@@ -218,7 +218,7 @@ tasks:
       PollingCommandArgName:
         simple: job_id
       PollingCommandName:
-        simple: panorama-push-status
+        simple: pan-os-push-status
       Timeout:
         simple: '60'
       dt:
@@ -241,7 +241,7 @@ tasks:
       version: -1
       name: Get Panorama commit status
       description: Get commit status
-      script: '|||panorama-commit-status'
+      script: '|||pan-os-commit-status'
       type: regular
       iscommand: true
       brand: ''
@@ -267,7 +267,7 @@ tasks:
       version: -1
       name: Get Panorama push status
       description: Get push status
-      script: '|||panorama-push-status'
+      script: '|||pan-os-push-status'
       type: regular
       iscommand: true
       brand: ''
@@ -353,7 +353,7 @@ tasks:
       version: -1
       name: Fetch instance info
       description: Run any command supported in the API.
-      script: Panorama|||panorama
+      script: Panorama|||pan-os
       type: regular
       iscommand: true
       brand: Panorama

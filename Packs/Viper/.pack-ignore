@@ -1,2 +1,5 @@
 [file:Viper.yml]
 ignore=IN145
+
+[file:Viper_image.png]
+ignore=IM111

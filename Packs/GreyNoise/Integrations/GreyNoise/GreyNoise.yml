@@ -578,7 +578,7 @@ script:
     - contextPath: GreyNoise.IP.bot
       description: Whether the IP is associated with known bot activity or not. Common examples include credential stuffing, content scraping, or brute force attacks.
       type: Boolean
-  dockerimage: demisto/greynoise:1.0.0.24037
+  dockerimage: demisto/greynoise:1.0.0.25543
   feed: false
   isfetch: false
   longRunning: false
