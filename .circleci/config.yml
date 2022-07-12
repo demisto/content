@@ -162,10 +162,8 @@ references:
 
         echo "========== Build Parameters =========="
         set | grep -E "^NIGHTLY=|^CONTRIB_BRANCH=|^SDK_REF"
-        python --version | tee -a $CIRCLE_ARTIFACTS/python2_list.txt
-        python3 --version | tee -a $CIRCLE_ARTIFACTS/python3_list.txt
-        python -m pip list | tee -a $CIRCLE_ARTIFACTS/python2_list.txt
-        python3 -m pip list | tee -a $CIRCLE_ARTIFACTS/python3_list.txt
+        python3 --version | tee -a $CIRCLE_ARTIFACTS/installed_python_libraries.txt
+        python3 -m pip list | tee -a $CIRCLE_ARTIFACTS/installed_python_libraries.txt
         node --version
         npm --version
         demisto-sdk --version
