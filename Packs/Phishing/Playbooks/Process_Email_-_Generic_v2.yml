@@ -138,14 +138,14 @@ tasks:
     isautoswitchedtoquietmode: false
   '3':
     id: '3'
-    taskid: 5802b254-fac3-4c94-8b2d-89038b4239e5
+    taskid: cfcbc8f8-24b7-45bd-8d42-cfa8c12f163d
     type: regular
     task:
-      id: 5802b254-fac3-4c94-8b2d-89038b4239e5
+      id: cfcbc8f8-24b7-45bd-8d42-cfa8c12f163d
       version: -1
       name: Extract email artifacts and attachments
-      description: Parse an email from an eml or msg file and populate all relevant context data to investigate the email. Also extracts inner attachments and returns them to the war room. The incident labels themselves are preserved and not modified - only the "Label/x" context items that originated from the labels, and the best practice is to rely on these for the remainder of the playbook.
-      scriptName: ParseEmailFiles
+      description: (Beta) Parse an email from an eml or msg file and populate all relevant context data to investigate the email. Also extracts inner attachments and returns them to the war room. The incident labels themselves are preserved and not modified - only the "Label/x" context items that originated from the labels, and the best practice is to rely on these for the remainder of the playbook. This script is based on the parse-emails XSOAR python package, check the script documentation for more info
+      scriptName: ParseEmailFilesV2
       type: regular
       iscommand: false
       brand: ''
@@ -159,8 +159,6 @@ tasks:
         complex:
           root: inputs.EmailFileToExtract
     reputationcalc: 2
-    results:
-    - AttachmentName
     separatecontext: false
     view: |-
       {
@@ -1809,8 +1807,6 @@ tasks:
         retriescount: 2
         retriesinterval: 360
         completeafterreplies: 1
-        completeafterv2: false
-        completeaftersla: false
     form:
       questions:
       - id: '0'
@@ -2201,7 +2197,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ''
-      description: ''
     nexttasks:
       '#default#':
       - '6'
@@ -2278,7 +2273,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -2480,6 +2474,6 @@ outputs:
   description: The file object.
   type: string
 tests:
-- Phishing v3 - Get Original Email + Search & Delete - Test
 - Phishing v3 - DomainSquatting+EML+MaliciousIndicators - Test
+- Phishing v3 - Get Original Email + Search & Delete - Test
 fromversion: 6.0.0
