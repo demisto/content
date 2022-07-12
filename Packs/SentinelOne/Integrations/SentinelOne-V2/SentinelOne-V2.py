@@ -716,7 +716,7 @@ class Client(BaseClient):
         )
         response = self._http_request(method='GET', url_suffix=endpoint_url, params=query_params)
         urls_found = []
-        for i in range(30):
+        for i in range(len(response["data"])):
             if response['data'][i]['data'].get('downloadUrl') is not None:
                 urls_found.append(response['data'][i]['data'].get('downloadUrl'))
         for item in urls_found:
