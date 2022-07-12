@@ -508,7 +508,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: An IP address for assessment and enrichment
+  description: A Digital Shadows ShadowSearch query containing IP addresses
   playbookInputQuery:
 outputs:
 - contextPath: DBotScore.Indicator

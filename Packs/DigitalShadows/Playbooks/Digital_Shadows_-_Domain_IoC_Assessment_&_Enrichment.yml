@@ -507,7 +507,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: A domain for assessment and enrichment
+  description: A Digital Shadows ShadowSearch query containing domains
   playbookInputQuery:
 outputs:
 - contextPath: DBotScore.Indicator

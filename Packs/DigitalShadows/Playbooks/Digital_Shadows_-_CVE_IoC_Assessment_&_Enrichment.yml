@@ -499,7 +499,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: ''
+  description: A Digital Shadows ShadowSearch query containing CVE IDs
   playbookInputQuery:
 outputs:
 - contextPath: DBotScore.Indicator

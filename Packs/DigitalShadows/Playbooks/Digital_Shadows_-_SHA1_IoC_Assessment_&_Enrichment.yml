@@ -499,7 +499,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: A SHA1 hash for assessment and enrichment
+  description: A Digital Shadows ShadowSearch query containing SHA1 hashes
   playbookInputQuery:
 outputs:
 - contextPath: DBotScore.Indicator
