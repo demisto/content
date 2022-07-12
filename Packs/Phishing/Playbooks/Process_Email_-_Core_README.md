@@ -1,4 +1,4 @@
-Adds email details to the relevant context entities and handle the case where original emails are attached.
+Deprecated. Use the Process Email - Core v2 playbook instead. Adds email details to the relevant context entities and handle the case where original emails are attached.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.

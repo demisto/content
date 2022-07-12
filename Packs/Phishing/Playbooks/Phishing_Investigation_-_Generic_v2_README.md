@@ -1,6 +1,6 @@
 ## Usage
 
-Use this playbook to investigate and remediate a potential phishing incident and detect phishing campaigns. The playbook simultaneously engages with the user that triggered the incident, while investigating the incident itself.
+Deprecated. Use the Phishing - Generic v3 playbook instead. Use this playbook to investigate and remediate a potential phishing incident and detect phishing campaigns. The playbook simultaneously engages with the user that triggered the incident, while investigating the incident itself.
 
 The final remediation tasks are always decided by a human analyst.
 
