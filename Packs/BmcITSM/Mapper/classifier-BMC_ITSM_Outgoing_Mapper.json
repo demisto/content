@@ -1,0 +1,204 @@
+{
+    "brands": null,
+    "cacheVersn": 0,
+    "defaultIncidentType": "",
+    "definitionId": "",
+    "description": "",
+    "feed": false,
+    "fromServerVersion": "",
+    "id": "4b66d7a1-f156-47d1-8ccc-a7660f18c44f",
+    "incidentSamples": null,
+    "indicatorSamples": null,
+    "instanceIds": null,
+    "itemVersion": "",
+    "keyTypeMap": {},
+    "locked": false,
+    "logicalVersion": 18,
+    "mapping": {
+        "BMC Change-Request": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "CloseReason": {
+                    "simple": "closeNotes"
+                },
+                "Details": {
+                    "simple": "details"
+                },
+                "Impact": {
+                    "simple": "bmcimpact"
+                },
+                "Priority": {
+                    "simple": "sourcepriority"
+                },
+                "RiskLevel": {
+                    "simple": "bmcrisklevel"
+                },
+                "Status": {
+                    "simple": "sourcestatus"
+                },
+                "StatusReason": {
+                    "simple": "bmcstatusreason"
+                },
+                "Summary": {
+                    "simple": "description"
+                },
+                "Urgency": {
+                    "simple": "sourceurgency"
+                }
+            }
+        },
+        "BMC Incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "CloseReason": {
+                    "simple": "closeNotes"
+                },
+                "Details": {
+                    "simple": "details"
+                },
+                "Impact": {
+                    "simple": "bmcimpact"
+                },
+                "Priority": {
+                    "simple": "sourcepriority"
+                },
+                "Status": {
+                    "simple": "sourcestatus"
+                },
+                "StatusReason": {
+                    "simple": "bmcstatusreason"
+                },
+                "Summary": {
+                    "simple": "description"
+                },
+                "Urgency": {
+                    "simple": "sourceurgency"
+                }
+            }
+        },
+        "BMC Problem Investigation incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "CloseReason": {
+                    "simple": "closeNotes"
+                },
+                "Details": {
+                    "simple": "details"
+                },
+                "Impact": {
+                    "simple": "bmcimpact"
+                },
+                "Priority": {
+                    "simple": "labels.Priority"
+                },
+                "Status": {
+                    "simple": "sourcestatus"
+                },
+                "StatusReason": {
+                    "simple": "bmcstatusreason"
+                },
+                "Summary": {
+                    "simple": "description"
+                },
+                "Urgency": {
+                    "simple": "sourceurgency"
+                }
+            }
+        },
+        "BMC Problem – Known Error": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "CloseReason": {
+                    "simple": "closeNotes"
+                },
+                "Details": {
+                    "simple": "details"
+                },
+                "Impact": {
+                    "simple": "bmcimpact"
+                },
+                "Priority": {
+                    "simple": "sourcepriority"
+                },
+                "Status": {
+                    "simple": "sourcestatus"
+                },
+                "StatusReason": {
+                    "simple": "bmcstatusreason"
+                },
+                "Summary": {
+                    "simple": "description"
+                },
+                "Urgency": {
+                    "simple": "sourceurgency"
+                }
+            }
+        },
+        "BMC Service Request": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "CloseReason": {
+                    "simple": "closeNotes"
+                },
+                "Details": {
+                    "simple": "details"
+                },
+                "Impact": {
+                    "simple": "bmcimpact"
+                },
+                "Status": {
+                    "simple": "sourcestatus"
+                },
+                "StatusReason": {
+                    "simple": "bmcstatusreason"
+                },
+                "Summary": {
+                    "simple": "description"
+                },
+                "Urgency": {
+                    "simple": "sourceurgency"
+                }
+            }
+        },
+        "BMC Task": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "CloseReason": {
+                    "simple": "closeNotes"
+                },
+                "Details": {
+                    "simple": "details"
+                },
+                "Priority": {
+                    "simple": "sourcepriority"
+                },
+                "Status": {
+                    "simple": "sourcestatus"
+                },
+                "StatusReason": {
+                    "simple": "bmcstatusreason"
+                },
+                "Summary": {
+                    "simple": "description"
+                },
+                "Urgency": {
+                    "simple": "sourceurgency"
+                }
+            }
+        }
+    },
+    "name": "BMC ITSM Outgoing Mapper",
+    "nameRaw": "BMC ITSM Outgoing Mapper",
+    "packID": "",
+    "packName": "",
+    "propagationLabels": [
+        "all"
+    ],
+    "sourceClassifierId": "",
+    "system": false,
+    "toServerVersion": "",
+    "transformer": {},
+    "type": "mapping-outgoing",
+    "unclassifiedCases": null,
+    "version": -1
+}

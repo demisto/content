@@ -1,7 +1,19 @@
 {
+    "brands": null,
+    "cacheVersn": 0,
+    "defaultIncidentType": "",
+    "definitionId": "",
     "description": "",
     "feed": false,
-    "id": "BMC ITSM Incoming Mapper",
+    "fromServerVersion": "",
+    "id": "e1a21b64-6636-4227-8358-0c2b9ce2086e",
+    "incidentSamples": null,
+    "indicatorSamples": null,
+    "instanceIds": null,
+    "itemVersion": "",
+    "keyTypeMap": {},
+    "locked": false,
+    "logicalVersion": 35,
     "mapping": {
         "BMC Change-Request": {
             "dontMapEventToLabels": false,
@@ -12,11 +24,20 @@
                 "BMC Display ID": {
                     "simple": "DisplayID"
                 },
+                "BMC Impact": {
+                    "simple": "Impact"
+                },
+                "BMC Reason For Change": {
+                    "simple": "ReasonForChange"
+                },
                 "BMC Request ID": {
                     "simple": "RequestID"
                 },
                 "BMC Risk Level": {
                     "simple": "RiskLevel"
+                },
+                "BMC Status Reason": {
+                    "simple": "StatusReason"
                 },
                 "BMC Sub-Type": {
                     "simple": "SubType"
@@ -41,6 +62,9 @@
                 "BMC Request ID": {
                     "simple": "RequestID"
                 },
+                "BMC Status Reason": {
+                    "simple": "StatusReason"
+                },
                 "BMC Sub-Type": {
                     "simple": "SubType"
                 },
@@ -58,8 +82,14 @@
                 "BMC Display ID": {
                     "simple": "DisplayID"
                 },
+                "BMC Impact": {
+                    "simple": "Impact"
+                },
                 "BMC Request ID": {
                     "simple": "RequestID"
+                },
+                "BMC Status Reason": {
+                    "simple": "StatusReason"
                 },
                 "BMC Sub-Type": {
                     "simple": "SubType"
@@ -78,8 +108,14 @@
                 "BMC Display ID": {
                     "simple": "DisplayID"
                 },
+                "BMC Impact": {
+                    "simple": "Impact"
+                },
                 "BMC Request ID": {
                     "simple": "RequestID"
+                },
+                "BMC Status Reason": {
+                    "simple": "StatusReason"
                 },
                 "BMC Sub-Type": {
                     "simple": "SubType"
@@ -98,8 +134,14 @@
                 "BMC Display ID": {
                     "simple": "DisplayID"
                 },
+                "BMC Impact": {
+                    "simple": "Impact"
+                },
                 "BMC Request ID": {
                     "simple": "RequestID"
+                },
+                "BMC Status Reason": {
+                    "simple": "StatusReason"
                 },
                 "BMC Sub-Type": {
                     "simple": "SubType"
@@ -120,6 +162,9 @@
                 },
                 "BMC Request ID": {
                     "simple": "RequestID"
+                },
+                "BMC Status Reason": {
+                    "simple": "StatusReason"
                 },
                 "BMC Sub-Type": {
                     "simple": "SubType"
@@ -183,6 +228,15 @@
                 "Source Urgency": {
                     "simple": "Urgency"
                 },
+                "dbotMirrorDirection": {
+                    "simple": "miror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "RequestID"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "miror_instance"
+                },
                 "details": {
                     "simple": "Details"
                 },
@@ -196,6 +250,17 @@
         }
     },
     "name": "BMC ITSM Incoming Mapper",
+    "nameRaw": "BMC ITSM Incoming Mapper",
+    "packID": "",
+    "packName": "",
+    "propagationLabels": [
+        "all"
+    ],
+    "sourceClassifierId": "",
+    "system": false,
+    "toServerVersion": "",
+    "transformer": {},
     "type": "mapping-incoming",
+    "unclassifiedCases": null,
     "version": -1
 }
