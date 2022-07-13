@@ -22,7 +22,6 @@ def load_mock_response(file_name: str) -> str:
     Returns:
         str: Mock file content.
     """
-    print(os.path.join("test_data", file_name))
     with open(os.path.join("test_data", file_name), mode="r", encoding="utf-8") as mock_file:
         return json.loads(mock_file.read())
 
