@@ -2359,18 +2359,15 @@ def qradar_search_create_command(client: Client, params: Dict, args: Dict) -> Co
     # if this call fails, raise an error and stop command execution
     if query_expression or saved_search_id:
         response = client.search_create(query_expression, saved_search_id)
-        outputs = sanitize_outputs(response, SEARCH_OLD_NEW_MAP)
     else:
-        search_id = create_events_search(client,
-                                         fetch_mode,
-                                         events_columns,
-                                         events_limit,
-                                         int(offense_id),
-                                         start_time)
-        if search_id == QueryStatus.ERROR.value:
-            raise DemistoException(f'Could not create search for {offense_id}')
-        outputs = [{'ID': search_id,
-                   'Status': 'Created'}]
+        response = create_events_search(client,
+                                        fetch_mode,
+                                        events_columns,
+                                        events_limit,
+                                        int(offense_id),
+                                        start_time,
+                                        return_raw_response=True)
+    outputs = sanitize_outputs(response, SEARCH_OLD_NEW_MAP)
     return CommandResults(
         readable_output=tableToMarkdown('Create Search', outputs),
         outputs_prefix='QRadar.Search',
@@ -3358,6 +3355,7 @@ def create_events_search(client: Client,
                          events_limit: int,
                          offense_id: int,
                          offense_start_time: str = None,
+                         return_raw_response: bool = False,
                          ) -> str:
     additional_where = ''' AND LOGSOURCETYPENAME(devicetype) = 'Custom Rule Engine' ''' \
         if fetch_mode == FetchMode.correlations_events_only.value else ''
@@ -3377,6 +3375,8 @@ def create_events_search(client: Client,
                         f'Start Time: {offense_start_time}, '
                         f'events_limit: {events_limit}, '
                         f'ret_value: {search_response}.')
+        if return_raw_response:
+            return search_response
         return search_response['search_id'] if search_response['search_id'] else QueryStatus.ERROR.value
     except Exception as e:
         print_debug_msg(f'Search for {offense_id} failed. Error: {e}')
