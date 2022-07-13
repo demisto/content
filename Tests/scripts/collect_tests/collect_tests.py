@@ -215,19 +215,20 @@ class TestCollector(ABC):
             reason_description=reason_description,
         )
 
-    def _add_packs_from_test_playbooks(self, tests: set[str]) -> list[CollectedTests]:  # only called in _add_packs_used
-        logger.info('searching for pack_name_to_pack_metadata under which test playbooks are saved,'
-                    ' to make sure they are installed')
-        collected = []
-
-        for test in tests:
-            if test not in self.id_set.test_playbooks_to_pack_id:
-                raise ValueError(f'test {test} is missing from id-set, stopping collection.')
-            if pack := self.id_set.test_playbooks_to_pack_id[test]:
-                collected.append(
-                    self._collect_pack(pack, reason=CollectionReason.PACK_MATCHES_TEST, reason_description='')
-                )
-        return collected
+    # def _add_packs_from_test_playbooks(self, tests: set[str]) -> list[CollectedTests]:
+    # only called in _add_packs_used # todo reconsider
+    #     logger.info('searching for pack_name_to_pack_metadata under which test playbooks are saved,'
+    #                 ' to make sure they are installed')
+    #     collected = []
+    #
+    #     for test in tests:
+    #         if test not in self.id_set.test_playbooks_to_pack_id:
+    #             raise ValueError(f'test {test} is missing from id-set, stopping collection.')
+    #         if pack := self.id_set.test_playbooks_to_pack_id[test]:
+    #             collected.append(
+    #                 self._collect_pack(pack, reason=CollectionReason.PACK_MATCHES_TEST, reason_description='')
+    #             )
+    #     return collected
 
 
 class BranchTestCollector(TestCollector):

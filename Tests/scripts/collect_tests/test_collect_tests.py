@@ -9,7 +9,7 @@ from collect_tests import (BranchTestCollector, Machine,
                            XSOARNightlyTestCollector)
 from demisto_sdk.commands.common.constants import MarketplaceVersions
 
-from Tests.scripts.collect_tests.constants import XSOAR_SANITY_TEST_NAMES
+from Tests.scripts.collect_tests.constants import XSOAR_SANITY_TEST_NAMES, ONLY_INSTALL_PACK
 from Tests.scripts.collect_tests.path_manager import PathManager
 from Tests.scripts.collect_tests.utils import PackManager
 
@@ -23,6 +23,8 @@ Test Collection Unit-Test cases
 - `D` has a single pack with from_version == to_version == 6.5, for testing the version range. 
 - `E` has a single pack with a script tested using myTestPlaybook
 - `F` has a single pack with a script set up as `no tests`, and a conf where myTestPlaybook is set as the script's test.
+- `G` has objects that trigger collection of the pack (without tests)
+- `H` has a single file, that is not a content item, and find_type is mocked to test ONLY_INSTALL_PACK.
 """
 
 
@@ -63,6 +65,8 @@ class MockerCases:
     D = CollectTestsMocker(Path('test_data/D'))
     E = CollectTestsMocker(Path('test_data/E'))
     F = CollectTestsMocker(Path('test_data/F'))
+    G = CollectTestsMocker(Path('test_data/G'))
+    H = CollectTestsMocker(Path('test_data/H'))
 
 
 def _test(monkeypatch, case_mocker: CollectTestsMocker, run_nightly: bool, run_master: bool, collector_class: Callable,
@@ -248,3 +252,58 @@ def test_branch(
         expected_machines=expected_machines,
         collector_class_args=collector_class_args
     )
+
+
+@pytest.mark.parametrize('file_type', ONLY_INSTALL_PACK)
+def test_only_collect_pack(mocker, monkeypatch, file_type: collect_tests.FileType):
+    """
+    give    a content item type for which no tests should be collected
+    when    collecting with a BranchTestCollector
+    then    make sure the pack is collected, but tests are not
+    """
+    # avoid crashing
+    mocker.patch.object(collect_tests, 'Repo', return_value=None)
+
+    # test mockers
+    mocker.patch.object(BranchTestCollector, '_get_changed_files', return_value=('Packs/myPack/some_file',))
+    mocker.patch('collect_tests.find_type_by_path', return_value=file_type)
+
+    # noinspection PyTypeChecker
+    _test(
+        monkeypatch,
+        case_mocker=MockerCases.H,
+        run_nightly=False,
+        run_master=False,
+        collector_class=BranchTestCollector,
+        expected_tests=(),
+        expected_packs=('myPack',),
+        expected_machines=None,
+        collector_class_args=XSOAR_BRANCH_ARGS
+    )
+
+
+def test_invalid_content_item(mocker, monkeypatch):
+    """
+    given:  a changed file that  _get_changed_files can not identify
+    when:   collecting tests
+    then:   make sure an appropriate error is raised
+    """
+    mocker.patch.object(collect_tests, 'Repo', return_value=None)
+
+    # test mockers
+    mocker.patch.object(BranchTestCollector, '_get_changed_files', return_value=('Packs/myPack/some_file',))
+
+    with pytest.raises(ValueError) as e:
+        # noinspection PyTypeChecker
+        _test(
+            monkeypatch,
+            case_mocker=MockerCases.H,
+            run_nightly=False,
+            run_master=False,
+            collector_class=BranchTestCollector,
+            expected_tests=(),
+            expected_packs=('myPack',),
+            expected_machines=None,
+            collector_class_args=XSOAR_BRANCH_ARGS
+        )
+    assert 'Unexpected filetype None' in str(e.value)
