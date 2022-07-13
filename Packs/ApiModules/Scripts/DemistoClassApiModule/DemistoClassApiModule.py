@@ -472,7 +472,7 @@ def demisto_print(*args):
     output = StringIO()
     __builtin__.print(*args, file=output)
     result = output.getvalue().strip()
-    demisto.log(result)
+    demisto.log(result)     # pylint: disable=E9012
 
 
 print = demisto_print
