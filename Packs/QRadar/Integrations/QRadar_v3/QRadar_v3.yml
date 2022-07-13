@@ -777,32 +777,32 @@ script:
     - name: offense_id
       required: false
       type: Number
-      description: The ID of the offense to retrieve.
+      description: The ID of the offense to retrieve. Mutually exclusive with query_expression and saved_search_id.
     - name: events_limit
       required: false
       type: Number
-      description: The number of events to return.
+      description: The number of events to return. Mutually exclusive with query_expression and saved_search_id.
     - name: events_columns
       required: false
       type: String
-      description: Comma separated list of columns to return.
+      description: Comma separated list of columns to return. Mutually exclusive with query_expression and saved_search_id.
     - name: fetch_mode
       type: PREDEFINED
       predefined:
         - Fetch With All Events
         - Fetch Correlation Events Only
       required: false
-      description: The mode to use when fetching events.
+      description: The mode to use when fetching events. Mutually exclusive with query_expression and saved_search_id.
     - name: start_time
       required: false
       type: Date
       description: The start time of the search.
     - name: query_expression
       required: false
-      description: The AQL query to execute. Mutually exclusive with saved_search_id.
+      description: The AQL query to execute. Mutually exclusive with all other arguments.
     - name: saved_search_id
       required: false
-      description: Saved search ID to execute. Mutually exclusive with query_expression. Saved search ID is the 'id' field returned by the 'qradar-saved-searches-list' command.
+      description: Saved search ID to execute. Mutually exclusive with all other arguments. Saved search ID is the 'id' field returned by the 'qradar-saved-searches-list' command.
   - name: qradar-search-status-get
     description: Retrieves status information for a search, based on the search ID.
     outputs:
@@ -2695,26 +2695,26 @@ script:
     - name: offense_id
       required: false
       type: Number
-      description: The ID of the offense to retrieve.
+      description: The ID of the offense to retrieve. Mutually exclusive with query_expression.
     - name: events_limit
       required: false
       type: Number
-      description: The number of events to return.
+      description: The number of events to return. Mutually exclusive with query_expression.
     - name: events_columns
       required: false
       type: String
-      description: Comma separated list of columns to return.
+      description: Comma separated list of columns to return. Mutually exclusive with query_expression.
     - name: fetch_mode
       type: PREDEFINED
       predefined:
         - Fetch With All Events
         - Fetch Correlation Events Only
       required: false
-      description: The mode to use when fetching events.
+      description: The mode to use when fetching events. Mutually exclusive with query_expression.
     - name: start_time
       required: false
       type: Date
-      description: The start time of the search.
+      description: The start time of the search. Mutually exclusive with query_expression
     - name: query_expression
       required: false
       type: String
