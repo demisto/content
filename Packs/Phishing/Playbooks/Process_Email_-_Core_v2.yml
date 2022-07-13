@@ -136,7 +136,7 @@ tasks:
       id: 9b7f8f49-fdef-40bb-8ad3-0fda21e0b65d
       version: -1
       name: Extract and save email details
-      description: (Beta) Parse an email from an eml or msg file and populate all relevant context data to investigate the email. Also extracts inner attachments and returns them to the war room. The incident labels themselves are preserved and not modified - only the "Label/x" context items that originated from the labels, and the best practice is to rely on these for the remainder of the playbook. This script is based on the parse-emails XSOAR python package, check the script documentation for more info
+      description: Parse an email from an eml or msg file and populate all relevant context data to investigate the email. Also extracts inner attachments and returns them to the war room. The incident labels themselves are preserved and not modified - only the "Label/x" context items that originated from the labels, and the best practice is to rely on these for the remainder of the playbook. This script is based on the parse-emails XSOAR python package, check the script documentation for more info
       scriptName: ParseEmailFilesV2
       type: regular
       iscommand: false
