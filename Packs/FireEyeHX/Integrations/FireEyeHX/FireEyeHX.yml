@@ -1065,7 +1065,7 @@ script:
       description: FIreEye HX instance
       type: date
     deprecated: true
-  dockerimage: demisto/python3:3.10.4.30607
+  dockerimage: demisto/python3:3.10.5.31928
   isfetch: true
   runonce: false
   script: ''
