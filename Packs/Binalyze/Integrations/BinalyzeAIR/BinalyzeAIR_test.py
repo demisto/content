@@ -1,7 +1,4 @@
 from CommonServerPython import *
-import requests
-
-requests.packages.urllib3.disable_warnings()
 
 MOCK_URL = 'https://nonexistent-domain.com/'
 

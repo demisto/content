@@ -43,7 +43,6 @@ class Client(BaseClient):
 
     def air_isolate(self, endpoint: str, organization_id: int, isolation: str) -> Dict[str, str]:
         ''' Makes a POST request /api/public/acquisitions/acquire endpoint to verify acquire evidence
-
         :param endpoint str: endpoint hostname to start acquisition.
         :param isolation str: To isolate enable, to disable isolate use disable
         :param organization_id int: Organization ID of the endpoint.
@@ -80,8 +79,6 @@ def test_connection(base_url) -> str:
         return demisto.results('ok')
     else:
         return demisto.results('test connection failed')
-
-    '''Command Line Handlers'''
 
 
 def air_acquire_command(client: Client, args: Dict[str, Any]) -> CommandResults:
