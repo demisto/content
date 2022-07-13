@@ -1587,24 +1587,27 @@ def update_threat_status(client: Client, args: dict) -> CommandResults:
     # Get arguments
     threat_ids = argToList(args.get('threat_ids'))
     status = args.get('status')
-    
-    # Make request and get raw response
-    updated_threats = client.update_threat_status_request(threat_ids, status)
-    
-    # Parse response into context & content entries
-    if updated_threats.get('affected') and int(updated_threats.get('affected')) > 0:
-        updated = True
-        meta = f'Total of {updated_threats.get("affected")} provided threats status were updated successfully'
-    else:
-        updated = False
-        meta = 'No threats were updated'
+    affected = 0 
+    meta = 'No threats were updated'
+
     for threat_id in threat_ids:
+        # Make request and get raw response
+        updated_threats = client.update_threat_status_request(threat_id, status)
+        # Parse response into context & content entries
+        if updated_threats.get('affected') and int(updated_threats.get('affected')) > 0:
+            updated = True
+            affected += 1
+        else:
+            updated = False
         context_entries.append({
             'Updated': updated,
             'ID': threat_id,
             'Status': status,
         })
-    
+
+    if affected > 0:
+        meta = f'Total of {affected} provided threats status were updated successfully'
+
     return CommandResults(
         readable_output=tableToMarkdown('Sentinel One - Update threats status', context_entries, metadata=meta, removeNull=True),
         outputs_prefix='SentinelOne.Threat',
@@ -1621,24 +1624,27 @@ def update_alert_status(client: Client, args: dict) -> CommandResults:
     # Get arguments
     alert_ids = argToList(args.get('alert_ids'))
     status = args.get('status')
-    
-    # Make request and get raw response
-    updated_alerts = client.update_alert_status_request(alert_ids, status)
-    
-    # Parse response into content entries
-    if updated_alerts.get('affected') and int(updated_alerts.get('affected')) > 0:
-        updated = True
-        meta = f'Total of {updated_alerts.get("affected")} provided alerts status were updated successfully'
-    else:
-        updated = False
-        meta = 'No alerts were updated'
+    affected = 0
+    meta = 'No alerts were updated'
+        
     for alert_id in alert_ids:
+        # Make request and get raw response
+        updated_alerts = client.update_alert_status_request(alert_id, status)
+        # Parse response into content entries
+        if updated_alerts.get('affected') and int(updated_alerts.get('affected')) > 0:
+            updated = True
+            affected += 1
+        else:
+            updated = False
         context_entries.append({
             'Updated': updated,
             'ID': alert_id,
             'Status': status,
         })
-    
+
+    if affected > 0:
+        meta = f'Total of {affected} provided alerts status were updated successfully'
+
     return CommandResults(
         readable_output=tableToMarkdown('Sentinel One - Update alerts status', context_entries, metadata=meta, removeNull=True),
         outputs_prefix='SentinelOne.Alert',
