@@ -1,16 +1,15 @@
-BmcITSM integration allows customers to manage service request, incident, change request, task, problem investigation and known error tickets.
-This integration was integrated and tested with version 21.02 of BmcITSM.
+BMC Remedy ITSM integration allows customers to manage service request, incident, change request, task, problem investigation and known error tickets.
+This integration was integrated and tested with version 21.02 of BmcITSM
 
-## Configure BmcITSM on Cortex XSOAR
+## Configure BMC Remedy ITSM on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for BmcITSM.
+2. Search for BMC Remedy ITSM.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Fetch incidents |  | False |
-    | Server URL | For Example: http://localhost:8008 | True |
+    | Server URL | For Example: https://localhost:8008 | True |
     | Username |  | True |
     | Password |  | True |
     | Maximum incidents per fetch. | Default is 50. Maximum is 200. | False |
@@ -20,8 +19,15 @@ This integration was integrated and tested with version 21.02 of BmcITSM.
     | Ticket Impact | The impact of the tickets to fetch. | False |
     | Ticket Urgency | The urgnecy of the tickets to fetch. | False |
     | Fetch By Query | Search qualification to fetch tickets. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query will be used as an addition to the existing params. You can Review the BMC documentation for how to Build search qualifications: https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html | False |
+    | Incident type |  | False |
+    | Fetch incidents |  | False |
+    | Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from  BMC Remedy ITSM to XSOAR\), Outgoing \(from XSOAR to BMC Remedy ITSM\), or Incoming and Outgoing \(from/to XSOAR and BMC Remedy ITSM\). | False |
+    | Close Mirrored XSOAR Incident | When selected, closing the BMC Remedy ITSM ticket is mirrored in Cortex XSOAR. | False |
+    | Close Mirrored BMC Remedy ITSM Ticket | When selected, closing the XSOAR incident is mirrored in BMC Remedy ITSM. | False |
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
+
+4. Click **Test** to validate the URLs, token, and connection.
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
