@@ -42,6 +42,7 @@ The query parameter '$filter' is not supported when using the 'search' parameter
 | proxy | Whether to use system proxy settings. | False |
 | self_deployed | Whether to use a self deployed Azure Application. | False |
 | incidentType | The incident type. | False |
+| display_full_email_body | Whether to fetch incidents with the entire email body, or just an email body preview, mark if the full email body is required. | False
 
 4. Click **Test** to validate the URLs, token, and connection.
 
