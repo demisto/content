@@ -5728,15 +5728,15 @@ script:
         description: The machine ID on which the action was executed.
         type: String
   - arguments:
-      - default: true
-        description: A comma-separated list of machine IDs to be used for offboarding.
+    - default: true
+      description: A comma-separated list of machine IDs to be used for offboarding.
           e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424.
-        isArray: true
-        name: machine_id
-        required: true
-      - description: A comment to associate with the action.
-        name: comment
-        required: true
+      isArray: true
+      name: machine_id
+      required: true
+    - description: A comment to associate with the action.
+      name: comment
+      required: true
     description: Offboard a machine from defender.
     execution: true
     name: microsoft-atp-offboard-machine
