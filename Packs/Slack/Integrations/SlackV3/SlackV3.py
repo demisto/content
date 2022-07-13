@@ -2606,8 +2606,8 @@ def main() -> None:
     Main
     """
     global CLIENT
-    # if is_debug_mode():
-    os.environ['PYTHONASYNCIODEBUG'] = "1"
+    if is_debug_mode():
+        os.environ['PYTHONASYNCIODEBUG'] = "1"
 
     commands = {
         'test-module': test_module,
@@ -2639,7 +2639,8 @@ def main() -> None:
         LOG(e)
         return_error(str(e))
     finally:
-        demisto.info(f'{command_name} completed. loop: {loop_info(CLIENT._event_loop)}')  # type: ignore
+        demisto.info(
+            f'{command_name} completed.')
         if is_debug_mode():
             print_thread_dump()
 
