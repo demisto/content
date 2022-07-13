@@ -7766,7 +7766,7 @@ def parse_raw_whois(raw_data, normalized=None, never_query_handles=True, handle_
         if match is not None:
             chunk = match.group(1)
             for match in re.findall("\s+?(.+)\n", chunk):
-                if match.strip():
+                if match.strip():  # type: ignore
                     match = match.split()[0]  # type: ignore
                     # Prevent nameserver aliases from being picked up.
                     if not match.startswith("[") and not match.endswith("]"):  # type: ignore
