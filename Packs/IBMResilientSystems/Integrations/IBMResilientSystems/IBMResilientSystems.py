@@ -306,7 +306,7 @@ def extract_data_form_other_fields_argument(other_fields, patch):
     Args:
         other_fields (str): Contains the field that should be changed and the new value ({"name": {"text": "The new name"}}).
         incident (dict): Contains the old value of the field that should be changed ({"name": "The old name"}).
-        patch (Resilient.Patch): Instance a Resilient.Patch variable (e.g. 'patch') then call patch.add_valu(name,value)
+        patch (Resilient.Patch): Instantiate a Resilient.Patch variable (e.g. 'patch') then call patch.add_value(name,value)
                                 with name being string name of the field being changed and value being the value
                                 this replaces the previous 'change' requiring old and new value, i.e. patch does this
                                 and does not require IDs, which are tenant specific, you simply use the name,
