@@ -2021,10 +2021,17 @@ def offboard_machine_command(client: MsClient, args: dict):
     entry_context = {
         'MicrosoftATP.MachineAction(val.ID === obj.ID)': machines_action_data
     }
-    human_readable = tableToMarkdown("The offboards request has been submitted successfully:", machines_action_data,
+    human_readable = tableToMarkdown("The offboard request has been submitted successfully:", machines_action_data,
                                      headers=headers, removeNull=True)
     human_readable += add_error_message(failed_machines, machine_ids)
-    return human_readable, entry_context, raw_response
+
+    return CommandResults(
+        outputs=entry_context,
+        outputs_key_field=["ID", "MachineID"],
+        outputs_prefix="MicrosoftATP.OffboardMachine",
+        readable_output=human_redable,
+        raw_response=raw_response
+    )
 
 
 def isolate_machine_command(client: MsClient, args: dict):
@@ -4523,7 +4530,6 @@ def run_polling_command(client: MsClient, args: dict, cmd: str, action_func: Cal
 
     # distinguish between the initial run, which is the upload run, and the results run
     is_first_run = 'machine_action_id' not in args
-    demisto.debug(f'polling args: {args}')
     if is_first_run:
         command_results = action_func(client, args)
         outputs = command_results.outputs
@@ -4543,7 +4549,6 @@ def run_polling_command(client: MsClient, args: dict, cmd: str, action_func: Cal
         return command_results
 
     # not a first run
-
     command_result = results_function(client, args)
     action_status = command_result.outputs.get("status")
     demisto.debug(f"action status is: {action_status}")
@@ -4561,6 +4566,7 @@ def run_polling_command(client: MsClient, args: dict, cmd: str, action_func: Cal
         raise Exception(error_msg)
 
     elif command_status != 'Completed' or action_status == 'InProgress':
+        demisto.debug("action status is not completed")
         # schedule next poll
         polling_args = {
             'interval_in_seconds': interval_in_secs,
@@ -5007,7 +5013,7 @@ def main():  # pragma: no cover
         elif command == 'microsoft-atp-advanced-hunting-cover-up':
             return_results(cover_up_command(client, args))
         elif command == 'microsoft-atp-offboard-machine':
-            return_outputs(*offboard_machine_command(client, args))
+            return_outputs(offboard_machine_command(client, args))
         elif command == 'microsoft-atp-get-machine-users':
             return_results(get_machine_users_command(client, args))
         elif command == 'microsoft-atp-get-machine-alerts':
@@ -5022,3 +5028,4 @@ from MicrosoftApiModule import *  # noqa: E402
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
+
