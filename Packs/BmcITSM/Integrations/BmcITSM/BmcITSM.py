@@ -129,7 +129,7 @@ COMMON_PROPERTIES = [
 ]
 
 TICKET_TYPE_TO_LIST_FORM = {
-    SERVICE_REQUEST: "SRM:Request",  # TODO: change to SRM:Request
+    SERVICE_REQUEST: "SRM:Request",
     CHANGE_REQUEST: "CHG:ChangeInterface",
     INCIDENT: "HPD:IncidentInterface",
     TASK: "TMS:Task",
@@ -2554,7 +2554,7 @@ def format_command_output(records: List[dict],
 
 
 def get_paginated_records_with_hr(
-    raw_data: List[dict],  # type: ignore
+    raw_data: List[dict],
     limit: Optional[int],
     page: int = None,
     page_size: int = None,
@@ -2636,10 +2636,8 @@ def validate_related_arguments_provided(**related_args):
         raise ValueError(f"The arguments: {list(related_args.keys())} should be provided together.")
 
 
-def extract_args_from_additional_fields_arg(
-        additional_fields: str,
-        field_name: str  # type: ignore
-) -> Tuple[Any, List[str]]:
+def extract_args_from_additional_fields_arg(additional_fields: str,
+                                            field_name: str) -> Tuple[Any, List[str]]:
     """
     Extract dictionary structure from additional field argument.
 
@@ -2743,7 +2741,7 @@ def generate_complex_entity_for_context_data(raw_data: Dict[str, Any],
     return complex_entitiy
 
 
-def generate_ticket_context_data_mapper(ticket_type: str) -> Dict[str, Any]:  # type: ignore
+def generate_ticket_context_data_mapper(ticket_type: str) -> Dict[str, Any]:
     """
     Generates mapper of ticket context data. Based on unique and common
     ticket properties.
