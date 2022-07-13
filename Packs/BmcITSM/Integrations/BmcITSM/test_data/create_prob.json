@@ -1,0 +1,14 @@
+{
+    "values": {
+        "Sys-Problem Investigation ID": null,
+        "Problem Investigation ID": "PBI000000000402",
+        "Create Date": "2022-07-03T14:53:29.000+0000"
+    },
+    "_links": {
+        "self": [
+            {
+                "href": "https://lb-bmc-remedy-itsm-1790109711.eu-west-1.elb.amazonaws.com:9443/api/arsys/v1/entry/PBM:ProblemInterface_Create"
+            }
+        ]
+    }
+}
