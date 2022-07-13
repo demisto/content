@@ -252,13 +252,14 @@ class BranchTestCollector(TestCollector):
 
     @classmethod
     def _find_yml_content_type(cls, yml_path: Path):
-        if yml_path.parent.name == 'TestPlaybooks':
-            return FileType.TEST_PLAYBOOK
+        if result := ({'Playbooks': FileType.PLAYBOOK,
+                       'TestPlaybooks': FileType.TEST_PLAYBOOK,
+                       }.get(yml_path.parent.name)):
+            return result
 
-        if result := ({
-            'Integrations': FileType.INTEGRATION,
-            'Scripts': FileType.SCRIPT
-        }.get(yml_path.parents[1].name)):
+        if result := ({'Integrations': FileType.INTEGRATION,
+                       'Scripts': FileType.SCRIPT,
+                       }.get(yml_path.parents[1].name)):
             return result
 
     def _collect_yml(self, content_item_path: Path) -> Optional[CollectedTests]:
@@ -295,12 +296,10 @@ class BranchTestCollector(TestCollector):
 
                     match actual_content_type:
                         case FileType.SCRIPT:
-                            tests = tuple(test.name for test in
-                                          self.id_set.implemented_scripts_to_tests.get(yml.id_))
+                            tests = tuple(test.name for test in self.id_set.implemented_scripts_to_tests.get(yml.id_))
 
                         case FileType.PLAYBOOK:
-                            tests = tuple(test.name for test in
-                                          self.id_set.implemented_playbooks_to_tests.get(yml.id_))
+                            tests = tuple(test.name for test in self.id_set.implemented_playbooks_to_tests.get(yml.id_))
                         case _:
                             raise RuntimeError(f'unexpected content type folder {actual_content_type}')
                     if not tests:

@@ -11,6 +11,13 @@
       }
     }
   ],
+  "playbooks": [{
+    "myPlaybook": {
+      "name": "myPlaybook",
+      "file_path": "Packs/myPack/Playbooks/myPlaybook/myPlaybook.yml",
+      "pack": "myPack"
+    }
+  }],
   "integrations": [],
   "TestPlaybooks": [
     {
