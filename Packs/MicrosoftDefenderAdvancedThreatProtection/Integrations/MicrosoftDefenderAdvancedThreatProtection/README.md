@@ -5729,8 +5729,7 @@ script:
       type: String
   - arguments:
     - default: true
-      description: A comma-separated list of machine IDs to be used for offboarding.
-          e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424.
+      description: A comma-separated list of machine IDs to be used for offboarding. e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424.
       isArray: true
       name: machine_id
       required: true
@@ -5741,45 +5740,45 @@ script:
     execution: true
     name: microsoft-atp-offboard-machine
     outputs:
-      - contextPath: MicrosoftATP.MachineAction.ID
-        description: The machine action ID.
-        type: String
-      - contextPath: MicrosoftATP.MachineAction.Type
-        description: Type of the machine action.
-        type: String
-      - contextPath: MicrosoftATP.MachineAction.Scope
-        description: Scope of the action.
-        type: Unknown
-      - contextPath: MicrosoftATP.MachineAction.Requestor
-        description: The ID of the user that executed the action.
-        type: String
-      - contextPath: MicrosoftATP.MachineAction.RequestorComment
-        description: Comment that was written when issuing the action.
-        type: String
-      - contextPath: MicrosoftATP.MachineAction.Status
-        description: The current status of the command.
-        type: String
-      - contextPath: MicrosoftATP.MachineAction.MachineID
-        description: The machine ID on which the action was executed.
-        type: String
-      - contextPath: MicrosoftATP.MachineAction.ComputerDNSName
-        description: The machine DNS name on which the action was executed.
-        type: String
-      - contextPath: MicrosoftATP.MachineAction.CreationDateTimeUtc
-        description: The date and time when the action was created.
-        type: Date
-      - contextPath: MicrosoftATP.MachineAction.LastUpdateTimeUtc
-        description: The last date and time when the action status was updated.
-        type: Date
-      - contextPath: MicrosoftATP.MachineAction.cancellationDateTimeUtc
-        decription: The date and time when the action was canceled.
-        type: Date
-      - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo
-        description: The file info.
-        type: String
-      - contextPath: MicrosoftATP.MachineAction.troubleshootInfo
-        description: Troubleshooting information.
-        type: String
+    - contextPath: MicrosoftATP.MachineAction.ID
+      description: The machine action ID.
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.Type
+      description: Type of the machine action.
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.Scope
+      description: Scope of the action.
+      type: Unknown
+    - contextPath: MicrosoftATP.MachineAction.Requestor
+      description: The ID of the user that executed the action.
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.RequestorComment
+      description: Comment that was written when issuing the action.
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.Status
+      description: The current status of the command.
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.MachineID
+      description: The machine ID on which the action was executed.
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.ComputerDNSName
+      description: The machine DNS name on which the action was executed.
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.CreationDateTimeUtc
+      description: The date and time when the action was created.
+      type: Date
+    - contextPath: MicrosoftATP.MachineAction.LastUpdateTimeUtc
+      description: The last date and time when the action status was updated.
+      type: Date
+    - contextPath: MicrosoftATP.MachineAction.cancellationDateTimeUtc
+      decription: The date and time when the action was canceled.
+      type: Date
+    - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo
+      description: The file info.
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.troubleshootInfo
+      description: Troubleshooting information.
+      type: String
   dockerimage: demisto/crypto:1.0.0.31577
   feed: false
   isfetch: true
