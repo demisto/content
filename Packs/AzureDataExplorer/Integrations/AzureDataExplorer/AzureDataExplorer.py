@@ -592,7 +592,6 @@ def main() -> None:
             error_text = "Search query execution took longer than the assigned timeout" \
                          " value and has been aborted."
 
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {command} command.\nError:\n{error_text}')
 
 

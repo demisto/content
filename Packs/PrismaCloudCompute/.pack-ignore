@@ -1,5 +1,5 @@
 [file:PaloAltoNetworks_PrismaCloudCompute.yml]
-ignore=IN126,BA108,BA109
+ignore=IN126,BA108,BA109,IN154
 
 [file:layoutscontainer-Prisma_Cloud_Compute_Cloud_Discovery.json]
 ignore=BA101
@@ -20,3 +20,6 @@ ignore=IF100
 
 [file:pack_metadata.json]
 ignore=PA129
+
+[file:classifier-PrismaCloudCompute.json]
+ignore=BA101

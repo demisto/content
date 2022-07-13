@@ -71,6 +71,7 @@ def mock_client():
         proxy=False,
         certificate_thumbprint=None,
         private_key=None,
+        client_credentials=False,
     )
     return client
 

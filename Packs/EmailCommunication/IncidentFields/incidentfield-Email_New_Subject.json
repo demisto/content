@@ -1,0 +1,31 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Email Communication"
+    ],
+    "caseInsensitive": true,
+    "cliName": "emailnewsubject",
+    "closeForm": false,
+    "content": true,
+    "description": "Use this field to set a subject line for new email thread on 'Email Threads' layout",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_emailnewsubject",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Email New Subject",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.2.0"
+}

@@ -94,7 +94,7 @@ references:
 
   container_config: &container_config
     docker:
-      - image: devdemisto/content-build:3.0.0.27109  # disable-secrets-detection
+      - image: devdemisto/content-build:3.0.0.30555  # disable-secrets-detection
         auth:
           username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASSWORD
@@ -147,32 +147,30 @@ references:
 
         chmod +x ./Tests/scripts/*
         chmod +x ./Tests/Marketplace/*
-        if [ ! -e "venv" ]; then
+
+        if [ ! -e ".venv" ]; then
           echo "installing venv"
-          NO_HOOKS=1 SETUP_PY2=yes .hooks/bootstrap
-          source ./venv/bin/activate
-          pip3 install -r .circleci/build-requirements.txt
+          NO_HOOKS=1 .hooks/bootstrap
+          source ./.venv/bin/activate
         else
           echo "venv exists (from cache). activating"
-          source ./venv/bin/activate
+          source ./.venv/bin/activate
         fi
         # store in bash env so we load our venv in each step
-        echo 'source /home/circleci/project/venv/bin/activate' >> $BASH_ENV
+        echo 'source /home/circleci/project/.venv/bin/activate' >> $BASH_ENV
         git config diff.renameLimit 6000
 
         echo "========== Build Parameters =========="
         set | grep -E "^NIGHTLY=|^CONTRIB_BRANCH=|^SDK_REF"
-        python --version | tee -a $CIRCLE_ARTIFACTS/python2_list.txt
-        python3 --version | tee -a $CIRCLE_ARTIFACTS/python3_list.txt
-        python -m pip list | tee -a $CIRCLE_ARTIFACTS/python2_list.txt
-        python3 -m pip list | tee -a $CIRCLE_ARTIFACTS/python3_list.txt
+        python3 --version | tee -a $CIRCLE_ARTIFACTS/installed_python_libraries.txt
+        python3 -m pip list | tee -a $CIRCLE_ARTIFACTS/installed_python_libraries.txt
         node --version
         npm --version
         demisto-sdk --version
 
   restore_cache: &restore_cache
     restore_cache:
-      key: virtualenv-venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
+      key: virtualenv-venv-{{ checksum "pyproject.toml" }}-{{ checksum "poetry.lock" }}-{{ checksum "package-lock.json" }}
 
   remote_docker: &remote_docker
     setup_remote_docker:
@@ -327,9 +325,9 @@ jobs:
       - *prepare_environment
       - save_cache:
           paths:
-            - venv
+            - .venv
             - node_modules
-          key: virtualenv-venv-{{ checksum "dev-requirements-py2.txt" }}-{{ checksum "dev-requirements-py3.txt" }}-{{ checksum ".circleci/build-requirements.txt" }}-{{ checksum "package-lock.json" }}
+          key: virtualenv-venv-{{ checksum "pyproject.toml" }}-{{ checksum "poetry.lock" }}-{{ checksum "package-lock.json" }}
       - *get_contribution_pack
       - *add_ssh_keys
       - *persist_to_workspace
@@ -362,8 +360,8 @@ jobs:
           when: always
           command: |
             ./Tests/scripts/is_file_up_to_date.sh .circleci/config.yml $CIRCLE_BRANCH
-            ./Tests/scripts/is_file_up_to_date.sh dev-requirements-py2.txt $CIRCLE_BRANCH
-            ./Tests/scripts/is_file_up_to_date.sh dev-requirements-py3.txt $CIRCLE_BRANCH
+            ./Tests/scripts/is_file_up_to_date.sh poetry.lock $CIRCLE_BRANCH
+            ./Tests/scripts/is_file_up_to_date.sh pyproject.toml $CIRCLE_BRANCH
       - *restore_cache
       - *add_ssh_keys
       - *prepare_environment

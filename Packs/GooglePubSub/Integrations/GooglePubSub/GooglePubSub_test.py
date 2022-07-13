@@ -429,7 +429,7 @@ class TestCommands:
             publish_message_command,
             "publish_message",
             {
-                "data": "42",
+                "data": "42\\42",
                 "project_id": "dmst-doc-prjct",
                 "topic_id": "dmst-test-topic",
             },

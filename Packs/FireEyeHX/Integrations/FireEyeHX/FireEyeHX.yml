@@ -1089,7 +1089,7 @@ script:
     - contextPath: FireEyeHX.Acquisitions.Data.instance
       description: FIreEye HX instance
       type: date
-  dockerimage: demisto/python3:3.10.4.29342
+  dockerimage: demisto/python3:3.10.4.30607
   isfetch: true
   runonce: false
   script: ''

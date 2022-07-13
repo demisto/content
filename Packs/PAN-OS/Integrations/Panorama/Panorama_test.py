@@ -1158,6 +1158,183 @@ def test_panorama_push_to_device_group_command(mocker, args, expected_request_pa
     assert demisto_result_got == expected_demisto_result
 
 
+@pytest.mark.parametrize('args, expected_request_params, request_result, expected_demisto_result',
+                         [pytest.param({},
+                                       {'action': 'all',
+                                        'cmd': '<commit-all><template><name>some_template</name></template></commit-all>',
+                                        'key': 'thisisabogusAPIKEY!',
+                                        'type': 'commit'},
+                                       MockedResponse(text='<response status="success" code="19"><result><msg>'
+                                                           '<line>Commit job enqueued with jobid 19420</line></msg>'
+                                                           '<job>19420</job></result></response>', status_code=200,
+                                                      reason=''),
+                                       {'Panorama.Push(val.JobID == obj.JobID)': {'Template': 'some_template',
+                                                                                  'JobID': '19420',
+                                                                                  'Status': 'Pending'}},
+                                       id='no args'),
+                          pytest.param({"validate-only": "true"},
+                                       {'action': 'all',
+                                        'cmd': '<commit-all><template><name>some_template</name>'
+                                               '<validate-only>yes</validate-only></template></commit-all>',
+                                        'key': 'thisisabogusAPIKEY!',
+                                        'type': 'commit'},
+                                       MockedResponse(text='<response status="success" code="19"><result><msg>'
+                                                           '<line>Commit job enqueued with jobid 19420</line></msg>'
+                                                           '<job>19420</job></result></response>', status_code=200,
+                                                      reason=''),
+                                       {'Panorama.Push(val.JobID == obj.JobID)': {'Template': 'some_template',
+                                                                                  'JobID': '19420',
+                                                                                  'Status': 'Pending'}},
+                                       id='with validate'),
+                          pytest.param({'serial_number': '1337'},
+                                       {'action': 'all',
+                                        'cmd': '<commit-all><template><name>some_template</name><device><member>1337</member>'
+                                               '</device></template></commit-all>',
+                                        'key': 'thisisabogusAPIKEY!',
+                                        'type': 'commit'},
+                                       MockedResponse(text='<response status="success" code="19"><result><msg>'
+                                                           '<line>Commit job enqueued with jobid 19420</line></msg>'
+                                                           '<job>19420</job></result></response>', status_code=200,
+                                                      reason=''),
+                                       {'Panorama.Push(val.JobID == obj.JobID)': {'Template': 'some_template',
+                                                                                  'JobID': '19420',
+                                                                                  'Status': 'Pending'}},
+                                       id='with device'),
+                          ])
+def test_panorama_push_to_template_command(
+    mocker, args, expected_request_params, request_result, expected_demisto_result
+):
+    """
+    Given:
+        - command args
+        - request result
+    When:
+        - Running panorama-push-to-device-group command
+    Then:
+        - Assert the request url is as expected
+        - Assert demisto results contain the relevant result information
+    """
+    import Panorama
+    import requests
+    from Panorama import panorama_push_to_template_command
+
+    return_results_mock = mocker.patch.object(Panorama, 'return_results')
+    request_mock = mocker.patch.object(requests, 'request', return_value=request_result)
+    Panorama.TEMPLATE = 'some_template'
+    Panorama.API_KEY = 'thisisabogusAPIKEY!'
+    panorama_push_to_template_command(args)
+
+    called_request_params = request_mock.call_args.kwargs['data']  # The body part of the request
+    assert called_request_params == expected_request_params
+
+    demisto_result_got = return_results_mock.call_args.args[0]['EntryContext']
+    assert demisto_result_got == expected_demisto_result
+
+
+@pytest.mark.parametrize('args, expected_request_params, request_result, expected_demisto_result',
+                         [
+                             pytest.param(
+                                 {
+                                     "template-stack": "some_template_stack"
+                                 },
+                                 {
+                                     'action': 'all',
+                                     'cmd': '<commit-all><template-stack><name>some_template_stack'
+                                            '</name></template-stack></commit-all>',
+                                     'key': 'thisisabogusAPIKEY!',
+                                     'type': 'commit'
+                                 },
+                                 MockedResponse(text='<response status="success" code="19"><result><msg>'
+                                                     '<line>Commit job enqueued with jobid 19420</line></msg>'
+                                                     '<job>19420</job></result></response>', status_code=200,
+                                                reason=''),
+                                 {
+                                     'Panorama.Push(val.JobID == obj.JobID)':
+                                         {
+                                             'TemplateStack': 'some_template_stack',
+                                             'JobID': '19420', 'Status': 'Pending'
+                                         }
+                                 },
+                                 id='no args'
+                             ),
+                             pytest.param(
+                                 {
+                                     "validate-only": "true", "template-stack": "some_template_stack"
+                                 },
+                                 {
+                                     'action': 'all',
+                                     'cmd': '<commit-all><template-stack><name>some_template_stack</name>'
+                                            '<validate-only>yes</validate-only></template-stack></commit-all>',
+                                     'key': 'thisisabogusAPIKEY!',
+                                     'type': 'commit'
+                                 },
+                                 MockedResponse(text='<response status="success" code="19"><result><msg>'
+                                                     '<line>Commit job enqueued with jobid 19420</line></msg>'
+                                                     '<job>19420</job></result></response>', status_code=200,
+                                                reason=''),
+                                 {
+                                     'Panorama.Push(val.JobID == obj.JobID)': {
+                                         'TemplateStack': 'some_template_stack', 'JobID': '19420', 'Status': 'Pending'
+                                     }
+                                 },
+                                 id='with validate'),
+                             pytest.param(
+                                 {
+                                     'serial_number': '1337',
+                                     "template-stack": "some_template_stack"
+                                 },
+                                 {
+                                     'action': 'all',
+                                     'cmd': '<commit-all><template-stack><name>some_template_stack<'
+                                            '/name><device><member>1337</member>'
+                                            '</device></template-stack></commit-all>',
+                                     'key': 'thisisabogusAPIKEY!',
+                                     'type': 'commit'
+                                 },
+                                 MockedResponse(text='<response status="success" code="19"><result><msg>'
+                                                     '<line>Commit job enqueued with jobid 19420</line></msg>'
+                                                     '<job>19420</job></result></response>', status_code=200,
+                                                reason=''),
+                                 {
+                                     'Panorama.Push(val.JobID == obj.JobID)':
+                                         {
+                                             'TemplateStack': 'some_template_stack',
+                                             'JobID': '19420',
+                                             'Status': 'Pending'
+                                         }
+                                 },
+                                 id='with device'),
+                         ])
+def test_panorama_push_to_template_stack_command(
+    mocker, args, expected_request_params, request_result, expected_demisto_result
+):
+    """
+    Given:
+        - command args
+        - request result
+    When:
+        - Running panorama-push-to-device-group command
+    Then:
+        - Assert the request url is as expected
+        - Assert demisto results contain the relevant result information
+    """
+    import Panorama
+    import requests
+    from Panorama import panorama_push_to_template_stack_command
+
+    return_results_mock = mocker.patch.object(Panorama, 'return_results')
+    request_mock = mocker.patch.object(requests, 'request', return_value=request_result)
+    Panorama.TEMPLATE = 'some_template'
+    Panorama.API_KEY = 'thisisabogusAPIKEY!'
+    panorama_push_to_template_stack_command(args)
+
+    called_request_params = request_mock.call_args.kwargs['data']  # The body part of the request
+    assert called_request_params == expected_request_params
+
+    demisto_result_got = return_results_mock.call_args.args[0]['EntryContext']
+    assert demisto_result_got == expected_demisto_result
+
+
 def test_get_url_category__url_length_gt_1278(mocker):
     """
     Given:
@@ -1298,6 +1475,16 @@ def mock_vsys():
     mock_vsys = MagicMock(spec=Vsys)
     mock_vsys.name = "vsys1"
     return [mock_vsys]
+
+
+def mock_address_objects():
+    from Panorama import AddressObject
+    mock_object_1 = MagicMock(spec=AddressObject)
+    mock_object_1.name = "test-address-1"
+
+    mock_object_2 = MagicMock(spec=AddressObject)
+    mock_object_2.name = "test-address-2"
+    return [mock_object_1, mock_object_2]
 
 
 def mock_good_log_fowarding_profile():
@@ -1555,6 +1742,19 @@ def mock_topology(mock_panorama, mock_firewall):
     return topology
 
 
+@pytest.fixture
+def mock_single_device_topology(mock_panorama):
+    from Panorama import Topology
+    topology = Topology()
+    topology.panorama_objects = {
+        MOCK_PANORAMA_SERIAL: mock_panorama,
+    }
+    topology.ha_active_devices = {
+        MOCK_PANORAMA_SERIAL: mock_panorama,
+    }
+    return topology
+
+
 class TestTopology:
     """Tests the Topology class and all of it's methods"""
     SHOW_HA_STATE_ENABLED_XML = "test_data/show_ha_state_enabled.xml"
@@ -1776,6 +1976,7 @@ class TestUniversalCommand:
     """Test all the commands relevant to both Panorama and Firewall devices"""
     SHOW_SYSTEM_INFO_XML = "test_data/show_system_info.xml"
     SHOW_JOB_XML = "test_data/show_jobs_all.xml"
+    SHOW_COMMIT_JOB_XML = "test_data/show_commit_jobs_all.xml"
 
     @patch("Panorama.run_op_command")
     def test_get_system_info(self, patched_run_op_command, mock_topology):
@@ -1867,7 +2068,8 @@ class TestUniversalCommand:
     @patch("Panorama.run_op_command")
     def test_system_status(self, patched_run_op_command, mock_topology):
         """
-        Given a topology object with a mixture of systems in it, assert that check_system_availability returns the correct status
+        Given a topology object with a mixture of systems in it,
+        assert that check_system_availability returns the correct status
         based on whether devices are connected or not.
         """
         from Panorama import UniversalCommand
@@ -2068,9 +2270,12 @@ class TestHygieneFunctions:
         assert len(result.result_data) == 0
 
         # Trim the "threat" log type and cause a missing log type error
-        LogForwardingProfileMatchList.refreshall = MagicMock(return_value=[mock_good_log_forwarding_profile_match_list()[0]])
+        LogForwardingProfileMatchList.refreshall = MagicMock(
+            return_value=[mock_good_log_forwarding_profile_match_list()[0]]
+        )
         result = HygieneLookups.check_log_forwarding_profiles(mock_topology)
-        # Note; because we mock the topology with multiple devices, it appears that the same LFP is missing in each Container.
+        # Note; because we mock the topology with multiple devices,
+        # it appears that the same LFP is missing in each Container.
         # This is expected.
         assert len(result.result_data) == 3
         assert result.result_data[0].description == "Log forwarding profile missing log type 'threat'."
@@ -2112,7 +2317,8 @@ class TestHygieneFunctions:
     @patch("Panorama.DeviceGroup.refreshall", return_value=mock_device_groups())
     def test_check_spyware_profiles(self, _, __, ___, mock_topology):
         """
-        Test the Hygiene Configuration lookups can validate the Spyware profiles given combinations of good and bad profile
+        Test the Hygiene Configuration lookups can validate the
+        Spyware profiles given combinations of good and bad profile
         objects.
         """
         from Panorama import HygieneLookups, AntiSpywareProfile
@@ -2129,7 +2335,8 @@ class TestHygieneFunctions:
     @patch("Panorama.DeviceGroup.refreshall", return_value=mock_device_groups())
     def test_check_url_filtering_profiles(self, _, __, ___, mock_topology):
         """
-        Test the Hygiene Configuration lookups can validate the URL filtering profiles given combinations of good and bad
+        Test the Hygiene Configuration lookups can validate the
+        URL filtering profiles given combinations of good and bad
         profiles.
         """
         from Panorama import HygieneLookups, URLFilteringProfile
@@ -2204,7 +2411,8 @@ class TestHygieneFunctions:
 
     def test_hygiene_issue_dict_to_object(self):
         """
-        Tests the function can convert a given dictionary of an issue, returned by a hygiene lookup, back into the relevent
+        Tests the function can convert a given dictionary of
+        an issue, returned by a hygiene lookup, back into the relevent
         object. This is to allow the check commands to pass their results directly into the fix commands via XSOAR.
         """
         from Panorama import hygiene_issue_dict_to_object, ConfigurationHygieneIssue
@@ -2226,7 +2434,8 @@ class TestHygieneFunctions:
     @patch("Panorama.DeviceGroup.refreshall", return_value=mock_device_groups())
     def test_fix_log_forwarding_profile_enhanced_logging(self, _, __, ___, mock_topology):
         """
-        Tests wthe fix function for enabling enhanced application logging on log forwarding profiles, given an issue referring
+        Tests wthe fix function for enabling enhanced application
+        logging on log forwarding profiles, given an issue referring
         to a bad log forwarding profile.
         """
         from Panorama import hygiene_issue_dict_to_object, LogForwardingProfile, HygieneRemediation
@@ -2297,3 +2506,198 @@ class TestHygieneFunctions:
         assert result
         for value in result[0].__dict__.values():
             assert value
+
+
+class TestObjectFunctions:
+    @patch("Panorama.Template.refreshall", return_value=[])
+    @patch("Panorama.Vsys.refreshall", return_value=[])
+    @patch("Panorama.DeviceGroup.refreshall", return_value=mock_device_groups())
+    def test_get_objects(self, _, __, ___, mock_single_device_topology):
+        """
+        Tests that we can get various object types and the filtering logic, by object type and name, works correctly.
+        """
+        from Panorama import ObjectGetter, AddressObject
+
+        # Use side effects so that objects are only returned from one container
+        AddressObject.refreshall = MagicMock(side_effect=[mock_address_objects(), []])
+
+        # Test with no filter first
+        result = ObjectGetter.get_object_reference(mock_single_device_topology, "AddressObject")
+        assert "test-address-1" in [x.name for x in result]
+        assert "test-address-2" in [x.name for x in result]
+
+        # Same as above but with a filter on object name
+        AddressObject.refreshall = MagicMock(side_effect=[mock_address_objects(), []])
+        result = ObjectGetter.get_object_reference(
+            mock_single_device_topology, "AddressObject", object_name="test-address-1"
+        )
+        assert "test-address-1" in [x.name for x in result]
+        assert "test-address-2" not in [x.name for x in result]
+
+        # Same as above but include a regex filter
+        AddressObject.refreshall = MagicMock(side_effect=[mock_address_objects(), []])
+        result = ObjectGetter.get_object_reference(
+            mock_single_device_topology, "AddressObject", object_name="test-address-\d+", use_regex="true"
+        )
+        assert "test-address-1" in [x.name for x in result]
+        assert "test-address-2" in [x.name for x in result]
+
+        # Test broken regex
+        AddressObject.refreshall = MagicMock(side_effect=[mock_address_objects(), []])
+        with pytest.raises(DemistoException):
+            result = ObjectGetter.get_object_reference(
+                mock_single_device_topology, "AddressObject", object_name="test-address-(\d+", use_regex="true"
+            )
+            assert not result
+
+
+@pytest.mark.parametrize('expected_request_params, target',
+                         [pytest.param(
+                             {
+                                 'type': 'op',
+                                 'cmd': '<show><system><info/></system></show>',
+                                 'key': 'fakeAPIKEY!',
+                                 'target': 'fake-target'
+                             },
+                             'fake-target',
+                         ),
+                             pytest.param(
+                                 {
+                                     'type': 'op',
+                                     'cmd': '<show><system><info/></system></show>',
+                                     'key': 'fakeAPIKEY!',
+                                 },
+                                 None,
+                         ),
+                         ])
+def test_add_target_arg(mocker, expected_request_params, target):
+    """
+    Given:
+        - a call to the function with or without the target args
+    When:
+        - panorama_show_device_version_command - (or any other function with the target arg)
+    Then:
+        - Assert that the target param was added or not to the https request
+    """
+    import Panorama
+    from Panorama import panorama_show_device_version
+
+    Panorama.API_KEY = 'fakeAPIKEY!'
+    Panorama.DEVICE_GROUP = 'fakeDeviceGroup'
+    request_mock = mocker.patch.object(Panorama, 'http_request',
+                                       return_value={'response': {'result': {'system': 'fake_data'}}})
+
+    panorama_show_device_version(target)
+    called_request_params = request_mock.call_args.kwargs['params']
+    assert called_request_params == expected_request_params
+
+
+@pytest.mark.parametrize('rule , expected_result',
+                         [pytest.param({'target':
+                                        {'devices':
+                                         {'entry':
+                                          [{'@name': 'fw1'},
+                                           {'@name': 'fw2'}]
+                                          }
+                                         }
+                                        },
+                                       True
+                                       ),
+                          pytest.param(
+                              {'target':
+                               {'devices':
+                                {'entry': {'@name': 'fw1'}}
+                                }
+                               },
+                              True),
+                          pytest.param({'target':
+                                        {'devices':
+                                         {'entry': {'@name': 'fw2'}
+                                          }
+                                         }
+                                        },
+                                       False),
+                          pytest.param({'target':
+                                        {'devices':
+                                         {'entry': [{'@name': 'fw1'}]}
+                                         }
+                                        },
+                                       True),
+
+                          ]
+                         )
+def test_target_filter(rule, expected_result):
+    """
+    Given:
+        - a rule (dict) and a target (str) - 'fw1'
+    When:
+        - filtering rules by target
+    Then:
+        - return True if the rule contains the target and False otherwise
+    """
+    from Panorama import target_filter
+    assert target_filter(rule, 'fw1') == expected_result
+
+
+def test_check_latest_version_hr(mocker):
+    """
+    Given:
+        - a response from panorma of latest version
+    When:
+        - calling the command - pan-os-check-latest-panos-software
+    Then:
+        - filter the 5 latest results and present in a markdown
+    """
+    from Panorama import panorama_check_latest_panos_software_command
+    import requests
+    with open('test_data/latest_versions.xml') as xml_file:
+        text = xml_file.read()
+    with open('test_data/5_latest_version.md') as md_file:
+        markdown_assert = md_file.read()
+    mr = MockedResponse(text=text,
+                        status_code=200,
+                        reason='')
+    mocker.patch.object(requests, 'request', return_value=mr)
+    command_res: CommandResults = panorama_check_latest_panos_software_command()
+
+    assert markdown_assert == command_res.readable_output
+
+
+def test_pan_os_get_running_config(mocker):
+    """
+    Given -
+        A target serial number
+    When -
+        Returning the running config
+    Then -
+        File returned should be called 'running_config'
+        The contents should be XML and not JSON
+    """
+    from Panorama import pan_os_get_running_config
+
+    return_mock = """
+    <response status='error' code='13'><msg><line>SOME_SERIAL_NUMBER not connected</line></msg></response>
+    """
+    mocker.patch("Panorama.http_request", return_value=return_mock)
+    created_file = pan_os_get_running_config({"target": "SOME_SERIAL_NUMBER"})
+    assert created_file['File'] == 'running_config'
+
+
+def test_pan_os_get_merged_config(mocker):
+    """
+    Given -
+        A target serial number
+    When -
+        Returning the merged config
+    Then -
+        File returned should be called 'merged_config'
+        The contents should be XML and not JSON
+    """
+    from Panorama import pan_os_get_merged_config
+
+    return_mock = """
+    <response status='error' code='13'><msg><line>SOME_SERIAL_NUMBER not connected</line></msg></response>
+    """
+    mocker.patch("Panorama.http_request", return_value=return_mock)
+    created_file = pan_os_get_merged_config({"target": "SOME_SERIAL_NUMBER"})
+    assert created_file['File'] == 'merged_config'

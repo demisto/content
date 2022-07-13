@@ -40,8 +40,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Returns the coordinates of the given physical address. Only the first
-      result is returned (the most relevant, according to Google Maps).
+    description: Returns the coordinates of the given physical address. Only the first result is returned (the most relevant, according to Google Maps).
     execution: false
     name: google-maps-geocode
     outputs:
@@ -58,10 +57,9 @@ script:
       description: The address provided by Google Maps for the provided location
       type: String
     - contextPath: GoogleMaps.Country
-      description: The country or region where the provided location is, according
-        to Google Maps.
+      description: The country or region where the provided location is, according to Google Maps.
       type: String
-  dockerimage: demisto/python3:3.10.4.29342
+  dockerimage: demisto/python3:3.10.4.30607
   feed: false
   isfetch: false
   longRunning: false

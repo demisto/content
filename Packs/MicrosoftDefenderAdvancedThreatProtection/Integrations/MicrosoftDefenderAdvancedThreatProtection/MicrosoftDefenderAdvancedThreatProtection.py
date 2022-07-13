@@ -2744,9 +2744,20 @@ def get_machine_action_by_id_command(client: MsClient, args: dict):
     return human_readable, entry_context, response
 
 
+def get_machine_investigation_package(client: MsClient, args: dict):
+
+    machine_id = args.get('machine_id')
+    comment = args.get('comment')
+    res = client.get_investigation_package(machine_id, comment)
+    human_readable = tableToMarkdown('Processing action. This may take a few minutes.', res['id'], headers=['id'])
+
+    return CommandResults(outputs_prefix='MicrosoftATP.MachineAction',
+                          readable_output=human_readable, outputs={'action_id': res['id']})
+
+
 def request_download_investigation_package_command(client: MsClient, args: dict):
     return run_polling_command(client, args, 'microsoft-atp-request-and-download-investigation-package',
-                               get_machine_investigation_package_command,
+                               get_machine_investigation_package,
                                get_machine_action_command, download_file_after_successful_status)
 
 
@@ -4535,10 +4546,20 @@ def run_polling_command(client: MsClient, args: dict, cmd: str, action_func: Cal
 
     command_result = results_function(client, args)
     action_status = command_result.outputs.get("status")
-    command_status = command_result.outputs.get("commands", [{}])[0].get("commandStatus")
+    demisto.debug(f"action status is: {action_status}")
+
+    # In case command is one of the put/get file/ run script there is command section, otherwise there isnt.
+    if command_result.outputs.get("commands", []):
+        command_status = command_result.outputs.get("commands", [{}])[0].get("commandStatus")
+    else:
+        command_status = 'Completed' if action_status == "Succeeded" else None
+
     if action_status in ['Failed', 'Cancelled'] or command_status == 'Failed':
-        raise Exception(
-            f'Command {action_status}. Additional info: {command_result.outputs.get("commands", [{}])[0].get("errors")}')
+        error_msg = f"Command {action_status}."
+        if command_result.outputs.get("commands", []):
+            error_msg += f'{command_result.outputs.get("commands", [{}])[0].get("errors")}'
+        raise Exception(error_msg)
+
     elif command_status != 'Completed' or action_status == 'InProgress':
         # schedule next poll
         polling_args = {

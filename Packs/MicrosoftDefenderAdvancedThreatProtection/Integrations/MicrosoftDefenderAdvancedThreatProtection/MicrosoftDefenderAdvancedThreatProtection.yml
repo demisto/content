@@ -33,6 +33,7 @@ configuration:
   type: 14
 - display: Fetch incidents
   name: isFetch
+  defaultvalue: 'true'
   required: false
   type: 8
 - display: Incident type
@@ -5717,67 +5718,16 @@ script:
     polling: true
     name: microsoft-atp-request-and-download-investigation-package
     outputs:
-      - contextPath: MicrosoftATP.MachineAction.ID
-        description: The machine action ID.
-        type: String
-      - contextPath: MicrosoftATP.MachineAction.Status
-        description: The current status of the machine action.
-        type: String
-      - contextPath: MicrosoftATP.MachineAction.MachineID
-        description: The machine ID on which the action was executed.
-        type: String
-  - arguments:
-      - default: true
-        description: A comma-separated list of machine IDs to be used for offboarding.
-          e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424.
-        isArray: true
-        name: machine_id
-        required: true
-      - description: A comment to associate with the action.
-        name: comment
-        required: true
-    description: Offboard a machine from defender.
-    execution: true
-    name: microsoft-atp-offboard-machine
-    outputs:
-      - contextPath: MicrosoftATP.MachineAction.ID
-        description: The machine action ID.
-        type: String
-      - contextPath: MicrosoftATP.MachineAction.Type
-        description: Type of the machine action.
-        type: String
-      - contextPath: MicrosoftATP.MachineAction.Scope
-        description: Scope of the action.
-        type: Unknown
-      - contextPath: MicrosoftATP.MachineAction.Requestor
-        description: The ID of the user that executed the action.
-        type: String
-      - contextPath: MicrosoftATP.MachineAction.RequestorComment
-        description: Comment that was written when issuing the action.
-        type: String
-      - contextPath: MicrosoftATP.MachineAction.Status
-        description: The current status of the command.
-        type: String
-      - contextPath: MicrosoftATP.MachineAction.MachineID
-        description: The machine ID on which the action was executed.
-        type: String
-      - contextPath: MicrosoftATP.MachineAction.ComputerDNSName
-        description: The machine DNS name on which the action was executed.
-        type: String
-      - contextPath: MicrosoftATP.MachineAction.CreationDateTimeUtc
-        description: The date and time when the action was created.
-        type: Date
-      - contextPath: MicrosoftATP.MachineAction.LastUpdateTimeUtc
-        description: The last date and time when the action status was updated.
-        type: Date
-      - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier
-        description: The file identifier.
-        type: String
-      - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType
-        description: 'The type of the file identifier. Possible values: "SHA1" ,"SHA256",
-          and "MD5".'
-        type: String
-  dockerimage: demisto/crypto:1.0.0.28507
+    - contextPath: MicrosoftATP.MachineAction.ID
+      description: The machine action ID.
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.Status
+      description: The current status of the machine action.
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.MachineID
+      description: The machine ID on which the action was executed.
+      type: String
+  dockerimage: demisto/crypto:1.0.0.31577
   feed: false
   isfetch: true
   longRunning: false
@@ -5786,6 +5736,7 @@ script:
   script: '-'
   subtype: python3
   type: python
+defaultmapperin: Microsoft Defender For Endpoint Mapper
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)

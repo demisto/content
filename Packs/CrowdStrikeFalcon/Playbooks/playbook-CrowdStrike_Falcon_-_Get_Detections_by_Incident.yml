@@ -1,0 +1,267 @@
+id: CrowdStrike Falcon - Get Detections by Incident
+version: -1
+fromversion: 6.5.0
+name: CrowdStrike Falcon - Get Detections by Incident
+description: This playbook enables getting CrowdStrike Falcon detection details based on the CrowdStrike incident ID.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 96d3a83c-0e47-4b1b-8c8a-8a9ad8da7966
+    type: start
+    task:
+      id: 96d3a83c-0e47-4b1b-8c8a-8a9ad8da7966
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '2':
+    id: '2'
+    taskid: efbe71b9-8a25-4e15-80c5-bf42d1023ab0
+    type: regular
+    task:
+      id: efbe71b9-8a25-4e15-80c5-bf42d1023ab0
+      version: -1
+      name: Get detections for incident
+      description: Gets the detections for a specific incident.
+      script: '|||cs-falcon-get-detections-for-incident'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '5'
+    scriptarguments:
+      incident_id:
+        simple: ${inputs.IncidentID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '3':
+    id: '3'
+    taskid: 5a7f4edd-f080-4c19-80fd-dcb96cbe286f
+    type: regular
+    task:
+      id: 5a7f4edd-f080-4c19-80fd-dcb96cbe286f
+      version: -1
+      name: Get full detection details
+      description: Searches for details of specific detections, either using a filter query or by providing the IDs of the detections.
+      script: '|||cs-falcon-search-detection'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      extended_data:
+        simple: Yes
+      ids:
+        simple: ${CrowdStrike.IncidentDetection.detection_ids}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: File Names
+      output:
+        simple: ${CrowdStrike.Detection.Behavior.FileName}
+    - incidentfield: Scenario
+      output:
+        simple: ${CrowdStrike.Detection.Behavior.Scenario}
+    - incidentfield: Process MD5
+      output:
+        simple: ${CrowdStrike.Detection.Behavior.MD5}
+    - incidentfield: Process SHA256
+      output:
+        simple: ${CrowdStrike.Detection.Behavior.SHA256}
+    - incidentfield: Process CMD
+      output:
+        simple: ${CrowdStrike.Detection.Behavior.CommandLine}
+    - incidentfield: External Confidence
+      output:
+        simple: ${CrowdStrike.Detection.MaxConfidence}
+    - incidentfield: Users
+      output:
+        simple: ${CrowdStrike.Detection.Behavior.UserName}
+    - incidentfield: Tactic ID
+      output:
+        simple: ${CrowdStrike.Detection.Behavior.TacticID}
+    - incidentfield: Technique ID
+      output:
+        simple: ${CrowdStrike.Detection.Behavior.TechniqueId}
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '4':
+    id: '4'
+    taskid: fcb0faa4-eb71-4d23-8e52-350a1a9b77f7
+    type: title
+    task:
+      id: fcb0faa4-eb71-4d23-8e52-350a1a9b77f7
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 850
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '5':
+    id: '5'
+    taskid: 70a6e889-bdcb-4118-85b6-bb1493df0ae2
+    type: condition
+    task:
+      id: 70a6e889-bdcb-4118-85b6-bb1493df0ae2
+      version: -1
+      name: Are there related detections?
+      type: condition
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#default#':
+      - '6'
+      yes:
+      - '3'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CrowdStrike.IncidentDetection.detection_ids
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
+    taskid: 1128f484-1855-4136-8c84-17ae1d9cbcdd
+    type: regular
+    task:
+      id: 1128f484-1855-4136-8c84-17ae1d9cbcdd
+      version: -1
+      name: Set no detections found
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      key:
+        simple: CrowdStrike.FoundDetections
+      value:
+        simple: 'False'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 220,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 705,
+        "width": 850,
+        "x": 220,
+        "y": 210
+      }
+    }
+  }
+inputs:
+- key: IncidentID
+  value: {}
+  required: false
+  description: The ID of the CrowdStrike incident.
+  playbookInputQuery:
+outputs:
+- contextPath: CrowdStrike.Detection.Behavior
+  description: CrowdStrike Detection Details
+  type: string
+- contextPath: CrowdStrike.FoundDetections
+  description: 'Indicates whether detections were found. '
+  type: string
+tests:
+-  No tests
+contentitemexportablefields:
+  contentitemfields: {}
+system: true
