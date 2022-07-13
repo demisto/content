@@ -281,7 +281,7 @@ List BMC Helix ITSM tickets.The records are retrieved according to a constraint 
 | BmcITSM.Ticket.LastModifiedDate | Date | Ticket last update time in UTC. | 
 
 #### Command example
-```!bmc-itsm-ticket-list ticket_type="service request" limit=2```
+```!bmc-itsm-ticket-list ticket_type="known error" limit=2```
 #### Context Example
 ```json
 {
@@ -289,120 +289,91 @@ List BMC Helix ITSM tickets.The records are retrieved according to a constraint 
         "Ticket": [
             {
                 "Assignee": {
-                    "AssignedGroup": null,
-                    "FullName": "Bob Baxter",
-                    "Group": "Backoffice Support",
+                    "AssignedGroup": "Service Desk",
+                    "FullName": "Mary Mann",
+                    "Group": null,
                     "SupportCompany": "Calbro Services",
                     "SupportOrganization": "IT Support"
                 },
-                "CreateDate": "2022-02-23T13:54:47",
-                "Customer": {
-                    "Company": "Calbro Services",
-                    "Department": "Customer Service",
-                    "E-mail": "A.Allbrook@calbroservices.com",
-                    "FirstName": "Allen",
-                    "LastName": "Allbrook",
-                    "Organization": "Information Technology",
-                    "PhoneNumber": "1 212 555-5454 (11)"
-                },
-                "DisplayID": "REQ000000000001",
-                "Impact": "3-Moderate/Limited",
-                "InstanceId": "SRGAI7ZXDK9WFARHR5Z1RGSGM6WLHZ",
-                "Request Type": "Standard",
+                "CreateDate": "2008-11-07T05:18:44",
+                "Customer": null,
+                "Details": "router issue - temporary workaround available",
+                "DisplayID": "PKE_CAL_1000001",
+                "Impact": "4-Minor/Localized",
+                "InstanceId": "AG00123F73CF5Ea4wTSQ1CAvAQog0B",
+                "LastModifiedDate": "2008-11-07T05:18:44",
+                "Priority": "Medium",
                 "RequestID": "000000000000001",
                 "Requester": {
                     "Company": "Calbro Services",
-                    "FirstName": "Allen",
-                    "LastName": "Allbrook",
-                    "Region": "Americas",
-                    "Site": "Headquarters, Building 1.31",
-                    "SiteGroup": "United States"
+                    "FirstName": null,
+                    "LastName": null,
+                    "Region": null,
+                    "Site": null,
+                    "SiteGroup": null
                 },
-                "Status": "Planning",
-                "StatusReason": null,
+                "Resolution": null,
+                "Status": "Assigned",
                 "Status-History": {
-                    "Draft": {
-                        "timestamp": "2022-02-23T13:54:48.000+0000",
-                        "user": "Allen"
-                    },
-                    "Planning": {
-                        "timestamp": "2022-02-23T13:54:50.000+0000",
-                        "user": "Remedy Application Service"
-                    },
-                    "Submitted": {
-                        "timestamp": "2022-02-23T13:54:48.000+0000",
-                        "user": "Allen"
-                    },
-                    "Waiting Approval": {
-                        "timestamp": "2022-02-23T13:54:50.000+0000",
-                        "user": "Remedy Application Service"
+                    "Assigned": {
+                        "timestamp": "2020-02-28T00:50:29.000+0000",
+                        "user": "Action Request Installer Account"
                     }
                 },
-                "Submitter": "Allen",
-                "Summary": "Audio Visual/Video Conferencing",
-                "TargetDate": null,
-                "Type": "service request",
-                "Urgency": "3-Medium"
+                "StatusReason": null,
+                "Submitter": "Demo",
+                "Summary": "Email Connectivity Issue",
+                "TargetResolutionDate": "2009-05-28T07:00:00",
+                "TemporaryWorkaround": "Router issue - route affected users to secondary redundant email server.",
+                "Type": "known error",
+                "Urgency": "3-Medium",
+                "ViewAccess": "Internal"
             },
             {
                 "Assignee": {
-                    "AssignedGroup": null,
-                    "FullName": "Bob Baxter",
-                    "Group": "Backoffice Support",
+                    "AssignedGroup": "Service Desk",
+                    "FullName": "Mary Mann",
+                    "Group": null,
                     "SupportCompany": "Calbro Services",
                     "SupportOrganization": "IT Support"
                 },
-                "CreateDate": "2022-02-23T15:28:33",
-                "Customer": {
-                    "Company": "Calbro Services",
-                    "Department": "Customer Service",
-                    "E-mail": "A.Allbrook@calbroservices.com",
-                    "FirstName": "Allen",
-                    "LastName": "Allbrook",
-                    "Organization": "Information Technology",
-                    "PhoneNumber": "1 212 555-5454 (11)"
-                },
-                "DisplayID": "REQ000000000002",
-                "Impact": "1-Extensive/Widespread",
-                "InstanceId": "SRGAI7ZXDK9WFARHRK1LRGS0YQWNQ3",
-                "Request Type": "Standard",
+                "CreateDate": "2008-11-07T05:18:44",
+                "Customer": null,
+                "Details": "router issue",
+                "DisplayID": "PKE_CAL_1000002",
+                "Impact": "4-Minor/Localized",
+                "InstanceId": "AG00123F73CF5Ea4wTSQAyEvAQpA0B",
+                "LastModifiedDate": "2008-11-07T05:18:44",
+                "Priority": "Medium",
                 "RequestID": "000000000000002",
                 "Requester": {
                     "Company": "Calbro Services",
-                    "FirstName": "Allen",
-                    "LastName": "Allbrook",
-                    "Region": "Americas",
-                    "Site": "Headquarters, Building 1.31",
-                    "SiteGroup": "United States"
+                    "FirstName": null,
+                    "LastName": null,
+                    "Region": null,
+                    "Site": null,
+                    "SiteGroup": null
                 },
-                "Status": "Draft",
+                "Resolution": null,
+                "Status": "Scheduled For Correction",
                 "Status-History": {
-                    "Draft": {
-                        "timestamp": "2022-04-05T13:44:24.000+0000",
-                        "user": "appadmin"
+                    "Assigned": {
+                        "timestamp": "2020-02-28T00:50:29.000+0000",
+                        "user": "Action Request Installer Account"
                     },
-                    "Planning": {
-                        "timestamp": "2022-04-05T10:17:18.000+0000",
-                        "user": "Demo"
-                    },
-                    "Rejected": {
-                        "timestamp": "2022-04-05T10:21:03.000+0000",
-                        "user": "Demo"
-                    },
-                    "Submitted": {
-                        "timestamp": "2022-02-23T15:28:33.000+0000",
-                        "user": "Allen"
-                    },
-                    "Waiting Approval": {
-                        "timestamp": "2022-02-23T15:28:34.000+0000",
-                        "user": "Remedy Application Service"
+                    "Scheduled For Correction": {
+                        "timestamp": "2020-02-28T00:50:29.000+0000",
+                        "user": "Action Request Installer Account"
                     }
                 },
-                "Submitter": "Allen",
-                "Summary": "Audio Visual/Video Conferencing",
-                "TargetDate": null,
-                "Type": "service request",
-                "Urgency": "3-Medium"
+                "StatusReason": "Pending Infrastructure Change",
+                "Submitter": "Demo",
+                "Summary": "Email Connectivity Issue",
+                "TargetResolutionDate": "2009-05-28T07:00:00",
+                "TemporaryWorkaround": "re-route user",
+                "Type": "known error",
+                "Urgency": "3-Medium",
+                "ViewAccess": "Internal"
             }
         ]
     }
@@ -412,11 +383,11 @@ List BMC Helix ITSM tickets.The records are retrieved according to a constraint 
 #### Human Readable Output
 
 >### List Tickets.
->Showing 2 records out of 227.
+>Showing 2 records out of 41.
 >|Type|Request ID|Display ID|Summary|Status|Urgency|Impact|Create Date|Last Modified Date|
 >|---|---|---|---|---|---|---|---|---|
->| service request | 000000000000001 | REQ000000000001 | Audio Visual/Video Conferencing | Planning | 3-Medium | 3-Moderate/Limited | 2022-02-23T13:54:47 |  |
->| service request | 000000000000002 | REQ000000000002 | Audio Visual/Video Conferencing | Draft | 3-Medium | 1-Extensive/Widespread | 2022-02-23T15:28:33 |  |
+>| known error | 000000000000001 | PKE_CAL_1000001 | Email Connectivity Issue | Assigned | 3-Medium | 4-Minor/Localized | 2008-11-07T05:18:44 | 2008-11-07T05:18:44 |
+>| known error | 000000000000002 | PKE_CAL_1000002 | Email Connectivity Issue | Scheduled For Correction | 3-Medium | 4-Minor/Localized | 2008-11-07T05:18:44 | 2008-11-07T05:18:44 |
 
 
 ### bmc-itsm-service-request-create
