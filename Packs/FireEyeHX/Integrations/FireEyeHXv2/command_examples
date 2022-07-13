@@ -28,7 +28,7 @@
 !fireeye-hx-delete-indicator category=Custom indicator_name=7f49e4c6-14d5-4b06-8d17-843fd17f79de
 !fireeye-hx-delete-indicator-condition category=Custom condition_id=4gMIyj9rWnt2o9vOXzYI5A== indicator_name=049c2e93-dae8-4fcd-a8e6-924029e12171 type=execution
 !fireeye-hx-delete-host-set host_set_id=1036
-!fireeye-hx-create-host-set-static host_set_name=demisto_test hosts_ids=Hqb2ns3oui1fpzg0BxI1Ch
-!fireeye-hx-update-host-set-static host_set_name=demisto_test host_set_id=1036 add_host_ids=GfLI00Q4zpidezw9I11rV6 remove_host_ids=Hqb2ns3oui1fpzg0BxI1Ch
-!fireeye-hx-create-host-set-dynamic host_set_name=demisto_test query_key=Bitlevel query_operator=eq query_value=64-bit
-!fireeye-hx-update-host-set-dynamic host_set_name=demisto_test query_key=Bitlevel query_operator=eq query_value=64-bit
+!fireeye-hx-create-host-set-static host_set_name=demisto_test_static hosts_ids=Hqb2ns3oui1fpzg0BxI1Ch
+!fireeye-hx-update-host-set-static host_set_name=demisto_test_static host_set_id=1068 add_host_ids=GfLI00Q4zpidezw9I11rV6 remove_host_ids=Hqb2ns3oui1fpzg0BxI1Ch
+!fireeye-hx-create-host-set-dynamic host_set_name=demisto_test_dynamic query_key=Bitlevel query_operator=eq query_value=64-bit
+!fireeye-hx-update-host-set-dynamic host_set_name=demisto_test_dynamic query_key=Bitlevel query_operator=eq query_value=64-bit host_set_id=1069
