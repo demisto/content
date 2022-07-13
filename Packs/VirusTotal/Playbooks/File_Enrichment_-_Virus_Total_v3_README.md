@@ -108,4 +108,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![File Enrichment - Virus Total (API v3)](https://raw.githubusercontent.com/demisto/content/9b3fb3fa0faff3ca873ccbb564be801ce405b749/Packs/VirusTotal/doc_files/File_Enrichment_-_Virus_Total_(API_v3).png)
+![File Enrichment - Virus Total (API v3)](https://raw.githubusercontent.com/demisto/content/master/Packs/VirusTotal/doc_files/File_Enrichment_-_Virus_Total_(API_v3).png)
