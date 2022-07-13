@@ -1,7 +1,7 @@
 id: Azure Log Analytics - Query From Saved Search
 version: -1
 name: Azure Log Analytics - Query From Saved Search
-description: Executes a query from a saved search in Azure Log Analytics.
+description: Executes a query from a saved search in Azure Log Analytics .
 fromversion: 5.0.0
 starttaskid: "0"
 tasks:
