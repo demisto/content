@@ -63,7 +63,7 @@ class Client(object):
             elif isinstance(value, dict):
                 results = self.get_recursively(value, field)
                 for result in results:
-                    fields_found.extend(result)
+                    fields_found.append(result)
 
             elif isinstance(value, list):
                 for item in value:
