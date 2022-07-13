@@ -2352,7 +2352,7 @@ def qradar_search_create_command(client: Client, params: Dict, args: Dict) -> Co
     saved_search_id = args.get('saved_search_id')
 
     if not query_expression and not saved_search_id and not offense_id:
-        raise DemistoException('Must use either `query_expression` or `saved_search_id` or `offense_id`.')
+        raise DemistoException('Please provide one of the following args: `query_expression`, `saved_search_id` or `offense_id`.')
 
     if query_expression and offense_id:
         raise DemistoException('Could not use both `query_expression` and `offense_id`.')
