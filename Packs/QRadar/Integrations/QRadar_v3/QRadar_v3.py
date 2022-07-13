@@ -3437,7 +3437,7 @@ def qradar_search_retrieve_events_command(client: Client,
         if query_expression:
             search_response = client.search_create(query_expression=query_expression)
             if not search_response or 'search_id' not in search_response:
-                raise DemistoException('QRadar search was failed.')
+                raise DemistoException(f'Failed to create search for the AQL query: {query_expression}')
             search_id = search_response['search_id']
         else:
             search_id = create_events_search(client,
@@ -3446,8 +3446,8 @@ def qradar_search_retrieve_events_command(client: Client,
                                              events_columns=events_columns,
                                              events_limit=events_limit,
                                              offense_start_time=start_time)
-        if search_id == QueryStatus.ERROR.value:
-            raise DemistoException(f'Failed to create search. for Offense {offense_id}')
+            if search_id == QueryStatus.ERROR.value:
+                raise DemistoException(f'Failed to create search for Offense {offense_id}')
         polling_args = {
             'search_id': search_id,
             'interval_in_seconds': interval_in_secs,
