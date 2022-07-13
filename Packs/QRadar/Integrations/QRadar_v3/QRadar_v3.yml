@@ -2670,16 +2670,39 @@ script:
       type: Unknown
   - arguments:
     - name: offense_id
-      required: true
+      required: false
       type: Number
       description: The ID of the offense to retrieve.
+    - name: events_limit
+      required: false
+      type: Number
+      description: The number of events to return.
+    - name: events_columns
+      required: false
+      type: String
+      description: Comma separated list of columns to return.
+    - name: fetch_mode
+      type: PREDEFINED
+      predefined:
+        - Fetch With All Events
+        - Fetch Correlation Events Only
+      required: false
+      description: The mode to use when fetching events.
+    - name: start_time
+      required: false
+      type: Date
+      description: The start time of the search.
+    - name: query_expression
+      required: false
+      type: String
+      description: The AQL query to execute. Mutually exclusive with the other arguments.
     - name: search_id
       required: false
       type: String
       description: The search id to query the results.
     deprecated: false
     description: Polling command to search for events of a specific offense.
-    name: qradar-get-events-polling
+    name: qradar-search-retrieve-events
     polling: true
     outputs:
     - contextPath: QRadar.SearchEvents.ID

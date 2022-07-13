@@ -3332,7 +3332,6 @@ def create_events_search(client: Client,
                          events_limit: int,
                          offense_id: int,
                          offense_start_time: str = None,
-                         **_,  # so we can pass all the other params to the search
                          ) -> str:
     additional_where = ''' AND LOGSOURCETYPENAME(devicetype) = 'Custom Rule Engine' ''' \
         if fetch_mode == FetchMode.correlations_events_only.value else ''
@@ -3407,10 +3406,10 @@ def get_modified_remote_data_command(client: Client, params: Dict[str, str],
     return GetModifiedRemoteDataResponse(list(new_modified_records_ids))
 
 
-def qradar_get_events_polling_command(client: Client,
-                                      params,
-                                      args,
-                                      ) -> CommandResults:  # pragma: no cover (tested in test-playbook)
+def qradar_search_retrieve_events_command(client: Client,
+                                          params,
+                                          args,
+                                          ) -> CommandResults:  # pragma: no cover (tested in test-playbook)
     """A polling command to get events from QRadar offense
 
     Args:
@@ -3424,14 +3423,29 @@ def qradar_get_events_polling_command(client: Client,
     Returns:
         CommandResults: The results of the command.
     """
-    ScheduledCommand.raise_error_if_not_supported()
     interval_in_secs = int(args.get('interval_in_seconds', 60))
     offense_id = args.get('offense_id')
+    events_columns = args.get('events_columns', params.get('events_columns'))
+    events_limit = args.get('events_limit', params.get('events_limit'))
+    fetch_mode = args.get('fetch_mode', params.get('fetch_mode'))
+    start_time = args.get('start_time')
+    query_expression = args.get('query_expression')
+    if query_expression and offense_id:
+        raise DemistoException('Could not use both `query_expression` and `offense_id`.')
     search_id = args.get('search_id')
     if not search_id:
-        search_id = create_events_search(client,
-                                         offense_id=offense_id,
-                                         **params)
+        if query_expression:
+            search_response = client.search_create(query_expression=query_expression)
+            if not search_response or 'search_id' not in search_response:
+                raise DemistoException('QRadar search was failed.')
+            search_id = search_response['search_id']
+        else:
+            search_id = create_events_search(client,
+                                             offense_id=offense_id,
+                                             fetch_mode=fetch_mode,
+                                             events_columns=events_columns,
+                                             events_limit=events_limit,
+                                             offense_start_time=start_time)
         if search_id == QueryStatus.ERROR.value:
             raise DemistoException(f'Failed to create search. for Offense {offense_id}')
         polling_args = {
@@ -3440,7 +3454,7 @@ def qradar_get_events_polling_command(client: Client,
             **args
         }
         scheduled_command = ScheduledCommand(
-            command='qradar-get-events-polling',
+            command='qradar-search-retrieve-events',
             next_run_in_seconds=interval_in_secs,
             args=polling_args,
             timeout_in_seconds=3600,
@@ -3470,7 +3484,7 @@ def qradar_get_events_polling_command(client: Client,
         **args
     }
     scheduled_command = ScheduledCommand(
-        command='qradar-get-events-polling',
+        command='qradar-search-retrieve-events',
         next_run_in_seconds=interval_in_secs,
         args=polling_args,
     )
@@ -3698,8 +3712,8 @@ def main() -> None:  # pragma: no cover
             validate_integration_context()
             return_results(get_modified_remote_data_command(client, params, args))
 
-        elif command == 'qradar-get-events-polling':
-            return_results(qradar_get_events_polling_command(client, params, args))
+        elif command == 'qradar-search-retrieve-events':
+            return_results(qradar_search_retrieve_events_command(client, params, args))
         else:
             raise NotImplementedError(f'''Command '{command}' is not implemented.''')
 
