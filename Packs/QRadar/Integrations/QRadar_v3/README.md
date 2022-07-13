@@ -2521,7 +2521,7 @@ This uses the instance parameters to create the AQL search query for the events.
 
 #### Base Command
 
-`qradar-get-events-polling`
+`qradar-search-retrieve-events`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
