@@ -1,0 +1,24 @@
+{
+  "trigger_id": "73545719a1bdeba6ba91f6a16044c021",
+  "playbook_id": "NGFW Scan",
+  "suggestion_reason": "Recommended for NGFW scan related alerts",
+  "description": "This trigger is responsible for handling alerts involving scanning activity identified by our NGFW",
+  "trigger_name": "NGFW Scanning Alerts",
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+            "SEARCH_FIELD": "alert_name",
+            "SEARCH_TYPE": "CONTAINS",
+            "SEARCH_VALUE": "scan"
+        },
+        {
+            "SEARCH_FIELD": "alert_source",
+            "SEARCH_TYPE": "EQ",
+            "SEARCH_VALUE": "FW"
+        }
+      ]
+    }
+  }
+}
+

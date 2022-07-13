@@ -737,7 +737,7 @@ script:
     - contextPath: Axonius.tags
       description: Axonius Tags
       type: Unknown
-  dockerimage: demisto/axonius:1.0.0.23674
+  dockerimage: demisto/axonius:1.0.0.30481
   feed: false
   isfetch: false
   longRunning: false

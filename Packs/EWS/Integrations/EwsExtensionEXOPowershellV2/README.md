@@ -380,3 +380,281 @@ Displays existing recipient objects in your organization. This command returns a
 >| Alias | DisplayName | DistinguishedName | EmailAddresses | ExchangeVersion | ExternalDirectoryObjectId | Identity | Name | OrganizationId | PrimarySmtpAddress | RecipientType | RecipientTypeDetails
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
 >| "user" | "user" | "CN=user\_Identity,OU=example.com,OU=Microsoft Exchange Hosted Organizations,DC=EURPR07A005,DC=PROD,DC=OUTLOOK,DC=COM" | \["SPO:SPO\_SP00@SPO\_SP01","SMTP:user@example.com"\] | "0.10 \(14.0.100\)" | "Identity" | "user\_Identity" | "user\_Identity" | "EURPR07A005.PROD.OUTLOOK.COM/Microsoft Exchange Hosted Organizations/example.com \- EURPR07A005.PROD.OUTLOOK.COM/ConfigurationUnits/example.com/Configuration" | "user@example.com" | "MailUniversalDistributionGroup" | "GroupMailbox"
+
+
+
+
+### ews-new-tenant-allow-block-list-items
+***
+Add new items to the Tenant Allow/Block Lists.  Uses PowerShell New-TenantAllowBlockListItems cmdlet.
+
+Official PowerShell cmdlet documentation [here](https://docs.microsoft.com/en-us/powershell/module/exchange/new-tenantallowblocklistitems?view=exchange-ps)
+
+
+#### Base Command
+
+`ews-new-tenant-allow-block-list-items`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| entries | Entries to add to the list.  Separate multiple entries with a comma (e.g. "Item1,Item2"). | Required |
+| list_type | List type to add items to. | Required |
+| list_subtype | List subtype to add items to.  | Optional |
+| action | Action to set for new entries | Required |
+| notes | Notes to include on new list entries | Optional |
+| expiration_date | Enter a specific date and time for the new entries to expire using format "YYYY-MM-DD HH:MM:SSz" for UTC time.  Alternately, a PowerShell **GetDate** statement can be used. | Optional |
+| no_expiration | Specify whether to create list entries with no expiration date.  Cannot be used with "expiration_date".  If left false and no expiration date is set, default of 30 days will be used. | Optional |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| EWS.NewTenantBlocks.Action | String | List type ('Block' or 'Allow') |
+| EWS.NewTenantBlocks.EntryValueHash | String | Entry Value Hash |
+| EWS.NewTenantBlocks.Error | String | Error (if any) returned by remote command |
+| EWS.NewTenantBlocks.ExpirationDate | String | DateTime the entry will expire and be removed |
+| EWS.NewTenantBlocks.Identity | String | Unique identifier for the entry |
+| EWS.NewTenantBlocks.LastModifiedDateTime | String | DateTime of last modification |
+| EWS.NewTenantBlocks.ListSubType | String | List sub type (Tenant or AdvancedDelivery) |
+| EWS.NewTenantBlocks.ModifiedBy | String | User / App Registration which last modified this entry |
+| EWS.NewTenantBlocks.Notes | String | Custom notes added to the entry. |
+| EWS.NewTenantBlocks.ObjectState | String | State of the object (e.g. New/Modified/Deleted) |
+| EWS.NewTenantBlocks.PSComputerName | String | Name of Remote Powershell endpoint |
+| EWS.NewTenantBlocks.PSShowComputerName | Bool | Flag whether or not remote computer name is shown in PS prompt |
+| EWS.NewTenantBlocks.RunspaceId | String | RunspaceID of the entry |
+| EWS.NewTenantBlocks.SubmissionID | String | SubmissionID of the entry |
+| EWS.NewTenantBlocks.SysManaged | Bool | SysManaged property of the entry |
+| EWS.NewTenantBlocks.Value | String | The value of the new entry created |
+
+
+#### Command Example
+```!ews-new-tenant-allow-block-list-items action=Block list_type=sender entries="attacker@phishingsite.com" notes="Email observed in a phishing campaign."```
+
+#### Context Example
+```json
+{
+    "Action": "Block",
+    "EntryValueHash": "d568L6iokOxrYqB2L1CxcKy6S6A/tCDoQQJal33AFWo=",
+    "Error": null,
+    "ExpirationDate": "2022-06-15T19:30:52.6071551Z",
+    "Identity": "RgAAAAAuoyIuRcZsTKgZbIQyJWZUBwA02rlnO0nOR5RO-QI-xRP9AAAAAAEVAAA02rlnO0nOR5RO-QI-xRP9AAADfzPhAAAA0",
+    "LastModifiedDateTime": "2022-05-16T19:30:52.7320883Z",
+    "ListSubType": "Tenant",
+    "ModifiedBy": "",
+    "Notes": "Email observed in a phishing campaign.",
+    "ObjectState": "New",
+    "PSComputerName": "outlook.office365.com",
+    "PSShowComputerName": false,
+    "RunspaceId": "fe0186a8-6ce6-487d-bd65-a9869f60ffcd",
+    "SubmissionID": "",
+    "SysManaged": false,
+    "Value": "attacker@phishingsite.com"
+}
+```
+
+#### Human Readable Output
+
+>### Results of ews-new-tenant-allow-block-list-items
+| Action | EntryValueHash | Error | ExpirationDate | Identity | LastModifiedDateTime | ListSubType | ModifiedBy | Notes | ObjectState | PSComputerName | PSShowComputerName | RunspaceId | SubmissionID | SysManaged | Value
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
+| Block | d568L6iokOxrYqB2L1CxcKy6S6A/tCDoQQJal33AFWo= |  | \{"value":"2022\-06\-15T19:34:01.2028448Z","DateTime":"Wednesday, June 15, 2022 7:34:01 PM"\} | RgAAAAAuoyIuRcZsTKgZbIQyJWZUBwA02rlnO0nOR5RO\-QI\-xRP9AAAAAAEVAAA02rlnO0nOR5RO\-QI\-xRP9AAADfzPiAAAA0 | \{"value":"2022\-05\-16T19:34:01.2652934Z","DateTime":"Monday, May 16, 2022 7:34:01 PM"\} | Tenant |  | Email observed in a phishing campaign. | New | outlook.office365.com | false | \{"value":"8f736b87\-f951\-4b6b\-aa21\-e358720c44e3","Guid":"8f736b87\-f951\-4b6b\-aa21\-e358720c44e3"\} |  | false | attacker@phishingsite.com
+
+
+
+### ews-get-tenant-allow-block-list-items
+***
+Retrieve current Tenant Allow/Block List items.  Uses Get-TenantAllowBlockListItems cmdlet.
+
+Official PowerShell cmdlet documentation [here](https://docs.microsoft.com/en-us/powershell/module/exchange/get-tenantallowblocklistitems?view=exchange-ps)
+
+
+#### Base Command
+
+`ews-get-tenant-allow-block-list-items`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| list_type | List type to retrieve items from. | Required |
+| list_subtype | List subtype to retrieve items from.  | Optional |
+| action | Action to filter entries by. | Required |
+| expiration_date | Enter a specific date and time to filter entries by using format "YYYY-MM-DD HH:MM:SSz" for UTC time.  Alternately, a PowerShell **GetDate** statement can be used. | Optional |
+| no_expiration | Filter list items that are set to never expire. | Optional |
+| entry | Specif8ic entry value to retrieve. | Optional |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| EWS.CurrentTenantBlocks.Action | String | List type ('Block' or 'Allow') |
+| EWS.CurrentTenantBlocks.EntryValueHash | String | Entry Value Hash |
+| EWS.CurrentTenantBlocks.Error | Bool | Error (if any) returned by remote command |
+| EWS.CurrentTenantBlocks.ExpirationDate | String | DateTime the entry will expire and be removed |
+| EWS.CurrentTenantBlocks.Identity | String | Unique identifier for the entry |
+| EWS.CurrentTenantBlocks.LastModifiedDateTime | String | DateTime of last modification |
+| EWS.CurrentTenantBlocks.ListSubType | String | List sub type (Tenant or AdvancedDelivery) |
+| EWS.CurrentTenantBlocks.ModifiedBy | String | User / App Registration which last modified this entry |
+| EWS.CurrentTenantBlocks.Notes | String | Custom notes added to the entry. |
+| EWS.CurrentTenantBlocks.ObjectState | String | State of the object (e.g. New/Modified/Deleted) |
+| EWS.CurrentTenantBlocks.PSComputerName | String | Name of Remote Powershell endpoint |
+| EWS.CurrentTenantBlocks.PSShowComputerName | Bool | Flag whether or not remote computer name is shown in PS prompt |
+| EWS.CurrentTenantBlocks.RunspaceId | String | RunspaceID of the entry |
+| EWS.CurrentTenantBlocks.SubmissionID | String | SubmissionID of the entry |
+| EWS.CurrentTenantBlocks.SysManaged | Bool | SysManaged property of the entry |
+| EWS.CurrentTenantBlocks.Value | String | The value of the new entry created |
+
+
+#### Command Example
+```!ews-get-tenant-allow-block-list-items action=Block list_type=sender```
+
+#### Context Example
+```json
+[
+    {
+        "Action": "Block",
+        "EntryValueHash": "d568L6iokOxrYqB2L1CxcKy6S6A/tCDoQQJal33AFWo=",
+        "Error": null,
+        "ExpirationDate": "2022-06-15T19:34:01.2028448Z",
+        "Identity": "RgAAAAAuoyIuRcZsTKgZbIQyJWZUBwA02rlnO0nOR5RO-QI-xRP9AAAAAAEVAAA02rlnO0nOR5RO-QI-xRP9AAADfzPiAAAA0",
+        "LastModifiedDateTime": "2022-05-16T19:34:01.2652934Z",
+        "ListSubType": "Tenant",
+        "ModifiedBy": "",
+        "Notes": "Email observed in a phishing campaign.",
+        "ObjectState": "Unchanged",
+        "PSComputerName": "outlook.office365.com",
+        "PSShowComputerName": false,
+        "RunspaceId": "010da4cf-2d47-4b8a-a882-4bd6885faff1",
+        "SubmissionID": "",
+        "SysManaged": false,
+        "Value": "attacker@phishingsite.com"
+    }
+]
+```
+
+#### Human Readable Output
+### Results of ews-get-tenant-allow-block-list-items
+| Action | EntryValueHash | Error | ExpirationDate | Identity | LastModifiedDateTime | ListSubType | ModifiedBy | Notes | ObjectState | PSComputerName | PSShowComputerName | RunspaceId | SubmissionID | SysManaged | Value
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
+| Block | d568L6iokOxrYqB2L1CxcKy6S6A/tCDoQQJal33AFWo= |  | \{"value":"2022\-06\-15T19:34:01.2028448Z","DateTime":"Wednesday, June 15, 2022 7:34:01 PM"\} | RgAAAAAuoyIuRcZsTKgZbIQyJWZUBwA02rlnO0nOR5RO\-QI\-xRP9AAAAAAEVAAA02rlnO0nOR5RO\-QI\-xRP9AAADfzPiAAAA0 | \{"value":"2022\-05\-16T19:34:01.2652934Z","DateTime":"Monday, May 16, 2022 7:34:01 PM"\} | Tenant |  | Email observed in a phishing campaign. | Unchanged | outlook.office365.com | false | \{"value":"feada07c\-99b7\-48e9\-a562\-a755073522ff","Guid":"feada07c\-99b7\-48e9\-a562\-a755073522ff"\} |  | false | attacker@phishingsite.com
+
+
+### ews-get-tenant-allow-block-list-count
+***
+Retrieve current count of defined Tenant Allow/Block List items.  Uses Get-TenantAllowBlockListItems cmdlet.
+
+Official PowerShell cmdlet documentation [here](https://docs.microsoft.com/en-us/powershell/module/exchange/get-tenantallowblocklistitems?view=exchange-ps)
+
+
+#### Base Command
+
+`ews-get-tenant-allow-block-list-count`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| list_type | List type to retrieve items from. | Optional |
+| list_subtype | List subtype to retrieve items from. | Optional |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| EWS.CurrentListCount.Count | Number | Number of entries presently in the specified list |
+| EWS.CurrentListCount.ListSubType | String | List sub type (Tenant or AdvancedDelivery) |
+| EWS.CurrentListCount.ListType | String | List type |
+
+
+#### Command Example
+```!ews-get-tenant-allow-block-list-count list_type=sender```
+
+#### Context Example
+```json
+{
+    "Count": 2,
+    "ListSubType": "Tenant",
+    "ListType": "sender"
+}
+```
+
+#### Human Readable Output
+### Results of ews-get-tenant-allow-block-list-count
+| Count | ListSubType | ListType
+| --- | --- | ---
+| 2 | Tenant | sender
+
+
+### ews-remove-tenant-allow-block-list-items
+***
+Remove items from the Tenant Allow/Block Lists.   You can delete items by their value or by unique ID.  Uses PowerShell cmdlet Remove-TenantAllowBlockListItems cmdlet.
+
+Official PowerShell cmdlet documentation [here](https://docs.microsoft.com/en-us/powershell/module/exchange/remove-tenantallowblocklistitems?view=exchange-ps)
+
+
+#### Base Command
+
+`ews-remove-tenant-allow-block-list-items`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| entries | Entries to remove from the list.  Either use this OR 'ids' to specify items to remove.  Separate multiple entries with a comma (e.g. "Item1,Item2"). | Optional |
+| ids | Entry IDs to remove from the list.  Either use this OR 'entries' to specify items to remove.  Separate multiple entries with a comma (e.g. "Item1,Item2"). | Optional |
+| list_type | List type to remove items from. | Required |
+| list_subtype | List subtype to remove items from. | Optional |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| EWS.RemovedTenantBlocks.Action | String | Action |
+| EWS.RemovedTenantBlocks.EntryValueHash | String | Null for deleted items. |
+| EWS.RemovedTenantBlocks.Error | String | Null for deleted items. |
+| EWS.RemovedTenantBlocks.ExpirationDate | String | Null for deleted items. |
+| EWS.RemovedTenantBlocks.Identity | String | Blank for deleted items. |
+| EWS.RemovedTenantBlocks.LastModifiedDateTime | String | Null for deleted items. |
+| EWS.RemovedTenantBlocks.ListSubType | String | Null for deleted items. |
+| EWS.RemovedTenantBlocks.ModifiedBy | String | Null for deleted items. |
+| EWS.RemovedTenantBlocks.Notes | String | Null for deleted items. |
+| EWS.RemovedTenantBlocks.ObjectState | String | State of the object (Deleted) |
+| EWS.RemovedTenantBlocks.PSComputerName | String | Name of Remote Powershell endpoint |
+| EWS.RemovedTenantBlocks.PSShowComputerName | Bool | Flag whether or not remote computer name is shown in PS prompt |
+| EWS.RemovedTenantBlocks.RunspaceId | String | RunspaceID of the entry |
+| EWS.RemovedTenantBlocks.SubmissionID | String | SubmissionID of the entry |
+| EWS.RemovedTenantBlocks.SysManaged | Bool | SysManaged property of the entry |
+| EWS.RemovedTenantBlocks.Value | String | The value of the entry that was removed |
+
+#### Command Example
+```!ews-remove-tenant-allow-block-list-items list_type=sender entries="attacker2@phishingsite.com"```
+
+#### Context Example
+```json
+{
+    "Action": "0",
+    "EntryValueHash": null,
+    "Error": null,
+    "ExpirationDate": null,
+    "Identity": "",
+    "LastModifiedDateTime": null,
+    "ListSubType": null,
+    "ModifiedBy": null,
+    "Notes": null,
+    "ObjectState": "Deleted",
+    "PSComputerName": "outlook.office365.com",
+    "PSShowComputerName": false,
+    "RunspaceId": "efa88be5-7342-4b77-af2f-99dd2d914300",
+    "SubmissionID": null,
+    "SysManaged": null,
+    "Value": "attacker2@phishingsite.com"
+}
+```
+
+#### Human Readable Output
+### Results of ews-remove-tenant-allow-block-list-items
+| Action | EntryValueHash | Error | ExpirationDate | Identity | LastModifiedDateTime | ListSubType | ModifiedBy | Notes | ObjectState | PSComputerName | PSShowComputerName | RunspaceId | SubmissionID | SysManaged | Value
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | ---
+| 0 |  |  |  |  |  |  |  |  | Deleted | outlook.office365.com | false | \{"value":"cd58060e\-d033\-4cdb\-814e\-9f9748fdf78c","Guid":"cd58060e\-d033\-4cdb\-814e\-9f9748fdf78c"\} |  |  | attacker@phishingsite.com

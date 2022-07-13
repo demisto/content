@@ -17,7 +17,7 @@
       {
         "ackId": "",
         "message": {
-          "data": "42",
+          "data": "42\\42",
           "messageId": "123",
           "publishTime": "2020-04-18T08:36:30.541Z"
         }

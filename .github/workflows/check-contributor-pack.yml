@@ -18,10 +18,11 @@ jobs:
         uses: actions/setup-python@v3
         with:
           python-version: '3.8'
+      - name: Setup Poetry
+        uses: Gr1N/setup-poetry@v7
       - name: Install python dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install -r dev-requirements-py3.txt
+          poetry install
       - name: Check pack and request review
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -33,5 +34,5 @@ jobs:
           echo "PR number is: $PR_NUMBER"
           echo "Target branch name is: $BRANCH_NAME"
           echo "Starting check of contributor packs"
-          python Utils/request_contributor_review.py --pr_number $PR_NUMBER --github_token $GITHUB_TOKEN --email_api_token $SENDGRID_EMAIL_API_KEY
+          poetry run python ./Utils/request_contributor_review.py --pr_number $PR_NUMBER --github_token $GITHUB_TOKEN --email_api_token $SENDGRID_EMAIL_API_KEY
           echo "Finished check of contributor packs"

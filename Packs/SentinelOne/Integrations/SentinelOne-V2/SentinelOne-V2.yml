@@ -1939,7 +1939,7 @@ script:
       type: String
     - contextPath: SentinelOne.Blocklist.ScopeName
       description: Name of the block list scope.
-      type: String    
+      type: String
   - arguments:
     - description: SHA1 hash to add to the Global blocklist.
       name: sha1

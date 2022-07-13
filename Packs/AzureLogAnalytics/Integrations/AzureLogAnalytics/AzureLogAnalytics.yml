@@ -4,12 +4,6 @@ commonfields:
   version: -1
 configuration:
 - additionalinfo: Received from the authorization process or from the self-deployed
-    configuration process.
-  display: ID / Client ID
-  name: auth_id
-  required: true
-  type: 4
-- additionalinfo: Received from the authorization process or from the self-deployed
     configuration process (find the tenant ID in your app overview page in the Azure
     portal)
   display: Token / Tenant ID
@@ -18,10 +12,10 @@ configuration:
   type: 4
 - additionalinfo: Received from the authorization process or from the self-deployed
     configuration process.
-  display: Key / Client Secret
-  name: enc_key
+  display: ID / (Client ID :For client credentials flow)
+  name: credentials
   required: false
-  type: 4
+  type: 9
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
@@ -34,6 +28,11 @@ configuration:
   type: 14
 - display: Use a self-deployed Azure application
   name: self_deployed
+  required: false
+  type: 8
+- additionalinfo: Check when authenticating using the Client Credentials flow.
+  display: Use Client Credentials Authorization Flow
+  name: client_credentials
   required: false
   type: 8
 - display: Application redirect URI (for self-deployed mode)
@@ -322,7 +321,7 @@ script:
     description: Deletes a specified saved search in the Log Analytics workspace.
     execution: false
     name: azure-log-analytics-delete-saved-search
-  dockerimage: demisto/crypto:1.0.0.27590
+  dockerimage: demisto/crypto:1.0.0.30286
   feed: false
   isfetch: false
   longRunning: false

@@ -349,7 +349,14 @@ def extract_urls_and_emails_from_annot_objects(annot_objects):
 
     for annot_object in annot_objects:
         if isinstance(annot_object, PyPDF2.generic.IndirectObject):
-            annot_object = annot_object.get_object()
+            try:
+                annot_object = annot_object.get_object()
+            except Exception as e:
+                if "Could not find object" in str(e):
+                    demisto.error(f'annot.get_object() encountered an error: {e}.\n Skipping without failure.')
+                    continue
+                else:
+                    demisto.error(f'annot.get_object() encountered an error: {e}.')
 
         extracted_object = extract_url_from_annot_object(annot_object)
         # Separates URLs and Emails:
@@ -390,12 +397,7 @@ def get_urls_and_emails_from_pdf_annots(file_path):
                 annots = [annots]
 
             for annot in annots:
-                try:
-                    annot_objects = annot.get_object()
-                # There is a bug in PyPDF2, failed when converting an empty byte to an int in the get_object() function
-                except ValueError as e:
-                    demisto.error(f'annot.get_object() encountered an error: {e}.\n Skipping without failure.')
-                    continue
+                annot_objects = annot.get_object()
                 if not isinstance(annot_objects, PyPDF2.generic.ArrayObject):
                     annot_objects = [annot_objects]
 
