@@ -1,0 +1,38 @@
+{
+	"autorun": true,
+	"cacheVersn": 0,
+	"closureScript": "",
+	"color": "#07a507",
+	"days": 0,
+	"daysR": 0,
+	"default": false,
+	"definitionId": "",
+	"detached": false,
+	"disabled": false,
+	"extractSettings": {
+		"fieldCliNameToExtractSettings": {},
+		"mode": "Specific"
+	},
+	"fromServerVersion": "",
+	"hours": 0,
+	"hoursR": 0,
+	"id": "PAN-OS Network Operations - Onboarding",
+	"itemVersion": "",
+	"layout": "1e5f055b-9751-478d-8cf3-800dcec477e2",
+	"locked": false,
+	"name": "PAN-OS Network Operations - Onboarding",
+	"onChangeRepAlg": 0,
+	"packID": "a3acf260-148d-4af7-81ab-49744965d264",
+	"playbookId": "b88592f5-e75c-438a-884a-1b891d8d1fa5",
+	"preProcessingScript": "",
+	"propagationLabels": [
+		"all"
+	],
+	"readonly": false,
+	"reputationCalc": 0,
+	"system": false,
+	"toServerVersion": "",
+	"version": -1,
+	"weeks": 0,
+	"weeksR": 0
+}

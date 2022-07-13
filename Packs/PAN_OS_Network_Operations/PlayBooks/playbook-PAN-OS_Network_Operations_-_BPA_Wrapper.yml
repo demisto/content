@@ -1,0 +1,249 @@
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: a3acf260-148d-4af7-81ab-49744965d264
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: Wraps the BPA use case to make it simple to run using a button.
+id: 7823b858-49a5-4d43-8aaa-11ac4985eb6e
+inputs:
+- description: The name of the new BPA incident to create.
+  key: incident_name
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: Panorama - Best Practices Assessment
+name: PAN-OS Network Operations - BPA Wrapper
+outputs:
+- contextPath: CreatedIncidentID
+  description: commands.local.cmd.create.inc.outputs.createdId
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e0e25583-91a5-4382-82fb-8bc0578eea92
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: e0e25583-91a5-4382-82fb-8bc0578eea92
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -160
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: da293e92-1700-4bde-8d6f-cf20a086475a
+      iscommand: false
+      name: Finish!
+      type: title
+      version: -1
+    taskid: da293e92-1700-4bde-8d6f-cf20a086475a
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 540
+        }
+      }
+  "4":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: BPA
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+      label: "yes"
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 794a3641-aea9-451a-8786-75e7783fdab6
+      iscommand: false
+      name: Is the BPA Integration Enabled?
+      type: condition
+      version: -1
+    taskid: 794a3641-aea9-451a-8786-75e7783fdab6
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -30
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      name:
+        simple: ${inputs.incident_name}
+      type:
+        simple: Panorama Best Practice Assessment
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.create.inc
+      id: 84e803d6-5366-4f60-82fe-2a727b6f038a
+      iscommand: true
+      name: Create new BPA incident
+      script: Builtin|||createNewIncident
+      type: regular
+      version: -1
+    taskid: 84e803d6-5366-4f60-82fe-2a727b6f038a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 170
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      linkedIncidentIDs:
+        simple: ${CreatedIncidentID}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.linkIncidents
+      id: 280f3fe8-128c-4f64-8d21-13423f34c3e6
+      iscommand: true
+      name: Link to current incident
+      script: Builtin|||linkIncidents
+      type: regular
+      version: -1
+    taskid: 280f3fe8-128c-4f64-8d21-13423f34c3e6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 330
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      panosnetworkoperationspreremediationbpa:
+        simple: ${CreatedIncidentID}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 3d05e920-b161-4dd3-8c6c-286744f26ad1
+      iscommand: true
+      name: Update Pre-remediation BPA Field
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 3d05e920-b161-4dd3-8c6c-286744f26ad1
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 2570
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2825,
+        "width": 580,
+        "x": 450,
+        "y": -160
+      }
+    }
+  }

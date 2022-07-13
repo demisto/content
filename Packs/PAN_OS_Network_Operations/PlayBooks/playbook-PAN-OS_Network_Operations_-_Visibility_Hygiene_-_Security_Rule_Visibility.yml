@@ -1,0 +1,850 @@
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: a3acf260-148d-4af7-81ab-49744965d264
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: Finds and correct visibility related configuration issues specifically
+  in regards to security rules.
+id: PAN-OS Network Operations - Visibility Hygiene - Security Rule Visibility
+inputs: []
+name: PAN-OS Network Operations - Visibility Hygiene - Security Rule Visibility
+outputs:
+- contextPath: PANOS.ConfigurationHygieneFix
+  description: Configuration Hygiene Fixes.
+  type: unknown
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a72485bb-4818-41e8-8fa6-908d6b60c36e
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: a72485bb-4818-41e8-8fa6-908d6b60c36e
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": -120
+        }
+      }
+  "1":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: incident.panosnetworkoperationsconfigurationhygieneissues.issuecode
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: BP-V-8
+                root: incident.panosnetworkoperationsconfigurationhygieneissues
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.auto_remediate
+          operator: isEqualString
+          right:
+            value:
+              simple: "yes"
+      label: Yes - Auto Remediate
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: incident.panosnetworkoperationsconfigurationhygieneissues.issuecode
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: BP-V-8
+                root: incident.panosnetworkoperationsconfigurationhygieneissues
+          operator: isExists
+      label: "Yes"
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "Yes":
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: True if BP-V-8 issues present.
+      id: 819794bc-8d82-4263-845d-256fcc2c4cd1
+      iscommand: false
+      name: BP-V-8
+      type: condition
+      version: -1
+    taskid: 819794bc-8d82-4263-845d-256fcc2c4cd1
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 210,
+          "y": 20
+        }
+      }
+  "2":
+    form:
+      description: To remediate **BP-V-8** and **BP-V-9**, a log forwarding profile
+        will be set on the security rules.
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          complex:
+            accessor: name
+            filters:
+            - - left:
+                  iscontext: true
+                  value:
+                    simple: incident.panosnetworkoperationsconfigurationhygieneissues.issuecode
+                operator: isEqualString
+                right:
+                  value:
+                    simple: BP-V-8
+              - left:
+                  iscontext: true
+                  value:
+                    simple: incident.panosnetworkoperationsconfigurationhygieneissues.issuecode
+                operator: isEqualString
+                right:
+                  value:
+                    simple: BP-V-9
+            root: incident.panosnetworkoperationsconfigurationhygieneissues
+            transformers:
+            - operator: uniq
+            - args:
+                prefix:
+                  value:
+                    simple: ' * '
+                suffix: {}
+              operator: concat
+            - args:
+                separator:
+                  value:
+                    simple: |2+
+
+              operator: join
+            - args:
+                prefix:
+                  value:
+                    simple: |+
+                      Confirm the remediation action of setting the log setting and log at session end on the following security rules:
+
+
+
+                suffix: {}
+              operator: concat
+        options: []
+        optionsarg:
+        - simple: "Yes"
+        - simple: "No"
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: singleSelect
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "1"
+        label: ""
+        labelarg:
+          simple: Select the log forwarding rule to use for the same rules
+        options: []
+        optionsarg:
+        - complex:
+            accessor: name
+            root: PANOS.PanosObject
+            transformers:
+            - operator: uniq
+        - simple: ${PANOS.PanosObject.name}
+        - {}
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: The name of the log forwarding profile to use in the security zone
+          log settings.
+        type: singleSelect
+      sender: ""
+      title: BP-V-8 and BP-V-9 Fix Confirmation
+      totalanswers: 0
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: false
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Confirm the automatic fixes.
+      id: 9ff00783-79e7-448f-845b-4f56bb25328d
+      iscommand: false
+      name: Confirm Fixes for BP-V-8/BP-V-9
+      type: collection
+      version: -1
+    taskid: 9ff00783-79e7-448f-845b-4f56bb25328d
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: BP-V-8 and BP-V-9 Fix Confirmation.Answers.0
+          operator: isEqualString
+          right:
+            value:
+              simple: "Yes"
+      label: "yes"
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Confirm the fixes are accepted.
+      id: dd27e1f1-a664-4af7-819e-0ab321126021
+      iscommand: false
+      name: Accepted?
+      type: condition
+      version: -1
+    taskid: dd27e1f1-a664-4af7-819e-0ab321126021
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 540
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      issue:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: incident.panosnetworkoperationsconfigurationhygieneissues.issuecode
+              operator: isEqualString
+              right:
+                value:
+                  simple: BP-V-8
+            - left:
+                iscontext: true
+                value:
+                  simple: incident.panosnetworkoperationsconfigurationhygieneissues.issuecode
+              operator: isEqualString
+              right:
+                value:
+                  simple: BP-V-9
+          root: incident.panosnetworkoperationsconfigurationhygieneissues
+      log_forwarding_profile_name:
+        simple: ${BP-V-8 and BP-V-9 Fix Confirmation.Answers.1}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Fixed security rules that have incorrect log settings by adding
+        a log forwarding profile and setting
+      id: 8c0d2a90-9c7d-41e2-8cb1-52fe24199645
+      iscommand: true
+      name: BP-V-8/BP-V-9 - Fix Security Zone Log Settings
+      script: '|||pan-os-hygiene-fix-security-rule-log-settings'
+      type: regular
+      version: -1
+    taskid: 8c0d2a90-9c7d-41e2-8cb1-52fe24199645
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 700
+        }
+      }
+  "5":
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e1f58a9c-f3e6-4637-82d6-1eb3cec8ab51
+      iscommand: false
+      name: Profile Group Settings
+      type: title
+      version: -1
+    taskid: e1f58a9c-f3e6-4637-82d6-1eb3cec8ab51
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 870
+        }
+      }
+  "6":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: incident.panosnetworkoperationsconfigurationhygieneissues.issuecode
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: BP-V-9
+                root: incident.panosnetworkoperationsconfigurationhygieneissues
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.auto_remediate
+          operator: isEqualString
+          right:
+            value:
+              simple: "yes"
+      label: Yes - Auto Remediate
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: incident.panosnetworkoperationsconfigurationhygieneissues.issuecode
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: BP-V-9
+                root: incident.panosnetworkoperationsconfigurationhygieneissues
+          operator: isExists
+      label: "Yes"
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "Yes":
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: True if BP-V-9 issues present.
+      id: ecdf023d-2982-48f7-84cd-c0aea37f1c3e
+      iscommand: false
+      name: BP-V-9
+      type: condition
+      version: -1
+    taskid: ecdf023d-2982-48f7-84cd-c0aea37f1c3e
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 20
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      object_type:
+        simple: LogForwardingProfile
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Searches and returns a reference for the given object type and
+        name. If no name is provided, all
+      id: 8e3432ad-13fa-4c99-8a2e-2988bb8c4eda
+      iscommand: true
+      name: Get log forwarding profiles
+      script: '|||pan-os-config-get-object'
+      type: regular
+      version: -1
+    taskid: 8e3432ad-13fa-4c99-8a2e-2988bb8c4eda
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+  "8":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: incident.panosnetworkoperationsconfigurationhygieneissues.issuecode
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: BP-V-10
+                root: incident.panosnetworkoperationsconfigurationhygieneissues
+          operator: isExists
+      label: "Yes"
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "11"
+      "Yes":
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: True if BP-V-10 issues present.
+      id: 8dacc844-1029-43e7-85e6-80b18259c0f8
+      iscommand: false
+      name: BP-V-10
+      type: condition
+      version: -1
+    taskid: 8dacc844-1029-43e7-85e6-80b18259c0f8
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1010
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      object_type:
+        simple: SecurityProfileGroup
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Searches and returns a reference for the given object type and
+        name. If no name is provided, all
+      id: 329ede80-05a5-4a96-8114-2959a54101af
+      iscommand: true
+      name: Get Security Profile Groups
+      script: '|||pan-os-config-get-object'
+      type: regular
+      version: -1
+    taskid: 329ede80-05a5-4a96-8114-2959a54101af
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1210
+        }
+      }
+  "10":
+    form:
+      description: To remediate **BP-V-10**, a security profile group must be set
+        on all rules.
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          complex:
+            accessor: name
+            filters:
+            - - left:
+                  iscontext: true
+                  value:
+                    simple: incident.panosnetworkoperationsconfigurationhygieneissues.issuecode
+                operator: isEqualString
+                right:
+                  value:
+                    simple: BP-V-10
+            root: incident.panosnetworkoperationsconfigurationhygieneissues
+            transformers:
+            - operator: uniq
+            - args:
+                prefix:
+                  value:
+                    simple: ' * '
+                suffix: {}
+              operator: concat
+            - args:
+                separator:
+                  value:
+                    simple: |2+
+
+              operator: join
+            - args:
+                prefix:
+                  value:
+                    simple: |+
+                      Confirm the remediation action of setting the security profile group on the following rules:
+
+
+
+                suffix: {}
+              operator: concat
+        options: []
+        optionsarg:
+        - simple: "Yes"
+        - simple: "No"
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: singleSelect
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "1"
+        label: ""
+        labelarg:
+          simple: Select the security profile group to use
+        options: []
+        optionsarg:
+        - complex:
+            accessor: name
+            filters:
+            - - left:
+                  iscontext: true
+                  value:
+                    simple: PANOS.PanosObject.object_type
+                operator: isEqualString
+                right:
+                  value:
+                    simple: SecurityProfileGroup
+            root: PANOS.PanosObject
+            transformers:
+            - operator: uniq
+        - {}
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: The name of the security profile group to be set on the rules that
+          currently have no group set.
+        type: singleSelect
+      sender: ""
+      title: BP-V-10 Fix Confirmation
+      totalanswers: 0
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: false
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Confirm the fixes for BP-V-10.
+      id: d7f5af0e-8d7a-4d9f-86b8-28bc3c885a91
+      iscommand: false
+      name: Confirm Fixes for BP-V-10
+      type: collection
+      version: -1
+    taskid: d7f5af0e-8d7a-4d9f-86b8-28bc3c885a91
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1530
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9b97a7f5-d0c8-43b5-8019-902a4d6116a6
+      iscommand: false
+      name: Finish
+      type: title
+      version: -1
+    taskid: 9b97a7f5-d0c8-43b5-8019-902a4d6116a6
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1870
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      issue:
+        complex:
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: incident.panosnetworkoperationsconfigurationhygieneissues.issuecode
+              operator: isEqualString
+              right:
+                value:
+                  simple: BP-V-10
+          root: incident.panosnetworkoperationsconfigurationhygieneissues
+      security_profile_group_name:
+        simple: ${BP-V-10 Fix Confirmation.Answers.1}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Fixed security rules that have incorrect log settings by adding
+        a log forwarding profile and setting
+      id: 3a487720-97e0-4f3e-823f-aa0535fe1c26
+      iscommand: true
+      name: BP-V-10 Fix missing security profile group
+      script: '|||pan-os-hygiene-fix-security-rule-profile-settings'
+      type: regular
+      version: -1
+    taskid: 3a487720-97e0-4f3e-823f-aa0535fe1c26
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1690
+        }
+      }
+  "13":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: name
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: PANOS.PanosObject.object_type
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: SecurityProfileGroup
+                root: PANOS.PanosObject
+          operator: isExists
+      label: "yes"
+    id: "13"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 3f35c085-4c44-41cd-8cbe-05eabb3caa73
+      iscommand: false
+      name: Did we get any security profile groups?
+      type: condition
+      version: -1
+    taskid: 3f35c085-4c44-41cd-8cbe-05eabb3caa73
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1360
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2055,
+        "width": 870,
+        "x": 210,
+        "y": -120
+      }
+    }
+  }

@@ -1,0 +1,462 @@
+{
+	"cacheVersn": 0,
+	"close": null,
+	"definitionId": "",
+	"description": "",
+	"detached": false,
+	"details": null,
+	"detailsV2": {
+		"TypeName": "",
+		"tabs": [
+			{
+				"id": "summary",
+				"name": "Legacy Summary",
+				"type": "summary"
+			},
+			{
+				"id": "caseinfoid",
+				"name": "Incident Info",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-field-changed-caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "type",
+								"height": 22,
+								"id": "incident-type-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "severity",
+								"height": 22,
+								"id": "incident-severity-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "owner",
+								"height": 22,
+								"id": "incident-owner-field",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "playbookid",
+								"height": 22,
+								"id": "incident-playbookId-field",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Hygiene Check Details",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-field-changed-caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Work Plan",
+						"static": false,
+						"type": "workplan",
+						"w": 1,
+						"x": 1,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-field-changed-caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
+						"isVisible": true,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Linked Incidents",
+						"static": false,
+						"type": "linkedIncidents",
+						"w": 2,
+						"x": 0,
+						"y": 2
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"i": "caseinfoid-field-changed-caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 1,
+								"fieldId": "occurred",
+								"height": 53,
+								"id": "incident-occurred-field",
+								"index": 0,
+								"listId": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 1,
+								"fieldId": "dbotmodified",
+								"height": 53,
+								"id": "incident-modified-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotduedate",
+								"height": 53,
+								"id": "incident-dueDate-field",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotcreated",
+								"height": 53,
+								"id": "incident-created-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 1
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotclosed",
+								"height": 53,
+								"id": "incident-closed-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 1
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Timeline Information",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 8
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-field-changed-caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "dbotclosed",
+								"height": 22,
+								"id": "incident-dbotClosed-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "closereason",
+								"height": 22,
+								"id": "incident-closeReason-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "closenotes",
+								"height": 44,
+								"id": "incident-closeNotes-field",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Closing Information",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 8
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "caseinfoid-field-changed-caseinfoid-6a2e2220-5bd6-11ec-b441-5721a615e1db",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "panosnetworkoperationsincidentdescription",
+								"height": 106,
+								"id": "7196f410-5bd6-11ec-b441-5721a615e1db",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Incident Description",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 4,
+						"hideName": false,
+						"i": "caseinfoid-field-changed-caseinfoid-c99b9990-72ce-11ec-8cac-f9439bbac0d8",
+						"items": [
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "panosnetworkoperationsconfigurationhygieneissues",
+								"height": 106,
+								"id": "638d5b20-5bd6-11ec-b441-5721a615e1db",
+								"index": 0,
+								"listId": "caseinfoid-c99b9990-72ce-11ec-8cac-f9439bbac0d8",
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Configuration Issues",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 5
+					},
+					{
+						"displayType": "ROW",
+						"h": 4,
+						"hideItemTitleOnlyOne": true,
+						"hideName": false,
+						"i": "caseinfoid-field-changed-caseinfoid-e00b7740-72ce-11ec-8cac-f9439bbac0d8",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "panosnetworkoperationsconfigurationhygienecheck",
+								"height": 22,
+								"id": "f13a1df0-72ce-11ec-8cac-f9439bbac0d8",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Checks run",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 4
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-field-changed-caseinfoid-68a6a070-72cf-11ec-8cac-f9439bbac0d8",
+						"items": [
+							{
+								"args": {
+									"name": {
+										"simple": "PAN-OS Network Operations - Visibility Hygiene Remediation"
+									}
+								},
+								"buttonClass": "warning",
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "",
+								"height": 44,
+								"id": "2e9abde0-5e15-11ec-b1a0-8d3dfdd077da",
+								"index": 0,
+								"listId": "caseinfoid-c99b9990-72ce-11ec-8cac-f9439bbac0d8",
+								"name": "Start Remediation Process for all issues",
+								"scriptId": "Builtin|||setPlaybook",
+								"sectionItemType": "button",
+								"startCol": 0
+							},
+							{
+								"args": {
+									"name": {
+										"simple": "PAN-OS Network Operations - Visibility Hygiene"
+									}
+								},
+								"buttonClass": "success",
+								"endCol": 2,
+								"fieldId": "",
+								"height": 44,
+								"id": "8d1fb8b0-741e-11ec-80ed-45290f921d72",
+								"index": 1,
+								"name": "Refresh",
+								"scriptId": "Builtin|||setPlaybook",
+								"sectionItemType": "button",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Actions",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 2
+					},
+					{
+						"h": 1,
+						"hideName": true,
+						"i": "caseinfoid-field-changed-caseinfoid-777b78a0-72cf-11ec-8cac-f9439bbac0d8",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Hygiene Issue Count",
+						"query": "CountHygieneIssues",
+						"queryType": "script",
+						"static": false,
+						"type": "dynamic",
+						"w": 2,
+						"x": 0,
+						"y": 4
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-c5157a80-9844-11ec-bf5f-d3fb553f6afe",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "panosnetworkoperationspreremediationbpa",
+								"height": 53,
+								"id": "b12ce3f0-9844-11ec-bf5f-d3fb553f6afe",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "panosnetworkoperationspostremediationbpa",
+								"height": 53,
+								"id": "b5da6670-9844-11ec-bf5f-d3fb553f6afe",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "BPA Details",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 9
+					},
+					{
+						"displayType": "ROW",
+						"h": 3,
+						"hideName": false,
+						"i": "caseinfoid-b5f4ea40-acf3-11ec-8d95-0d48f909ee9e",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "panosnetworkoperationsfixedconfigurationhygieneissues",
+								"height": 22,
+								"id": "c3e09af0-acf3-11ec-8d95-0d48f909ee9e",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Fixed Configuration Issues",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 5
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"id": "warRoom",
+				"name": "War Room",
+				"type": "warRoom"
+			},
+			{
+				"id": "workPlan",
+				"name": "Work Plan",
+				"type": "workPlan"
+			},
+			{
+				"id": "evidenceBoard",
+				"name": "Evidence Board",
+				"type": "evidenceBoard"
+			},
+			{
+				"id": "relatedIncidents",
+				"name": "Related Incidents",
+				"type": "relatedIncidents"
+			},
+			{
+				"id": "canvas",
+				"name": "Canvas",
+				"type": "canvas"
+			}
+		]
+	},
+	"edit": null,
+	"fromServerVersion": "",
+	"group": "incident",
+	"id": "PAN-OS Network Operations - Visibility Hygiene",
+	"indicatorsDetails": null,
+	"indicatorsQuickView": null,
+	"itemVersion": "",
+	"locked": false,
+	"mobile": null,
+	"name": "PAN-OS Network Operations - Visibility Hygiene",
+	"packID": "a3acf260-148d-4af7-81ab-49744965d264",
+	"propagationLabels": [
+		"all"
+	],
+	"quickView": null,
+	"quickViewV2": null,
+	"system": false,
+	"toServerVersion": "",
+	"version": -1
+}

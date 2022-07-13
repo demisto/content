@@ -1,0 +1,411 @@
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: a3acf260-148d-4af7-81ab-49744965d264
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: Download PAN-OS System software.
+id: PAN-OS Network Operations - Download Software
+inputs:
+- description: ""
+  key: target
+  playbookInputQuery: null
+  required: false
+  value: {}
+- description: ""
+  key: target_version
+  playbookInputQuery: null
+  required: false
+  value: {}
+- description: Default max timeout value
+  key: timeout
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: "45"
+name: PAN-OS Network Operations - Download Software
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 3ab18519-8711-4edc-8a87-cea7af5e1bad
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 3ab18519-8711-4edc-8a87-cea7af5e1bad
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -100
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device_filter_string:
+        simple: ${inputs.target}
+      version:
+        simple: ${inputs.target_version}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Download The provided software version onto the device.
+      id: cb1c6056-a58c-4b2a-86ee-d04340b52026
+      iscommand: true
+      name: Download the Software Version
+      script: '|||pan-os-platform-download-software'
+      type: regular
+      version: -1
+    taskid: cb1c6056-a58c-4b2a-86ee-d04340b52026
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 185
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device_filter_string:
+        simple: ${PANOS.DownloadStatus.Summary.hostid}
+      ignore-outputs:
+        simple: "false"
+      job_type:
+        simple: Downld
+      status:
+        simple: ACT
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Get all the jobs from the devices in the environment.
+      id: 99800d8b-5e59-4f3b-801b-9b47805717ad
+      iscommand: true
+      name: Get Jobs
+      script: '|||pan-os-platform-get-jobs'
+      type: regular
+      version: -1
+    taskid: 99800d8b-5e59-4f3b-801b-9b47805717ad
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 340
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 0
+      scriptArguments:
+        Ids:
+          complex:
+            accessor: id
+            root: PANOS.JobStatus
+            transformers:
+            - operator: LastArrayElement
+        Interval:
+          simple: "1"
+        PollingCommandArgName:
+          simple: id
+        PollingCommandName:
+          simple: pan-os-platform-get-jobs
+        Timeout:
+          simple: "30"
+        dt:
+          simple: PANOS.JobStatus(val.status!=="FIN").id
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AdditionalPollingCommandArgNames:
+        simple: device_filter_string
+      AdditionalPollingCommandArgValues:
+        simple: ${inputs.target}
+      Ids:
+        complex:
+          accessor: id
+          root: PANOS.JobStatus
+          transformers:
+          - operator: LastArrayElement
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: id
+      PollingCommandName:
+        simple: pan-os-platform-get-jobs
+      Timeout:
+        simple: ${inputs.timeout}
+      dt:
+        simple: PANOS.JobStatus(val.status!=="FIN").id
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      id: ca60ec96-4471-4be9-8dea-37faaa1ea7bb
+      iscommand: false
+      name: GenericPolling
+      playbookId: GenericPolling
+      type: playbook
+      version: -1
+    taskid: ca60ec96-4471-4be9-8dea-37faaa1ea7bb
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 490
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      id:
+        complex:
+          accessor: id
+          root: PANOS.JobStatus
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Get all the jobs from the devices in the environment, or a single
+        job when ID is specified.
+      id: b6610785-6cc3-4303-8934-f6b0ec5dc57a
+      iscommand: true
+      name: Get jobs again to check status
+      script: '|||pan-os-platform-get-jobs'
+      type: regular
+      version: -1
+    taskid: b6610785-6cc3-4303-8934-f6b0ec5dc57a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 640
+        }
+      }
+  "5":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.JobStatus.status
+          operator: isEqualString
+          right:
+            value:
+              simple: FIN
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.JobStatus.result
+          operator: isEqualString
+          right:
+            value:
+              simple: OK
+      label: "yes"
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: True if the software download was successful
+      id: 0b47ba7d-887a-4726-8f6a-8ea7d0acd855
+      iscommand: false
+      name: Did it complete?
+      type: condition
+      version: -1
+    taskid: 0b47ba7d-887a-4726-8f6a-8ea7d0acd855
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 810
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 762767a0-e4d0-4c54-896d-46dac220418d
+      iscommand: false
+      name: Finish
+      type: title
+      version: -1
+    taskid: 762767a0-e4d0-4c54-896d-46dac220418d
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1000
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      message:
+        simple: Download job failed.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints an error entry with a given message
+      id: 08120e18-078e-46bc-892b-7828c6c4fad7
+      iscommand: false
+      name: Fail message
+      scriptName: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: 08120e18-078e-46bc-892b-7828c6c4fad7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 985
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      description:
+        simple: Downloading Software
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: ca23bd1c-f0df-4b3f-8aa2-0484f8a9745e
+      iscommand: true
+      name: Set Status
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: ca23bd1c-f0df-4b3f-8aa2-0484f8a9745e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 20
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1180,
+        "width": 850,
+        "x": 450,
+        "y": -100
+      }
+    }
+  }

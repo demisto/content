@@ -1,0 +1,182 @@
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: a3acf260-148d-4af7-81ab-49744965d264
+    propagationLabels:
+    - all
+    toServerVersion: ""
+id: b88592f5-e75c-438a-884a-1b891d8d1fa5
+inputs: []
+name: PAN-OS Network Operations - Onboarding
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: fb03e32f-158f-4acc-8aa8-90eb1585be84
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: fb03e32f-158f-4acc-8aa8-90eb1585be84
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      target:
+        simple: ${PANOS.ShowSystemInfo.Summary.hostid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Given a target device, creates or updates an existing PAN-OS Network
+        Operations - Device incident.
+      id: a80f8bc0-7990-4798-8702-353ecbc752fa
+      iscommand: false
+      name: Update device incidents
+      scriptName: CreateOrUpdateDeviceIncident
+      type: regular
+      version: -1
+    taskid: a80f8bc0-7990-4798-8702-353ecbc752fa
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 360
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Gets information from all PAN-OS systems in the topology.
+      id: e476a9b0-adce-492b-828c-daf1b9192c61
+      iscommand: true
+      name: Get system information
+      script: '|||pan-os-platform-get-system-info'
+      type: regular
+      version: -1
+    taskid: e476a9b0-adce-492b-828c-daf1b9192c61
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      linkedIncidentIDs:
+        simple: ${DeviceIncidents.device_incident_id}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.linkIncidents
+      id: c66d3d17-04c6-4f96-8d7c-1e0eca372f99
+      iscommand: true
+      name: Link Incidents
+      script: Builtin|||linkIncidents
+      type: regular
+      version: -1
+    taskid: c66d3d17-04c6-4f96-8d7c-1e0eca372f99
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 530
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 12660157-225f-43e6-8212-fbf60432a3d6
+      iscommand: false
+      name: Onboarding Finished
+      type: title
+      version: -1
+    taskid: 12660157-225f-43e6-8212-fbf60432a3d6
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 710
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 725,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }

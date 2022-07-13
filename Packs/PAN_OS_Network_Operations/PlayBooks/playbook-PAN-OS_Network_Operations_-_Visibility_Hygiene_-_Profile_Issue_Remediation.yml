@@ -1,0 +1,732 @@
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: a3acf260-148d-4af7-81ab-49744965d264
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: Remediates issues with security profiles.
+id: f0b72724-9f8c-4d4a-8f1e-60dfff67c225
+inputs:
+- description: True if the profile issues should be automatically fixed.
+  key: auto_remediate
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: "false"
+name: PAN-OS Network Operations - Visibility Hygiene - Profile Issue Remediation
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+      - "4"
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8763748f-135f-4de6-8088-2f9651fc1d2b
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 8763748f-135f-4de6-8088-2f9651fc1d2b
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: incident.panosnetworkoperationsconfigurationhygieneissues.issuecode
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: BP-V-4
+                root: incident.panosnetworkoperationsconfigurationhygieneissues
+          operator: isExists
+          right:
+            value: {}
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.auto_remediate
+          operator: isEqualString
+          right:
+            value:
+              simple: "true"
+      label: Yes - Auto Remediate
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: incident.panosnetworkoperationsconfigurationhygieneissues.issuecode
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: BP-V-4
+                root: incident.panosnetworkoperationsconfigurationhygieneissues
+          operator: isExists
+      label: "yes"
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "9"
+      Yes - Auto Remediate:
+      - "3"
+      "yes":
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks for BP-V-3 issues.
+      id: 0e233144-4708-4f40-81b5-bfe319050381
+      iscommand: false
+      name: BP-V-4
+      type: condition
+      version: -1
+    taskid: 0e233144-4708-4f40-81b5-bfe319050381
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+  "2":
+    form:
+      description: |-
+        This Issue is raised when either no vulnerability profiles are present in the system, or those that are don't meet the minimum requirements to be considered valid for the purpose of threat visibility.
+
+        Without a vulnerability profile correctly configured, the PAN-OS firewalls are not able to properly identify and protect against attacks.
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: |-
+            Do you want to automatically create a recommended vulnerability profile?
+
+            *note; Created vulernability profile is a recommended profile, which includes rules in block mode which may result in traffic disruption if it is applied to rules.*
+        options: []
+        optionsarg:
+        - simple: "true"
+        - simple: "false"
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: singleSelect
+      sender: Your SOC team
+      title: BP-V-4 Fix Confirmation
+      totalanswers: 0
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Confirms the fix for BP-V-3 issues.
+      id: 62befeca-1390-4c0f-8e35-2ef3321cd640
+      iscommand: false
+      name: Confirm Fixes for BP-V-4
+      type: collection
+      version: -1
+    taskid: 62befeca-1390-4c0f-8e35-2ef3321cd640
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 380
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      profile_name:
+        simple: xsoar-best-practice
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates a vulnerability protection best practice profile.
+      id: 82e1c892-30f7-460b-87cf-82f2f17eb604
+      iscommand: true
+      name: Create the recommended vulnerability profile
+      script: '|||panorama-create-vulnerability-best-practice-profile'
+      type: regular
+      version: -1
+    taskid: 82e1c892-30f7-460b-87cf-82f2f17eb604
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 560
+        }
+      }
+  "4":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: incident.panosnetworkoperationsconfigurationhygieneissues.issuecode
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: BP-V-5
+                root: incident.panosnetworkoperationsconfigurationhygieneissues
+          operator: isExists
+          right:
+            value: {}
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.auto_remediate
+          operator: isEqualString
+          right:
+            value:
+              simple: "true"
+      label: Yes - Auto Remediate
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: incident.panosnetworkoperationsconfigurationhygieneissues.issuecode
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: BP-V-5
+                root: incident.panosnetworkoperationsconfigurationhygieneissues
+          operator: isExists
+      label: "yes"
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "9"
+      Yes - Auto Remediate:
+      - "6"
+      "yes":
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks for BP-V-3 issues.
+      id: 05051582-a943-4980-8b8a-f335584eba2f
+      iscommand: false
+      name: BP-V-5
+      type: condition
+      version: -1
+    taskid: 05051582-a943-4980-8b8a-f335584eba2f
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 200
+        }
+      }
+  "5":
+    form:
+      description: |-
+        This Issue is raised when either no anti-spyware profiles are present in the system, or those that are don't meet the minimum requirements to be considered valid for the purpose of threat visibility.
+
+        Without a correclty configured anti-spyware profile, the firewalls are not able to properly detect and manage CnC or DNS based threats.
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: |-
+            Do you want to automatically create a recommended url-filtering profile?
+
+            *note; Created anti-spyware profile is a recommended profile, which includes rules in block mode which may result in traffic disruption if it is applied to rules.*
+        options: []
+        optionsarg:
+        - simple: "true"
+        - simple: "false"
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: singleSelect
+      sender: Your SOC team
+      title: BP-V-5 Fix Confirmation
+      totalanswers: 0
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Confirms the fix for BP-V-3 issues.
+      id: a6592949-7dd6-491a-84aa-a45ab8e10297
+      iscommand: false
+      name: Confirm Fixes for BP-V-5
+      type: collection
+      version: -1
+    taskid: a6592949-7dd6-491a-84aa-a45ab8e10297
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 380
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      profile_name:
+        simple: xsoar-best-practice
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates an Anti-Spyware best practice profile.
+      id: 944b239d-00a0-4acb-8e4a-960e849cd5c0
+      iscommand: true
+      name: Create the recommended anti-spyware profile
+      script: '|||panorama-create-anti-spyware-best-practice-profile'
+      type: regular
+      version: -1
+    taskid: 944b239d-00a0-4acb-8e4a-960e849cd5c0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 560
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        ### Create a new security profile group (SPG)
+
+        Currently we do not support automatically creating an SPG that includes the previously automatically created best practices profiles. Please create an SPG and include the following:
+
+          * Vulnerabilty profile: *xsoar-best-practice*
+          * Anti-spyware: *xsoar-best-practice*
+          * URL-filtering: *xsoar-best-practice*
+
+        Mark this task complete when this is done.
+      id: 7a810de2-7b8f-4a6e-841b-6bc770bb6fe7
+      iscommand: false
+      name: 'Manual: Create a Security Profile Group'
+      type: regular
+      version: -1
+    taskid: 7a810de2-7b8f-4a6e-841b-6bc770bb6fe7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 910
+        }
+      }
+  "8":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.auto_remediate
+          operator: isEqualString
+          right:
+            value:
+              simple: "true"
+      label: "yes"
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "9"
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5460f681-dd4e-4504-8f9e-9b8f33cb39e4
+      iscommand: false
+      name: Auto-remediate?
+      type: condition
+      version: -1
+    taskid: 5460f681-dd4e-4504-8f9e-9b8f33cb39e4
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 280,
+          "y": 730
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 232c8621-5c87-464e-820a-2eef8552bb6d
+      iscommand: false
+      name: Finish
+      type: title
+      version: -1
+    taskid: 232c8621-5c87-464e-820a-2eef8552bb6d
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -270,
+          "y": 1080
+        }
+      }
+  "10":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: incident.panosnetworkoperationsconfigurationhygieneissues.issuecode
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: BP-V-6
+                root: incident.panosnetworkoperationsconfigurationhygieneissues
+          operator: isExists
+          right:
+            value: {}
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.auto_remediate
+          operator: isEqualString
+          right:
+            value:
+              simple: "true"
+      label: Yes - Auto Remediate
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: incident.panosnetworkoperationsconfigurationhygieneissues.issuecode
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: BP-V-6
+                root: incident.panosnetworkoperationsconfigurationhygieneissues
+          operator: isExists
+      label: "yes"
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "9"
+      Yes - Auto Remediate:
+      - "12"
+      "yes":
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks for BP-V-3 issues.
+      id: 3757c2a4-2863-4e9a-8602-e73f7506a3fc
+      iscommand: false
+      name: BP-V-6
+      type: condition
+      version: -1
+    taskid: 3757c2a4-2863-4e9a-8602-e73f7506a3fc
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 200
+        }
+      }
+  "11":
+    form:
+      description: This Issue is raised when either no url-filtering profiles are
+        present in the system, or those that are don't meet the minimum requirements
+        to be considered valid for the purpose of threat visibility.
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: |-
+            Do you want to automatically create a recommended URL filtering profile?
+
+            *note; Created URL filtering profile is a recommended profile, which includes rules in block mode which may result in traffic disruption if it is applied to rules.*
+        options: []
+        optionsarg:
+        - simple: "true"
+        - simple: "false"
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: singleSelect
+      sender: Your SOC team
+      title: BP-V-6 Fix Confirmation
+      totalanswers: 0
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Confirms the fix for BP-V-3 issues.
+      id: 9ff501be-da46-47ff-83be-03a501e4f206
+      iscommand: false
+      name: Confirm Fixes for BP-V-6
+      type: collection
+      version: -1
+    taskid: 9ff501be-da46-47ff-83be-03a501e4f206
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 380
+        }
+      }
+  "12":
+    continueonerror: true
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      profile_name:
+        simple: xsoar-best-practice
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates a URL filtering best practice profile.
+      id: cb1aa635-5e09-4234-8336-a695c1f82a65
+      iscommand: true
+      name: Create the recommended URL Filtering profile
+      script: '|||panorama-create-url-filtering-best-practice-profile'
+      type: regular
+      version: -1
+    taskid: cb1aa635-5e09-4234-8336-a695c1f82a65
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 560
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1095,
+        "width": 1530,
+        "x": -270,
+        "y": 50
+      }
+    }
+  }

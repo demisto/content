@@ -1,0 +1,151 @@
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: a3acf260-148d-4af7-81ab-49744965d264
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: Refereshes the device incidents.
+id: 8555c3d9-4336-44ff-8891-0264d32d7b16
+inputs: []
+name: PAN-OS Network Operations - Refresh System Information
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 572beacc-a277-4a2f-8d5c-e28a89123930
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 572beacc-a277-4a2f-8d5c-e28a89123930
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": -10
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      target:
+        simple: ${PANOS.ShowSystemInfo.Summary.hostid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Given a target device, creates or updates an existing PAN-OS Network
+        Operations - Device incident.
+      id: f841b543-0bd8-49a9-8437-6fddcb01c891
+      iscommand: false
+      name: Update device incidents
+      scriptName: CreateOrUpdateDeviceIncident
+      type: regular
+      version: -1
+    taskid: f841b543-0bd8-49a9-8437-6fddcb01c891
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 300
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Gets information from all PAN-OS systems in the topology.
+      id: 06b13200-813a-4a42-8ec4-4b74144b562e
+      iscommand: true
+      name: Get system information
+      script: '|||pan-os-platform-get-system-info'
+      type: regular
+      version: -1
+    taskid: 06b13200-813a-4a42-8ec4-4b74144b562e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 140
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 3ce06b1f-c02c-4f03-8402-65394c5ee480
+      iscommand: true
+      name: Close Incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 3ce06b1f-c02c-4f03-8402-65394c5ee480
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 460
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 565,
+        "width": 380,
+        "x": 460,
+        "y": -10
+      }
+    }
+  }

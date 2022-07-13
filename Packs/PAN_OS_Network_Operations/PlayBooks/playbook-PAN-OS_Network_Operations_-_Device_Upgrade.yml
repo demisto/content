@@ -1,0 +1,1754 @@
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: a3acf260-148d-4af7-81ab-49744965d264
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: Upgrades a single or HA pair of PAN-OS firewalls.
+id: PAN-OS Network Operations - Device Upgrade
+inputs:
+- description: Target Firewall for upgrade
+  key: target_device
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: ${incident.panosnetworkoperationsupgradetargetdevice}
+- description: Peer firewall (if any)
+  key: peer_device
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: ${incident.panosnetworkoperationsupgradepeerfirewall}
+- description: Target version of upgrade
+  key: target_version
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: ${incident.panosnetworkoperationsupgradetargetversion}
+name: PAN-OS Network Operations - Device Upgrade
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 080a843a-4cf9-4a80-8cad-1f104630adf2
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 080a843a-4cf9-4a80-8cad-1f104630adf2
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": -2690
+        }
+      }
+  "1":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.HAState.peer
+          operator: isNotEmpty
+      label: "yes"
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "44"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: True if the device belongs to a HA Pair
+      id: 44225882-d602-45fa-84b7-cd84ecdb0e75
+      iscommand: false
+      name: Is this a HA Pair?
+      type: condition
+      version: -1
+    taskid: 44225882-d602-45fa-84b7-cd84ecdb0e75
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": -540
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "28"
+      - "29"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 55b418b9-dc6a-4224-80fb-ef877656c2a4
+      iscommand: false
+      name: HA Pair process
+      type: title
+      version: -1
+    taskid: 55b418b9-dc6a-4224-80fb-ef877656c2a4
+    timertriggers:
+    - action: start
+      fieldname: deviceupgradetimer
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 170
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "48"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Delete field from context
+      id: 568ea7bc-4aa9-4c0d-8a6a-ce64a05dd4f0
+      iscommand: false
+      name: Delete Context
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: 568ea7bc-4aa9-4c0d-8a6a-ce64a05dd4f0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": -2520
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "35"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      target:
+        simple: ${inputs.target_device}
+      target_version:
+        simple: ${inputs.target_version}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 91ee6770-afa2-40fa-8be2-b81544e126d5
+      iscommand: false
+      name: PAN-OS Network Operations - Single Device Upgrade
+      playbookId: PAN-OS Network Operations - Single Device Upgrade
+      type: playbook
+      version: -1
+    taskid: 91ee6770-afa2-40fa-8be2-b81544e126d5
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 870,
+          "y": 630
+        }
+      }
+  "13":
+    id: "13"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "36"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: '### Mark this task complete when ready to "release" the upgrade
+        for this device or pair.'
+      id: 7c02165b-6cd7-48f6-8889-eb63d2ab8d7e
+      iscommand: false
+      name: Mark Complete When Ready For Upgrade
+      tags:
+      - start-upgrade
+      type: regular
+      version: -1
+    taskid: 7c02165b-6cd7-48f6-8889-eb63d2ab8d7e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": -1390
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "53"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 830a1a3c-43de-4c65-8c04-fef007e5b27d
+      iscommand: false
+      name: Single Device Process
+      type: title
+      version: -1
+    taskid: 830a1a3c-43de-4c65-8c04-fef007e5b27d
+    timertriggers:
+    - action: start
+      fieldname: deviceupgradetimer
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 870,
+          "y": 295
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device_filter_string:
+        simple: ${inputs.target_device}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Get the HA state and assocaited details from the given device and
+        any other details.
+      id: 7a7be5a1-400d-4852-82c2-cd39e09641db
+      iscommand: true
+      name: Get HA State
+      script: '|||pan-os-platform-get-ha-state'
+      type: regular
+      version: -1
+    taskid: 7a7be5a1-400d-4852-82c2-cd39e09641db
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": -700
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      target:
+        simple: ${OriginalPassive}
+      target_version:
+        simple: ${inputs.target_version}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Runs a complete upgrade process for a single device
+      id: 5b2f4229-335d-4435-8e2e-d69519ef7104
+      iscommand: false
+      name: PAN-OS Network Operations - Single Device Upgrade
+      playbookId: PAN-OS Network Operations - Single Device Upgrade
+      type: playbook
+      version: -1
+    taskid: 5b2f4229-335d-4435-8e2e-d69519ef7104
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 630
+        }
+      }
+  "18":
+    id: "18"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device_filter_string:
+        simple: ${OriginalPassive}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Get the HA state and assocaited details from the given device and
+        any other details.
+      id: c1597114-73d1-4f55-803f-fc179e153d5a
+      iscommand: true
+      name: Get HA State
+      script: '|||pan-os-platform-get-ha-state'
+      type: regular
+      version: -1
+    taskid: c1597114-73d1-4f55-803f-fc179e153d5a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 790
+        }
+      }
+  "19":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: status
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: PANOS.HAState.hostid
+                    operator: isEqualString
+                    right:
+                      iscontext: true
+                      value:
+                        simple: OriginalPassive
+                root: PANOS.HAState
+          operator: isEqualString
+          right:
+            value:
+              simple: passive
+      label: "yes"
+    id: "19"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "33"
+      "yes":
+      - "50"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: True if the device is correctly Passive after the upgrade process
+        has concluded.
+      id: 2324dc48-4d32-4058-8399-1e7953e13a76
+      iscommand: false
+      name: Is device passive after upgrade?
+      type: condition
+      version: -1
+    taskid: 2324dc48-4d32-4058-8399-1e7953e13a76
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 940
+        }
+      }
+  "20":
+    continueonerror: true
+    id: "20"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      execution-timeout:
+        simple: "120"
+      hostid:
+        simple: ${OriginalActive}
+      state:
+        simple: suspend
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: "Suspends the active firewall, causing the pair to failover to
+        the secondary. \n\nThis task can error in the event that the suspension breaks
+        the connectivity between XSOAR and the firewall - in this case, we continue,
+        as a subsequent task will error if the firewalls are truly unreachable (which
+        would, of course, be very bad)"
+      id: 399c8a0e-5eb6-4e74-85cf-31a9b2d03542
+      iscommand: true
+      name: Suspend Active firewall
+      script: '|||pan-os-platform-update-ha-state'
+      type: regular
+      version: -1
+    taskid: 399c8a0e-5eb6-4e74-85cf-31a9b2d03542
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 1240
+        }
+      }
+  "21":
+    id: "21"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      message:
+        simple: Device did not return to passive mode after upgrade.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints an error entry with a given message
+      id: bb5fead3-9591-4be7-8d70-d160d079a379
+      iscommand: false
+      name: Error - Wrong HA mode.
+      scriptName: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: bb5fead3-9591-4be7-8d70-d160d079a379
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -370,
+          "y": 2340
+        }
+      }
+  "22":
+    id: "22"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      target:
+        simple: ${OriginalActive}
+      target_version:
+        simple: ${inputs.target_version}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Runs a complete upgrade process for a single device
+      id: d4191710-4ee4-4d5d-88b9-141a310b59f6
+      iscommand: false
+      name: PAN-OS Network Operations - Single Device Upgrade
+      playbookId: PAN-OS Network Operations - Single Device Upgrade
+      type: playbook
+      version: -1
+    taskid: d4191710-4ee4-4d5d-88b9-141a310b59f6
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 1670
+        }
+      }
+  "23":
+    id: "23"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "51"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      seconds:
+        simple: "30"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sleep for X seconds
+      id: 94ef0dee-5101-4e9c-8d7f-a2adf59338f9
+      iscommand: false
+      name: Sleep for failover process to complete safely
+      scriptName: Sleep
+      type: regular
+      version: -1
+    taskid: 94ef0dee-5101-4e9c-8d7f-a2adf59338f9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 1390
+        }
+      }
+  "24":
+    id: "24"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "25"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      device_filter_string:
+        simple: ${OriginalActive}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Get the HA state and assocaited details from the given device and
+        any other details.
+      id: 87c89d7a-ed50-4898-89f3-68b6b5b24960
+      iscommand: true
+      name: Get HA State
+      script: '|||pan-os-platform-get-ha-state'
+      type: regular
+      version: -1
+    taskid: 87c89d7a-ed50-4898-89f3-68b6b5b24960
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 1820
+        }
+      }
+  "25":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: status
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: PANOS.HAState.hostid
+                    operator: isEqualString
+                    right:
+                      iscontext: true
+                      value:
+                        simple: OriginalActive
+                root: PANOS.HAState
+          operator: isEqualString
+          right:
+            value:
+              simple: passive
+      label: "yes"
+    id: "25"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "34"
+      "yes":
+      - "52"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: True if the device is correctly Passive after the upgrade process
+        has concluded.
+      id: fa636004-c7b8-4e56-888e-3e67b8661a28
+      iscommand: false
+      name: Is device passive after upgrade?
+      type: condition
+      version: -1
+    taskid: fa636004-c7b8-4e56-888e-3e67b8661a28
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 1970
+        }
+      }
+  "26":
+    id: "26"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "27"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      execution-timeout:
+        simple: "240"
+      hostid:
+        simple: ${OriginalPassive}
+      state:
+        simple: suspend
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: "Suspends the active firewall, causing the pair to failover to
+        the passive. \n\nThis task can error in the event that the suspension breaks
+        the connectivity between XSOAR and the firewall - in this case, we continue,
+        as a subsequent task will error if the firewalls are truly unreachable (which
+        would, of course, be very bad)"
+      id: fc28cd02-2f4a-42bb-8260-d36d0f4fff02
+      iscommand: true
+      name: Suspend Passive firewall
+      script: '|||pan-os-platform-update-ha-state'
+      type: regular
+      version: -1
+    taskid: fc28cd02-2f4a-42bb-8260-d36d0f4fff02
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 2330
+        }
+      }
+  "27":
+    id: "27"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "30"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      seconds:
+        simple: "30"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sleep for X seconds
+      id: 37683263-9c6c-486a-8bd5-35a7d6be0b2d
+      iscommand: false
+      name: Sleep for failover process to complete safely
+      scriptName: Sleep
+      type: regular
+      version: -1
+    taskid: 37683263-9c6c-486a-8bd5-35a7d6be0b2d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 2510
+        }
+      }
+  "28":
+    id: "28"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "49"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: OriginalActive
+      value:
+        simple: ${inputs.target_device}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: d4ab4169-4704-40e3-859b-21bf341710c5
+      iscommand: false
+      name: Set Original Active
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: d4ab4169-4704-40e3-859b-21bf341710c5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 10,
+          "y": 310
+        }
+      }
+  "29":
+    id: "29"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "49"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: OriginalPassive
+      value:
+        simple: ${PANOS.HAState.peer}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 819aaae6-a02c-4d38-8b20-4f9651db04e8
+      iscommand: false
+      name: Set Original Passive
+      scriptName: Set
+      type: regular
+      version: -1
+    taskid: 819aaae6-a02c-4d38-8b20-4f9651db04e8
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 440,
+          "y": 310
+        }
+      }
+  "30":
+    id: "30"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "35"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      execution-timeout:
+        simple: "300"
+      hostid:
+        simple: ${OriginalPassive}
+      state:
+        simple: functional
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks the status of the given device, checking whether it's up
+        or down and the operational mode normal
+      id: a0f09e1b-9f49-4abc-8dc0-15e28fb059e2
+      iscommand: true
+      name: Unsuspend Passive Firewall
+      script: '|||pan-os-platform-update-ha-state'
+      type: regular
+      version: -1
+    taskid: a0f09e1b-9f49-4abc-8dc0-15e28fb059e2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 2690
+        }
+      }
+  "31":
+    id: "31"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 11d0d4d7-5e4a-4b03-8f60-d25b0ce59e69
+      iscommand: true
+      name: Close incident - Complete
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 11d0d4d7-5e4a-4b03-8f60-d25b0ce59e69
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 3360
+        }
+      }
+  "32":
+    id: "32"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "38"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      description:
+        simple: Starting Upgrade
+      severity:
+        simple: "2"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 09115f7b-c12d-4d33-8403-476807a34bbb
+      iscommand: true
+      name: Set Status
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 09115f7b-c12d-4d33-8403-476807a34bbb
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": -1050
+        }
+      }
+  "33":
+    id: "33"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      description:
+        simple: Upgrade failed.
+      details:
+        simple: Upgrade for device pair failed - ${OriginalPassive} failed to return
+          to functional state after reboot.
+      severity:
+        simple: "4"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 6b9af5d8-0813-433a-8a0e-ae081cce7e5d
+      iscommand: true
+      name: Set Status
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 6b9af5d8-0813-433a-8a0e-ae081cce7e5d
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -570,
+          "y": 2160
+        }
+      }
+  "34":
+    id: "34"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "21"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      description:
+        simple: Upgrade failed.
+      details:
+        simple: Upgrade for device pair failed - ${OriginalActive} failed to return
+          to functional state after reboot.
+      severity:
+        simple: "4"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 1871d278-d87f-4de5-8258-c391c295dd73
+      iscommand: true
+      name: Set Status
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 1871d278-d87f-4de5-8258-c391c295dd73
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -170,
+          "y": 2160
+        }
+      }
+  "35":
+    id: "35"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "39"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      description:
+        simple: Upgrade complete.
+      severity:
+        simple: "0.5"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: c9b0ce38-aff6-42f2-84b6-679f99c89ead
+      iscommand: true
+      name: Set Status
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: c9b0ce38-aff6-42f2-84b6-679f99c89ead
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 2870
+        }
+      }
+  "36":
+    id: "36"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "32"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      name:
+        simple: PAN-OS Upgrade Snapshot Comparision - ${inputs.target_device}
+      type:
+        simple: PAN-OS Network Operations - Snapshot Comparison
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.create.inc
+      id: be83eb86-7562-44b9-8574-247a70da208a
+      iscommand: true
+      name: Create Snapshot Incidents
+      script: Builtin|||createNewIncident
+      type: regular
+      version: -1
+    taskid: be83eb86-7562-44b9-8574-247a70da208a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": -1220
+        }
+      }
+  "37":
+    id: "37"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "31"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      id:
+        simple: second_snapshot
+      incidentId:
+        simple: ${CreatedIncidentID}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.task.complete
+      id: d45bb15e-1854-449a-8f00-aceb1a8327a9
+      iscommand: true
+      name: Continue Snapshot Process
+      script: Builtin|||taskComplete
+      type: regular
+      version: -1
+    taskid: d45bb15e-1854-449a-8f00-aceb1a8327a9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 3180
+        }
+      }
+  "38":
+    id: "38"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      linkedIncidentIDs:
+        simple: ${CreatedIncidentID}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.linkIncidents
+      id: 687495b6-b475-4ca3-8eb2-9db25b6ccad0
+      iscommand: true
+      name: Link incidents
+      script: Builtin|||linkIncidents
+      type: regular
+      version: -1
+    taskid: 687495b6-b475-4ca3-8eb2-9db25b6ccad0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": -860
+        }
+      }
+  "39":
+    id: "39"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "37"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      execution-timeout:
+        simple: "300"
+      seconds:
+        simple: "60"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Sleep for X seconds
+      id: a4b36058-97a6-4b56-801b-a0310648222e
+      iscommand: false
+      name: Sleep 1min to wait for all devices to connect
+      scriptName: Sleep
+      type: regular
+      version: -1
+    taskid: a4b36058-97a6-4b56-801b-a0310648222e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 3020
+        }
+      }
+  "40":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.panosnetworkoperationsparentincidentid
+          operator: isNotEmpty
+      label: "yes"
+    id: "40"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "42"
+      "yes":
+      - "41"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: True if this incident was created by another incident.
+      id: 2aed5686-6db1-4558-82ed-a09554b9d174
+      iscommand: false
+      name: Do we have a parent incident?
+      type: condition
+      version: -1
+    taskid: 2aed5686-6db1-4558-82ed-a09554b9d174
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": -2140
+        }
+      }
+  "41":
+    id: "41"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "42"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      linkedIncidentIDs:
+        simple: ${incident.panosnetworkoperationsparentincidentid}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.linkIncidents
+      id: 09b477f5-9be1-49cb-88f7-6aaea5234639
+      iscommand: true
+      name: Link to parent
+      script: Builtin|||linkIncidents
+      type: regular
+      version: -1
+    taskid: 09b477f5-9be1-49cb-88f7-6aaea5234639
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": -1940
+        }
+      }
+  "42":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.target_version
+          operator: isNotEmpty
+      label: "yes"
+    id: "42"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "43"
+      "yes":
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: True if this incident has been provided a target version.
+      id: 72d0ce66-100b-4915-84f7-d575d473b563
+      iscommand: false
+      name: Do we have a target version?
+      type: condition
+      version: -1
+    taskid: 72d0ce66-100b-4915-84f7-d575d473b563
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": -1735
+        }
+      }
+  "43":
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: panosnetworkoperationsupgradetargetversion
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Specify target software version
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: The string version (ex. 9.1.1) to upgrade the device to.
+        type: shortText
+      sender: ""
+      title: Specify Target Software Version
+      totalanswers: 0
+    id: "43"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: null
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: false
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: If a target version wasn't given, ask the user for the version
+        to upgrade to.
+      id: 93ad8357-c5b3-4e8d-8858-9de5614be236
+      iscommand: false
+      name: Collect Target Version
+      type: collection
+      version: -1
+    taskid: 93ad8357-c5b3-4e8d-8858-9de5614be236
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": -1560
+        }
+      }
+  "44":
+    id: "44"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "45"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      hostid:
+        simple: ${PANOS.HAState.peer}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks the status of the given device, checking whether it's up
+        or down and the operational mode normal
+      id: e682320c-f23e-4444-8ae9-7c553421b657
+      iscommand: true
+      name: 'Get System Status of HA Peer '
+      script: '|||pan-os-platform-get-system-status'
+      type: regular
+      version: -1
+    taskid: e682320c-f23e-4444-8ae9-7c553421b657
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": -360
+        }
+      }
+  "45":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.SystemStatus.up
+          operator: isTrue
+      label: "yes"
+    id: "45"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "46"
+      "yes":
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks the HA peer is back up.
+      id: c7807dbb-a43e-4cbf-88fe-897f1ec30e01
+      iscommand: false
+      name: Is the HA peer up/Reachable?
+      type: condition
+      version: -1
+    taskid: c7807dbb-a43e-4cbf-88fe-897f1ec30e01
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": -180
+        }
+      }
+  "46":
+    id: "46"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body:
+        simple: HA Peer ${PANOS.SystemStatus.hostid} is not up. Do you want to proceed
+          with the upgrade anyway?
+      cc: null
+      format: ""
+      methods: []
+      replyOptions:
+      - "Yes"
+      - "No"
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: false
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      "No":
+      - "47"
+      "Yes":
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Confirm thatthe upgrade should continue if peer device down..
+      id: 8acff9b5-faa5-4003-8b19-ff31e3e5303c
+      iscommand: false
+      name: Confirm upgrade when no passive firewall is UP
+      type: condition
+      version: -1
+    taskid: 8acff9b5-faa5-4003-8b19-ff31e3e5303c
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": 20
+        }
+      }
+  "47":
+    id: "47"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      closeNotes:
+        simple: Passive peer was not up - upgrade process halted.
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 055081c3-2894-4b8b-8ff7-336a6ad8d931
+      iscommand: true
+      name: Close Incident - Will not upgrade
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 055081c3-2894-4b8b-8ff7-336a6ad8d931
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -460,
+          "y": 320
+        }
+      }
+  "48":
+    id: "48"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "40"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      description:
+        simple: Awaiting Upgrade Confirmation
+      name:
+        simple: PAN-OS Upgrade - ${inputs.target_device}
+      severity:
+        simple: "0.5"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: c0389777-a7e3-4eb6-875c-202fcd98f3f0
+      iscommand: true
+      name: Set Status
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: c0389777-a7e3-4eb6-875c-202fcd98f3f0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": -2345
+        }
+      }
+  "49":
+    id: "49"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      description:
+        simple: Upgrading currently passive peer.
+      severity:
+        simple: "2"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: c15fd86e-89f1-44aa-875c-208ae47ac3ce
+      iscommand: true
+      name: Set Status
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: c15fd86e-89f1-44aa-875c-208ae47ac3ce
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 480
+        }
+      }
+  "50":
+    id: "50"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      description:
+        simple: Performing Failover
+      severity:
+        simple: "3"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 23722918-22b3-4a27-896c-fb8456032097
+      iscommand: true
+      name: Set Status
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 23722918-22b3-4a27-896c-fb8456032097
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 1090
+        }
+      }
+  "51":
+    id: "51"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      description:
+        simple: Upgrading previously active firewall
+      severity:
+        simple: "2"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 4e596f65-ccd1-4f21-8aaf-dde9ce707576
+      iscommand: true
+      name: Set Status
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 4e596f65-ccd1-4f21-8aaf-dde9ce707576
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 1530
+        }
+      }
+  "52":
+    id: "52"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "26"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      description:
+        simple: Restoring HA state.
+      severity:
+        simple: "3"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: f32259c1-92f0-4793-8f04-7de3dd594d87
+      iscommand: true
+      name: Set Status
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: f32259c1-92f0-4793-8f04-7de3dd594d87
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 2160
+        }
+      }
+  "53":
+    id: "53"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      description:
+        simple: Upgrading Standalone device.
+      severity:
+        simple: "2"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 920de662-ad4d-4805-89f7-f09c51affdbb
+      iscommand: true
+      name: Set Status
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 920de662-ad4d-4805-89f7-f09c51affdbb
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 870,
+          "y": 480
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 6145,
+        "width": 1820,
+        "x": -570,
+        "y": -2690
+      }
+    }
+  }

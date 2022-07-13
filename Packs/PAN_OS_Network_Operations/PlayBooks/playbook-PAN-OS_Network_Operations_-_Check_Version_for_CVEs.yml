@@ -1,0 +1,294 @@
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: a3acf260-148d-4af7-81ab-49744965d264
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: Checks a specific version of software for any open CVEs, and if they
+  exist, starts a domain upgrade for that system to a fixed version.
+id: 94afef97-284c-456f-8aaf-1c283566591a
+inputs:
+- description: Software version to check.
+  key: panos_version
+  playbookInputQuery: null
+  required: true
+  value: {}
+- description: Minimum CVSS score to initiate the upgrade process.
+  key: minimum_cvss_score
+  playbookInputQuery: null
+  required: false
+  value:
+    simple: "7.0"
+name: PAN-OS Network Operations - Check Version for CVEs
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 47bb1f0d-c98b-4bb7-8ced-f0906a7a0d0b
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 47bb1f0d-c98b-4bb7-8ced-f0906a7a0d0b
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      product:
+        simple: PAN-OS
+      q:
+        simple: ${inputs.panos_version}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Gets all the advisories for the given product.
+      id: b77e55c3-0a0b-430f-8dcb-2bd1abf880e0
+      iscommand: true
+      name: Get the advisories for this Version
+      script: '|||pan-advisories-get-advisories'
+      type: regular
+      version: -1
+    taskid: b77e55c3-0a0b-430f-8dcb-2bd1abf880e0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 190
+        }
+      }
+  "2":
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      advisories:
+        simple: ${PANSecurityAdvisory.Advisory}
+      version:
+        simple: ${inputs.panos_version}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: 'Checks if the given PAN-OS version number is affected by the given
+        list of vulnerabilties. '
+      id: da4a9092-949a-4343-87ed-b59960db01a0
+      iscommand: false
+      name: Check if this version is affected by any CVEs
+      scriptName: CheckPanosVersionAffected
+      type: regular
+      version: -1
+    taskid: da4a9092-949a-4343-87ed-b59960db01a0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 350
+        }
+      }
+  "3":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: cve_id
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: MatchingSecurityAdvisory.cvss_score
+                    operator: greaterThan
+                    right:
+                      iscontext: true
+                      value:
+                        simple: inputs.minimum_cvss_score
+                root: MatchingSecurityAdvisory
+          operator: isExists
+          right:
+            value: {}
+      label: "yes"
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: bd8657db-5eb1-4ee3-8b71-76ec7f21ecd3
+      iscommand: false
+      name: Any matches?
+      type: condition
+      version: -1
+    taskid: bd8657db-5eb1-4ee3-8b71-76ec7f21ecd3
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 540
+        }
+      }
+  "6":
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 13c98086-1473-4752-84e7-ba14b4f39f9d
+      iscommand: false
+      name: Finish
+      type: title
+      version: -1
+    taskid: 13c98086-1473-4752-84e7-ba14b4f39f9d
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 1090
+        }
+      }
+  "7":
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      description:
+        complex:
+          accessor: cve_id
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: MatchingSecurityAdvisory.cvss_score
+              operator: greaterThanOrEqual
+              right:
+                iscontext: true
+                value:
+                  simple: inputs.minimum_cvss_score
+          root: MatchingSecurityAdvisory
+          transformers:
+          - args:
+              separator:
+                value:
+                  simple: ', '
+            operator: join
+          - args:
+              prefix:
+                value:
+                  simple: |+
+                    This version is affected by the following CVEs:
+
+              suffix:
+                value:
+                  simple: |2-
+
+
+                    This incident will upgrade all the devices on this version to a fixed release.
+            operator: concat
+      name:
+        simple: Automatic CVE Remedation Upgrade - ${inputs.panos_version}
+      panosnetworkoperationsdeviceupgradequery:
+        simple: panosnetworkoperationsrunningsoftwareversion:${inputs.panos_version}
+      panosnetworkoperationsparentincidentid:
+        simple: ${incident.id}
+      type:
+        simple: PAN-OS Network Operations - Platform Upgrade
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.create.inc
+      id: 45a12e69-5758-4f8b-85fc-316fb92a6ad0
+      iscommand: true
+      name: Create Platform Upgrade Incident
+      script: Builtin|||createNewIncident
+      type: regular
+      version: -1
+    taskid: 45a12e69-5758-4f8b-85fc-316fb92a6ad0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 910
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1105,
+        "width": 390,
+        "x": 460,
+        "y": 50
+      }
+    }
+  }
