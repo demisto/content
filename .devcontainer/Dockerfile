@@ -1,4 +1,4 @@
-FROM devdemisto/content-dev:latest
+FROM devdemisto/content-dev
 
 ADD create_certs.sh .
 RUN apt-get update && apt-get install dos2unix -y \
