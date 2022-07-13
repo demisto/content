@@ -17,7 +17,7 @@
     "type": "markdown",
     "breachScript": "",
     "editForm": true,
-    "description": "in server < 6.8, if type is longText and not markdown, the CommonTypes pack should be re-installed for the type to be changed",
+    "description": "re-install CommonTypes if the type is not markdown",
     "associatedToAll": false,
     "associatedTypes": [
         "Account"
