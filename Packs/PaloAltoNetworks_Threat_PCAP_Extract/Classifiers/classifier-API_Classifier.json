@@ -1,0 +1,19 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "API_Classifier",
+    "keyTypeMap": {
+        "Decryption": "Decryption",
+        "Threat Log PCAP Extract Incident": "NetOps - ThreatPCAPExtract"
+    },
+    "name": "API_Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "simple": "name"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.2.0"
+}

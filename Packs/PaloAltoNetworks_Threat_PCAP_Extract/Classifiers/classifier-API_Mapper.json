@@ -1,0 +1,81 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "API_Mapper",
+    "mapping": {
+        "NetOps - ThreatPCAPExtract": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Alert Category": {
+                    "simple": "type"
+                },
+                "App": {
+                    "simple": "app"
+                },
+                "Classification": {
+                    "simple": "severity"
+                },
+                "Destination IP": {
+                    "simple": "destinationip"
+                },
+                "Detection URL": {
+                    "simple": "detectionurl"
+                },
+                "Device Id": {
+                    "simple": "serial"
+                },
+                "Device Name": {
+                    "simple": "firewall"
+                },
+                "Event Type": {
+                    "simple": "action"
+                },
+                "PAN Content Version": {
+                    "simple": "contentversion"
+                },
+                "PAN PCAP ID": {
+                    "simple": "pcapid"
+                },
+                "PAN Session ID": {
+                    "simple": "sessionid"
+                },
+                "PAN Threat ID": {
+                    "simple": "threatid"
+                },
+                "Received Time": {
+                    "simple": "timegenerated"
+                },
+                "Rule Name": {
+                    "simple": "policyid"
+                },
+                "Source IP": {
+                    "simple": "sourceip"
+                },
+                "Source User": {
+                    "simple": "user"
+                },
+                "Src User": {
+                    "simple": "user"
+                },
+                "Threat Name": {
+                    "simple": "threatname"
+                },
+                "name": {
+                    "simple": "name"
+                }
+            }
+        },
+        "ep-ThreatPCAPExtract": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "name": {
+                    "simple": "name"
+                }
+            }
+        }
+    },
+    "name": "API_Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.2.0"
+}
