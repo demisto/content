@@ -209,7 +209,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 9295
+          "y": 9820
         }
       }
     note: false
@@ -2253,14 +2253,14 @@ tasks:
     isautoswitchedtoquietmode: false
   '63':
     id: '63'
-    taskid: e2996050-6103-48eb-8e78-644fe2a8b07f
+    taskid: cfe9cb61-d4ac-4520-8a56-e3c27e58a178
     type: regular
     task:
-      id: e2996050-6103-48eb-8e78-644fe2a8b07f
+      id: cfe9cb61-d4ac-4520-8a56-e3c27e58a178
       version: -1
       name: Get events with polling
       description: Polling command to search for events of a specific offense.
-      script: QRadar v3|||qradar-get-events-polling
+      script: QRadar v3|||qradar-search-retrieve-events
       type: regular
       iscommand: true
       brand: QRadar v3
@@ -2287,10 +2287,88 @@ tasks:
     isautoswitchedtoquietmode: false
   '64':
     id: '64'
-    taskid: ca84d86a-3bd1-43aa-894c-12d6c56cc245
+    taskid: a219be19-90f1-48ac-895a-7f7d736c8b76
     type: condition
     task:
-      id: ca84d86a-3bd1-43aa-894c-12d6c56cc245
+      id: a219be19-90f1-48ac-895a-7f7d736c8b76
+      version: -1
+      name: Validate polling
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '67'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: QRadar.SearchEvents.ID
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: QRadar.SearchEvents.Events
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '65':
+    id: '65'
+    taskid: 5d7b7d5d-741b-438c-81e2-8ba8fe487fff
+    type: regular
+    task:
+      id: 5d7b7d5d-741b-438c-81e2-8ba8fe487fff
+      version: -1
+      name: get events with polling custom query
+      description: Polling command to search for events of a specific offense.
+      script: QRadar v3|||qradar-search-retrieve-events
+      type: regular
+      iscommand: true
+      brand: QRadar v3
+    nexttasks:
+      '#none#':
+      - '66'
+    scriptarguments:
+      query_expression:
+        simple: SELECT * FROM events WHERE INOFFENSE(194) limit 3 start 3600000
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '66':
+    id: '66'
+    taskid: ecab50b5-72c2-4e01-85ca-4738fa7af9fb
+    type: condition
+    task:
+      id: ecab50b5-72c2-4e01-85ca-4738fa7af9fb
       version: -1
       name: Validate polling
       type: condition
@@ -2308,17 +2386,57 @@ tasks:
             value:
               simple: QRadar.SearchEvents.ID
             iscontext: true
+          right:
+            value: {}
       - - operator: isNotEmpty
           left:
             value:
               simple: QRadar.SearchEvents.Events
             iscontext: true
-
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 9120
+          "y": 9645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '67':
+    id: '67'
+    taskid: eca365ac-70f5-4773-8ca0-a5d1a98e2353
+    type: regular
+    task:
+      id: eca365ac-70f5-4773-8ca0-a5d1a98e2353
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '65'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9295
         }
       }
     note: false
@@ -2333,7 +2451,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 9310,
+        "height": 9835,
         "width": 380,
         "x": 50,
         "y": 50
