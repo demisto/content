@@ -698,4 +698,3 @@ def test_fail_to_add_email_object(mocker):
     with pytest.raises(DemistoException) as exception_info:
         add_email_object(demisto_args)
     assert "'errors': (404" in str(exception_info.value)
-    assert "Error in `!misp-add-email-object` command" in str(exception_info.value)
