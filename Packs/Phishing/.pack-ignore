@@ -149,3 +149,7 @@ ignore=IF116
 CheckEmailAuthenticity
 DeleteReportedEmail
 GetBrandDeleteReportedEmail
+PhishingDedupPreprocessingRule
+FindDuplicateEmailIncidents
+LinkToPhishingCampaign
+ParseEmailFiles
