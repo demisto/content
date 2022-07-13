@@ -831,8 +831,10 @@ def test_commands(mocker, command_func: Callable[[Client, Dict], CommandResults]
         raw_response=response
     )
     mocker.patch.object(client, command_name, return_value=response)
-
-    results = command_func(client, args)
+    if command_func == qradar_search_create_command:
+        results = command_func(client, {}, args)
+    else:
+        results = command_func(client, args)
 
     assert results.outputs_prefix == expected_command_results.outputs_prefix
     assert results.outputs_key_field == expected_command_results.outputs_key_field

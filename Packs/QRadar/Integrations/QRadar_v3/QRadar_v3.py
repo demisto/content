@@ -734,7 +734,7 @@ def get_remote_events(client: Client,
             time.sleep(FAILURE_SLEEP)
     elif offense_id in offenses_queried:  # if our offense is in the queried list, we will get the result
         search_id = offenses_queried[offense_id]
-        events, status = poll_offense_events(client, search_id, int(offense_id), should_get_events=True)
+        events, status = poll_offense_events(client, search_id, should_get_events=True, offense_id=int(offense_id))
         if status == QueryStatus.SUCCESS.value:
             del offenses_queried[offense_id]
             changed_ids_ctx.append(offense_id)
@@ -1516,7 +1516,11 @@ def create_search_with_retry(client: Client, fetch_mode: str, offense: Dict, eve
     return QueryStatus.ERROR.value
 
 
-def poll_offense_events(client: Client, search_id: str, offense_id: int, should_get_events: bool,):
+def poll_offense_events(client: Client,
+                        search_id: str,
+                        should_get_events: bool,
+                        offense_id: int | None,
+                        ):
     try:
         print_debug_msg(f"Getting search status for {search_id}")
         search_status_response = client.search_status_get(search_id)
@@ -1572,7 +1576,7 @@ def poll_offense_events_with_retry(client: Client, search_id: str, offense_id: i
     for retry in range(max_retries):
         print_debug_msg(f'Polling for events for offense {offense_id}. Retry number {retry+1}/{max_retries}')
         time.sleep(EVENTS_INTERVAL_SECS)
-        events, status = poll_offense_events(client, search_id, offense_id, should_get_events=True)
+        events, status = poll_offense_events(client, search_id, should_get_events=True, offense_id=int(offense_id))
         if status == QueryStatus.SUCCESS.value:
             return events, ''
         elif status == QueryStatus.ERROR.value:
@@ -2325,7 +2329,7 @@ def qradar_searches_list_command(client: Client, args: Dict) -> CommandResults:
     )
 
 
-def qradar_search_create_command(client: Client, args: Dict) -> CommandResults:
+def qradar_search_create_command(client: Client, params: Dict, args: Dict) -> CommandResults:
     """
     Create a search in QRadar service.
     possible arguments:
@@ -2333,18 +2337,40 @@ def qradar_search_create_command(client: Client, args: Dict) -> CommandResults:
     - saved_search_id: Saved search ID to execute. Mutually exclusive with query_expression.
     Args:
         client (Client): QRadar client to perform the API call.
+        params (Dict): Demisto params.
         args (Dict): Demisto args.
 
     Returns:
         CommandResults.
     """
+    offense_id = args.get('offense_id', '')
+    events_columns = args.get('events_columns', params.get('events_columns'))
+    events_limit = args.get('events_limit', params.get('events_limit'))
+    fetch_mode = args.get('fetch_mode', params.get('fetch_mode'))
+    start_time = args.get('start_time')
     query_expression = args.get('query_expression')
     saved_search_id = args.get('saved_search_id')
 
-    # if this call fails, raise an error and stop command execution
-    response = client.search_create(query_expression, saved_search_id)
-    outputs = sanitize_outputs(response, SEARCH_OLD_NEW_MAP)
+    if not query_expression and not saved_search_id and not offense_id:
+        raise DemistoException('Must use either `query_expression` or `saved_search_id` or `offense_id`.')
 
+    if query_expression and offense_id:
+        raise DemistoException('Could not use both `query_expression` and `offense_id`.')
+    # if this call fails, raise an error and stop command execution
+    if query_expression or saved_search_id:
+        response = client.search_create(query_expression, saved_search_id)
+        outputs = sanitize_outputs(response, SEARCH_OLD_NEW_MAP)
+    else:
+        search_id = create_events_search(client,
+                                         fetch_mode,
+                                         events_columns,
+                                         events_limit,
+                                         int(offense_id),
+                                         start_time)
+        if search_id == QueryStatus.ERROR.value:
+            raise DemistoException(f'Could not create search for {offense_id}')
+        outputs = [{'ID': search_id,
+                   'Status': 'Created'}]
     return CommandResults(
         readable_output=tableToMarkdown('Create Search', outputs),
         outputs_prefix='QRadar.Search',
@@ -3303,7 +3329,7 @@ def add_modified_remote_offenses(client: Client,
                 mirrored_offenses_queries[offense_id] = search_id
                 changed_ids_ctx.append(offense_id)
             # If the search finished, move it to finished queue
-            _, status = poll_offense_events(client, search_id, int(offense_id), should_get_events=False)
+            _, status = poll_offense_events(client, search_id, should_get_events=False, offense_id=int(offense_id))
             if status == QueryStatus.ERROR.value:
                 time.sleep(FAILURE_SLEEP)
                 print_debug_msg(f'offense {offense_id}, search query {search_id}, status is {status}')
@@ -3424,30 +3450,9 @@ def qradar_search_retrieve_events_command(client: Client,
         CommandResults: The results of the command.
     """
     interval_in_secs = int(args.get('interval_in_seconds', 60))
-    offense_id = args.get('offense_id')
-    events_columns = args.get('events_columns', params.get('events_columns'))
-    events_limit = args.get('events_limit', params.get('events_limit'))
-    fetch_mode = args.get('fetch_mode', params.get('fetch_mode'))
-    start_time = args.get('start_time')
-    query_expression = args.get('query_expression')
-    if query_expression and offense_id:
-        raise DemistoException('Could not use both `query_expression` and `offense_id`.')
     search_id = args.get('search_id')
     if not search_id:
-        if query_expression:
-            search_response = client.search_create(query_expression=query_expression)
-            if not search_response or 'search_id' not in search_response:
-                raise DemistoException(f'Failed to create search for the AQL query: {query_expression}')
-            search_id = search_response['search_id']
-        else:
-            search_id = create_events_search(client,
-                                             offense_id=offense_id,
-                                             fetch_mode=fetch_mode,
-                                             events_columns=events_columns,
-                                             events_limit=events_limit,
-                                             offense_start_time=start_time)
-            if search_id == QueryStatus.ERROR.value:
-                raise DemistoException(f'Failed to create search for Offense {offense_id}')
+        search_command_results = qradar_search_create_command(client, params, args)
         polling_args = {
             'search_id': search_id,
             'interval_in_seconds': interval_in_secs,
@@ -3464,16 +3469,16 @@ def qradar_search_retrieve_events_command(client: Client,
                               readable_output=f'Search ID: {search_id}',
                               outputs_prefix='QRadar.SearchEvents',
                               outputs_key_field='ID',
-                              outputs={'ID': search_id}
+                              outputs=search_command_results.outputs
                               )
-    events, status = poll_offense_events(client, search_id, offense_id, should_get_events=True)
+    events, status = poll_offense_events(client, search_id, should_get_events=True, offense_id=None)
     if status == QueryStatus.ERROR.value:
-        raise DemistoException(f'Polling for events for Offense {offense_id} failed')
+        raise DemistoException('Polling for events failed')
     if status == QueryStatus.SUCCESS.value:
         return CommandResults(outputs_prefix='QRadar.SearchEvents',
                               outputs_key_field='ID',
                               outputs={'Events': events, 'ID': search_id},
-                              readable_output=tableToMarkdown(f'Events for offense {offense_id}',
+                              readable_output=tableToMarkdown(f'Events returned from search_id {search_id}',
                                                               events,
                                                               )
                               )
@@ -3652,7 +3657,7 @@ def main() -> None:  # pragma: no cover
             return_results(qradar_searches_list_command(client, args))
 
         elif command == 'qradar-search-create' or command == 'qradar-searches':
-            return_results(qradar_search_create_command(client, args))
+            return_results(qradar_search_create_command(client, params, args))
 
         elif command == 'qradar-search-status-get' or command == 'qradar-get-search':
             return_results(qradar_search_status_get_command(client, args))
