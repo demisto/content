@@ -5718,15 +5718,15 @@ script:
     polling: true
     name: microsoft-atp-request-and-download-investigation-package
     outputs:
-      - contextPath: MicrosoftATP.MachineAction.ID
-        description: The machine action ID.
-        type: String
-      - contextPath: MicrosoftATP.MachineAction.Status
-        description: The current status of the machine action.
-        type: String
-      - contextPath: MicrosoftATP.MachineAction.MachineID
-        description: The machine ID on which the action was executed.
-        type: String
+    - contextPath: MicrosoftATP.MachineAction.ID
+      description: The machine action ID.
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.Status
+      description: The current status of the machine action.
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.MachineID
+      description: The machine ID on which the action was executed.
+      type: String
   - arguments:
     - default: true
       description: A comma-separated list of machine IDs to be used for offboarding.
