@@ -63,7 +63,7 @@ class Client(object):
             elif isinstance(value, dict):
                 results = self.get_recursively(value, field)
                 for result in results:
-                    fields_found.append(result)
+                    fields_found.extend(result)
 
             elif isinstance(value, list):
                 for item in value:
@@ -75,7 +75,7 @@ class Client(object):
         return fields_found
 
 
-    def build_indicators(self, args, data):
+    def build_indicators(self, args: Dict[str, Any], data: list):
         indicators= []
         for eachres in data:
             indicator_obj = {
@@ -128,7 +128,7 @@ class Client(object):
             return {}
 
 
-    def get_taxii(self, args):
+    def get_taxii(self, args: Dict[str, Any]):
         """
         Fetch Taxii events for the given parameters
         :param args: arguments which would be used to fetch feed
@@ -155,7 +155,7 @@ class Client(object):
                 taxii_data.append(response)
 
                 count += 1
-                if count == arg_to_number(args.get('limit', 0)):
+                if count == arg_to_number(args.get('limit', 1)):
                     break
         except Exception as e:
             demisto.error("Failed to fetch feed details, exception:{}".format(e))
@@ -189,7 +189,7 @@ class Client(object):
         return self.client.get_collections(uri=address)
 
 
-def get_test_response(client, args):
+def get_test_response(client: Client, args: Dict[str, Any]):
     """
     Test the integration connection state
     :param client: instance of client to communicate with server
@@ -211,7 +211,7 @@ def get_test_response(client, args):
     return ret_val
 
 
-def get_feed_collection(client):
+def get_feed_collection(client: Client):
     """
     Test the integration connection state
     :param client: instance of client to communicate with server
@@ -226,7 +226,7 @@ def get_feed_collection(client):
     return command_results
 
 
-def cyble_fetch_taxii(client, args):
+def cyble_fetch_taxii(client: Client, args: Dict[str, Any]):
     '''
     TAXII feed details will be pulled from server
     :param client: instance of client to communicate with server
@@ -253,7 +253,7 @@ def cyble_fetch_taxii(client, args):
     return command_results
 
 
-def fetch_indicators(client):
+def fetch_indicators(client: Client):
     '''
     TAXII feed details will be pulled from server
     :param client: instance of client to communicate with server
@@ -285,7 +285,7 @@ def fetch_indicators(client):
     return indicators
 
 
-def validate_input(args):
+def validate_input(args: Dict[str, Any]):
     """
     Check if the input params for the command are valid. Return an error if any
     :param args: dictionary of input params
