@@ -116,10 +116,7 @@ configuration:
     defaultvalue:
     type: 0
     additionalinfo: 'Search qualification to fetch tickets. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query will be used as an addition to the existing params. You can Review the BMC documentation for how to Build search qualifications: https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html'
-  - additionalinfo:
-      "Choose the direction to mirror the incident: Incoming (from  BMC Remedy ITSM
-      to XSOAR), Outgoing (from XSOAR to BMC Remedy ITSM), or Incoming and Outgoing (from/to
-      XSOAR and BMC Remedy ITSM)."
+  - additionalinfo: "Choose the direction to mirror the incident: Incoming (from  BMC Remedy ITSM to XSOAR), Outgoing (from XSOAR to BMC Remedy ITSM), or Incoming and Outgoing (from/to XSOAR and BMC Remedy ITSM)."
     defaultvalue: None
     display: Incident Mirroring Direction
     name: mirror_direction
@@ -130,9 +127,7 @@ configuration:
       - Incoming And Outgoing
     required: false
     type: 15
-  - additionalinfo:
-      When selected, closing the BMC Remedy ITSM ticket is mirrored in Cortex
-      XSOAR.
+  - additionalinfo: When selected, closing the BMC Remedy ITSM ticket is mirrored in Cortex XSOAR.
     defaultvalue: "false"
     display: Close Mirrored XSOAR Incident
     name: close_incident
@@ -168,7 +163,7 @@ script:
   script: ""
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.4.30607
+  dockerimage: demisto/python3:3.10.5.31928
   commands:
     - name: bmc-itsm-user-list
       description: List users profile in BMC Helix ITSM. The records are retrieved according to a constraint determined either by the query argument or by the filtering arguments. When using filtering arguments, Each one defines a 'LIKE' operation and 'AND' operator is used between them.
@@ -2851,16 +2846,9 @@ script:
       description: Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes.
       name: get-remote-data
     - arguments:
-        - description:
-            Date string in local time representing the last time the incident
-            was updated. The incident is only returned if it was modified after the last
-            update time.
+        - description: Date string in local time representing the last time the incident was updated. The incident is only returned if it was modified after the last update time.
           name: lastUpdate
-      description:
-        Gets the list of incidents that were modified since the last update
-        time. Note that this method is here for debugging purposes. The get-modified-remote-data
-        command is used as part of a Mirroring feature, which is available from version
-        6.1.
+      description: Gets the list of incidents that were modified since the last update time. Note that this method is here for debugging purposes. The get-modified-remote-data command is used as part of a Mirroring feature, which is available from version 6.1.
       name: get-modified-remote-data
   feed: false
   isfetch: true
