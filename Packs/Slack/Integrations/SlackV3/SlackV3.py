@@ -5,6 +5,7 @@ import ssl
 import threading
 from distutils.util import strtobool
 from typing import Tuple
+import gc
 
 import aiohttp
 import slack_sdk
@@ -776,14 +777,15 @@ def mirror_investigation():
     demisto.results(f'Investigation mirrored successfully, channel: {conversation_name}')
 
 
-async def long_running_loop():
+def long_running_loop():
     while True:
         error = ''
         try:
             if MIRRORING_ENABLED:
                 check_for_mirrors()
             check_for_unanswered_questions()
-            await asyncio.sleep(15)
+            gc.collect()
+            time.sleep(15)
         except requests.exceptions.ConnectionError as e:
             error = f'Could not connect to the Slack endpoint: {str(e)}'
         except Exception as e:
@@ -1055,8 +1057,10 @@ async def start_listening():
     Starts a Slack SocketMode client and checks for mirrored incidents.
     """
     try:
-        tasks = [asyncio.ensure_future(slack_loop()), asyncio.ensure_future(long_running_loop())]
-        await asyncio.gather(*tasks)
+        executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
+        loop = asyncio.get_running_loop()
+        loop.run_in_executor(executor, long_running_loop)
+        await slack_loop()
     except Exception as e:
         demisto.error(f"An error has occurred while gathering the loop tasks. {e}")
 
@@ -2602,8 +2606,8 @@ def main() -> None:
     Main
     """
     global CLIENT
-    if is_debug_mode():
-        os.environ['PYTHONASYNCIODEBUG'] = "1"
+    # if is_debug_mode():
+    os.environ['PYTHONASYNCIODEBUG'] = "1"
 
     commands = {
         'test-module': test_module,
@@ -2635,8 +2639,9 @@ def main() -> None:
         LOG(e)
         return_error(str(e))
     finally:
-        demisto.info(
-            f'{command_name} completed.')
+        demisto.info(f'{command_name} completed. loop: {loop_info(CLIENT._event_loop)}')  # type: ignore
+        if is_debug_mode():
+            print_thread_dump()
 
 
 ''' ENTRY POINT '''
