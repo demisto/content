@@ -472,18 +472,18 @@ class Client(BaseClient):
         if 'data' in response:
             return response.get('data')[0]
         return {}
-    
+
     def update_threat_analyst_verdict_request(self, threat_ids, action):
         endpoint_url = 'threats/analyst-verdict'
 
         payload = {
             "data": {
-                        "analystVerdict": action
-                    },
+                "analystVerdict": action
+            },
             "filter": {
-                        "ids": threat_ids,
-                        "tenant": "true"
-                    }
+                "ids": threat_ids,
+                "tenant": "true"
+            }
         }
         response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
@@ -493,79 +493,79 @@ class Client(BaseClient):
 
         payload = {
             "data": {
-                        "analystVerdict": action
-                    },
+                "analystVerdict": action
+            },
             "filter": {
-                        "ids": alert_ids,
-                        "tenant": "true"
-                    }
+                "ids": alert_ids,
+                "tenant": "true"
+            }
         }
         response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
-    
-    def create_star_rule_request(self,name,description,query,query_type,rule_severity,account_ids,group_ids,
-                                site_ids,expiration_mode,expiration_date,network_quarantine,treatAsThreat):
+
+    def create_star_rule_request(self, name, description, query, query_type, rule_severity, account_ids, group_ids,
+                                 site_ids, expiration_mode, expiration_date, network_quarantine, treatAsThreat):
         endpoint_url = 'cloud-detection/rules'
         payload = {
-                "data": {
-                    "expiration": expiration_date,
-                    "networkQuarantine": network_quarantine,
-                    "status": "Draft",
-                    "queryType": query_type,
-                    "expirationMode": expiration_mode,
-                    "severity": rule_severity,
-                    "treatAsThreat": treatAsThreat,
-                    "s1ql": query,
-                    "name": name,
-                    "description": description
-                },
-                "filter": {
-                    "siteIds": site_ids,
-                    "tenant": "true",
-                    "groupIds": group_ids,
-                    "accountIds": account_ids
-                }
+            "data": {
+                "expiration": expiration_date,
+                "networkQuarantine": network_quarantine,
+                "status": "Draft",
+                "queryType": query_type,
+                "expirationMode": expiration_mode,
+                "severity": rule_severity,
+                "treatAsThreat": treatAsThreat,
+                "s1ql": query,
+                "name": name,
+                "description": description
+            },
+            "filter": {
+                "siteIds": site_ids,
+                "tenant": "true",
+                "groupIds": group_ids,
+                "accountIds": account_ids
+            }
         }
         response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
-    
+
     def get_star_rule_request(self, params):
         endpoint_url = 'cloud-detection/rules'
         response = self._http_request(method='GET', url_suffix=endpoint_url, params=params)
         return response.get('data', [])
-    
-    def update_star_rule_request(self,rule_id,name,description,query,query_type,rule_severity,account_ids,group_ids,
-                                site_ids,expiration_mode,expiration_date,network_quarantine,treatAsThreat):
+
+    def update_star_rule_request(self, rule_id, name, description, query, query_type, rule_severity, account_ids, group_ids,
+                                 site_ids, expiration_mode, expiration_date, network_quarantine, treatAsThreat):
         endpoint_url = f'cloud-detection/rules/{rule_id}'
         payload = {
-                "data": {
-                    "expiration": expiration_date,
-                    "networkQuarantine": network_quarantine,
-                    "status": "Draft",
-                    "queryType": query_type,
-                    "expirationMode": expiration_mode,
-                    "severity": rule_severity,
-                    "treatAsThreat": treatAsThreat,
-                    "s1ql": query,
-                    "name": name,
-                    "description": description
-                },
-                "filter": {
-                    "siteIds": site_ids,
-                    "tenant": "true",
-                    "groupIds": group_ids,
-                    "accountIds": account_ids
-                }
+            "data": {
+                "expiration": expiration_date,
+                "networkQuarantine": network_quarantine,
+                "status": "Draft",
+                "queryType": query_type,
+                "expirationMode": expiration_mode,
+                "severity": rule_severity,
+                "treatAsThreat": treatAsThreat,
+                "s1ql": query,
+                "name": name,
+                "description": description
+            },
+            "filter": {
+                "siteIds": site_ids,
+                "tenant": "true",
+                "groupIds": group_ids,
+                "accountIds": account_ids
+            }
         }
         response = self._http_request(method='PUT', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
-    
+
     def enable_star_rule_request(self, rule_ids):
         endpoint_url = 'cloud-detection/rules/enable'
         payload = {
-                "filter": {
-                        "ids": rule_ids
-                    }
+            "filter": {
+                "ids": rule_ids
+            }
         }
         response = self._http_request(method='PUT', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
@@ -573,19 +573,19 @@ class Client(BaseClient):
     def disable_star_rule_request(self, rule_ids):
         endpoint_url = 'cloud-detection/rules/disable'
         payload = {
-                "filter": {
-                        "ids": rule_ids
-                    }
+            "filter": {
+                "ids": rule_ids
+            }
         }
         response = self._http_request(method='PUT', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
-    
+
     def delete_star_rule_request(self, rule_ids):
         endpoint_url = 'cloud-detection/rules'
         payload = {
-                "filter": {
-                        "ids": rule_ids
-                    }
+            "filter": {
+                "ids": rule_ids
+            }
         }
         response = self._http_request(method='DELETE', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
@@ -593,49 +593,49 @@ class Client(BaseClient):
     def write_threat_note_request(self, threat_ids, note):
         endpoint_url = 'threats/notes'
         payload = {
-                "data": {
-                    "text": note
-                },
-                "filter": {
-                    "ids": threat_ids
-                }
+            "data": {
+                "text": note
+            },
+            "filter": {
+                "ids": threat_ids
+            }
         }
         response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
-    
+
     def create_ioc_request(self, name, source, ioc_type, method, validUntil, value, account_ids, externalId, description):
         endpoint_url = 'threat-intelligence/iocs'
         payload = {
-                "filter": {
-                    "accountIds": account_ids
-                },
-                "data": [
-                    {
+            "filter": {
+                "accountIds": account_ids
+            },
+            "data": [
+                {
                     "source": source,
                     "type": ioc_type,
                     "method": method,
                     "validUntil": validUntil,
                     "name": name,
                     "value": value,
-                    "externalId": externalId,                
+                    "externalId": externalId,
                     "description": description
-                    }
-                    ]
+                }
+            ]
         }
         response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
-    
+
     def delete_ioc_request(self, account_ids, uuids):
         endpoint_url = 'threat-intelligence/iocs'
         payload = {
-                "filter": {
-                        "accountIds": account_ids,
-                        "uuids": uuids
-                    }
+            "filter": {
+                "accountIds": account_ids,
+                "uuids": uuids
+            }
         }
         response = self._http_request(method='DELETE', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
-    
+
     def get_iocs_request(self, params):
         endpoint_url = 'threat-intelligence/iocs'
         response = self._http_request(method='GET', url_suffix=endpoint_url, params=params)
@@ -646,10 +646,10 @@ class Client(BaseClient):
     def create_power_query_request(self, limit, query, from_date, to_date):
         endpoint_url = 'dv/events/pq'
         payload = {
-                "limit": limit,
-                "query": query,
-                "toDate": to_date,
-                "fromDate": from_date
+            "limit": limit,
+            "query": query,
+            "toDate": to_date,
+            "fromDate": from_date
         }
         response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
@@ -658,17 +658,17 @@ class Client(BaseClient):
         endpoint_url = 'dv/events/pq-ping'
         response = self._http_request(method='GET', url_suffix=endpoint_url, params=params)
         return response.get('data', [])
-    
+
     def update_threat_status_request(self, threat_ids, status):
         endpoint_url = 'threats/incident'
 
         payload = {
             "data": {
-                        "incidentStatus": status
-                    },
+                "incidentStatus": status
+            },
             "filter": {
-                        "ids": threat_ids
-                    }
+                "ids": threat_ids
+            }
         }
         response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
@@ -678,35 +678,35 @@ class Client(BaseClient):
 
         payload = {
             "data": {
-                        "incidentStatus": status
-                    },
+                "incidentStatus": status
+            },
             "filter": {
-                        "ids": alert_ids
-                    }
+                "ids": alert_ids
+            }
         }
         response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
 
     def expire_site_request(self, site_id):
-        endpoint_url  = f'sites/{site_id}/expire-now'
+        endpoint_url = f'sites/{site_id}/expire-now'
 
         response = self._http_request(method='POST', url_suffix=endpoint_url)
         return response.get('data', {})
-    
+
     def fetch_threat_file_request(self, password, threat_ids):
         endpoint_url = 'threats/fetch-file'
 
         payload = {
             "data": {
-                        "password": password
-                    },
+                "password": password
+            },
             "filter": {
-                        "ids": threat_ids
-                    }
+                "ids": threat_ids
+            }
         }
         response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {})
-    
+
     def download_url_request(self, threat_id):
         endpoint_url = f'threats/{threat_id}/timeline'
         query_params = assign_params(
@@ -815,7 +815,7 @@ def get_groups_command(client: Client, args: dict) -> CommandResults:
         raw_response=groups)
 
 
-def delete_group(client: Client, args: dict)  -> CommandResults:
+def delete_group(client: Client, args: dict) -> CommandResults:
     """
     Deletes a group by ID.
     """
@@ -1033,10 +1033,10 @@ def update_threat_analyst_verdict(client: Client, args: dict) -> CommandResults:
     # Get arguments
     threat_ids = argToList(args.get('threat_ids'))
     action = args.get('action')
-    
+
     # Make request and get raw response
     updated_threats = client.update_threat_analyst_verdict_request(threat_ids, action)
-    
+
     # Parse response into context & content entries
     if updated_threats.get('affected') and int(updated_threats.get('affected')) > 0:
         updated = True
@@ -1057,14 +1057,15 @@ def update_threat_analyst_verdict(client: Client, args: dict) -> CommandResults:
                 'Action': action
             },
         })
-    
+
     return CommandResults(
-        readable_output=tableToMarkdown('Sentinel One - Update threats analyst verdict', contents, metadata=meta, removeNull=True),
+        readable_output=tableToMarkdown('Sentinel One - Update threats analyst verdict',
+                                        contents, metadata=meta, removeNull=True),
         outputs_prefix='SentinelOne.Threat',
         outputs_key_field='ID',
         outputs=context_entries,
         raw_response=updated_threats)
-   
+
 
 def update_alert_analyst_verdict(client: Client, args: dict) -> CommandResults:
     """
@@ -1076,10 +1077,10 @@ def update_alert_analyst_verdict(client: Client, args: dict) -> CommandResults:
     # Get arguments
     alert_ids = argToList(args.get('alert_ids'))
     action = args.get('action')
-    
+
     # Make request and get raw response
     updated_alerts = client.update_alert_analyst_verdict_request(alert_ids, action)
-    
+
     # Parse response into context & content entries
     if updated_alerts.get('affected') and int(updated_alerts.get('affected')) > 0:
         updated = True
@@ -1100,13 +1101,14 @@ def update_alert_analyst_verdict(client: Client, args: dict) -> CommandResults:
                 'Action': action
             },
         })
-    
+
     return CommandResults(
         readable_output=tableToMarkdown('Sentinel One - Update alerts analyst verdict', contents, metadata=meta, removeNull=True),
         outputs_prefix='SentinelOne.Alert',
         outputs_key_field='ID',
         outputs=context_entries,
         raw_response=updated_alerts)
+
 
 def create_star_rule(client: Client, args: dict) -> CommandResults:
     """
@@ -1122,7 +1124,7 @@ def create_star_rule(client: Client, args: dict) -> CommandResults:
     rule_severity = args.get('rule_severity')
     account_ids = argToList(args.get('account_ids'))
     group_ids = argToList(args.get('group_ids'))
-    site_ids  = argToList(args.get('site_ids'))
+    site_ids = argToList(args.get('site_ids'))
     expiration_mode = args.get('expiration_mode')
     expiration_date = args.get('expiration_date')
     network_quarantine = argToBoolean(args.get('network_quarantine'))
@@ -1130,10 +1132,10 @@ def create_star_rule(client: Client, args: dict) -> CommandResults:
     # if the expiration_mode is Temporary then expiration_date is required
     if expiration_mode == "Temporary" and expiration_date is None:
         raise DemistoException("You must provide expiration_date argument when you selected the Temporary as expiration_mode")
-        
+
     # Make request and get raw response
-    rule = client.create_star_rule_request(name,description,query,query_type,rule_severity,account_ids,group_ids,site_ids,
-                                            expiration_mode,expiration_date,network_quarantine,treatAsThreat)
+    rule = client.create_star_rule_request(name, description, query, query_type, rule_severity, account_ids, group_ids, site_ids,
+                                           expiration_mode, expiration_date, network_quarantine, treatAsThreat)
     if rule:
         context = {
             'ID': rule.get('id'),
@@ -1156,6 +1158,7 @@ def create_star_rule(client: Client, args: dict) -> CommandResults:
         outputs=context,
         raw_response=rule)
 
+
 def get_star_rule(client: Client, args: dict) -> CommandResults:
     """
     Get the custom STAR rule(s) (cloud detection rule). Relavent for API version 2.1
@@ -1172,7 +1175,7 @@ def get_star_rule(client: Client, args: dict) -> CommandResults:
         accountIds=args.get('accountIds'),
         expirationMode=args.get('expirationMode'),
         siteIds=args.get('siteIds'),
-        limit=int(args.get('limit',1000)),
+        limit=int(args.get('limit', 1000)),
     )
 
     # Make request and get raw response
@@ -1204,6 +1207,7 @@ def get_star_rule(client: Client, args: dict) -> CommandResults:
         outputs=context_entries,
         raw_response=rules)
 
+
 def update_star_rule(client: Client, args: dict) -> CommandResults:
     """
     Get the custom STAR rule(s) (cloud detection rule). Relavent for API version 2.1
@@ -1218,7 +1222,7 @@ def update_star_rule(client: Client, args: dict) -> CommandResults:
     rule_severity = args.get('rule_severity')
     account_ids = argToList(args.get('account_ids'))
     group_ids = argToList(args.get('group_ids'))
-    site_ids  = argToList(args.get('site_ids'))
+    site_ids = argToList(args.get('site_ids'))
     expiration_mode = args.get('expiration_mode')
     expiration_date = args.get('expiration_date')
     network_quarantine = argToBoolean(args.get('network_quarantine'))
@@ -1226,10 +1230,10 @@ def update_star_rule(client: Client, args: dict) -> CommandResults:
     # if the expiration_mode is Temporary then expiration_date is required
     if expiration_mode == "Temporary" and expiration_date is None:
         raise DemistoException("You must provide expiration_date argument when you selected the Temporary as expiration_mode")
-    
+
     # Make request and get raw response
-    rule = client.update_star_rule_request(rule_id,name,description,query,query_type,rule_severity,account_ids,group_ids,site_ids,
-                                            expiration_mode,expiration_date,network_quarantine,treatAsThreat)
+    rule = client.update_star_rule_request(rule_id, name, description, query, query_type, rule_severity, account_ids, group_ids,
+                                           site_ids, expiration_mode, expiration_date, network_quarantine, treatAsThreat)
     if rule:
         context = {
             'ID': rule.get('id'),
@@ -1250,7 +1254,8 @@ def update_star_rule(client: Client, args: dict) -> CommandResults:
         outputs_prefix='SentinelOne.StarRule',
         outputs_key_field='ID',
         outputs=context,
-        raw_response=rule)   
+        raw_response=rule)
+
 
 def enable_star_rules(client: Client, args: dict) -> CommandResults:
     """
@@ -1260,7 +1265,7 @@ def enable_star_rules(client: Client, args: dict) -> CommandResults:
 
     # Get arguments
     rule_ids = argToList(args.get('rule_ids'))
-    
+
     # Make request and get raw response
     enabled_rules = client.enable_star_rule_request(rule_ids)
 
@@ -1284,6 +1289,7 @@ def enable_star_rules(client: Client, args: dict) -> CommandResults:
         outputs=context_entries,
         raw_response=enabled_rules)
 
+
 def disable_star_rules(client: Client, args: dict) -> CommandResults:
     """
     Disables the custom STAR rule (cloud detection rule). Relavent for API version 2.1
@@ -1292,7 +1298,7 @@ def disable_star_rules(client: Client, args: dict) -> CommandResults:
 
     # Get arguments
     rule_ids = argToList(args.get('rule_ids'))
-    
+
     # Make request and get raw response
     disabled_rules = client.disable_star_rule_request(rule_ids)
 
@@ -1314,7 +1320,8 @@ def disable_star_rules(client: Client, args: dict) -> CommandResults:
         outputs_prefix='SentinelOne.StarRule',
         outputs_key_field='ID',
         outputs=context_entries,
-        raw_response=disabled_rules) 
+        raw_response=disabled_rules)
+
 
 def delete_star_rule(client: Client, args: dict) -> CommandResults:
     """
@@ -1324,7 +1331,7 @@ def delete_star_rule(client: Client, args: dict) -> CommandResults:
 
     # Get arguments
     rule_ids = argToList(args.get('rule_ids'))
-    
+
     # Make request and get raw response
     deleted_rules = client.delete_star_rule_request(rule_ids)
 
@@ -1346,7 +1353,8 @@ def delete_star_rule(client: Client, args: dict) -> CommandResults:
         outputs_prefix='SentinelOne.StarRule',
         outputs_key_field='ID',
         outputs=context_entries,
-        raw_response=deleted_rules) 
+        raw_response=deleted_rules)
+
 
 def write_threat_note(client: Client, args: dict) -> CommandResults:
     """
@@ -1357,7 +1365,7 @@ def write_threat_note(client: Client, args: dict) -> CommandResults:
     # Get arguments
     note = args.get('note')
     threat_ids = argToList(args.get('threat_ids'))
-    
+
     # Make request and get raw response
     threat_notes = client.write_threat_note_request(threat_ids, note)
 
@@ -1371,7 +1379,7 @@ def write_threat_note(client: Client, args: dict) -> CommandResults:
     for threat_id in threat_ids:
         context_entries.append({
             'ID': threat_id,
-            'Note': note, 
+            'Note': note,
             'Status': status
         })
     return CommandResults(
@@ -1380,14 +1388,15 @@ def write_threat_note(client: Client, args: dict) -> CommandResults:
         outputs_prefix='SentinelOne.Threat',
         outputs_key_field='ID',
         outputs=context_entries,
-        raw_response=threat_notes) 
+        raw_response=threat_notes)
+
 
 def create_ioc(client: Client, args: dict) -> CommandResults:
     """
     Add an IoC to the Threat Intelligence database. . Relavent for API version 2.1
     """
     context = {}
-    
+
     # Get arguments
     name = args.get('name')
     source = args.get('source')
@@ -1397,12 +1406,12 @@ def create_ioc(client: Client, args: dict) -> CommandResults:
     value = args.get('value')
     account_ids = argToList(args.get('account_ids'))
     # not-requied arguments
-    externalId = args.get('externalId')   
+    externalId = args.get('externalId')
     description = args.get("description")
 
     # Make request and get raw response
     ioc = client.create_ioc_request(name, source, ioc_type, method, validUntil, value, account_ids, externalId, description)[0]
-    
+
     if ioc:
         context = {
             'UUID': ioc.get('uuid'),
@@ -1415,7 +1424,7 @@ def create_ioc(client: Client, args: dict) -> CommandResults:
             'Scope Id': ioc.get('scopeId')[0],
             'Valid Until': ioc.get('validUntil'),
             'Description': ioc.get('description'),
-            'External Id': ioc.get('externalId'),           
+            'External Id': ioc.get('externalId'),
         }
     return CommandResults(
         readable_output=tableToMarkdown('Sentinel One - Create IOC', context, removeNull=True),
@@ -1423,6 +1432,7 @@ def create_ioc(client: Client, args: dict) -> CommandResults:
         outputs_key_field='UUID',
         outputs=context,
         raw_response=ioc)
+
 
 def delete_ioc(client: Client, args: dict) -> CommandResults:
     """
@@ -1433,9 +1443,9 @@ def delete_ioc(client: Client, args: dict) -> CommandResults:
     # Get arguments
     account_ids = argToList(args.get('account_ids'))
     uuids = argToList(args.get('uuids'))
-    
+
     # Make request and get raw response
-    deleted_iocs = client.delete_ioc_request(account_ids, uuids) 
+    deleted_iocs = client.delete_ioc_request(account_ids, uuids)
 
     # Parse response into context & content entries
     if deleted_iocs.get('affected') and int(deleted_iocs.get('affected')) > 0:
@@ -1458,6 +1468,7 @@ def delete_ioc(client: Client, args: dict) -> CommandResults:
         outputs=context_entries,
         raw_response=deleted_iocs)
 
+
 def get_iocs(client: Client, args: dict) -> CommandResults:
     """
     Get the IOCs of a specified Account that match the filter. Relavent for API version 2.1
@@ -1467,7 +1478,7 @@ def get_iocs(client: Client, args: dict) -> CommandResults:
         accountIds=args.get('account_ids'),
         uploadTime__gte=args.get('upload_time_gte'),
         uploadTime__lte=args.get('upload_time_lte'),
-        limit=int(args.get('limit',1000)),
+        limit=int(args.get('limit', 1000)),
         cursor=args.get('cursor'),
         uuids=args.get('uuids'),
         type=args.get('type'),
@@ -1486,11 +1497,11 @@ def get_iocs(client: Client, args: dict) -> CommandResults:
     )
 
     # Make request and get raw response
-    iocs, pagination = client.get_iocs_request(query_params) 
-    
+    iocs, pagination = client.get_iocs_request(query_params)
+
     if pagination['nextCursor'] is not None:
-        demisto.log("Use the below cursor value to get the next page iocs \n {}". format(pagination['nextCursor']))
-    
+        demisto.results("Use the below cursor value to get the next page iocs \n {}". format(pagination['nextCursor']))
+
     if iocs:
         # Parse response into context & content entries
         for ioc in iocs:
@@ -1516,6 +1527,7 @@ def get_iocs(client: Client, args: dict) -> CommandResults:
         outputs=context_entries,
         raw_response=iocs)
 
+
 def create_power_query(client: Client, args: dict) -> CommandResults:
     """
     Create the power query and get the events or get the query ID. Relavent for API version 2.1
@@ -1523,7 +1535,7 @@ def create_power_query(client: Client, args: dict) -> CommandResults:
     context_entries = []
 
     # Get arguments
-    limit = int(args.get('limit',1000))
+    limit = int(args.get('limit', 1000))
     query = args.get('query')
     from_date = args.get('from_date')
     to_date = args.get('to_date')
@@ -1545,7 +1557,7 @@ def create_power_query(client: Client, args: dict) -> CommandResults:
             context_entries.append(temp)
 
         meta = 'Provides summary information and details aboput the power query and its id \n your search criteria.'
-                                        
+
     return CommandResults(
         readable_output=tableToMarkdown('Sentinel One - Create a Power Query and Get QueryId', context_entries, removeNull=True,
                                         metadata=meta, headerTransform=pascalToSpace),
@@ -1553,13 +1565,14 @@ def create_power_query(client: Client, args: dict) -> CommandResults:
         outputs=context_entries,
         raw_response=response)
 
+
 def ping_power_query(client: Client, args: dict) -> CommandResults:
     """
     Create the power query and get the events or get the query ID. Relavent for API version 2.1
     """
     context_entries = []
     query_params = assign_params(
-        queryId = args.get('queryId')
+        queryId=args.get('queryId')
     )
 
     response = client.ping_power_query_request(query_params)
@@ -1569,7 +1582,7 @@ def ping_power_query(client: Client, args: dict) -> CommandResults:
             for i in range(len(row)):
                 temp.update({response['columns'][i]['name']: row[i]})
             context_entries.append(temp)
-    
+
     return CommandResults(
         readable_output=tableToMarkdown('Sentinel One - Ping the Power Query', context_entries, removeNull=True,
                                         metadata='Provides summary information and details aboput the power query and its id '
@@ -1577,6 +1590,7 @@ def ping_power_query(client: Client, args: dict) -> CommandResults:
         outputs_prefix='SentinelOne.PowerQuery',
         outputs=context_entries,
         raw_response=response)
+
 
 def update_threat_status(client: Client, args: dict) -> CommandResults:
     """
@@ -1587,7 +1601,7 @@ def update_threat_status(client: Client, args: dict) -> CommandResults:
     # Get arguments
     threat_ids = argToList(args.get('threat_ids'))
     status = args.get('status')
-    affected = 0 
+    affected = 0
     meta = 'No threats were updated'
 
     for threat_id in threat_ids:
@@ -1615,6 +1629,7 @@ def update_threat_status(client: Client, args: dict) -> CommandResults:
         outputs=context_entries,
         raw_response=updated_threats)
 
+
 def update_alert_status(client: Client, args: dict) -> CommandResults:
     """
     Updates the status for group of Alerts. Relevant for API version 2.1
@@ -1626,7 +1641,7 @@ def update_alert_status(client: Client, args: dict) -> CommandResults:
     status = args.get('status')
     affected = 0
     meta = 'No alerts were updated'
-        
+
     for alert_id in alert_ids:
         # Make request and get raw response
         updated_alerts = client.update_alert_status_request(alert_id, status)
@@ -1650,7 +1665,8 @@ def update_alert_status(client: Client, args: dict) -> CommandResults:
         outputs_prefix='SentinelOne.Alert',
         outputs_key_field='ID',
         outputs=context_entries,
-        raw_response=updated_alerts) 
+        raw_response=updated_alerts)
+
 
 def expire_site(client: Client, args: dict) -> CommandResults:
     """
@@ -1662,7 +1678,7 @@ def expire_site(client: Client, args: dict) -> CommandResults:
     site_id = args.get("site_id")
 
     # Make request and get raw response
-    Expired_site = client.expire_site_request(site_id) 
+    Expired_site = client.expire_site_request(site_id)
 
     if Expired_site:
         context_entries = {
@@ -1686,16 +1702,17 @@ def expire_site(client: Client, args: dict) -> CommandResults:
         outputs=context_entries,
         raw_response=Expired_site)
 
+
 def fetch_threat_file(client: Client, args: dict) -> CommandResults:
     """
     Fetches the threat file. Relevent to both API Versions
-    """ 
+    """
     context_entries = []
 
     # Get Arguments
     threat_ids = argToList(args.get('threat_id'))
     password = args.get('password')
-    time_to_sleep = int(args.get('time_to_sleep',30))
+    time_to_sleep = int(args.get('time_to_sleep', 30))
 
     downloaded_files = client.fetch_threat_file_request(password, threat_ids)
 
@@ -1724,14 +1741,15 @@ def fetch_threat_file(client: Client, args: dict) -> CommandResults:
         outputs=context_entries,
         raw_response=downloaded_files)
 
+
 def get_alerts(client: Client, args: dict) -> CommandResults:
     """
     Get the Alerts from server. Relevant to API Version 2.1
     """
     context_entries = []
-    headers = ['AlertId', 'EventType','RuleName', 'EndpointName', 'SrcProcName' ,'SrcProcPath','SrcProcCommandline',
-                'SrcProcSHA1','SrcProcStartTime' ,'SrcProcStorylineId' ,'SrcParentProcName',
-                'AlertCreatedAt','AgentId','AgentUUID','RuleName']
+    headers = ['AlertId', 'EventType', 'RuleName', 'EndpointName', 'SrcProcName', 'SrcProcPath', 'SrcProcCommandline',
+               'SrcProcSHA1', 'SrcProcStartTime', 'SrcProcStorylineId', 'SrcParentProcName',
+               'AlertCreatedAt', 'AgentId', 'AgentUUID', 'RuleName']
     query_params = assign_params(
         ruleName__contains=args.get('ruleName'),
         incidentStatus=args.get('incidentStatus'),
@@ -1739,7 +1757,7 @@ def get_alerts(client: Client, args: dict) -> CommandResults:
         createdAt__lte=args.get('created_until'),
         createdAt__gte=args.get('created_from'),
         ids=argToList(args.get('alert_ids')),
-        limit=int(args.get('limit',1000)),
+        limit=int(args.get('limit', 1000)),
         siteIds=args.get('site_ids'),
     )
 
@@ -1755,43 +1773,45 @@ def get_alerts(client: Client, args: dict) -> CommandResults:
             context_entries.append({
                 'EventType': alert_info.get('eventType'),
                 'RuleName': rule_info.get('name'),
-                'SrcProcUser' : source_process_info.get('user'),
-                'SrcProcName' : source_process_info.get('name'),
-                'SrcProcPath' : source_process_info.get('filePath'),
-                'SrcProcCommandline' : source_process_info.get('commandline'),
-                'SrcProcSHA1' : source_process_info.get('fileHashSha1'),
-                'SrcProcStartTime' : source_process_info.get('pidStarttime'),
-                'SrcProcStorylineId' : source_process_info.get('storyline'),
-                'SrcParentProcName' : source_parent_process_info.get('name'),
-                'SrcParentProcPath' : source_parent_process_info.get('filePath'),
-                'SrcParentProcCommandline' : source_parent_process_info.get('commandline'),
-                'SrcParentProcStartTime' : source_parent_process_info.get('pidStarttime'),
-                'SrcParentProcUser' : source_parent_process_info.get('user'),
-                'SrcParentProcSHA1' : source_parent_process_info.get('fileHashSha1'),
-                'SrcProcSignerIdentity' : source_process_info.get('fileSignerIdentity'),
-                'SrcParentProcSignerIdentity' : source_parent_process_info.get('fileSignerIdentity'),
-                'AlertCreatedAt' : alert_info.get('createdAt'),
-                'AlertId' : alert_info.get('alertId'),
-                'AnalystVerdict' : alert_info.get('analystVerdict'),
-                'IncidentStatus' : alert_info.get('incidentStatus'),
-                'EndpointName' : agent_realtime_info.get('name'),
-                'AgentId' : agent_realtime_info.get('id'),
-                'AgentUUID' : agent_detection_info.get('uuid'),
-                'dvEventId' : alert_info.get('dvEventId'),
-                'AgentOS' : agent_realtime_info.get('os'),
-                'AgentVersion' : agent_detection_info.get('version'),
-                'SiteId' : agent_detection_info.get('siteId'),
-                'RuleId' : rule_info.get('id'),
+                'SrcProcUser': source_process_info.get('user'),
+                'SrcProcName': source_process_info.get('name'),
+                'SrcProcPath': source_process_info.get('filePath'),
+                'SrcProcCommandline': source_process_info.get('commandline'),
+                'SrcProcSHA1': source_process_info.get('fileHashSha1'),
+                'SrcProcStartTime': source_process_info.get('pidStarttime'),
+                'SrcProcStorylineId': source_process_info.get('storyline'),
+                'SrcParentProcName': source_parent_process_info.get('name'),
+                'SrcParentProcPath': source_parent_process_info.get('filePath'),
+                'SrcParentProcCommandline': source_parent_process_info.get('commandline'),
+                'SrcParentProcStartTime': source_parent_process_info.get('pidStarttime'),
+                'SrcParentProcUser': source_parent_process_info.get('user'),
+                'SrcParentProcSHA1': source_parent_process_info.get('fileHashSha1'),
+                'SrcProcSignerIdentity': source_process_info.get('fileSignerIdentity'),
+                'SrcParentProcSignerIdentity': source_parent_process_info.get('fileSignerIdentity'),
+                'AlertCreatedAt': alert_info.get('createdAt'),
+                'AlertId': alert_info.get('alertId'),
+                'AnalystVerdict': alert_info.get('analystVerdict'),
+                'IncidentStatus': alert_info.get('incidentStatus'),
+                'EndpointName': agent_realtime_info.get('name'),
+                'AgentId': agent_realtime_info.get('id'),
+                'AgentUUID': agent_detection_info.get('uuid'),
+                'dvEventId': alert_info.get('dvEventId'),
+                'AgentOS': agent_realtime_info.get('os'),
+                'AgentVersion': agent_detection_info.get('version'),
+                'SiteId': agent_detection_info.get('siteId'),
+                'RuleId': rule_info.get('id'),
             })
-    
+
     return CommandResults(
         readable_output=tableToMarkdown('Sentinel One - Getting Alert List', context_entries, removeNull=True,
-                                        metadata='Provides summary information and details for all the alerts that matched your search criteria.', 
+                                        metadata='Provides summary information and details for all the alerts'
+                                        ' that matched your search criteria.',
                                         headers=headers, headerTransform=pascalToSpace),
         outputs_prefix='SentinelOne.Alert',
         outputs_key_field='AlertId',
         outputs=context_entries,
         raw_response=alerts)
+
 
 def resolve_threat_command(client: Client, args: dict) -> CommandResults:
     """
@@ -2226,6 +2246,7 @@ def broadcast_message(client: Client, args: dict) -> CommandResults:
         outputs=context,
         raw_response=response)
 
+
 def shutdown_agents(client: Client, args: dict) -> str:
     """
     Sends a shutdown command to all agents matching the input filter
@@ -2266,7 +2287,7 @@ def uninstall_agent(client: Client, args: dict) -> CommandResults:
         meta = f'Uninstall was sent to {affected_agents} agent(s).'
     else:
         meta = 'No agents were affected.'
-    
+
     return CommandResults(
         readable_output=tableToMarkdown('Sentinel One - Uninstall Agent', context, metadata=meta, removeNull=True),
         outputs_prefix='SentinelOne.uninstall',
@@ -2745,4 +2766,3 @@ def main():
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()
-   
