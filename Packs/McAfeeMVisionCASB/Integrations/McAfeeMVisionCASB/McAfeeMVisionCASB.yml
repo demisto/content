@@ -303,13 +303,13 @@ script:
     execution: false
     name: mvision-casb-policy-dictionary-list
     outputs:
-    - contextPath: MVisionCASB.dictionaries.ID
+    - contextPath: MVisionCASB.Dictionaries.ID
       description: The ID for the dictionary.
       type: Number
-    - contextPath: MVisionCASB.dictionaries.LastModified
+    - contextPath: MVisionCASB.Dictionaries.LastModified
       description: The date the dictionary was last modified.
       type: String
-    - contextPath: MVisionCASB.dictionaries.Name
+    - contextPath: MVisionCASB.Dictionaries.Name
       description: The name of the dictionary.
       type: String
   - arguments:
@@ -344,6 +344,8 @@ script:
   script: '-'
   subtype: python3
   type: python
+defaultclassifier: McAfee MVision CASB Incident
+defaultmapperin: McAfee MVision CASB Incoming Mapper
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0

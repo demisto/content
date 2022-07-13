@@ -247,7 +247,7 @@ def anomaly_activity_list_command(client: Client, args: Dict) -> CommandResults:
 
     return CommandResults(
         outputs=result,
-        outputs_prefix='MVisionCASB.dictionaries',
+        outputs_prefix='MVisionCASB.Dictionaries',
         outputs_key_field='ID',
         readable_output=tableToMarkdown('', result),
         raw_response=result
@@ -278,7 +278,7 @@ def policy_dictionary_list_command(client: Client, args: Dict) -> CommandResults
 
     return CommandResults(
         outputs=filtered_policies,
-        outputs_prefix='MVisionCASB.dictionaries',
+        outputs_prefix='MVisionCASB.Dictionaries',
         outputs_key_field='ID',
         readable_output=readable_output,
         raw_response=filtered_policies,
