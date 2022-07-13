@@ -94,8 +94,7 @@ def prettify_incidents(client, incidents):
     for incident in incidents:
         incident['id'] = str(incident['id'])
         if isinstance(incident['description'], unicode):
-            incident['description'] = incident['description'].replace('<div>', '').replace('</div>',
-                                                                                           '')
+            incident['description'] = incident['description'].replace('<div>', '').replace('</div>', '')
         incident['discovered_date'] = normalize_timestamp(incident['discovered_date'])
         incident['created_date'] = normalize_timestamp(incident['create_date'])
         incident.pop('create_date', None)
