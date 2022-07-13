@@ -137,6 +137,9 @@ def fix_traceback_line_numbers(trace_str):
     return trace_str
 
 
+from DemistoClassApiModule import *     # type:ignore [no-redef]  # noqa:E402
+
+
 OS_LINUX = False
 OS_MAC = False
 OS_WINDOWS = False
@@ -1581,7 +1584,7 @@ class IntegrationLogger(object):
         if self.messages:
             text = 'Full Integration Log:\n' + '\n'.join(self.messages)
             if verbose:
-                demisto.log(text)
+                demisto.log(text)  # pylint: disable=E9012
             if not self.debug_logging:  # we don't print out if in debug_logging as already all message where printed
                 demisto.info(text)
             self.messages = []
@@ -2855,7 +2858,7 @@ class Common(object):
 
     class CustomIndicator(Indicator):
 
-        def __init__(self, indicator_type, value, dbot_score, data, context_prefix):
+        def __init__(self, indicator_type, value, dbot_score, data, context_prefix, relationships=None):
             """
             :type indicator_type: ``Str``
             :param indicator_type: The name of the indicator type.
@@ -2872,6 +2875,9 @@ class Common(object):
             :type context_prefix: ``Str``
             :param context_prefix: Will be used as the context path prefix.
 
+            :type relationships: ``list of EntityRelationship``
+            :param relationships: List of relationships of the indicator.
+
             :return: None
             :rtype: ``None``
             """
@@ -2886,6 +2892,7 @@ class Common(object):
                 format(context_prefix=context_prefix)
 
             self.value = value
+            self.relationships = relationships
 
             if not isinstance(dbot_score, Common.DBotScore):
                 raise ValueError('dbot_score must be of type DBotScore')
@@ -2907,11 +2914,16 @@ class Common(object):
 
             ret_value = {
                 self.CONTEXT_PATH: custom_context
-            }
+            }  # type: Dict[str, Any]
 
             if self.dbot_score:
                 ret_value.update(self.dbot_score.to_context())
             ret_value[Common.DBotScore.get_context_path()]['Type'] = self.indicator_type
+
+            if self.relationships:
+                relationships_context = [relationship.to_context() for relationship in self.relationships if
+                                         relationship.to_context()]
+                ret_value['Relationships'] = relationships_context
 
             return ret_value
 
@@ -7848,7 +7860,7 @@ def is_demisto_version_ge(version, build_number=''):
         raise
     except ValueError:
         # dev editions are not comparable
-        demisto.log(
+        demisto.log(  # pylint: disable=E9012
             'is_demisto_version_ge: ValueError. \n '
             'input: server version: {} build number: {}\n'
             'server version: {}'.format(version, build_number, server_version)
@@ -10072,7 +10084,7 @@ def get_pack_version(pack_name=''):
 
 
 def create_indicator_result_with_dbotscore_unknown(indicator, indicator_type, reliability=None,
-                                                   context_prefix=None, address_type=None):
+                                                   context_prefix=None, address_type=None, relationships=None):
     '''
     Used for cases where the api response to an indicator is not found,
     returns CommandResults with readable_output generic in this case, and indicator with DBotScore unknown
@@ -10091,6 +10103,9 @@ def create_indicator_result_with_dbotscore_unknown(indicator, indicator_type, re
 
     :type address_type: ``str``
     :param address_type: Use only in case that the indicator is Cryptocurrency
+
+    :type relationships: ``list of EntityRelationship``
+    :param relationships: List of relationships of the indicator.
 
     :rtype: ``CommandResults``
     :return: CommandResults
@@ -10157,7 +10172,9 @@ def create_indicator_result_with_dbotscore_unknown(indicator, indicator_type, re
                                             value=indicator,
                                             dbot_score=dbot_score,
                                             data={},
-                                            context_prefix=context_prefix)
+                                            context_prefix=context_prefix,
+                                            relationships=relationships,
+                                            )
 
     indicator_type = indicator_type.upper()
     readable_output = tableToMarkdown(name='{}:'.format(integration_name),
@@ -10642,12 +10659,12 @@ def send_events_to_xsiam(events, vendor, product, data_format=None):
 
     header_msg = 'Error sending new events into XSIAM. \n'
 
-    def events_error_handler(response):
+    def events_error_handler(res):
         """
         Internal function to parse the XSIAM API errors
         """
         try:
-            response = response.json()
+            response = res.json()
             error = res.reason
             if response.get('error').lower() == 'false':
                 xsiam_server_err_msg = response.get('error')

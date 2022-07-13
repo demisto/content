@@ -1720,7 +1720,6 @@ def main() -> None:
 
     # Log exceptions
     except Exception as e:
-        demisto.error(traceback.format_exc())
         return_error(f'Error: {str(e)}')
 
 

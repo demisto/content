@@ -1,7 +1,9 @@
 import pytest
+from unittest.mock import mock_open
 
 from Tests.configure_and_test_integration_instances import XSOARBuild, create_build_object, \
-    options_handler, XSIAMBuild
+    options_handler, XSIAMBuild, get_turned_non_hidden_packs, update_integration_lists, \
+    get_packs_with_higher_min_version
 
 XSIAM_SERVERS = {
     "qa2-test-111111": {
@@ -96,3 +98,91 @@ def test_create_build(mocker, expected_class, build_object_type):
     """
     build = create_build_object_with_mock(mocker, build_object_type)
     assert isinstance(build, expected_class)
+
+
+NON_HIDDEN_PACKS = [
+    ("""
+   "tags": [],
++  "hidden": false,
+   "marketplaces": [
+     "xsoar",
+     "marketplacev2""", True),
+    ("""
+   "tags": [],
++  "hidden": true,
+   "marketplaces": [
+     "xsoar",
+     "marketplacev2""", False),
+    ("""
+   "tags": [],
+   "marketplaces": [
+     "xsoar",
+     "marketplacev2""", False),
+    ("""
+    "tags": [],
+    +  "hidden": true,
+    -  "hidden": false,
+    "marketplaces": [
+      "xsoar",
+      "marketplacev2""", False)
+]
+
+
+@pytest.mark.parametrize('diff, the_expected_result', NON_HIDDEN_PACKS)
+def test_get_turned_non_hidden_packs(mocker, diff, the_expected_result):
+    """
+    Given:
+        - A pack_metadata.json content returned from the git diff.
+    When:
+        - Running 'get_turned_non_hidden_packs' method.
+    Then:
+        - Assert the expected result is returned.
+    """
+    build = create_build_object_with_mock(mocker, 'XSOAR')
+    mocker.patch('Tests.configure_and_test_integration_instances.run_git_diff', return_value=diff)
+    turned_non_hidden = get_turned_non_hidden_packs({'test'}, build)
+    assert ('test' in turned_non_hidden) is the_expected_result
+
+
+UPDATE_INTEGRATION_LISTS = [
+    (['test1'], ['test2'], ['test2'], lambda new, modified: 'test2' in new and not modified),
+    (['test1'], ['test1'], ['test2'], lambda new, modified: 'test2' not in new and 'test2' in modified),
+    (['test1'], [], ['test2'], lambda new, modified: 'test2' not in new and 'test2' in modified),
+    (['test1'], ['test1'], ['test1'], lambda new, modified: len(new) == 1 and not modified)
+]
+
+
+@pytest.mark.parametrize(
+    'new_integrations_names, turned_non_hidden_packs_id, modified_integrations_names, the_expected_result',
+    UPDATE_INTEGRATION_LISTS)
+def test_update_integration_lists(mocker, new_integrations_names, turned_non_hidden_packs_id,
+                                  modified_integrations_names, the_expected_result):
+    """
+    Given:
+        - New integrations names, modifeid integrations names and turned non-hidden packs ids.
+    When:
+        - Running 'update_integration_lists' method.
+    Then:
+        - Assert the turned non-hidden integrations removed from the modified integrations list and
+         added to the new integration list.
+    """
+    mocker.patch('Tests.configure_and_test_integration_instances.packs_names_to_integrations_names',
+                 return_value=turned_non_hidden_packs_id)
+    returned_results = update_integration_lists(new_integrations_names, set(), modified_integrations_names)
+    assert the_expected_result(returned_results[0], returned_results[1])
+
+
+def test_get_packs_with_higher_min_version(mocker):
+    """
+    Given:
+        - Pack names to install.
+    When:
+        - Running 'get_packs_with_higher_min_version' method.
+    Then:
+        - Assert the returned packs are with higher min version than the server version.
+    """
+
+    mocker.patch("builtins.open", mock_open(read_data='{"serverMinVersion": "6.6.0"}'))
+
+    packs_with_higher_min_version = get_packs_with_higher_min_version({'TestPack'}, 'content', '6.5.0')
+    assert packs_with_higher_min_version == {'TestPack'}

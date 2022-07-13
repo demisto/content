@@ -292,3 +292,6 @@ ignore=IF100
 ignore=IF100
 [known_words]
 SysAid
+
+[file:classifier-Mail-listener.json]
+ignore=BA101

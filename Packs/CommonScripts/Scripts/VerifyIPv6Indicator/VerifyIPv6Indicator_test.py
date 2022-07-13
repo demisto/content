@@ -30,12 +30,12 @@ def test_main(mocker):
     When:
         - Running the script
     Then:
-        - Ensure the MAC address is caught as invalid IPv6 and returns empty string
+        - Ensure the MAC address is caught as invalid IPv6 and returns array with empty string
     """
     mocker.patch.object(demisto, 'args', return_value={'input': '00:16:45:00:46:91'})
     mocker.patch.object(demisto, 'results')
     main()
-    demisto.results.assert_called_with('')
+    demisto.results.assert_called_with([''])
 
 
 @pytest.mark.skip(reason="Flaky test, issue #41552")

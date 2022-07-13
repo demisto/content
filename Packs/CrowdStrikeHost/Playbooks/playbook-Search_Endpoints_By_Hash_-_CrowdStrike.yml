@@ -3,7 +3,9 @@ fromversion: 5.0.0
 system: true
 version: -1
 name: Search Endpoints By Hash - CrowdStrike
-description: Hunt for endpoint activity involving hash and domain IOCs, using Crowdstrike Falcon Host
+deprecated: true
+hidden: true
+description: Deprecated. Use CrowdStrike Falcon instead.
 starttaskid: "0"
 tasks:
   "0":
@@ -502,4 +504,4 @@ outputs:
   description: The endpoint
   type: unknown
 tests:
-- search_endpoints_by_hash_-_crowdstrike_-_test
+- No tests (auto formatted)

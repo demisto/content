@@ -1,10 +1,11 @@
 id: Expanse Behavior Severity Update
 version: -1
 name: Expanse Behavior Severity Update
-description: 'This playbook updates the severity of an Expanse Behavior incident
-  based on the presence of other active Exposures for the IP address. '
+description: Deprecated. Use Xpanse Incident Handling - Generic instead.
 starttaskid: "0"
 fromversion: 5.0.0
+deprecated: true
+hidden: true
 tasks:
   "0":
     id: "0"

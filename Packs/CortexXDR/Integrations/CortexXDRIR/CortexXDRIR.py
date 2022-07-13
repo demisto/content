@@ -4,6 +4,7 @@ import string
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
+from itertools import zip_longest
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -348,6 +349,39 @@ class Client(CoreClient):
             modified_incidents_context[incident_id] = incident.get('modification_time')
 
         set_integration_context({'modified_incidents': modified_incidents_context})
+
+    def get_contributing_event_by_alert_id(self, alert_id: int) -> dict:
+        request_data = {
+            "request_data": {
+                "alert_id": alert_id,
+            }
+        }
+
+        reply = self._http_request(
+            method='POST',
+            url_suffix='/alerts/get_correlation_alert_data/',
+            json_data=request_data,
+            timeout=self.timeout,
+        )
+
+        return reply.get('reply', {})
+
+    def replace_featured_field(self, field_type: str, fields: list[dict]) -> dict:
+        request_data = {
+            'request_data': {
+                'fields': fields
+            }
+        }
+
+        reply = self._http_request(
+            method='POST',
+            url_suffix=f'/featured_fields/replace_{field_type}',
+            json_data=request_data,
+            timeout=self.timeout,
+            raise_on_status=True
+        )
+
+        return reply.get('reply')
 
 
 def get_incidents_command(client, args):
@@ -958,6 +992,81 @@ def get_endpoints_by_status_command(client: Client, args: Dict) -> CommandResult
         raw_response=raw_res)
 
 
+def file_details_results(client: Client, args: Dict, add_to_context: bool) -> None:
+    return_entry, file_results = retrieve_file_details_command(client, args, add_to_context)
+    demisto.results(return_entry)
+    if file_results:
+        demisto.results(file_results)
+
+
+def get_contributing_event_command(client: Client, args: Dict) -> CommandResults:
+
+    if alert_ids := argToList(args.get('alert_ids')):
+        alerts = []
+
+        for alert_id in alert_ids:
+            if alert := client.get_contributing_event_by_alert_id(int(alert_id)):
+                page_number = max(int(args.get('page_number', 1)), 1) - 1  # Min & default zero (First page)
+                page_size = max(int(args.get('page_size', 50)), 0)  # Min zero & default 50
+                offset = page_number * page_size
+                limit = max(int(args.get('limit', 0)), 0) or offset + page_size
+
+                alert_with_events = {
+                    'alertID': str(alert_id),
+                    'events': alert.get('events', [])[offset:limit],
+                }
+                alerts.append(alert_with_events)
+
+        readable_output = tableToMarkdown(
+            'Contributing events', alerts, headerTransform=pascalToSpace, removeNull=True, is_auto_json_transform=True
+        )
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.ContributingEvent',
+            outputs_key_field='alertID',
+            outputs=alerts,
+            raw_response=alerts
+        )
+
+    else:
+        return CommandResults(readable_output='The alert_ids argument cannot be empty.')
+
+
+def replace_featured_field_command(client: Client, args: Dict) -> CommandResults:
+    field_type = args.get('field_type', '')
+    values = argToList(args.get('values'))
+    len_values = len(values)
+    comments = argToList(args.get('comments'))[:len_values]
+    ad_type = argToList(args.get('ad_type', 'group'))[:len_values]
+
+    if field_type == 'ad_groups':
+        fields = [
+            {
+                'value': field[0], 'comment': field[1], 'type': field[2]
+            } for field in zip_longest(values, comments, ad_type, fillvalue='')
+        ]
+    else:
+        fields = [
+            {'value': field[0], 'comment': field[1]} for field in zip_longest(values, comments, fillvalue='')
+        ]
+
+    client.replace_featured_field(field_type, fields)
+
+    result = {'fieldType': field_type, 'fields': fields}
+
+    readable_output = tableToMarkdown(
+        f'Replaced featured: {result.get("fieldType")}', result.get('fields'), headerTransform=pascalToSpace
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f'{INTEGRATION_CONTEXT_BRAND}.FeaturedField',
+        outputs_key_field='fieldType',
+        outputs=result,
+        raw_response=result
+    )
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -993,6 +1102,9 @@ def main():  # pragma: no cover
     auth_key = "%s%s%s" % (api_key, nonce, timestamp)
     auth_key = auth_key.encode("utf-8")
     api_key_hash = hashlib.sha256(auth_key).hexdigest()
+
+    if argToBoolean(params.get("prevent_only", False)):
+        api_key_hash = api_key
 
     headers = {
         "x-xdr-timestamp": timestamp,
@@ -1185,22 +1297,31 @@ def main():  # pragma: no cover
             return_results(retrieve_files_command(client, args))
 
         elif command == 'xdr-file-retrieve':
-            return_results(run_polling_command(client=client,
-                                               args=args,
-                                               cmd="xdr-file-retrieve",
-                                               command_function=retrieve_files_command,
-                                               command_decision_field="action_id",
-                                               results_function=action_status_get_command,
-                                               polling_field="status",
-                                               polling_value=["PENDING",
-                                                              "IN_PROGRESS",
-                                                              "PENDING_ABORT"]))
+            polling = run_polling_command(client=client,
+                                          args=args,
+                                          cmd="xdr-file-retrieve",
+                                          command_function=retrieve_files_command,
+                                          command_decision_field="action_id",
+                                          results_function=action_status_get_command,
+                                          polling_field="status",
+                                          polling_value=["PENDING",
+                                                         "IN_PROGRESS",
+                                                         "PENDING_ABORT"])
+            raw = polling.raw_response
+            # raw is the response returned by the get-action-status
+            if polling.scheduled_command:
+                return_results(polling)
+                return
+            status = raw[0].get('status')  # type: ignore
+            if status == 'COMPLETED_SUCCESSFULLY':
+                file_details_results(client, args, True)
+            else:  # status is not in polling value and operation was not COMPLETED_SUCCESSFULLY
+                polling.outputs_prefix = f'{args.get("integration_context_brand", "CoreApiModule")}' \
+                                         f'.RetrievedFiles(val.action_id == obj.action_id)'
+                return_results(polling)
 
         elif command == 'xdr-retrieve-file-details':
-            return_entry, file_results = retrieve_file_details_command(client, args)
-            demisto.results(return_entry)
-            if file_results:
-                demisto.results(file_results)
+            file_details_results(client, args, False)
 
         elif command == 'xdr-get-scripts':
             return_outputs(*get_scripts_command(client, args))
@@ -1327,6 +1448,12 @@ def main():  # pragma: no cover
 
         elif command == 'xdr-remove-allowlist-files':
             return_results(remove_allowlist_files_command(client, args))
+
+        elif command == 'xdr-get-contributing-event':
+            return_results(get_contributing_event_command(client, args))
+
+        elif command == 'xdr-replace-featured-field':
+            return_results(replace_featured_field_command(client, args))
 
     except Exception as err:
         demisto.error(traceback.format_exc())
