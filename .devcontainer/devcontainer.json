@@ -66,5 +66,5 @@
 		"powershell": "latest"
 	},
 	"onCreateCommand": "touch ${containerWorkspaceFolder}/CommonServerUserPython.py && echo 'export PYTHONPATH=$(printf '%s: ' ${containerWorkspaceFolder}/Packs/ApiModules/Scripts/*):$PYTHONPATH' >> ~/.zshrc && echo 'export MYPYPATH=$(printf '%s: ' ${containerWorkspaceFolder}/Packs/ApiModules/Scripts/*):$MYPYPATH' >> ~/.zshrc",
-	"postCreateCommand": "poetry install" // dependencies installed in the container might be outdated, so we need to run poetry install again.
+	"postCreateCommand": "poetry install"
 }
