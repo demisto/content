@@ -3466,7 +3466,7 @@ def qradar_search_retrieve_events_command(client: Client,
         )
 
         return CommandResults(scheduled_command=scheduled_command,
-                              readable_output=f'Search ID: {search_id}',
+                              readable_output=search_command_results.readable_output,
                               outputs_prefix='QRadar.SearchEvents',
                               outputs_key_field='ID',
                               outputs=search_command_results.outputs
