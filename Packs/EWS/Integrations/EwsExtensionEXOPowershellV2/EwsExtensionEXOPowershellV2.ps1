@@ -295,7 +295,7 @@ class ExchangeOnlinePowershellV2Client
             [int]$limit
     )
     {
-        $cmd_params = @{ }
+        $cmd_params = @{ Properties="Guid" }
         if ($identity)
         {
             $cmd_params.Identity = $identity
