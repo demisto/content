@@ -3327,7 +3327,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any],
             "Type": EntryType.NOTE,
             "Contents": {
                 "dbotIncidentClose": True,
-                "closeReason": "Closed from BMC Remedy ITSM.",
+                "closeReason": "Closed from BMC Helix ITSM.",
             },
             "ContentsFormat": EntryFormat.JSON,
         })
