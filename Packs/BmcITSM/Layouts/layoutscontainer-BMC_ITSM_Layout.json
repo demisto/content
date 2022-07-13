@@ -1,12 +1,5 @@
 {
-    "cacheVersn": 0,
-    "close": null,
-    "definitionId": "",
-    "description": "",
-    "detached": false,
-    "details": null,
     "detailsV2": {
-        "TypeName": "",
         "tabs": [
             {
                 "hidden": true,
@@ -636,24 +629,11 @@
             }
         ]
     },
-    "edit": null,
-    "fromServerVersion": "",
     "group": "incident",
-    "id": "e9a69a76-dd78-452a-88a2-4c08261a14b7",
-    "indicatorsDetails": null,
-    "indicatorsQuickView": null,
-    "itemVersion": "",
-    "locked": false,
-    "mobile": null,
+    "id": "BMC ITSM Layout",
     "name": "BMC ITSM Layout",
-    "packID": "",
-    "packName": "",
-    "propagationLabels": [
-        "all"
-    ],
-    "quickView": null,
-    "quickViewV2": null,
     "system": false,
-    "toServerVersion": "",
-    "version": -1
+    "version": -1,
+    "fromVersion": "6.2.0",
+    "description": ""
 }
