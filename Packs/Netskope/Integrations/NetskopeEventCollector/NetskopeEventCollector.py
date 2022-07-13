@@ -132,54 +132,76 @@ class Client(BaseClient):
 
 ''' HELPER FUNCTIONS '''
 
-# TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
+
+def arg_to_seconds_timestamp(arg: Optional[str]) -> Optional[int]:
+    """
+    Converts an XSOAR date string argument to a timestamp in seconds.
+
+    Args:
+        arg (Optional[str]): The argument to convert.
+
+    Returns:
+        Optional[int]: A timestamp if arg can be converted,
+        or None if arg is None.
+    """
+
+    if arg is None:
+        return None
+
+    return date_to_seconds_timestamp(arg_to_datetime(arg))
+
+
+def date_to_seconds_timestamp(date_str_or_dt: Union[str, datetime]) -> int:
+    """
+    Converts date string or datetime object to a timestamp in seconds.
+
+    Args:
+        date_str_or_dt (Union[str, datetime]): The datestring or datetime.
+
+    Returns:
+        int: The timestamp in seconds.
+    """
+
+    return date_to_timestamp(date_str_or_dt) // 1000
+
 
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client) -> str:
-    """Tests API connectivity and authentication'
+def test_module(client: Client, api_version: str) -> str:
+    if api_version == 'v1':
+        response = client.v1_get_alerts_request(limit=1, timeperiod=2592000)  # timeperiod - Last 30 days
+    else:
+        response = client.v2_get_alert_events_request(timeperiod=2592000, limit=1)
 
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
-
-    :type client: ``Client``
-    :param Client: client to use
-
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
-    """
-
-    message: str = ''
-    try:
-        # TODO: ADD HERE some code to test connectivity and authentication to your service.
-        # This  should validate all the inputs given in the integration configuration panel,
-        # either manually or by using an API that uses them.
-        message = 'ok'
-    except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
-            message = 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
-    return message
+    if response.get('status') == 'success':
+        return 'ok'
+    else:
+        return f'Test failed - {response.get("errorCode")}, {response.get("errors")}'
 
 
-# TODO: REMOVE the following dummy command function
-def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def v1_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
-    dummy = args.get('dummy', None)
-    if not dummy:
-        raise ValueError('dummy not specified')
+    limit = arg_to_number(args.get('limit', 50))
+    timeperiod = arg_to_seconds_timestamp(args.get('timeperiod', 259200))
 
-    # Call the Client function and get the raw response
-    result = client.baseintegration_dummy(dummy)
+    result = client.v1_get_alerts_request(timeperiod, limit)
+    outputs = result.get('data', [])
 
     return CommandResults(
-        outputs_prefix='BaseIntegration',
-        outputs_key_field='',
-        outputs=result,
+        outputs_prefix='Netskope.Alert',
+        outputs_key_field='_id',
+        readable_output=f'Alerts List: {outputs}',
+        outputs=outputs,
+        raw_response=result
     )
+
+
+def v1_get_events_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    limit = arg_to_number(args.get('limit', 50))
+    timeperiod = arg_to_seconds_timestamp(args.get('timeperiod', 259200))
+    result = client.v1_get_events_request(timeperiod, limit)
+    outputs = result.get('data', [])
 
 
 ''' MAIN FUNCTION '''
@@ -203,13 +225,13 @@ def main() -> None:
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client)
+            result = test_module(client, api_version)
             return_results(result)
 
-        # TODO: REMOVE the following dummy command case:
-        elif demisto.command() == 'baseintegration-dummy':
-            return_results(baseintegration_dummy_command(client, demisto.args()))
-        # TODO: ADD command cases for the commands you will implement
+        elif demisto.command() == 'netskope-get-alerts':
+            return_results(v1_get_alerts_command(client, demisto.args()))
+        elif demisto.command() == 'netskope-get-events':
+            return_results(v1_get_events_command(client, demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:
