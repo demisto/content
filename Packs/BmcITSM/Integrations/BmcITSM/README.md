@@ -266,6 +266,7 @@ List BMC Helix ITSM tickets.The records are retrieved according to a constraint 
 | BmcITSM.Ticket.Type | String | Ticket type. | 
 | BmcITSM.Ticket.TargetDate | Date | Ticket target date in UTC. | 
 | BmcITSM.Ticket.Status | String | Ticket status. | 
+| BmcITSM.Ticket.StatusReason | String | Ticket status reason. | 
 | BmcITSM.Ticket.Submitter | String | Ticket submitter. | 
 | BmcITSM.Ticket.Priority | String | Ticket priority. | 
 | BmcITSM.Ticket.RiskLevel | String | Ticket risk level. | 
@@ -318,6 +319,7 @@ List BMC Helix ITSM tickets.The records are retrieved according to a constraint 
                     "SiteGroup": "United States"
                 },
                 "Status": "Planning",
+                "StatusReason": null,
                 "Status-History": {
                     "Draft": {
                         "timestamp": "2022-02-23T13:54:48.000+0000",
