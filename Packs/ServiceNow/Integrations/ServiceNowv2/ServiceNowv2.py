@@ -2022,7 +2022,8 @@ def get_mirroring():
         'mirror_direction': MIRROR_DIRECTION.get(params.get('mirror_direction')),
         'mirror_tags': [
             params.get('comment_tag'),
-            params.get('file_tag'),
+            params.get('file_tag'),  # file tag to service now
+            params.get('file_tag_from_service_now'),
             params.get('work_notes_tag')
         ],
         'mirror_instance': demisto.integrationInstance()
@@ -2294,6 +2295,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
     if file_entries:
         for file in file_entries:
             if '_mirrored_from_xsoar' not in file.get('File'):
+                file['Tags'] = [params.get('file_tag_from_service_now')]
                 entries.append(file)
 
     sys_param_limit = args.get('limit', client.sys_param_limit)
@@ -2743,6 +2745,16 @@ def main():
     mirror_limit = params.get('mirror_limit', '100') or '100'
     look_back = arg_to_number(params.get('look_back')) or 0
     add_custom_fields(params)
+
+    file_tag_from_service_now, file_tag_to_service_now = (
+        params.get('file_tag_from_service_now'), params.get('file_tag')
+    )
+
+    if file_tag_from_service_now == file_tag_to_service_now:
+        raise Exception(
+            f'File Entry Tag To ServiceNow and File Entry Tag '
+            f'From ServiceNow cannot be the same name [{file_tag_from_service_now}].'
+        )
 
     raise_exception = False
     try:

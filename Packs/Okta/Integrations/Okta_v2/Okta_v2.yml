@@ -398,6 +398,12 @@ script:
     deprecated: false
     execution: false
   - arguments:
+    - description: The maximum number of results to return.
+      name: limit
+      default: false
+      isArray: false
+      required: false
+      secret: false
     - auto: PREDEFINED
       defaultValue: 'false'
       description: Whether to return extended user information. Can be "true" or "false". The default is "false".

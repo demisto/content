@@ -590,7 +590,7 @@ class Client(BaseClient):
     def list_zones(self, limit):
         uri = 'zones'
         if limit:
-            query_params = {'limit': limit}
+            query_params = {'limit': encode_string_results(limit)}
             return self._http_request(
                 method='GET',
                 url_suffix=uri,
