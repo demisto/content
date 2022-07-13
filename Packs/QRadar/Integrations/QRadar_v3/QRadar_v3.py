@@ -3471,7 +3471,7 @@ def qradar_search_retrieve_events_command(client: Client,
                               outputs_key_field='ID',
                               outputs=search_command_results.outputs
                               )
-    events, status = poll_offense_events(client, search_id, should_get_events=True, offense_id=None)
+    events, status = poll_offense_events(client, search_id, should_get_events=True, offense_id=args.get('offense_id', ''))
     if status == QueryStatus.ERROR.value:
         raise DemistoException('Polling for events failed')
     if status == QueryStatus.SUCCESS.value:
