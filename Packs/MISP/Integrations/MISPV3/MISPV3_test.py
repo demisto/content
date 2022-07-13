@@ -695,9 +695,7 @@ def test_fail_to_add_email_object(mocker):
                         })
     mocker.patch.object(pymisp.api.PyMISP, "_prepare_request", return_value=get_response(404, mocker, "response_mock_case_1"))
     pymisp.ExpandedPyMISP.global_pythonify = True
-    try:
+    with pytest.raises(DemistoException) as exception_info:
         add_email_object(demisto_args)
-    except DemistoException:
-        assert True
-    else:
-        assert False
+    assert "'errors': (404" in str(exception_info.value)
+    assert "Error in `!misp-add-email-object` command" in str(exception_info.value)
