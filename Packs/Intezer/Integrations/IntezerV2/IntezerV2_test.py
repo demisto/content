@@ -2,18 +2,20 @@ import tempfile
 import uuid
 from http import HTTPStatus
 
+from intezer_sdk import consts
+from intezer_sdk.api import IntezerApi
+
 from CommonServerPython import outputPaths
 from IntezerV2 import analyze_by_hash_command
-from IntezerV2 import analyze_url_command
 from IntezerV2 import analyze_by_uploaded_file_command
+from IntezerV2 import analyze_url_command
 from IntezerV2 import check_analysis_status_and_get_results_command
 from IntezerV2 import get_analysis_code_reuse_command
 from IntezerV2 import get_analysis_metadata_command
 from IntezerV2 import get_analysis_sub_analyses_command
 from IntezerV2 import get_family_info_command
 from IntezerV2 import get_latest_result_command
-from intezer_sdk import consts
-from intezer_sdk.api import IntezerApi
+from IntezerV2 import get_analysis_iocs_command
 
 fake_api_key = str(uuid.uuid4())
 intezer_api = IntezerApi(consts.API_VERSION, fake_api_key, consts.BASE_URL)
@@ -229,7 +231,8 @@ def test_check_analysis_status_and_get_results_url_command_single_success(reques
                 'analysis_id': analysis_id,
                 'summary': {
                     'title': 'malicious',
-                    'verdict_name': 'malicious'
+                    'verdict_name': 'malicious',
+                    'verdict_type': 'malicious'
                 },
                 'indicators': [
                     {
@@ -305,6 +308,7 @@ def test_check_analysis_status_and_get_results_url_command_single_success(reques
 
     first_result = command_results_list[0]
     assert first_result.outputs[outputPaths['dbotscore']]['Indicator'] == url
+    assert first_result.outputs[outputPaths['dbotscore']]['Score'] == 3
 
 
 def test_check_analysis_status_and_get_results_command_single_success_endpoint(requests_mock):
@@ -672,6 +676,124 @@ def test_get_analysis_metadata_command_analysis_doesnt_exist(requests_mock):
 
 # endregion
 
+# region get_analysis_iocs_command
+
+def test_get_analysis_iocs_command_success(requests_mock):
+    # Arrange
+    analysis_id = 'analysis_id'
+    _setup_access_token(requests_mock)
+    requests_mock.get(
+        f'{full_url}/analyses/{analysis_id}',
+        json={
+            'result': {
+                'analysis_id': analysis_id,
+                'sub_verdict': 'trusted',
+                'sha256': 'sha256',
+                'verdict': 'trusted',
+                'analysis_url': 'bla'
+            },
+            'status': 'succeeded'
+        }
+    )
+    requests_mock.get(
+        f'{full_url}/analyses/{analysis_id}/iocs',
+        json={
+            'result': {
+                'files': [
+                    {
+                        'path': 'test_file_1.csv',
+                        'sha256': 'eeb1199f7db006e4d20086171cc312cf5bdf53682cc37997223ad0c15a27dc88',
+                        'verdict': 'malicious',
+                        'family': 'Turla',
+                        'type': 'Main file',
+                    }
+                ],
+                'network': [
+                    {
+                        'ioc': '1.1.1.1',
+                        'source': [
+                            'Network communication'
+                        ],
+                        'type': 'ip'
+                    },
+                    {
+                        'ioc': 'raw.exampledomain.com',
+                        'source': [
+                            'Network communication'
+                        ],
+                        'type': 'domain'
+                    }
+                ]
+            }
+        }
+    )
+
+    args = dict(analysis_id=analysis_id)
+
+    # Act
+    command_results = get_analysis_iocs_command(intezer_api, args)
+
+    # Assert
+    outputs = command_results.outputs['Intezer.Analysis(obj.ID == val.ID)']
+    assert outputs.get('ID') == analysis_id
+    assert 'IOCs' in outputs
+
+
+def test_get_analysis_iocs_command_no_iocs(requests_mock):
+    # Arrange
+    analysis_id = 'analysis_id'
+    _setup_access_token(requests_mock)
+    requests_mock.get(
+        f'{full_url}/analyses/{analysis_id}',
+        json={
+            'result': {
+                'analysis_id': analysis_id,
+                'sub_verdict': 'trusted',
+                'sha256': 'sha256',
+                'verdict': 'trusted',
+                'analysis_url': 'bla'
+            },
+            'status': 'succeeded'
+        }
+    )
+    requests_mock.get(
+        f'{full_url}/analyses/{analysis_id}/iocs',
+        status_code=HTTPStatus.NOT_FOUND
+    )
+
+    args = dict(analysis_id=analysis_id)
+
+    # Act
+    command_results = get_analysis_iocs_command(intezer_api, args)
+
+    # Assert
+    outputs = command_results.outputs['Intezer.Analysis(obj.ID == val.ID)']
+    assert outputs.get('ID') == analysis_id
+    assert command_results.readable_output == 'No IOCs found'
+    assert 'IOCs' in outputs
+    assert outputs['IOCs'] is None
+
+
+def test_get_analysis_iocs_command_analysis_doesnt_exist(requests_mock):
+    # Arrange
+    analysis_id = 'analysis_id'
+    _setup_access_token(requests_mock)
+    requests_mock.get(
+        f'{full_url}/analyses/{analysis_id}',
+        status_code=HTTPStatus.NOT_FOUND
+    )
+
+    args = dict(analysis_id=analysis_id)
+
+    # Act
+    command_results = get_analysis_iocs_command(intezer_api, args)
+
+    # Assert
+    assert command_results.readable_output == f'The Analysis {analysis_id} was not found on Intezer Analyze'
+
+
+# endregion
+
 # region get_family_info_command
 
 def test_get_family_info_command_success(requests_mock):
@@ -719,7 +841,6 @@ def test_get_family_info_command_analysis_doesnt_exist(requests_mock):
 
 
 # endregion
-
 
 # region analyze_url_command
 def test_analyze_url_command_success(requests_mock):

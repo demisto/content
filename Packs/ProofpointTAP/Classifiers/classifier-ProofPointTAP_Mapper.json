@@ -532,6 +532,15 @@
                 "Proofpoint TAP Xmailer": {
                     "complex": null,
                     "simple": "xmailer"
+                },
+                "Proofpoint TAP Long Subject": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "subject",
+                        "transformers": []
+                    },
+                    "simple": ""
                 }
             }
         },
@@ -799,6 +808,15 @@
                 "Proofpoint TAP Xmailer": {
                     "complex": null,
                     "simple": "xmailer"
+                },
+                "Proofpoint TAP Long Subject": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "subject",
+                        "transformers": []
+                    },
+                    "simple": ""
                 }
             }
         }

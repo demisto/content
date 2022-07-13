@@ -6,6 +6,10 @@ rules: ''
 schema: |-
   {
     "gitlab_gitlab_raw": {
+      "id": {
+        "type": "string",
+        "is_array": false
+      },
       "author_id": {
         "type": "string",
         "is_array": false

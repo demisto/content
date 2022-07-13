@@ -3,6 +3,13 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "IndicatorFormatterFilterTest"
+        },
+        {
+            "integrations": "FeedURLhaus",
+            "playbookID": "playbook-urlhaus-feed_Test"
+        },
+        {
             "integrations": "RSANetWitnessv115",
             "playbookID": "RSANetWitnessv115-Test"
         },
@@ -3618,7 +3625,7 @@
             "integrations": "QualysV2",
             "playbookID": "QualysVulnerabilityManagement-Test",
             "fromversion": "5.5.0",
-            "timeout": 4000
+            "timeout": 3500
         },
         {
             "integrations": "ThreatExchange v2",
@@ -4396,6 +4403,7 @@
         {
             "playbookID": "CrowdStrike_Falcon_X_-Test-Detonate_File",
             "fromversion": "6.1.0",
+            "memory_threshold": 95,
             "integrations": [
                 "CrowdStrike Falcon X"
             ],
@@ -4404,7 +4412,7 @@
         {
             "playbookID": "CrowdStrike_FalconX_Test",
             "fromversion": "6.1.0",
-            "memory_threshold": 90,
+            "memory_threshold": 91,
             "integrations": [
                 "CrowdStrike Falcon X"
             ]
@@ -4448,7 +4456,8 @@
             "integrations": [
                 "EWS Mail Sender",
                 "Demisto REST API",
-                "CreateIncidents"
+                "CreateIncidents",
+                "Rasterize"
             ],
             "instance_names": [
                 "ews_mail_sender_srtest02",
@@ -5130,6 +5139,11 @@
             "fromversion": "6.1.0"
         },
         {
+            "integrations": "CloudflareWAF",
+            "playbookID": "playbook-TestCloudflareWAFPlaybook_Test",
+            "fromversion": "6.2.0"
+        },
+        {
             "scripts": "CheckIfSubdomain",
             "playbookID": "CheckIfSubdomain_Test",
             "fromversion": "6.0.0"
@@ -5147,14 +5161,38 @@
             "fromversion": "6.1.0"
         },
         {
+            "integrations": "Alibaba Action Trail Event Collector",
+            "playbookID": "Alibaba Event Collector-test",
+            "fromversion": "6.8.0"
+        },
+        {
+            "integrations": "Salesforce Event Collector",
+            "playbookID": "Salesforce Event Collector-test",
+            "fromversion": "6.8.0"
+        },
+        {
             "integrations": [
                 "Github Event Collector"
             ],
             "playbookID": "Github Event Collector-test",
-            "fromversion": "6.6.0"
+            "fromversion": "6.8.0"
+        },
+        {
+            "integrations": [
+                "Microsoft Defender for Cloud Apps Event Collector"
+            ],
+            "playbookID": "Microsoft Defender for Cloud Apps Event Collector-test",
+            "fromversion": "6.8.0"
+        },
+        {
+            "integrations": "Arkime",
+            "playbookID": "Arkime Test playbook",
+            "fromversion": "6.2.0"
         }
     ],
     "skipped_tests": {
+        "Panorama Query Logs - Test": "issues with firewall environment configuration - CIAC-3459",
+        "palo_alto_firewall_test_pb": "issues with firewall environment configuration - CIAC-3459",
         "Test - CrowdStrike Falcon": "to merge https://github.com/demisto/content/pull/19250",
         "MISP V2 Test": "The integration is deprecated as we released MISP V3",
         "Github IAM - Test Playbook": "Issue 32383",
@@ -5262,6 +5300,8 @@
         "Process Email - Generic - Test - Actual Incident": "Issue 45227",
         "Jira-v2-Test": "Issue 33313",
         "Tanium Threat Response V2 Test": "Issue 44201",
+        "Tanium Threat Response Test": "Issue CRTX-58729",
+        "Tanium Threat Response - Create Connection v2 - Test": "Issue CRTX-58729",
         "AzureADTest": "Issue 40131",
         "whois_test": "Issue 25648",
         "Autoextract - Test": "Issue 45293",
@@ -5286,7 +5326,9 @@
         "RecordedFutureFeed - Test": "Issue 43923",
         "RedLockTest": "Issue 24600",
         "SymantecEndpointProtection_Test": "Issue 30157",
-        "RSANetWitnessv115-Test": "Issue XDRSUP-12553"
+        "RSANetWitnessv115-Test": "Issue XDRSUP-12553",
+        "TestCloudflareWAFPlaybook": "No instance",
+        "DBot Build Phishing Classifier Test - Multiple Algorithms": "Issue 48350"
     },
     "skipped_integrations": {
         "_comment1": "~~~ NO INSTANCE ~~~",
@@ -5351,6 +5393,7 @@
         "Remedy On-Demand": "Issue 19835",
         "Check Point": "Issue 18643",
         "CheckPointFirewall_v2": "Issue 18643",
+        "CTIX v3": "No instance - developed by partner",
         "Preempt": "Issue 20268",
         "Jask": "Issue 18879",
         "vmray": "Issue 18752",
@@ -5405,7 +5448,10 @@
         "AttackIQFireDrill": "License issues #29774",
         "SentinelOne V2": "License expired issue #24933",
         "LogRhythm": "The integration is deprecated",
-        "Github Event Collector" : "XSIAM integration"
+        "Alibaba Action Trail Event Collector": "XSIAM integration",
+        "Salesforce Event Collector": "XSIAM integration",
+        "Github Event Collector" : "XSIAM integration",
+        "Microsoft Defender for Cloud Apps Event Collector": "XSIAM integration"
     },
     "nightly_integrations": [
         "Laline v2",

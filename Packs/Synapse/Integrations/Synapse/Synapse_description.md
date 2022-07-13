@@ -3,3 +3,4 @@
 2. Configure the **Server URL** to match that of your remote cortex instance. 
 3. Configure the **port** that was used for the REST API (default is `:4443`). 
 4. Use your **username** and **password** for remote authentication.
+5. Set **use_optic** if your instance is running Synapse Optic.
