@@ -39,6 +39,11 @@ gsutil -m cp -r "gs://$GCS_PRIVATE_PROD_BUCKET/$SOURCE_PATH" "gs://$GCS_PRIVATE_
 echo "Finished copying private bucket successfully."
 
 
+echo "Copying index.zip at: gs://marketplace-dist/content/packs/index.zip to target path: gs://marketplace-ci-build/private/dummy_index/index.zip ..."
+gsutil -m cp "gs://marketplace-dist/content/packs/index.zip" "gs://marketplace-ci-build/private/dummy_index/index.zip"
+echo "Finished copying private index.zip successfully."
+
+
 PUBLIC_BUILD_BUCKET_PATH="content/builds/$GIT_BRANCH/$GITHUB_RUN_NUMBER"
 PUBLIC_TARGET_PATH="$PUBLIC_BUILD_BUCKET_PATH/content/packs"
 BUCKET_FULL_TARGET_PATH="$GCS_TESTING_BUCKET/$PUBLIC_BUILD_BUCKET_PATH"
