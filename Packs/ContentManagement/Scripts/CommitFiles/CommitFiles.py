@@ -17,25 +17,34 @@ PR_TEMPLATE = '### Pull Request created in Cortex XSOAR\n' \
               '{}\n\n' \
               '---'
 
+file_path_to_sha = {}
 new_files = []
 modified_files = []
 
 
-def commit_content_item(branch_name, content_file):
-    file_sha = ''
+def get_file_sha(branch_name, content_file):
+    full_path = os.path.join(content_file.path_to_file, content_file.file_name)
 
-    commit_args = {'commit_message': f'Added {content_file.file_name}',
-                   'path_to_file': f'{content_file.path_to_file}/{content_file.file_name}',
-                   'branch_name': branch_name, 'file_text': content_file.file_text}
+    sha = file_path_to_sha.get(full_path)
+    if sha:
+        return sha
 
     # try to get the file from branch
     status, list_files_res = execute_command('Github-list-files', {'branch': branch_name, 'path': content_file.path_to_file}, fail_on_error=False)
 
     if status:
         for file in list_files_res:
-            if file['name'] == content_file.file_name:
-                # if the file already exists - take the file sha1 value
-                file_sha = file['sha']
+            file_path_to_sha[file['path']] = file['sha']
+
+    return file_path_to_sha[full_path]
+
+
+def commit_content_item(branch_name, content_file):
+    commit_args = {'commit_message': f'Added {content_file.file_name}',
+                   'path_to_file': f'{content_file.path_to_file}/{content_file.file_name}',
+                   'branch_name': branch_name, 'file_text': content_file.file_text}
+
+    file_sha = get_file_sha(branch_name, content_file)
 
     # dont commit pack_metadata.json if already exists in the branch
     if file_sha and content_file.file_name == 'pack_metadata.json':
@@ -92,7 +101,7 @@ def split_yml_file(content_file):
 
     yml_file_path = f'{base_name}/{base_name}.yml'
     script_file_path = f'{base_name}/{base_name}.{script_extention}'
-    path_to_file = f'{content_file.path_to_file}{base_name}'
+    path_to_file = os.path.join(content_file.path_to_file, base_name)
 
 
     # read the py and yml files content
@@ -153,7 +162,7 @@ class ContentFile:
 
         if self.file_name == 'metadata.json':
             self.file_name = 'pack_metadata.json'
-            self.path_to_file = f'Packs/{pack_name}'
+            self.path_to_file = os.path.join('Packs', pack_name)
             self.content_type = 'metadata'
         else:
             with open(file_object['name'], "w") as f:
@@ -162,8 +171,8 @@ class ContentFile:
             file_type = find_type(file_object['name'])
             os.remove(file_object['name'])
             self.content_type = file_type.value if file_type else file_type
-            folder = ENTITY_TYPE_TO_DIR.get(file_type, '')
-            self.path_to_file = f'Packs/{pack_name}/{folder}'
+            folder = ENTITY_TYPE_TO_DIR.get(self.content_type, '')
+            self.path_to_file = os.path.join('Packs', pack_name, folder)
 
 
 ''' MAIN FUNCTION '''
