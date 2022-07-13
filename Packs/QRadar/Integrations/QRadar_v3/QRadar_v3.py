@@ -3452,8 +3452,8 @@ def qradar_search_retrieve_events_command(client: Client,
     interval_in_secs = int(args.get('interval_in_seconds', 60))
     search_id = args.get('search_id')
     if not search_id:
-        search_command_results = qradar_search_create_command(client, params, args)
         try:
+            search_command_results = qradar_search_create_command(client, params, args)
             search_id = search_command_results.outputs[0].get('ID')  # type: ignore
         except Exception as e:
             raise DemistoException(f'The search was failed. Error: {e}')
