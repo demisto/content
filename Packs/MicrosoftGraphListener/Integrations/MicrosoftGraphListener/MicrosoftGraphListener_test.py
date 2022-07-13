@@ -62,6 +62,18 @@ def emails_data():
         return mocked_emails
 
 
+@pytest.fixture()
+def emails_data_full_body():
+    with open('test_data/emails_data_full_body') as emails_json:
+        return json.load(emails_json)
+
+
+@pytest.fixture()
+def expected_incident_full_body():
+    with open('test_data/expected_incident_full_body') as incident:
+        return json.load(incident)
+
+
 @pytest.fixture
 def last_run_data():
     last_run = {

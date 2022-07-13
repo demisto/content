@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 933c4e74-143d-4429-8f5d-f155d03b0f70
+    taskid: 21aaed67-8b83-4255-8f91-5686ea984c61
     type: start
     task:
-      id: 933c4e74-143d-4429-8f5d-f155d03b0f70
+      id: 21aaed67-8b83-4255-8f91-5686ea984c61
       version: -1
       name: ""
       iscommand: false
@@ -29,12 +29,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 3b667ede-6c4c-495e-8f01-73f72c38bbc8
+    taskid: 5c5c9851-198d-4275-8860-8886f4dc899a
     type: regular
     task:
-      id: 3b667ede-6c4c-495e-8f01-73f72c38bbc8
+      id: 5c5c9851-198d-4275-8860-8886f4dc899a
       version: -1
       name: Test send mail
       script: EWS Mail Sender|||send-mail
@@ -70,12 +72,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: f73780f8-4a12-432e-8209-5a9ce075abba
+    taskid: 371db546-d62c-437e-8ae5-b5d62b48cde1
     type: regular
     task:
-      id: f73780f8-4a12-432e-8209-5a9ce075abba
+      id: 371db546-d62c-437e-8ae5-b5d62b48cde1
       version: -1
       name: Get file
       scriptName: http
@@ -114,12 +118,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 2238320b-e705-482d-85d8-7ca29249defb
+    taskid: 81e8e117-3c88-42c4-8bab-e87a8e9fbe91
     type: title
     task:
-      id: 2238320b-e705-482d-85d8-7ca29249defb
+      id: 81e8e117-3c88-42c4-8bab-e87a8e9fbe91
       version: -1
       name: Test success after failure
       type: title
@@ -141,12 +147,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 85d61b58-765f-4c33-8bbc-ed2f53eca13c
+    taskid: 0c7e82c3-ac71-42ae-801d-9d492d673f7c
     type: regular
     task:
-      id: 85d61b58-765f-4c33-8bbc-ed2f53eca13c
+      id: 0c7e82c3-ac71-42ae-801d-9d492d673f7c
       version: -1
       name: Send Bad Email (Should fail)
       description: Sends an email using EWS.
@@ -185,21 +193,20 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: f9661f43-49e4-400e-89b3-cb9319f822bb
+    taskid: 1ce3f82a-9aea-4edc-8891-ee721c063342
     type: regular
     task:
-      id: f9661f43-49e4-400e-89b3-cb9319f822bb
+      id: 1ce3f82a-9aea-4edc-8891-ee721c063342
       version: -1
       name: Send Good Email
       script: EWS Mail Sender|||send-mail
       type: regular
       iscommand: true
       brand: EWS Mail Sender
-    nexttasks:
-      '#none#':
-      - "6"
     scriptarguments:
       attachCIDs: {}
       attachIDs:
@@ -227,88 +234,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "6":
-    id: "6"
-    taskid: 662a6966-085d-47ae-87a8-0c503e64d73b
-    type: title
-    task:
-      id: 662a6966-085d-47ae-87a8-0c503e64d73b
-      version: -1
-      name: Reply mail
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1215
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "7":
-    id: "7"
-    taskid: 465b32b6-5e6f-453d-8011-780ecd5657d2
-    type: regular
-    task:
-      id: 465b32b6-5e6f-453d-8011-780ecd5657d2
-      version: -1
-      name: reply-mail
-      description: Reply to an email using EWS.
-      script: EWS Mail Sender|||reply-mail
-      type: regular
-      iscommand: true
-      brand: EWS Mail Sender
-    scriptarguments:
-      additionalHeader: {}
-      attachCIDs: {}
-      attachIDs:
-        simple: ${File.EntryID}
-      attachNames: {}
-      bcc: {}
-      body: {}
-      cc: {}
-      from: {}
-      htmlBody: {}
-      inReplyTo:
-        simple: AQMkADk2MWU3YmU5LTYzOGYtNDZiZC1hN2U2LTRkNTM1OGViNTY0YwBGAAADZqnLvsOUq0+eym8EhcwzDgcAyD929J75cU2Xt1Cyvm6zhwAAAgEMAAAAyD929J75cU2Xt1Cyvm6zhwAAAhMJAAAA
-      references: {}
-      replyTo: {}
-      subject:
-        simple: DO NOT DELETE - Test for reply mail
-      templateParams: {}
-      to:
-        simple: ews-2016-test@lab-demisto.com
-      transientFile: {}
-      transientFileCID: {}
-      transientFileContent: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1360
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 8b6b4948-a7cc-4b96-823c-eb6e67d97e02
+    taskid: 3e9a3f05-6619-4700-86e7-57ca4e3ae7e3
     type: regular
     task:
-      id: 8b6b4948-a7cc-4b96-823c-eb6e67d97e02
+      id: 3e9a3f05-6619-4700-86e7-57ca4e3ae7e3
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -339,12 +272,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1405,
+        "height": 1085,
         "width": 380,
         "x": 50,
         "y": 50

@@ -3,6 +3,19 @@ commonfields:
   id: HelloWorld
   version: -1
 configuration:
+- additionalinfo: Reliability of the source providing the intelligence data.
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  defaultvalue: C - Fairly reliable
+  type: 15
 - defaultvalue: https://soar.monstersofhack.com
   display: Server URL (e.g. https://soar.monstersofhack.com)
   name: url
@@ -590,7 +603,7 @@ script:
     - contextPath: CVE.ID
       description: The ID of the CVE.
       type: string
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.4.30607
   isfetch: true
   longRunning: false
   longRunningPort: false

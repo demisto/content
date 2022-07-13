@@ -1,0 +1,54 @@
+{
+    "description": "Classifies GLPI incidents.",
+    "feed": false,
+    "id": "GLPI - Classifier",
+    "defaultIncidentType": "",
+    "keyTypeMap": {
+        "Incident": "GLPI Incident",
+        "Request": "GLPI Request"
+    },
+    "name": "GLPI - Classifier",
+    "transformer": {
+        "complex": {
+            "filters": [],
+            "root": "type",
+            "transformers": [
+                {
+                    "args": {
+                        "limit": {},
+                        "replaceWith": {
+                            "value": {
+                                "simple": "Incident"
+                            }
+                        },
+                        "toReplace": {
+                            "value": {
+                                "simple": "1"
+                            }
+                        }
+                    },
+                    "operator": "replace"
+                },
+                {
+                    "args": {
+                        "limit": {},
+                        "replaceWith": {
+                            "value": {
+                                "simple": "Request"
+                            }
+                        },
+                        "toReplace": {
+                            "value": {
+                                "simple": "2"
+                            }
+                        }
+                    },
+                    "operator": "replace"
+                }
+            ]
+        }
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.2.0"
+}

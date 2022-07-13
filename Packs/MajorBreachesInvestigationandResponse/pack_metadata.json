@@ -2,7 +2,7 @@
     "name": "Rapid Breach Response",
     "description": "This content Pack helps you collect, investigate, and remediate incidents related to major breaches.",
     "support": "xsoar",
-    "currentVersion": "1.6.22",
+    "currentVersion": "1.6.23",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -71,6 +71,10 @@
         "CVE_2021_40444": {
             "mandatory": false,
             "display_name": "CVE-2021-40444 - MSHTML RCE"
+        },
+        "CVE_2021_30190": {
+            "mandatory": false,
+            "display_name": "CVE-2022-30190 - MSDT RCE"
         },
         "ServiceNow": {
             "mandatory": false,

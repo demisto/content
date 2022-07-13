@@ -1,0 +1,11 @@
+!azure-vm-list-instances resource_group=Ayman-Labs
+!azure-vm-start-instance resource_group="Ayman-Labs" virtual_machine_name="webserver"
+!azure-vm-get-instance-details resource_group=Ayman-Labs virtual_machine_name=webserver
+!azure-vm-create-nic nic_location=eastus nic_name=test_nic2 resource_group=Ayman-Labs subnet_name=default vnet_name=Ayman-Labs-vnet ip_config_name=ipconfigtest
+!azure-list-resource-groups
+!azure-list-subscriptions
+!azure-vm-get-nic-details resource_group=Ayman-Labs nic_name=webserver729
+!azure-vm-create-instance nic_name=test_nic1 resource_group=Ayman-Labs virtual_machine_location=eastus virtual_machine_name=test567 vm_size=Standard_D1_v2
+!azure-vm-poweroff-instance resource_group=Ayman-Labs virtual_machine_name=test12
+!azure-vm-delete-instance resource_group=Ayman-Labs virtual_machine_name=test1234
+!azure-vm-get-public-ip-details resource_group=Ayman-Labs address_name=webserver-ip

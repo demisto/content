@@ -2,7 +2,7 @@ comment: Export all Incident, Context and Widget data into Json format output.
 commonfields:
   id: HealthCheckExportSummary
   version: -1
-dockerimage: demisto/python3:3.10.1.27636
+dockerimage: demisto/python3:3.10.4.29342
 enabled: true
 name: HealthCheckExportSummary
 runas: DBotWeakRole

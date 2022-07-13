@@ -137,6 +137,9 @@ def fix_traceback_line_numbers(trace_str):
     return trace_str
 
 
+from DemistoClassApiModule import *     # type:ignore [no-redef]  # noqa:E402
+
+
 OS_LINUX = False
 OS_MAC = False
 OS_WINDOWS = False
@@ -259,6 +262,7 @@ class EntryType(object):
     STATIC_VIDEO_FILE = 12
     MAP_ENTRY_TYPE = 15
     WIDGET = 17
+    EXECUTION_METRICS = 19
 
 
 class IncidentStatus(object):
@@ -467,6 +471,23 @@ INDICATOR_TYPE_TO_CONTEXT_KEY = {
     'ctph': 'file',
     'ssdeep': 'file'
 }
+
+
+class ErrorTypes(object):
+    """
+    Enum: contains all the available error types
+    :return: None
+    :rtype: ``None``
+    """
+    SUCCESS = 'Successful'
+    QUOTA_ERROR = 'QuotaError'
+    GENERAL_ERROR = 'GeneralError'
+    AUTH_ERROR = 'AuthError'
+    SERVICE_ERROR = 'ServiceError'
+    CONNECTION_ERROR = 'ConnectionError'
+    PROXY_ERROR = 'ProxyError'
+    SSL_ERROR = 'SSLError'
+    TIMEOUT_ERROR = 'TimeoutError'
 
 
 class FeedIndicatorType(object):
@@ -1563,7 +1584,7 @@ class IntegrationLogger(object):
         if self.messages:
             text = 'Full Integration Log:\n' + '\n'.join(self.messages)
             if verbose:
-                demisto.log(text)
+                demisto.log(text)  # pylint: disable=E9012
             if not self.debug_logging:  # we don't print out if in debug_logging as already all message where printed
                 demisto.info(text)
             self.messages = []
@@ -2837,7 +2858,7 @@ class Common(object):
 
     class CustomIndicator(Indicator):
 
-        def __init__(self, indicator_type, value, dbot_score, data, context_prefix):
+        def __init__(self, indicator_type, value, dbot_score, data, context_prefix, relationships=None):
             """
             :type indicator_type: ``Str``
             :param indicator_type: The name of the indicator type.
@@ -2854,6 +2875,9 @@ class Common(object):
             :type context_prefix: ``Str``
             :param context_prefix: Will be used as the context path prefix.
 
+            :type relationships: ``list of EntityRelationship``
+            :param relationships: List of relationships of the indicator.
+
             :return: None
             :rtype: ``None``
             """
@@ -2868,6 +2892,7 @@ class Common(object):
                 format(context_prefix=context_prefix)
 
             self.value = value
+            self.relationships = relationships
 
             if not isinstance(dbot_score, Common.DBotScore):
                 raise ValueError('dbot_score must be of type DBotScore')
@@ -2889,11 +2914,16 @@ class Common(object):
 
             ret_value = {
                 self.CONTEXT_PATH: custom_context
-            }
+            }  # type: Dict[str, Any]
 
             if self.dbot_score:
                 ret_value.update(self.dbot_score.to_context())
             ret_value[Common.DBotScore.get_context_path()]['Type'] = self.indicator_type
+
+            if self.relationships:
+                relationships_context = [relationship.to_context() for relationship in self.relationships if
+                                         relationship.to_context()]
+                ret_value['Relationships'] = relationships_context
 
             return ret_value
 
@@ -4833,6 +4863,9 @@ class Common(object):
         :type external_references: ``ExternalReference``
         :param external_references:  A list of id's and description of the AP via external refs.
 
+        :type value: ``str``
+        :param value: The Attack Pattern value (name) - example: "Plist File Modification"
+
         :return: None
         :rtype: ``None``
         """
@@ -4840,7 +4873,7 @@ class Common(object):
 
         def __init__(self, stix_id, kill_chain_phases=None, first_seen_by_source=None, description=None,
                      operating_system_refs=None, publications=None, mitre_id=None, tags=None,
-                     traffic_light_protocol=None, dbot_score=None, community_notes=None, external_references=None):
+                     traffic_light_protocol=None, dbot_score=None, community_notes=None, external_references=None, value=None):
 
             self.community_notes = community_notes
             self.description = description
@@ -4853,7 +4886,7 @@ class Common(object):
             self.stix_id = stix_id
             self.tags = tags
             self.traffic_light_protocol = traffic_light_protocol
-
+            self.value = value
             self.dbot_score = dbot_score
 
         def to_context(self):
@@ -4864,6 +4897,7 @@ class Common(object):
                 'OperatingSystemRefs': self.operating_system_refs,
                 "Publications": self.publications,
                 "MITREID": self.mitre_id,
+                "Value": self.value,
                 "Tags": self.tags,
                 "Description": self.description
             }
@@ -5948,6 +5982,9 @@ class ScheduledCommand:
     :type timeout_in_seconds: ``Optional[int]``
     :param timeout_in_seconds: Number of seconds until the polling sequence will timeout.
 
+    :type items_remaining: ``Optional[int]``
+    :param items_remaining: Number of items that are remaining to be polled.
+
     :return: None
     :rtype: ``None``
     """
@@ -5960,6 +5997,7 @@ class ScheduledCommand:
             next_run_in_seconds,  # type: int
             args=None,  # type: Optional[Dict[str, Any]]
             timeout_in_seconds=None,  # type: Optional[int]
+            items_remaining=0,  # type: Optional[int]
     ):
         self.raise_error_if_not_supported()
         self._command = command
@@ -5971,11 +6009,20 @@ class ScheduledCommand:
         self._next_run = str(next_run_in_seconds)
         self._args = args
         self._timeout = str(timeout_in_seconds) if timeout_in_seconds else None
+        self._items_remaining = items_remaining
 
     @staticmethod
     def raise_error_if_not_supported():
         if not is_demisto_version_ge('6.2.0'):
             raise DemistoException(ScheduledCommand.VERSION_MISMATCH_ERROR)
+
+    @staticmethod
+    def supports_polling():
+        """
+        Check if the integration supports polling.
+        Returns: Boolean
+        """
+        return True if is_demisto_version_ge('6.2.0') else False
 
     def to_results(self):
         """
@@ -5985,7 +6032,8 @@ class ScheduledCommand:
             PollingCommand=self._command,
             NextRun=self._next_run,
             PollingArgs=self._args,
-            Timeout=self._timeout
+            Timeout=self._timeout,
+            PollingItemsRemaining=self._items_remaining
         )
 
 
@@ -6623,6 +6671,9 @@ class CommandResults:
     :type scheduled_command: ``ScheduledCommand``
     :param scheduled_command: manages the way the command should be polled.
 
+    :type execution_metrics: ``ExecutionMetrics``
+    :param execution_metrics: contains metric data about a command's execution
+
     :return: None
     :rtype: ``None``
     """
@@ -6641,8 +6692,8 @@ class CommandResults:
                  relationships=None,
                  entry_type=None,
                  content_format=None,
-                 ):
-        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, ScheduledCommand, list, int, str) -> None  # noqa: E501
+                 execution_metrics=None):
+        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, ScheduledCommand, list, int, str, List[Any]) -> None  # noqa: E501
         if raw_response is None:
             raw_response = outputs
         if outputs is not None and not isinstance(outputs, dict) and not outputs_prefix:
@@ -6679,6 +6730,7 @@ class CommandResults:
         self.mark_as_note = mark_as_note
         self.scheduled_command = scheduled_command
         self.relationships = relationships
+        self.execution_metrics = execution_metrics
 
         if content_format is not None and not EntryFormat.is_valid_type(content_format):
             raise TypeError('content_format {} is invalid, see CommonServerPython.EntryFormat'.format(content_format))
@@ -6695,6 +6747,7 @@ class CommandResults:
         indicators_timeline = []  # type: ignore[assignment]
         ignore_auto_extract = False  # type: bool
         mark_as_note = False  # type: bool
+        exec_metrics = None  # type: ignore[assignment]
 
         indicators = [self.indicator] if self.indicator else self.indicators
 
@@ -6747,6 +6800,10 @@ class CommandResults:
             else:
                 content_format = EntryFormat.JSON
 
+        if self.execution_metrics:
+            exec_metrics = self.execution_metrics
+            self.entry_type = EntryType.EXECUTION_METRICS
+            raw_response = 'Metrics reported successfully.'
         return_entry = {
             'Type': self.entry_type,
             'ContentsFormat': content_format,
@@ -6756,10 +6813,14 @@ class CommandResults:
             'IndicatorTimeline': indicators_timeline,
             'IgnoreAutoExtract': bool(ignore_auto_extract),
             'Note': mark_as_note,
-            'Relationships': relationships,
+            'Relationships': relationships
         }
         if self.scheduled_command:
             return_entry.update(self.scheduled_command.to_results())
+
+        if exec_metrics:
+            return_entry.update({'APIExecutionMetrics': exec_metrics})
+
         return return_entry
 
 
@@ -6954,6 +7015,162 @@ def return_warning(message, exit=False, warning='', outputs=None, ignore_auto_ex
         sys.exit(0)
 
 
+class ExecutionMetrics(object):
+    """
+        ExecutionMetrics is used to collect and format metric data to be reported to the XSOAR server.
+
+        :return: None
+        :rtype: ``None``
+    """
+    def __init__(self, success=0, quota_error=0, general_error=0, auth_error=0, service_error=0, connection_error=0,
+                 proxy_error=0, ssl_error=0, timeout_error=0):
+        self._metrics = []
+        self.metrics = None
+        self.success = success
+        self.quota_error = quota_error
+        self.general_error = general_error
+        self.auth_error = auth_error
+        self.service_error = service_error
+        self.connection_error = connection_error
+        self.proxy_error = proxy_error
+        self.ssl_error = ssl_error
+        self.timeout_error = timeout_error
+        """
+            Initializes an ExecutionMetrics object. Once initialized, you may increment each metric type according to the
+            metric you'd like to report. Afterwards, pass the `metrics` value to CommandResults.
+
+            :type success: ``int``
+            :param success: Quantity of Successful metrics
+
+            :type quota_error: ``int``
+            :param quota_error: Quantity of Quota Error (Rate Limited) metrics
+
+            :type general_error: ``int``
+            :param general_error: Quantity of General Error metrics
+
+            :type auth_error: ``int``
+            :param auth_error: Quantity of Authentication Error metrics
+
+            :type service_error: ``int``
+            :param service_error: Quantity of Service Error metrics
+
+            :type connection_error: ``int``
+            :param connection_error: Quantity of Connection Error metrics
+
+            :type proxy_error: ``int``
+            :param proxy_error: Quantity of Proxy Error metrics
+
+            :type ssl_error: ``int``
+            :param ssl_error: Quantity of SSL Error metrics
+
+            :type timeout_error: ``int``
+            :param timeout_error: Quantity of Timeout Error metrics
+
+            :type metrics: ``CommandResults``
+            :param metrics: Append this value to your CommandResults list to report the metrics to your server.
+        """
+
+    @staticmethod
+    def is_supported():
+        if is_demisto_version_ge('7.0.0'):
+            return True
+        return False
+
+    @property
+    def success(self):
+        return self._success
+
+    @success.setter
+    def success(self, value):
+        self._success = value
+        self.update_metrics('Successful', self._success)
+
+    @property
+    def quota_error(self):
+        return self._quota_error
+
+    @quota_error.setter
+    def quota_error(self, value):
+        self._quota_error = value
+        self.update_metrics(ErrorTypes.QUOTA_ERROR, self._quota_error)
+
+    @property
+    def general_error(self):
+        return self._general_error
+
+    @general_error.setter
+    def general_error(self, value):
+        self._general_error = value
+        self.update_metrics(ErrorTypes.GENERAL_ERROR, self._general_error)
+
+    @property
+    def auth_error(self):
+        return self._auth_error
+
+    @auth_error.setter
+    def auth_error(self, value):
+        self._auth_error = value
+        self.update_metrics(ErrorTypes.AUTH_ERROR, self._auth_error)
+
+    @property
+    def service_error(self):
+        return self._service_error
+
+    @service_error.setter
+    def service_error(self, value):
+        self._service_error = value
+        self.update_metrics(ErrorTypes.SERVICE_ERROR, self._service_error)
+
+    @property
+    def connection_error(self):
+        return self._connection_error
+
+    @connection_error.setter
+    def connection_error(self, value):
+        self._connection_error = value
+        self.update_metrics(ErrorTypes.CONNECTION_ERROR, self._connection_error)
+
+    @property
+    def proxy_error(self):
+        return self._proxy_error
+
+    @proxy_error.setter
+    def proxy_error(self, value):
+        self._proxy_error = value
+        self.update_metrics(ErrorTypes.PROXY_ERROR, self._proxy_error)
+
+    @property
+    def ssl_error(self):
+        return self._ssl_error
+
+    @ssl_error.setter
+    def ssl_error(self, value):
+        self._ssl_error = value
+        self.update_metrics(ErrorTypes.SSL_ERROR, self._ssl_error)
+
+    @property
+    def timeout_error(self):
+        return self._timeout_error
+
+    @timeout_error.setter
+    def timeout_error(self, value):
+        self._timeout_error = value
+        self.update_metrics(ErrorTypes.TIMEOUT_ERROR, self._timeout_error)
+
+    def update_metrics(self, metric_type, metric_value):
+        if metric_value > 0:
+            if len(self._metrics) == 0:
+                self._metrics.append({'Type': metric_type, 'APICallsCount': metric_value})
+            else:
+                for metric in self._metrics:
+                    if metric['Type'] == metric_type:
+                        metric['APICallsCount'] = metric_value
+                        break
+                else:
+                    self._metrics.append({'Type': metric_type, 'APICallsCount': metric_value})
+            self.metrics = CommandResults(execution_metrics=self._metrics)
+
+
 class CommandRunner:
     """
     Class for executing multiple commands and save the results of each command.
@@ -7053,12 +7270,15 @@ class CommandRunner:
         results, errors = [], []
         for command, args in zip(command.commands, command.args_lst):
             try:
+                demisto.debug(' '.join(('calling', command, 'with args=', ','.join(args))))
                 execute_command_results = demisto.executeCommand(command, args)
                 for res in execute_command_results:
                     brand_name = res.get('Brand', 'Unknown') if isinstance(res, dict) else 'Unknown'
                     module_name = res.get('ModuleName', 'Unknown') if isinstance(res, dict) else 'Unknown'
                     if is_error(res):
-                        errors.append(CommandRunner.Result(command, args, brand_name, module_name, get_error(res)))
+                        error = get_error(res)
+                        demisto.debug('error: ' + error)
+                        errors.append(CommandRunner.Result(command, args, brand_name, module_name, error))
                     else:
                         if extract_contents:
                             res = res.get('Contents', {})
@@ -7270,10 +7490,10 @@ regexFlags = re.M  # Multi line matching
 # else, use re.match({regex_format},str)
 
 ipv4Regex = r'\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b([^\/]|$)'
-ipv4cidrRegex = r'\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\[\.\]|\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(\/([0-9]|[1-2][0-9]|3[0-2]))\b'  # noqa: E501
+ipv4cidrRegex = r'^([0-9]{1,3}\.){3}[0-9]{1,3}(\/([0-9]|[1-2][0-9]|3[0-2]))$'
 ipv6Regex = r'\b(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:(?:(:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\b'  # noqa: E501
-ipv6cidrRegex = r'\b(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))(\/(12[0-8]|1[0-1][0-9]|[1-9][0-9]|[0-9]))\b'  # noqa: E501
-emailRegex = r'\b[^@\s]{1,64}@[^@\s]{1,253}\.[^@\s]+\b'
+ipv6cidrRegex = r'^s*((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]d|1dd|[1-9]?d)(.(25[0-5]|2[0-4]d|1dd|[1-9]?d)){3}))|:)))(%.+)?s*(\/([0-9]|[1-9][0-9]|1[0-1][0-9]|12[0-8]))$'  # noqa: E501
+emailRegex = r'''(?:[a-z0-9!#$%&'*+/=?^_\x60{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_\x60{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])'''  # noqa: E501
 hashRegex = r'\b[0-9a-fA-F]+\b'
 urlRegex = r'(?i)((?:(?:https?|ftps?|hxxps?|sftp|meows):\/\/|www\[?\.\]?|ftp\[?\.\]?|(?:(?:https?|ftps?|hxxps?|sftp|meows):\/\/www\[?\.\]?))(((25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)(\[?\.\]?[A-Za-z]{2,6})?)|(([A-Za-z0-9\S]\.|[A-Za-z0-9][A-Za-z0-9-]{0,61}[A-Za-z0-9]\[?\.\]?){1,3}[A-Za-z]{2,6})|(0\[?x\]?[0-9a-fA-F]{8})|([0-7]{4}\.[0-7]{4}\.[0-7]{4}\.[0-7]{4})|([0-9]{1,10}))($|\/\S+|\/$|:[0-9]{1,5}($|\/\S*))|^(((25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?))(\/([0-9]|[12][0-9]|3[0-2])\/\S+|\/[A-Za-z]\S*|\/([3-9]{2}|[0-9]{3,})\S*|(:[0-9]{1,5}\/\S+))$)|(([A-Za-z0-9\S]\.|[A-Za-z0-9][A-Za-z0-9-]{0,61}[A-Za-z0-9]\[?\.\]?){1,3}[A-Za-z]{2,6}(((\/\S+))|(:[0-9]{1,5}\/\S+))$)|\b(?:(?:[0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,7}:|(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|(?:[0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|(?:[0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|(?:[0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|(?:[0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:(?:(:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))\b((\/([0-9]|[1-5][0-9]|6[0-4])\/\S+|\/[A-Za-z]\S*|\/((6[5-9]|[7-9][0-9])|[0-9]{3,}|65)\S*|(:[0-9]{1,5}\/\S+))$))'  # noqa: E501
 cveRegex = r'(?i)^cve-\d{4}-([1-9]\d{4,}|\d{4})$'
@@ -7640,7 +7860,7 @@ def is_demisto_version_ge(version, build_number=''):
         raise
     except ValueError:
         # dev editions are not comparable
-        demisto.log(
+        demisto.log(  # pylint: disable=E9012
             'is_demisto_version_ge: ValueError. \n '
             'input: server version: {} build number: {}\n'
             'server version: {}'.format(version, build_number, server_version)
@@ -8630,11 +8850,12 @@ def update_integration_context(context, object_keys=None, sync=True):
 
 
 class DemistoException(Exception):
-    def __init__(self, message, exception=None, res=None, *args):
+    def __init__(self, message, exception=None, res=None, error_type=None, *args):
         self.res = res
         self.message = message
         self.exception = exception
-        super(DemistoException, self).__init__(message, exception, *args)
+        self.error_type = error_type
+        super(DemistoException, self).__init__(message, exception, error_type, *args)
 
     def __str__(self):
         return str(self.message)
@@ -9863,7 +10084,7 @@ def get_pack_version(pack_name=''):
 
 
 def create_indicator_result_with_dbotscore_unknown(indicator, indicator_type, reliability=None,
-                                                   context_prefix=None, address_type=None):
+                                                   context_prefix=None, address_type=None, relationships=None):
     '''
     Used for cases where the api response to an indicator is not found,
     returns CommandResults with readable_output generic in this case, and indicator with DBotScore unknown
@@ -9882,6 +10103,9 @@ def create_indicator_result_with_dbotscore_unknown(indicator, indicator_type, re
 
     :type address_type: ``str``
     :param address_type: Use only in case that the indicator is Cryptocurrency
+
+    :type relationships: ``list of EntityRelationship``
+    :param relationships: List of relationships of the indicator.
 
     :rtype: ``CommandResults``
     :return: CommandResults
@@ -9948,7 +10172,9 @@ def create_indicator_result_with_dbotscore_unknown(indicator, indicator_type, re
                                             value=indicator,
                                             dbot_score=dbot_score,
                                             data={},
-                                            context_prefix=context_prefix)
+                                            context_prefix=context_prefix,
+                                            relationships=relationships,
+                                            )
 
     indicator_type = indicator_type.upper()
     readable_output = tableToMarkdown(name='{}:'.format(integration_name),
@@ -10433,12 +10659,12 @@ def send_events_to_xsiam(events, vendor, product, data_format=None):
 
     header_msg = 'Error sending new events into XSIAM. \n'
 
-    def events_error_handler(response):
+    def events_error_handler(res):
         """
         Internal function to parse the XSIAM API errors
         """
         try:
-            response = response.json()
+            response = res.json()
             error = res.reason
             if response.get('error').lower() == 'false':
                 xsiam_server_err_msg = response.get('error')
@@ -10466,6 +10692,20 @@ def send_events_to_xsiam(events, vendor, product, data_format=None):
         raise DemistoException(header_msg + res.get('error'))
 
     demisto.updateModuleHealth({'eventsPulled': amount_of_events})
+
+
+def is_scheduled_command_retry():
+    """
+    Determines if the current command is a polling retry command. This is useful if some actions should not be performed
+    when a command is polling for a response such as submitting data for processing.
+
+    :returns: True if the command is part of a polling retry, otherwise false
+    :rtype: ``Bool``
+
+    """
+    calling_context = demisto.callingContext.get('context', {})
+    sm = get_schedule_metadata(context=calling_context)
+    return True if sm.get('is_polling', False) else False
 
 
 ###########################################

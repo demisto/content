@@ -2187,6 +2187,7 @@ Creates a new MISP event.
 | threat_level_id | MISP Threat level ID. Possible values: "High", "Medium", "Low", and "Unknown". Possible values are: High, Medium, Low, Unknown. Default is High. | Optional | 
 | analysis | The analysis event level. Possible values: "initial", "ongoing", and "completed". Possible values are: initial, ongoing, completed. Default is initial. | Optional | 
 | sharing_group_id | Sharing group ID. Mandatory when Sharing_group distribution is set. | Optional | 
+| creation_date | Set the creation date for the event in the format YYYY-MM-DD. | Optional | 
 
 
 #### Context Output
@@ -3068,6 +3069,203 @@ Adds a domain object to MISP.
 
 >Object has been added to MISP event ID 1655
 
+### misp-add-email-object
+***
+Adds an email object to MISP.
+
+
+#### Base Command
+
+`misp-add-email-object`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| event_id | ID of an MISP event. | Required | 
+| entry_id | Entry ID of the email. | Required |
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MISP.Event.ID | number | MISP event ID. | 
+| MISP.Event.Object.MetaCategory | String | Object meta category. | 
+| MISP.Event.Object.Distribution | Number | Distribution of the object. | 
+| MISP.Event.Object.Name | String | Name of the object. | 
+| MISP.Event.Object.TemplateVersion | Number | Template version of the object. | 
+| MISP.Event.Object.EventID | Number | ID of the event in which the object was first created. | 
+| MISP.Event.Object.TemplateUUID | String | UUID of the template. | 
+| MISP.Event.Object.LastChanged | String | Timestamp when the object was last changed. | 
+| MISP.Event.Object.Deleted | Boolean | Whether the object was deleted. | 
+| MISP.Event.Object.ID | Number | ID of the object. | 
+| MISP.Event.Object.UUID | String | UUID of the object. | 
+| MISP.Event.Object.Attribute.Value | String | Value of the attribute. | 
+| MISP.Event.Object.Attribute.EventID | Number | ID of the first event from which the object originated. | 
+| MISP.Event.Object.Attribute.LastChanged | Date | Attribute last changed date. | 
+| MISP.Event.Object.Attribute.Deleted | Boolean | Whether the object was deleted. | 
+| MISP.Event.Object.Attribute.ObjectID | Number | ID of the object. | 
+| MISP.Event.Object.Attribute.DisableCorrelation | Boolean | Whether correlation is disabled. | 
+| MISP.Event.Object.Attribute.ID | Unknown | ID of the attribute. | 
+| MISP.Event.Object.Attribute.ObjectRelation | String | Relation of the object. | 
+| MISP.Event.Object.Attribute.Type | String | Object type. | 
+| MISP.Event.Object.Attribute.UUID | String | UUID of the attribute. | 
+| MISP.Event.Object.Attribute.ToIDs | Boolean | Whether the to_ids flag is on. | 
+| MISP.Event.Object.Attribute.Category | String | Category of the attribute. | 
+| MISP.Event.Object.Attribute.SharingGroupID | Number | ID of the sharing group. | 
+| MISP.Event.Object.Attribute.Comment | String | Comment of the attribute. | 
+| MISP.Event.Object.Description | String | Description of the object. | 
+
+
+#### Command Example
+```!misp-add-email-object ip="678@6" event_id=743```
+
+#### Context Example
+```json
+{
+    "MISP.Event": {
+        "ID": "743",
+        "Object": {
+            "Attribute": [
+                {
+                    "Category": "External analysis", 
+                    "Comment": "", 
+                    "UUID": "52d1d881-a1fb-4a2c-b5bc-047fb0073c2f", 
+                    "ObjectID": "3231", 
+                    "Deleted": false, 
+                    "LastChanged": "2022-07-07T13:50:06Z",
+                    "ToIDs": false, 
+                    "Value": "Full email.eml", 
+                    "ID": "26175", 
+                    "SharingGroupID": "0", 
+                    "ObjectRelation": "eml", 
+                    "EventID": "743", 
+                    "value1": "Full email.eml", 
+                    "DisableCorrelation": true, 
+                    "Type": "attachment", 
+                    "Distribution": "5", 
+                    "value2": ""
+                }
+                {
+                    "Category": "Payload delivery", 
+                    "Comment": "", 
+                    "UUID": "5ddaae1c-ce54-4191-9d61-907d2c101103", 
+                    "ObjectID": "3231", 
+                    "Deleted": false,
+                    "LastChanged": "2022-07-07T13:50:06Z", 
+                    "ToIDs": false, 
+                    "Value": "&lt;example.gmail.com&gt;", 
+                    "ID": "26177", 
+                    "SharingGroupID": "0", 
+                    "ObjectRelation": "message-id", 
+                    "EventID": "743", 
+                    "value1": "&lt;example.gmail.com&gt;", 
+                    "DisableCorrelation": true, 
+                    "Type": "email-message-id", 
+                    "Distribution": "5", 
+                    "value2": ""
+                }, 
+                {
+                    "Category": "Network activity", 
+                    "Comment": "", 
+                    "UUID": "26daac8a-730e-4951-bad1-d8134feba2cb", 
+                    "ObjectID": "3231", 
+                    "Deleted": false, 
+                    "LastChanged": "2022-07-07T13:50:06Z",
+                    "ToIDs": true, 
+                    "Value": "\"Example Demisto (ca)\" &lt;example@demisto.com&gt;", 
+                    "ID": "26178", 
+                    "SharingGroupID": "0", 
+                    "ObjectRelation": "to", 
+                    "EventID": "743", 
+                    "value1": "\"Example Demisto (ca)\" &lt;example.&gt;", 
+                    "DisableCorrelation": true, 
+                    "Type": "email-dst", 
+                    "Distribution": "5", 
+                    "value2": ""
+                }, 
+                {
+                    "Category": "Payload delivery", 
+                    "Comment": "", 
+                    "UUID": "d6ca6b5f-edba-4d46-9a9f-15fec4f6bd2b", 
+                    "ObjectID": "3231", 
+                    "Deleted": false,
+                    "LastChanged": "2022-07-07T13:50:06Z", 
+                    "ToIDs": false, 
+                    "Value": "[TEST][DEMISTO] CASO 1 EMAIL DA SISTEMA DEMISTO | ZIP+PASSWORD", 
+                    "ID": "26179", 
+                    "SharingGroupID": "0", 
+                    "ObjectRelation": "subject", 
+                    "EventID": "743", 
+                    "value1": "[TEST][DEMISTO] CASO 1 EMAIL DA SISTEMA DEMISTO | ZIP+PASSWORD", 
+                    "DisableCorrelation": false, 
+                    "Type": "email-subject", 
+                    "Distribution": "5", 
+                    "value2": ""
+                }, 
+                {
+                    "Category": "Payload delivery", 
+                    "Comment": "", 
+                    "UUID": "983eaba4-a94e-49ab-ae18-40151778a9ba", 
+                    "ObjectID": "3231", 
+                    "Deleted": false, 
+                    "LastChanged": "2022-07-07T13:50:06Z", 
+                    "ToIDs": true, 
+                    "Value": "\"Example Demisto (ca)\" &lt;example@demisto.com&gt;", 
+                    "ID": "26180", 
+                    "SharingGroupID": "0", 
+                    "ObjectRelation": "from", 
+                    "EventID": "743", 
+                    "value1": "\"Example Demisto (ca)\" &lt;example@demisto.com&gt;", 
+                    "DisableCorrelation": false, 
+                    "Type": "email-src", 
+                    "Distribution": "5", 
+                    "value2": ""
+                }, 
+                {
+                    "Category": "Payload delivery", 
+                    "Comment": "", 
+                    "UUID": "c432d6c7-5d34-4b64-a6b4-5813d1874bd2", 
+                    "ObjectID": "3231", 
+                    "Deleted": false,
+                    "LastChanged": "2022-07-07T13:50:06Z", 
+                    "ToIDs": true, 
+                    "Value": "example@demisto.com", 
+                    "ID": "26181", 
+                    "SharingGroupID": "0", 
+                    "ObjectRelation": "return-path", 
+                    "EventID": "743", 
+                    "value1": "example@demisto.com", 
+                    "DisableCorrelation": false, 
+                    "Type": "email-src", 
+                    "Distribution": "5", 
+                    "value2": ""
+                }
+            ],
+            "Comment": "", 
+            "EventID": "743", 
+            "LastChanged": "2022-07-07T13:50:06Z",
+            "Description": "Email object describing an email with meta-information", 
+            "UUID": "e00e6a2c-682b-48b3-bb01-aee21832ebf0", 
+            "Deleted": false,  
+            "TemplateUUID": "a0c666e0-fc65-4be8-b48f-3423d788b552", 
+            "TemplateVersion": "12", 
+            "SharingGroupID": "0", 
+            "MetaCategory": "network", 
+            "Distribution": "5", 
+            "ID": "3231", 
+            "Name": "email",
+            "first_seen": null,
+            "last_seen": null
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Object has been added to MISP event ID 743
+
 ### misp-add-url-object
 ***
 Adds a URL object to an MISP event.
@@ -3721,7 +3919,6 @@ Please see the new commands (ip, file, url...) context output for details.
 ### Commands
 #### The following commands were removed in this version:
 * ***misp-add-tag*** - replaced by both *misp-add-tag-to-event* and *misp-add-tag-to-attribute*.
-* ***misp-add-email-object*** - replaced by *misp-add-file-object* as and email object is not supported by the new PYMISP version.
 * ***misp-download-sample*** - removed as download sample is not supported by the new PYMISP version.
 * ***misp-upload-sample*** - removed as upload sample is not supported by the new PYMISP version.
 

@@ -490,9 +490,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: The email address of the incident assignee. Note that the updated API field is `owner.email`.
+      description: The email address of the incident assignee. It is recommended to update *user_principal_name* instead of this field. Note that the updated API field is `owner.email`.
       isArray: false
       name: assignee_email
+      required: false
+      secret: false
+    - default: false
+      description: The user principal name of the client. Note that the updated API field is `owner.userPrincipalName`.
+      isArray: false
+      name: user_principal_name
       required: false
       secret: false
     - default: false
@@ -1786,7 +1792,7 @@ script:
     - contextPath: AzureSentinel.ThreatIndicator.Types
       description: The threat types of the indicator.
       type: Unknown
-  dockerimage: demisto/crypto:1.0.0.28507
+  dockerimage: demisto/crypto:1.0.0.31715
   feed: false
   isfetch: true
   longRunning: false

@@ -42,6 +42,7 @@ class IntegrationHTTPRequest(BaseModel):
     headers: dict = dict()  # type: ignore[type-arg]
     auth: Optional[HTTPBasicAuth]
     data: Any = None
+    params: dict = dict()  # type: ignore[type-arg]
 
     class Config(BaseConfig):
         arbitrary_types_allowed = True

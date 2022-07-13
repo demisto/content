@@ -1,0 +1,34 @@
+name: Github Modeling Rule
+id: github_modeling_rule
+fromversion: 6.8.0
+tags: github
+rules: ''
+schema: |-
+  {
+    "github_github_audit_raw": {
+      "actor_location": {
+        "type": "string",
+        "is_array": false
+      },
+      "org": {
+        "type": "string",
+        "is_array": false
+      },
+      "repo": {
+        "type": "string",
+        "is_array": false
+      },
+      "created_at": {
+        "type": "int",
+        "is_array": false
+      },
+      "actor": {
+        "type": "string",
+        "is_array": false
+      },
+      "action": {
+        "type": "string",
+        "is_array": false
+      }
+    }
+  }
