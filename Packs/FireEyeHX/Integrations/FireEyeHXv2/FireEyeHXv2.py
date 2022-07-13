@@ -2149,7 +2149,6 @@ def create_dynamic_host_set_command(client: Client, args: Dict[str, Any]) -> Com
         if '409' in str(e):
             message = "Another host set has that name, please choose a different one."
         else:
-            print(str(e))
             message = "Creating Host Set failed, check if you have the necessary permissions."
 
     return CommandResults(

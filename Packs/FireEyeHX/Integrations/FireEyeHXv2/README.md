@@ -421,6 +421,7 @@ Returns a list of all host sets known to your HX Series appliance.
 | FireEyeHX.HostSets.name | string | The name of the host set. | 
 | FireEyeHX.HostSets.type | string | The type of the host set \(static/dynamic/hidden\). | 
 | FireEyeHX.HostSets.url | string | The FireEye URL of the host set. | 
+| FireEyeHX.HostSets.deleted | Boolean | Was the host set deleted. | 
 
 #### Command example
 ```!fireeye-hx-get-host-set-information hostSetID=1001```
@@ -433,7 +434,8 @@ Returns a list of all host sets known to your HX Series appliance.
             "_revision": "20210308150955358783164361",
             "name": "Test",
             "type": "venn",
-            "url": "/hx/api/v3/host_sets/1001"
+            "url": "/hx/api/v3/host_sets/1001",
+            "deleted": false
         }
     }
 }
@@ -2410,7 +2412,8 @@ Creates static host set.
 | FireEyeHX.HostSets._id | String | The host set id | 
 | FireEyeHX.HostSets.url | String | URI to retrieve data for this record. | 
 | FireEyeHX.HostSets.name | String | The host set name. | 
-| FireEyeHX.HostSets._revision | Date | Timestamp of last update. Used for preventing updates with obsolete data. If _revision in the request body does not match _revision in the databse, the update will fail. | 
+| FireEyeHX.HostSets._revision | String | Timestamp of last update. Used for preventing updates with obsolete data. If _revision in the request body does not match _revision in the databse, the update will fail. | 
+| FireEyeHX.HostSets.deleted | Boolean | Was the host set deleted. | 
 
 #### Command example
 ```!fireeye-hx-create-host-set-static host_set_name=demisto_test hosts_ids=Hqb2ns3oui1fpzg0BxI1Ch```
@@ -2442,7 +2445,8 @@ Updates a static host set.
 | FireEyeHX.HostSets._id | String | The host set id. | 
 | FireEyeHX.HostSets.url | String | URI to retrieve data for this record. | 
 | FireEyeHX.HostSets.name | String | The host set name. | 
-| FireEyeHX.HostSets._revision | Date | Timestamp of last update. Used for preventing updates with obsolete data. If _revision in the request body does not match _revision in the databse, the update will fail. | 
+| FireEyeHX.HostSets._revision | String | Timestamp of last update. Used for preventing updates with obsolete data. If _revision in the request body does not match _revision in the databse, the update will fail. | 
+| FireEyeHX.HostSets.deleted | Boolean | Was the host set deleted. | 
 
 #### Command example
 ```!fireeye-hx-update-host-set-static host_set_name=demisto_test host_set_id=1036 add_host_ids=GfLI00Q4zpidezw9I11rV6 remove_host_ids=Hqb2ns3oui1fpzg0BxI1Ch```
@@ -2463,9 +2467,9 @@ Creates dynamic host set.
 | --- | --- | --- |
 | host_set_name | The host set name. | Required | 
 | query | Free text query. Cannot be used with the other query arguments. | Optional | 
-| query_key | The query key. Must be provided with the query_value and query_operator. Possible values are: domain, <br/>product_name, <br/>patch_level, <br/>timezone, <br/>os_bitness, <br/>cloud_provider, <br/>app_version, <br/>hostname, <br/>server_time, <br/>gmt_offset_seconds, <br/>primary-ip_address, <br/>normalized_app_version, <br/>litmus_script_id, <br/>app_config_hash, <br/>platform. | Optional | 
+| query_key | The query key. Must be provided with the query_value and query_operator. Possible values are: domain, product_name, patch_level, timezone, os_bitness, cloud_provider, app_version, hostname, server_time, gmt_offset_seconds, primary-ip_address, normalized_app_version, litmus_script_id, app_config_hash, platform. | Optional | 
 | query_value | The query value. Must be provided with the query_key and query_operator. | Optional | 
-| query_operator | The query operator. Must be provided with the query_key and query_value. Possible values are: eq, <br/>gt, <br/>lt, <br/>lte, <br/>gte, <br/>exists, <br/>cidr. | Optional | 
+| query_operator | The query operator. Must be provided with the query_key and query_value. Possible values are: eq, gt, lt, lte, gte, exists, cidr. | Optional | 
 
 
 #### Context Output
@@ -2475,7 +2479,8 @@ Creates dynamic host set.
 | FireEyeHX.HostSets._id | String | The host set id. | 
 | FireEyeHX.HostSets.url | String | URI to retrieve data for this record. | 
 | FireEyeHX.HostSets.name | String | The host set name. | 
-| FireEyeHX.HostSets._revision | Date | Timestamp of last update. Used for preventing updates with obsolete data. If _revision in the request body does not match _revision in the databse, the update will fail. | 
+| FireEyeHX.HostSets._revision | String | Timestamp of last update. Used for preventing updates with obsolete data. If _revision in the request body does not match _revision in the databse, the update will fail. | 
+| FireEyeHX.HostSets.deleted | Boolean | Was the host set deleted. | 
 
 #### Command example
 ```!fireeye-hx-create-host-set-dynamic host_set_name=demisto_test query_key=Bitlevel query_operator=eq query_value=64-bit```
@@ -2497,9 +2502,9 @@ Updates dynamic host set.
 | host_set_name | The host set name. | Required | 
 | host_set_id | The host set id. | Required | 
 | query | free text query. Cannot be used with the other query arguments. | Optional | 
-| query_key | The query key. Must be provided with the query_value and query_operator. Possible values are: domain, <br/>product_name, <br/>patch_level, <br/>timezone, <br/>os_bitness, <br/>cloud_provider, <br/>app_version, <br/>hostname, <br/>server_time, <br/>gmt_offset_seconds, <br/>primary-ip_address, <br/>normalized_app_version, <br/>litmus_script_id, <br/>app_config_hash, <br/>platform. | Optional | 
+| query_key | The query key. Must be provided with the query_value and query_operator. Possible values are: domain, product_name, patch_level, timezone, os_bitness, cloud_provider, app_version, hostname, server_time, gmt_offset_seconds, primary-ip_address, normalized_app_version, litmus_script_id, app_config_hash, platform. | Optional | 
 | query_value | The query value. Must be provided with the query_key and query_operator. | Optional | 
-| query_operator | The query operator. Must be provided with the query_value and query_key. Possible values are: eq, <br/>gt, <br/>lt, <br/>lte, <br/>gte, <br/>exists, <br/>cidr. | Optional | 
+| query_operator | The query operator. Must be provided with the query_value and query_key. Possible values are: eq, gt, lt, lte, gte, exists, cidr. | Optional | 
 
 
 #### Context Output
@@ -2509,7 +2514,7 @@ Updates dynamic host set.
 | FireEyeHX.HostSets._id | String | The host set id. | 
 | FireEyeHX.HostSets.url | String | URI to retrieve data for this record. | 
 | FireEyeHX.HostSets.name | String | The host set name. | 
-| FireEyeHX.HostSets._revision | Date | Timestamp of last update. Used for preventing updates with obsolete data. If _revision in the request body does not match _revision in the databse, the update will fail. | 
+| FireEyeHX.HostSets._revision | String | Timestamp of last update. Used for preventing updates with obsolete data. If _revision in the request body does not match _revision in the databse, the update will fail. | 
 | FireEyeHX.HostSets.deleted | Boolean | Was the host set deleted. | 
 
 #### Command example
