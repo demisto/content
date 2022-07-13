@@ -1,0 +1,123 @@
+commonfields:
+  id: Binalyze AIR
+  version: -1
+name: Binalyze AIR
+display: Binalyze AIR (Partner Contribution)
+category: Forensics & Malware Analysis
+description: Collect your forensics data under 10 minutes.
+configuration:
+- display: Binalyze AIR Server URL
+  name: server
+  type: 0
+  required: true
+  additionalinfo: Binalyze AIR Server URL
+- display: API Key
+  name: api_key
+  type: 4
+  required: true
+  additionalinfo: 'e.g.: api_1234567890abcdef1234567890abcdef'
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+script:
+  script: ''
+  type: python
+  commands:
+  - name: binalyze-air-isolate
+    arguments:
+    - name: endpoint
+      required: true
+      description: Hostname of endpoint
+    - name: organization_id
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - '0'
+      - '1'
+      - '2'
+      description: Organization ID of the endpoint
+    - name: isolation
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - enable
+      - disable
+      description: To isolate use enable
+    outputs:
+    - contextPath: BinalyzeAIRIsolate.success
+      description: API call success confirmation
+      type: boolean
+    - contextPath: BinalyzeAIRIsolate.result._id
+      description: Isolation unique task ID
+      type: string
+    - contextPath: BinalyzeAIRIsolate.result.name
+      description: Isolation task name
+      type: string
+    - contextPath: BinalyzeAIRIsolate.result.organizationId
+      description: Organization Id of endpoint
+      type: number
+    - contextPath: BinalyzeAIRIsolate.statusCode
+      description: HTTP Status Code of response
+      type: number
+    - contextPath: BinalyzeAIRIsolate.errors
+      description: Error message
+      type: string
+    description: Isolate an endpoint
+  - name: binalyze-air-acquire
+    arguments:
+    - name: endpoint
+      required: true
+      description: Hostname of endpoint
+    - name: profile
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - compromise-assessment
+      - browsing-history
+      - event-logs
+      - memory-ram-pagefile
+      - quick
+      - full
+      description: Acquisition profile
+    - name: caseid
+      required: true
+      description: ID for the case,e.g. C-2022-0001
+    - name: organization_id
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - '0'
+      - '1'
+      - '2'
+      description: Organization ID of the endpoint
+    outputs:
+    - contextPath: BinalyzeAIRAcquire.success
+      description: API call success confirmation
+      type: boolean
+    - contextPath: BinalyzeAIRAcquire.result._id
+      description: Acquisition unique task ID
+      type: string
+    - contextPath: BinalyzeAIRAcquire.result.name
+      description: Acquisiton task name
+      type: string
+    - contextPath: BinalyzeAIRAcquire.result.organizationId
+      description: Organization Id of endpoint
+      type: number
+    - contextPath: BinalyzeAIRAcquire.statusCode
+      description: HTTP Status Code of response
+      type: number
+    - contextPath: BinalyzeAIRAcquire.errors
+      description: Error message
+      type: string
+    description: Acquire evidence from an endpoint
+  dockerimage: demisto/python3:3.10.4.30607
+  runonce: false
+  subtype: python3
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)
