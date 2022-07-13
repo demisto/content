@@ -6,6 +6,7 @@ from TestsInput.ansible_keys import MOCK_ANSIBLE_DICT, EXPECTED_ANSIBLE_DICT, MO
 from TestsInput.ansible_inventory import ANSIBLE_INVENTORY_HOSTS_LIST, ANSIBLE_INVENTORY_HOSTS_CSV_LIST
 from TestsInput.ansible_inventory import ANSIBLE_INVENTORY_HOST_w_PORT, ANSIBLE_INVENTORY_INT_PARAMS
 from unittest.mock import patch
+import pytest
 
 
 def test_dict2md_simple_lists():
@@ -210,3 +211,146 @@ def test_generic_ansible():
 
         assert CommandResults.readable_output == expected_readable
         assert CommandResults.outputs == expected_outputs
+
+
+@pytest.mark.parametrize(
+    'event, stdout, expected_err',
+    [
+        (
+            'verbose',
+            "PermissionError: [Errno 13] Permission denied: b'/.ansible'",
+            'Make sure the "demisto/ansible-runner" container runs as a root user.'
+        ),
+        (
+            'warning',
+            '',
+            'To see the full events details, run the command in debug mode.'
+        ),
+        (
+            'runner_on_async_failed',
+            '',
+            'Raw data is:'
+        )
+    ]
+)
+def test_generic_ansible_unhandled_errors(event, stdout, expected_err):
+    """
+    Given:
+        - Valid params and arguments for running the linux-expect command.
+
+    When:
+        - Calling generic_ansible() method.
+        - ansible_runner.run() returns unhandled events, in the following cases:
+          1. A verbose event indicating a PermissionError.
+          2. A warning event.
+          3. A runner_on_async_failed event.
+
+    Then:
+        - Make sure a DemistoException is raised with the appropriate error message for each case.
+    """
+    command_passed = False
+
+    args = {
+        "command": "date",
+        "echo": "No",
+        "host": "8.8.8.8",
+        "responses": "ls=ls",
+        "timeout": "30"
+    }
+    params = {
+        'port': 5985,
+        'creds': {'identifier': 'bill', 'password': 'xyz321', 'credentials': {}},
+        'concurrency': '4',
+        'become_method': 'sudo',
+        'become_user': 'root',
+        'become': 'No',
+        'become_password': ''
+    }
+
+    host_type = 'ssh'
+    integration_name = 'Linux'
+    command_name = 'expect'
+
+    mock_ansible_results = Object()
+    mock_ansible_results.events = [
+        {
+            'event': event,
+            'uuid': 'e5b95379-8988-4460-8c25-bc6cea7bccc3',
+            'counter': 1,
+            'stdout': stdout,
+            'start_line': 0,
+            'end_line': 0,
+            'runner_ident': '1f4e5207-2227-44ff-a292-590145cfb0d1'
+        }
+    ]
+
+    try:
+        with patch('ansible_runner.run', return_value=mock_ansible_results):
+            generic_ansible(integration_name, command_name, args, params, host_type)
+        assert command_passed  # should not get here
+    except Exception as e:
+        assert not command_passed
+        assert expected_err in str(e)
+
+
+def test_generic_ansible_unhandled_errors_but_should_not_fail():
+    """
+    Given:
+        - Valid params and arguments for running the linux-expect command.
+
+    When:
+        - Calling generic_ansible() method.
+        - ansible_runner.run() returns a verbose events, but also a standard valid event.
+
+    Then:
+        - Make sure only the valid event is returned and the command passes.
+    """
+
+    args = {
+        "command": "date",
+        "echo": "No",
+        "host": "8.8.8.8",
+        "responses": "ls=ls",
+        "timeout": "30"
+    }
+    params = {
+        'port': 5985,
+        'creds': {'identifier': 'bill', 'password': 'xyz321', 'credentials': {}},
+        'concurrency': '4',
+        'become_method': 'sudo',
+        'become_user': 'root',
+        'become': 'No',
+        'become_password': ''
+    }
+
+    host_type = 'ssh'
+    integration_name = 'Linux'
+    command_name = 'expect'
+
+    mock_ansible_results = Object()
+    mock_ansible_results.events = [
+        {
+            'event': 'verbose',
+            'uuid': 'e5b95379-8988-4460-8c25-bc6cea7bccc3',
+            'counter': 1,
+            'stdout': '',
+            'start_line': 0,
+            'end_line': 0,
+            'runner_ident': '1f4e5207-2227-44ff-a292-590145cfb0d1'
+        },
+        {
+            'event': 'runner_on_ok',
+            'uuid': '4770effd-5088-430c-aee2-621bee4f3f00',
+            'counter': 2,
+            'stdout': '123.123.123.123 | SUCCESS => {\r\n    "changed": false,\r\n'
+                      '"current_audit_policy": {\r\n        "file system": "failure"\r\n    }\r\n}',
+            'start_line': 0,
+            'end_line': 0,
+            'runner_ident': '1f4e5207-2227-44ff-a292-590145cfb0d1'
+        }
+    ]
+
+    with patch('ansible_runner.run', return_value=mock_ansible_results):
+        result = generic_ansible(integration_name, command_name, args, params, host_type)
+        assert len(result.outputs) == 1
+        assert result.outputs[0].get('status') == 'SUCCESS'
