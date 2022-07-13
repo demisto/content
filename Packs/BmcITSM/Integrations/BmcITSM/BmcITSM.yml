@@ -116,10 +116,6 @@ configuration:
   defaultvalue:
   type: 0
   additionalinfo: 'Search qualification to fetch tickets. For example: Status = "Draft" AND Impact = "1-Extensive/Widespread". The query will be used as an addition to the existing params. You can Review the BMC documentation for how to Build search qualifications: https://docs.bmc.com/docs/ars2008/building-qualifications-and-expressions-929630007.html'
-- display: Incident type
-  name: incidentType
-  required: false
-  type: 13
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -159,6 +155,10 @@ configuration:
   defaultvalue: "false"
   type: 8
   additionalinfo:
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
 script:
   script: ""
   type: python
