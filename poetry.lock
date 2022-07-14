@@ -508,8 +508,8 @@ build = ["gsutil (==5.8)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "fix_indicator_types_missing_create_artifacts"
-resolved_reference = "14f7950365a06becd5de25532a917dd7abeb0383"
+reference = "f736d5e2bd0d96fbf924edee21105282a0cfe2f0"
+resolved_reference = "f736d5e2bd0d96fbf924edee21105282a0cfe2f0"
 
 [[package]]
 name = "deprecated"
@@ -2204,7 +2204,7 @@ build = ["google-cloud-bigquery"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "342c10f66596c9de36c5b06558e086fe9de2fa0a01a0754091763fdf7e1e2275"
+content-hash = "0f7a8c4ee9cda5bce666f316534f488fe1cd3045d99dbfdd5d9bb54e8fe1883f"
 
 [metadata.files]
 aiohttp = [
