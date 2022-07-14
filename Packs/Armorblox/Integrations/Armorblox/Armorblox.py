@@ -1,4 +1,5 @@
 import demistomock as demisto  # noqa: F401
+from armorblox.client import Client as AbxBaseClient
 from CommonServerPython import *  # noqa: F401
 import dateparser
 import requests
@@ -17,46 +18,35 @@ PROXY = demisto.params().get('proxy')
 API_KEY = demisto.params().get('apikey')
 verify_certificate = not demisto.params().get('insecure', False)
 proxy = demisto.params().get('proxy', False)
-BASE_URL = f"https://{TENANT_NAME}.armorblox.io/api/v1beta1/organizations/{TENANT_NAME}"
-
-payload: Dict = {}
-headers = {
-    'x-ab-authorization': f'{API_KEY}'
-}
 
 
-class Client(BaseClient):
+class Client(AbxBaseClient):
     """Client class to interact with the service API
     This Client implements API calls, and does not contain any Demisto logic.
     Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
     """
 
-    def get_incidents(self, orderBy="ASC", pageSize=None, pageToken=None, first_fetch=None) -> List[Dict[str, Any]]:
-        request_params: Dict[str, Any] = {}
-
+    def get_incidents(self, orderBy='ASC', pageSize=None, pageToken=None, first_fetch=None):
+        request_params = {}
+        PATH = 'incidents'
         request_params['orderBy'] = orderBy
+
         if pageToken == -1 and first_fetch:
             request_params['timeFilter'] = first_fetch
         elif pageToken and first_fetch:
             request_params['timeFilter'] = first_fetch
             request_params['pageToken'] = pageToken
+
         if pageSize:
             request_params['pageSize'] = pageSize
-        return self._http_request(
-            method='GET',
-            url_suffix='/incidents',
-            params=request_params
-        )
+        response_json, _ = self.incidents.list_resource(PATH, params=request_params)
+        if response_json is None:
+            return []
+        else:
+            return response_json
 
     def get_incident_details(self, incident_id):
-        request_params: Dict[str, Any] = {}
-        return self._http_request(
-            method='GET',
-            url_suffix='/incidents/{}'.format(incident_id),
-            params=request_params
-        )
+        return self.incidents.get(incident_id)
 
 
 def makehash():
@@ -162,7 +152,8 @@ def fetch_incidents_command(client):
             start_time = dateparser.parse(start_time)
             message_ids = get_incident_message_ids(client, response['incidents'][0]['id'])
             response['incidents'][0]['message_ids'] = message_ids
-            curr_incident = {'rawJSON': json.dumps(response['incidents'][0]), 'details': json.dumps(response['incidents'][0])}
+            curr_incident = {'rawJSON': json.dumps(response['incidents'][0]),
+                             'details': json.dumps(response['incidents'][0])}
             incidents.append(curr_incident)
 
     if last_run and 'pageToken' in last_run.keys():
@@ -171,7 +162,7 @@ def fetch_incidents_command(client):
     if last_run and 'start_time' in last_run.keys():
         start_time = dateparser.parse(last_run.get('start_time'))
 
-    start_time = start_time.timestamp()
+    start_time = int(start_time.timestamp())
     incidents_data = get_incidents_list(client, pageToken=pageToken, first_fetch=FIRST_FETCH)
     pageToken = get_page_token(client, pageToken=pageToken)
     last_time = start_time
@@ -180,10 +171,9 @@ def fetch_incidents_command(client):
         dt = incident['date']
         parsed_date = dateparser.parse(dt)
         assert parsed_date is not None, f'failed parsing {dt}'
-        dt = parsed_date.timestamp()
+        dt = int(parsed_date.timestamp())
         # Update last run and add incident if the incident is newer than last fetch
         if dt > start_time:
-
             curr_incident = {'rawJSON': json.dumps(incident), 'details': json.dumps(incident)}
             last_time = dt
             incidents.append(curr_incident)
@@ -194,15 +184,13 @@ def fetch_incidents_command(client):
 
 def main():
     ''' EXECUTION '''
-    LOG('command is %s' % (demisto.command(), ))
+    LOG('command is %s' % (demisto.command(),))
     try:
 
         client = Client(
-            base_url=BASE_URL,
-            verify=verify_certificate,
-            headers=headers,
-            proxy=proxy)
-
+            api_key=API_KEY,
+            instance_name=TENANT_NAME
+        )
         if demisto.command() == "fetch-incidents":
             incident_results = fetch_incidents_command(client)
             demisto.incidents(incident_results)
