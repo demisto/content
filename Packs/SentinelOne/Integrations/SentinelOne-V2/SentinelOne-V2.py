@@ -1,6 +1,5 @@
 import io
 import json
-import time
 import traceback
 import zipfile
 from typing import Callable, List, Optional, Tuple
@@ -714,7 +713,8 @@ class Client(BaseClient):
             limit=30,
             sortOrder="desc",
         )
-        response = self._http_request(method='GET', url_suffix=endpoint_url, params=query_params)
+        response = self._http_request(method='GET', url_suffix=endpoint_url, params=query_params,
+                                      retries=3, backoff_factor=5, status_list_to_retry=[200, 202])
         urls_found = []
         for i in range(len(response["data"])):
             if response['data'][i]['data'].get('downloadUrl') is not None:
@@ -1712,7 +1712,6 @@ def fetch_threat_file(client: Client, args: dict) -> CommandResults:
     # Get Arguments
     threat_ids = argToList(args.get('threat_id'))
     password = args.get('password')
-    time_to_sleep = int(args.get('time_to_sleep', 30))
 
     downloaded_files = client.fetch_threat_file_request(password, threat_ids)
 
@@ -1722,7 +1721,7 @@ def fetch_threat_file(client: Client, args: dict) -> CommandResults:
     else:
         downloadable = False
         meta = 'No threats were downloaded'
-    time.sleep(time_to_sleep)
+
     for threat_id in threat_ids:
         download_url = ""
         threat_file_download_endpoint = client.download_url_request(threat_id)
