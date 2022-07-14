@@ -1089,14 +1089,19 @@ def create_file_report(file_hash: str, reports, file_info, format_: str = 'xml',
     outputs, feed_related_indicators, behavior, relationships = parse_file_report(file_hash, reports,
                                                                                   file_info, extended_data)
 
-    dbot_score = 3 if file_info["malware"] == 'yes' else 1
+    if file_info["malware"] == 'yes':
+        dbot_score = 3
+        tags = ['malware']
+    else:
+        dbot_score = 1
+        tags = []
 
     dbot_score_object = Common.DBotScore(indicator=file_hash, indicator_type=DBotScoreType.FILE,
                                          integration_name='WildFire', score=dbot_score, reliability=RELIABILITY)
     file = Common.File(dbot_score=dbot_score_object, name=file_info.get('filename'),
                        file_type=file_info.get('filetype'), md5=file_info.get('md5'), sha1=file_info.get('sha1'),
                        sha256=file_info.get('sha256'), size=file_info.get('size'),
-                       feed_related_indicators=feed_related_indicators, tags=['malware'],
+                       feed_related_indicators=feed_related_indicators, tags=tags,
                        digital_signature__publisher=file_info.get('file_signer'), behaviors=behavior, relationships=relationships)
 
     if format_ == 'pdf':

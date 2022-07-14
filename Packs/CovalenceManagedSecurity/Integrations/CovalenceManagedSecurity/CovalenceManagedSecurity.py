@@ -152,7 +152,7 @@ def portal_check():
         Portal(bearer=API_KEY)
         return True
     except Exception:
-        demisto.log(traceback.format_exc())
+        demisto.debug(traceback.format_exc())
         return False
 
 

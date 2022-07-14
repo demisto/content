@@ -1,0 +1,33 @@
+{
+    "defaultIncidentType": "Microsoft Graph Identity and Access",
+    "description": "Classifies Microsoft Graph Identity and Access's alerts",
+    "feed": false,
+    "id": "Microsoft Graph Identity and Access Classifier",
+    "keyTypeMap": {
+        "unlikelyTravel": "Microsoft Graph Identity and Access",
+        "anonymizedIPAddress": "Microsoft Graph Identity and Access",
+        "maliciousIPAddress": "Microsoft Graph Identity and Access",
+        "unfamiliarFeatures": "Microsoft Graph Identity and Access",
+        "malwareInfectedIPAddress": "Microsoft Graph Identity and Access",
+        "suspiciousIPAddress": "Microsoft Graph Identity and Access",
+        "leakedCredentials": "Microsoft Graph Identity and Access",
+        "investigationsThreatIntelligence": "Microsoft Graph Identity and Access",
+        "generic,adminConfirmedUserCompromised": "Microsoft Graph Identity and Access",
+        "mcasImpossibleTravel": "Microsoft Graph Identity and Access",
+        "mcasSuspiciousInboxManipulationRules": "Microsoft Graph Identity and Access",
+        "investigationsThreatIntelligenceSigninLinked": "Microsoft Graph Identity and Access",
+        "maliciousIPAddressValidCredentialsBlockedIP": "Microsoft Graph Identity and Access",
+        "unknownFutureValue": "Microsoft Graph Identity and Access"
+    },
+    "name": "Microsoft Graph Identity and Access Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "complex": null,
+        "simple": "riskEventType"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.2.0"
+}

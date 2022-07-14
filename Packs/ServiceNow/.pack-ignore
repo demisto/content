@@ -33,3 +33,6 @@ ignore=IF100
 [known_words]
 lookback
 InfoFile
+
+[file:classifier-ServiceNow.json]
+ignore=BA101

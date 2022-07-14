@@ -1,8 +1,9 @@
 {
     "name": "Palo Alto Networks Traps (Deprecated)",
-    "description": "Deprecated - Use the CortexXDR pack instead.",
+    "description": "Deprecated. Use the Cortex XDR pack instead.",
     "support": "xsoar",
-    "currentVersion": "1.0.9",
+    "hidden": true,
+    "currentVersion": "1.0.11",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
