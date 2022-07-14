@@ -1151,7 +1151,8 @@
             "integrations": "EDL",
             "instance_names": "edl_update",
             "fromversion": "5.5.0",
-            "pid_threshold": 8
+            "pid_threshold": 8,
+            "non_api": true
         },
         {
             "playbookID": "Test_export_indicators_service",
@@ -3659,7 +3660,8 @@
             "timeout": 3500,
             "memory_threshold": 900,
             "pid_threshold": 12,
-            "context_print_dt": "EDLHey"
+            "context_print_dt": "EDLHey",
+            "non_api": true
         },
         {
             "playbookID": "Export Indicators Performance Test",
@@ -3875,11 +3877,13 @@
         },
         {
             "playbookID": "EDL Indicator Performance Test",
-            "fromversion": "6.0.0"
+            "fromversion": "6.0.0",
+            "non_api": true
         },
         {
             "playbookID": "EDL Performance Test - Concurrency",
-            "fromversion": "6.0.0"
+            "fromversion": "6.0.0",
+            "non_api": true
         },
         {
             "playbookID": "Venafi - Test",
@@ -4233,7 +4237,8 @@
             "fromversion": "5.0.0",
             "integrations": [
                 "palo_alto_networks_pan_os_edl_management"
-            ]
+            ],
+            "non_api": true
         },
         {
             "playbookID": "Group-IB Threat Intelligence & Attribution-Test",
@@ -5458,6 +5463,58 @@
         "TruSTAR",
         "VulnDB"
     ],
+    "popular_integrations": [
+        "DemistoRESTAPI",
+        "Phishing",
+        "Active_Directory_Query",
+        "VirusTotal",
+        "AutoFocus",
+        "Malware",
+        "EWS",
+        "UrlScan",
+        "HelloWorld",
+        "Whois",
+        "Compliance",
+        "PAN-OS",
+        "ServiceNow",
+        "ExportIndicators",
+        "rasterize",
+        "MailSenderNew",
+        "SplunkPy",
+        "XForceExchange",
+        "ipinfo",
+        "EWSMailSender",
+        "FeedTAXII",
+        "Palo_Alto_Networks_WildFire",
+        "TIM_Processing",
+        "MicrosoftGraphMail",
+        "CortexXDR",
+        "CVESearch",
+        "MicrosoftGraphListener",
+        "DemistoLocking",
+        "VirusTotal-Private_API",
+        "AbuseDB",
+        "ThreatIntelligenceManagement",
+        "Asset",
+        "ImageOCR",
+        "MISP",
+        "PaloAltoNetworks_PAN_OS_EDL_Management",
+        "Jira",
+        "QRadar",
+        "PhishTank",
+        "Gmail",
+        "PANWComprehensiveInvestigation",
+        "GetServerURL",
+        "GenericSQL",
+        "MicrosoftTeams",
+        "AlienVault_OTX",
+        "OpenPhish",
+        "Sixgill-Darkfeed",
+        "URLHaus",
+        "EDL",
+        "FeedMitreAttack",
+        "RecordedFuture"
+  ],
     "unmockable_integrations": {
         "NetscoutArborSightline": "Uses timestamp",
         "Cylance Protect v2": "uses time-based JWT token",
