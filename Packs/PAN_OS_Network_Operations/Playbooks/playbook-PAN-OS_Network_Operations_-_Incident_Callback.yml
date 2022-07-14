@@ -1,38 +1,33 @@
 contentitemexportablefields:
   contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: a3acf260-148d-4af7-81ab-49744965d264
     propagationLabels:
     - all
-    toServerVersion: ""
-description: Checks to see if this incident has a parent incident and if so, links
-  the two incidents.
+description: Checks to see if this incident has a parent incident and if so, links the two incidents.
 id: PAN-OS Network Operations - Incident Callback
 inputs: []
 name: PAN-OS Network Operations - Incident Callback
 outputs: []
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: f258a1ff-09f8-4f56-8366-152bd3057cc0
       iscommand: false
-      name: ""
+      name: ''
       version: -1
+      description: ''
     taskid: f258a1ff-09f8-4f56-8366-152bd3057cc0
     timertriggers: []
     type: start
@@ -43,14 +38,14 @@ tasks:
           "y": 20
         }
       }
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     note: false
     quietmode: 0
     scriptarguments:
@@ -79,8 +74,8 @@ tasks:
           "y": 330
         }
       }
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
@@ -89,12 +84,13 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: e5b1d1c4-905c-47cf-89b8-6337054ed269
       iscommand: false
       name: Done
       type: title
       version: -1
+      description: ''
     taskid: e5b1d1c4-905c-47cf-89b8-6337054ed269
     timertriggers: []
     type: title
@@ -105,7 +101,7 @@ tasks:
           "y": 490
         }
       }
-  "4":
+  '4':
     conditions:
     - condition:
       - - left:
@@ -113,22 +109,22 @@ tasks:
             value:
               simple: incident.panosnetworkoperationsclosetaskid
           operator: isNotEmpty
-      label: "yes"
-    id: "4"
+      label: yes
+    id: '4'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "3"
-      "yes":
-      - "2"
+      - '3'
+      yes:
+      - '2'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Chefcks if the incident callback needs to run.
       id: 03415a7b-1a12-44c2-8c86-2943aa702009
       iscommand: false
@@ -158,3 +154,6 @@ view: |-
       }
     }
   }
+tests:
+- No tests (auto formatted)
+fromversion: 6.2.0

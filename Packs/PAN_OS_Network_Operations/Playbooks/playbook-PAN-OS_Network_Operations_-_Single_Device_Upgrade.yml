@@ -1,47 +1,43 @@
 contentitemexportablefields:
   contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: a3acf260-148d-4af7-81ab-49744965d264
     propagationLabels:
     - all
-    toServerVersion: ""
 description: Runs a complete upgrade process for a single device
 id: PAN-OS Network Operations - Single Device Upgrade
 inputs:
 - description: Target firewall to upgrade
   key: target
-  playbookInputQuery: null
+  playbookInputQuery:
   required: true
   value: {}
 - description: Target version to upgrade to.
   key: target_version
-  playbookInputQuery: null
+  playbookInputQuery:
   required: true
   value: {}
 name: PAN-OS Network Operations - Single Device Upgrade
 outputs: []
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "25"
+      - '25'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: c4072e0e-8d47-4f80-8fa5-5a46f68bafe0
       iscommand: false
-      name: ""
+      name: ''
       version: -1
+      description: ''
     taskid: c4072e0e-8d47-4f80-8fa5-5a46f68bafe0
     timertriggers: []
     type: start
@@ -52,15 +48,15 @@ tasks:
           "y": -2110
         }
       }
-  "14":
+  '14':
     continueonerror: true
-    id: "14"
+    id: '14'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "21"
+      - '21'
     note: false
     quietmode: 0
     scriptarguments:
@@ -69,7 +65,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Reboot the given host.
       id: f3c4c5a6-c6ab-45c2-8d2f-a7ea04755d07
       iscommand: true
@@ -87,13 +83,13 @@ tasks:
           "y": -65
         }
       }
-  "15":
-    id: "15"
+  '15':
+    id: '15'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     loop:
-      exitCondition: ""
+      exitCondition: ''
       iscommand: false
       max: 0
       scriptArguments:
@@ -112,38 +108,38 @@ tasks:
             transformers:
             - operator: FirstArrayElement
         Interval:
-          simple: "1"
+          simple: '1'
         PollingCommandArgName:
           simple: ids
         PollingCommandName:
           simple: pan-os-platform-get-jobs
         Timeout:
-          simple: "10"
+          simple: '10'
         dt:
           simple: PANOS.JobStatus.Result(val.status!=="FIN").id
       wait: 1
     nexttasks:
       '#none#':
-      - "18"
+      - '18'
     note: false
     quietmode: 0
     scriptarguments:
       Ids:
         simple: ${inputs.target}
       Interval:
-        simple: "1"
+        simple: '1'
       PollingCommandArgName:
         simple: hostid
       PollingCommandName:
         simple: pan-os-platform-get-system-status
       Timeout:
-        simple: "30"
+        simple: '30'
       dt:
         simple: PANOS.SystemStatus(!val.up).hostid
     separatecontext: true
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: |-
         Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
         This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
@@ -168,8 +164,8 @@ tasks:
           "y": 300
         }
       }
-  "16":
-    id: "16"
+  '16':
+    id: '16'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
@@ -178,7 +174,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Finish
       id: e3f6ea6d-2149-4667-8bbc-dab4f9eeb20b
       iscommand: false
@@ -195,14 +191,14 @@ tasks:
           "y": 825
         }
       }
-  "18":
-    id: "18"
+  '18':
+    id: '18'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "19"
+      - '19'
     note: false
     quietmode: 0
     scriptarguments:
@@ -211,7 +207,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Gets information from all PAN-OS systems in the topology.
       id: e30e82c6-afa0-48ee-8661-ee52964b5017
       iscommand: true
@@ -229,7 +225,7 @@ tasks:
           "y": 450
         }
       }
-  "19":
+  '19':
     conditions:
     - condition:
       - - left:
@@ -241,22 +237,22 @@ tasks:
             iscontext: true
             value:
               simple: inputs.target_version
-      label: "yes"
-    id: "19"
+      label: yes
+    id: '19'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "20"
-      "yes":
-      - "16"
+      - '20'
+      yes:
+      - '16'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Checks whether the post-upgrade software version is correct.
       id: f903e077-7aa8-4c31-8ed9-1d8431cb1c1a
       iscommand: false
@@ -273,8 +269,8 @@ tasks:
           "y": 630
         }
       }
-  "20":
-    id: "20"
+  '20':
+    id: '20'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
@@ -282,12 +278,11 @@ tasks:
     quietmode: 0
     scriptarguments:
       message:
-        simple: Installation completed, reboot completed, but device still on old
-          software version.
+        simple: Installation completed, reboot completed, but device still on old software version.
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Prints an error entry with a given message
       id: c34bd6be-57da-4228-8343-380cca27de4e
       iscommand: false
@@ -305,23 +300,23 @@ tasks:
           "y": 810
         }
       }
-  "21":
-    id: "21"
+  '21':
+    id: '21'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "15"
+      - '15'
     note: false
     quietmode: 0
     scriptarguments:
       seconds:
-        simple: "25"
+        simple: '25'
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Sleep for X seconds
       id: b804364d-ca0a-4673-85cb-9aa30d3de8e9
       iscommand: false
@@ -339,14 +334,14 @@ tasks:
           "y": 110
         }
       }
-  "22":
-    id: "22"
+  '22':
+    id: '22'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "35"
+      - '35'
     note: false
     quietmode: 0
     scriptarguments:
@@ -355,7 +350,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Check the devices for software that is available to be installed.
       id: 3e066f68-5b02-4c1f-8a5f-a0be5c2206dc
       iscommand: true
@@ -373,7 +368,7 @@ tasks:
           "y": -1460
         }
       }
-  "23":
+  '23':
     conditions:
     - condition:
       - - left:
@@ -393,24 +388,23 @@ tasks:
             iscontext: true
             value:
               simple: inputs.target_version
-      label: "yes"
-    id: "23"
+      label: yes
+    id: '23'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "38"
-      "yes":
-      - "39"
+      - '38'
+      yes:
+      - '39'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Checks if the upgrade software version is already downloaded onto
-        the PAN-OS system.
+      brand: ''
+      description: Checks if the upgrade software version is already downloaded onto the PAN-OS system.
       id: afdf3fd4-ccda-4f8e-8af0-e049a4140ed9
       iscommand: false
       name: Has the software already been downloaded?
@@ -426,15 +420,15 @@ tasks:
           "y": -760
         }
       }
-  "24":
+  '24':
     continueonerror: true
-    id: "24"
+    id: '24'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "22"
+      - '22'
     note: false
     quietmode: 0
     scriptarguments:
@@ -443,7 +437,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Get the device state from the provided device.
       id: a9e64233-bb16-43b0-86ac-93f80afaeaf8
       iscommand: true
@@ -461,14 +455,14 @@ tasks:
           "y": -1640
         }
       }
-  "25":
-    id: "25"
+  '25':
+    id: '25'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "26"
+      - '26'
     note: false
     quietmode: 0
     scriptarguments:
@@ -477,7 +471,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Gets information from all PAN-OS systems in the topology.
       id: 00837bd6-3bd0-4e0b-8c73-a40d692aa6d5
       iscommand: true
@@ -495,7 +489,7 @@ tasks:
           "y": -1980
         }
       }
-  "26":
+  '26':
     conditions:
     - condition:
       - - left:
@@ -507,21 +501,21 @@ tasks:
             value:
               simple: pc
       label: Panorama
-    id: "26"
+    id: '26'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "24"
+      - '24'
       Panorama:
-      - "22"
+      - '22'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Checks the system type.
       id: 144981c2-e379-4a4e-8c88-28b8655403c4
       iscommand: false
@@ -538,7 +532,7 @@ tasks:
           "y": -1830
         }
       }
-  "27":
+  '27':
     conditions:
     - condition:
       - - left:
@@ -558,22 +552,22 @@ tasks:
                         simple: PANOS.SoftwareVersions.Summary.downloaded
                     operator: isTrue
                 root: PANOS.SoftwareVersions.Summary
-      label: "yes"
-    id: "27"
+      label: yes
+    id: '27'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "37"
-      "yes":
-      - "23"
+      - '37'
+      yes:
+      - '23'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: True if the base version of the upgrade image is downloaded.
       id: 833d6fee-7023-4d46-8088-658de4a1ff88
       iscommand: false
@@ -590,14 +584,14 @@ tasks:
           "y": -1110
         }
       }
-  "35":
-    id: "35"
+  '35':
+    id: '35'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "27"
+      - '27'
     note: false
     quietmode: 0
     scriptarguments:
@@ -615,10 +609,10 @@ tasks:
           - args:
               from:
                 value:
-                  simple: "0"
+                  simple: '0'
               to:
                 value:
-                  simple: "2"
+                  simple: '2'
             operator: slice
           - args:
               separator:
@@ -629,12 +623,12 @@ tasks:
               prefix: {}
               suffix:
                 value:
-                  simple: ".0"
+                  simple: '.0'
             operator: concat
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Set a value in context under the key you entered.
       id: 96ad2bc0-1f51-4d4c-8bfc-a14fbe5a0ae2
       iscommand: false
@@ -652,19 +646,19 @@ tasks:
           "y": -1300
         }
       }
-  "37":
-    id: "37"
+  '37':
+    id: '37'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     loop:
-      exitCondition: ""
+      exitCondition: ''
       iscommand: false
       max: 100
       wait: 1
     nexttasks:
       '#none#':
-      - "23"
+      - '23'
     note: false
     quietmode: 0
     scriptarguments:
@@ -675,7 +669,7 @@ tasks:
     separatecontext: true
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Downloads the PAN-OS Software.
       id: f702f18a-3e94-49db-8ef5-b7680e78b983
       iscommand: false
@@ -693,19 +687,19 @@ tasks:
           "y": -930
         }
       }
-  "38":
-    id: "38"
+  '38':
+    id: '38'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     loop:
-      exitCondition: ""
+      exitCondition: ''
       iscommand: false
       max: 100
       wait: 1
     nexttasks:
       '#none#':
-      - "39"
+      - '39'
     note: false
     quietmode: 0
     scriptarguments:
@@ -716,7 +710,7 @@ tasks:
     separatecontext: true
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Downloads the given software image.
       id: bfa1cc69-4013-4549-8aef-c131bbd67a04
       iscommand: false
@@ -734,19 +728,19 @@ tasks:
           "y": -565
         }
       }
-  "39":
-    id: "39"
+  '39':
+    id: '39'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     loop:
-      exitCondition: ""
+      exitCondition: ''
       iscommand: false
       max: 0
       wait: 1
     nexttasks:
       '#none#':
-      - "40"
+      - '40'
     note: false
     quietmode: 0
     scriptarguments:
@@ -757,7 +751,7 @@ tasks:
     separatecontext: true
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Run the installation subplaybook.
       id: 85fcd821-df9b-4d45-8cdc-b8cd6e70832a
       iscommand: false
@@ -775,14 +769,14 @@ tasks:
           "y": -375
         }
       }
-  "40":
-    id: "40"
+  '40':
+    id: '40'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "14"
+      - '14'
     note: false
     quietmode: 0
     scriptarguments:
@@ -824,3 +818,6 @@ view: |-
       }
     }
   }
+tests:
+- No tests (auto formatted)
+fromversion: 6.2.0

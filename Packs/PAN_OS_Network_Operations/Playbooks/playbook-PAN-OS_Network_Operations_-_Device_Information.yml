@@ -1,60 +1,51 @@
 contentitemexportablefields:
   contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: a3acf260-148d-4af7-81ab-49744965d264
     propagationLabels:
     - all
-    toServerVersion: ""
 description: Gathers all relevant information for a specific PAN-OS device.
 id: PAN-OS Network Operations - Device Information
 inputs:
-- description: ""
+- description: ''
   key: device
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: ${incident.panosnetworkoperationstarget}
-- description: If set, will assign this group to the first group retrieved via the
-    regex string. Example; regex of (\S+)\-\S and hostname "nsw-fw01" would set the
-    device domain to "nsw".
+- description: If set, will assign this group to the first group retrieved via the regex string. Example; regex of (\S+)\-\S and hostname "nsw-fw01" would set the device domain to "nsw".
   key: domain_regex_hostname
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: (\S+)\-
-- description: If set to "device-group", device will be automatically put in a Domain
-    group based on the device group it's a member of in Panorama. If set to "template-stack",
-    will set the domain to the template-stack this device is a member of. If unset,
-    no grouping is done.
+- description: If set to "device-group", device will be automatically put in a Domain group based on the device group it's a member of in Panorama. If set to "template-stack", will set the domain to the template-stack this device is a member of. If unset, no grouping is done.
   key: domain_panorama
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: both
 name: PAN-OS Network Operations - Device Information
 outputs: []
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 6c2010de-57c8-424b-8d00-a96cd8842e26
       iscommand: false
-      name: ""
+      name: ''
       version: -1
+      description: ''
     taskid: 6c2010de-57c8-424b-8d00-a96cd8842e26
     timertriggers: []
     type: start
@@ -65,7 +56,7 @@ tasks:
           "y": -550
         }
       }
-  "1":
+  '1':
     fieldMapping:
     - incidentfield: PAN-OS Network Operations - Management IP
       output:
@@ -164,13 +155,13 @@ tasks:
           root: PANOS.ShowSystemInfo.Summary
           transformers:
           - operator: FirstArrayElement
-    id: "1"
+    id: '1'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     note: false
     quietmode: 0
     scriptarguments:
@@ -179,7 +170,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Gets information from all PAN-OS systems in the topology.
       id: 72b4ff6d-0e83-42ae-83e6-b140e6fd02c4
       iscommand: true
@@ -197,7 +188,7 @@ tasks:
           "y": 420
         }
       }
-  "2":
+  '2':
     fieldMapping:
     - incidentfield: PAN-OS Network Operations - High Availability State
       output:
@@ -220,13 +211,13 @@ tasks:
           root: PANOS.HAState
           transformers:
           - operator: FirstArrayElement
-    id: "2"
+    id: '2'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
     note: false
     quietmode: 0
     scriptarguments:
@@ -235,9 +226,8 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Get the HA state and assocaited details from the given device and
-        any other details.
+      brand: ''
+      description: Get the HA state and assocaited details from the given device and any other details.
       id: aa806017-95dd-454f-8580-91e701996077
       iscommand: true
       name: Get HA Information
@@ -254,7 +244,7 @@ tasks:
           "y": 580
         }
       }
-  "3":
+  '3':
     conditions:
     - condition:
       - - left:
@@ -262,22 +252,22 @@ tasks:
             value:
               simple: incident.panosnetworkoperationsparentincidentid
           operator: isNotEmpty
-      label: "yes"
-    id: "3"
+      label: yes
+    id: '3'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "5"
-      "yes":
-      - "4"
+      - '5'
+      yes:
+      - '4'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: True if this incident has been created by another incident.
       id: e9e870a9-e49a-42ce-818a-d4e10322b5ce
       iscommand: false
@@ -294,14 +284,14 @@ tasks:
           "y": -410
         }
       }
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     note: false
     quietmode: 0
     scriptarguments:
@@ -328,25 +318,26 @@ tasks:
           "y": -240
         }
       }
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: c3d6fedd-6a59-4808-88e3-74f85b3d5eb5
       iscommand: false
       name: Gather Device Information
       type: title
       version: -1
+      description: ''
     taskid: c3d6fedd-6a59-4808-88e3-74f85b3d5eb5
     timertriggers: []
     type: title
@@ -357,23 +348,23 @@ tasks:
           "y": -20
         }
       }
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
     note: false
     quietmode: 0
     scriptarguments:
       all:
-        simple: "yes"
+        simple: yes
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: |-
         Delete field from context.
 
@@ -396,26 +387,27 @@ tasks:
           "y": 80
         }
       }
-  "7":
-    id: "7"
+  '7':
+    id: '7'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     note: false
     quietmode: 0
     separatecontext: true
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 10203a7e-0734-477f-8ae1-eb161e21caa5
       iscommand: false
       name: Update Occurred Time
       playbookId: Update Occurred Time
       type: playbook
       version: -1
+      description: ''
     taskid: 10203a7e-0734-477f-8ae1-eb161e21caa5
     timertriggers: []
     type: playbook
@@ -426,19 +418,19 @@ tasks:
           "y": 260
         }
       }
-  "8":
-    id: "8"
+  '8':
+    id: '8'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     loop:
-      exitCondition: ""
+      exitCondition: ''
       iscommand: false
       max: 100
       wait: 1
     nexttasks:
       '#none#':
-      - "9"
+      - '9'
     note: false
     quietmode: 0
     scriptarguments:
@@ -449,13 +441,14 @@ tasks:
     separatecontext: true
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: b9838bb6-7a98-4492-826d-c6d8f87d83bf
       iscommand: false
       name: PAN-OS Network Operations - Set Device Domain
-      playbookId: 87805323-33fa-458d-8780-707e9d7e37ec
+      playbookId: PAN-OS Network Operations - Set Device Domain
       type: playbook
       version: -1
+      description: ''
     taskid: b9838bb6-7a98-4492-826d-c6d8f87d83bf
     timertriggers: []
     type: playbook
@@ -466,8 +459,8 @@ tasks:
           "y": 730
         }
       }
-  "9":
-    id: "9"
+  '9':
+    id: '9'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
@@ -476,12 +469,13 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 442e46a7-89d9-4290-89e0-54e7510036ad
       iscommand: false
       name: Finish
       type: title
       version: -1
+      description: ''
     taskid: 442e46a7-89d9-4290-89e0-54e7510036ad
     timertriggers: []
     type: title
@@ -505,3 +499,6 @@ view: |-
       }
     }
   }
+tests:
+- No tests (auto formatted)
+fromversion: 6.2.0

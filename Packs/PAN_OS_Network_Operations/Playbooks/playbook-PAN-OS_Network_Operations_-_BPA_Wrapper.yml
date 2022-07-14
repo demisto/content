@@ -1,18 +1,13 @@
 contentitemexportablefields:
   contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: a3acf260-148d-4af7-81ab-49744965d264
     propagationLabels:
     - all
-    toServerVersion: ""
 description: Wraps the BPA use case to make it simple to run using a button.
-id: 7823b858-49a5-4d43-8aaa-11ac4985eb6e
+id: PAN-OS Network Operations - BPA Wrapper
 inputs:
 - description: The name of the new BPA incident to create.
   key: incident_name
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: Panorama - Best Practices Assessment
@@ -20,26 +15,27 @@ name: PAN-OS Network Operations - BPA Wrapper
 outputs:
 - contextPath: CreatedIncidentID
   description: commands.local.cmd.create.inc.outputs.createdId
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: e0e25583-91a5-4382-82fb-8bc0578eea92
       iscommand: false
-      name: ""
+      name: ''
       version: -1
+      description: ''
     taskid: e0e25583-91a5-4382-82fb-8bc0578eea92
     timertriggers: []
     type: start
@@ -50,8 +46,8 @@ tasks:
           "y": -160
         }
       }
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
@@ -60,12 +56,13 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: da293e92-1700-4bde-8d6f-cf20a086475a
       iscommand: false
       name: Finish!
       type: title
       version: -1
+      description: ''
     taskid: da293e92-1700-4bde-8d6f-cf20a086475a
     timertriggers: []
     type: title
@@ -76,7 +73,7 @@ tasks:
           "y": 540
         }
       }
-  "4":
+  '4':
     conditions:
     - condition:
       - - left:
@@ -102,22 +99,22 @@ tasks:
                         simple: active
                 root: modules
           operator: isExists
-      label: "yes"
-    id: "4"
+      label: yes
+    id: '4'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "3"
-      "yes":
-      - "5"
+      - '3'
+      yes:
+      - '5'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 794a3641-aea9-451a-8786-75e7783fdab6
       iscommand: false
       name: Is the BPA Integration Enabled?
@@ -133,14 +130,14 @@ tasks:
           "y": -30
         }
       }
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
     note: false
     quietmode: 0
     scriptarguments:
@@ -169,14 +166,14 @@ tasks:
           "y": 170
         }
       }
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     note: false
     quietmode: 0
     scriptarguments:
@@ -203,8 +200,8 @@ tasks:
           "y": 330
         }
       }
-  "7":
-    id: "7"
+  '7':
+    id: '7'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
@@ -247,3 +244,6 @@ view: |-
       }
     }
   }
+tests:
+- No tests (auto formatted)
+fromversion: 6.2.0

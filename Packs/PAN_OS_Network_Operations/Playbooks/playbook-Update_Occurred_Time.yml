@@ -1,37 +1,33 @@
 contentitemexportablefields:
   contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: a3acf260-148d-4af7-81ab-49744965d264
     propagationLabels:
     - all
-    toServerVersion: ""
 description: Updates the occurred time for the current incident.
 id: Update Occurred Time
 inputs: []
 name: Update Occurred Time
 outputs: []
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: e44260fe-e778-4851-8de5-c7eeedd42572
       iscommand: false
-      name: ""
+      name: ''
       version: -1
+      description: ''
     taskid: e44260fe-e778-4851-8de5-c7eeedd42572
     timertriggers: []
     type: start
@@ -42,14 +38,14 @@ tasks:
           "y": 50
         }
       }
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     note: false
     quietmode: 0
     scriptarguments:
@@ -58,7 +54,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: |
         Retrieves the current date and time.
       id: 27ebd3b0-de65-485f-867a-550895b34b66
@@ -77,14 +73,14 @@ tasks:
           "y": 180
         }
       }
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     note: false
     quietmode: 0
     scriptarguments:
@@ -111,8 +107,8 @@ tasks:
           "y": 330
         }
       }
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
@@ -121,12 +117,13 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 1dee786f-79e8-422f-8567-fef751bd1220
       iscommand: false
       name: Finish
       type: title
       version: -1
+      description: ''
     taskid: 1dee786f-79e8-422f-8567-fef751bd1220
     timertriggers: []
     type: title
@@ -150,3 +147,6 @@ view: |-
       }
     }
   }
+tests:
+- No tests (auto formatted)
+fromversion: 6.2.0

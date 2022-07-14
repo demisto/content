@@ -1,58 +1,50 @@
 contentitemexportablefields:
   contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: a3acf260-148d-4af7-81ab-49744965d264
     propagationLabels:
     - all
-    toServerVersion: ""
 description: Remediates Visibility Hygiene issues.
-id: 81d62c9a-4c6d-430c-811e-926b141a694d
+id: PAN-OS Network Operations - Visibility Hygiene Remediation
 inputs:
 - description: The list of supported codes for automatic remediation.
   key: supported_codes
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: BP-V-3 BP-V-4 BP-V-5 BP-V-6 BP-V-7 BP-V-8 BP-V-9 BP-V-10
-- description: If set, any issues that this playbook can automatically remediate without
-    threat of traffic interruption will be done.
+- description: If set, any issues that this playbook can automatically remediate without threat of traffic interruption will be done.
   key: auto_remediate
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
-    simple: "false"
-- description: If set to Yes, the remediated configuration will be automatically committed
-    to the firewalls and Panorama.
+    simple: 'false'
+- description: If set to Yes, the remediated configuration will be automatically committed to the firewalls and Panorama.
   key: auto_commit
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
-    simple: "false"
+    simple: 'false'
 name: PAN-OS Network Operations - Visibility Hygiene Remediation
 outputs: []
-sourceplaybookid: ba6f503c-1e97-4bbb-8b60-16607aea58e5
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: start
       id: c0d14fb5-b123-4e58-8c4d-72094a4dbf1a
       iscommand: false
-      name: ""
+      name: ''
       version: -1
     taskid: c0d14fb5-b123-4e58-8c4d-72094a4dbf1a
     timertriggers: []
@@ -64,23 +56,23 @@ tasks:
           "y": -260
         }
       }
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "17"
+      - '17'
     note: false
     quietmode: 0
     scriptarguments:
       all:
-        simple: "yes"
+        simple: yes
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Delete field from context
       id: c0ba37b5-0c18-4aab-819c-34b95c340883
       iscommand: false
@@ -98,7 +90,7 @@ tasks:
           "y": -120
         }
       }
-  "2":
+  '2':
     conditions:
     - condition:
       - - left:
@@ -106,22 +98,22 @@ tasks:
             value:
               simple: incident.panosnetworkoperationsparentincidentid
           operator: isNotEmpty
-      label: "yes"
-    id: "2"
+      label: yes
+    id: '2'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "4"
-      "yes":
-      - "3"
+      - '4'
+      yes:
+      - '3'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: True if this task has been initiated by another incident.
       id: 73ba48ee-96c8-4347-8eda-8df1791af68c
       iscommand: false
@@ -138,14 +130,14 @@ tasks:
           "y": 260
         }
       }
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     note: false
     quietmode: 0
     scriptarguments:
@@ -172,22 +164,22 @@ tasks:
           "y": 460
         }
       }
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "8"
-      - "9"
-      - "13"
+      - '8'
+      - '9'
+      - '13'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Start all hygiene issue fixes
       id: 29d1249f-3658-4c99-86b3-8d321f5e6cb9
       iscommand: false
@@ -204,14 +196,14 @@ tasks:
           "y": 620
         }
       }
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
     note: false
     quietmode: 0
     scriptarguments:
@@ -230,7 +222,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Fix log fowarding issues.
       id: 2f405b10-9cef-4922-8ef2-65a3059b859e
       iscommand: true
@@ -248,20 +240,20 @@ tasks:
           "y": 1250
         }
       }
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "27"
+      - '27'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Fix security rule visibility issues.
       id: 34894533-f7dd-452b-8d75-d8bb702a9ce1
       iscommand: false
@@ -278,14 +270,14 @@ tasks:
           "y": 1440
         }
       }
-  "7":
-    id: "7"
+  '7':
+    id: '7'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "20"
+      - '20'
     note: false
     quietmode: 0
     scriptarguments:
@@ -312,7 +304,7 @@ tasks:
           "y": 3040
         }
       }
-  "8":
+  '8':
     conditions:
     - condition:
       - - left:
@@ -338,7 +330,7 @@ tasks:
           operator: isEqualString
           right:
             value:
-              simple: "true"
+              simple: 'true'
       label: Yes - Auto Remediate
     - condition:
       - - left:
@@ -356,24 +348,24 @@ tasks:
                         simple: BP-V-3
                 root: incident.panosnetworkoperationsconfigurationhygieneissues
           operator: isExists
-      label: "yes"
-    id: "8"
+      label: yes
+    id: '8'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "6"
+      - '6'
       Yes - Auto Remediate:
-      - "5"
-      "yes":
-      - "10"
+      - '5'
+      yes:
+      - '10'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Checks for BP-V-3 issues.
       id: 83a8d5ac-b6c1-4f07-8d1d-1cb191844d53
       iscommand: false
@@ -390,7 +382,7 @@ tasks:
           "y": 780
         }
       }
-  "9":
+  '9':
     conditions:
     - condition:
       - - left:
@@ -411,24 +403,23 @@ tasks:
                 transformers:
                 - operator: uniq
           operator: isExists
-      label: "yes"
-    id: "9"
+      label: yes
+    id: '9'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "6"
-      "yes":
-      - "12"
+      - '6'
+      yes:
+      - '12'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Asked the client how to remediate issues that cant be automatically
-        remediated.
+      brand: ''
+      description: Asked the client how to remediate issues that cant be automatically remediated.
       id: 7a91db9a-7a0c-4b4b-8423-fb3b57f17c17
       iscommand: false
       name: Manual Fix Required
@@ -444,58 +435,57 @@ tasks:
           "y": 780
         }
       }
-  "10":
+  '10':
     form:
-      description: ""
+      description: ''
       expired: false
       questions:
       - defaultrows: []
-        fieldassociated: ""
+        fieldassociated: ''
         gridcolumns: []
-        id: "0"
-        label: ""
+        id: '0'
+        label: ''
         labelarg:
-          simple: Confirm the remediation action of enabling *Enhanced Application
-            Logging* on all log forwarding profiles.
+          simple: Confirm the remediation action of enabling *Enhanced Application Logging* on all log forwarding profiles.
         options: []
         optionsarg:
-        - simple: "true"
-        - simple: "false"
-        placeholder: ""
+        - simple: 'true'
+        - simple: 'false'
+        placeholder: ''
         readonly: false
         required: false
-        tooltip: ""
+        tooltip: ''
         type: singleSelect
-      sender: ""
+      sender: ''
       title: BP-V-3 Fix Confirmation
       totalanswers: 0
-    id: "10"
+    id: '10'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     message:
-      bcc: null
-      body: null
-      cc: null
-      format: ""
+      bcc:
+      body:
+      cc:
+      format: ''
       methods: []
-      subject: null
+      subject:
       timings:
         completeafterreplies: 1
         completeaftersla: false
         completeafterv2: false
         retriescount: 2
         retriesinterval: 360
-      to: null
+      to:
     nexttasks:
       '#none#':
-      - "11"
+      - '11'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Confirms the fix for BP-V-3 issues.
       id: ea4f72dd-80ea-43d7-8689-7fc20cd0c9f5
       iscommand: false
@@ -512,7 +502,7 @@ tasks:
           "y": 930
         }
       }
-  "11":
+  '11':
     conditions:
     - condition:
       - - left:
@@ -522,23 +512,23 @@ tasks:
           operator: isEqualString
           right:
             value:
-              simple: "true"
-      label: "yes"
-    id: "11"
+              simple: 'true'
+      label: yes
+    id: '11'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "6"
-      "yes":
-      - "5"
+      - '6'
+      yes:
+      - '5'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: True if the fixes were accepted.
       id: 4672aa30-5e95-4696-8d9a-aa29e901200f
       iscommand: false
@@ -555,16 +545,16 @@ tasks:
           "y": 1090
         }
       }
-  "12":
+  '12':
     form:
-      description: ""
+      description: ''
       expired: false
       questions:
       - defaultrows: []
-        fieldassociated: ""
+        fieldassociated: ''
         gridcolumns: []
-        id: "0"
-        label: ""
+        id: '0'
+        label: ''
         labelarg:
           complex:
             accessor: description
@@ -606,53 +596,42 @@ tasks:
         optionsarg:
         - simple: Issues manually remediated.
         - simple: Issues will not be remediated.
-        placeholder: ""
+        placeholder: ''
         readonly: false
         required: false
-        tooltip: ""
+        tooltip: ''
         type: singleSelect
       sender: Your SOC team
       title: Manual Remediation Confirmation
       totalanswers: 0
-    formDisplay:
-      bodybackgroundcolor: ""
-      bodyfontcolor: ""
-      headerbackgroundcolor: ""
-      headerfontcolor: ""
-      isexternalrtl: false
-      sender: ""
-      submitbuttonbackgroundcolor: ""
-      submitbuttonfontcolor: ""
-      submittext: ""
-    id: "12"
+    id: '12'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     message:
-      bcc: null
-      body: null
-      cc: null
-      format: ""
+      bcc:
+      body:
+      cc:
+      format: ''
       methods: []
-      subject: null
+      subject:
       timings:
         completeafterreplies: 1
         completeaftersla: false
         completeafterv2: false
         retriescount: 2
         retriesinterval: 360
-      to: null
+      to:
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Asked the customer to confirm they will manually remediate the
-        other hygiene issues.
+      brand: ''
+      description: Asked the customer to confirm they will manually remediate the other hygiene issues.
       id: 4f27b350-8c34-4c9f-84de-4f6d80c1783a
       iscommand: false
       name: Confirm Manual Remediation
@@ -668,7 +647,7 @@ tasks:
           "y": 1250
         }
       }
-  "13":
+  '13':
     conditions:
     - condition:
       - - left:
@@ -686,22 +665,22 @@ tasks:
                         simple: BP-V-7
                 root: incident.panosnetworkoperationsconfigurationhygieneissues
           operator: isExists
-      label: "yes"
-    id: "13"
+      label: yes
+    id: '13'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "6"
-      "yes":
-      - "14"
+      - '6'
+      yes:
+      - '14'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Checks for BP-V-7 issues.
       id: 6e70c824-6059-4713-8438-40f7f79a8788
       iscommand: false
@@ -718,17 +697,16 @@ tasks:
           "y": 780
         }
       }
-  "14":
+  '14':
     form:
-      description: To remediate BP-V-7, a log forwarding profile will be set on the
-        security zones.
+      description: To remediate BP-V-7, a log forwarding profile will be set on the security zones.
       expired: false
       questions:
       - defaultrows: []
-        fieldassociated: ""
+        fieldassociated: ''
         gridcolumns: []
-        id: "0"
-        label: ""
+        id: '0'
+        label: ''
         labelarg:
           complex:
             accessor: name
@@ -765,58 +743,57 @@ tasks:
               operator: concat
         options: []
         optionsarg:
-        - simple: "true"
-        - simple: "false"
-        placeholder: ""
+        - simple: 'true'
+        - simple: 'false'
+        placeholder: ''
         readonly: false
         required: false
-        tooltip: ""
+        tooltip: ''
         type: singleSelect
       - defaultrows: []
-        fieldassociated: ""
+        fieldassociated: ''
         gridcolumns: []
-        id: "1"
-        label: ""
+        id: '1'
+        label: ''
         labelarg:
           simple: Log forwarding profile name
         options: []
         optionsarg: []
-        placeholder: ""
+        placeholder: ''
         readonly: false
         required: true
-        tooltip: The name of the log forwarding profile to use in the security zone
-          log settings.
+        tooltip: The name of the log forwarding profile to use in the security zone log settings.
         type: shortText
-      sender: ""
+      sender: ''
       title: BP-V-7 Fix Confirmation
       totalanswers: 0
-    id: "14"
+    id: '14'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     message:
-      bcc: null
-      body: null
-      cc: null
-      format: ""
+      bcc:
+      body:
+      cc:
+      format: ''
       methods: []
-      subject: null
+      subject:
       timings:
         completeafterreplies: 1
         completeaftersla: false
         completeafterv2: false
         retriescount: 2
         retriesinterval: 360
-      to: null
+      to:
     nexttasks:
       '#none#':
-      - "15"
+      - '15'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Confirms fixes for BP-V-7 issues.
       id: 46757b96-dac1-4b72-843a-393b86208f0e
       iscommand: false
@@ -833,7 +810,7 @@ tasks:
           "y": 930
         }
       }
-  "15":
+  '15':
     conditions:
     - condition:
       - - left:
@@ -843,23 +820,23 @@ tasks:
           operator: isEqualString
           right:
             value:
-              simple: "true"
-      label: "yes"
-    id: "15"
+              simple: 'true'
+      label: yes
+    id: '15'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "6"
-      "yes":
-      - "16"
+      - '6'
+      yes:
+      - '16'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Confirms acceptance of fixes.
       id: f9d027e6-07b9-49f7-8326-7b2375d0d7ea
       iscommand: false
@@ -876,14 +853,14 @@ tasks:
           "y": 1090
         }
       }
-  "16":
-    id: "16"
+  '16':
+    id: '16'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
     note: false
     quietmode: 0
     scriptarguments:
@@ -904,9 +881,8 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Fixes security zones that are configured without a valid log forwarding
-        profile.
+      brand: ''
+      description: Fixes security zones that are configured without a valid log forwarding profile.
       id: 93c83cbf-b8a8-46cd-8f06-ec5a2a0e99c4
       iscommand: true
       name: BP-V-7 - Fix Security Zone Log Settings
@@ -923,14 +899,14 @@ tasks:
           "y": 1250
         }
       }
-  "17":
-    id: "17"
+  '17':
+    id: '17'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     note: false
     quietmode: 0
     scriptarguments:
@@ -948,7 +924,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Set a value in context under the key you entered.
       id: c8442697-4d60-459e-81ac-dd3dc9b8c568
       iscommand: false
@@ -966,27 +942,26 @@ tasks:
           "y": 60
         }
       }
-  "18":
-    id: "18"
+  '18':
+    id: '18'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     loop:
-      exitCondition: ""
+      exitCondition: ''
       iscommand: false
       max: 100
       wait: 1
     nexttasks:
       '#none#':
-      - "21"
+      - '21'
     note: false
     quietmode: 0
     separatecontext: true
     skipunavailable: false
     task:
-      brand: ""
-      description: Finds and correct visibility related configuration issues specifically
-        in regards to security rules.
+      brand: ''
+      description: Finds and correct visibility related configuration issues specifically in regards to security rules.
       id: 280b9a1a-5526-4a25-838d-376df6c05118
       iscommand: false
       name: PAN-OS Network Operations - Visibility Hygiene - Security Rule Visibility
@@ -1003,20 +978,20 @@ tasks:
           "y": 1735
         }
       }
-  "19":
-    id: "19"
+  '19':
+    id: '19'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     loop:
-      exitCondition: ""
+      exitCondition: ''
       forEach: true
       iscommand: false
       max: 100
       wait: 1
     nexttasks:
       '#none#':
-      - "23"
+      - '23'
     note: false
     quietmode: 0
     scriptarguments:
@@ -1033,10 +1008,8 @@ tasks:
     separatecontext: true
     skipunavailable: false
     task:
-      brand: ""
-      description: Commits to either a single device, or across all devices in the
-        topology. PAN-OS integration will attempt to only commit to devices that require
-        it, not blanket to all possible devices.
+      brand: ''
+      description: Commits to either a single device, or across all devices in the topology. PAN-OS integration will attempt to only commit to devices that require it, not blanket to all possible devices.
       id: d8a04796-a964-48cd-8d7d-f62d98fb7b41
       iscommand: false
       name: PAN-OS Network Operations - Commit Configuration
@@ -1053,8 +1026,8 @@ tasks:
           "y": 2385
         }
       }
-  "20":
-    id: "20"
+  '20':
+    id: '20'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
@@ -1063,7 +1036,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Finish.
       id: 38a3294c-8a0d-40e8-85b4-b5a73bb5cdeb
       iscommand: false
@@ -1080,20 +1053,20 @@ tasks:
           "y": 3200
         }
       }
-  "21":
-    id: "21"
+  '21':
+    id: '21'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "22"
+      - '22'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Commit the configuration
       id: c55cb116-25df-4366-8e13-fb36ca563a73
       iscommand: false
@@ -1110,7 +1083,7 @@ tasks:
           "y": 1900
         }
       }
-  "22":
+  '22':
     conditions:
     - condition:
       - - left:
@@ -1120,22 +1093,22 @@ tasks:
           operator: isNotEmpty
           right:
             value: {}
-      label: "yes"
-    id: "22"
+      label: yes
+    id: '22'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "7"
-      "yes":
-      - "26"
+      - '7'
+      yes:
+      - '26'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Checks if the configuration has changed.
       id: d997802a-2426-4343-895e-9215a6e48c09
       iscommand: false
@@ -1152,19 +1125,19 @@ tasks:
           "y": 2030
         }
       }
-  "23":
-    id: "23"
+  '23':
+    id: '23'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     loop:
-      exitCondition: ""
+      exitCondition: ''
       iscommand: false
       max: 100
       wait: 1
     nexttasks:
       '#none#':
-      - "25"
+      - '25'
     note: false
     quietmode: 0
     scriptarguments:
@@ -1173,12 +1146,12 @@ tasks:
     separatecontext: true
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Wraps the BPA use case to make it simple to run using a button.
       id: bbd2f798-d2fe-4dc3-876d-717d6f8df3d6
       iscommand: false
-      name: Run another BPA to find change delta
-      playbookId: 7823b858-49a5-4d43-8aaa-11ac4985eb6e
+      name: PAN-OS Network Operations - BPA Wrapper
+      playbookId: PAN-OS Network Operations - BPA Wrapper
       type: playbook
       version: -1
     taskid: bbd2f798-d2fe-4dc3-876d-717d6f8df3d6
@@ -1191,14 +1164,14 @@ tasks:
           "y": 2540
         }
       }
-  "24":
-    id: "24"
+  '24':
+    id: '24'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
     note: false
     quietmode: 0
     scriptarguments:
@@ -1225,7 +1198,7 @@ tasks:
           "y": 2870
         }
       }
-  "25":
+  '25':
     conditions:
     - condition:
       - - left:
@@ -1233,22 +1206,22 @@ tasks:
             value:
               simple: CreatedIncidentID
           operator: isExists
-      label: "yes"
-    id: "25"
+      label: yes
+    id: '25'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "7"
-      "yes":
-      - "24"
+      - '7'
+      yes:
+      - '24'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 41186865-1aa3-42ae-8efe-1ec773b232e3
       iscommand: false
       name: Did we get another BPA?
@@ -1264,14 +1237,14 @@ tasks:
           "y": 2700
         }
       }
-  "26":
-    id: "26"
+  '26':
+    id: '26'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "19"
+      - '19'
     note: false
     quietmode: 0
     scriptarguments:
@@ -1302,25 +1275,25 @@ tasks:
           "y": 2220
         }
       }
-  "27":
-    id: "27"
+  '27':
+    id: '27'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "18"
+      - '18'
     note: false
     quietmode: 0
     separatecontext: true
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Remediates issues with security profiles.
       id: bf57402c-2efd-4ae1-8cc1-0b4c742c12bc
       iscommand: false
       name: PAN-OS Network Operations - Visibility Hygiene - Profile Issue Remediation
-      playbookId: f0b72724-9f8c-4d4a-8f1e-60dfff67c225
+      playbookId: PAN-OS Network Operations - Visibility Hygiene - Profile Issue Remediation
       type: playbook
       version: -1
     taskid: bf57402c-2efd-4ae1-8cc1-0b4c742c12bc
@@ -1349,3 +1322,5 @@ view: |-
       }
     }
   }
+tests:
+- No tests (auto formatted)

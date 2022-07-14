@@ -1,56 +1,45 @@
 contentitemexportablefields:
   contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: a3acf260-148d-4af7-81ab-49744965d264
     propagationLabels:
     - all
-    toServerVersion: ""
-description: Enables the grouping of devices into administrative domains. Domains
-  may refer to a physical location or logical administrative boundry.
-id: 87805323-33fa-458d-8780-707e9d7e37ec
+description: Enables the grouping of devices into administrative domains. Domains may refer to a physical location or logical administrative boundry.
+id: PAN-OS Network Operations - Set Device Domain
 inputs:
-- description: If set, will assign this group to the first group retrieved via the
-    regex string. Example; regex of (\S+)\-\S and hostname "nsw-fw01" would set the
-    device domain to "nsw".
+- description: If set, will assign this group to the first group retrieved via the regex string. Example; regex of (\S+)\-\S and hostname "nsw-fw01" would set the device domain to "nsw".
   key: domain_regex_hostname
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: (\S+)\-
-- description: If set to "device-group", device will be automatically put in a Domain
-    group based on the device group it's a member of in Panorama. If set to "template-stack",
-    will set the domain to the template-stack this device is a member of. If unset,
-    no grouping is done. Can also be set to both to add both the template-stack and
-    DG as a domain tag.
+- description: If set to "device-group", device will be automatically put in a Domain group based on the device group it's a member of in Panorama. If set to "template-stack", will set the domain to the template-stack this device is a member of. If unset, no grouping is done. Can also be set to both to add both the template-stack and DG as a domain tag.
   key: domain_panorama
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: both
 name: PAN-OS Network Operations - Set Device Domain
 outputs: []
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 5cacf526-f1aa-4d49-86b7-a72800d0c79b
       iscommand: false
-      name: ""
+      name: ''
       version: -1
+      description: ''
     taskid: 5cacf526-f1aa-4d49-86b7-a72800d0c79b
     timertriggers: []
     type: start
@@ -61,15 +50,15 @@ tasks:
           "y": -240
         }
       }
-  "2":
+  '2':
     continueonerror: true
-    id: "2"
+    id: '2'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "12"
+      - '12'
     note: false
     quietmode: 0
     scriptarguments:
@@ -82,7 +71,7 @@ tasks:
               flags: {}
               groups:
                 value:
-                  simple: "0"
+                  simple: '0'
               keys: {}
               regex:
                 iscontext: true
@@ -110,14 +99,14 @@ tasks:
           "y": 80
         }
       }
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
     note: false
     quietmode: 0
     scriptarguments:
@@ -156,7 +145,7 @@ tasks:
           "y": 790
         }
       }
-  "4":
+  '4':
     conditions:
     - condition:
       - - left:
@@ -164,20 +153,20 @@ tasks:
             value:
               simple: inputs.domain_regex_hostname
           operator: isNotEmpty
-      label: "yes"
-    id: "4"
+      label: yes
+    id: '4'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
-      "yes":
-      - "2"
+      yes:
+      - '2'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 91bf1e45-c406-4007-8798-efe24b9778f4
       iscommand: false
       name: Is Regex Grouping Enabled?
@@ -193,7 +182,7 @@ tasks:
           "y": -90
         }
       }
-  "6":
+  '6':
     conditions:
     - condition:
       - - left:
@@ -212,22 +201,22 @@ tasks:
           right:
             value:
               simple: both
-      label: "yes"
-    id: "6"
+      label: yes
+    id: '6'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "8"
-      "yes":
-      - "7"
+      - '8'
+      yes:
+      - '7'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 5c8b2a3d-1057-4f7d-86b7-06df2b955434
       iscommand: false
       name: Is Device-group Grouping enabled?
@@ -243,20 +232,20 @@ tasks:
           "y": 430
         }
       }
-  "7":
-    id: "7"
+  '7':
+    id: '7'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Gets the operational information of the device groups in the topology.
       id: 92fff8bf-af6c-4c14-8da8-01aae28e3a7e
       iscommand: true
@@ -274,7 +263,7 @@ tasks:
           "y": 610
         }
       }
-  "8":
+  '8':
     conditions:
     - condition:
       - - left:
@@ -293,22 +282,22 @@ tasks:
           right:
             value:
               simple: both
-      label: "yes"
-    id: "8"
+      label: yes
+    id: '8'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "11"
-      "yes":
-      - "9"
+      - '11'
+      yes:
+      - '9'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 2674a8df-f06e-4954-87ab-2b2fcfac2003
       iscommand: false
       name: Is template-stack grouping enabled?
@@ -324,22 +313,21 @@ tasks:
           "y": 960
         }
       }
-  "9":
-    id: "9"
+  '9':
+    id: '9'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "10"
+      - '10'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Gets the operational information of the template-stacks in the
-        topology.
+      brand: ''
+      description: Gets the operational information of the template-stacks in the topology.
       id: 32a127e0-5f4e-40fb-8898-50285f3b9bc0
       iscommand: true
       name: Get Template-stacks
@@ -356,14 +344,14 @@ tasks:
           "y": 1160
         }
       }
-  "10":
-    id: "10"
+  '10':
+    id: '10'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "11"
+      - '11'
     note: false
     quietmode: 0
     scriptarguments:
@@ -402,8 +390,8 @@ tasks:
           "y": 1320
         }
       }
-  "11":
-    id: "11"
+  '11':
+    id: '11'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
@@ -412,12 +400,13 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 13adfe9a-0ed4-4746-8afb-2a35239a0b13
       iscommand: false
       name: Finish
       type: title
       version: -1
+      description: ''
     taskid: 13adfe9a-0ed4-4746-8afb-2a35239a0b13
     timertriggers: []
     type: title
@@ -428,7 +417,7 @@ tasks:
           "y": 1500
         }
       }
-  "12":
+  '12':
     conditions:
     - condition:
       - - left:
@@ -439,22 +428,22 @@ tasks:
           right:
             value:
               simple: Panorama
-      label: "yes"
-    id: "12"
+      label: yes
+    id: '12'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "6"
-      "yes":
-      - "13"
+      - '6'
+      yes:
+      - '13'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 265ade38-aedd-4037-828e-a9131fecbc1c
       iscommand: false
       name: Is this a Panorama Device?
@@ -470,14 +459,14 @@ tasks:
           "y": 240
         }
       }
-  "13":
-    id: "13"
+  '13':
+    id: '13'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "11"
+      - '11'
     note: false
     quietmode: 0
     scriptarguments:
@@ -517,3 +506,6 @@ view: |-
       }
     }
   }
+tests:
+- No tests (auto formatted)
+fromversion: 6.2.0

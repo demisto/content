@@ -1,0 +1,22 @@
+comment: Used as a dynamic field, retrieves all the currently hygiene incidents and counts the total number of fixes deployed.
+commonfields:
+  id: CountFixedVisibilityHygieneIssues
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.9.8.24399
+enabled: true
+name: CountFixedVisibilityHygieneIssues
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- dynamic-section
+- widget
+type: python
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)

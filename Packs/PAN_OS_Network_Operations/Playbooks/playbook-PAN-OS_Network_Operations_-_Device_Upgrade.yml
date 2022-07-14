@@ -1,55 +1,51 @@
 contentitemexportablefields:
   contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: a3acf260-148d-4af7-81ab-49744965d264
     propagationLabels:
     - all
-    toServerVersion: ""
 description: Upgrades a single or HA pair of PAN-OS firewalls.
 id: PAN-OS Network Operations - Device Upgrade
 inputs:
 - description: Target Firewall for upgrade
   key: target_device
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: ${incident.panosnetworkoperationsupgradetargetdevice}
 - description: Peer firewall (if any)
   key: peer_device
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: ${incident.panosnetworkoperationsupgradepeerfirewall}
 - description: Target version of upgrade
   key: target_version
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: ${incident.panosnetworkoperationsupgradetargetversion}
 name: PAN-OS Network Operations - Device Upgrade
 outputs: []
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "11"
+      - '11'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 080a843a-4cf9-4a80-8cad-1f104630adf2
       iscommand: false
-      name: ""
+      name: ''
       version: -1
+      description: ''
     taskid: 080a843a-4cf9-4a80-8cad-1f104630adf2
     timertriggers: []
     type: start
@@ -60,7 +56,7 @@ tasks:
           "y": -2690
         }
       }
-  "1":
+  '1':
     conditions:
     - condition:
       - - left:
@@ -68,22 +64,22 @@ tasks:
             value:
               simple: PANOS.HAState.peer
           operator: isNotEmpty
-      label: "yes"
-    id: "1"
+      label: yes
+    id: '1'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "15"
-      "yes":
-      - "44"
+      - '15'
+      yes:
+      - '44'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: True if the device belongs to a HA Pair
       id: 44225882-d602-45fa-84b7-cd84ecdb0e75
       iscommand: false
@@ -100,26 +96,27 @@ tasks:
           "y": -540
         }
       }
-  "7":
-    id: "7"
+  '7':
+    id: '7'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "28"
-      - "29"
+      - '28'
+      - '29'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 55b418b9-dc6a-4224-80fb-ef877656c2a4
       iscommand: false
       name: HA Pair process
       type: title
       version: -1
+      description: ''
     taskid: 55b418b9-dc6a-4224-80fb-ef877656c2a4
     timertriggers:
     - action: start
@@ -132,23 +129,23 @@ tasks:
           "y": 170
         }
       }
-  "11":
-    id: "11"
+  '11':
+    id: '11'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "48"
+      - '48'
     note: false
     quietmode: 0
     scriptarguments:
       all:
-        simple: "yes"
+        simple: yes
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Delete field from context
       id: 568ea7bc-4aa9-4c0d-8a6a-ce64a05dd4f0
       iscommand: false
@@ -166,19 +163,19 @@ tasks:
           "y": -2520
         }
       }
-  "12":
-    id: "12"
+  '12':
+    id: '12'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     loop:
-      exitCondition: ""
+      exitCondition: ''
       iscommand: false
       max: 100
       wait: 1
     nexttasks:
       '#none#':
-      - "35"
+      - '35'
     note: false
     quietmode: 0
     scriptarguments:
@@ -189,13 +186,14 @@ tasks:
     separatecontext: true
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 91ee6770-afa2-40fa-8be2-b81544e126d5
       iscommand: false
       name: PAN-OS Network Operations - Single Device Upgrade
       playbookId: PAN-OS Network Operations - Single Device Upgrade
       type: playbook
       version: -1
+      description: ''
     taskid: 91ee6770-afa2-40fa-8be2-b81544e126d5
     timertriggers: []
     type: playbook
@@ -206,22 +204,21 @@ tasks:
           "y": 630
         }
       }
-  "13":
-    id: "13"
+  '13':
+    id: '13'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "36"
+      - '36'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: '### Mark this task complete when ready to "release" the upgrade
-        for this device or pair.'
+      brand: ''
+      description: '### Mark this task complete when ready to "release" the upgrade for this device or pair.'
       id: 7c02165b-6cd7-48f6-8889-eb63d2ab8d7e
       iscommand: false
       name: Mark Complete When Ready For Upgrade
@@ -239,25 +236,26 @@ tasks:
           "y": -1390
         }
       }
-  "15":
-    id: "15"
+  '15':
+    id: '15'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "53"
+      - '53'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 830a1a3c-43de-4c65-8c04-fef007e5b27d
       iscommand: false
       name: Single Device Process
       type: title
       version: -1
+      description: ''
     taskid: 830a1a3c-43de-4c65-8c04-fef007e5b27d
     timertriggers:
     - action: start
@@ -270,14 +268,14 @@ tasks:
           "y": 295
         }
       }
-  "16":
-    id: "16"
+  '16':
+    id: '16'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     note: false
     quietmode: 0
     scriptarguments:
@@ -286,9 +284,8 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Get the HA state and assocaited details from the given device and
-        any other details.
+      brand: ''
+      description: Get the HA state and assocaited details from the given device and any other details.
       id: 7a7be5a1-400d-4852-82c2-cd39e09641db
       iscommand: true
       name: Get HA State
@@ -305,19 +302,19 @@ tasks:
           "y": -700
         }
       }
-  "17":
-    id: "17"
+  '17':
+    id: '17'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     loop:
-      exitCondition: ""
+      exitCondition: ''
       iscommand: false
       max: 100
       wait: 1
     nexttasks:
       '#none#':
-      - "18"
+      - '18'
     note: false
     quietmode: 0
     scriptarguments:
@@ -328,7 +325,7 @@ tasks:
     separatecontext: true
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Runs a complete upgrade process for a single device
       id: 5b2f4229-335d-4435-8e2e-d69519ef7104
       iscommand: false
@@ -346,14 +343,14 @@ tasks:
           "y": 630
         }
       }
-  "18":
-    id: "18"
+  '18':
+    id: '18'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "19"
+      - '19'
     note: false
     quietmode: 0
     scriptarguments:
@@ -362,9 +359,8 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Get the HA state and assocaited details from the given device and
-        any other details.
+      brand: ''
+      description: Get the HA state and assocaited details from the given device and any other details.
       id: c1597114-73d1-4f55-803f-fc179e153d5a
       iscommand: true
       name: Get HA State
@@ -381,7 +377,7 @@ tasks:
           "y": 790
         }
       }
-  "19":
+  '19':
     conditions:
     - condition:
       - - left:
@@ -404,24 +400,23 @@ tasks:
           right:
             value:
               simple: passive
-      label: "yes"
-    id: "19"
+      label: yes
+    id: '19'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "33"
-      "yes":
-      - "50"
+      - '33'
+      yes:
+      - '50'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: True if the device is correctly Passive after the upgrade process
-        has concluded.
+      brand: ''
+      description: True if the device is correctly Passive after the upgrade process has concluded.
       id: 2324dc48-4d32-4058-8399-1e7953e13a76
       iscommand: false
       name: Is device passive after upgrade?
@@ -437,20 +432,20 @@ tasks:
           "y": 940
         }
       }
-  "20":
+  '20':
     continueonerror: true
-    id: "20"
+    id: '20'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "23"
+      - '23'
     note: false
     quietmode: 0
     scriptarguments:
       execution-timeout:
-        simple: "120"
+        simple: '120'
       hostid:
         simple: ${OriginalActive}
       state:
@@ -458,12 +453,8 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: "Suspends the active firewall, causing the pair to failover to
-        the secondary. \n\nThis task can error in the event that the suspension breaks
-        the connectivity between XSOAR and the firewall - in this case, we continue,
-        as a subsequent task will error if the firewalls are truly unreachable (which
-        would, of course, be very bad)"
+      brand: ''
+      description: "Suspends the active firewall, causing the pair to failover to the secondary. \n\nThis task can error in the event that the suspension breaks the connectivity between XSOAR and the firewall - in this case, we continue, as a subsequent task will error if the firewalls are truly unreachable (which would, of course, be very bad)"
       id: 399c8a0e-5eb6-4e74-85cf-31a9b2d03542
       iscommand: true
       name: Suspend Active firewall
@@ -480,8 +471,8 @@ tasks:
           "y": 1240
         }
       }
-  "21":
-    id: "21"
+  '21':
+    id: '21'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
@@ -493,7 +484,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Prints an error entry with a given message
       id: bb5fead3-9591-4be7-8d70-d160d079a379
       iscommand: false
@@ -511,19 +502,19 @@ tasks:
           "y": 2340
         }
       }
-  "22":
-    id: "22"
+  '22':
+    id: '22'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     loop:
-      exitCondition: ""
+      exitCondition: ''
       iscommand: false
       max: 100
       wait: 1
     nexttasks:
       '#none#':
-      - "24"
+      - '24'
     note: false
     quietmode: 0
     scriptarguments:
@@ -534,7 +525,7 @@ tasks:
     separatecontext: true
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Runs a complete upgrade process for a single device
       id: d4191710-4ee4-4d5d-88b9-141a310b59f6
       iscommand: false
@@ -552,23 +543,23 @@ tasks:
           "y": 1670
         }
       }
-  "23":
-    id: "23"
+  '23':
+    id: '23'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "51"
+      - '51'
     note: false
     quietmode: 0
     scriptarguments:
       seconds:
-        simple: "30"
+        simple: '30'
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Sleep for X seconds
       id: 94ef0dee-5101-4e9c-8d7f-a2adf59338f9
       iscommand: false
@@ -586,14 +577,14 @@ tasks:
           "y": 1390
         }
       }
-  "24":
-    id: "24"
+  '24':
+    id: '24'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "25"
+      - '25'
     note: false
     quietmode: 0
     scriptarguments:
@@ -602,9 +593,8 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Get the HA state and assocaited details from the given device and
-        any other details.
+      brand: ''
+      description: Get the HA state and assocaited details from the given device and any other details.
       id: 87c89d7a-ed50-4898-89f3-68b6b5b24960
       iscommand: true
       name: Get HA State
@@ -621,7 +611,7 @@ tasks:
           "y": 1820
         }
       }
-  "25":
+  '25':
     conditions:
     - condition:
       - - left:
@@ -644,24 +634,23 @@ tasks:
           right:
             value:
               simple: passive
-      label: "yes"
-    id: "25"
+      label: yes
+    id: '25'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "34"
-      "yes":
-      - "52"
+      - '34'
+      yes:
+      - '52'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: True if the device is correctly Passive after the upgrade process
-        has concluded.
+      brand: ''
+      description: True if the device is correctly Passive after the upgrade process has concluded.
       id: fa636004-c7b8-4e56-888e-3e67b8661a28
       iscommand: false
       name: Is device passive after upgrade?
@@ -677,19 +666,19 @@ tasks:
           "y": 1970
         }
       }
-  "26":
-    id: "26"
+  '26':
+    id: '26'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "27"
+      - '27'
     note: false
     quietmode: 0
     scriptarguments:
       execution-timeout:
-        simple: "240"
+        simple: '240'
       hostid:
         simple: ${OriginalPassive}
       state:
@@ -697,12 +686,8 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: "Suspends the active firewall, causing the pair to failover to
-        the passive. \n\nThis task can error in the event that the suspension breaks
-        the connectivity between XSOAR and the firewall - in this case, we continue,
-        as a subsequent task will error if the firewalls are truly unreachable (which
-        would, of course, be very bad)"
+      brand: ''
+      description: "Suspends the active firewall, causing the pair to failover to the passive. \n\nThis task can error in the event that the suspension breaks the connectivity between XSOAR and the firewall - in this case, we continue, as a subsequent task will error if the firewalls are truly unreachable (which would, of course, be very bad)"
       id: fc28cd02-2f4a-42bb-8260-d36d0f4fff02
       iscommand: true
       name: Suspend Passive firewall
@@ -719,23 +704,23 @@ tasks:
           "y": 2330
         }
       }
-  "27":
-    id: "27"
+  '27':
+    id: '27'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "30"
+      - '30'
     note: false
     quietmode: 0
     scriptarguments:
       seconds:
-        simple: "30"
+        simple: '30'
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Sleep for X seconds
       id: 37683263-9c6c-486a-8bd5-35a7d6be0b2d
       iscommand: false
@@ -753,14 +738,14 @@ tasks:
           "y": 2510
         }
       }
-  "28":
-    id: "28"
+  '28':
+    id: '28'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "49"
+      - '49'
     note: false
     quietmode: 0
     scriptarguments:
@@ -771,7 +756,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Set a value in context under the key you entered.
       id: d4ab4169-4704-40e3-859b-21bf341710c5
       iscommand: false
@@ -789,14 +774,14 @@ tasks:
           "y": 310
         }
       }
-  "29":
-    id: "29"
+  '29':
+    id: '29'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "49"
+      - '49'
     note: false
     quietmode: 0
     scriptarguments:
@@ -807,7 +792,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Set a value in context under the key you entered.
       id: 819aaae6-a02c-4d38-8b20-4f9651db04e8
       iscommand: false
@@ -825,19 +810,19 @@ tasks:
           "y": 310
         }
       }
-  "30":
-    id: "30"
+  '30':
+    id: '30'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "35"
+      - '35'
     note: false
     quietmode: 0
     scriptarguments:
       execution-timeout:
-        simple: "300"
+        simple: '300'
       hostid:
         simple: ${OriginalPassive}
       state:
@@ -845,9 +830,8 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Checks the status of the given device, checking whether it's up
-        or down and the operational mode normal
+      brand: ''
+      description: Checks the status of the given device, checking whether it's up or down and the operational mode normal
       id: a0f09e1b-9f49-4abc-8dc0-15e28fb059e2
       iscommand: true
       name: Unsuspend Passive Firewall
@@ -864,8 +848,8 @@ tasks:
           "y": 2690
         }
       }
-  "31":
-    id: "31"
+  '31':
+    id: '31'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
@@ -892,21 +876,21 @@ tasks:
           "y": 3360
         }
       }
-  "32":
-    id: "32"
+  '32':
+    id: '32'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "38"
+      - '38'
     note: false
     quietmode: 0
     scriptarguments:
       description:
         simple: Starting Upgrade
       severity:
-        simple: "2"
+        simple: '2'
     separatecontext: false
     skipunavailable: false
     task:
@@ -928,24 +912,23 @@ tasks:
           "y": -1050
         }
       }
-  "33":
-    id: "33"
+  '33':
+    id: '33'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "21"
+      - '21'
     note: false
     quietmode: 0
     scriptarguments:
       description:
         simple: Upgrade failed.
       details:
-        simple: Upgrade for device pair failed - ${OriginalPassive} failed to return
-          to functional state after reboot.
+        simple: Upgrade for device pair failed - ${OriginalPassive} failed to return to functional state after reboot.
       severity:
-        simple: "4"
+        simple: '4'
     separatecontext: false
     skipunavailable: false
     task:
@@ -967,24 +950,23 @@ tasks:
           "y": 2160
         }
       }
-  "34":
-    id: "34"
+  '34':
+    id: '34'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "21"
+      - '21'
     note: false
     quietmode: 0
     scriptarguments:
       description:
         simple: Upgrade failed.
       details:
-        simple: Upgrade for device pair failed - ${OriginalActive} failed to return
-          to functional state after reboot.
+        simple: Upgrade for device pair failed - ${OriginalActive} failed to return to functional state after reboot.
       severity:
-        simple: "4"
+        simple: '4'
     separatecontext: false
     skipunavailable: false
     task:
@@ -1006,21 +988,21 @@ tasks:
           "y": 2160
         }
       }
-  "35":
-    id: "35"
+  '35':
+    id: '35'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "39"
+      - '39'
     note: false
     quietmode: 0
     scriptarguments:
       description:
         simple: Upgrade complete.
       severity:
-        simple: "0.5"
+        simple: '0.5'
     separatecontext: false
     skipunavailable: false
     task:
@@ -1042,14 +1024,14 @@ tasks:
           "y": 2870
         }
       }
-  "36":
-    id: "36"
+  '36':
+    id: '36'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "32"
+      - '32'
     note: false
     quietmode: 0
     scriptarguments:
@@ -1078,14 +1060,14 @@ tasks:
           "y": -1220
         }
       }
-  "37":
-    id: "37"
+  '37':
+    id: '37'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "31"
+      - '31'
     note: false
     quietmode: 0
     scriptarguments:
@@ -1114,14 +1096,14 @@ tasks:
           "y": 3180
         }
       }
-  "38":
-    id: "38"
+  '38':
+    id: '38'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "16"
+      - '16'
     note: false
     quietmode: 0
     scriptarguments:
@@ -1148,25 +1130,25 @@ tasks:
           "y": -860
         }
       }
-  "39":
-    id: "39"
+  '39':
+    id: '39'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "37"
+      - '37'
     note: false
     quietmode: 0
     scriptarguments:
       execution-timeout:
-        simple: "300"
+        simple: '300'
       seconds:
-        simple: "60"
+        simple: '60'
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Sleep for X seconds
       id: a4b36058-97a6-4b56-801b-a0310648222e
       iscommand: false
@@ -1184,7 +1166,7 @@ tasks:
           "y": 3020
         }
       }
-  "40":
+  '40':
     conditions:
     - condition:
       - - left:
@@ -1192,22 +1174,22 @@ tasks:
             value:
               simple: incident.panosnetworkoperationsparentincidentid
           operator: isNotEmpty
-      label: "yes"
-    id: "40"
+      label: yes
+    id: '40'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "42"
-      "yes":
-      - "41"
+      - '42'
+      yes:
+      - '41'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: True if this incident was created by another incident.
       id: 2aed5686-6db1-4558-82ed-a09554b9d174
       iscommand: false
@@ -1224,14 +1206,14 @@ tasks:
           "y": -2140
         }
       }
-  "41":
-    id: "41"
+  '41':
+    id: '41'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "42"
+      - '42'
     note: false
     quietmode: 0
     scriptarguments:
@@ -1258,7 +1240,7 @@ tasks:
           "y": -1940
         }
       }
-  "42":
+  '42':
     conditions:
     - condition:
       - - left:
@@ -1266,22 +1248,22 @@ tasks:
             value:
               simple: inputs.target_version
           operator: isNotEmpty
-      label: "yes"
-    id: "42"
+      label: yes
+    id: '42'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "43"
-      "yes":
-      - "13"
+      - '43'
+      yes:
+      - '13'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: True if this incident has been provided a target version.
       id: 72d0ce66-100b-4915-84f7-d575d473b563
       iscommand: false
@@ -1298,57 +1280,56 @@ tasks:
           "y": -1735
         }
       }
-  "43":
+  '43':
     form:
-      description: ""
+      description: ''
       expired: false
       questions:
       - defaultrows: []
         fieldassociated: panosnetworkoperationsupgradetargetversion
         gridcolumns: []
-        id: "0"
-        label: ""
+        id: '0'
+        label: ''
         labelarg:
           simple: Specify target software version
         options: []
         optionsarg: []
-        placeholder: ""
+        placeholder: ''
         readonly: false
         required: false
         tooltip: The string version (ex. 9.1.1) to upgrade the device to.
         type: shortText
-      sender: ""
+      sender: ''
       title: Specify Target Software Version
       totalanswers: 0
-    id: "43"
+    id: '43'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     message:
-      bcc: null
-      body: null
-      cc: null
-      format: ""
+      bcc:
+      body:
+      cc:
+      format: ''
       methods: []
-      subject: null
+      subject:
       timings:
         completeafterreplies: 1
         completeaftersla: false
         completeafterv2: false
         retriescount: 2
         retriesinterval: 360
-      to: null
+      to:
     nexttasks:
       '#none#':
-      - "13"
+      - '13'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: If a target version wasn't given, ask the user for the version
-        to upgrade to.
+      brand: ''
+      description: If a target version wasn't given, ask the user for the version to upgrade to.
       id: 93ad8357-c5b3-4e8d-8858-9de5614be236
       iscommand: false
       name: Collect Target Version
@@ -1364,14 +1345,14 @@ tasks:
           "y": -1560
         }
       }
-  "44":
-    id: "44"
+  '44':
+    id: '44'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "45"
+      - '45'
     note: false
     quietmode: 0
     scriptarguments:
@@ -1380,9 +1361,8 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Checks the status of the given device, checking whether it's up
-        or down and the operational mode normal
+      brand: ''
+      description: Checks the status of the given device, checking whether it's up or down and the operational mode normal
       id: e682320c-f23e-4444-8ae9-7c553421b657
       iscommand: true
       name: 'Get System Status of HA Peer '
@@ -1399,7 +1379,7 @@ tasks:
           "y": -360
         }
       }
-  "45":
+  '45':
     conditions:
     - condition:
       - - left:
@@ -1407,22 +1387,22 @@ tasks:
             value:
               simple: PANOS.SystemStatus.up
           operator: isTrue
-      label: "yes"
-    id: "45"
+      label: yes
+    id: '45'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "46"
-      "yes":
-      - "7"
+      - '46'
+      yes:
+      - '7'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Checks the HA peer is back up.
       id: c7807dbb-a43e-4cbf-88fe-897f1ec30e01
       iscommand: false
@@ -1439,41 +1419,40 @@ tasks:
           "y": -180
         }
       }
-  "46":
-    id: "46"
+  '46':
+    id: '46'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     message:
-      bcc: null
+      bcc:
       body:
-        simple: HA Peer ${PANOS.SystemStatus.hostid} is not up. Do you want to proceed
-          with the upgrade anyway?
-      cc: null
-      format: ""
+        simple: HA Peer ${PANOS.SystemStatus.hostid} is not up. Do you want to proceed with the upgrade anyway?
+      cc:
+      format: ''
       methods: []
       replyOptions:
-      - "Yes"
-      - "No"
-      subject: null
+      - Yes
+      - No
+      subject:
       timings:
         completeafterreplies: 1
         completeaftersla: false
         completeafterv2: false
         retriescount: 2
         retriesinterval: 360
-      to: null
+      to:
     nexttasks:
-      "No":
-      - "47"
-      "Yes":
-      - "15"
+      No:
+      - '47'
+      Yes:
+      - '15'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Confirm thatthe upgrade should continue if peer device down..
       id: 8acff9b5-faa5-4003-8b19-ff31e3e5303c
       iscommand: false
@@ -1490,8 +1469,8 @@ tasks:
           "y": 20
         }
       }
-  "47":
-    id: "47"
+  '47':
+    id: '47'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
@@ -1521,14 +1500,14 @@ tasks:
           "y": 320
         }
       }
-  "48":
-    id: "48"
+  '48':
+    id: '48'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "40"
+      - '40'
     note: false
     quietmode: 0
     scriptarguments:
@@ -1537,7 +1516,7 @@ tasks:
       name:
         simple: PAN-OS Upgrade - ${inputs.target_device}
       severity:
-        simple: "0.5"
+        simple: '0.5'
     separatecontext: false
     skipunavailable: false
     task:
@@ -1559,21 +1538,21 @@ tasks:
           "y": -2345
         }
       }
-  "49":
-    id: "49"
+  '49':
+    id: '49'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "17"
+      - '17'
     note: false
     quietmode: 0
     scriptarguments:
       description:
         simple: Upgrading currently passive peer.
       severity:
-        simple: "2"
+        simple: '2'
     separatecontext: false
     skipunavailable: false
     task:
@@ -1595,21 +1574,21 @@ tasks:
           "y": 480
         }
       }
-  "50":
-    id: "50"
+  '50':
+    id: '50'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "20"
+      - '20'
     note: false
     quietmode: 0
     scriptarguments:
       description:
         simple: Performing Failover
       severity:
-        simple: "3"
+        simple: '3'
     separatecontext: false
     skipunavailable: false
     task:
@@ -1631,21 +1610,21 @@ tasks:
           "y": 1090
         }
       }
-  "51":
-    id: "51"
+  '51':
+    id: '51'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "22"
+      - '22'
     note: false
     quietmode: 0
     scriptarguments:
       description:
         simple: Upgrading previously active firewall
       severity:
-        simple: "2"
+        simple: '2'
     separatecontext: false
     skipunavailable: false
     task:
@@ -1667,21 +1646,21 @@ tasks:
           "y": 1530
         }
       }
-  "52":
-    id: "52"
+  '52':
+    id: '52'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "26"
+      - '26'
     note: false
     quietmode: 0
     scriptarguments:
       description:
         simple: Restoring HA state.
       severity:
-        simple: "3"
+        simple: '3'
     separatecontext: false
     skipunavailable: false
     task:
@@ -1703,21 +1682,21 @@ tasks:
           "y": 2160
         }
       }
-  "53":
-    id: "53"
+  '53':
+    id: '53'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "12"
+      - '12'
     note: false
     quietmode: 0
     scriptarguments:
       description:
         simple: Upgrading Standalone device.
       severity:
-        simple: "2"
+        simple: '2'
     separatecontext: false
     skipunavailable: false
     task:
@@ -1752,3 +1731,6 @@ view: |-
       }
     }
   }
+tests:
+- No tests (auto formatted)
+fromversion: 6.2.0

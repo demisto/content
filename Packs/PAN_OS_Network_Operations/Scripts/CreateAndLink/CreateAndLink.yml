@@ -1,0 +1,26 @@
+args:
+- description: New Incident Name
+  name: name
+  required: true
+- description: New Incident type
+  name: type
+comment: Creates, and then links an incident.
+commonfields:
+  id: CreateAndLink
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.7.3.286
+enabled: true
+name: CreateAndLink
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)

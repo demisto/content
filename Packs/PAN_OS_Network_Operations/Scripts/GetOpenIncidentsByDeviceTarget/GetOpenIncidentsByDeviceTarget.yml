@@ -1,0 +1,28 @@
+args:
+- description: The target device (hostid)
+  name: target
+comment: Returns the incident data for any open use cases for the given target.
+commonfields:
+  id: GetOpenIncidentsByDeviceTarget
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.9.8.24399
+enabled: true
+name: GetOpenIncidentsByDeviceTarget
+outputs:
+- contextPath: GetOpenIncidentsByDeviceTarget.incident_id
+  description: ID of the incident with the given device as the target.
+- contextPath: GetOpenIncidentsByDeviceTarget.incident_name
+  description: Name of the incident with the device as the target.
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)

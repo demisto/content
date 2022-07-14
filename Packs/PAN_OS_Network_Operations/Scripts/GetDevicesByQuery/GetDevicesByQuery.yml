@@ -1,0 +1,32 @@
+args:
+- description: The complete XSOAR query to add to the device incident query, ex.  "devicemodel:Panorama"
+  name: query
+comment: 'Searches the active PAN-OS devices in the topology - the device incidents - by the given incident query. '
+commonfields:
+  id: GetDevicesByQuery
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.9.8.24399
+enabled: true
+name: GetDevicesByQuery
+outputs:
+- contextPath: GetDevicesByQuery.hostname
+  description: The device hostname.
+- contextPath: GetDevicesByQuery.hostid
+  description: The hostid of the device.
+- contextPath: GetDevicesByQuery.incident_id
+  description: ID of the incident representing this device.
+- contextPath: GetDevicesByQuery.admin_domain
+  description: Administrative domain or domains the device belongs to.
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)

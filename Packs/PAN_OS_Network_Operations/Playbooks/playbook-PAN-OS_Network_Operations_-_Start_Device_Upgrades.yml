@@ -1,52 +1,48 @@
 contentitemexportablefields:
   contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: a3acf260-148d-4af7-81ab-49744965d264
     propagationLabels:
     - all
-    toServerVersion: ""
 description: |-
   This playbook is used by the Domain Upgrade playbook to start (either manually or automatically) groups of Device Upgrade incidents.
 
   It works by first retrieving the administrative domains/device-groups that have upgrades pending, then marking the pause tasks within them complete in batches.
-id: 009c7198-8298-4ace-8505-87ffeba5090f
+id: PAN-OS Network Operations - Start Device Upgrades
 inputs:
 - description: If set to true, will automatically start all device ugprades.
   key: Automatically Upgrade
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: ${incident.panosnetworkoperationsautomaticupgradeswitch}
 - description: List of incident IDs corresponding to device upgrade incidents to start.
   key: incident_ids
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: ${CreatedIncidentID}
 name: PAN-OS Network Operations - Start Device Upgrades
 outputs: []
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: ccaad207-fdcb-4695-85ab-4bf55a61eb6f
       iscommand: false
-      name: ""
+      name: ''
       version: -1
+      description: ''
     taskid: ccaad207-fdcb-4695-85ab-4bf55a61eb6f
     timertriggers: []
     type: start
@@ -57,7 +53,7 @@ tasks:
           "y": 50
         }
       }
-  "1":
+  '1':
     conditions:
     - condition:
       - - left:
@@ -65,22 +61,22 @@ tasks:
             value:
               simple: inputs.Automatically Upgrade
           operator: isTrue
-      label: "yes"
-    id: "1"
+      label: yes
+    id: '1'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "3"
-      "yes":
-      - "2"
+      - '3'
+      yes:
+      - '2'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: d3b7cb66-48f6-4c06-84f5-6cd1837a83a8
       iscommand: false
       name: Is auto-upgrade enabled?
@@ -96,14 +92,14 @@ tasks:
           "y": 190
         }
       }
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     note: false
     quietmode: 0
     scriptarguments:
@@ -133,13 +129,13 @@ tasks:
           "y": 580
         }
       }
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     message:
-      bcc: null
+      bcc:
       body:
         simple: |-
           Do you want to start all device upgrades?
@@ -149,31 +145,31 @@ tasks:
           ${incident.panosnetworkoperationspanoramaupgradelist}
 
           ${incident.panosnetworkoperationsfirewallupgradelist}
-      cc: null
-      format: ""
+      cc:
+      format: ''
       methods: []
       replyOptions:
-      - "Yes"
-      - "No"
-      subject: null
+      - Yes
+      - No
+      subject:
       timings:
         completeafterreplies: 1
         completeaftersla: false
         completeafterv2: false
         retriescount: 2
         retriesinterval: 360
-      to: null
+      to:
     nexttasks:
-      "No":
-      - "4"
-      "Yes":
-      - "2"
+      No:
+      - '4'
+      Yes:
+      - '2'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 6ed9c49c-1777-4a1a-8021-17edee7a4606
       iscommand: false
       name: Confirm Upgrade
@@ -189,8 +185,8 @@ tasks:
           "y": 380
         }
       }
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
@@ -199,12 +195,13 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: da195ee4-befc-4e2d-8306-4df6209308c3
       iscommand: false
       name: Finish
       type: title
       version: -1
+      description: ''
     taskid: da195ee4-befc-4e2d-8306-4df6209308c3
     timertriggers: []
     type: title
@@ -228,3 +225,6 @@ view: |-
       }
     }
   }
+tests:
+- No tests (auto formatted)
+fromversion: 6.2.0

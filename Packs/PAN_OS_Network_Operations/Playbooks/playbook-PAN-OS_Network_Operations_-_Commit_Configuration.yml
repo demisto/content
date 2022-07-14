@@ -1,72 +1,61 @@
 contentitemexportablefields:
   contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: a3acf260-148d-4af7-81ab-49744965d264
     propagationLabels:
     - all
-    toServerVersion: ""
-description: Commits to either a single device, or across all devices in the topology.
-  PAN-OS integration will attempt to only commit to devices that require it, not blanket
-  to all possible devices.
+description: Commits to either a single device, or across all devices in the topology. PAN-OS integration will attempt to only commit to devices that require it, not blanket to all possible devices.
 id: PAN-OS Network Operations - Commit Configuration
 inputs:
-- description: Commit only on specific devices. Note this does not affect Panorama
-    push operation - to limit the scope of the push, use device_group_filter and template_stack_filter.
+- description: Commit only on specific devices. Note this does not affect Panorama push operation - to limit the scope of the push, use device_group_filter and template_stack_filter.
   key: device_filter_string
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
     simple: ${incident.panosnetworkoperationstarget}
-- description: 'Panorama Only: If required, a csv list of device-groups to push. If
-    not specified, all device groups will be pushed after a commit.'
+- description: 'Panorama Only: If required, a csv list of device-groups to push. If not specified, all device groups will be pushed after a commit.'
   key: device_group_filter
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
-- description: 'Panorama Only: If required, a csv list of template-stacks to push.
-    If not specified, all template stacks will be pushed after a commit.'
+- description: 'Panorama Only: If required, a csv list of template-stacks to push. If not specified, all template stacks will be pushed after a commit.'
   key: template_stack_filter
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
-- description: If set to Yes, the configuration will be committed to all firewalls
-    and panorama. If no, a data collection task will prompt for the scope first.
+- description: If set to Yes, the configuration will be committed to all firewalls and panorama. If no, a data collection task will prompt for the scope first.
   key: auto_commit
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
-    simple: "No"
-- description: If set to Yes, the configuration will be automatically pushed to all
-    device groups and template stacks.
+    simple: No
+- description: If set to Yes, the configuration will be automatically pushed to all device groups and template stacks.
   key: auto_push
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
-    simple: "No"
+    simple: No
 name: PAN-OS Network Operations - Commit Configuration
 outputs: []
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "11"
+      - '11'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: bced0ca9-b541-4ea3-8c78-ee6c336b3cbf
       iscommand: false
-      name: ""
+      name: ''
       version: -1
+      description: ''
     taskid: bced0ca9-b541-4ea3-8c78-ee6c336b3cbf
     timertriggers: []
     type: start
@@ -77,14 +66,14 @@ tasks:
           "y": -740
         }
       }
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     note: false
     quietmode: 0
     scriptarguments:
@@ -93,9 +82,8 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Commit the configuration for the entire topology. Note this only
-        commits the configuration - it does
+      brand: ''
+      description: Commit the configuration for the entire topology. Note this only commits the configuration - it does
       id: 44856044-2ac6-44ef-83f7-0342a1e5b8b5
       iscommand: true
       name: Commit on all devices
@@ -112,19 +100,19 @@ tasks:
           "y": -130
         }
       }
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     loop:
-      exitCondition: ""
+      exitCondition: ''
       iscommand: false
       max: 100
       wait: 1
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     note: false
     quietmode: 0
     scriptarguments:
@@ -142,19 +130,19 @@ tasks:
                   simple: ACT
           root: PANOS.CommitStatus
       Interval:
-        simple: "1"
+        simple: '1'
       PollingCommandArgName:
         simple: match_job_id
       PollingCommandName:
         simple: pan-os-config-get-commit-status
       Timeout:
-        simple: "10"
+        simple: '10'
       dt:
         simple: PANOS.CommitStatus(val.status=="ACT").hostid
     separatecontext: true
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: |-
         Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
         This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
@@ -179,22 +167,21 @@ tasks:
           "y": 410
         }
       }
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Returns the status of the commit operation on all devices. If an
-        ID is given, only that id will be
+      brand: ''
+      description: Returns the status of the commit operation on all devices. If an ID is given, only that id will be
       id: c91fbc44-0a82-45c7-8d54-22eb153a8ab2
       iscommand: true
       name: Get commit job status
@@ -211,7 +198,7 @@ tasks:
           "y": 40
         }
       }
-  "4":
+  '4':
     conditions:
     - condition:
       - - left:
@@ -229,22 +216,22 @@ tasks:
                         simple: Panorama
                 root: PANOS.CommitStatus.device_type
           operator: isExists
-      label: "yes"
-    id: "4"
+      label: yes
+    id: '4'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "9"
-      "yes":
-      - "14"
+      - '9'
+      yes:
+      - '14'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Check if the topology includes at least one Panorama system.
       id: 53b3bd73-9c12-4994-87f2-87ca3cb8c468
       iscommand: false
@@ -261,14 +248,14 @@ tasks:
           "y": 600
         }
       }
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "10"
+      - '10'
     note: false
     quietmode: 0
     scriptarguments:
@@ -295,9 +282,8 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Push the configuration to all the device groups and template-stacks
-        in the environment.
+      brand: ''
+      description: Push the configuration to all the device groups and template-stacks in the environment.
       id: 6b6c41ae-de3d-461c-844c-da84a0823ee8
       iscommand: true
       name: Push all device groups and templates
@@ -314,19 +300,19 @@ tasks:
           "y": 1050
         }
       }
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     loop:
-      exitCondition: ""
+      exitCondition: ''
       iscommand: false
       max: 100
       wait: 1
     nexttasks:
       '#none#':
-      - "9"
+      - '9'
     note: false
     quietmode: 0
     scriptarguments:
@@ -344,19 +330,19 @@ tasks:
                   simple: PEND
           root: PANOS.PushStatus
       Interval:
-        simple: "1"
+        simple: '1'
       PollingCommandArgName:
         simple: match_job_id
       PollingCommandName:
         simple: pan-os-config-get-push-status
       Timeout:
-        simple: "20"
+        simple: '20'
       dt:
         simple: PANOS.PushStatus(val.device_status=="PEND").hostid
     separatecontext: true
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: |-
         Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
         This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
@@ -381,7 +367,7 @@ tasks:
           "y": 2010
         }
       }
-  "7":
+  '7':
     conditions:
     - condition:
       - - left:
@@ -400,22 +386,22 @@ tasks:
                         simple: ACT
                 root: PANOS.CommitStatus
           operator: isExists
-      label: "yes"
-    id: "7"
+      label: yes
+    id: '7'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "4"
-      "yes":
-      - "2"
+      - '4'
+      yes:
+      - '2'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: True if at least one system in the topology committed changes.
       id: 17b36f62-fc75-4b2e-89d8-77278efcb55d
       iscommand: false
@@ -432,7 +418,7 @@ tasks:
           "y": 200
         }
       }
-  "8":
+  '8':
     conditions:
     - condition:
       - - left:
@@ -451,24 +437,23 @@ tasks:
                         simple: PEND
                 root: PANOS.PushStatus
           operator: isExists
-      label: "yes"
-    id: "8"
+      label: yes
+    id: '8'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "9"
-      "yes":
-      - "6"
+      - '9'
+      yes:
+      - '6'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Checks if the Panorama configuration needs to be pushed to any
-        device-group or template.
+      brand: ''
+      description: Checks if the Panorama configuration needs to be pushed to any device-group or template.
       id: 8f638394-54a2-4596-85ea-53775a72bef8
       iscommand: false
       name: Was a  push required?
@@ -484,8 +469,8 @@ tasks:
           "y": 1850
         }
       }
-  "9":
-    id: "9"
+  '9':
+    id: '9'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
@@ -494,12 +479,13 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: d09db3c8-f72b-4967-8b42-4178fa302e30
       iscommand: false
       name: Finish
       type: title
       version: -1
+      description: ''
     taskid: d09db3c8-f72b-4967-8b42-4178fa302e30
     timertriggers: []
     type: title
@@ -510,14 +496,14 @@ tasks:
           "y": 2180
         }
       }
-  "10":
-    id: "10"
+  '10':
+    id: '10'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
     note: false
     quietmode: 0
     scriptarguments:
@@ -526,7 +512,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Returns the status of the push (commit-all) jobs from Panorama.
       id: 0d13d822-79a5-4c27-8260-35cfd1c900bf
       iscommand: true
@@ -544,7 +530,7 @@ tasks:
           "y": 1690
         }
       }
-  "11":
+  '11':
     conditions:
     - condition:
       - - left:
@@ -554,25 +540,24 @@ tasks:
           operator: isEqualString
           right:
             value:
-              simple: "Yes"
-      label: "yes"
-    id: "11"
+              simple: Yes
+      label: yes
+    id: '11'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "17"
-      "yes":
-      - "1"
+      - '17'
+      yes:
+      - '1'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Checks if the playbook input is set to automatically commit the
-        config.
+      brand: ''
+      description: Checks if the playbook input is set to automatically commit the config.
       id: ca63943f-a8e0-4326-806e-2c541eaa9e31
       iscommand: false
       name: Auto-Commit?
@@ -588,14 +573,14 @@ tasks:
           "y": -590
         }
       }
-  "12":
-    id: "12"
+  '12':
+    id: '12'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "13"
+      - '13'
     note: false
     quietmode: 0
     scriptarguments:
@@ -604,7 +589,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Gets the operational information of the device groups in the topology.
       id: c9d7dc3c-8d22-4382-8018-f557ac05fe42
       iscommand: true
@@ -622,22 +607,21 @@ tasks:
           "y": 1050
         }
       }
-  "13":
-    id: "13"
+  '13':
+    id: '13'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "15"
+      - '15'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Gets the operational information of the template-stacks in the
-        topology.
+      brand: ''
+      description: Gets the operational information of the template-stacks in the topology.
       id: 8a39c05b-87db-46cb-891c-dc7af5918861
       iscommand: true
       name: Get Template Stacks
@@ -654,7 +638,7 @@ tasks:
           "y": 1210
         }
       }
-  "14":
+  '14':
     conditions:
     - condition:
       - - left:
@@ -664,23 +648,23 @@ tasks:
           operator: isEqualString
           right:
             value:
-              simple: "Yes"
-      label: "yes"
-    id: "14"
+              simple: Yes
+      label: yes
+    id: '14'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "12"
-      "yes":
-      - "5"
+      - '12'
+      yes:
+      - '5'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Check if the playbook input it set to automatically push the configuration.
       id: 32709149-e453-42d6-8c4f-e99574ab9df7
       iscommand: false
@@ -697,71 +681,71 @@ tasks:
           "y": 770
         }
       }
-  "15":
+  '15':
     form:
       description: Specify the device groups and template-stacks to push to.
       expired: false
       questions:
       - defaultrows: []
-        fieldassociated: ""
+        fieldassociated: ''
         gridcolumns: []
-        id: "0"
-        label: ""
+        id: '0'
+        label: ''
         labelarg:
           simple: Device-groups
         options: []
         optionsarg:
         - simple: ${PANOS.DeviceGroupOp.name}
-        placeholder: ""
+        placeholder: ''
         readonly: false
         required: false
-        tooltip: ""
+        tooltip: ''
         type: multiSelect
       - defaultrows: []
-        fieldassociated: ""
+        fieldassociated: ''
         gridcolumns: []
-        id: "1"
-        label: ""
+        id: '1'
+        label: ''
         labelarg:
           simple: Template-stacks
         options: []
         optionsarg:
         - simple: ${PANOS.TemplateStackOp.name}
-        placeholder: ""
+        placeholder: ''
         readonly: false
         required: false
-        tooltip: ""
+        tooltip: ''
         type: multiSelect
-      sender: ""
+      sender: ''
       title: Panorama - Config Push Scope
       totalanswers: 0
-    id: "15"
+    id: '15'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     message:
-      bcc: null
-      body: null
-      cc: null
-      format: ""
+      bcc:
+      body:
+      cc:
+      format: ''
       methods: []
-      subject: null
+      subject:
       timings:
         completeafterreplies: 1
         completeaftersla: false
         completeafterv2: false
         retriescount: 2
         retriesinterval: 360
-      to: null
+      to:
     nexttasks:
       '#none#':
-      - "16"
+      - '16'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Ask the user for the scope of the Panorama config push.
       id: 384fa8d1-478a-42ca-8497-e2ff70655adc
       iscommand: false
@@ -778,14 +762,14 @@ tasks:
           "y": 1360
         }
       }
-  "16":
-    id: "16"
+  '16':
+    id: '16'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "10"
+      - '10'
     note: false
     quietmode: 0
     scriptarguments:
@@ -798,9 +782,8 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Push the configuration to all the device groups and template-stacks
-        in the environment.
+      brand: ''
+      description: Push the configuration to all the device groups and template-stacks in the environment.
       id: ba8d419c-920e-4c37-8388-81a578e61ec9
       iscommand: true
       name: Push all device groups and templates
@@ -817,20 +800,20 @@ tasks:
           "y": 1520
         }
       }
-  "17":
-    id: "17"
+  '17':
+    id: '17'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: |-
         This task will commit to the device specified by the device_filter_string or all devices.
 
@@ -863,3 +846,6 @@ view: |-
       }
     }
   }
+tests:
+- No tests (auto formatted)
+fromversion: 6.2.0

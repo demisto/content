@@ -1,46 +1,39 @@
 contentitemexportablefields:
   contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: a3acf260-148d-4af7-81ab-49744965d264
     propagationLabels:
     - all
-    toServerVersion: ""
-description: Takes two snapshots of the PAN-OS operational topology before and after
-  a change, comparing the two for differences.
+description: Takes two snapshots of the PAN-OS operational topology before and after a change, comparing the two for differences.
 id: PAN-OS Network Operations - System Snapshot
 inputs:
-- description: Default change threshold. Greater or equal than the number equals a
-    medium severity, greater or equal to double the number is high, and 5x the number
-    is critical.
+- description: Default change threshold. Greater or equal than the number equals a medium severity, greater or equal to double the number is high, and 5x the number is critical.
   key: change_threshold
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value:
-    simple: "2"
+    simple: '2'
 name: PAN-OS Network Operations - System Snapshot
 outputs: []
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "12"
+      - '12'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 25da64ee-4568-49e2-883e-fd3b9573c2da
       iscommand: false
-      name: ""
+      name: ''
       version: -1
+      description: ''
     taskid: 25da64ee-4568-49e2-883e-fd3b9573c2da
     timertriggers: []
     type: start
@@ -51,25 +44,26 @@ tasks:
           "y": -880
         }
       }
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "33"
+      - '33'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: a99260f8-2046-4c16-8aff-84b662694e11
       iscommand: false
       name: Run First Snapshot
       type: title
       version: -1
+      description: ''
     taskid: a99260f8-2046-4c16-8aff-84b662694e11
     timertriggers: []
     type: title
@@ -80,25 +74,26 @@ tasks:
           "y": -190
         }
       }
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: e44b8446-d406-4593-85ae-88be782553b7
       iscommand: false
       name: Run Second Snapshot
       type: title
       version: -1
+      description: ''
     taskid: e44b8446-d406-4593-85ae-88be782553b7
     timertriggers: []
     type: title
@@ -109,14 +104,14 @@ tasks:
           "y": 650
         }
       }
-  "4":
-    id: "4"
+  '4':
+    id: '4'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "34"
+      - '34'
     note: false
     quietmode: 0
     scriptarguments:
@@ -147,20 +142,20 @@ tasks:
           "y": 140
         }
       }
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Task that pauses until the comparison snapshot is ready.
       id: fdf8f02f-c631-40d5-8d21-12220594b011
       iscommand: false
@@ -179,14 +174,14 @@ tasks:
           "y": 480
         }
       }
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "20"
+      - '20'
     note: false
     quietmode: 0
     scriptarguments:
@@ -195,7 +190,7 @@ tasks:
       name:
         simple: PAN-OS Second System Snapshot - ${incident.created}
       panosnetworkoperationsclosetaskid:
-        simple: "15"
+        simple: '15'
       panosnetworkoperationsparentincidentid:
         simple: ${incident.id}
       type:
@@ -221,26 +216,27 @@ tasks:
           "y": 800
         }
       }
-  "7":
-    id: "7"
+  '7':
+    id: '7'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "13"
-      - "14"
+      - '13'
+      - '14'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 0b6056a4-1870-4e76-88c2-7950f3340af5
       iscommand: false
       name: Run Comparison
       type: title
       version: -1
+      description: ''
     taskid: 0b6056a4-1870-4e76-88c2-7950f3340af5
     timertriggers: []
     type: title
@@ -251,23 +247,23 @@ tasks:
           "y": 1370
         }
       }
-  "12":
-    id: "12"
+  '12':
+    id: '12'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "31"
+      - '31'
     note: false
     quietmode: 0
     scriptarguments:
       all:
-        simple: "yes"
+        simple: yes
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Delete field from context
       id: d2c66ef1-e539-4227-899c-1acf1b6407d1
       iscommand: false
@@ -285,14 +281,14 @@ tasks:
           "y": -720
         }
       }
-  "13":
-    id: "13"
+  '13':
+    id: '13'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "17"
+      - '17'
     note: false
     quietmode: 0
     scriptarguments:
@@ -304,11 +300,11 @@ tasks:
           transformers:
           - operator: FirstArrayElement
       ignore-outputs:
-        simple: "true"
+        simple: 'true'
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Get the first snapshot incident data.
       id: e6ef9d97-9de5-4d8d-8fb3-5ab6d415d87d
       iscommand: false
@@ -326,14 +322,14 @@ tasks:
           "y": 1530
         }
       }
-  "14":
-    id: "14"
+  '14':
+    id: '14'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "17"
+      - '17'
     note: false
     quietmode: 0
     scriptarguments:
@@ -345,11 +341,11 @@ tasks:
           transformers:
           - operator: LastArrayElement
       ignore-outputs:
-        simple: "true"
+        simple: 'true'
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Get the snapshot data from the second snapshot incident.
       id: 6c23a31f-cd7f-4c37-8adb-e38877223d8b
       iscommand: false
@@ -367,22 +363,21 @@ tasks:
           "y": 1530
         }
       }
-  "15":
-    id: "15"
+  '15':
+    id: '15'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Automatically completed by the snapshot process to indicate the
-        snapshot was taken successfully.
+      brand: ''
+      description: Automatically completed by the snapshot process to indicate the snapshot was taken successfully.
       id: 3aff941b-c0a2-425f-85c5-9a9023764b5f
       iscommand: false
       name: Mark Complete when Second Snapshot Complete
@@ -400,7 +395,7 @@ tasks:
           "y": 1190
         }
       }
-  "16":
+  '16':
     fieldMapping:
     - incidentfield: PAN-OS Network Operations - Snapshot ARP Differences
       output:
@@ -432,18 +427,18 @@ tasks:
           root: CompareTables.Result
           transformers:
           - operator: count
-    id: "16"
+    id: '16'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "22"
+      - '22'
     note: false
     quietmode: 0
     scriptarguments:
       ignore-outputs:
-        simple: "false"
+        simple: 'false'
       ignore_keys:
         simple: ttl
       index_key:
@@ -457,9 +452,8 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Given two tables, compare by keys to look for difference and return
-        the result.
+      brand: ''
+      description: Given two tables, compare by keys to look for difference and return the result.
       id: 7139d35a-90db-4846-86f4-d1c7ef8783d6
       iscommand: false
       name: Compare ARP Tables
@@ -476,27 +470,28 @@ tasks:
           "y": 1870
         }
       }
-  "17":
-    id: "17"
+  '17':
+    id: '17'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "16"
-      - "29"
-      - "30"
+      - '16'
+      - '29'
+      - '30'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: fae90654-6635-427a-84fa-2344c1032124
       iscommand: false
       name: Run Comparisons
       type: title
       version: -1
+      description: ''
     taskid: fae90654-6635-427a-84fa-2344c1032124
     timertriggers: []
     type: title
@@ -507,14 +502,14 @@ tasks:
           "y": 1730
         }
       }
-  "20":
-    id: "20"
+  '20':
+    id: '20'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "15"
+      - '15'
     note: false
     quietmode: 0
     scriptarguments:
@@ -542,25 +537,26 @@ tasks:
           "y": 1000
         }
       }
-  "22":
-    id: "22"
+  '22':
+    id: '22'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "23"
+      - '23'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 7ab12691-f5ca-4f07-8284-31ceb5db2b00
       iscommand: false
       name: Calculate Severity
       type: title
       version: -1
+      description: ''
     taskid: 7ab12691-f5ca-4f07-8284-31ceb5db2b00
     timertriggers: []
     type: title
@@ -571,7 +567,7 @@ tasks:
           "y": 2040
         }
       }
-  "23":
+  '23':
     conditions:
     - condition:
       - - left:
@@ -608,7 +604,7 @@ tasks:
                 - args:
                     by:
                       value:
-                        simple: "2"
+                        simple: '2'
                   operator: multiply
         - left:
             iscontext: true
@@ -624,28 +620,27 @@ tasks:
                 - args:
                     by:
                       value:
-                        simple: "2"
+                        simple: '2'
                   operator: multiply
       label: High
-    id: "23"
+    id: '23'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "26"
+      - '26'
       High:
-      - "25"
+      - '25'
       Medium:
-      - "24"
+      - '24'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Calculate whether the snapshot process has detected any errors
-        or not.
+      brand: ''
+      description: Calculate whether the snapshot process has detected any errors or not.
       id: f812fb6b-c922-443f-89db-91c41925bafc
       iscommand: false
       name: Calculate Severity
@@ -661,14 +656,14 @@ tasks:
           "y": 2170
         }
       }
-  "24":
-    id: "24"
+  '24':
+    id: '24'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "27"
+      - '27'
     note: false
     quietmode: 0
     scriptarguments:
@@ -695,14 +690,14 @@ tasks:
           "y": 2370
         }
       }
-  "25":
-    id: "25"
+  '25':
+    id: '25'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "27"
+      - '27'
     note: false
     quietmode: 0
     scriptarguments:
@@ -729,14 +724,14 @@ tasks:
           "y": 2370
         }
       }
-  "26":
-    id: "26"
+  '26':
+    id: '26'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "27"
+      - '27'
     note: false
     quietmode: 0
     scriptarguments:
@@ -763,25 +758,26 @@ tasks:
           "y": 2370
         }
       }
-  "27":
-    id: "27"
+  '27':
+    id: '27'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "28"
+      - '28'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: ad146de8-9722-4bb4-8ca8-ebacbcc8d294
       iscommand: false
       name: Close Snapshot Incidents
       type: title
       version: -1
+      description: ''
     taskid: ad146de8-9722-4bb4-8ca8-ebacbcc8d294
     timertriggers: []
     type: title
@@ -792,8 +788,8 @@ tasks:
           "y": 2550
         }
       }
-  "28":
-    id: "28"
+  '28':
+    id: '28'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
@@ -825,7 +821,7 @@ tasks:
           "y": 2670
         }
       }
-  "29":
+  '29':
     fieldMapping:
     - incidentfield: PAN-OS Network Operations - Snapshot Route Differences
       output:
@@ -857,18 +853,18 @@ tasks:
           root: CompareTables.Result
           transformers:
           - operator: count
-    id: "29"
+    id: '29'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "22"
+      - '22'
     note: false
     quietmode: 0
     scriptarguments:
       ignore-outputs:
-        simple: "false"
+        simple: 'false'
       ignore_keys:
         simple: age
       index_key:
@@ -882,9 +878,8 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Given two tables, compare by keys to look for difference and return
-        the result.
+      brand: ''
+      description: Given two tables, compare by keys to look for difference and return the result.
       id: 029cf627-2fe6-4dfd-806e-f094f032d159
       iscommand: false
       name: Compare Route Tables
@@ -901,7 +896,7 @@ tasks:
           "y": 1870
         }
       }
-  "30":
+  '30':
     fieldMapping:
     - incidentfield: PAN-OS Network Operations  - Snapshot BGP Differences
       output:
@@ -933,18 +928,18 @@ tasks:
           root: CompareTables.Result
           transformers:
           - operator: count
-    id: "30"
+    id: '30'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "22"
+      - '22'
     note: false
     quietmode: 0
     scriptarguments:
       ignore-outputs:
-        simple: "false"
+        simple: 'false'
       index_key:
         simple: peeraddress
       left:
@@ -956,9 +951,8 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Given two tables, compare by keys to look for difference and return
-        the result.
+      brand: ''
+      description: Given two tables, compare by keys to look for difference and return the result.
       id: c0478ec2-42c5-4d7a-874b-332e5a6c044b
       iscommand: false
       name: Compare BGP Tables
@@ -975,7 +969,7 @@ tasks:
           "y": 1870
         }
       }
-  "31":
+  '31':
     conditions:
     - condition:
       - - left:
@@ -983,24 +977,23 @@ tasks:
             value:
               simple: incident.panosnetworkoperationsparentincidentid
           operator: isNotEmpty
-      label: "yes"
-    id: "31"
+      label: yes
+    id: '31'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "2"
-      "yes":
-      - "32"
+      - '2'
+      yes:
+      - '32'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Check if this snapshot process was initiated by another incident
-        type.
+      brand: ''
+      description: Check if this snapshot process was initiated by another incident type.
       id: 07a6c31f-def0-4263-8064-7cc82db2fd8e
       iscommand: false
       name: Do we have a parent incident?
@@ -1016,14 +1009,14 @@ tasks:
           "y": -530
         }
       }
-  "32":
-    id: "32"
+  '32':
+    id: '32'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     note: false
     quietmode: 0
     scriptarguments:
@@ -1050,14 +1043,14 @@ tasks:
           "y": -355
         }
       }
-  "33":
-    id: "33"
+  '33':
+    id: '33'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     note: false
     quietmode: 0
     scriptarguments:
@@ -1089,14 +1082,14 @@ tasks:
           "y": -40
         }
       }
-  "34":
-    id: "34"
+  '34':
+    id: '34'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     note: false
     quietmode: 0
     scriptarguments:
@@ -1139,3 +1132,6 @@ view: |-
       }
     }
   }
+tests:
+- No tests (auto formatted)
+fromversion: 6.2.0

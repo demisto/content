@@ -1,1210 +1,1199 @@
 {
-	"cacheVersn": 0,
-	"definitionId": "",
-	"fromDate": "0001-01-01T00:00:00Z",
-	"fromDateLicense": "0001-01-01T00:00:00Z",
-	"fromServerVersion": "",
-	"hidePivot": false,
-	"hideSearch": false,
-	"id": "bda493f8-40c6-4dd6-8098-6beee08e5ab6",
-	"isCommon": false,
-	"itemVersion": "",
-	"layout": [
-		{
-			"forceRange": false,
-			"h": 2,
-			"i": "7d9f7600-9854-11ec-befd-bd260a8d24bc",
-			"id": "7d9f7600-9854-11ec-befd-bd260a8d24bc",
-			"reflectDimensions": true,
-			"w": 3,
-			"widget": {
-				"Cache": null,
-				"cacheVersn": 0,
-				"category": "",
-				"commitMessage": "",
-				"dataType": "incidents",
-				"dateRange": {
-					"fromDate": "0001-01-01T00:00:00Z",
-					"fromDateLicense": "0001-01-01T00:00:00Z",
-					"period": {
-						"by": "",
-						"byFrom": "days",
-						"byTo": "",
-						"field": "",
-						"fromValue": null,
-						"toValue": null
-					},
-					"toDate": "0001-01-01T00:00:00Z"
-				},
-				"definitionId": "",
-				"fromServerVersion": "",
-				"id": "782daf08-c424-48c5-8165-50cca4d0e69d",
-				"isPredefined": false,
-				"itemVersion": "",
-				"modified": "2022-02-28T05:08:38.611878411Z",
-				"name": "PAN-OS Network Operations - Devices By Model",
-				"packID": "",
-				"params": {
-					"groupBy": [
-						"devicemodel"
-					],
-					"legend": [
-						{
-							"color": "#FED22C",
-							"name": "pa-vm"
-						},
-						{
-							"color": "#FF8411",
-							"name": "panorama"
-						}
-					],
-					"valuesFormat": "abbreviated"
-				},
-				"prevName": "PAN-OS Network Operations - Devices By Type",
-				"propagationLabels": [
-					"all"
-				],
-				"query": "type:\"PAN-OS Network Operations - Device\" -type:\"PAN-OS Network Operations - Device Upgrade\"",
-				"shouldCommit": false,
-				"toServerVersion": "",
-				"vcShouldIgnore": false,
-				"vcShouldKeepItemLegacyProdMachine": false,
-				"version": 2,
-				"widgetType": "pie"
-			},
-			"x": 9,
-			"y": 3
-		},
-		{
-			"forceRange": false,
-			"h": 2,
-			"i": "dc41d720-9854-11ec-befd-bd260a8d24bc",
-			"id": "dc41d720-9854-11ec-befd-bd260a8d24bc",
-			"reflectDimensions": true,
-			"w": 3,
-			"widget": {
-				"Cache": null,
-				"cacheVersn": 0,
-				"category": "",
-				"commitMessage": "",
-				"dataType": "incidents",
-				"dateRange": {
-					"fromDate": "0001-01-01T00:00:00Z",
-					"fromDateLicense": "0001-01-01T00:00:00Z",
-					"period": {
-						"by": "",
-						"byFrom": "days",
-						"byTo": "",
-						"field": "",
-						"fromValue": null,
-						"toValue": null
-					},
-					"toDate": "0001-01-01T00:00:00Z"
-				},
-				"definitionId": "",
-				"fromServerVersion": "",
-				"id": "ad9e4a00-64af-41b2-84b9-e541a5e032ce",
-				"isPredefined": false,
-				"itemVersion": "",
-				"modified": "2022-02-28T05:11:10.41980571Z",
-				"name": "PAN-OS Network Operations - Devices By Software Version",
-				"packID": "",
-				"params": {
-					"groupBy": [
-						"panosnetworkoperationsrunningsoftwareversion"
-					],
-					"legend": [
-						{
-							"color": "#FED22C",
-							"name": "pa-vm"
-						},
-						{
-							"color": "#FF8411",
-							"name": "panorama"
-						}
-					],
-					"valuesFormat": "abbreviated"
-				},
-				"prevName": "PAN-OS Network Operations - Devices By Model",
-				"propagationLabels": [
-					"all"
-				],
-				"query": "type:\"PAN-OS Network Operations - Device\" -type:\"PAN-OS Network Operations - Device Upgrade\"",
-				"shouldCommit": false,
-				"toServerVersion": "",
-				"vcShouldIgnore": false,
-				"vcShouldKeepItemLegacyProdMachine": false,
-				"version": 1,
-				"widgetType": "pie"
-			},
-			"x": 9,
-			"y": 5
-		},
-		{
-			"forceRange": false,
-			"h": 2,
-			"i": "5c02eb20-9855-11ec-befd-bd260a8d24bc",
-			"id": "5c02eb20-9855-11ec-befd-bd260a8d24bc",
-			"reflectDimensions": true,
-			"w": 3,
-			"widget": {
-				"Cache": null,
-				"cacheVersn": 0,
-				"category": "",
-				"commitMessage": "",
-				"dataType": "incidents",
-				"dateRange": {
-					"fromDate": "0001-01-01T00:00:00Z",
-					"fromDateLicense": "0001-01-01T00:00:00Z",
-					"period": {
-						"by": "",
-						"byFrom": "days",
-						"byTo": "",
-						"field": "",
-						"fromValue": null,
-						"toValue": null
-					},
-					"toDate": "0001-01-01T00:00:00Z"
-				},
-				"definitionId": "",
-				"fromServerVersion": "",
-				"id": "130ca226-55b2-44c0-8d7d-337124d2dc21",
-				"isPredefined": false,
-				"itemVersion": "",
-				"modified": "2022-02-28T05:14:50.142946515Z",
-				"name": "PAN-OS Network Operations - Devices By Domain",
-				"packID": "",
-				"params": {
-					"groupBy": [
-						"panosnetworkoperationsdeviceadministrativedomain"
-					],
-					"legend": [
-						{
-							"color": "#FED22C",
-							"name": "pa-vm"
-						},
-						{
-							"color": "#FF8411",
-							"name": "panorama"
-						}
-					],
-					"valuesFormat": "abbreviated"
-				},
-				"prevName": "PAN-OS Network Operations - Devices By Domain",
-				"propagationLabels": [
-					"all"
-				],
-				"query": "type:\"PAN-OS Network Operations - Device\" -type:\"PAN-OS Network Operations - Device Upgrade\"",
-				"shouldCommit": false,
-				"toServerVersion": "",
-				"vcShouldIgnore": false,
-				"vcShouldKeepItemLegacyProdMachine": false,
-				"version": 1,
-				"widgetType": "column"
-			},
-			"x": 9,
-			"y": 7
-		},
-		{
-			"forceRange": false,
-			"h": 1,
-			"i": "934e7f40-9855-11ec-befd-bd260a8d24bc",
-			"id": "934e7f40-9855-11ec-befd-bd260a8d24bc",
-			"reflectDimensions": true,
-			"w": 9,
-			"widget": {
-				"Cache": null,
-				"cacheVersn": 0,
-				"category": "",
-				"commitMessage": "",
-				"dataType": "incidents",
-				"dateRange": {
-					"fromDate": "0001-01-01T00:00:00Z",
-					"fromDateLicense": "0001-01-01T00:00:00Z",
-					"period": {
-						"by": "",
-						"byFrom": "days",
-						"byTo": "",
-						"field": "",
-						"fromValue": null,
-						"toValue": null
-					},
-					"toDate": "0001-01-01T00:00:00Z"
-				},
-				"definitionId": "",
-				"fromServerVersion": "",
-				"id": "45cb32fa-6d5d-4b96-85f3-239f2819b394",
-				"isPredefined": false,
-				"itemVersion": "",
-				"modified": "2022-02-28T05:16:22.670395636Z",
-				"name": "PAN-OS Network Operations -Total Devices",
-				"packID": "",
-				"params": {
-					"colors": {
-						"isEnabled": true,
-						"items": {
-							"#1DB846": {
-								"value": 0
-							}
-						},
-						"type": "above"
-					},
-					"valuesFormat": "abbreviated"
-				},
-				"prevName": "PAN-OS Network Operations -Total Devices",
-				"propagationLabels": [
-					"all"
-				],
-				"query": "type:\"PAN-OS Network Operations - Device\" -type:\"PAN-OS Network Operations - Device Upgrade\"",
-				"shouldCommit": false,
-				"toServerVersion": "",
-				"vcShouldIgnore": false,
-				"vcShouldKeepItemLegacyProdMachine": false,
-				"version": 1,
-				"widgetType": "number"
-			},
-			"x": 3,
-			"y": 2
-		},
-		{
-			"forceRange": false,
-			"h": 7,
-			"i": "b5d7bea0-9855-11ec-befd-bd260a8d24bc",
-			"id": "b5d7bea0-9855-11ec-befd-bd260a8d24bc",
-			"reflectDimensions": true,
-			"w": 3,
-			"widget": {
-				"Cache": null,
-				"cacheVersn": 0,
-				"category": "utilities",
-				"commitMessage": "",
-				"dataType": "incidents",
-				"dateRange": {
-					"fromDate": "0001-01-01T00:00:00Z",
-					"fromDateLicense": "0001-01-01T00:00:00Z",
-					"period": {
-						"by": "",
-						"byFrom": "days",
-						"byTo": "",
-						"field": "",
-						"fromValue": null,
-						"toValue": null
-					},
-					"toDate": "0001-01-01T00:00:00Z"
-				},
-				"definitionId": "",
-				"fromServerVersion": "5.0.0",
-				"id": "",
-				"isPredefined": false,
-				"itemVersion": "1.1.8",
-				"modified": "2021-11-14T23:23:22.990194561Z",
-				"name": "Text Widget",
-				"packID": "CommonWidgets",
-				"packPropagationLabels": [
-					"all"
-				],
-				"params": {
-					"text": "# Topology Information\n\nThese stats display an overview of the PAN-OS topology.\n\nThe visualizations seen here represent data from within *PAN-OS Network Operations - Device* incidents, which are generally created and maintained by *PAN-OS Network Operations - System Information* incidents."
-				},
-				"prevName": "Text Widget",
-				"propagationLabels": [],
-				"query": "",
-				"shouldCommit": false,
-				"toServerVersion": "",
-				"vcShouldIgnore": false,
-				"vcShouldKeepItemLegacyProdMachine": false,
-				"version": 0,
-				"widgetType": "text"
-			},
-			"x": 0,
-			"y": 2
-		},
-		{
-			"forceRange": false,
-			"h": 3,
-			"i": "3c7d9590-9858-11ec-befd-bd260a8d24bc",
-			"id": "3c7d9590-9858-11ec-befd-bd260a8d24bc",
-			"reflectDimensions": true,
-			"w": 3,
-			"widget": {
-				"Cache": null,
-				"cacheVersn": 0,
-				"category": "",
-				"commitMessage": "",
-				"dataType": "incidents",
-				"dateRange": {
-					"fromDate": "0001-01-01T00:00:00Z",
-					"fromDateLicense": "0001-01-01T00:00:00Z",
-					"period": {
-						"by": "",
-						"byFrom": "days",
-						"byTo": "",
-						"field": "",
-						"fromValue": null,
-						"toValue": null
-					},
-					"toDate": "0001-01-01T00:00:00Z"
-				},
-				"definitionId": "",
-				"fromServerVersion": "",
-				"id": "089c3162-d3b0-4f8a-8d32-140fbc69ea70",
-				"isPredefined": false,
-				"itemVersion": "",
-				"modified": "2022-02-28T05:33:41.452799204Z",
-				"name": "PAN-OS Network Operations - Upgrade Status",
-				"packID": "",
-				"params": {
-					"groupBy": [
-						"description"
-					],
-					"legend": [
-						{
-							"color": "#FED22C",
-							"name": "pa-vm"
-						},
-						{
-							"color": "#FF8411",
-							"name": "panorama"
-						}
-					],
-					"valuesFormat": "abbreviated"
-				},
-				"prevName": "PAN-OS Network Operations - Upgrade Status",
-				"propagationLabels": [
-					"all"
-				],
-				"query": "type:\"PAN-OS Network Operations - Device Upgrade\" -status:Closed",
-				"shouldCommit": false,
-				"toServerVersion": "",
-				"vcShouldIgnore": false,
-				"vcShouldKeepItemLegacyProdMachine": false,
-				"version": 1,
-				"widgetType": "column"
-			},
-			"x": 9,
-			"y": 11
-		},
-		{
-			"forceRange": false,
-			"h": 1,
-			"i": "5b22e400-9858-11ec-befd-bd260a8d24bc",
-			"id": "5b22e400-9858-11ec-befd-bd260a8d24bc",
-			"reflectDimensions": true,
-			"w": 9,
-			"widget": {
-				"Cache": null,
-				"cacheVersn": 0,
-				"category": "",
-				"commitMessage": "",
-				"dataType": "incidents",
-				"dateRange": {
-					"fromDate": "0001-01-01T00:00:00Z",
-					"fromDateLicense": "0001-01-01T00:00:00Z",
-					"period": {
-						"by": "",
-						"byFrom": "days",
-						"byTo": "",
-						"field": "",
-						"fromValue": null,
-						"toValue": null
-					},
-					"toDate": "0001-01-01T00:00:00Z"
-				},
-				"definitionId": "",
-				"fromServerVersion": "",
-				"id": "9d19b8ec-7f3f-4dc4-8528-2faa927a9961",
-				"isPredefined": false,
-				"itemVersion": "",
-				"modified": "2022-02-28T05:36:05.756969346Z",
-				"name": "PAN-OS Network Operations - Total Upgrades In Progress",
-				"packID": "",
-				"params": {
-					"colors": {
-						"isEnabled": true,
-						"items": {
-							"#1DB846": {
-								"value": null
-							},
-							"#EF9700": {
-								"value": 0
-							}
-						},
-						"type": "above"
-					},
-					"valuesFormat": "abbreviated"
-				},
-				"prevName": "PAN-OS Network Operations - Total Upgrades In Progress",
-				"propagationLabels": [
-					"all"
-				],
-				"query": "type:\"PAN-OS Network Operations - Device Upgrade\" -status:Closed",
-				"shouldCommit": false,
-				"toServerVersion": "",
-				"vcShouldIgnore": false,
-				"vcShouldKeepItemLegacyProdMachine": false,
-				"version": 1,
-				"widgetType": "number"
-			},
-			"x": 3,
-			"y": 9
-		},
-		{
-			"forceRange": false,
-			"h": 5,
-			"i": "645b6ce0-9858-11ec-befd-bd260a8d24bc",
-			"id": "645b6ce0-9858-11ec-befd-bd260a8d24bc",
-			"reflectDimensions": true,
-			"w": 3,
-			"widget": {
-				"Cache": null,
-				"cacheVersn": 0,
-				"category": "utilities",
-				"commitMessage": "",
-				"dataType": "incidents",
-				"dateRange": {
-					"fromDate": "0001-01-01T00:00:00Z",
-					"fromDateLicense": "0001-01-01T00:00:00Z",
-					"period": {
-						"by": "",
-						"byFrom": "days",
-						"byTo": "",
-						"field": "",
-						"fromValue": null,
-						"toValue": null
-					},
-					"toDate": "0001-01-01T00:00:00Z"
-				},
-				"definitionId": "",
-				"fromServerVersion": "5.0.0",
-				"id": "",
-				"isPredefined": false,
-				"itemVersion": "1.1.8",
-				"modified": "2021-11-14T23:23:22.990194561Z",
-				"name": "Text Widget",
-				"packID": "CommonWidgets",
-				"packPropagationLabels": [
-					"all"
-				],
-				"params": {
-					"text": "# Upgrade Information\n\nThese stats display an overview of any currently active upgrade processes. This information is tracked by inspecting the status of the **PAN-OS Network Operations - Device Upgrade** incidents.\n\nThe device upgrade process manages the end to end upgrade strategy for the entire PAN-OS topology. It manages both Panorama, HA and Non-HA Firewall upgrades."
-				},
-				"prevName": "Text Widget",
-				"propagationLabels": [],
-				"query": "",
-				"shouldCommit": false,
-				"toServerVersion": "",
-				"vcShouldIgnore": false,
-				"vcShouldKeepItemLegacyProdMachine": false,
-				"version": 0,
-				"widgetType": "text"
-			},
-			"x": 0,
-			"y": 9
-		},
-		{
-			"forceRange": false,
-			"h": 1,
-			"i": "ebc4d790-987e-11ec-a99f-31d09a27f82d",
-			"id": "ebc4d790-987e-11ec-a99f-31d09a27f82d",
-			"reflectDimensions": true,
-			"w": 3,
-			"widget": {
-				"Cache": null,
-				"cacheVersn": 0,
-				"category": "",
-				"commitMessage": "",
-				"dataType": "incidents",
-				"dateRange": {
-					"fromDate": "0001-01-01T00:00:00Z",
-					"fromDateLicense": "0001-01-01T00:00:00Z",
-					"period": {
-						"by": "",
-						"byFrom": "days",
-						"byTo": "",
-						"field": "",
-						"fromValue": null,
-						"toValue": null
-					},
-					"toDate": "0001-01-01T00:00:00Z"
-				},
-				"definitionId": "",
-				"fromServerVersion": "",
-				"id": "ca5eed90-7816-4819-82c0-6f74b5a527b8",
-				"isPredefined": false,
-				"itemVersion": "",
-				"modified": "2022-02-28T10:12:12.622749188Z",
-				"name": "PAN-OS Network Operations - Average Device Upgrade Timer",
-				"packID": "",
-				"params": {
-					"colors": {
-						"isEnabled": true,
-						"items": {
-							"#1DB846": {
-								"value": null
-							}
-						},
-						"type": "above"
-					},
-					"keys": [
-						"avg|deviceupgradetimer.totalDuration"
-					],
-					"valuesFormat": "hours"
-				},
-				"prevName": "PAN-OS Network Operations - Average Device Upgrade Timer",
-				"propagationLabels": [
-					"all"
-				],
-				"query": "type:\"PAN-OS Network Operations - Device Upgrade\" status:Closed ",
-				"shouldCommit": false,
-				"toServerVersion": "",
-				"vcShouldIgnore": false,
-				"vcShouldKeepItemLegacyProdMachine": false,
-				"version": 1,
-				"widgetType": "duration"
-			},
-			"x": 9,
-			"y": 10
-		},
-		{
-			"forceRange": false,
-			"h": 4,
-			"i": "2e93cef0-987f-11ec-a99f-31d09a27f82d",
-			"id": "2e93cef0-987f-11ec-a99f-31d09a27f82d",
-			"reflectDimensions": true,
-			"w": 6,
-			"widget": {
-				"Cache": null,
-				"cacheVersn": 0,
-				"category": "",
-				"commitMessage": "",
-				"dataType": "incidents",
-				"dateRange": {
-					"fromDate": "0001-01-01T00:00:00Z",
-					"fromDateLicense": "0001-01-01T00:00:00Z",
-					"period": {
-						"by": "",
-						"byFrom": "days",
-						"byTo": "",
-						"field": "",
-						"fromValue": null,
-						"toValue": null
-					},
-					"toDate": "0001-01-01T00:00:00Z"
-				},
-				"definitionId": "",
-				"fromServerVersion": "",
-				"id": "75fd1741-12ee-41ac-8bc5-1a3519258ab8",
-				"isPredefined": false,
-				"itemVersion": "",
-				"modified": "2022-02-28T10:14:10.571668383Z",
-				"name": "PAN-OS Network Operations - Active Upgrades",
-				"packID": "",
-				"params": {
-					"colors": {
-						"isEnabled": true,
-						"items": {
-							"#1DB846": {
-								"value": null
-							}
-						},
-						"type": "above"
-					},
-					"tableColumns": [
-						{
-							"displayed": true,
-							"isDefault": true,
-							"key": "id",
-							"width": 100
-						},
-						{
-							"displayed": true,
-							"isDefault": true,
-							"key": "name",
-							"width": 300
-						},
-						{
-							"displayed": true,
-							"isDefault": true,
-							"key": "type",
-							"width": 200
-						},
-						{
-							"displayed": true,
-							"isDefault": true,
-							"key": "severity",
-							"width": 124
-						},
-						{
-							"displayed": true,
-							"isDefault": true,
-							"key": "occurred",
-							"width": 200
-						},
-						{
-							"displayed": true,
-							"key": "Description",
-							"width": 200
-						}
-					]
-				},
-				"prevName": "PAN-OS Network Operations - Active Upgrades",
-				"propagationLabels": [
-					"all"
-				],
-				"query": "type:\"PAN-OS Network Operations - Device Upgrade\" status:Active",
-				"shouldCommit": false,
-				"toServerVersion": "",
-				"vcShouldIgnore": false,
-				"vcShouldKeepItemLegacyProdMachine": false,
-				"version": 1,
-				"widgetType": "table"
-			},
-			"x": 3,
-			"y": 10
-		},
-		{
-			"forceRange": false,
-			"h": 6,
-			"i": "ac0e0030-987f-11ec-a99f-31d09a27f82d",
-			"id": "ac0e0030-987f-11ec-a99f-31d09a27f82d",
-			"reflectDimensions": true,
-			"w": 6,
-			"widget": {
-				"Cache": null,
-				"cacheVersn": 0,
-				"category": "",
-				"commitMessage": "",
-				"dataType": "incidents",
-				"dateRange": {
-					"fromDate": "0001-01-01T00:00:00Z",
-					"fromDateLicense": "0001-01-01T00:00:00Z",
-					"period": {
-						"by": "",
-						"byFrom": "days",
-						"byTo": "",
-						"field": "",
-						"fromValue": null,
-						"toValue": null
-					},
-					"toDate": "0001-01-01T00:00:00Z"
-				},
-				"definitionId": "",
-				"fromServerVersion": "",
-				"id": "3fe084d0-2f69-44d8-89b4-9bd5d15659bd",
-				"isPredefined": false,
-				"itemVersion": "",
-				"modified": "2022-02-28T10:17:41.336914831Z",
-				"name": "PAN-OS Network Operations - Devices",
-				"packID": "",
-				"params": {
-					"colors": {
-						"isEnabled": true,
-						"items": {
-							"#1DB846": {
-								"value": null
-							}
-						},
-						"type": "above"
-					},
-					"tableColumns": [
-						{
-							"displayed": true,
-							"isDefault": true,
-							"key": "id",
-							"width": 110
-						},
-						{
-							"displayed": true,
-							"isDefault": true,
-							"key": "name",
-							"width": 166
-						},
-						{
-							"displayed": true,
-							"key": "PAN-OS Network Operations - Hostname",
-							"width": 263
-						},
-						{
-							"displayed": true,
-							"key": "PAN-OS Network Operations - Management IP",
-							"width": 200
-						}
-					]
-				},
-				"prevName": "PAN-OS Network Operations - Devices",
-				"propagationLabels": [
-					"all"
-				],
-				"query": "type:\"PAN-OS Network Operations - Device\" -type:\"PAN-OS Network Operations - Device Upgrade\"",
-				"shouldCommit": false,
-				"toServerVersion": "",
-				"vcShouldIgnore": false,
-				"vcShouldKeepItemLegacyProdMachine": false,
-				"version": 1,
-				"widgetType": "table"
-			},
-			"x": 3,
-			"y": 3
-		},
-		{
-			"forceRange": false,
-			"h": 1,
-			"i": "8b3e1750-9884-11ec-a99f-31d09a27f82d",
-			"id": "8b3e1750-9884-11ec-a99f-31d09a27f82d",
-			"reflectDimensions": true,
-			"w": 5,
-			"widget": {
-				"Cache": null,
-				"cacheVersn": 0,
-				"category": "",
-				"commitMessage": "",
-				"dataType": "incidents",
-				"dateRange": {
-					"fromDate": "0001-01-01T00:00:00Z",
-					"fromDateLicense": "0001-01-01T00:00:00Z",
-					"period": {
-						"by": "",
-						"byFrom": "days",
-						"byTo": "",
-						"field": "",
-						"fromValue": null,
-						"toValue": null
-					},
-					"toDate": "0001-01-01T00:00:00Z"
-				},
-				"definitionId": "",
-				"fromServerVersion": "",
-				"id": "d93018bd-4548-47a6-8486-0dbc0f155c9e",
-				"isPredefined": false,
-				"itemVersion": "",
-				"modified": "2022-02-28T10:52:33.937463144Z",
-				"name": "PAN-OS Network Operations - BPAs",
-				"packID": "",
-				"params": {
-					"valuesFormat": "abbreviated"
-				},
-				"prevName": "PAN-OS Network Operations - BPAs",
-				"propagationLabels": [
-					"all"
-				],
-				"query": "type:\"Panorama Best Practice Assessment\"",
-				"shouldCommit": false,
-				"toServerVersion": "",
-				"vcShouldIgnore": false,
-				"vcShouldKeepItemLegacyProdMachine": false,
-				"version": 1,
-				"widgetType": "number"
-			},
-			"x": 3,
-			"y": 14
-		},
-		{
-			"forceRange": false,
-			"h": 1,
-			"i": "e648dd50-9885-11ec-a99f-31d09a27f82d",
-			"id": "e648dd50-9885-11ec-a99f-31d09a27f82d",
-			"reflectDimensions": true,
-			"w": 4,
-			"widget": {
-				"Cache": null,
-				"cacheVersn": 0,
-				"category": "",
-				"commitMessage": "",
-				"dataType": "scripts",
-				"dateRange": {
-					"fromDate": "0001-01-01T00:00:00Z",
-					"fromDateLicense": "0001-01-01T00:00:00Z",
-					"period": {
-						"by": "",
-						"byFrom": "",
-						"byTo": "",
-						"field": "",
-						"fromValue": null,
-						"toValue": null
-					},
-					"toDate": "0001-01-01T00:00:00Z"
-				},
-				"definitionId": "",
-				"fromServerVersion": "",
-				"id": "a087376f-e748-482d-89cf-5987792c1acc",
-				"isPredefined": false,
-				"itemVersion": "",
-				"modified": "2022-02-28T11:02:16.908241868Z",
-				"name": "Active Configuration Hygiene Issues",
-				"packID": "",
-				"params": {
-					"colors": {
-						"isEnabled": true,
-						"items": {
-							"#1DB846": {
-								"value": 0
-							},
-							"#D13C3C": {
-								"value": 20
-							},
-							"#EF9700": {
-								"value": 5
-							}
-						},
-						"type": "above"
-					},
-					"valuesFormat": "abbreviated"
-				},
-				"prevName": "Active Configuration Hygiene Issues",
-				"propagationLabels": [
-					"all"
-				],
-				"query": "CountActiveVisibilityHygieneIssues",
-				"shouldCommit": false,
-				"toServerVersion": "",
-				"vcShouldIgnore": false,
-				"vcShouldKeepItemLegacyProdMachine": false,
-				"version": 1,
-				"widgetType": "number"
-			},
-			"x": 8,
-			"y": 14
-		},
-		{
-			"forceRange": false,
-			"h": 5,
-			"i": "f1b7f540-9885-11ec-a99f-31d09a27f82d",
-			"id": "f1b7f540-9885-11ec-a99f-31d09a27f82d",
-			"reflectDimensions": true,
-			"w": 3,
-			"widget": {
-				"Cache": null,
-				"cacheVersn": 0,
-				"category": "utilities",
-				"commitMessage": "",
-				"dataType": "incidents",
-				"dateRange": {
-					"fromDate": "0001-01-01T00:00:00Z",
-					"fromDateLicense": "0001-01-01T00:00:00Z",
-					"period": {
-						"by": "",
-						"byFrom": "days",
-						"byTo": "",
-						"field": "",
-						"fromValue": null,
-						"toValue": null
-					},
-					"toDate": "0001-01-01T00:00:00Z"
-				},
-				"definitionId": "",
-				"fromServerVersion": "5.0.0",
-				"id": "",
-				"isPredefined": false,
-				"itemVersion": "1.1.8",
-				"modified": "2021-11-14T23:23:22.990194561Z",
-				"name": "Text Widget",
-				"packID": "CommonWidgets",
-				"packPropagationLabels": [
-					"all"
-				],
-				"params": {
-					"text": "# Configuration Hygiene\n\nThese stats report the output and status of configuration hygiene issues in the environment.\n\nConfiguration Hygiene tracks the compliance of the PAN-OS configuration against [published Palo Alto Networks Best Practices.](https://docs.paloaltonetworks.com/best-practices)\n\nThe Configuration Hygiene use case also uses BPA reports to provide another commonly used and visual mechanism for tracking these sorts of compliance issues."
-				},
-				"prevName": "Text Widget",
-				"propagationLabels": [],
-				"query": "",
-				"shouldCommit": false,
-				"toServerVersion": "",
-				"vcShouldIgnore": false,
-				"vcShouldKeepItemLegacyProdMachine": false,
-				"version": 0,
-				"widgetType": "text"
-			},
-			"x": 0,
-			"y": 14
-		},
-		{
-			"forceRange": false,
-			"h": 4,
-			"i": "96fb8b70-9886-11ec-a99f-31d09a27f82d",
-			"id": "96fb8b70-9886-11ec-a99f-31d09a27f82d",
-			"reflectDimensions": true,
-			"w": 5,
-			"widget": {
-				"Cache": null,
-				"cacheVersn": 0,
-				"category": "",
-				"commitMessage": "",
-				"dataType": "incidents",
-				"dateRange": {
-					"fromDate": "0001-01-01T00:00:00Z",
-					"fromDateLicense": "0001-01-01T00:00:00Z",
-					"period": {
-						"by": "",
-						"byFrom": "days",
-						"byTo": "",
-						"field": "",
-						"fromValue": 7,
-						"toValue": null
-					},
-					"toDate": "0001-01-01T00:00:00Z"
-				},
-				"definitionId": "",
-				"fromServerVersion": "",
-				"id": "875b4def-82d4-4e94-8dc6-e1fe08d37658",
-				"isPredefined": false,
-				"itemVersion": "",
-				"modified": "2022-02-28T11:07:15.507762416Z",
-				"name": "PAN-OS Network Operations - BPA Runs",
-				"packID": "",
-				"params": {
-					"tableColumns": [
-						{
-							"displayed": true,
-							"isDefault": true,
-							"key": "id",
-							"width": 110
-						},
-						{
-							"displayed": true,
-							"isDefault": true,
-							"key": "name",
-							"width": 300
-						},
-						{
-							"displayed": true,
-							"isDefault": true,
-							"key": "type",
-							"width": 200
-						},
-						{
-							"displayed": true,
-							"isDefault": true,
-							"key": "occurred",
-							"width": 200
-						}
-					]
-				},
-				"prevName": "PAN-OS Network Operations - Best Practices Incidents",
-				"propagationLabels": [
-					"all"
-				],
-				"query": "type:\"Panorama Best Practice Assessment\"",
-				"shouldCommit": false,
-				"toServerVersion": "",
-				"vcShouldIgnore": false,
-				"vcShouldKeepItemLegacyProdMachine": false,
-				"version": 1,
-				"widgetType": "table"
-			},
-			"x": 3,
-			"y": 15
-		},
-		{
-			"forceRange": false,
-			"h": 4,
-			"i": "b0698df0-9886-11ec-a99f-31d09a27f82d",
-			"id": "b0698df0-9886-11ec-a99f-31d09a27f82d",
-			"reflectDimensions": true,
-			"w": 4,
-			"widget": {
-				"Cache": null,
-				"cacheVersn": 0,
-				"category": "",
-				"commitMessage": "",
-				"dataType": "incidents",
-				"dateRange": {
-					"fromDate": "0001-01-01T00:00:00Z",
-					"fromDateLicense": "0001-01-01T00:00:00Z",
-					"period": {
-						"by": "",
-						"byFrom": "days",
-						"byTo": "",
-						"field": "",
-						"fromValue": null,
-						"toValue": null
-					},
-					"toDate": "0001-01-01T00:00:00Z"
-				},
-				"definitionId": "",
-				"fromServerVersion": "",
-				"id": "3fe084d0-2f69-44d8-89b4-9bd5d15659bd",
-				"isPredefined": false,
-				"itemVersion": "",
-				"modified": "2022-02-28T10:17:41.336914831Z",
-				"name": "PAN-OS Network Operations - Hygiene Checks",
-				"packID": "",
-				"params": {
-					"colors": {
-						"isEnabled": true,
-						"items": {
-							"#1DB846": {
-								"value": null
-							}
-						},
-						"type": "above"
-					},
-					"tableColumns": [
-						{
-							"displayed": true,
-							"isDefault": true,
-							"key": "id",
-							"width": 110
-						},
-						{
-							"displayed": true,
-							"isDefault": true,
-							"key": "name",
-							"width": 300
-						},
-						{
-							"displayed": true,
-							"isDefault": true,
-							"key": "occurred",
-							"width": 200
-						}
-					]
-				},
-				"prevName": "PAN-OS Network Operations - Devices",
-				"propagationLabels": [
-					"all"
-				],
-				"query": "type:\"PAN-OS Network Operations - Visibility Hygiene\" -status:Closed",
-				"shouldCommit": false,
-				"toServerVersion": "",
-				"vcShouldIgnore": false,
-				"vcShouldKeepItemLegacyProdMachine": false,
-				"version": 1,
-				"widgetType": "table"
-			},
-			"x": 8,
-			"y": 15
-		},
-		{
-			"forceRange": false,
-			"h": 2,
-			"i": "fff4c840-9aab-11ec-bf9a-a5410df758ed",
-			"id": "fff4c840-9aab-11ec-bf9a-a5410df758ed",
-			"reflectDimensions": true,
-			"w": 12,
-			"widget": {
-				"Cache": null,
-				"cacheVersn": 0,
-				"category": "",
-				"commitMessage": "",
-				"dataType": "incidents",
-				"dateRange": {
-					"fromDate": "0001-01-01T00:00:00Z",
-					"fromDateLicense": "0001-01-01T00:00:00Z",
-					"period": {
-						"by": "",
-						"byFrom": "days",
-						"byTo": "",
-						"field": "",
-						"fromValue": null,
-						"toValue": null
-					},
-					"toDate": "0001-01-01T00:00:00Z"
-				},
-				"definitionId": "",
-				"fromServerVersion": "",
-				"id": "77ffc92d-3087-4db2-8dae-85208958d9a6",
-				"isPredefined": false,
-				"itemVersion": "",
-				"modified": "2022-03-03T04:40:02.077242305Z",
-				"name": "PAN-OS Network Operations - Active Snapshots and Platform Detail Incidents",
-				"packID": "",
-				"params": {
-					"tableColumns": [
-						{
-							"isDefault": true,
-							"key": "id",
-							"position": 0,
-							"width": 110
-						},
-						{
-							"isDefault": true,
-							"key": "name",
-							"position": 2,
-							"width": 300
-						},
-						{
-							"isDefault": true,
-							"key": "type",
-							"position": 3,
-							"width": 200
-						},
-						{
-							"isDefault": true,
-							"key": "severity",
-							"position": 4,
-							"width": 80
-						},
-						{
-							"isDefault": true,
-							"key": "status",
-							"position": 5,
-							"width": 80
-						},
-						{
-							"isDefault": true,
-							"key": "owner",
-							"position": 6,
-							"width": 160
-						},
-						{
-							"isDefault": true,
-							"key": "roles",
-							"position": 7,
-							"width": 160
-						},
-						{
-							"isDefault": true,
-							"key": "playbookId",
-							"position": 8,
-							"width": 150
-						},
-						{
-							"isDefault": true,
-							"key": "occurred",
-							"position": 9,
-							"width": 200
-						},
-						{
-							"isDefault": true,
-							"key": "dueDate",
-							"position": 10,
-							"width": 200
-						}
-					]
-				},
-				"prevName": "PAN-OS Network Operations - Active Snapshots and Platform Detail Incidents",
-				"propagationLabels": [
-					"all"
-				],
-				"query": "type:\"PAN-OS Network Operations - System Information\" -status:Closed",
-				"shouldCommit": false,
-				"toServerVersion": "",
-				"vcShouldIgnore": false,
-				"vcShouldKeepItemLegacyProdMachine": false,
-				"version": 1,
-				"widgetType": "table"
-			},
-			"x": 0,
-			"y": 0
-		}
-	],
-	"locked": false,
-	"modulePage": false,
-	"name": "PAN-OS Network Operations",
-	"owner": "abaumeister",
-	"packID": "a3acf260-148d-4af7-81ab-49744965d264",
-	"period": {
-		"by": "",
-		"byFrom": "days",
-		"byTo": "",
-		"field": "",
-		"fromValue": null,
-		"toValue": null
-	},
-	"propagationLabels": [],
-	"system": false,
-	"toDate": "0001-01-01T00:00:00Z",
-	"toServerVersion": "",
-	"version": -1
+    "fromDate": "0001-01-01T00:00:00Z",
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "id": "PAN-OS Network Operations",
+    "layout": [
+        {
+            "forceRange": false,
+            "h": 2,
+            "i": "7d9f7600-9854-11ec-befd-bd260a8d24bc",
+            "id": "7d9f7600-9854-11ec-befd-bd260a8d24bc",
+            "reflectDimensions": true,
+            "w": 3,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "782daf08-c424-48c5-8165-50cca4d0e69d",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2022-02-28T05:08:38.611878411Z",
+                "name": "PAN-OS Network Operations - Devices By Model",
+                "packID": "",
+                "params": {
+                    "groupBy": [
+                        "devicemodel"
+                    ],
+                    "legend": [
+                        {
+                            "color": "#FED22C",
+                            "name": "pa-vm"
+                        },
+                        {
+                            "color": "#FF8411",
+                            "name": "panorama"
+                        }
+                    ],
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "PAN-OS Network Operations - Devices By Type",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:\"PAN-OS Network Operations - Device\" -type:\"PAN-OS Network Operations - Device Upgrade\"",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 2,
+                "widgetType": "pie"
+            },
+            "x": 9,
+            "y": 3
+        },
+        {
+            "forceRange": false,
+            "h": 2,
+            "i": "dc41d720-9854-11ec-befd-bd260a8d24bc",
+            "id": "dc41d720-9854-11ec-befd-bd260a8d24bc",
+            "reflectDimensions": true,
+            "w": 3,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "ad9e4a00-64af-41b2-84b9-e541a5e032ce",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2022-02-28T05:11:10.41980571Z",
+                "name": "PAN-OS Network Operations - Devices By Software Version",
+                "packID": "",
+                "params": {
+                    "groupBy": [
+                        "panosnetworkoperationsrunningsoftwareversion"
+                    ],
+                    "legend": [
+                        {
+                            "color": "#FED22C",
+                            "name": "pa-vm"
+                        },
+                        {
+                            "color": "#FF8411",
+                            "name": "panorama"
+                        }
+                    ],
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "PAN-OS Network Operations - Devices By Model",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:\"PAN-OS Network Operations - Device\" -type:\"PAN-OS Network Operations - Device Upgrade\"",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "pie"
+            },
+            "x": 9,
+            "y": 5
+        },
+        {
+            "forceRange": false,
+            "h": 2,
+            "i": "5c02eb20-9855-11ec-befd-bd260a8d24bc",
+            "id": "5c02eb20-9855-11ec-befd-bd260a8d24bc",
+            "reflectDimensions": true,
+            "w": 3,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "130ca226-55b2-44c0-8d7d-337124d2dc21",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2022-02-28T05:14:50.142946515Z",
+                "name": "PAN-OS Network Operations - Devices By Domain",
+                "packID": "",
+                "params": {
+                    "groupBy": [
+                        "panosnetworkoperationsdeviceadministrativedomain"
+                    ],
+                    "legend": [
+                        {
+                            "color": "#FED22C",
+                            "name": "pa-vm"
+                        },
+                        {
+                            "color": "#FF8411",
+                            "name": "panorama"
+                        }
+                    ],
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "PAN-OS Network Operations - Devices By Domain",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:\"PAN-OS Network Operations - Device\" -type:\"PAN-OS Network Operations - Device Upgrade\"",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "column"
+            },
+            "x": 9,
+            "y": 7
+        },
+        {
+            "forceRange": false,
+            "h": 1,
+            "i": "934e7f40-9855-11ec-befd-bd260a8d24bc",
+            "id": "934e7f40-9855-11ec-befd-bd260a8d24bc",
+            "reflectDimensions": true,
+            "w": 9,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "45cb32fa-6d5d-4b96-85f3-239f2819b394",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2022-02-28T05:16:22.670395636Z",
+                "name": "PAN-OS Network Operations -Total Devices",
+                "packID": "",
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#1DB846": {
+                                "value": 0
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "PAN-OS Network Operations -Total Devices",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:\"PAN-OS Network Operations - Device\" -type:\"PAN-OS Network Operations - Device Upgrade\"",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "number"
+            },
+            "x": 3,
+            "y": 2
+        },
+        {
+            "forceRange": false,
+            "h": 7,
+            "i": "b5d7bea0-9855-11ec-befd-bd260a8d24bc",
+            "id": "b5d7bea0-9855-11ec-befd-bd260a8d24bc",
+            "reflectDimensions": true,
+            "w": 3,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "utilities",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "5.0.0",
+                "id": "",
+                "isPredefined": false,
+                "itemVersion": "1.1.8",
+                "modified": "2021-11-14T23:23:22.990194561Z",
+                "name": "Text Widget",
+                "packID": "CommonWidgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "text": "# Topology Information\n\nThese stats display an overview of the PAN-OS topology.\n\nThe visualizations seen here represent data from within *PAN-OS Network Operations - Device* incidents, which are generally created and maintained by *PAN-OS Network Operations - System Information* incidents."
+                },
+                "prevName": "Text Widget",
+                "propagationLabels": [],
+                "query": "",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 0,
+                "widgetType": "text"
+            },
+            "x": 0,
+            "y": 2
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "3c7d9590-9858-11ec-befd-bd260a8d24bc",
+            "id": "3c7d9590-9858-11ec-befd-bd260a8d24bc",
+            "reflectDimensions": true,
+            "w": 3,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "089c3162-d3b0-4f8a-8d32-140fbc69ea70",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2022-02-28T05:33:41.452799204Z",
+                "name": "PAN-OS Network Operations - Upgrade Status",
+                "packID": "",
+                "params": {
+                    "groupBy": [
+                        "description"
+                    ],
+                    "legend": [
+                        {
+                            "color": "#FED22C",
+                            "name": "pa-vm"
+                        },
+                        {
+                            "color": "#FF8411",
+                            "name": "panorama"
+                        }
+                    ],
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "PAN-OS Network Operations - Upgrade Status",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:\"PAN-OS Network Operations - Device Upgrade\" -status:Closed",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "column"
+            },
+            "x": 9,
+            "y": 11
+        },
+        {
+            "forceRange": false,
+            "h": 1,
+            "i": "5b22e400-9858-11ec-befd-bd260a8d24bc",
+            "id": "5b22e400-9858-11ec-befd-bd260a8d24bc",
+            "reflectDimensions": true,
+            "w": 9,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "9d19b8ec-7f3f-4dc4-8528-2faa927a9961",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2022-02-28T05:36:05.756969346Z",
+                "name": "PAN-OS Network Operations - Total Upgrades In Progress",
+                "packID": "",
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#1DB846": {
+                                "value": null
+                            },
+                            "#EF9700": {
+                                "value": 0
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "PAN-OS Network Operations - Total Upgrades In Progress",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:\"PAN-OS Network Operations - Device Upgrade\" -status:Closed",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "number"
+            },
+            "x": 3,
+            "y": 9
+        },
+        {
+            "forceRange": false,
+            "h": 5,
+            "i": "645b6ce0-9858-11ec-befd-bd260a8d24bc",
+            "id": "645b6ce0-9858-11ec-befd-bd260a8d24bc",
+            "reflectDimensions": true,
+            "w": 3,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "utilities",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "5.0.0",
+                "id": "",
+                "isPredefined": false,
+                "itemVersion": "1.1.8",
+                "modified": "2021-11-14T23:23:22.990194561Z",
+                "name": "Text Widget",
+                "packID": "CommonWidgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "text": "# Upgrade Information\n\nThese stats display an overview of any currently active upgrade processes. This information is tracked by inspecting the status of the **PAN-OS Network Operations - Device Upgrade** incidents.\n\nThe device upgrade process manages the end to end upgrade strategy for the entire PAN-OS topology. It manages both Panorama, HA and Non-HA Firewall upgrades."
+                },
+                "prevName": "Text Widget",
+                "propagationLabels": [],
+                "query": "",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 0,
+                "widgetType": "text"
+            },
+            "x": 0,
+            "y": 9
+        },
+        {
+            "forceRange": false,
+            "h": 1,
+            "i": "ebc4d790-987e-11ec-a99f-31d09a27f82d",
+            "id": "ebc4d790-987e-11ec-a99f-31d09a27f82d",
+            "reflectDimensions": true,
+            "w": 3,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "ca5eed90-7816-4819-82c0-6f74b5a527b8",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2022-02-28T10:12:12.622749188Z",
+                "name": "PAN-OS Network Operations - Average Device Upgrade Timer",
+                "packID": "",
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#1DB846": {
+                                "value": null
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "keys": [
+                        "avg|deviceupgradetimer.totalDuration"
+                    ],
+                    "valuesFormat": "hours"
+                },
+                "prevName": "PAN-OS Network Operations - Average Device Upgrade Timer",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:\"PAN-OS Network Operations - Device Upgrade\" status:Closed ",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "duration"
+            },
+            "x": 9,
+            "y": 10
+        },
+        {
+            "forceRange": false,
+            "h": 4,
+            "i": "2e93cef0-987f-11ec-a99f-31d09a27f82d",
+            "id": "2e93cef0-987f-11ec-a99f-31d09a27f82d",
+            "reflectDimensions": true,
+            "w": 6,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "75fd1741-12ee-41ac-8bc5-1a3519258ab8",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2022-02-28T10:14:10.571668383Z",
+                "name": "PAN-OS Network Operations - Active Upgrades",
+                "packID": "",
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#1DB846": {
+                                "value": null
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "tableColumns": [
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "id",
+                            "width": 100
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "name",
+                            "width": 300
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "type",
+                            "width": 200
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "severity",
+                            "width": 124
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "occurred",
+                            "width": 200
+                        },
+                        {
+                            "displayed": true,
+                            "key": "Description",
+                            "width": 200
+                        }
+                    ]
+                },
+                "prevName": "PAN-OS Network Operations - Active Upgrades",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:\"PAN-OS Network Operations - Device Upgrade\" status:Active",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "table"
+            },
+            "x": 3,
+            "y": 10
+        },
+        {
+            "forceRange": false,
+            "h": 6,
+            "i": "ac0e0030-987f-11ec-a99f-31d09a27f82d",
+            "id": "ac0e0030-987f-11ec-a99f-31d09a27f82d",
+            "reflectDimensions": true,
+            "w": 6,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "3fe084d0-2f69-44d8-89b4-9bd5d15659bd",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2022-02-28T10:17:41.336914831Z",
+                "name": "PAN-OS Network Operations - Devices",
+                "packID": "",
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#1DB846": {
+                                "value": null
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "tableColumns": [
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "id",
+                            "width": 110
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "name",
+                            "width": 166
+                        },
+                        {
+                            "displayed": true,
+                            "key": "PAN-OS Network Operations - Hostname",
+                            "width": 263
+                        },
+                        {
+                            "displayed": true,
+                            "key": "PAN-OS Network Operations - Management IP",
+                            "width": 200
+                        }
+                    ]
+                },
+                "prevName": "PAN-OS Network Operations - Devices",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:\"PAN-OS Network Operations - Device\" -type:\"PAN-OS Network Operations - Device Upgrade\"",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "table"
+            },
+            "x": 3,
+            "y": 3
+        },
+        {
+            "forceRange": false,
+            "h": 1,
+            "i": "8b3e1750-9884-11ec-a99f-31d09a27f82d",
+            "id": "8b3e1750-9884-11ec-a99f-31d09a27f82d",
+            "reflectDimensions": true,
+            "w": 5,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "d93018bd-4548-47a6-8486-0dbc0f155c9e",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2022-02-28T10:52:33.937463144Z",
+                "name": "PAN-OS Network Operations - BPAs",
+                "packID": "",
+                "params": {
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "PAN-OS Network Operations - BPAs",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:\"Panorama Best Practice Assessment\"",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "number"
+            },
+            "x": 3,
+            "y": 14
+        },
+        {
+            "forceRange": false,
+            "h": 1,
+            "i": "e648dd50-9885-11ec-a99f-31d09a27f82d",
+            "id": "e648dd50-9885-11ec-a99f-31d09a27f82d",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "scripts",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "a087376f-e748-482d-89cf-5987792c1acc",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2022-02-28T11:02:16.908241868Z",
+                "name": "Active Configuration Hygiene Issues",
+                "packID": "",
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#1DB846": {
+                                "value": 0
+                            },
+                            "#D13C3C": {
+                                "value": 20
+                            },
+                            "#EF9700": {
+                                "value": 5
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Active Configuration Hygiene Issues",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "CountActiveVisibilityHygieneIssues",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "number"
+            },
+            "x": 8,
+            "y": 14
+        },
+        {
+            "forceRange": false,
+            "h": 5,
+            "i": "f1b7f540-9885-11ec-a99f-31d09a27f82d",
+            "id": "f1b7f540-9885-11ec-a99f-31d09a27f82d",
+            "reflectDimensions": true,
+            "w": 3,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "utilities",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "5.0.0",
+                "id": "",
+                "isPredefined": false,
+                "itemVersion": "1.1.8",
+                "modified": "2021-11-14T23:23:22.990194561Z",
+                "name": "Text Widget",
+                "packID": "CommonWidgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "text": "# Configuration Hygiene\n\nThese stats report the output and status of configuration hygiene issues in the environment.\n\nConfiguration Hygiene tracks the compliance of the PAN-OS configuration against [published Palo Alto Networks Best Practices.](https://docs.paloaltonetworks.com/best-practices)\n\nThe Configuration Hygiene use case also uses BPA reports to provide another commonly used and visual mechanism for tracking these sorts of compliance issues."
+                },
+                "prevName": "Text Widget",
+                "propagationLabels": [],
+                "query": "",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 0,
+                "widgetType": "text"
+            },
+            "x": 0,
+            "y": 14
+        },
+        {
+            "forceRange": false,
+            "h": 4,
+            "i": "96fb8b70-9886-11ec-a99f-31d09a27f82d",
+            "id": "96fb8b70-9886-11ec-a99f-31d09a27f82d",
+            "reflectDimensions": true,
+            "w": 5,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "875b4def-82d4-4e94-8dc6-e1fe08d37658",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2022-02-28T11:07:15.507762416Z",
+                "name": "PAN-OS Network Operations - BPA Runs",
+                "packID": "",
+                "params": {
+                    "tableColumns": [
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "id",
+                            "width": 110
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "name",
+                            "width": 300
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "type",
+                            "width": 200
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "occurred",
+                            "width": 200
+                        }
+                    ]
+                },
+                "prevName": "PAN-OS Network Operations - Best Practices Incidents",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:\"Panorama Best Practice Assessment\"",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "table"
+            },
+            "x": 3,
+            "y": 15
+        },
+        {
+            "forceRange": false,
+            "h": 4,
+            "i": "b0698df0-9886-11ec-a99f-31d09a27f82d",
+            "id": "b0698df0-9886-11ec-a99f-31d09a27f82d",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "3fe084d0-2f69-44d8-89b4-9bd5d15659bd",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2022-02-28T10:17:41.336914831Z",
+                "name": "PAN-OS Network Operations - Hygiene Checks",
+                "packID": "",
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#1DB846": {
+                                "value": null
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "tableColumns": [
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "id",
+                            "width": 110
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "name",
+                            "width": 300
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "occurred",
+                            "width": 200
+                        }
+                    ]
+                },
+                "prevName": "PAN-OS Network Operations - Devices",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:\"PAN-OS Network Operations - Visibility Hygiene\" -status:Closed",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "table"
+            },
+            "x": 8,
+            "y": 15
+        },
+        {
+            "forceRange": false,
+            "h": 2,
+            "i": "fff4c840-9aab-11ec-bf9a-a5410df758ed",
+            "id": "fff4c840-9aab-11ec-bf9a-a5410df758ed",
+            "reflectDimensions": true,
+            "w": 12,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "77ffc92d-3087-4db2-8dae-85208958d9a6",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2022-03-03T04:40:02.077242305Z",
+                "name": "PAN-OS Network Operations - Active Snapshots and Platform Detail Incidents",
+                "packID": "",
+                "params": {
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "id",
+                            "position": 0,
+                            "width": 110
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "type",
+                            "position": 3,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "severity",
+                            "position": 4,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "status",
+                            "position": 5,
+                            "width": 80
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "owner",
+                            "position": 6,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "roles",
+                            "position": 7,
+                            "width": 160
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "playbookId",
+                            "position": 8,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "occurred",
+                            "position": 9,
+                            "width": 200
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "dueDate",
+                            "position": 10,
+                            "width": 200
+                        }
+                    ]
+                },
+                "prevName": "PAN-OS Network Operations - Active Snapshots and Platform Detail Incidents",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:\"PAN-OS Network Operations - System Information\" -status:Closed",
+                "shouldCommit": false,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "table"
+            },
+            "x": 0,
+            "y": 0
+        }
+    ],
+    "name": "PAN-OS Network Operations",
+    "period": {
+        "by": "",
+        "byFrom": "days",
+        "byTo": "",
+        "field": "",
+        "fromValue": null,
+        "toValue": null
+    },
+    "toDate": "0001-01-01T00:00:00Z",
+    "version": -1,
+    "fromVersion": "6.2.0",
+    "description": "",
+    "isPredefined": true
 }

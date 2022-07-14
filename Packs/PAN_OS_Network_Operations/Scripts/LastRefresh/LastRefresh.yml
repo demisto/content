@@ -1,0 +1,21 @@
+comment: Duration widget tracking the last time this incident was refreshed using the occurred time.
+commonfields:
+  id: LastRefresh
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.10.1.25933
+enabled: true
+name: LastRefresh
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- dynamic-section
+type: python
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)

@@ -1,0 +1,28 @@
+args:
+- description: The complete XSOAR query to add to the device incident query, ex.  "devicemodel:Panorama"
+  name: query
+comment: 'Searches the active PAN-OS devices in the topology - the device incidents - by the given incident query. '
+commonfields:
+  id: GetIncidentIDsByQuery
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.9.8.24399
+enabled: true
+name: GetIncidentIDsByQuery
+outputs:
+- contextPath: GetIncidentIDsByQuery.incident_id
+  description: ID of the incident representing this device.
+- contextPath: GetIncidentIDsByQuery.incident_name
+  description: The name of the matched incident
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)

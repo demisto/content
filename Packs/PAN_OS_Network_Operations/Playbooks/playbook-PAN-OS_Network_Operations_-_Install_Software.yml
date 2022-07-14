@@ -1,47 +1,43 @@
 contentitemexportablefields:
   contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: a3acf260-148d-4af7-81ab-49744965d264
     propagationLabels:
     - all
-    toServerVersion: ""
 description: Installs PAN-OS system software.
 id: PAN-OS Network Operations - Install Software
 inputs:
-- description: ""
+- description: ''
   key: target_version
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
-- description: ""
+- description: ''
   key: target
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 name: PAN-OS Network Operations - Install Software
 outputs: []
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "9"
+      - '9'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: dec88bf8-7c17-4a8c-89dc-3a0d0923afd8
       iscommand: false
-      name: ""
+      name: ''
       version: -1
+      description: ''
     taskid: dec88bf8-7c17-4a8c-89dc-3a0d0923afd8
     timertriggers: []
     type: start
@@ -52,14 +48,14 @@ tasks:
           "y": -80
         }
       }
-  "1":
-    id: "1"
+  '1':
+    id: '1'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     note: false
     quietmode: 0
     scriptarguments:
@@ -70,9 +66,8 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Install the given software version onto the device. Download the
-        software first with
+      brand: ''
+      description: Install the given software version onto the device. Download the software first with
       id: 668f7d50-c933-4e31-8b94-ec2ea19ed2f8
       iscommand: true
       name: Install the given software version
@@ -89,14 +84,14 @@ tasks:
           "y": 190
         }
       }
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
     note: false
     quietmode: 0
     scriptarguments:
@@ -109,7 +104,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Get all the jobs from the devices in the environment.
       id: 6af94d31-7de0-4239-8687-0083f69c4b90
       iscommand: true
@@ -127,13 +122,13 @@ tasks:
           "y": 340
         }
       }
-  "3":
-    id: "3"
+  '3':
+    id: '3'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     loop:
-      exitCondition: ""
+      exitCondition: ''
       iscommand: false
       max: 0
       scriptArguments:
@@ -144,19 +139,19 @@ tasks:
             transformers:
             - operator: LastArrayElement
         Interval:
-          simple: "1"
+          simple: '1'
         PollingCommandArgName:
           simple: id
         PollingCommandName:
           simple: pan-os-platform-get-jobs
         Timeout:
-          simple: "20"
+          simple: '20'
         dt:
           simple: PANOS.JobStatus(val.status!=="FIN").id
       wait: 1
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     note: false
     quietmode: 0
     scriptarguments:
@@ -171,19 +166,19 @@ tasks:
           transformers:
           - operator: LastArrayElement
       Interval:
-        simple: "1"
+        simple: '1'
       PollingCommandArgName:
         simple: id
       PollingCommandName:
         simple: pan-os-platform-get-jobs
       Timeout:
-        simple: "20"
+        simple: '20'
       dt:
         simple: PANOS.JobStatus(val.status!=="FIN").id
     separatecontext: true
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: |-
         Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
         This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
@@ -208,7 +203,7 @@ tasks:
           "y": 650
         }
       }
-  "4":
+  '4':
     conditions:
     - condition:
       - - left:
@@ -249,22 +244,22 @@ tasks:
           right:
             value:
               simple: OK
-      label: "yes"
-    id: "4"
+      label: yes
+    id: '4'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "10"
-      "yes":
-      - "7"
+      - '10'
+      yes:
+      - '7'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Check if the software installation finished successfully.
       id: bf9e522f-4bab-40c4-8791-d5bce73a98b6
       iscommand: false
@@ -281,14 +276,14 @@ tasks:
           "y": 970
         }
       }
-  "5":
-    id: "5"
+  '5':
+    id: '5'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     note: false
     quietmode: 0
     scriptarguments:
@@ -303,9 +298,8 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Get all the jobs from the devices in the environment, or a single
-        job when ID is specified.
+      brand: ''
+      description: Get all the jobs from the devices in the environment, or a single job when ID is specified.
       id: eb242fa0-cdd4-4d1e-88c9-74c37edf922a
       iscommand: true
       name: Get jobs again to check status
@@ -322,7 +316,7 @@ tasks:
           "y": 815
         }
       }
-  "6":
+  '6':
     conditions:
     - condition:
       - - left:
@@ -344,25 +338,24 @@ tasks:
             value:
               simple: FIN
       label: FIN
-    id: "6"
+    id: '6'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#default#':
-      - "10"
+      - '10'
       ACT:
-      - "3"
+      - '3'
       FIN:
-      - "4"
+      - '4'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: It's possible that, if software has already been installed, then
-        we don't get an active job for it.
+      brand: ''
+      description: It's possible that, if software has already been installed, then we don't get an active job for it.
       id: 385528cc-3f37-4bf0-8470-03cc27369205
       iscommand: false
       name: Is the job active?
@@ -378,8 +371,8 @@ tasks:
           "y": 490
         }
       }
-  "7":
-    id: "7"
+  '7':
+    id: '7'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
@@ -388,12 +381,13 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: ed3424f0-d43a-4483-8ae9-4a399dfd927a
       iscommand: false
       name: Finish
       type: title
       version: -1
+      description: ''
     taskid: ed3424f0-d43a-4483-8ae9-4a399dfd927a
     timertriggers: []
     type: title
@@ -404,8 +398,8 @@ tasks:
           "y": 1160
         }
       }
-  "8":
-    id: "8"
+  '8':
+    id: '8'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
@@ -417,7 +411,7 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Prints an error entry with a given message
       id: e546f440-17ec-4e79-8f1b-2c03d2818cdc
       iscommand: false
@@ -435,14 +429,14 @@ tasks:
           "y": 1335
         }
       }
-  "9":
-    id: "9"
+  '9':
+    id: '9'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     note: false
     quietmode: 0
     scriptarguments:
@@ -469,14 +463,14 @@ tasks:
           "y": 40
         }
       }
-  "10":
-    id: "10"
+  '10':
+    id: '10'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "8"
+      - '8'
     note: false
     quietmode: 0
     scriptarguments:
@@ -516,3 +510,6 @@ view: |-
       }
     }
   }
+tests:
+- No tests (auto formatted)
+fromversion: 6.2.0

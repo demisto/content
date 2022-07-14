@@ -1,24 +1,18 @@
 contentitemexportablefields:
   contentitemfields:
-    definitionid: ""
-    fromServerVersion: ""
-    itemVersion: ""
-    packID: a3acf260-148d-4af7-81ab-49744965d264
     propagationLabels:
     - all
-    toServerVersion: ""
 description: Retrieves all the details of the PAN-OS Platform and topology.
 id: PAN-OS Network Operations - Platform Management
 inputs:
-- description: If set, completes the given task in the parent playbook. Used to ensure
-    that the parent does not continue until this incident is finished processing.
+- description: If set, completes the given task in the parent playbook. Used to ensure that the parent does not continue until this incident is finished processing.
   key: close_task_id
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 - description: Incident that initiated this subplaybook, if any.
   key: parent_incident_id
-  playbookInputQuery: null
+  playbookInputQuery:
   required: false
   value: {}
 name: PAN-OS Network Operations - Platform Management
@@ -35,26 +29,27 @@ outputs:
 - contextPath: PANOS.ShowCounters.Result
   description: PANOS Global counters
   type: unknown
-starttaskid: "0"
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "13"
+      - '13'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: dd8bfbfc-bdc8-44e7-884f-90b21b40c0d8
       iscommand: false
-      name: ""
+      name: ''
       version: -1
+      description: ''
     taskid: dd8bfbfc-bdc8-44e7-884f-90b21b40c0d8
     timertriggers: []
     type: start
@@ -65,7 +60,7 @@ tasks:
           "y": -560
         }
       }
-  "1":
+  '1':
     fieldMapping:
     - incidentfield: PAN-OS Network Operations - System Info
       output:
@@ -81,19 +76,19 @@ tasks:
           root: PANOS.ShowSystemInfo
           transformers:
           - operator: ConvertKeysToTableFieldFormat
-    id: "1"
+    id: '1'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "14"
+      - '14'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Gets information from all PAN-OS systems in the topology.
       id: 621f5ea7-23bd-4942-8b78-59d31a85e43b
       iscommand: true
@@ -111,27 +106,27 @@ tasks:
           "y": 230
         }
       }
-  "2":
-    id: "2"
+  '2':
+    id: '2'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "1"
-      - "3"
-      - "5"
+      - '1'
+      - '3'
+      - '5'
     note: false
     quietmode: 0
     scriptarguments:
       all:
-        simple: "yes"
+        simple: yes
       keysToKeep:
         simple: File
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Delete field from context
       id: 25d6141d-203d-4203-89f5-12688e331629
       iscommand: false
@@ -149,7 +144,7 @@ tasks:
           "y": 60
         }
       }
-  "3":
+  '3':
     fieldMapping:
     - incidentfield: PAN-OS Network Operations - ARP Summary
       output:
@@ -157,19 +152,19 @@ tasks:
     - incidentfield: PAN-OS Network Operations - ARP Table Result
       output:
         simple: ${PANOS.ShowArp.Result}
-    id: "3"
+    id: '3'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "14"
+      - '14'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Gets all arp tables from all firewalls in the topology.
       id: 38e80a91-e7bd-49fb-8849-a8cb8e37f7ec
       iscommand: true
@@ -187,24 +182,24 @@ tasks:
           "y": 230
         }
       }
-  "4":
+  '4':
     fieldMapping:
     - incidentfield: PAN-OS Route Summary
       output:
         simple: ${PANOS.ShowRouteSummary.Summary}
-    id: "4"
+    id: '4'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Pulls all route summary information from the topology
       id: 9ee416e8-2bb3-41d9-8a83-9c912a8c5f8e
       iscommand: true
@@ -222,7 +217,7 @@ tasks:
           "y": 580
         }
       }
-  "5":
+  '5':
     fieldMapping:
     - incidentfield: PAN-OS Network Operations - Global Counters
       output:
@@ -230,21 +225,20 @@ tasks:
     - incidentfield: PAN-OS Network Operations - Global Counters Result
       output:
         simple: ${PANOS.ShowCounters.Result}
-    id: "5"
+    id: '5'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "14"
+      - '14'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Gets global counter information from all the PAN-OS firewalls in
-        the topology
+      brand: ''
+      description: Gets global counter information from all the PAN-OS firewalls in the topology
       id: ddae5d13-e326-4068-8252-60981c6528fb
       iscommand: true
       name: Get Global Counters
@@ -261,25 +255,26 @@ tasks:
           "y": 230
         }
       }
-  "6":
-    id: "6"
+  '6':
+    id: '6'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "9"
+      - '9'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 04489f39-37f7-41e2-81f7-7640adf16d2c
       iscommand: false
       name: Finish Information Gathering
       type: title
       version: -1
+      description: ''
     taskid: 04489f39-37f7-41e2-81f7-7640adf16d2c
     timertriggers: []
     type: title
@@ -290,7 +285,7 @@ tasks:
           "y": 760
         }
       }
-  "7":
+  '7':
     fieldMapping:
     - incidentfield: PAN-OS Routes
       output:
@@ -306,19 +301,19 @@ tasks:
           root: PANOS.ShowRoute
           transformers:
           - operator: ConvertKeysToTableFieldFormat
-    id: "7"
+    id: '7'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Pulls all route summary information from the topology
       id: 1d2cbcc0-dde3-4b07-840a-f606c1aa269f
       iscommand: true
@@ -336,31 +331,32 @@ tasks:
           "y": 580
         }
       }
-  "9":
-    id: "9"
+  '9':
+    id: '9'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     loop:
-      exitCondition: ""
+      exitCondition: ''
       iscommand: false
       max: 100
       wait: 1
     nexttasks:
       '#none#':
-      - "10"
+      - '10'
     note: false
     quietmode: 0
     separatecontext: true
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: fe34e134-5b9e-4f9b-8b02-90effd5d9474
       iscommand: false
       name: PAN-OS Network Operations - Incident Callback
       playbookId: PAN-OS Network Operations - Incident Callback
       type: playbook
       version: -1
+      description: ''
     taskid: fe34e134-5b9e-4f9b-8b02-90effd5d9474
     timertriggers: []
     type: playbook
@@ -371,25 +367,26 @@ tasks:
           "y": 880
         }
       }
-  "10":
-    id: "10"
+  '10':
+    id: '10'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "15"
+      - '15'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 28b8a448-adb0-4672-8fa0-b7a8b34c6533
       iscommand: false
       name: Create Device Specific Incidents
       type: title
       version: -1
+      description: ''
     taskid: 28b8a448-adb0-4672-8fa0-b7a8b34c6533
     timertriggers: []
     type: title
@@ -400,15 +397,15 @@ tasks:
           "y": 1040
         }
       }
-  "11":
+  '11':
     continueonerror: true
-    id: "11"
+    id: '11'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "17"
+      - '17'
     note: false
     quietmode: 0
     scriptarguments:
@@ -439,7 +436,7 @@ tasks:
           "y": -270
         }
       }
-  "12":
+  '12':
     fieldMapping:
     - incidentfield: PAN-OS Network Operations - BGP Peers
       output:
@@ -455,21 +452,20 @@ tasks:
           root: PANOS.ShowBGPPeers
           transformers:
           - operator: ConvertKeysToTableFieldFormat
-    id: "12"
+    id: '12'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "6"
+      - '6'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Retrieves all BGP peer information from the PAN-OS firewalls in
-        the topology.
+      brand: ''
+      description: Retrieves all BGP peer information from the PAN-OS firewalls in the topology.
       id: 8e70740b-7b8c-4c2e-8810-8e0711914de9
       iscommand: true
       name: Get BGP Peers
@@ -486,23 +482,23 @@ tasks:
           "y": 580
         }
       }
-  "13":
-    id: "13"
+  '13':
+    id: '13'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "11"
+      - '11'
     note: false
     quietmode: 0
     scriptarguments:
       seconds:
-        simple: "5"
+        simple: '5'
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       description: Sleep for X seconds
       id: 30aa587f-a839-42c6-85ac-9dc48365320e
       iscommand: false
@@ -520,27 +516,28 @@ tasks:
           "y": -430
         }
       }
-  "14":
-    id: "14"
+  '14':
+    id: '14'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "4"
-      - "7"
-      - "12"
+      - '4'
+      - '7'
+      - '12'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 7de6c740-31cb-4fcb-879b-7b7b27adf2e5
       iscommand: false
       name: Get More data...
       type: title
       version: -1
+      description: ''
     taskid: 7de6c740-31cb-4fcb-879b-7b7b27adf2e5
     timertriggers: []
     type: title
@@ -551,14 +548,14 @@ tasks:
           "y": 410
         }
       }
-  "15":
-    id: "15"
+  '15':
+    id: '15'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "16"
+      - '16'
     note: false
     quietmode: 0
     scriptarguments:
@@ -585,8 +582,8 @@ tasks:
           "y": 1170
         }
       }
-  "16":
-    id: "16"
+  '16':
+    id: '16'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
@@ -595,12 +592,13 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 51487703-e0ef-4ea5-8292-37ec9f6b4fa0
       iscommand: false
       name: Finish
       type: title
       version: -1
+      description: ''
     taskid: 51487703-e0ef-4ea5-8292-37ec9f6b4fa0
     timertriggers: []
     type: title
@@ -611,26 +609,27 @@ tasks:
           "y": 1330
         }
       }
-  "17":
-    id: "17"
+  '17':
+    id: '17'
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     note: false
     quietmode: 0
     separatecontext: true
     skipunavailable: false
     task:
-      brand: ""
+      brand: ''
       id: 98ec50d8-1576-4f4c-8a43-7f32768bdde0
       iscommand: false
       name: Update Occurred Time
       playbookId: Update Occurred Time
       type: playbook
       version: -1
+      description: ''
     taskid: 98ec50d8-1576-4f4c-8a43-7f32768bdde0
     timertriggers: []
     type: playbook
@@ -654,3 +653,6 @@ view: |-
       }
     }
   }
+tests:
+- No tests (auto formatted)
+fromversion: 6.2.0

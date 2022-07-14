@@ -1,0 +1,55 @@
+args:
+- description: The PAN-OS version - ex 9.1.0
+  name: version
+  required: true
+- description: The list of advisories, produced by pan-advisories-get-advisories
+  isArray: true
+  name: advisories
+  required: true
+comment: 'Checks if the given PAN-OS version number is affected by the given list of vulnerabilties. '
+commonfields:
+  id: CheckPanosVersionAffected
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: demisto/python3:3.10.1.25933
+enabled: true
+name: CheckPanosVersionAffected
+outputs:
+- contextPath: MatchingSecurityAdvisory.data_type
+  description: The type of advisory this is
+  type: String
+- contextPath: MatchingSecurityAdvisory.data_format
+  description: The format of the advisory, such as MITRE
+  type: String
+- contextPath: MatchingSecurityAdvisory.cve_id
+  description: The ID of the CVE described by this advisory
+  type: String
+- contextPath: MatchingSecurityAdvisory.cve_date_public
+  description: The date this CVE was released
+  type: String
+- contextPath: MatchingSecurityAdvisory.cve_title
+  description: The name of this CVE
+  type: String
+- contextPath: MatchingSecurityAdvisory.affects_product_name
+  description: The name of the product this affects, such as PAN-OS
+  type: String
+- contextPath: MatchingSecurityAdvisory.description
+  description: Human readable description of Advisory
+  type: String
+- contextPath: MatchingSecurityAdvisory.affected_version_list
+  description: List of PAN-OS affected versions exactly
+  type: String
+- contextPath: MatchingSecurityAdvisory.cvss_score
+  description: cvss score
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)
