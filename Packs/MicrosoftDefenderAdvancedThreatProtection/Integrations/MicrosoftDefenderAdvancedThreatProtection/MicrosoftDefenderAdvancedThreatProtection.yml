@@ -5779,7 +5779,7 @@ script:
     - contextPath: MicrosoftATP.MachineAction.troubleshootInfo
       description: Troubleshooting information.
       type: String
-  dockerimage: demisto/crypto:1.0.0.31577
+  dockerimage: demisto/crypto:1.0.0.31715
   feed: false
   isfetch: true
   longRunning: false
