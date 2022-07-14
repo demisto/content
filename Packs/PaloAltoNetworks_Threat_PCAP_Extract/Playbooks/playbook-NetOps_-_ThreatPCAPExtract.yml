@@ -1,115 +1,61 @@
-contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
-description: Auto Retrieve PCAP from firewall threat logs
 id: NetOps - ThreatPCAPExtract
-fromversion: 6.5.0
-inputs:
-- description: clear context?
-  key: debug
-  playbookInputQuery:
-  required: false
-  value:
-    simple: '1'
-- description: shoudl we use pcapminerv2 to extract
-  key: mine_pcap
-  playbookInputQuery:
-  required: false
-  value:
-    simple: '1'
-- description: Incident default severity
-  key: inc_severity
-  playbookInputQuery:
-  required: false
-  value:
-    simple: '0.5'
-- description: Default incident details
-  key: inc_details
-  playbookInputQuery:
-  required: false
-  value:
-    simple: Threat Log PCAP extraction operation
-- description: |-
-    Incident Labels
-
-    format
-     [\{"labelName": "labelValue"\}, \{"labelName1": "labelValue1"\}]
-  key: inc_labels
-  playbookInputQuery:
-  required: false
-  value: {}
-- description: how to get the PCAP, via firewall connection directly or via Panorama as Proxy?
-  key: proxy_via_panorama
-  playbookInputQuery:
-  required: false
-  value:
-    simple: '1'
-- description: name of the instance for ngfw connection
-  key: pan_os_ngfw_instance
-  playbookInputQuery:
-  required: false
-  value:
-    simple: vm50-local
-- description: name of the instance for panorama connection
-  key: pan_os_pra_instance
-  playbookInputQuery:
-  required: false
-  value:
-    simple: Panorama_esxi_panorama
+version: -1
 name: NetOps - ThreatPCAPExtract
-outputs: []
-starttaskid: '0'
-tags:
-- custom
-- ep
+description: Auto Retrieve PCAP from firewall threat logs
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
+  "0":
+    id: "0"
+    taskid: 34199dfd-4efe-40ac-83e6-8e89dde1b77b
+    type: start
+    task:
+      id: 34199dfd-4efe-40ac-83e6-8e89dde1b77b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
-      - '2'
-    note: false
-    quietmode: 0
+      - "26"
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      id: 34199dfd-4efe-40ac-83e6-8e89dde1b77b
-      iscommand: false
-      name: ''
-      version: -1
-      description: ''
-    taskid: 34199dfd-4efe-40ac-83e6-8e89dde1b77b
-    timertriggers: []
-    type: start
     view: |-
       {
         "position": {
-          "x": 820,
-          "y": -240
+          "x": 940,
+          "y": -1300
         }
       }
-  '1':
-    id: '1'
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: f2b51c5f-1603-451f-878f-631a961cecb1
+    type: regular
+    task:
+      id: f2b51c5f-1603-451f-878f-631a961cecb1
+      version: -1
+      name: pan-os-get-pcap from Panorama proxy to firewall
+      description: Returns information for a Panorama PCAP file. The recommended maximum file size is 5 MB. If the limit is exceeded, you may need to SSH the firewall and run the scp export command to export the PCAP file. See the Palo Alto Networks documentation.
+      script: Panorama|||pan-os-get-pcap
+      type: regular
+      iscommand: true
+      brand: Panorama
     nexttasks:
       '#none#':
-      - '15'
-    note: true
-    quietmode: 0
+      - "15"
     scriptarguments:
       deviceName:
         simple: ${incident.devicename}
       localName:
-        simple: threatlog-${incident.devicename}-${incident.sessionid}-${incident.pcapid}
+        simple: threatlog-${incident.devicename}-${incident.sessionid}-${incident.panpcapid}
       pcapID:
-        simple: ${incident.pcapid}
+        simple: ${incident.panpcapid}
       pcapType:
         simple: threat-pcap
       searchTime:
@@ -121,19 +67,6 @@ tasks:
       using:
         simple: ${inputs.pan_os_pra_instance}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Panorama
-      description: Returns information for a Panorama PCAP file. The recommended maximum file size is 5 MB. If the limit is exceeded, you may need to SSH the firewall and run the scp export command to export the PCAP file. See the Palo Alto Networks documentation.
-      id: 827a15f0-7d62-4202-863b-58294249eca3
-      iscommand: true
-      name: pan-os-get-pcap
-      script: Panorama|||pan-os-get-pcap
-      type: regular
-      version: -1
-    taskid: 827a15f0-7d62-4202-863b-58294249eca3
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -141,370 +74,293 @@ tasks:
           "y": 860
         }
       }
-  '2':
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: inputs.debug
-          operator: isEqualString
-          right:
-            value:
-              simple: '1'
-      label: yes
-    id: '2'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#default#':
-      - '11'
-      yes:
-      - '3'
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      id: 1042d843-0aff-4b65-8bb2-b0c4c15acd43
-      iscommand: false
-      name: Debug Enabled
-      type: condition
-      version: -1
-    taskid: 1042d843-0aff-4b65-8bb2-b0c4c15acd43
-    timertriggers: []
-    type: condition
-    view: |-
-      {
-        "position": {
-          "x": 820,
-          "y": -120
-        }
-      }
-  '3':
-    id: '3'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - '11'
-    note: false
-    quietmode: 0
-    scriptarguments:
-      all:
-        simple: no
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: |-
-        Delete field from context.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
-      id: 76480a83-5184-437c-8d2b-7497da4a4adc
-      iscommand: false
-      name: DeleteContext
-      scriptName: DeleteContext
-      type: regular
-      version: -1
-    taskid: 76480a83-5184-437c-8d2b-7497da4a4adc
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 1260,
-          "y": -80
-        }
-      }
-  '4':
-    id: '4'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - '6'
     note: true
-    quietmode: 0
-    scriptarguments:
-      entry_id:
-        simple: ${File.EntryID}
-      extract_strings:
-        simple: 'True'
-    separatecontext: false
+    timertriggers: []
+    ignoreworker: false
     skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 7840fccf-249e-4007-876b-813ae64d77f0
+    type: regular
     task:
-      brand: ''
+      id: 7840fccf-249e-4007-876b-813ae64d77f0
+      version: -1
+      name: PcapMinerV2 - extract ips, strings, all protocols to context
       description: |-
         PcapMIner V2 allows to parse PCAP files by displaying the all of the relevant data within including ip addresses, ports, flows, specific protocol breakdown, searching by regex, decrypting encrypted  traffic and more.
         This automation takes about a minute to process 20,000 packets (which is approximately 10MB). If you want to mine large files you can either:
         a) Use the `pcap_filter` parameter to filter your PCAP file and thus make is smaller.
         b) Copy the automation and change the `default timeout` parameter to match your needs.
-      id: 34416cbb-a50a-4259-85b0-e6d94cdd023a
-      iscommand: false
-      name: PcapMinerV2
       scriptName: PcapMinerV2
       type: regular
-      version: -1
-    taskid: 34416cbb-a50a-4259-85b0-e6d94cdd023a
-    timertriggers: []
-    type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      entry_id:
+        simple: ${File.EntryID}
+      extract_ips:
+        simple: "True"
+      extract_strings:
+        simple: "True"
+      protocol_output:
+        simple: All
+    separatecontext: false
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1850
+          "x": 930,
+          "y": 1580
         }
       }
-  '5':
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: inputs.mine_pcap
-          operator: isEqualString
-          right:
-            value:
-              simple: '1'
-      label: yes
-    id: '5'
+    note: true
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: ed308b41-115c-44f2-831b-51b5d848fe12
+    type: condition
+    task:
+      id: ed308b41-115c-44f2-831b-51b5d848fe12
+      version: -1
+      name: should we mine PCAP for flows?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
     nexttasks:
       '#default#':
-      - '6'
-      yes:
-      - '4'
-    note: false
-    quietmode: 0
+      - "6"
+      miner:
+      - "4"
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      id: 891ceb64-329c-4252-8e92-89c56eb166a8
-      iscommand: false
-      name: should we mine PCAP for flows?
-      type: condition
-      version: -1
-      description: ''
-    taskid: 891ceb64-329c-4252-8e92-89c56eb166a8
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: miner
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.pcap_activity
+            iscontext: true
+          right:
+            value:
+              simple: miner
     view: |-
       {
         "position": {
           "x": 1090,
-          "y": 1670
+          "y": 1360
         }
       }
-  '6':
-    id: '6'
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: e2b07134-4448-47b3-8bb0-cfa0780abdb8
+    type: title
+    task:
+      id: e2b07134-4448-47b3-8bb0-cfa0780abdb8
+      version: -1
+      name: Insert PCAP file storage export here if required (Azure Blob, NFS etc.)
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
-      - '16'
-    note: false
-    quietmode: 0
+      - "38"
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      id: acf2487c-3331-45b7-88de-32736e079e49
-      iscommand: false
-      name: end
-      type: title
-      version: -1
-      description: ''
-    taskid: acf2487c-3331-45b7-88de-32736e079e49
-    timertriggers: []
-    type: title
     view: |-
       {
         "position": {
-          "x": 1530,
-          "y": 2030
+          "x": 1330,
+          "y": 1810
         }
       }
-  '9':
-    id: '9'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      no:
-      - '6'
-      yes:
-      - '13'
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
     quietmode: 0
-    results:
-    - brandInstances
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: cda801df-8738-4089-8cd8-bf4efea47206
+    type: condition
+    task:
+      id: cda801df-8738-4089-8cd8-bf4efea47206
+      version: -1
+      name: IsIntegrationAvailable - PAN-OS - required for pulling the PCAP from the threat log on the firewall
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "13"
     scriptarguments:
       brandname:
         simple: Panorama
+    results:
+    - brandInstances
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
-      id: 6d7d55f3-272e-4fd2-87c5-27a2597c7fe3
-      iscommand: false
-      name: IsIntegrationAvailable - PAN-OS
-      scriptName: IsIntegrationAvailable
-      type: condition
-      version: -1
-    taskid: 6d7d55f3-272e-4fd2-87c5-27a2597c7fe3
-    timertriggers: []
-    type: condition
     view: |-
       {
         "position": {
           "x": 1110,
-          "y": 500
+          "y": 480
         }
       }
-  '10':
-    id: '10'
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 30e971df-2576-4de9-823d-083055350a39
+    type: regular
+    task:
+      id: 30e971df-2576-4de9-823d-083055350a39
+      version: -1
+      name: setIncident Details and initial severity
+      description: Set the default severity and the description
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
-      - '12'
-    note: false
-    quietmode: 0
+      - "30"
     scriptarguments:
       details:
         simple: ${inputs.inc_details}
       severity:
         simple: ${inputs.inc_severity}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Builtin
-      description: Change the properties of an incident
-      id: c60975b3-41e0-4efa-8286-2313be34a18c
-      iscommand: true
-      name: setIncident
-      script: Builtin|||setIncident
-      type: regular
-      version: -1
-    taskid: c60975b3-41e0-4efa-8286-2313be34a18c
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
-          "x": 1110,
-          "y": 240
+          "x": 470,
+          "y": -580
         }
       }
-  '11':
-    id: '11'
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: b2ff125c-625a-4250-8a6e-010ae6d48d8b
+    type: title
+    task:
+      id: b2ff125c-625a-4250-8a6e-010ae6d48d8b
+      version: -1
+      name: Panorama retrieval set
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
-      - '10'
-    note: false
-    quietmode: 0
+      - "29"
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      id: 49e76f35-9f28-4ca3-81a7-8e9f0f13eb2b
-      iscommand: false
-      name: Set Incident Properties
-      type: title
-      version: -1
-      description: ''
-    taskid: 49e76f35-9f28-4ca3-81a7-8e9f0f13eb2b
-    timertriggers: []
-    type: title
     view: |-
       {
         "position": {
-          "x": 1110,
-          "y": 120
+          "x": 710,
+          "y": -940
         }
       }
-  '12':
-    id: '12'
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 1d0d6f6a-fb6d-47b5-8910-e3ca86f08372
+    type: title
+    task:
+      id: 1d0d6f6a-fb6d-47b5-8910-e3ca86f08372
+      version: -1
+      name: Get PCAP from PAN-OS
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
-      - '9'
-    note: false
-    quietmode: 0
+      - "9"
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      id: a03c3dc4-4782-4624-86ae-51a32305ee98
-      iscommand: false
-      name: Get PCAP
-      type: title
-      version: -1
-      description: ''
-    taskid: a03c3dc4-4782-4624-86ae-51a32305ee98
-    timertriggers: []
-    type: title
     view: |-
       {
         "position": {
           "x": 1110,
-          "y": 390
+          "y": 320
         }
       }
-  '13':
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: inputs.proxy_via_panorama
-          operator: isEqualString
-          right:
-            value:
-              simple: '1'
-      label: Panorama
-    id: '13'
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: d6347fd2-b7bf-4e8a-85d8-48f93ddb57c3
+    type: condition
+    task:
+      id: d6347fd2-b7bf-4e8a-85d8-48f93ddb57c3
+      version: -1
+      name: Connect Via Panorama or Firewall Direct for PCAP
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
     nexttasks:
       '#default#':
-      - '14'
+      - "14"
       Panorama:
-      - '1'
-    note: false
-    quietmode: 0
+      - "1"
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      id: d6347fd2-b7bf-4e8a-85d8-48f93ddb57c3
-      iscommand: false
-      name: Connect Via Panorama or Firewall Direct for PCAP
-      type: condition
-      version: -1
-      description: ''
-    taskid: d6347fd2-b7bf-4e8a-85d8-48f93ddb57c3
-    timertriggers: []
-    type: condition
+    conditions:
+    - label: Panorama
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.proxy_via_panorama
+            iscontext: true
+          right:
+            value:
+              simple: "1"
     view: |-
       {
         "position": {
@@ -512,47 +368,45 @@ tasks:
           "y": 670
         }
       }
-  '14':
-    id: '14'
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 9c6fe13c-13d6-4997-86e1-2401b7b13a59
+    type: regular
+    task:
+      id: 9c6fe13c-13d6-4997-86e1-2401b7b13a59
+      version: -1
+      name: pan-os-get-pcap from firewall direct
+      description: Returns information for a Panorama PCAP file. The recommended maximum file size is 5 MB. If the limit is exceeded, you may need to SSH the firewall and run the scp export command to export the PCAP file. See the Palo Alto Networks documentation.
+      script: Panorama|||pan-os-get-pcap
+      type: regular
+      iscommand: true
+      brand: Panorama
     nexttasks:
       '#none#':
-      - '15'
-    note: true
-    quietmode: 0
+      - "15"
     scriptarguments:
       deviceName:
         simple: ${incident.devicename}
       localName:
-        simple: threatlog-${incident.devicename}-${incident.sessionid}-${incident.pcapid}
+        simple: threatlog-${incident.devicename}-${incident.sessionid}-${incident.panpcapid}
       pcapID:
-        simple: ${incident.pcapid}
+        simple: ${incident.panpcapid}
       pcapType:
         simple: threat-pcap
       searchTime:
         simple: ${incident.receivedtime}
-      serialNumber:
-        simple: ${incident.deviceid}
       sessionID:
         simple: ${incident.sessionid}
       using:
         simple: ${inputs.pan_os_ngfw_instance}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Panorama
-      description: Returns information for a Panorama PCAP file. The recommended maximum file size is 5 MB. If the limit is exceeded, you may need to SSH the firewall and run the scp export command to export the PCAP file. See the Palo Alto Networks documentation.
-      id: caf011c3-8bb5-4392-85b8-3e557d3aa59f
-      iscommand: true
-      name: pan-os-get-pcap
-      script: Panorama|||pan-os-get-pcap
-      type: regular
-      version: -1
-    taskid: caf011c3-8bb5-4392-85b8-3e557d3aa59f
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -560,35 +414,35 @@ tasks:
           "y": 860
         }
       }
-  '15':
-    id: '15'
+    note: true
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 771aa9f4-2677-49fa-8396-7569ffb4ac85
+    type: regular
+    task:
+      id: 771aa9f4-2677-49fa-8396-7569ffb4ac85
+      version: -1
+      name: setIncident PCAPFilename and FileSize from extracted threat pcap
+      description: Change the properties of an incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
-      - '18'
-    note: false
-    quietmode: 0
+      - "25"
     scriptarguments:
       pcapfilename:
         simple: ${File.Name}
       pcapfilesize:
         simple: ${File.Size}
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Builtin
-      description: Change the properties of an incident
-      id: b1ae1c73-5878-4372-828a-10c5fea5c462
-      iscommand: true
-      name: setIncident
-      script: Builtin|||setIncident
-      type: regular
-      version: -1
-    taskid: b1ae1c73-5878-4372-828a-10c5fea5c462
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
@@ -596,13 +450,29 @@ tasks:
           "y": 1050
         }
       }
-  '16':
-    id: '16'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: d0ec611c-9588-465e-8698-7b9f7311f088
+    type: regular
+    task:
+      id: d0ec611c-9588-465e-8698-7b9f7311f088
+      version: -1
+      name: closeInvestigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "41"
     scriptarguments:
       closeNotes:
         simple: PCAP Extracted
@@ -610,304 +480,1185 @@ tasks:
         simple: Resolved
       id:
         complex:
-          accessor: id
           root: incident
+          accessor: id
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Builtin
-      description: Close the current incident
-      id: d0ec611c-9588-465e-8698-7b9f7311f088
-      iscommand: true
-      name: closeInvestigation
-      script: Builtin|||closeInvestigation
-      type: regular
-      version: -1
-    taskid: d0ec611c-9588-465e-8698-7b9f7311f088
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
-          "x": 1530,
-          "y": 2170
+          "x": 1470,
+          "y": 2660
         }
       }
-  '17':
-    id: '17'
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 8709f9f4-f8c2-44b2-8f7d-6d3b616e00b2
+    type: title
+    task:
+      id: 8709f9f4-f8c2-44b2-8f7d-6d3b616e00b2
+      version: -1
+      name: close investigation or not?
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
     nexttasks:
       '#none#':
-      - '5'
+      - "40"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1470,
+          "y": 2305
+        }
+      }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 54ee5d36-9569-4b83-813b-dd5fece3f7de
+    type: title
+    task:
+      id: 54ee5d36-9569-4b83-813b-dd5fece3f7de
+      version: -1
+      name: Should we mine the PCAP for flows?
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1090,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 70b16d5a-ce25-4953-8a0a-2fb930fe67d3
+    type: condition
+    task:
+      id: 70b16d5a-ce25-4953-8a0a-2fb930fe67d3
+      version: -1
+      name: Validate important inputs for either Panorama or NGFW PCAP retrieval
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "35"
+      ngfw:
+      - "27"
+      panorama:
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: panorama
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.proxy_via_panorama
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.pan_os_pra_instance
+            iscontext: true
+    - label: ngfw
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.proxy_via_panorama
+            iscontext: true
+          right:
+            value:
+              simple: "false"
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.pan_os_ngfw_instance
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": -1150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 44fa60a0-0160-4c35-8a63-b9106ba1e249
+    type: title
+    task:
+      id: 44fa60a0-0160-4c35-8a63-b9106ba1e249
+      version: -1
+      name: ngfw retrieval set
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": -940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 97b89b81-2b5c-4cf1-8866-062ead3c83ab
+    type: regular
+    task:
+      id: 97b89b81-2b5c-4cf1-8866-062ead3c83ab
+      version: -1
+      name: Print Warning that important inputs not set
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      value:
+        simple: Playbook inputs for PCAP retrieval are not set properly for Panorama or NGFW retrieval
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1800,
+          "y": -785
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: d9772c29-e560-4683-8158-f0b38bce1f9e
+    type: condition
+    task:
+      id: d9772c29-e560-4683-8158-f0b38bce1f9e
+      version: -1
+      name: used_as_sub-playbook?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "42"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.used_as_sub-playbook
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": -785
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: f8a0ec65-c55b-490a-86fe-bf1c62b38c1c
+    type: condition
+    task:
+      id: f8a0ec65-c55b-490a-86fe-bf1c62b38c1c
+      version: -1
+      name: change incident severity to match threat log
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "37"
+      critical:
+      - "34"
+      high:
+      - "33"
+      low:
+      - "31"
+      medium:
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: low
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.classification
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+    - label: medium
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.classification
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    - label: high
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.classification
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    - label: critical
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: incident.classification
+            iscontext: true
+          right:
+            value:
+              simple: "4"
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": -410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: f1d88307-8149-4c76-896f-cf57a7a2a76b
+    type: regular
+    task:
+      id: f1d88307-8149-4c76-896f-cf57a7a2a76b
+      version: -1
+      name: IncreaseIncidentSeverity - low
+      description: Optionally increases the incident severity to the new value if it is greater than the existing severity.
+      scriptName: IncreaseIncidentSeverity
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
     scriptarguments:
       severity:
-        simple: '0.5'
+        simple: Low
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Builtin
-      description: Change the properties of an incident
-      id: 971b294d-35c5-4fb3-86ab-5ccab9771084
-      iscommand: true
-      name: setIncident - Info
-      script: Builtin|||setIncident
-      type: regular
-      version: -1
-    taskid: 971b294d-35c5-4fb3-86ab-5ccab9771084
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
-          "x": 290,
-          "y": 1400
+          "x": 50,
+          "y": -240
         }
       }
-  '18':
-    conditions:
-    - condition:
-      - - ignorecase: true
-          left:
-            iscontext: true
-            value:
-              simple: incident.classification
-          operator: isEqualString
-          right:
-            value:
-              simple: Informational
-      label: Info
-    - condition:
-      - - ignorecase: true
-          left:
-            iscontext: true
-            value:
-              simple: incident.classification
-          operator: isEqualString
-          right:
-            value:
-              simple: Low
-      label: Low
-    - condition:
-      - - ignorecase: true
-          left:
-            iscontext: true
-            value:
-              simple: incident.classification
-          operator: isEqualString
-          right:
-            value:
-              simple: Medium
-      label: Medium
-    - condition:
-      - - ignorecase: true
-          left:
-            iscontext: true
-            value:
-              simple: incident.classification
-          operator: isEqualString
-          right:
-            value:
-              simple: High
-      label: High
-    - condition:
-      - - ignorecase: true
-          left:
-            iscontext: true
-            value:
-              simple: incident.classification
-          operator: isEqualString
-          right:
-            value:
-              simple: Critical
-      label: Critical
-    id: '18'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      Critical:
-      - '22'
-      High:
-      - '21'
-      Info:
-      - '17'
-      Low:
-      - '19'
-      Medium:
-      - '20'
     note: false
-    quietmode: 0
-    separatecontext: false
+    timertriggers: []
+    ignoreworker: false
     skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: a2d23c44-624a-44d3-8f3c-2e956f314587
+    type: regular
     task:
-      brand: ''
-      id: 382c26bd-853f-4166-8791-9159be76c8e6
+      id: a2d23c44-624a-44d3-8f3c-2e956f314587
+      version: -1
+      name: IncreaseIncidentSeverity - medium
+      description: Optionally increases the incident severity to the new value if it is greater than the existing severity.
+      scriptName: IncreaseIncidentSeverity
+      type: regular
       iscommand: false
-      name: Set Severity from Log
-      type: condition
-      version: -1
-    taskid: 382c26bd-853f-4166-8791-9159be76c8e6
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      severity:
+        simple: Medium
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": -115
+        }
+      }
+    note: false
     timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: d7c5871e-9bd1-4b27-897f-341b847c263f
+    type: regular
+    task:
+      id: d7c5871e-9bd1-4b27-897f-341b847c263f
+      version: -1
+      name: IncreaseIncidentSeverity - high
+      description: Optionally increases the incident severity to the new value if it is greater than the existing severity.
+      scriptName: IncreaseIncidentSeverity
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      severity:
+        simple: High
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": -240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 9bf21cf4-5a5a-4205-824f-8e395ecb9b0c
+    type: regular
+    task:
+      id: 9bf21cf4-5a5a-4205-824f-8e395ecb9b0c
+      version: -1
+      name: IncreaseIncidentSeverity - critical
+      description: Optionally increases the incident severity to the new value if it is greater than the existing severity.
+      scriptName: IncreaseIncidentSeverity
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      severity:
+        simple: Critical
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": -120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 7e943818-9fe7-4dc9-837c-8decfd2cf1e1
+    type: title
+    task:
+      id: 7e943818-9fe7-4dc9-837c-8decfd2cf1e1
+      version: -1
+      name: input combination of playbook values is not set properly
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1800,
+          "y": -940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 324d7baa-42df-4bfb-83af-485e574dadd4
+    type: title
+    task:
+      id: 324d7baa-42df-4bfb-83af-485e574dadd4
+      version: -1
+      name: end incident settings
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 0e325a38-ab82-4f4d-8641-f4c91d35239d
+    type: regular
+    task:
+      id: 0e325a38-ab82-4f4d-8641-f4c91d35239d
+      version: -1
+      name: IncreaseIncidentSeverity - informational -catch all
+      description: Optionally increases the incident severity to the new value if it is greater than the existing severity.
+      scriptName: IncreaseIncidentSeverity
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      severity:
+        simple: Informational
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -340,
+          "y": -240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: d217840c-4725-43f1-8dea-3ffbfde0f6ca
     type: condition
+    task:
+      id: d217840c-4725-43f1-8dea-3ffbfde0f6ca
+      version: -1
+      name: archive_pcap_to_external_storage
+      description: |-
+        Placeholder for future enhancement
+
+        Insert integration for external storage if external archival of PCAP required
+        ideas:
+        Azure Blob, AWS S3, NFS etc.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "39"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.archive_pcap
+            iscontext: true
+          right:
+            value:
+              simple: "true"
     view: |-
       {
         "position": {
-          "x": 1090,
-          "y": 1220
+          "x": 1330,
+          "y": 1940
         }
       }
-  '19':
-    id: '19'
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: c14f27e1-3b2b-4461-805d-9200aeb5cbac
+    type: regular
+    task:
+      id: c14f27e1-3b2b-4461-805d-9200aeb5cbac
+      version: -1
+      name: REPLACE ME WITH STORAGE INTEGRATION
+      description: ''
+      type: regular
+      iscommand: false
+      brand: ""
     nexttasks:
       '#none#':
-      - '5'
-    note: false
-    quietmode: 0
-    scriptarguments:
-      classification:
-        simple: '1'
+      - "23"
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Builtin
-      description: Change the properties of an incident
-      id: 16e69c9a-9ff3-4da3-8edf-e784fb2857d1
-      iscommand: true
-      name: setIncident - Low
-      script: Builtin|||setIncident
-      type: regular
-      version: -1
-    taskid: 16e69c9a-9ff3-4da3-8edf-e784fb2857d1
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
-          "x": 690,
-          "y": 1400
+          "x": 1680,
+          "y": 2140
         }
       }
-  '20':
-    id: '20'
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
+    skipunavailable: false
+    quietmode: 0
     isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 68572815-db12-4d29-8880-88183b471025
+    type: condition
+    task:
+      id: 68572815-db12-4d29-8880-88183b471025
+      version: -1
+      name: is this used_as_sub-playbook ?
+      description: |-
+        Placeholder for future enhancement
+
+        Insert integration for external storage if external archival of PCAP required
+        ideas:
+        Azure Blob, AWS S3, NFS etc.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "41"
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.used_as_sub-playbook
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+    view: |-
+      {
+        "position": {
+          "x": 1470,
+          "y": 2460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 9d589023-e9c0-4429-8d2b-7f38d1c904fe
+    type: title
+    task:
+      id: 9d589023-e9c0-4429-8d2b-7f38d1c904fe
+      version: -1
+      name: end playbook
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1170,
+          "y": 2840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 2b9f370b-be1c-4f2f-8be7-a40dae532a30
+    type: regular
+    task:
+      id: 2b9f370b-be1c-4f2f-8be7-a40dae532a30
+      version: -1
+      name: setIncident - append only incident details to parent playbook
+      description: Set the default severity and the description
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
     nexttasks:
       '#none#':
-      - '5'
-    note: false
-    quietmode: 0
+      - "12"
     scriptarguments:
-      classification:
-        simple: '2'
+      details:
+        complex:
+          root: incident
+          accessor: details
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: inputs.inc_details
+                iscontext: true
     separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Builtin
-      description: Change the properties of an incident
-      id: 3b978861-596e-49fe-815b-8447e0d86052
-      iscommand: true
-      name: setIncident - Medium
-      script: Builtin|||setIncident
-      type: regular
-      version: -1
-    taskid: 3b978861-596e-49fe-815b-8447e0d86052
-    timertriggers: []
-    type: regular
     view: |-
       {
         "position": {
-          "x": 1090,
-          "y": 1400
+          "x": 1160,
+          "y": -580
         }
       }
-  '21':
-    id: '21'
+    note: false
+    timertriggers: []
     ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - '5'
-    note: false
-    quietmode: 0
-    scriptarguments:
-      classification:
-        simple: '3'
-    separatecontext: false
     skipunavailable: false
-    task:
-      brand: Builtin
-      description: Change the properties of an incident
-      id: 4c896da3-16b9-4855-8e53-a1fc415bfbd9
-      iscommand: true
-      name: setIncident - HIgh
-      script: Builtin|||setIncident
-      type: regular
-      version: -1
-    taskid: 4c896da3-16b9-4855-8e53-a1fc415bfbd9
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 1490,
-          "y": 1400
-        }
-      }
-  '22':
-    id: '22'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - '5'
-    note: false
     quietmode: 0
-    scriptarguments:
-      classification:
-        simple: '4'
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: Builtin
-      description: Change the properties of an incident
-      id: 9e66eb70-889b-49c7-83b9-17b28862a5f2
-      iscommand: true
-      name: setIncident - Critical
-      script: Builtin|||setIncident
-      type: regular
-      version: -1
-    taskid: 9e66eb70-889b-49c7-83b9-17b28862a5f2
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 1900,
-          "y": 1400
-        }
-      }
-version: -1
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2505,
-        "width": 1990,
-        "x": 290,
-        "y": -240
+        "height": 4205,
+        "width": 2520,
+        "x": -340,
+        "y": -1300
       }
     }
   }
+inputs:
+- key: inc_details
+  value:
+    simple: Threat Log PCAP extraction operation
+  required: false
+  description: |-
+    If used_as_sub-playbook=true this is skipped
+    Default incident details
+  playbookInputQuery:
+- key: inc_severity
+  value:
+    simple: "0.5"
+  required: false
+  description: |-
+    If used_as_sub-playbook=true this is skipped
+    Default incident severity - maps to PAN-OS threat log severity
+    0.5 - informational
+    1 - low
+    2 - medium
+    3 - high
+    4 - critical
+  playbookInputQuery:
+- key: proxy_via_panorama
+  value:
+    simple: "true"
+  required: true
+  description: |-
+    Should the playbook pull the PCAP via the Panorama (as proxy to firewall) or firewall directly?
+    Options:
+    true - pull via Panorama
+    false - pull via firewall directly
+  playbookInputQuery:
+- key: pan_os_ngfw_instance
+  value:
+    simple: vm50-local
+  required: false
+  description: PAN-OS Integration - name of the instance for ngfw direct connection
+  playbookInputQuery:
+- key: pan_os_pra_instance
+  value:
+    simple: Panorama_esxi_panorama
+  required: false
+  description: PAN-OS Integration - name of the instance for panorama connection
+  playbookInputQuery:
+- key: used_as_sub-playbook
+  value:
+    simple: "true"
+  required: true
+  description: |-
+    Is this used as a sub-playbook or not
+    Options:
+    true - do not set the severity or close the incident in this playbook
+    false - set the incident severity based on the threat log severity and close the incident when completed
+  playbookInputQuery:
+- key: archive_pcap
+  value:
+    simple: "false"
+  required: false
+  description: |-
+    SHould we archive the PCAP to external storage to XSOAR?
+    Options:
+    true - archive to external storage that needs to be configured in the playbook (clone playbook, insert preferred storage integration)
+    false - skip archival outside of XSOAR
+  playbookInputQuery:
+- key: pcap_activity
+  value:
+    simple: miner
+  required: false
+  description: |-
+    What action should we take on the PCAP?
+    Options:
+    miner - use PCAPMinerV2 for flow extraction
+  playbookInputQuery:
+outputs:
+- contextPath: PCAPResults
+  description: ''
+  type: unknown
+- contextPath: PCAPResults.Bytes
+  description: The number of bytes transmitted in the PCAP file.
+  type: Number
+- contextPath: PCAPResults.Packets
+  description: The number of packets transmitted in the PCAP file.
+  type: Number
+- contextPath: PCAPResults.EntryID
+  description: The entryID of the PCAP file.
+  type: String
+- contextPath: PCAPResults.StreamCount
+  description: The number of streams in the PCAP file.
+  type: String
+- contextPath: PCAPResults.StartTime
+  description: The date and time of the first packet in the PCAP file.
+  type: Date
+- contextPath: PCAPResults.EndTime
+  description: The date and time of the last packet in the PCAP file.
+  type: String
+- contextPath: PCAPResults.UniqueSourceIP
+  description: The number of unique IPs from which packets were transmitted.
+  type: Number
+- contextPath: PCAPResults.UniqueDestIP
+  description: The number of unique IPs from to packets were transmitted.
+  type: Number
+- contextPath: PCAPResults.URL
+  description: The URLs extracted from the file.
+  type: String
+- contextPath: PCAPResults.IP
+  description: The IPs extracted from the file.
+  type: String
+- contextPath: PCAPResults.Email
+  description: The emails extracted from the file.
+  type: String
+- contextPath: PCAPResults.Regex
+  description: The regular expressions specified in `extract_regex` extracted from the file.
+  type: String
+- contextPath: PCAPResults.Protocols
+  description: List of protocols found in the PCAP.
+  type: String
+- contextPath: PCAPResultsFlow
+  description: ''
+  type: unknown
+- contextPath: PCAPResultsFlow.Bytes
+  description: The number of bytes transmitted in the flow.
+  type: String
+- contextPath: PCAPResultsFlow.DestIP
+  description: The destination IP of the flow.
+  type: String
+- contextPath: PCAPResultsFlow.Transport
+  description: The transport protocol of the flow.
+  type: String
+- contextPath: PCAPResultsFlow.SourceIP
+  description: The source IP of the flow.
+  type: String
+- contextPath: PCAPResultsFlow.SourcePort
+  description: The source port of the flow.
+  type: String
+- contextPath: PCAPResultsFlow.DestPort
+  description: The destination port of the flow.
+  type: String
+- contextPath: PCAPResultsFlow.Duration
+  description: The duration of the flow (in seconds).
+  type: String
+- contextPath: PCAPResultsFlow.EndTime
+  description: The date/time the flow ended.
+  type: Date
+- contextPath: PCAPResultsFlow.StartTime
+  description: The date/time the flow started.
+  type: Date
+- contextPath: PCAPResultsHTTP
+  description: ''
+  type: unknown
+- contextPath: PCAPResultsHTTP.ResponseStatusCode
+  description: The response code.
+  type: String
+- contextPath: PCAPResultsHTTP.RequestVersion
+  description: The request version.
+  type: String
+- contextPath: PCAPResultsHTTP.RequestCacheControl
+  description: The cache control of the request.
+  type: String
+- contextPath: PCAPResultsHTTP.ResponseDate
+  description: The date/time of the response.
+  type: Date
+- contextPath: PCAPResultsHTTP.RequestMethod
+  description: The request method.
+  type: String
+- contextPath: PCAPResultsHTTP.RequestSourceIP
+  description: The source IP of the request.
+  type: String
+- contextPath: PCAPResultsHTTP.ResponseContentType
+  description: The response content type.
+  type: String
+- contextPath: PCAPResultsHTTP.RequestAgent
+  description: The request agent.
+  type: String
+- contextPath: PCAPResultsHTTP.RequestHost
+  description: The request host.
+  type: String
+- contextPath: PCAPResultsHTTP.ResponseVersion
+  description: The response version.
+  type: String
+- contextPath: PCAPResultsHTTP.ID
+  description: The ID of the HTTP interaction.
+  type: String
+- contextPath: PCAPResultsHTTP.EntryID
+  description: The PCAP entry ID.
+  type: String
+- contextPath: PCAPResultsHTTP.RequestURI
+  description: The request URI.
+  type: String
+- contextPath: PCAPResultsHTTP.ResponseContentLength
+  description: The length of the response content.
+  type: String
+- contextPath: PCAPResultsHTTP.ResponseCodeDesc
+  description: The code description of the response.
+  type: String
+- contextPath: PCAPResultsDNS
+  description: ''
+  type: unknown
+- contextPath: PCAPResultsDNS.ID
+  description: The ID of the DNS request.
+  type: String
+- contextPath: PCAPResultsDNS.Request
+  description: The DNS request.
+  type: String
+- contextPath: PCAPResultsDNS.Response
+  description: The DNS response.
+  type: String
+- contextPath: PCAPResultsDNS.Type
+  description: The type of the DNS request.
+  type: String
+- contextPath: PCAPResultsDNS.EntryID
+  description: The PCAP entry ID.
+  type: String
+- contextPath: PCAPResultsSMTP
+  description: ''
+  type: unknown
+- contextPath: PCAPResultsSMTP.From
+  description: The mail sender.
+  type: String
+- contextPath: PCAPResultsSMTP.To
+  description: The mail recipients.
+  type: String
+- contextPath: PCAPResultsSMTP.Subject
+  description: The mail subject.
+  type: String
+- contextPath: PCAPResultsSMTP.MimeVersion
+  description: The mime version.
+  type: String
+- contextPath: PCAPResultsSMTP.ID
+  description: The SMTP packet's ID.
+  type: String
+- contextPath: PCAPResultsSMTP.EntryID
+  description: The PCAP entry ID.
+  type: String
+- contextPath: PCAPResultsKERBEROS
+  description: ''
+  type: unknown
+- contextPath: PCAPResultsKERBEROS.EntryID
+  description: The PCAP entry ID.
+  type: String
+- contextPath: PCAPResultsKERBEROS.Realm
+  description: The KERBEROS realm.
+  type: String
+- contextPath: PCAPResultsKERBEROS.SName
+  description: The KERBEROS SName.
+  type: String
+- contextPath: PCAPResultsKERBEROS.CName
+  description: The KERBEROS CName.
+  type: String
+- contextPath: PCAPResultsTelnet
+  description: ''
+  type: unknown
+- contextPath: PCAPResultsTelnet.Data
+  description: The telnet data.
+  type: String
+- contextPath: PCAPResultsTelnet.Commands
+  description: The telnet commands.
+  type: String
+- contextPath: PCAPResultsTelnet.EntryID
+  description: The PCAP entry ID.
+  type: String
+- contextPath: PCAPResultsLLMNR
+  description: ''
+  type: unknown
+- contextPath: PCAPResultsLLMNR.EntryID
+  description: The PCAP entry ID.
+  type: String
+- contextPath: PCAPResultsLLMNR.QueryClass
+  description: The LLMNR query class.
+  type: String
+- contextPath: PCAPResultsLLMNR.QueryName
+  description: The LLMNR query name.
+  type: String
+- contextPath: PCAPResultsLLMNR.Questions
+  description: The LLMNR questions.
+  type: String
+- contextPath: PCAPResultsLLMNR.ID
+  description: The LLMNR packet ID.
+  type: String
+- contextPath: PCAPResultsLLMNR.QueryType
+  description: The LLMNR query type.
+  type: String
+- contextPath: PCAPResultsSYSLOG
+  description: ''
+  type: unknown
+- contextPath: PCAPResultsSYSLOG.EntryID
+  description: The PCAP entry ID.
+  type: String
+- contextPath: PCAPResultsSYSLOG.ID
+  description: The SYSLOGS packet ID.
+  type: String
+- contextPath: PCAPResultsSYSLOG.Message
+  description: The SYSLOGS message.
+  type: String
+- contextPath: PCAPResultsSYSLOG.Hostname
+  description: The SYSLOGS host name.
+  type: String
+- contextPath: PCAPResultsSYSLOG.Timestamp
+  description: The SYSLOGS time stamp.
+  type: String
+- contextPath: PCAPResultsSMB2
+  description: ''
+  type: unknown
+- contextPath: PCAPResultsSMB2.EntryID
+  description: The PCAP entry ID.
+  type: String
+- contextPath: PCAPResultsSMB2.ID
+  description: The SMB2 packet ID.
+  type: String
+- contextPath: PCAPResultsSMB2.UserName
+  description: The SMB2 user name.
+  type: String
+- contextPath: PCAPResultsSMB2.Domain
+  description: The SMB2 domain.
+  type: String
+- contextPath: PCAPResultsSMB2.HostName
+  description: The SMB2 host name.
+  type: String
+- contextPath: PCAPResultsSMB2.Command
+  description: The SMB2 command.
+  type: String
+- contextPath: PCAPResultsSMB2.FileName
+  description: The SMB2 file name.
+  type: String
+- contextPath: PCAPResultsSMB2.Tree
+  description: The SMB2 tree.
+  type: String
+- contextPath: PCAPResultsNETBIOS
+  description: ''
+  type: unknown
+- contextPath: PCAPResultsNETBIOS.EntryID
+  description: The PCAP entry ID.
+  type: String
+- contextPath: PCAPResultsNETBIOS.ID
+  description: The NETIOS packet ID.
+  type: String
+- contextPath: PCAPResultsNETBIOS.Name
+  description: The NETIOS name.
+  type: String
+- contextPath: PCAPResultsNETBIOS.Type
+  description: The NETIOS type.
+  type: String
+- contextPath: PCAPResultsNETBIOS.Class
+  description: The NETIOS class.
+  type: String
+- contextPath: PCAPResultsIRC
+  description: ''
+  type: unknown
+- contextPath: PCAPResultsIRC.EntryID
+  description: The PCAP entry ID.
+  type: String
+- contextPath: PCAPResultsIRC.ID
+  description: The IRC packet ID.
+  type: String
+- contextPath: PCAPResultsIRC.RequestCommand
+  description: The IRC request command.
+  type: String
+- contextPath: PCAPResultsIRC.RequestTrailer
+  description: The IRC request trailer.
+  type: String
+- contextPath: PCAPResultsIRC.RequestPrefix
+  description: The IRC request prefix.
+  type: String
+- contextPath: PCAPResultsIRC.RequestParameters
+  description: The IRC request parameters.
+  type: String
+- contextPath: PCAPResultsIRC.ResponseCommand
+  description: The IRC response command.
+  type: String
+- contextPath: PCAPResultsIRC.ResponseTrailer
+  description: The IRC response trailers.
+  type: String
+- contextPath: PCAPResultsIRC.ResponsePrefix
+  description: The IRC response prefix.
+  type: String
+- contextPath: PCAPResultsIRC.ResponseParameters
+  description: The IRC response parameters.
+  type: String
+- contextPath: PCAPResultsFTP
+  description: ''
+  type: unknown
+- contextPath: PCAPResultsFTP.EntryID
+  description: The PCAP entry ID.
+  type: String
+- contextPath: PCAPResultsFTP.ID
+  description: The FTP packet ID.
+  type: String
+- contextPath: PCAPResultsFTP.RequestCommand
+  description: The FTP request command.
+  type: String
+- contextPath: PCAPResultsFTP.ResponseArgs
+  description: The FTP response arguments.
+  type: String
+- contextPath: PCAPResultsFTP.ResponseCode
+  description: The FTP response code.
+  type: String
+- contextPath: PCAPResultsICMP
+  description: ICMP data.
+  type: String
+- contextPath: PCAPResultsSSH
+  description: ''
+  type: unknown
+- contextPath: PCAPResultsSSH.EntryID
+  description: The PCAP's entry ID.
+  type: String
+- contextPath: PCAPResultsSSH.ClientProtocols
+  description: The SSH client protocols in the PCAP.
+  type: String
+- contextPath: PCAPResultsSSH.ServerProtocols
+  description: The SSH server protocols in the PCAP.
+  type: String
+- contextPath: PCAPResultsSSH.KeyExchangeMessageCode
+  description: The SSH key exchange message codes.
+  type: String
 tests:
 - No tests (auto formatted)
+fromversion: 6.2.0
