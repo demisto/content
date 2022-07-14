@@ -7,7 +7,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ''
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.5.31928
 enabled: true
 name: getIncidentByID
 runas: DBotWeakRole
@@ -18,5 +18,6 @@ subtype: python3
 tags: []
 type: python
 fromversion: 6.2.0
+comment: "Gets the entire incident JSON, without the context, given an ID."
 tests:
 - No tests (auto formatted)

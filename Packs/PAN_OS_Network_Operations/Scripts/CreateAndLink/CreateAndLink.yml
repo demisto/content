@@ -11,7 +11,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ''
-dockerimage: demisto/python3:3.7.3.286
+dockerimage: demisto/python3:3.10.5.31928
 enabled: true
 name: CreateAndLink
 runas: DBotWeakRole
