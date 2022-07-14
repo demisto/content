@@ -9,7 +9,7 @@ XSOAR_SANITY_TEST_NAMES = (
 DEFAULT_REPUTATION_TESTS = (
     'FormattingPerformance - Test',
     'reputations.json Test',
-    'Indicators reputation-.json Test'
+    'Indicators reputation-.json Test',
 )
 DEFAULT_MARKETPLACE_WHEN_MISSING: MarketplaceVersions = MarketplaceVersions.XSOAR
 

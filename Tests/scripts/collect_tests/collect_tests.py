@@ -26,10 +26,7 @@ from Tests.scripts.collect_tests.path_manager import PathManager
 from utils import (ContentItem, Machine, PackManager, VersionRange,
                    find_pack_folder)
 
-
-# from Tests.Marketplace.marketplace_services import get_last_commit_from_index # todo uncomment
-def get_last_commit_from_index(*args, **kwargs):  # todo remove
-    pass
+from Tests.Marketplace.marketplace_services import get_last_commit_from_index
 
 
 PATHS = PathManager(Path(__file__).absolute().parents[3])
@@ -545,21 +542,19 @@ class UploadCollector(BranchTestCollector):
 
 # todo install_logging, see destroy_instances
 
-def ui():  # todo put as real main
-    parser = ArgumentParser(description='Utility CircleCI usage')  # todo (?)
+
+if __name__ == '__main__':
+    sys.path.append(str(PATHS.content_path))
+    parser = ArgumentParser()
     parser.add_argument('-n', '--nightly', type=str2bool, help='Is nightly')
     parser.add_argument('-p', '--changed_pack_path', type=str, help='A string representing the changed files')  # todo
-    parser.add_argument('-mp', '--marketplace', help='marketplace version', default='xsoar')
+    parser.add_argument('-mp', '--marketplace', type=MarketplaceVersions, help='marketplace version', default='xsoar')
     parser.add_argument('--service_account', help="Path to gcloud service account")
     options = parser.parse_args()
 
     match (options.nightly, marketplace := MarketplaceVersions(options.marketplace)):
         case False, _:  # not nightly
-            collector = BranchTestCollector(
-                marketplace=marketplace,
-                branch_name='master',  # todo branch name?
-                service_account=options.service_account
-            )
+            collector = BranchTestCollector('master', marketplace, options.service_account)
         case True, MarketplaceVersions.XSOAR:
             collector = XSOARNightlyTestCollector()
         case True, MarketplaceVersions.MarketplaceV2:
@@ -573,13 +568,3 @@ def ui():  # todo put as real main
     logger.info(f'writing output to {str(PATHS.output_tests_file)}, {str(PATHS.output_packs_file)}')
     PATHS.output_tests_file.write_text('\n'.join(collected.tests))
     PATHS.output_packs_file.write_text('\n'.join(collected.packs))
-
-
-# def debug():  # todo remove
-#     collector = XSOARNightlyTestCollector()
-#     print(collector.collect(True, True))
-
-
-if __name__ == '__main__':
-    sys.path.append(str(PATHS.content_path))
-    raise NotImplementedError()

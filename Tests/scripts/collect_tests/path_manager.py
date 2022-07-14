@@ -8,6 +8,7 @@ class PathManager:
     """
     Used for getting paths of various files and folders during the test collection process.
     """
+
     ARTIFACTS_PATH = Path(getenv('ARTIFACTS_FOLDER', './artifacts'))
 
     def __init__(self, content_path: Path):
@@ -40,11 +41,11 @@ class PathManager:
 
     @property
     def output_tests_file(self):
-        return PathManager.ARTIFACTS_PATH / 'filter_file.txt'
+        return PathManager.ARTIFACTS_PATH / 'filter_file_new.txt'  # todo change
 
     @property
     def output_packs_file(self):
-        return PathManager.ARTIFACTS_PATH / 'content_packs_to_install.txt'
+        return PathManager.ARTIFACTS_PATH / 'content_packs_to_install_new.txt'  # todo change
 
 
 def _calculate_excluded_files(content_path: Path) -> set[Path]:
@@ -52,6 +53,7 @@ def _calculate_excluded_files(content_path: Path) -> set[Path]:
     :param content_path: path to the content root
     :return: set of Paths that should be excluded from test collection
     """
+
     def glob(paths: Iterable[str]):
         result = []
         for partial_path in paths:
@@ -62,26 +64,32 @@ def _calculate_excluded_files(content_path: Path) -> set[Path]:
             elif '*' in path.name:
                 result.extend(path.parent.glob(path.name))
             elif not path.exists():
-                logging.warning(f'could not find {path} for calculating excluded paths')
+                logging.warning(
+                    f'could not find {path} for calculating excluded paths'
+                )
                 continue
             else:
                 result.append(path)
         return set(result)
 
-    excluded = glob((
-        'Tests',
-        '.gitlab',
-        'Documentation',
-        'dev-requirements*',
-    ))
-    not_excluded = glob((
-        'Tests/scripts/infrastructure_tests',
-        'Tests/Marketplace/Tests',
-        'Tests/tests',
-        'Tests/setup',
-        'Tests/sdknightly',
-        'Tests/known_words.txt',
-        'Tests/secrets_white_list.json',
-    ))
+    excluded = glob(
+        (
+            'Tests',
+            '.gitlab',
+            'Documentation',
+            'dev-requirements*',
+        )
+    )
+    not_excluded = glob(
+        (
+            'Tests/scripts/infrastructure_tests',
+            'Tests/Marketplace/Tests',
+            'Tests/tests',
+            'Tests/setup',
+            'Tests/sdknightly',
+            'Tests/known_words.txt',
+            'Tests/secrets_white_list.json',
+        )
+    )
 
     return excluded - not_excluded
