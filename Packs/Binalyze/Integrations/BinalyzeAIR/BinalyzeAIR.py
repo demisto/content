@@ -95,8 +95,8 @@ def air_acquire_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     result: Dict[str, Any] = client.air_acquire(hostname, profile, case_id, organization_id)
 
     return CommandResults(
-        outputs_prefix='BinalyzeAir.Acquisition',
-        outputs_key_field='name',
+        outputs_prefix='BinalyzeAIR.Acquisition',
+        outputs_key_field='hostname',
         outputs=result,
     )
 
@@ -111,8 +111,8 @@ def air_isolate_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     result: Dict[str, Any] = client.air_isolate(hostname, organization_id, isolation)
 
     return CommandResults(
-        outputs_prefix='BinalyzeAir.Isolate',
-        outputs_key_field='name',
+        outputs_prefix='BinalyzeAIR.Isolate',
+        outputs_key_field='hostname',
         outputs=result,
     )
 
