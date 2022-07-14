@@ -5727,7 +5727,7 @@ script:
     - contextPath: MicrosoftATP.MachineAction.MachineID
       description: The machine ID on which the action was executed.
       type: String
-  - arguments:
+  arguments:
     - default: true
       description: A comma-separated list of machine IDs to be used for offboarding. e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424.
       isArray: true
@@ -5771,7 +5771,7 @@ script:
       description: The last date and time when the action status was updated.
       type: Date
     - contextPath: MicrosoftATP.MachineAction.cancellationDateTimeUtc
-      decription: The date and time when the action was canceled.
+      description: The date and time when the action was canceled.
       type: Date
     - contextPath: MicrosoftATP.MachineAction.RelatedFileInfo
       description: The file info.
