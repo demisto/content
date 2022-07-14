@@ -5,7 +5,7 @@ contentitemexportablefields:
 description: Gathers all relevant information for a specific PAN-OS device.
 id: PAN-OS Network Operations - Device Information
 inputs:
-- description: ''
+- description: Target
   key: device
   playbookInputQuery:
   required: false

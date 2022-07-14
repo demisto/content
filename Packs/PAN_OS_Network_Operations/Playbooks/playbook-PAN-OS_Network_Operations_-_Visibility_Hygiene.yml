@@ -5,7 +5,7 @@ contentitemexportablefields:
 description: Check the PANOS Platform for configuration hygiene issues, such as misconfigured profiles, zones, and log forwarding.
 id: PAN-OS Network Operations - Visibility Hygiene
 inputs:
-- description: ''
+- description: Target Device 
   key: target
   playbookInputQuery:
   required: false

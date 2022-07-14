@@ -1224,6 +1224,7 @@ tasks:
       brand: ''
       id: 41186865-1aa3-42ae-8efe-1ec773b232e3
       iscommand: false
+      description: Check second BPA
       name: Did we get another BPA?
       type: condition
       version: -1
@@ -1324,3 +1325,4 @@ view: |-
   }
 tests:
 - No tests (auto formatted)
+fromversion: 6.2.0

@@ -5,12 +5,12 @@ contentitemexportablefields:
 description: Installs PAN-OS system software.
 id: PAN-OS Network Operations - Install Software
 inputs:
-- description: ''
+- description: Target Version to INstall 
   key: target_version
   playbookInputQuery:
   required: false
   value: {}
-- description: ''
+- description: Target Device 
   key: target
   playbookInputQuery:
   required: false

@@ -5,12 +5,12 @@ contentitemexportablefields:
 description: Download PAN-OS System software.
 id: PAN-OS Network Operations - Download Software
 inputs:
-- description: ''
+- description: Target Firewall - Serial or IP address
   key: target
   playbookInputQuery:
   required: false
   value: {}
-- description: ''
+- description: Target Software Version to Download
   key: target_version
   playbookInputQuery:
   required: false

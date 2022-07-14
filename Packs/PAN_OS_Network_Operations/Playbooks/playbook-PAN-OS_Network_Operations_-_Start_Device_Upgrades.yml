@@ -82,6 +82,7 @@ tasks:
       name: Is auto-upgrade enabled?
       type: condition
       version: -1
+      description: Check for automatic upgrade switch
     taskid: d3b7cb66-48f6-4c06-84f5-6cd1837a83a8
     timertriggers: []
     type: condition
@@ -175,6 +176,7 @@ tasks:
       name: Confirm Upgrade
       type: condition
       version: -1
+      description: Confirm Upgrade 
     taskid: 6ed9c49c-1777-4a1a-8021-17edee7a4606
     timertriggers: []
     type: condition
