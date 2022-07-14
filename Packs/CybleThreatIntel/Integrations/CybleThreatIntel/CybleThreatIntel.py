@@ -1,7 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from typing import *
 
 ''' IMPORTS '''
 import requests
@@ -12,12 +11,14 @@ from lxml import etree
 from stix.core import STIXPackage
 from datetime import datetime
 from dateutil import parser
+from typing import *
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S.%f+00:00"
+
 
 class Client(object):
     """
@@ -75,9 +76,8 @@ class Client(object):
 
         return fields_found
 
-
     def build_indicators(self, args: Dict[str, Any], data: list):
-        indicators= []
+        indicators = []
         for eachres in data:
             indicator_obj = {
                 "service": "Cyble Feed"
@@ -128,7 +128,6 @@ class Client(object):
         else:
             return {}
 
-
     def get_taxii(self, args: Dict[str, Any]):
         """
         Fetch Taxii events for the given parameters
@@ -147,7 +146,7 @@ class Client(object):
                 elif response.get('ttps') or False:
                     content = response.get('ttps').get('ttps')
                 else:
-                    raise ValueError(f"Last fetch time retrieval failed.")
+                    raise ValueError("Last fetch time retrieval failed.")
 
                 for eachone in content:
                     save_fetch_time = parser.parse(eachone['timestamp']).replace(tzinfo=pytz.UTC).strftime(
@@ -238,7 +237,7 @@ def cyble_fetch_taxii(client: Client, args: Dict[str, Any]):
         args['begin'] = str(parser.parse(args.get('begin')).replace(tzinfo=pytz.UTC)) if args.get('begin', None) else None
         args['end'] = str(parser.parse(args.get('end')).replace(tzinfo=pytz.UTC)) if args.get('end', None) else None
     except Exception as e:
-        raise ValueError("Invalid date format received")
+        raise ValueError("Invalid date format received, [{}]".format(e))
 
     result, time = client.get_taxii(args)
     indicators = client.build_indicators(args, result)
@@ -301,14 +300,14 @@ def validate_input(args: Dict[str, Any]):
             if args.get('end', None):
                 _end_date = parser.parse(args.get('end')).replace(tzinfo=pytz.UTC)
         except Exception as e:
-            raise ValueError("Invalid date format received")
+            raise ValueError("Invalid date format received, [{}]".format(e))
 
         if args.get('begin', None) and _start_date > datetime.now(timezone.utc):
-            raise ValueError(f"Start date must be a date before or equal to current")
+            raise ValueError("Start date must be a date before or equal to current")
         if args.get('end', None) and _end_date > datetime.now(timezone.utc):
-            raise ValueError(f"End date must be a date before or equal to current")
+            raise ValueError("End date must be a date before or equal to current")
         if args.get('begin', None) and args.get('end', None) and _start_date > _end_date:
-            raise ValueError(f"Start date cannot be after end date")
+            raise ValueError("Start date cannot be after end date")
 
         if not args.get('collection', False):
             raise ValueError(f"Collection Name should be provided: {arg_to_number(args.get('collection', None))}")
@@ -323,7 +322,7 @@ def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    # get the params in format 
+    # get the params in format
     params = {key: value for key, value in demisto.params().items() if value is not None}
 
     LOG(f'Command being called is {demisto.command()}')
