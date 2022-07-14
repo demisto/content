@@ -12,7 +12,6 @@ This integration was integrated and tested with version 1.7 of Drift
     | Access Token | API Access Token | True |
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
-    | Fetch indicators |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
