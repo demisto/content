@@ -125,7 +125,7 @@ script:
     - contextPath: CybleIntel.collection.names
       description: Available ollection names for the feed service
     description: Get the data feed collection names for the taxii feed
-  dockerimage: demisto/taxii-server
+  dockerimage: demisto/taxii-server:1.0.0.32072
   runonce: false
   subtype: python3
   feed: true
