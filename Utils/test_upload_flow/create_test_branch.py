@@ -180,7 +180,7 @@ if __name__ == "__main__":
         for p in changed_packs:
             repo.git.add(f"{p}/*")
 
-        repo.git.commit(m="Added Test file")
+        repo.git.commit(m="Added Test file", no_verify=True)
         repo.git.push('--set-upstream', 'https://code.pan.run/xsoar/content.git', branch)  # disable-secrets-detection
 
     except GitCommandError as e:
