@@ -2,6 +2,7 @@
     "id": "incident_carbonblackedruniqueid",
     "version": -1,
     "name": "Carbon Black EDR Unique ID",
+    "description": "Unique ID of the triggered alert",
     "ownerOnly": false,
     "cliName": "carbonblackedruniqueid",
     "type": "shortText",
