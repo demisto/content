@@ -31,7 +31,7 @@ def create_new_pack():
     if dest_path.exists():
         shutil.rmtree(dest_path)
     shutil.copytree(source_path, dest_path)
-    subprocess.call(['demisto-sdk', 'format', '-i', dest_path], stdout=subprocess.DEVNULL)
+    subprocess.call(['demisto-sdk', 'format', '-y', '-i', dest_path], stdout=subprocess.DEVNULL)
     return dest_path
 
 
@@ -48,6 +48,9 @@ def add_dependency(base_pack: Path, new_depndency_pack: Path):
 
     with metadata_json.open('w') as f:
         json.dump(base_metadata, f)
+    subprocess.call(['demisto-sdk', 'update-release-notes', '-i',
+                    f'{base_pack}', "--force", '--text', 'Adding release notes to check the upload flow'], stdout=subprocess.DEVNULL)
+
     return base_pack
 
 
