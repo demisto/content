@@ -1,4 +1,5 @@
 id: d66e5f86-e045-403f-819e-5058aa603c32
+fromversion: 5.0.0
 version: 4
 vcShouldKeepItemLegacyProdMachine: false
 name: AWS - EC2 Test Playbook actions
