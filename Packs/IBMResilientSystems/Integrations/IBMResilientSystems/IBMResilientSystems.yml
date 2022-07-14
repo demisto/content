@@ -781,15 +781,26 @@ script:
     - description: The ID of the incident the table is in.
       name: incident_id
       required: true
-    - description: The name of the table to update.
+    - description: The name of the table to retrieve, i.e. the name given to the data
+        table during creation and called 'API Access Name.'
       name: table_name
       required: true
-    - description: The row to add to the table.
+    - description: 'The row to add to the table. Entry must be a dictionary matching
+        the following format: {"cells": [<row item>,<row item>]}, or for a single
+        item the list brackets can be omitted. Row item must be a dictionary of name-value
+        pairs where name is the name and column is the string literal ''value''. Example:
+        {"cells": [{"cs_username": {"value": "user2"} },{"cs_username": {"value":
+        "user3"} }]}'
       isArray: true
       name: row
       required: true
-    description: Updates a table in an incident.
+    description: Insert a row into a Resilient data table
     name: rs-update-table
+    outputs:
+    - contextPath: Resilient.Incidents
+      description: ' Playground commands returns a formatted table; tasks returns
+        a List of dictionary entries. Example of a single column table with two rows
+        [   {  "cs_username": "user1"  },   {  "cs_username": "user2"   } ]'
   dockerimage: demisto/resilient:1.0.0.24033
   isfetch: true
   runonce: false

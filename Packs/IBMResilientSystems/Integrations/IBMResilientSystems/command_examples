@@ -12,3 +12,5 @@
 !rs-add-note incident-id=1234 note="This is a note"
 !rs-add-artifact artifact-type="IP Address" artifact-value=1.1.1.1 incident-id=1234 artifact-description="This is a description"
 !rs-incidents-get-tasks incident-id=1234
+!rs-get-table incident_id=1234 table_name=api_name_of_resilient_table
+!rs-update-table incident_id=1234 table_name=api_name_of_resilient_table row=`{"cells":{"api_column_name":{"value":"this is data"}}}`

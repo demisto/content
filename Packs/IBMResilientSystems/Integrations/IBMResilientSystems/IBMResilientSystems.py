@@ -2,13 +2,9 @@ import json
 import logging
 import time
 
-import demistomock as demisto  # noqa: F401
 import requests
+
 import resilient
-from CommonServerPython import *  # noqa: F401
-
-register_module_line('IBM Resilient Systems', 'start', __line__())
-
 
 ''' IMPORTS '''
 logging.basicConfig()
@@ -306,7 +302,7 @@ def extract_data_form_other_fields_argument(other_fields, patch):
     Args:
         other_fields (str): Contains the field that should be changed and the new value ({"name": {"text": "The new name"}}).
         incident (dict): Contains the old value of the field that should be changed ({"name": "The old name"}).
-        patch (Resilient.Patch): Instantiate a Resilient.Patch variable (e.g. 'patch') then call patch.add_value(name,value)
+        patch (Resilient.Patch): Instantiate a Resilient.Patch variable (e.g. 'patch') then call patch.add_valu(name,value)
                                 with name being string name of the field being changed and value being the value
                                 this replaces the previous 'change' requiring old and new value, i.e. patch does this
                                 and does not require IDs, which are tenant specific, you simply use the name,
@@ -978,9 +974,10 @@ def fetch_incidents(client):
 
 
 def get_table_command(client, args):
-    incident_id = args['incident_id']
-    table_name = args['table_name']
+    incident_id = args.get('incident_id')
+    table_name = args.get('table_name')
     table = get_table(client, incident_id, table_name)
+
     row_data = table["rows"]
     rows = []
     for row in row_data:
@@ -1028,15 +1025,13 @@ def update_table_command(client, args):
     elif isinstance(args['row'], dict):
         new_rows = [args['row']]
 
-    elif isinstance(args['row'], str):
+    else:
         if not args['row'].startswith("["):
             args['row'] = "[" + args['row'] + "]"
         try:
             new_rows = json.loads(args['row'])
         except Exception as e:
-            raise ValueError("The row which has been provided is not a list or dict and failed converting " + args + str(e))
-    else:
-        raise ValueError("The row which has been provided is not a list, dict or string: " + str(type(args['row'])))
+            raise ValueError("The row which has been provided is not a list or dict and failed converting " + args + str(e)) + " with type " + str(type(args['row']))
 
     for row in new_rows:
         if "cells" in row.keys():
@@ -1156,5 +1151,3 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-
-register_module_line('IBM Resilient Systems', 'end', __line__())
