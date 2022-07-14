@@ -1,6 +1,6 @@
 category: Messaging
 commonfields:
-  id: MailListener - POP3 Beta
+  id: MailListener - POP3
   version: -1
 configuration:
 - display: Server URL (e.g. example.com)
@@ -25,10 +25,6 @@ configuration:
   name: ssl
   required: false
   type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -43,8 +39,8 @@ configuration:
   required: false
   type: 13
 description: Listen to a mailbox, enable incident triggering via e-mail
-display: MailListener - POP3 Beta
-name: MailListener - POP3 Beta
+display: MailListener - POP3
+name: MailListener - POP3
 script:
   isfetch: true
   runonce: false
@@ -52,7 +48,7 @@ script:
   type: python
   subtype: python2
   dockerimage: demisto/python:2.7.18.27799
-beta: true
+beta: false
 tests:
 - MailListener-POP3 - Test
 fromversion: 5.0.0
