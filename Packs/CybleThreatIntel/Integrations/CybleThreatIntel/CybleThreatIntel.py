@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+from typing import *
 
 ''' IMPORTS '''
 import requests
@@ -213,7 +214,7 @@ def get_test_response(client: Client, args: Dict[str, Any]):
 
 def get_feed_collection(client: Client):
     """
-    Test the integration connection state
+    get the collections from taxii feed
     :param client: instance of client to communicate with server
     :return: list of collection names
     """
@@ -279,7 +280,6 @@ def fetch_indicators(client: Client):
 
     if save_fetch_time:
         last_run['lastRun_{}'.format(client.collection_name)] = save_fetch_time
-        # last_run['lastRun_{}'.format(client.collection_name)] = save_fetch_time
         demisto.setLastRun(last_run)
 
     return indicators
@@ -323,11 +323,8 @@ def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    # get the service API url
+    # get the params in format 
     params = {key: value for key, value in demisto.params().items() if value is not None}
-    verify_certificate = not demisto.params().get('insecure', False)
-    proxy = demisto.params().get('proxy', False)
-
 
     LOG(f'Command being called is {demisto.command()}')
     try:
@@ -344,19 +341,19 @@ def main():
             return_results(get_test_response(client, args))
 
         elif demisto.command() == 'fetch-indicators':
-            # fetch events using taxii service
+            # fetch indicators using taxii service
             indicators = fetch_indicators(client)
             # we submit the indicators in batches
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
 
         elif demisto.command() == 'cyble-vision-fetch-taxii':
-            # fetch events using taxii service
+            # fetch indicators using taxii service
             validate_input(args)
             return_results(cyble_fetch_taxii(client, args))
 
         elif demisto.command() == 'cyble-vision-get-collection-names':
-            # fetch events using taxii service
+            # fetch collections using taxii service
             return_results(get_feed_collection(client))
 
     # Log exceptions
