@@ -17,7 +17,7 @@
     "type": "markdown",
     "breachScript": "",
     "editForm": true,
-    "description": "re-install CommonTypes if the type is not markdown",
+    "description": ,
     "associatedToAll": false,
     "associatedTypes": [
         "AWS Security Hub",

@@ -5,7 +5,6 @@
     "name": "Applications",
     "ownerOnly": false,
     "cliName": "applications",
-    "description": "re-install CommonTypes if the type is not markdown",
     "type": "markdown",
     "closeForm": false,
     "editForm": true,
