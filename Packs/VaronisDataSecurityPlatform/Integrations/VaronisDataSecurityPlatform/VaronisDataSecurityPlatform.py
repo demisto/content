@@ -1003,7 +1003,7 @@ def enrich_with_pagination(output: Dict[str, Any], page: int, page_size: int) ->
 
 
 def enrich_with_url(output: Dict[str, Any], baseUrl: str, id: str) -> Dict[str, Any]:
-    output['Url'] = f'{baseUrl}/#/app/analytics/entity/Alert/{id}'
+    output['Url'] = urljoin(baseUrl, f'/#/app/analytics/entity/Alert/{id}')
     return output
 
 
@@ -1153,10 +1153,11 @@ def fetch_incidents(client: Client, last_run: Dict[str, int], first_fetch_time: 
         if not last_fetched_id or id > last_fetched_id:
             last_fetched_id = id
         guid = alert['Guid']
+        name = alert['Name']
         alert_time = alert['Time']
         enrich_with_url(alert, client._base_url, guid)
         incident = {
-            'name': f'Varonis alert {guid}',
+            'name': f'Varonis alert {name}',
             'occurred': f'{alert_time}Z',
             'rawJSON': json.dumps(alert),
             'type': 'Varonis DSP Incident',
@@ -1359,7 +1360,7 @@ def varonis_get_alerted_events_command(client: Client, args: Dict[str, Any]) -> 
     """
     alerts = args.get('alert_id', None)
     page = args.get('page', '1')
-    max_results = args.get('max_results', '5000')
+    max_results = args.get('max_results', '100')
 
     alerts = try_convert(alerts, lambda x: argToList(x))
     max_results = try_convert(
