@@ -135,10 +135,9 @@ def test_offboard_machine_command(mocker):
     mocker.patch.object(client_mocker, 'offboard_machine', return_value=MACHINE_OFFBOARD_API_RESPONSE)
     result = offboard_machine_command(client_mocker, {'machine_id':'9b898e79b0ed2173cc87577a158d1dba5f61d7a7', 'comment':'Testing Offboarding'})
     print(f'RESULTS: {result.outputs}')
-    assert result.outputs['MicrosoftATP.MachineAction(val.ID === obj.ID)'][0] == MACHINE_OFFBOARD_API_RESPONSE
-    # assert result.outputs['MicrosoftATP.MachineAction(val.ID === obj.ID)']['status'] == 'Pending'
-    # assert result.outputs['MicrosoftATP.MachineAction(val.ID === obj.ID)']['type'] == 'Offboard'
-    # assert result.outputs['MicrosoftATP.MachineAction(val.ID === obj.ID)']['id'] != ''
+    assert result.outputs['MicrosoftATP.MachineAction(val.ID === obj.ID)'][0]['ID'] == '947a677a-a11a-4240-ab6q-91277e2386b9'
+    assert result.outputs['MicrosoftATP.MachineAction(val.ID === obj.ID)'][0]['Status'] == 'Pending'
+    assert result.outputs['MicrosoftATP.MachineAction(val.ID === obj.ID)'][0]['Type'] == 'Offboard'
 
 def test_get_investigation_package_sas_uri_command(mocker):
     from MicrosoftDefenderAdvancedThreatProtection import get_investigation_package_sas_uri_command
