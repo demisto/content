@@ -2254,7 +2254,7 @@ Lists users in your organization.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | verbose | Whether to return extended user information. Can be "true" or "false". The default is "false". Possible values are: true, false. Default is false. | Optional | 
-
+| limit | The maximum number of results to return. | Optional | 
 
 #### Context Output
 
