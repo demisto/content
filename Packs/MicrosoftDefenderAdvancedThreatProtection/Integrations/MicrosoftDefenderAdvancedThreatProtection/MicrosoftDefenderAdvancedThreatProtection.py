@@ -2029,7 +2029,7 @@ def offboard_machine_command(client: MsClient, args: dict):
         outputs=entry_context,
         outputs_key_field=["ID", "MachineID"],
         outputs_prefix="MicrosoftATP.OffboardMachine",
-        readable_output=human_redable,
+        readable_output=human_readable,
         raw_response=raw_response
     )
 
