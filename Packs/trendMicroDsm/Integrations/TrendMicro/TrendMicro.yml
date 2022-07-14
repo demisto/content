@@ -6,7 +6,7 @@ system: true
 display: Trend Micro (Deprecated)
 category: Endpoint
 deprecated: true
-description: Deprecated. Use TrendMicroDeepSecurity instead.
+description: Deprecated. Use Trend Micro Deep Security instead.
 configuration:
 - display: Credentials
   name: credentials
