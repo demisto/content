@@ -36,16 +36,6 @@ def append_email_signature(html_body):
     return html_body
 
 
-def use_smime(sign_only, sign_and_encrypt, reply_body):
-    if sign_only:
-        res = demisto.executeCommand('smime-sign-email', {'message_body': reply_body})
-        return res[0].get('HumanReadable')
-    elif sign_and_encrypt:
-        res = demisto.executeCommand('smime-sign-and-encrypt', {'message': reply_body})
-        return res[0].get('HumanReadable')
-    return None
-
-
 def validate_email_sent(incident_id, email_subject, email_to, reply_body, service_mail, email_cc, email_bcc,
                         reply_html_body, entry_id_list, email_latest_message, email_code, mail_sender_instance):
     """
@@ -400,14 +390,12 @@ def create_file_data_json(attachment, field_name):
     return json.dumps(file_data)
 
 
-def get_reply_body(notes, incident_id, attachments, sign_only, sign_and_encrypt):
+def get_reply_body(notes, incident_id, attachments):
     """ Get the notes and the incident id and return the reply body
     Args:
         notes (list): The notes of the email.
         incident_id (str): The incident id.
         attachments (list): The email's attachments.
-        sign_only (boolean): Rather to sign the message
-        sign_and_encrypt (boolean): Rather to sign and encrypt the message
     Returns:
         The reply body and the html body.
     """
@@ -441,8 +429,6 @@ def get_reply_body(notes, incident_id, attachments, sign_only, sign_and_encrypt)
         return_error("Please add a note")
 
     try:
-        body = use_smime(sign_only, sign_and_encrypt, reply_body)
-        reply_body = body if body else reply_body
         res = demisto.executeCommand("mdToHtml", {"contextKey": "replyhtmlbody", "text": reply_body})
         reply_html_body = res[0]['EntryContext']['replyhtmlbody']
         return reply_body, reply_html_body
@@ -573,8 +559,7 @@ def reset_fields():
 
 
 def resend_first_contact(email_selected_thread, email_thread, incident_id, new_email_attachments, files, new_email_body,
-                         add_cc, add_bcc, service_mail, mail_sender_instance, new_attachment_names, sign_only,
-                         sign_and_encrypt):
+                         add_cc, add_bcc, service_mail, mail_sender_instance, new_attachment_names):
     """
         Use message details from the selected thread to construct a new mail message, since resending a first-contact
         email does not have a Message ID to reply to.
@@ -590,8 +575,6 @@ def resend_first_contact(email_selected_thread, email_thread, incident_id, new_e
         service_mail: Address the email is sent from
         mail_sender_instance: The service email (sender address)
         new_attachment_names: List of attachment file names
-        sign_only: Rather to sign the message
-        sign_and_encrypt: Rather to sign and encrypt the message
     Returns: Results from send_new_email function
     """
     # Verify the selected thread ID matches this dict
@@ -603,7 +586,7 @@ def resend_first_contact(email_selected_thread, email_thread, incident_id, new_e
         reply_code = email_thread['EmailCommsThreadId']
         entry_id_list = get_entry_id_list(incident_id, [], new_email_attachments, files)
 
-        html_body = format_body(new_email_body, sign_only, sign_and_encrypt)
+        html_body = format_body(new_email_body)
 
         final_email_cc = get_email_cc(thread_cc, add_cc)
         final_email_bcc = get_email_cc(thread_bcc, add_bcc)
@@ -617,18 +600,14 @@ def resend_first_contact(email_selected_thread, email_thread, incident_id, new_e
                      f'does not exist.  Please choose a valid Thread Number and re-try.')
 
 
-def format_body(new_email_body, sign_only, sign_and_encrypt):
+def format_body(new_email_body):
     """
         Converts markdown included in the email body to HTML
     Args:
-        new_email_body (str): Email body text with or without markdown formatting included\
-        sign_only (boolean): Rather to sign the message
-        sign_and_encrypt (boolean): Rather to sign and encrypt the message
+        new_email_body (str): Email body text with or without markdown formatting included
     Returns: (str) HTML email body
     """
     # Replace newlines with <br> element to preserve line breaks
-    body = use_smime(sign_only, sign_and_encrypt, new_email_body)
-    new_email_body = body if body else new_email_body
     new_email_body = new_email_body.replace('\n', '<br>')
 
     res = demisto.executeCommand("mdToHtml", {"text": new_email_body})
@@ -638,8 +617,7 @@ def format_body(new_email_body, sign_only, sign_and_encrypt):
 
 
 def single_thread_reply(email_code, incident_id, email_cc, add_cc, notes, attachments, files, email_subject,
-                        email_to_str, service_mail, email_latest_message, mail_sender_instance,
-                        sign_only, sign_and_encrypt):
+                        email_to_str, service_mail, email_latest_message, mail_sender_instance):
     """
         Retrieve all entries in the EmailThreads context key
     Args:
@@ -655,8 +633,6 @@ def single_thread_reply(email_code, incident_id, email_cc, add_cc, notes, attach
         service_mail: The service mail (mail listener).
         email_latest_message: The latest message ID in the email thread to reply to.
         mail_sender_instance: The name of the mail sender integration instance
-        sign_only: Rather to sign the message
-        sign_and_encrypt: Rather to sign and encrypt the message
     Returns:
         String containing result message from send_reply function
     """
@@ -669,7 +645,7 @@ def single_thread_reply(email_code, incident_id, email_cc, add_cc, notes, attach
                                                'customFields': {'emailgeneratedcode': email_code}})
     try:
         final_email_cc = get_email_cc(email_cc, add_cc)
-        reply_body, reply_html_body = get_reply_body(notes, incident_id, attachments, sign_only, sign_and_encrypt)
+        reply_body, reply_html_body = get_reply_body(notes, incident_id, attachments)
         entry_id_list = get_entry_id_list(incident_id, attachments, [], files)
         result = validate_email_sent(incident_id, email_subject, email_to_str, reply_body, service_mail,
                                      final_email_cc, '', reply_html_body, entry_id_list, email_latest_message,
@@ -682,7 +658,7 @@ def single_thread_reply(email_code, incident_id, email_cc, add_cc, notes, attach
 
 def multi_thread_new(new_email_subject, new_email_recipients, new_email_body, incident_id, email_codes,
                      new_email_attachments, files, service_mail, add_cc, add_bcc, mail_sender_instance,
-                     new_attachment_names, sign_only, sign_and_encrypt):
+                     new_attachment_names):
     """Validates that all necessary fields are set to send a new email, gets a unique code to associate replies
     to the current incident, prepares the final HTML email message body, then sends the email.
     Args:
@@ -698,8 +674,6 @@ def multi_thread_new(new_email_subject, new_email_recipients, new_email_body, in
         new_email_attachments: Files to attach to the new email message
         mail_sender_instance: The name of the mail sender integration instance
         new_attachment_names: File names of attachments being sent on the email
-        sign_only: Rather to sign the message
-        sign_and_encrypt: Rather to sign and encrypt the message
     Returns:
         String containing result message from send_new_email function
         """
@@ -732,10 +706,10 @@ def multi_thread_new(new_email_subject, new_email_recipients, new_email_body, in
     try:
         entry_id_list = get_entry_id_list(incident_id, [], new_email_attachments, files)
 
-        html_body = format_body(new_email_body, sign_only, sign_and_encrypt)
+        html_body = format_body(new_email_body)
 
-        result = send_new_email(incident_id, new_email_subject, new_email_recipients, new_email_body, service_mail,
-                                add_cc, add_bcc, html_body, entry_id_list,
+        result = send_new_email(incident_id, new_email_subject, new_email_recipients, new_email_body,
+                                service_mail, add_cc, add_bcc, html_body, entry_id_list,
                                 thread_code, mail_sender_instance, new_attachment_names)
         return_results(result)
 
@@ -823,8 +797,7 @@ def collect_thread_details(incident_email_threads, email_selected_thread):
 
 
 def multi_thread_reply(new_email_body, incident_id, email_selected_thread, new_email_attachments, files, add_cc,
-                       add_bcc, service_mail, mail_sender_instance, new_attachment_names, sign_only, sign_and_encrypt):
-
+                       add_bcc, service_mail, mail_sender_instance, new_attachment_names):
     """Validates that all necessary fields are set to send a reply email, retrieves details about the thread from
     incident context (subject, list of recipients, etc).  In the event this reply is for an email thread that has no
      inbound messages from end users this function will re-use details from the previous outbound first-contact email
@@ -840,8 +813,6 @@ def multi_thread_reply(new_email_body, incident_id, email_selected_thread, new_e
         new_email_attachments: Files to attach to the new email message
         mail_sender_instance: The name of the mail sender integration instance
         new_attachment_names: File names of attachments being sent on the email
-        sign_only: Rather to sign the message
-        sign_and_encrypt: Rather to sign and encrypt the message
     Returns:
         String containing result message from resend_first_contact function or the send_reply function, whichever
         is required by the applicable case
@@ -866,8 +837,7 @@ def multi_thread_reply(new_email_body, incident_id, email_selected_thread, new_e
             """
             result = resend_first_contact(email_selected_thread, incident_email_threads, incident_id,
                                           new_email_attachments, files, new_email_body, add_cc, add_bcc,
-                                          service_mail, mail_sender_instance, new_attachment_names, sign_only,
-                                          sign_and_encrypt)
+                                          service_mail, mail_sender_instance, new_attachment_names)
 
             # Clear fields for re-use
             reset_fields()
@@ -892,8 +862,7 @@ def multi_thread_reply(new_email_body, incident_id, email_selected_thread, new_e
                 # first-contact message and must be sent as a new email message.
                 result = resend_first_contact(email_selected_thread, incident_email_threads[last_thread_processed],
                                               incident_id, new_email_attachments, files, new_email_body, add_cc,
-                                              add_bcc, service_mail, mail_sender_instance, new_attachment_names,
-                                              sign_only, sign_and_encrypt)
+                                              add_bcc, service_mail, mail_sender_instance, new_attachment_names)
 
                 # Clear fields for re-use
                 reset_fields()
@@ -918,7 +887,7 @@ def multi_thread_reply(new_email_body, incident_id, email_selected_thread, new_e
             entry_id_list = get_entry_id_list(incident_id, [], new_email_attachments, files)
 
             # Format any markdown in the email body as HTML
-            reply_html_body = format_body(new_email_body, sign_only, sign_and_encrypt)
+            reply_html_body = format_body(new_email_body)
 
             # Trim "Re:" from subject since the reply-mail command in both EWS and Gmail adds it again
             reply_subject = reply_subject.lstrip("Re: ")
@@ -969,8 +938,6 @@ def main():
     email_codes = custom_fields.get('emailgeneratedcodes')  # multi-code field for other incident types
     email_to_str = get_email_recipients(email_to, email_from, service_mail, mailbox)
     files = args.get('files', {})
-    sign_only = argToBoolean(args.get('sign_only', False))
-    sign_and_encrypt = argToBoolean(args.get('sign_and_encrypt', False))
     attachments = argToList(args.get('attachment', []))
     new_email_attachments = custom_fields.get('emailnewattachment', {})
     notes = demisto.executeCommand("getEntries", {'filter': {'categories': ['notes']}})
@@ -989,20 +956,18 @@ def main():
     if new_thread == 'n/a':
         # This case is run when replying to an email from the 'Email Communication' layout
         single_thread_reply(email_code, incident_id, email_cc, add_cc, notes, attachments, files, email_subject,
-                            email_to_str, service_mail, email_latest_message, mail_sender_instance,
-                            sign_only, sign_and_encrypt)
+                            email_to_str, service_mail, email_latest_message, mail_sender_instance)
 
     elif new_thread == 'true':
         # This case is run when using the 'Email Threads' layout to send a new first-contact email message
         multi_thread_new(new_email_subject, new_email_recipients, new_email_body, incident_id, email_codes,
                          new_email_attachments, files, service_mail, add_cc, add_bcc, mail_sender_instance,
-                         new_attachment_names, sign_only, sign_and_encrypt)
+                         new_attachment_names)
 
     elif new_thread == 'false':
         # This case is run when using the 'Email Threads' layout to reply to an existing email thread
         multi_thread_reply(new_email_body, incident_id, email_selected_thread, new_email_attachments, files, add_cc,
-                           add_bcc, service_mail, mail_sender_instance, new_attachment_names,
-                           sign_only, sign_and_encrypt)
+                           add_bcc, service_mail, mail_sender_instance, new_attachment_names)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):

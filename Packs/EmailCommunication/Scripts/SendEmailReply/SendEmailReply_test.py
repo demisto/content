@@ -277,7 +277,7 @@ def test_get_reply_body(mocker, notes, attachments, expected_results):
     mocker.patch.object(demisto, "executeCommand", return_value=[{'EntryContext': {'replyhtmlbody': ''}, 'Type': ''}])
     mocker.patch.object(CommonServerPython, "dict_safe_get", return_value=None)
     mocker.patch.object(CommonServerPython, "is_error", return_value=False)
-    reply_body = get_reply_body(notes=notes, incident_id='1', attachments=attachments, sign_only=False, sign_and_encrypt=False)[0]
+    reply_body = get_reply_body(notes=notes, incident_id='1', attachments=attachments)[0]
     assert reply_body == expected_results
 
 
@@ -472,8 +472,7 @@ def test_resend_first_contact(email_selected_thread, email_thread, expected_resu
     send_new_email_mocker = mocker.patch.object(SendEmailReply, 'send_new_email', return_value=True)
     return_error_mocker = mocker.patch.object(SendEmailReply, 'return_error', return_value=True)
     result = resend_first_contact(email_selected_thread, email_thread, 1, '', '', 'Resending email.', '', '',
-                                  'soc_sender@company.com', 'soc_sender@company.com', '',
-                                  sign_only=False, sign_and_encrypt=False)
+                                  'soc_sender@company.com', 'soc_sender@company.com', '')
     send_new_email_args = send_new_email_mocker.call_args
     return_error_args = return_error_mocker.call_args
     if expected_result == 'success':
@@ -505,7 +504,7 @@ def test_single_thread_reply(email_code, mocker):
     - Validate that if no email_code is provided, 'get_unique_code' is called to generate one
     """
 
-    def get_reply_body_side_effect(notes, incident_id, attachments, sign_only, sign_and_encrypt):
+    def get_reply_body_side_effect(notes, incident_id, attachments):
         return 'Email body.', '<html><body>Email body.</body></html>'
 
     from SendEmailReply import single_thread_reply
@@ -517,8 +516,7 @@ def test_single_thread_reply(email_code, mocker):
     mocker.patch.object(SendEmailReply, 'get_reply_body', side_effect=get_reply_body_side_effect)
     validate_email_sent_mocker = mocker.patch.object(SendEmailReply, 'validate_email_sent', return_value=True)
     single_thread_reply(email_code, 1, 'cc_user@company.com', '', ['5'], '', '', 'Email Subject',
-                        'end_user@company.com', 'soc_sender@company.com', 10, 'soc_sender@company.com',
-                        sign_only=False, sign_and_encrypt=False)
+                        'end_user@company.com', 'soc_sender@company.com', 10, 'soc_sender@company.com')
     validate_mail_sent_call_args = validate_email_sent_mocker.call_args
     executeCommand_call_args = executeCommand_mocker.call_args
     assert validate_mail_sent_call_args.args == (1, 'Email Subject', 'end_user@company.com', 'Email body.',
@@ -625,14 +623,14 @@ def test_multi_thread_new(scenario, mocker):
         expected = "The following required fields have not been set.  Please set them and try again. " \
                    "['New Email Subject', 'New Email Recipients', 'New Email Body']"
         multi_thread_new('', '', '', 1, '12345678', '', '', 'soc_sender@company.com', 'cc_user@company.com',
-                         'bcc_user@company.com', 'soc_sender@company.com', '', sign_only=False, sign_and_encrypt=False)
+                         'bcc_user@company.com', 'soc_sender@company.com', '')
         call_args = return_error_mocker.call_args
         assert call_args.args[0] == expected
     if scenario == 'no_codes_present':
         # Test Scenario 2
         multi_thread_new('New Subject', 'end_user@company.com', 'Email Body', 1, '', '', '',
                          'soc_sender@company.com', 'cc_user@company.com', 'bcc_user@company.com',
-                         'soc_sender@company.com', '', sign_only=False, sign_and_encrypt=False)
+                         'soc_sender@company.com', '')
         setIncident_call_args = setIncident_mocker.call_args
         send_new_email_mocker_args = send_new_email_mocker.call_args
         assert setIncident_call_args.args[1] == {'id': 1, 'customFields': {'emailgeneratedcodes': '87654321'}}
@@ -645,7 +643,7 @@ def test_multi_thread_new(scenario, mocker):
         # Test Scenario 3
         multi_thread_new('New Subject', 'end_user@company.com', 'Email Body', 1, '12345678', '', '',
                          'soc_sender@company.com', 'cc_user@company.com', 'bcc_user@company.com',
-                         'soc_sender@company.com', '', sign_only=False, sign_and_encrypt=False)
+                         'soc_sender@company.com', '')
         setIncident_call_args = setIncident_mocker.call_args
         send_new_email_mocker_args = send_new_email_mocker.call_args
         assert setIncident_call_args.args[1] == {'id': 1, 'customFields': {'emailgeneratedcodes': '12345678,87654321'}}
@@ -730,8 +728,7 @@ def test_multi_thread_reply(scenario, mocker):
         # Return only a single email thread entry
         mocker.patch.object(SendEmailReply, 'get_email_threads', return_value=email_threads[0])
         multi_thread_reply('Email body', 1, 0, '', '', 'cc_user@company.com', 'bcc_user@company.com',
-                           'soc_sender@company.com', 'soc_sender@company.com', '',
-                           sign_only=False, sign_and_encrypt=False)
+                           'soc_sender@company.com', 'soc_sender@company.com', '')
         expected = (0, {'EmailBCC': '', 'EmailBody': 'Outbound test message from XSOAR to User.', 'EmailCC': '',
                         'EmailCommsThreadId': '69433507', 'EmailCommsThreadNumber': '0',
                         'EmailFrom': 'soc_sender@company.com', 'EmailHTML': 'Outbound test message from XSOAR to User.',
@@ -740,7 +737,7 @@ def test_multi_thread_reply(scenario, mocker):
                         'EmailAttachments': 'None', 'MessageDirection': 'outbound', 'MessageID': '',
                         'MessageTime': '2022-02-04T20:56:53UTC'}, 1, '', '', 'Email body',
                     'cc_user@company.com', 'bcc_user@company.com', 'soc_sender@company.com',
-                    'soc_sender@company.com', '', False, False)
+                    'soc_sender@company.com', '')
         resend_first_contact_call_args = resend_first_contact_mocker.call_args
         assert resend_first_contact_call_args.args == expected
         assert reset_fields_mocker.called is True
@@ -756,8 +753,7 @@ def test_multi_thread_reply(scenario, mocker):
 
         # Execute the tested function
         multi_thread_reply('Email body', 1, 0, '', '', 'cc_user@company.com', 'bcc_user@company.com',
-                           'soc_sender@company.com', 'soc_sender@company.com', '',
-                           sign_only=False, sign_and_encrypt=False)
+                           'soc_sender@company.com', 'soc_sender@company.com', '')
 
         expected = (0, {'EmailBCC': '', 'EmailBody': 'Outbound test message from XSOAR to User.', 'EmailCC': '',
                         'EmailCommsThreadId': '87692312', 'EmailCommsThreadNumber': '1',
@@ -767,7 +763,7 @@ def test_multi_thread_reply(scenario, mocker):
                         'EmailAttachments': 'None', 'MessageDirection': 'outbound', 'MessageID': '',
                         'MessageTime': '2022-02-04T20:56:53UTC'}, 1, '', '', 'Email body',
                     'cc_user@company.com', 'bcc_user@company.com', 'soc_sender@company.com',
-                    'soc_sender@company.com', '', False, False)
+                    'soc_sender@company.com', '')
         resend_first_contact_call_args = resend_first_contact_mocker.call_args
         assert resend_first_contact_call_args.args == expected
         assert reset_fields_mocker.called is True
@@ -793,8 +789,7 @@ def test_multi_thread_reply(scenario, mocker):
 
         # Execute the tested function
         multi_thread_reply('Email body', 1, 1, '', '', 'cc_user@company.com', 'bcc_user@company.com',
-                           'soc_sender@company.com', 'soc_sender@company.com', '',
-                           sign_only=False, sign_and_encrypt=False)
+                           'soc_sender@company.com', 'soc_sender@company.com', '')
 
         validate_email_sent_call_args = validate_email_sent_mocker.call_args
         create_context_call_args = create_context_mocker.call_args
@@ -844,9 +839,7 @@ def test_main(new_thread, mocker):
         'service_mail': 'soc_sender@company.com',
         'files': {},
         'mail_sender_instance': 'mail-sender-instance-1',
-        'new_thread': new_thread,
-        'sign_only': False,
-        'sign_and_encrypt': False,
+        'new_thread': new_thread
     }
     mocker.patch.object(demisto, 'args', return_value=input_args)
     mocker.patch.object(demisto, 'incident', return_value=incident)
@@ -860,16 +853,16 @@ def test_main(new_thread, mocker):
     if new_thread == 'n/a':
         single_thread_reply_args = single_thread_reply_mocker.call_args
         expected_args = ('87654321', '10', '', 'test_cc@example.com', '', [], {}, None, 'end_user@company.com',
-                         'soc_sender@company.com', '123456', 'mail-sender-instance-1', False, False)
+                         'soc_sender@company.com', '123456', 'mail-sender-instance-1')
         assert single_thread_reply_args.args == expected_args
     elif new_thread == 'true':
         multi_thread_new_args = multi_thread_new_mocker.call_args
         expected_args = ('Test Email Subject.', 'test_recipient@example.com', 'This is a test email.', '10', None, {},
                          {}, 'soc_sender@company.com', 'test_cc@example.com', 'test_bcc@example.com',
-                         'mail-sender-instance-1', 'None', False, False)
+                         'mail-sender-instance-1', 'None')
         assert multi_thread_new_args.args == expected_args
     elif new_thread == 'false':
         multi_thread_reply_args = multi_thread_reply_mocker.call_args
         expected_args = ('This is a test email.', '10', 1, {}, {}, 'test_cc@example.com', 'test_bcc@example.com',
-                         'soc_sender@company.com', 'mail-sender-instance-1', 'None', False, False)
+                         'soc_sender@company.com', 'mail-sender-instance-1', 'None')
         assert multi_thread_reply_args.args == expected_args

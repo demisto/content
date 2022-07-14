@@ -11,22 +11,6 @@ args:
   description: The mailbox from which emails are sent from the 3rd party integration.
   name: service_mail
   required: false
-- defaultValue: false
-  description: Rather to sign the message.
-  auto: PREDEFINED
-  predefined:
-  - 'true'
-  - 'false'
-  name: sign_only
-  required: false
-- defaultValue: false
-  description: Rather to sign and encrypt the message.
-  auto: PREDEFINED
-  predefined:
-  - 'true'
-  - 'false'
-  name: sign_and_encrypt
-  required: false
 - name: mail_sender_instance
   required: false
   description: Name of the mail sender instance name for transmitting emails
