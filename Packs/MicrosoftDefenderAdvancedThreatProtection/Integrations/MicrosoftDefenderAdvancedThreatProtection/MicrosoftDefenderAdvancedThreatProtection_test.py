@@ -132,7 +132,7 @@ def test_get_machine_investigation_package_command(mocker):
 
 def test_offboard_machine_command(mocker):
     from MicrosoftDefenderAdvancedThreatProtection import offboard_machine_command
-    mocker.patch.object(client_mocker, 'offboard_machine_command', return_value=MACHINE_OFFBOARD_API_RESPONSE)
+    mocker.patch.object(client_mocker, 'offboard_machine', return_value=MACHINE_OFFBOARD_API_RESPONSE)
     result = offboard_machine_command(client_mocker, {'machine_id':'9b898e79b0ed2173cc87577a158d1dba5f61d7a7', 'comment':'Testing Offboarding'})
     assert result.outputs[0]['requestorComment'] == "Testing Offboarding"
     assert result.outputs[0]['status'] == 'Pending'
