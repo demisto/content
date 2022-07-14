@@ -204,6 +204,7 @@ def incident_data_to_xsoar_format(inc_data):
         'CommentsCount': properties.get('additionalData', {}).get('commentsCount'),
         'AlertProductNames': properties.get('additionalData', {}).get('alertProductNames'),
         'Tactics': properties.get('additionalData', {}).get('tactics'),
+        'Techniques': properties.get('additionalData', {}).get('techniques'),
         'FirstActivityTimeGenerated': format_date(properties.get('firstActivityTimeGenerated')),
         'LastActivityTimeGenerated': format_date(properties.get('lastActivityTimeGenerated')),
         'Etag': inc_data.get('etag'),
