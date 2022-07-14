@@ -181,7 +181,6 @@ class Client(BaseClient):
         """
         self.base_url = base_url
         self.api_key = api_key
-        self.proxy = proxy
         self.status = None
 
         super().__init__(base_url=base_url, proxy=proxy)
