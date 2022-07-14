@@ -23,9 +23,9 @@ def test_air_acquire_command(requests_mock: Any) -> None:
     from BinalyzeAIR import Client, air_acquire_command
 
     args: Dict[str, Any] = {
-        'endpoint': 'endpointhostname',
+        'hostname': 'endpointhostname',
         'profile': 'quick',
-        'caseid': 'case_id will be here',
+        'case_id': 'case_id will be here',
         'organization_id': 0
     }
 
@@ -58,7 +58,7 @@ def test_air_acquire_command(requests_mock: Any) -> None:
     mocked_command_result: CommandResults = air_acquire_command(client, args)
 
     assert mocked_command_result.outputs_prefix == 'Binalyze.Air.Acquisition'
-    assert mocked_command_result.outputs_key_field == 'endpoint'
+    assert mocked_command_result.outputs_key_field == 'name'
     assert mocked_command_result.outputs == expected_mocked_command_result
 
 
@@ -66,7 +66,7 @@ def test_air_isolate_command(requests_mock: Any) -> None:
     from BinalyzeAIR import Client, air_isolate_command
 
     args: Dict[str, Any] = {
-        'endpoint': 'endpointhostname',
+        'hostname': 'endpointhostname',
         'organization_id': 0,
         'isolation': True
     }
@@ -101,5 +101,5 @@ def test_air_isolate_command(requests_mock: Any) -> None:
     mocked_command_result: CommandResults = air_isolate_command(client, args)
 
     assert mocked_command_result.outputs_prefix == 'Binalyze.Air.Isolate'
-    assert mocked_command_result.outputs_key_field == 'endpoint'
+    assert mocked_command_result.outputs_key_field == 'name'
     assert mocked_command_result.outputs == expected_mocked_command_result

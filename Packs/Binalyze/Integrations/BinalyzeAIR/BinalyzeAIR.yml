@@ -30,7 +30,7 @@ script:
   commands:
   - name: binalyze-air-isolate
     arguments:
-    - name: endpoint
+    - name: hostname
       required: true
       description: Hostname of endpoint
     - name: organization_id
@@ -70,7 +70,7 @@ script:
     description: Isolate an endpoint
   - name: binalyze-air-acquire
     arguments:
-    - name: endpoint
+    - name: hostname
       required: true
       description: Hostname of endpoint
     - name: profile
@@ -84,7 +84,7 @@ script:
       - quick
       - full
       description: Acquisition profile
-    - name: caseid
+    - name: case_id
       required: true
       description: ID for the case,e.g. C-2022-0001
     - name: organization_id

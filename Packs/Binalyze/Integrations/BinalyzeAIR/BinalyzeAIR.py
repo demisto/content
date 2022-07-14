@@ -7,12 +7,15 @@ requests.packages.urllib3.disable_warnings()
 
 class Client(BaseClient):
 
-    def air_acquire(self, endpoint: str, profile: str, caseid: str, organization_id: int) -> Dict[str, str]:
+    def test(self, base_url):
+        return requests.get(f'{base_url}/api/app/info').status_code
+
+    def air_acquire(self, hostname: str, profile: str, case_id: str, organization_id: int) -> Dict[str, str]:
         ''' Makes a POST request /api/public/acquisitions/acquire endpoint to verify acquire evidence
 
-        :param endpoint str: endpoint hostname to start acquisition.
+        :param hostname str: endpoint hostname to start acquisition.
         :param profile str: predefined 5 acquisiton profile name.
-        :param caseid str: The Case ID to associate with in AIR Server.
+        :param case_id str: The Case ID to associate with in AIR Server.
         :param organization_id int: Organizsation ID of the endpoint.
 
         Create a payload with the parameters
@@ -21,7 +24,7 @@ class Client(BaseClient):
         '''
 
         payload: Dict[str, Any] = {
-            "caseId": caseid,
+            "caseId": case_id,
             "droneConfig": {
                 "autoPilot": False,
                 "enabled": False
@@ -31,7 +34,7 @@ class Client(BaseClient):
             },
             "acquisitionProfileId": profile,
             "filter": {
-                "name": endpoint,
+                "name": hostname,
                 "organizationIds": [organization_id]
             }
         }
@@ -41,9 +44,9 @@ class Client(BaseClient):
             json_data=payload
         )
 
-    def air_isolate(self, endpoint: str, organization_id: int, isolation: str) -> Dict[str, str]:
+    def air_isolate(self, hostname: str, organization_id: int, isolation: str) -> Dict[str, str]:
         ''' Makes a POST request /api/public/acquisitions/acquire endpoint to verify acquire evidence
-        :param endpoint str: endpoint hostname to start acquisition.
+        :param hostname str: endpoint hostname to start acquisition.
         :param isolation str: To isolate enable, to disable isolate use disable
         :param organization_id int: Organization ID of the endpoint.
 
@@ -55,7 +58,7 @@ class Client(BaseClient):
         payload: Dict[str, Any] = {
             "enabled": True,
             "filter": {
-                "name": endpoint,
+                "name": hostname,
                 "organizationIds": [organization_id]
             }
         }
@@ -71,11 +74,12 @@ class Client(BaseClient):
         )
 
 
-def test_connection(base_url) -> str:
+def test_connection(client: Client) -> str:
     '''Command for test-connection'''
+    base_url: str = demisto.params()['server']
 
-    response = requests.get(f'{base_url}/api/app/info')
-    if response.status_code == 200:
+    result: str = client.test(base_url=base_url)
+    if result == 200:
         return demisto.results('ok')
     else:
         return demisto.results('test connection failed')
@@ -83,16 +87,16 @@ def test_connection(base_url) -> str:
 
 def air_acquire_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     '''Command handler for acquire command'''
-    endpoint = args.get('endpoint', None)
-    profile = args.get('profile', None)
-    caseid = args.get('caseid', None)
-    organization_id = args.get('organization_id', None)
+    hostname = args.get('hostname', '')
+    profile = args.get('profile', '')
+    case_id = args.get('case_id', '')
+    organization_id = args.get('organization_id', '')
 
-    result: Dict[str, Any] = client.air_acquire(endpoint, profile, caseid, organization_id)
+    result: Dict[str, Any] = client.air_acquire(hostname, profile, case_id, organization_id)
 
     return CommandResults(
-        outputs_prefix='Binalyze.Air.Acquisition',
-        outputs_key_field='endpoint',
+        outputs_prefix='BinalyzeAir.Acquisition',
+        outputs_key_field='name',
         outputs=result,
     )
 
@@ -100,15 +104,15 @@ def air_acquire_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 def air_isolate_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     ''' Command handler isolate '''
 
-    endpoint = args.get('endpoint', None)
-    organization_id = args.get('organization_id', None)
-    isolation = args.get('isolation', None)
+    hostname = args.get('hostname', '')
+    organization_id = args.get('organization_id', '')
+    isolation = args.get('isolation', '')
 
-    result: Dict[str, Any] = client.air_isolate(endpoint, organization_id, isolation)
+    result: Dict[str, Any] = client.air_isolate(hostname, organization_id, isolation)
 
     return CommandResults(
-        outputs_prefix='Binalyze.Air.Isolate',
-        outputs_key_field='endpoint',
+        outputs_prefix='BinalyzeAir.Isolate',
+        outputs_key_field='name',
         outputs=result,
     )
 
@@ -135,22 +139,19 @@ def main() -> None:
             base_url=base_url,
             verify=verify_certificate,
             headers=headers,
-            proxy=proxy
+            proxy=proxy,
+            ok_codes=(404, 200)
         )
         if command == 'test-module':
-            return_results(test_connection(base_url))
+            return_results(test_connection(client))
         elif command == 'binalyze-air-acquire':
             return_results(air_acquire_command(client, args))
         elif command == 'binalyze-air-isolate':
             return_results(air_isolate_command(client, args))
 
     except Exception as ex:
-        message: str = str(ex)
-        if '404' in message:
-            return_results(f'Nothing found for {command}')
-        else:
-            demisto.error(traceback.format_exc())  # print the traceback
-            return_error(f'Failed to execute BaseScript. Error: {str(ex)}')
+        demisto.error(traceback.format_exc())  # print the traceback
+        return_error(f'Failed to execute "{command}". Error: {str(ex)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
