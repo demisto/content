@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: MITRE ATT&CK
 deprecated: true
-display: MITRE ATT&CK Feed (Deprecated)
+display: MITRE IDs Feed (Deprecated)
 category: Data Enrichment & Threat Intelligence
 description: Deprecated. Use MITRE ATT&CK Feed v2 instead.
 configuration:
@@ -157,5 +157,7 @@ script:
   feed: true
   runonce: false
   subtype: python3
+tests:
+- No test
 fromversion: 5.5.0
 autoUpdateDockerImage: false
