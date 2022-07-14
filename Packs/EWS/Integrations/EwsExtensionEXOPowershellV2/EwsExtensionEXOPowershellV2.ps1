@@ -26,7 +26,7 @@ class ExchangeOnlinePowershellV2Client
             [string]$url,
             [string]$app_id,
             [string]$organization,
-            [string]$certificate,
+            [SecureString]$certificate,
             [SecureString]$password
     )
     {
@@ -696,11 +696,24 @@ function Main
         $password = $null
     }
 
+    if ($integration_params.certificate.identifier)
+    {
+        $certificate = $integration_params.certificate.identifier
+    }
+    elseif ($integration_params.certificate_encrypted.password)
+    {
+        $certificate = ConvertTo-SecureString $integration_params.certificate_encrypted.password -AsPlainText -Force
+    }
+    else
+    {
+        $certificate = $null
+    }
+
     $exo_client = [ExchangeOnlinePowershellV2Client]::new(
             $integration_params.url,
             $integration_params.app_id,
             $integration_params.organization,
-            $integration_params.certificate.identifier,
+            $certificate,
             $password
     )
     try
