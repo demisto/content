@@ -1,4 +1,4 @@
-This playbook adds email details to the relevant context entities and handles original email attachments.
+Deprecated. Use the Process Email - Generic v2 playbook instead. This playbook adds email details to the relevant context entities and handles original email attachments.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.

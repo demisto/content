@@ -1,4 +1,4 @@
-Provides a basic response to phishing incidents. 
+Deprecated. Use the Phishing - Core v2 playbook instead. Provides a basic response to phishing incidents. 
 
 Playbook features:
 - Calculates reputation for all indicators.
