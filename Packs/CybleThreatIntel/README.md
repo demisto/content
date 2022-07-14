@@ -11,8 +11,6 @@ Cyble Threat Intel is an integration which will help users to fetch Cyble's TAXI
     * __Reliability__: Reliability of the feed.
     * __Traffic Light Protocol Color__: The Traffic Light Protocol (TLP) designation to apply to indicators
     fetched from the feed
-    * __Trust any certificate (not secure)__
-    * __Use system proxy settings__
     * __Discovery Service__: TAXII discovery service endpoint.
     * __Collection__: Collection name to fetch indicators from.
     * __Username__: Username/Password (if required)
@@ -41,9 +39,9 @@ Fetch the indicators based on the taxii service
 
 | **Argument Name** | **Description**                                                                                        | **Required** |
 |-------------------|--------------------------------------------------------------------------------------------------------| --- |
-| limit             | Number of records to return, default value will be 10. Using a smaller limit will get faster responses. | Optional | 
-| begin             | Returns records starting with given datetime (Format: %Y-%m-%d %H:%M:%S))                              | Required | 
-| end               | Returns records starting with given datetime (Format: %Y-%m-%d %H:%M:%S))                              | Required | 
+| limit             | Number of records to return, default value will be 50. Using a smaller limit will get faster responses. | Optional | 
+| begin             | Returns records starting with given datetime (Format: %Y-%m-%d %H:%M:%S))                              | Optional | 
+| end               | Returns records starting with given datetime (Format: %Y-%m-%d %H:%M:%S))                              | Optional | 
 | collection        | Collection name to fetch indicators from                                                               | Required | 
 
 #### Context Output
