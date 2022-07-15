@@ -36,14 +36,14 @@
                 "PAN PCAP ID": {
                     "simple": "pcapid"
                 },
+                "PAN Received Time": {
+                    "simple": "timegenerated"
+                },
                 "PAN Session ID": {
                     "simple": "sessionid"
                 },
                 "PAN Threat ID": {
                     "simple": "threatid"
-                },
-                "Received Time": {
-                    "simple": "timegenerated"
                 },
                 "Rule Name": {
                     "simple": "policyid"

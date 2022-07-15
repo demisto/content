@@ -288,9 +288,9 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "receivedtime",
+                                "fieldId": "panreceivedtime",
                                 "height": 22,
-                                "id": "b8bae510-f3e1-11ec-a773-dfe80df8ddb1",
+                                "id": "2f9784e0-044f-11ed-aad5-9553157a1ab2",
                                 "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
