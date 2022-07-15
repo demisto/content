@@ -71,10 +71,11 @@ def test_get_taxii_invalid(mocker):
 
     mock_response_1 = str(open("test_data/data_err.xml", "r").read())
     mocker.patch.object(client, 'fetch', return_value=[mock_response_1])
-    try:
-        val, time = Client.get_taxii(client, args)
-    except Exception as e:
-        error_val = e.args[0]
+    with capfd.disabled():
+        try:
+            val, time = Client.get_taxii(client, args)
+        except Exception as e:
+            error_val = e.args[0]
 
     assert "Last fetch time retrieval failed." in error_val
 
