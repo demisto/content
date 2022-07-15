@@ -33,7 +33,7 @@ CLOSE_REASONS = {
     'Legitimate activity': 5,
     'Other': 6
 }
-STATUSES_TO_RETRY = [304, 405]
+STATUSES_TO_RETRY = [304, 405, 206]
 ALERT_COLUMNS = [
     'Alert.ID',
     'Alert.Rule.Name',
