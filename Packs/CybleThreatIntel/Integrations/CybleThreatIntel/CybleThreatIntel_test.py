@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta, timezone
-import demistomock as demisto
 import json
 import pytest
 
@@ -21,6 +20,61 @@ def load_json_file(filename):
     return content
 
 
+def test_get_recursively():
+    from CybleThreatIntel import Client
+    client = Client(params)
+
+    mock_response_1 = load_json_file("test.json")
+    val = Client.get_recursively(client, mock_response_1[0][0], "value")
+    assert isinstance(val, list)
+    assert 'URL Watchlist' in val
+
+
+def test_build_indicators():
+    from CybleThreatIntel import Client
+    client = Client(params)
+
+    mock_response_1 = load_json_file("test.json")
+    mock_response_2 = load_json_file("results.json")
+    val = Client.build_indicators(client, args, mock_response_1[0])
+    assert isinstance(val, list)
+    assert mock_response_2 == val
+
+
+def test_get_parse_to_json():
+    from CybleThreatIntel import Client
+    client = Client(params)
+
+    mock_response_1 = str(open("test_data/data.xml", "r").read())
+    mock_response_3 = load_json_file("data.json")
+    val = Client.parse_to_json(client, mock_response_1)
+    assert isinstance(val, dict)
+    assert mock_response_3 == val
+
+
+def test_get_taxii(mocker):
+    from CybleThreatIntel import Client
+    client = Client(params)
+
+    mock_response_1 = str(open("test_data/data.xml", "r").read())
+    mock_response_3 = load_json_file("data.json")
+    mocker.patch.object(client, 'fetch', return_value=[mock_response_1])
+    val, time = Client.get_taxii(client, args)
+    assert isinstance(val, list)
+    assert isinstance(time, str)
+    assert mock_response_3 == val[0]
+
+
+def test_get_services(mocker):
+    from CybleThreatIntel import Client
+    client = Client(params)
+
+    mocker.patch.object(client, 'client', return_value=[])
+    val = Client.get_services(client)
+    assert isinstance(val, list)
+    assert val == []
+
+
 def test_module(mocker):
     """
     Test the basic test command for Cyble Threat Intel
@@ -36,6 +90,22 @@ def test_module(mocker):
 
     assert isinstance(response, str)
     assert response == 'ok'
+
+
+def test_module_failure(mocker):
+    """
+    Test the basic test command for Cyble Threat Intel
+    :return:
+    """
+    # import requests_mock
+    from CybleThreatIntel import Client, get_test_response
+    client = Client(params)
+
+    mocker.patch.object(client, 'get_taxii', return_value=[])
+    response = get_test_response(client, {})
+
+    assert isinstance(response, str)
+    assert response == 'Unable to Contact Feed Service, Please Check the parameters.'
 
 
 def test_module_error(mocker):
@@ -104,7 +174,7 @@ def test_sdate_validate_input(capfd):
 
     with capfd.disabled():
         with pytest.raises(ValueError,
-                           match=f"Invalid date format received"):
+                           match="Invalid date format received"):
             validate_input(args=args)
 
 
@@ -120,7 +190,7 @@ def test_edate_validate_input(capfd):
 
     with capfd.disabled():
         with pytest.raises(ValueError,
-                           match=f"Invalid date format received"):
+                           match="Invalid date format received"):
             validate_input(args=args)
 
 
@@ -136,7 +206,7 @@ def test_date_validate_input(capfd):
 
     with capfd.disabled():
         with pytest.raises(ValueError,
-                           match=f"Start date cannot be after end date"):
+                           match="Start date cannot be after end date"):
             validate_input(args=args)
 
 
@@ -151,7 +221,7 @@ def test_idate_validate_input(capfd):
     }
 
     with capfd.disabled():
-        with pytest.raises(ValueError, match=f"End date must be a date before or equal to current"):
+        with pytest.raises(ValueError, match="End date must be a date before or equal to current"):
             validate_input(args=args)
 
 
@@ -166,7 +236,7 @@ def test_end_date_validate_input(capfd):
     }
 
     with capfd.disabled():
-        with pytest.raises(ValueError, match=f"Start date must be a date before or equal to current"):
+        with pytest.raises(ValueError, match="Start date must be a date before or equal to current"):
             validate_input(args=args)
 
 
@@ -181,7 +251,7 @@ def test_collection_validate_input(capfd):
     }
 
     with capfd.disabled():
-        with pytest.raises(ValueError, match=f"Collection Name should be provided: None"):
+        with pytest.raises(ValueError, match="Collection Name should be provided: None"):
             validate_input(args=args)
 
 

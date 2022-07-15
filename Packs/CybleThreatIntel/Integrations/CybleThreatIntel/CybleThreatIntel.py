@@ -46,7 +46,7 @@ class Client(object):
             discovery_path=self.parsed_url.path)
         self.client.set_auth(username=self.username, password=self.password)
 
-    def __fetch(self, begin, end, collection):
+    def fetch(self, begin, end, collection):
         for block in self.client.poll(collection_name=collection, begin_date=begin, end_date=end):
             yield block.content.decode('utf-8')
 
@@ -83,7 +83,7 @@ class Client(object):
                 "service": "Cyble Feed"
             }
             for eachtype in FeedIndicatorType.list_all_supported_indicators():
-                if eachtype.lower() in args.get('collection').lower():
+                if eachtype.lower() in args.get('collection').lower():      # type: ignore
                     indicator_obj['type'] = eachtype
                     break
 
@@ -138,7 +138,7 @@ class Client(object):
         save_fetch_time = None
         count = 0
         try:
-            for data in self.__fetch(args.get('begin'), args.get('end'), args.get('collection')):
+            for data in self.fetch(args.get('begin'), args.get('end'), args.get('collection')):
                 response = self.parse_to_json(data)
 
                 if response.get('indicators') or False:
@@ -267,13 +267,13 @@ def fetch_indicators(client: Client):
     if last_fetch_time:
         args['begin'] = str(parser.parse(last_fetch_time).replace(tzinfo=pytz.UTC))
     else:
-        last_fetch_time = datetime.utcnow() - timedelta(days=client.initial_interval)
+        last_fetch_time = datetime.utcnow() - timedelta(days=client.initial_interval)      # type: ignore
         args['begin'] = str(last_fetch_time.replace(tzinfo=pytz.UTC))
 
     args['end'] = str(datetime.utcnow().replace(tzinfo=pytz.UTC))
 
     args['collection'] = client.collection_name
-    args['limit'] = client.limit
+    args['limit'] = client.limit       # type: ignore
     indicator, save_fetch_time = client.get_taxii(args)
     indicators = client.build_indicators(args, indicator)
 
