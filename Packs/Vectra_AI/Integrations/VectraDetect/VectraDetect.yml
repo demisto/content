@@ -5,9 +5,9 @@ commonfields:
 beta: true
 name: Vectra_Detect
 display: Vectra Detect (Beta)
-description: This integration allows to create incidents based on Vectra Accounts/Detections/Hosts objects
-# detaileddescription: '... 
-#   ...'
+# For future use
+# description: This integration allows to create incidents based on Vectra Accounts/Detections/Hosts objects
+description: This integration allows to create incidents based on Vectra Detections/Hosts objects
 category: Network Security
 defaultclassifier: Vectra Detect
 defaultmapperin: Vectra Detect - Incoming Mapper
@@ -67,22 +67,29 @@ configuration:
   name: fetch_entity_types
   type: 16    # Mutiple select dropdown
   required: true
-  additionalinfo: Choose what to fetch - Accounts, Hosts and/or Detections.
-    (Default - Accounts & Hosts)
+  # For future use
+  # additionalinfo: Choose what to fetch - Accounts, Hosts and/or Detections.
+    # (Default - Accounts & Hosts)
+  additionalinfo: Choose what to fetch - Hosts and/or Detections.
+    (Default - Hosts)
   options:
-  - Accounts
+  # For future use
+  # - Accounts
   - Hosts
   - Detections
-  defaultvalue: Accounts,Hosts
+  # For future use
+  # defaultvalue: Accounts,Hosts
+  defaultvalue: Hosts
 
-- display: Accounts fetch query
-  name: accounts_fetch_query
-  type: 0    # Short text
-  additionalinfo: Only "active" Accounts matching this fetch query will be fetched.
-    Will be used only if "Accounts" is selected in the "Entity types to fetch".
-    (default - account.threat:>=50 AND account.certainty:>=50)
-  required: false
-  defaultvalue: account.threat:>=50 AND account.certainty:>=50
+# For future use
+# - display: Accounts fetch query
+#   name: accounts_fetch_query
+#   type: 0    # Short text
+#   additionalinfo: Only "active" Accounts matching this fetch query will be fetched.
+#     Will be used only if "Accounts" is selected in the "Entity types to fetch".
+#     (default - account.threat:>=50 AND account.certainty:>=50)
+#   required: false
+#   defaultvalue: account.threat:>=50 AND account.certainty:>=50
 
 - display: Hosts fetch query
   name: hosts_fetch_query
@@ -116,7 +123,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.5.31797
+  dockerimage: demisto/python3:3.10.5.31928
   isfetch: true
   runonce: false
   commands:
@@ -126,33 +133,34 @@ script:
     # Add tags to an account / host / detection
     # Remove tags to an account / host / detection
 
-  - name: vectra-search-accounts
-    description: Returns a list of Account objects.
-      All search attributes will be cummulative unless you're using the search_query_only one, in that case, only this one will be taken into account.
-    execution: false   # This command is not harmful
-    arguments:
-    - name: min_id
-      description: Returns Accounts with an ID greater than or equal to the specified ID.
-    - name: max_id
-      description: Returns Accounts with an ID less than or equal to the specified ID.
-    - name: min_threat
-      description: Returns Accounts with a threat score greater than or equal to the specified score.
-    - name: max_threat
-      description: Returns Accounts with a threat score less than or equal to the specified score.
-    - name: min_certainty
-      description: Returns Accounts with a certainty score greater than or equal to the specified score.
-    - name: max_certainty
-      description: Returns Accounts with a certainty score less than or equal to the specified score.
-    - name: state
-      description: Filters by state ('active', 'inactive').
-      auto: PREDEFINED
-      predefined:
-        - active
-        - inactive
-    - name: search_query
-      description: Search query in Lucene query syntax.
-    - name: search_query_only
-      description: Use specificaly this search query. Compared to "search_query" where default arguments are appended.
+  # For future use in next release
+  # - name: vectra-search-accounts
+  #   description: Returns a list of Account objects.
+  #     All search attributes will be cummulative unless you're using the search_query_only one, in that case, only this one will be taken into account.
+  #   execution: false   # This command is not harmful
+  #   arguments:
+  #   - name: min_id
+  #     description: Returns Accounts with an ID greater than or equal to the specified ID.
+  #   - name: max_id
+  #     description: Returns Accounts with an ID less than or equal to the specified ID.
+  #   - name: min_threat
+  #     description: Returns Accounts with a threat score greater than or equal to the specified score.
+  #   - name: max_threat
+  #     description: Returns Accounts with a threat score less than or equal to the specified score.
+  #   - name: min_certainty
+  #     description: Returns Accounts with a certainty score greater than or equal to the specified score.
+  #   - name: max_certainty
+  #     description: Returns Accounts with a certainty score less than or equal to the specified score.
+  #   - name: state
+  #     description: Filters by state ('active', 'inactive').
+  #     auto: PREDEFINED
+  #     predefined:
+  #       - active
+  #       - inactive
+  #   - name: search_query
+  #     description: Search query in Lucene query syntax.
+  #   - name: search_query_only
+  #     description: Use specificaly this search query. Compared to "search_query" where default arguments are appended.
         # # - name: privilege_level
         # #   description: Filters by the privilege level equals the one provided.
         # - name: min_privilege_level
@@ -163,50 +171,50 @@ script:
         #   description: Filters by the privilege category ("low", "medium", "high") provided.
         # - name: tags
         #   description: Filters by a tag or a comma-separated list tags. # TODO Check how to use that in the XSOAR CLI
-    outputs:  &accountOutput
-    - contextPath: Vectra.Account.Assignee
-      type: String
-      description: Vectra user account this Account is assigned to
-    - contextPath: Vectra.Account.AssignedDate
-      type: String
-      description: Assignment date
-    - contextPath: Vectra.Account.CertaintyScore
-      type: Number
-      description: Account certainty score
-    - contextPath: Vectra.Account.ID
-      type: Number
-      description: Account ID (unique)
-    - contextPath: Vectra.Account.LastDetectionTimestamp
-      type: String
-      description: Last time a detection linked to this account has been seen
-    - contextPath: Vectra.Account.PrivilegeLevel
-      type: Number
-      description: Account privilege level (from 1 to 10)
-    - contextPath: Vectra.Account.PrivilegeCategory
-      type: String
-      description: Account privilege category (Either 'Low', 'Medium' or 'High' -
-        Privilege levels of 1-2 > 'Low', 3-7 > 'Medium', 8-10 > 'High')
-    - contextPath: Vectra.Account.Severity
-      type: String
-      description: Account severity according to scores ('Low', 'Medium', 'High', 'Critical')
-    - contextPath: Vectra.Account.State
-      type: String
-      description: Account state ('active', 'inactive')
-    - contextPath: Vectra.Account.Tags
-      type: String
-      description: Account tags
-    - contextPath: Vectra.Account.ThreatScore
-      type: Number
-      description: Account threat score
-    - contextPath: Vectra.Account.Type
-      type: String
-      description: Account type ('kerberos' or 'o365')
-    - contextPath: Vectra.Account.URL
-      type: String
-      description: Account URL to pivot to Vectra UI
-    - contextPath: Vectra.Account.Name
-      type: String
-      description: The username of the account
+    # outputs:  &accountOutput
+    # - contextPath: Vectra.Account.Assignee
+    #   type: String
+    #   description: Vectra user account this Account is assigned to
+    # - contextPath: Vectra.Account.AssignedDate
+    #   type: String
+    #   description: Assignment date
+    # - contextPath: Vectra.Account.CertaintyScore
+    #   type: Number
+    #   description: Account certainty score
+    # - contextPath: Vectra.Account.ID
+    #   type: Number
+    #   description: Account ID (unique)
+    # - contextPath: Vectra.Account.LastDetectionTimestamp
+    #   type: String
+    #   description: Last time a detection linked to this account has been seen
+    # - contextPath: Vectra.Account.PrivilegeLevel
+    #   type: Number
+    #   description: Account privilege level (from 1 to 10)
+    # - contextPath: Vectra.Account.PrivilegeCategory
+    #   type: String
+    #   description: Account privilege category (Either 'Low', 'Medium' or 'High' -
+    #     Privilege levels of 1-2 > 'Low', 3-7 > 'Medium', 8-10 > 'High')
+    # - contextPath: Vectra.Account.Severity
+    #   type: String
+    #   description: Account severity according to scores ('Low', 'Medium', 'High', 'Critical')
+    # - contextPath: Vectra.Account.State
+    #   type: String
+    #   description: Account state ('active', 'inactive')
+    # - contextPath: Vectra.Account.Tags
+    #   type: String
+    #   description: Account tags
+    # - contextPath: Vectra.Account.ThreatScore
+    #   type: Number
+    #   description: Account threat score
+    # - contextPath: Vectra.Account.Type
+    #   type: String
+    #   description: Account type ('kerberos' or 'o365')
+    # - contextPath: Vectra.Account.URL
+    #   type: String
+    #   description: Account URL to pivot to Vectra UI
+    # - contextPath: Vectra.Account.Name
+    #   type: String
+    #   description: The username of the account
 
   - name: vectra-search-hosts
     description: Returns a list of Host objects.
@@ -425,41 +433,43 @@ script:
     #     - name: tags
     #       description: The tags list (comma separated)
     #       isArray: true
-    ######
-    ### Accounts
-    #
-  - name: vectra-account-describe
-    description: Returns a single Account details
-    execution: false    # This command is not harmful
-    arguments:
-    - name: id
-      default: true
-      description: Account ID you want to get details on
-    outputs: *accountOutput
 
-  - name: vectra-account-add-tags
-    description: Add tags to an Account
-    execution: true    # This command modifies the Vectra system
-    arguments:
-    - name: id
-      default: true
-      description: Account ID you want to add tags on
-    - name: tags
-      description: The tags list (comma separated)
-      isArray: true
-    outputs: []
+  # For future use
+  ######
+  ### Accounts
+  #
+  # - name: vectra-account-describe
+  #   description: Returns a single Account details
+  #   execution: false    # This command is not harmful
+  #   arguments:
+  #   - name: id
+  #     default: true
+  #     description: Account ID you want to get details on
+  #   outputs: *accountOutput
 
-  - name: vectra-account-del-tags
-    description: Delete tags from an Account
-    execution: true   # This command affects the Vectra system
-    arguments:
-    - name: id
-      default: true
-      description: Account ID you want to del tags from
-    - name: tags
-      description: The tags list (comma separated)
-      isArray: true
-    outputs: []
+  # - name: vectra-account-add-tags
+  #   description: Add tags to an Account
+  #   execution: true    # This command modifies the Vectra system
+  #   arguments:
+  #   - name: id
+  #     default: true
+  #     description: Account ID you want to add tags on
+  #   - name: tags
+  #     description: The tags list (comma separated)
+  #     isArray: true
+  #   outputs: []
+
+  # - name: vectra-account-del-tags
+  #   description: Delete tags from an Account
+  #   execution: true   # This command affects the Vectra system
+  #   arguments:
+  #   - name: id
+  #     default: true
+  #     description: Account ID you want to del tags from
+  #   - name: tags
+  #     description: The tags list (comma separated)
+  #     isArray: true
+  #   outputs: []
 
     ######
     ### Hosts

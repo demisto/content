@@ -16,8 +16,8 @@ To configure this integration you have to fill in the **Vectra Detect FQDN or IP
 Now if you want to tune more the integration, you can modify the others fields.
 
 ### Fetch queries
-This integration provide 3 search queries (one per entity) in order for you to limit the events you want to fetch from Vectra Detect.
+This integration provide 2 search queries (one per entity) in order for you to limit the events you want to fetch from Vectra Detect.
 These do not affect commands results, just the "Fetches incidents" action.
 
-All fetch queries (Accounts, Hosts, Detections) should be written in Lucene wording.
+All fetch queries (Hosts, Detections) should be written in Lucene wording.
 During the fetch process, they are appended with "*.state:active" to get only the active events from Vectra Detect.
