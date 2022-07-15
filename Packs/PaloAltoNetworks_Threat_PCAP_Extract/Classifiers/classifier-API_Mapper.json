@@ -1,5 +1,5 @@
 {
-    "description": "mapper",
+    "description": "",
     "feed": false,
     "id": "API_Mapper",
     "mapping": {
@@ -50,9 +50,6 @@
                 },
                 "Source IP": {
                     "simple": "sourceip"
-                },
-                "Source User": {
-                    "simple": "user"
                 },
                 "Src User": {
                     "simple": "user"
