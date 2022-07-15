@@ -172,6 +172,7 @@ tasks:
       name: Is Regex Grouping Enabled?
       type: condition
       version: -1
+      description: Look for regex based grouping
     taskid: 91bf1e45-c406-4007-8798-efe24b9778f4
     timertriggers: []
     type: condition
@@ -222,6 +223,7 @@ tasks:
       name: Is Device-group Grouping enabled?
       type: condition
       version: -1
+      description: Is DG grouping enabled
     taskid: 5c8b2a3d-1057-4f7d-86b7-06df2b955434
     timertriggers: []
     type: condition
@@ -303,6 +305,7 @@ tasks:
       name: Is template-stack grouping enabled?
       type: condition
       version: -1
+      description: Is TS grouping enabled
     taskid: 2674a8df-f06e-4954-87ab-2b2fcfac2003
     timertriggers: []
     type: condition
@@ -449,6 +452,7 @@ tasks:
       name: Is this a Panorama Device?
       type: condition
       version: -1
+      description: Checks if panorama
     taskid: 265ade38-aedd-4037-828e-a9131fecbc1c
     timertriggers: []
     type: condition
