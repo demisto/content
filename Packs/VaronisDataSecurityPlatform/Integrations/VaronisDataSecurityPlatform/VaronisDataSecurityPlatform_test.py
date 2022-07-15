@@ -216,3 +216,17 @@ def test_enrich_with_url():
     baseUrl = 'http://test.com/'
     enrich_with_url(obj, baseUrl, id)
     assert obj['Url'] == expectedUrl
+
+
+def test_case_insensitive():
+    from VaronisDataSecurityPlatform import strEqual
+
+    assert strEqual(None, None)
+    assert not strEqual(None, 'None')
+    assert not strEqual('None', None)
+    assert not strEqual('None', 'None1')
+    assert strEqual('', None)
+    assert strEqual(None, '')
+    assert strEqual('None', 'None')
+    assert strEqual('None', 'none')
+    assert strEqual('none', 'None') 
