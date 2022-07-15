@@ -65,7 +65,7 @@ def test_get_taxii(mocker):
     assert mock_response_3 == val[0]
 
 
-def test_get_taxii_invalid(mocker):
+def test_get_taxii_invalid(mocker, capfd):
     from CybleThreatIntel import Client
     client = Client(params)
 
@@ -91,7 +91,7 @@ def test_get_taxii_failure(mocker):
     assert [] == val
 
 
-def test_get_taxii_error(mocker):
+def test_get_taxii_error(mocker, capfd):
     from CybleThreatIntel import Client
     client = Client(params)
 
@@ -100,10 +100,11 @@ def test_get_taxii_error(mocker):
                 </stix:STIX_Package>
                 """
     mocker.patch.object(client, 'fetch', return_value=[mock_response_1])
-    try:
-        val, time = Client.get_taxii(client, args)
-    except Exception as e:
-        error_val = e.args[0]
+    with capfd.disabled():
+        try:
+            val, time = Client.get_taxii(client, args)
+        except Exception as e:
+            error_val = e.args[0]
 
     assert "Namespace prefix stix on STIX_Package is not defined" in error_val
 
