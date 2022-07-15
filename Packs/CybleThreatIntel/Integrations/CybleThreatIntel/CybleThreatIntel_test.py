@@ -65,6 +65,34 @@ def test_get_taxii(mocker):
     assert mock_response_3 == val[0]
 
 
+def test_get_taxii_failure(mocker):
+    from CybleThreatIntel import Client
+    client = Client(params)
+
+    mocker.patch.object(client, 'fetch', return_value=[])
+    val, time = Client.get_taxii(client, args)
+    assert isinstance(val, list)
+    assert time == None
+    assert [] == val
+
+
+def test_get_taxii_error(mocker):
+    from CybleThreatIntel import Client
+    client = Client(params)
+
+    mock_response_1 = """
+                <stix:STIX_Package id="example:Package-19548504-7169-4b2e-9b54-0fa1c3d931f8" version="1.2">
+                </stix:STIX_Package>
+                """
+    mocker.patch.object(client, 'fetch', return_value=[mock_response_1])
+    try:
+        val, time = Client.get_taxii(client, args)
+    except Exception as e:
+        error_val = e.args[0]
+
+    assert "Namespace prefix stix on STIX_Package is not defined" in error_val
+
+
 def test_get_services(mocker):
     from CybleThreatIntel import Client
     client = Client(params)
@@ -135,6 +163,39 @@ def test_cyble_fetch_taxii(mocker):
     assert response[0]['rawJSON'] == mock_response_1[0][0]
 
 
+@pytest.mark.parametrize(
+    "begin", [
+        "2022-06-73 00:00:00",
+        "2022-46-13 00:00:00",
+        "2022-06-73 88:00:00",
+        "2022-06-73 00:67:00",
+        "2022-06-73 00:00:67"
+    ]
+)
+def test_cyble_fetch_taxii_error(mocker, begin):
+    from CybleThreatIntel import Client, cyble_fetch_taxii
+    client = Client(params)
+
+    args = {
+        "limit": 5,
+        "begin": begin,
+        "end": "2022-06-13 00:00:00",
+        "collection": "phishing_url"
+    }
+
+    mock_response_1 = load_json_file("test.json")
+    mock_response_2 = load_json_file("results.json")
+    mocker.patch.object(client, 'get_taxii', return_value=mock_response_1)
+    mocker.patch.object(client, 'build_indicators', return_value=mock_response_2)
+    error_val = None
+    try:
+        response = cyble_fetch_taxii(client, args).outputs
+    except Exception as e:
+        error_val = e.args[0]
+
+    assert "Invalid date format received" in error_val
+
+
 def test_fetch_indicators(mocker):
     from CybleThreatIntel import Client, fetch_indicators
     client = Client(params)
@@ -194,11 +255,14 @@ def test_edate_validate_input(capfd):
             validate_input(args=args)
 
 
-def test_date_validate_input(capfd):
+@pytest.mark.parametrize(
+    "limit", [1, 10, 174, 1060]
+)
+def test_date_validate_input(capfd, limit):
     from CybleThreatIntel import validate_input
 
     args = {
-        "limit": 5,
+        "limit": limit,
         "begin": str(datetime.now(timezone.utc).strftime(DATETIME_FORMAT)),
         "end": str((datetime.now(timezone.utc) - timedelta(days=1)).strftime(DATETIME_FORMAT)),
         "collection": "phishing_url"
