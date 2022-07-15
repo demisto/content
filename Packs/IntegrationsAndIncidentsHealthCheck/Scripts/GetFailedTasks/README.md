@@ -1,4 +1,12 @@
 Gets failed tasks details for incidents based on a query. Limited to 1000 incidents
+
+## Permissions
+---
+
+This automation runs using the default Limited User role, unless you explicitly change the permissions.
+For more information, see the section about permissions here: [https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html)
+
 ## Script Data
 ---
 
@@ -25,3 +33,6 @@ This script is used in the following playbooks and scripts.
 ## Outputs
 ---
 There are no outputs for this script.
+
+## Troubleshooting
+In order for the automation script to be able to retrieve the failed tasks, the API key configured in the Demisto REST API integration, need to be of a user with *Read* permissions to the queried incident.

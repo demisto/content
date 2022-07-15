@@ -124,7 +124,7 @@ infinipoint get assets programs
 | Infinipoint.Assets.Programs.items.$time | Number | Timestamp | 
 | Infinipoint.Assets.Programs.items.$type | String | Assets type | 
 | Infinipoint.Assets.Programs.items.name | String | Programs name | 
-| Infinipoint.Assets.Programs.items.os_type | String | OS type \- 1 = Windows | 2 = Linux | 4 = macOS | 
+| Infinipoint.Assets.Programs.items.os_type | String | OS type \- 1 = Windows,  2 = Linux, 4 = macOS | 
 | Infinipoint.Assets.Programs.items.program_exists | String | Software exists on disk | 
 | Infinipoint.Assets.Programs.items.publisher | String | Software publisher name | 
 | Infinipoint.Assets.Programs.items.version | String | Software version | 
@@ -1194,7 +1194,7 @@ get compliance status
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Infinipoint.Compliance.Device.response.compliance | Number | compliance statius \- 0 \- errot | 1 \- compliance | 2 \- non\-compliance | 
+| Infinipoint.Compliance.Device.response.compliance | Number | compliance statius \- 0 \- error,  1 \- compliance, 2 \- non\-compliance | 
 | Infinipoint.Compliance.Device.success | Number | success | 
 
 

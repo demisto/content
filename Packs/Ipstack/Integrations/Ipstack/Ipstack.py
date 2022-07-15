@@ -6,6 +6,8 @@ import requests
 
 BASE_URL = 'http://api.ipstack.com'
 API_KEY = demisto.params().get('apikey')
+RELIABILITY = demisto.params().get('integrationReliability', 'C - Fairly reliable')
+BRAND_NAME = "Ipstack"
 
 if not demisto.params()['proxy']:
     del os.environ['HTTP_PROXY']
@@ -64,11 +66,22 @@ def do_ip_command():
         "Longitude": raw_response.get('longitude')
     }
 
+    if DBotScoreReliability.is_valid_type(RELIABILITY):
+        dbot_reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(RELIABILITY)
+    else:
+        raise Exception("Please provide a valid value for the Source Reliability parameter.")
+
+    dbot_score = Common.DBotScore(indicator=ip,
+                                  indicator_type=DBotScoreType.IP,
+                                  integration_name=BRAND_NAME,
+                                  reliability=dbot_reliability,
+                                  score=Common.DBotScore.NONE)
+
     outputs = {
         'IP(val.Address == obj.Address)': {
             'Address': raw_response.get('ip'),
             'Geo': {
-                'Location': "{},{}".format(raw_response.get('latitude'), raw_response.get('longitude')),
+                'Location': "{}:{}".format(raw_response.get('latitude'), raw_response.get('longitude')),
                 'Country': raw_response.get('country_name')
             }
         },
@@ -80,6 +93,8 @@ def do_ip_command():
             'longitude': raw_response.get('longitude'),
         }
     }
+
+    outputs.update(dbot_score.to_context())
 
     headers = ['Address', 'Country', 'Latitude', 'Longitude']
     human_readable = tableToMarkdown('Ipstack info on {}'.format(raw_response.get('ip')), human_readable_data, headers=headers)

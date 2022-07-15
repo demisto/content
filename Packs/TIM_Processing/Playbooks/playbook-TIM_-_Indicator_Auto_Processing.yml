@@ -3,7 +3,7 @@ version: -1
 fromversion: 5.5.0
 name: TIM - Indicator Auto Processing
 description: This playbook uses several sub playbooks to process and tag indicators,
-  which is used to identify indicators that shouldn't be blacklisted. For example
+  which is used to identify indicators that shouldn't be added to block list. For example
   IP indicators that belong to business partners or important hashes we wish to not
   process. Additional sub playbooks can be added for improving the business logic
   and tagging according to the user's needs. This playbook doesn't have its own indicator

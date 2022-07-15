@@ -1,5 +1,5 @@
 <!-- HTML_DOC -->
-<p>Use the Microsoft Graph Calendar integration to create, and manage different calendars and events according to your requirements.</p>
+<p>Use the O365 Outlook Calendar integration to create, and manage different calendars and events according to your requirements.</p>
 
 <h2>Authentication</h2>
 For more details about the authentication used in this integration, see <a href="https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication">Microsoft Integrations - Authentication</a>.
@@ -14,18 +14,20 @@ For more details about the authentication used in this integration, see <a href=
 <li>Calendars.ReadWrite - Delegated</li>
 <li>Calendars.ReadWrite - Application</li>
 </ul>
-<h2>Configure Microsoft Graph Calendar on Cortex XSOAR</h2>
+<h2>Configure O365 Outlook Calendar on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong>  &gt; <strong>Servers &amp; Services</strong>.</li>
-<li>Search for Microsoft Graph Calendar.</li>
+<li>Search for O365 Outlook Calendar.</li>
 <li>Click <strong>Add instance</strong> to create and configure a new integration instance.
 <ul>
 <li>
 <strong>Name</strong>: a textual name for the integration instance.</li>
 <li><strong>Server URL</strong></li>
-<li><strong>ID (<a href="#h_d0642479-95d1-4f92-b2da-f6c16c3e48b2" target="_self">from the admin consent - see Detailed Instructions</a>)</strong></li>
-<li><strong>Token (<a href="#h_d0642479-95d1-4f92-b2da-f6c16c3e48b2" target="_self">from the admin consent - see Detailed Instructions</a>)</strong></li>
-<li><strong>Key (<a href="#h_d0642479-95d1-4f92-b2da-f6c16c3e48b2" target="_self">from the admin consent - see Detailed Instructions</a>)</strong></li>
+<li><strong>ID for more details see cortex xsoar platform when configuring the integration instance</strong></li>
+<li><strong>Token for more details see cortex xsoar platform when configuring the integration instance</strong></li>
+<li><strong>Key for more details see cortex xsoar platform when configuring the integration instance</strong></li>
+<li><strong>Certificate Thumbprint</strong></li>
+<li><strong>Private Key</strong></li>
 <li><strong>Default user</strong></li>
 <li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy settings</strong></li>

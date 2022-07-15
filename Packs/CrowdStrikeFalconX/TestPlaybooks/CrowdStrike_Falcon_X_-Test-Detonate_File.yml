@@ -1,15 +1,14 @@
 id: CrowdStrike_Falcon_X_-Test-Detonate_File
 version: -1
 name: CrowdStrike_Falcon_X_-Test-Detonate_File
-description: ""
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 0febfd58-06a1-4831-8160-30b15e923847
+    taskid: 86477c2b-720a-4adf-8fa2-e7cb2e936744
     type: start
     task:
-      id: 0febfd58-06a1-4831-8160-30b15e923847
+      id: 86477c2b-720a-4adf-8fa2-e7cb2e936744
       version: -1
       name: ""
       iscommand: false
@@ -31,18 +30,19 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 3bc7bc7b-cf09-40c9-8191-658cf6ce571b
+    taskid: faa34e65-459f-45b4-8e24-044f101195dd
     type: regular
     task:
-      id: 3bc7bc7b-cf09-40c9-8191-658cf6ce571b
+      id: faa34e65-459f-45b4-8e24-044f101195dd
       version: -1
       name: DeleteContext
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      description: ""
       brand: ""
     nexttasks:
       '#none#':
@@ -50,8 +50,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      key: {}
-      keysToKeep: {}
     separatecontext: false
     view: |-
       {
@@ -65,12 +63,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 7fc6a518-4ddb-425c-8f12-1ca517d6bf45
+    taskid: f379ac76-510e-4bc5-8fd3-5bf09ccdd2ed
     type: regular
     task:
-      id: 7fc6a518-4ddb-425c-8f12-1ca517d6bf45
+      id: f379ac76-510e-4bc5-8fd3-5bf09ccdd2ed
       version: -1
       name: Set File
       description: Sends an http request and returns the response as JSON.
@@ -82,21 +82,14 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      body: {}
       filename:
         simple: test.pdf
-      headers: {}
-      insecure: {}
       method:
         simple: GET
-      password: {}
-      proxy: {}
       saveAsFile:
         simple: "yes"
-      unsecure: {}
       url:
         simple: http://www.pdf995.com/samples/pdf.pdf
-      username: {}
     separatecontext: false
     view: |-
       {
@@ -110,20 +103,42 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 7043a945-5200-40c5-8f48-b62e4b1c7573
+    taskid: 584e68fb-7de6-4342-8cd6-557463729486
     type: playbook
     task:
-      id: 7043a945-5200-40c5-8f48-b62e4b1c7573
+      id: 584e68fb-7de6-4342-8cd6-557463729486
       version: -1
       name: Detonate File - CrowsStrike Falcon X
-      playbookName: Detonate File - CrowsStrike Falcon X
-      playbookId: Detonate File - CrowdStrike Falcon X
+      playbookName: Detonate File - CrowdStrike Falcon X
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
+      description: |-
+        Detonates a File using CrowdStrike Falcon X sandbox.
+        Accepted file formats:
+        Portable executables: .exe, .scr, .pif, .dll, .com, .cpl, etc.
+        Office documents: .doc, .docx, .ppt, .pps, .pptx, .ppsx, .xls, .xlsx, .rtf, .pub
+        PDF
+        APK
+        Executable JAR
+        Windows script component: .sct
+        Windows shortcut: .lnk
+        Windows help: .chm
+        HTML application: .hta
+        Windows script file: .wsf
+        Javascript: .js
+        Visual Basic: .vbs, .vbe
+        Shockwave Flash: .swf
+        Perl: .pl
+        Powershell: .ps1, .psd1, .psm1
+        Scalable vector graphics: .svg
+        Python: .py
+        Linux ELF executables
+        Email files: MIME RFC 822 .eml, Outlook .msg.
     separatecontext: true
     view: |-
       {
@@ -137,6 +152,21 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    scriptarguments:
+      File:
+        complex:
+          root: File
+      Interval:
+        simple: "1"
+      Timeout:
+        simple: "35"
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -152,3 +182,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+description: ''

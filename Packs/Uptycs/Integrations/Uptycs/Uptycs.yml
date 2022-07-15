@@ -28,13 +28,11 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- defaultvalue: ''
-  display: Trust any certificate (not secure)
+- display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
-- defaultvalue: ''
-  display: Use system proxy settings
+- display: Use system proxy settings
   name: proxy
   required: false
   type: 8
@@ -1800,7 +1798,7 @@ script:
     - contextPath: Uptycs.PostedQuery.name
       description: name of query
       type: string
-  dockerimage: demisto/uptycs:1.0.0.18207
+  dockerimage: demisto/uptycs:1.0.0.23423
   isfetch: true
   runonce: true
   script: '-'

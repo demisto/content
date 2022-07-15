@@ -297,18 +297,18 @@ def test_get_indicators_with_relations():
             }
         }
     }
-    expected_res = [{'value': 'test.com', 'type': 'IP',
+    expected_res = ([{'value': 'test.com', 'type': 'IP',
                      'rawJSON': {'value': 'test.com', 'a': 'Domain used by Test c&c',
                                  None: ['2021-04-22 06:03',
                                         'https://test.com/manual/test-iplist.txt'],
                                  'type': 'IP'},
-                     'fields': {'AAA': 'Domain used by Test c&c', 'relationship_entity_b': 'Test',
-                                'tags': []},
-                     'relationships': [
+                      'fields': {'AAA': 'Domain used by Test c&c', 'relationship_entity_b': 'Test',
+                                 'tags': []},
+                      'relationships': [
                          {'name': 'resolved-from', 'reverseName': 'resolves-to', 'type': 'IndicatorToIndicator',
                           'entityA': 'test.com', 'entityAFamily': 'Indicator', 'entityAType': 'IP',
                           'entityB': 'Test', 'entityBFamily': 'Indicator', 'entityBType': 'IP',
-                          'fields': {}}]}]
+                          'fields': {}}]}], True)
 
     ip_ranges = 'test.com,Domain used by Test c&c,2021-04-22 06:03,https://test.com/manual/test-iplist.txt'
 
@@ -349,13 +349,13 @@ def test_get_indicators_without_relations():
             }
         }
     }
-    expected_res = [{'value': 'test.com', 'type': 'IP',
+    expected_res = ([{'value': 'test.com', 'type': 'IP',
                      'rawJSON': {'value': 'test.com', 'a': 'Domain used by Test c&c',
                                  None: ['2021-04-22 06:03',
                                         'https://test.com/manual/test-iplist.txt'],
                                  'type': 'IP'},
-                     'fields': {'AAA': 'Domain used by Test c&c', 'relationship_entity_b': 'Test',
-                                'tags': []}, 'relationships': []}]
+                      'fields': {'AAA': 'Domain used by Test c&c', 'relationship_entity_b': 'Test',
+                                 'tags': []}, 'relationships': []}], True)
 
     ip_ranges = 'test.com,Domain used by Test c&c,2021-04-22 06:03,https://test.com/manual/test-iplist.txt'
 
@@ -369,3 +369,105 @@ def test_get_indicators_without_relations():
         indicators = fetch_indicators_command(client, default_indicator_type=itype, auto_detect=False,
                                               limit=35, create_relationships=False)
         assert indicators == expected_res
+
+
+def test_get_no_update_value(mocker):
+    """
+    Given
+    - response with last_modified and etag headers with the same values like in the integration context.
+
+    When
+    - Running get_no_update_value method.
+
+    Then
+    - Ensure that the response is False
+    """
+    mocker.patch.object(demisto, 'debug')
+
+    class MockResponse:
+        headers = {'Last-Modified': 'Fri, 30 Jul 2021 00:24:13 GMT',  # guardrails-disable-line
+                   'ETag': 'd309ab6e51ed310cf869dab0dfd0d34b'}  # guardrails-disable-line
+        status_code = 200
+    no_update = get_no_update_value(MockResponse(), 'https://test.com/manual/test-iplist.txt')
+    assert not no_update
+    assert demisto.debug.call_args[0][0] == 'New indicators fetched - the Last-Modified value has been updated,' \
+                                            ' createIndicators will be executed with noUpdate=False.'
+
+
+def test_build_iterator_not_modified_header(mocker):
+    """
+    Given
+    - response with status code 304(Not Modified)
+
+    When
+    - Running build_iterator method.
+
+    Then
+    - Ensure that the results are empty and No_update value is True.
+    """
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.5.0"})
+    with requests_mock.Mocker() as m:
+        m.get('https://api.github.com/meta', status_code=304)
+
+        client = Client(
+            url='https://api.github.com/meta'
+        )
+        result = client.build_iterator()
+        assert result
+        assert result[0]['https://api.github.com/meta']
+        assert list(result[0]['https://api.github.com/meta']['result']) == []
+        assert result[0]['https://api.github.com/meta']['no_update']
+        assert demisto.debug.call_args[0][0] == 'No new indicators fetched, ' \
+                                                'createIndicators will be executed with noUpdate=True.'
+
+
+def test_build_iterator_with_version_6_2_0(mocker):
+    """
+    Given
+    - server version 6.2.0
+
+    When
+    - Running build_iterator method.
+
+    Then
+    - Ensure that the no_update value is True
+    - Request is called without headers "If-None-Match" and "If-Modified-Since"
+    """
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch('CommonServerPython.get_demisto_version', return_value={"version": "6.2.0"})
+
+    with requests_mock.Mocker() as m:
+        m.get('https://api.github.com/meta', status_code=304)
+
+        client = Client(
+            url='https://api.github.com/meta',
+            headers={}
+        )
+        result = client.build_iterator()
+        assert result[0]['https://api.github.com/meta']['no_update']
+        assert list(result[0]['https://api.github.com/meta']['result']) == []
+        assert 'If-None-Match' not in client.headers
+        assert 'If-Modified-Since' not in client.headers
+
+
+def test_get_no_update_value_without_headers(mocker):
+    """
+    Given
+    - response without last_modified and etag headers.
+
+    When
+    - Running get_no_update_value.
+
+    Then
+    - Ensure that the response is False.
+    """
+    mocker.patch.object(demisto, 'debug')
+
+    class MockResponse:
+        headers = {}
+        status_code = 200
+    no_update = get_no_update_value(MockResponse(), 'https://test.com/manual/test-iplist.txt')
+    assert not no_update
+    assert demisto.debug.call_args[0][0] == 'Last-Modified and Etag headers are not exists,' \
+                                            'createIndicators will be executed with noUpdate=False.'

@@ -113,7 +113,7 @@ tasks:
       resolve_comment:
         simple: Some comment here
       status:
-        simple: RESOLVED_THREAT_HANDLED
+        simple: RESOLVED_TRUE_POSITIVE
       unassign_user: {}
     separatecontext: false
     view: |-

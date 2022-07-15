@@ -4,8 +4,7 @@ commonfields:
 name: Infinipoint
 display: Infinipoint
 category: Network Security
-description: Use the Infinipoint integration to retrieve security and policy incompliance
-  events, vulnerabilities or incidents. Investigate and respond to events in real-time.
+description: Use the Infinipoint integration to retrieve security and policy incompliance events, vulnerabilities or incidents. Investigate and respond to events in real-time.
 configuration:
 - display: Access Key
   name: access_key
@@ -46,7 +45,6 @@ configuration:
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
   type: 8
   required: false
 - display: Incident type
@@ -60,8 +58,7 @@ script:
     description: Get vulnerable devices associated with a particular CVE
     arguments:
     - name: device_os
-      description: The device operating system, e.g. Ubutnu, Amazon Linux AMI, CentOS,
-        etc
+      description: The device operating system, e.g. Ubutnu, Amazon Linux AMI, CentOS, etc
     - name: device_risk
       description: Device risk score
     outputs:
@@ -826,7 +823,7 @@ script:
       description: Query ID, e.g 9b071f4c-da87-409c-9cd1-59a275e52c9d
       required: true
     - name: target
-      description: Target devices ID,e.g ["4f16532e-d41a-4b78-9a5c-946d3d3619ca"]
+      description: Target devices ID,e.g ['4f16532e-d41a-4b78-9a5c-946d3d3619ca']
       isArray: true
     outputs:
     - contextPath: Infinipoint.Scripts.execute.actionId
@@ -992,15 +989,17 @@ script:
       required: true
     outputs:
     - contextPath: Infinipoint.Compliance.Device.response.compliance
-      description: compliance statius - 0 - errot | 1 - compliance | 2 - non-compliance
+      description: compliance statius - 0 - error | 1 - compliance | 2 - non-compliance
       type: Number
     - contextPath: Infinipoint.Compliance.Device.success
       description: success
       type: Number
 
-  dockerimage: demisto/pyjwt3:1.0.0.16907
+  dockerimage: demisto/pyjwt3:1.0.0.27257
   isfetch: true
   runonce: false
   script: '-'
   subtype: python3
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

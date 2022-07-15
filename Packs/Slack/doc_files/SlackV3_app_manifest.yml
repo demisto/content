@@ -23,28 +23,33 @@ oauth_config:
     bot:
       - channels:history
       - channels:read
+      - channels:manage
       - chat:write
+      - chat:write.customize
       - files:write
       - groups:history
       - groups:read
+      - groups:write
       - im:history
-      - im:read
       - mpim:history
       - mpim:read
+      - mpim:write
+      - pins:write
       - users:read
+      - users:read.email
       - commands
 settings:
   event_subscriptions:
     user_events:
       - message.channels
       - message.groups
-      - message.im
       - message.mpim
     bot_events:
       - message.channels
       - message.groups
       - message.im
       - message.mpim
+      - channel_created
   interactivity:
     is_enabled: true
   org_deploy_enabled: false

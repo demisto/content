@@ -1,14 +1,20 @@
 {
-    "name": "RSS",
-    "description": "Simple RSS reader, imports new posts as Incidents.  All rss fields (e.g. author, published, tags) are available.",
+    "name": "RSS (Deprecated)",
+    "description": "Deprecated. Use RSS Feed instead.",
     "support": "community",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.2",
     "author": "Andrew Shepherd",
     "url": "",
     "email": "",
     "created": "2020-10-21T11:42:09Z",
-    "categories": [],
+    "categories": [
+        "Messaging"
+    ],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

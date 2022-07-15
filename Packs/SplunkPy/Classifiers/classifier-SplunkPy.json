@@ -1,22 +1,21 @@
 {
-    "id": "SplunkPy",
-    "name": "Splunk - Classifier",
-    "type": "classification",
     "description": "Classifies Splunk events.",
-	"version": -1,
-	"defaultIncidentType": "",
-	"custom": true,
-	"transformer": {
-		"simple": "source",
-		"complex": null
-	},
-	"keyTypeMap": {
-		"Access - Brute Force Access Behavior Detected - Rule": "Access",
-		"Access - Brute Force Access Behavior Detected Over 1d - Rule": "Access",
-		"Access - Concurrent App Accesses - Rule": "Access",
-		"Access - Excessive Failed Logins - Rule": "Access",
-		"Access - High or Critical Priority Individual Logging into Infected Machine - Rule": "Access",
-		"Endpoint - High Or Critical Priority Host With Malware - Rule": "Malware"
-	},
-	"fromVersion": "6.0.0"
+    "feed": false,
+    "id": "SplunkPy",
+    "keyTypeMap": {
+        "Access - Brute Force Access Behavior Detected - Rule": "Access",
+        "Access - Brute Force Access Behavior Detected Over 1d - Rule": "Access",
+        "Access - Concurrent App Accesses - Rule": "Access",
+        "Access - Excessive Failed Logins - Rule": "Access",
+        "Access - High or Critical Priority Individual Logging into Infected Machine - Rule": "Access",
+        "Endpoint - High Or Critical Priority Host With Malware - Rule": "Malware",
+        "Threat - Suspicious Email - URL - Rule": "Phishing Alerts"
+    },
+    "name": "Splunk - Classifier",
+    "transformer": {
+        "simple": "source"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.0.0"
 }

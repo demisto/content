@@ -1,0 +1,167 @@
+category: Network Security
+commonfields:
+  id: Netskope (API v2)
+  version: -1
+configuration:
+- display: URL of Netskope Tenant (e.g. https://tenant.goskope.com)
+  name: url
+  required: true
+  type: 0
+- display: API Key
+  name: api_key
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Block URLs, domains and file hashes.
+display: Netskope (API v2)
+name: Netskope (API v2)
+script:
+  commands:
+  - arguments:
+    - description: Name of the URL list
+      name: list_name
+      required: true
+    - description: URLs to add to the list
+      isArray: true
+      name: url
+      required: true
+    description: Add URLs to the Netskope URL block list
+    name: netskopev2-add-url
+    outputs:
+    - contextPath: Netskope.URLList.id
+      description: URL List ID.
+      type: number
+    - contextPath: Netskope.URLList.name
+      description: URL List name.
+      type: string
+    - contextPath: Netskope.URLList.data
+      description: URL List contents.
+    - contextPath: Netskope.URLList.data.urls
+      description: List of URLs in URL List.
+    - contextPath: Netskope.URLList.data.type
+      description: URL List type ('exact' or 'regex').
+      type: string
+    - contextPath: Netskope.URLList.modify_by
+      description: User which last modified URL List.
+      type: string
+    - contextPath: Netskope.URLList.modify_time
+      description: Time which URL List was last modified.
+      type: date
+    - contextPath: Netskope.URLList.modify_type
+      description: URL List modification type ('Created', 'Edited' or 'Deleted').
+      type: string
+    - contextPath: Netskope.URLList.pending
+      description: URL List pending status ('1' if pending, '0' if not).
+      type: number
+  - arguments:
+    - description: Name of the URL list
+      name: list_name
+      required: true
+    - description: URLs to remove from the list
+      isArray: true
+      name: url
+      required: true
+    description: Remove URLs from the Netskope URL block list
+    name: netskopev2-remove-url
+    outputs:
+    - contextPath: Netskope.URLList.id
+      description: URL List ID.
+      type: number
+    - contextPath: Netskope.URLList.name
+      description: URL List name.
+      type: string
+    - contextPath: Netskope.URLList.data
+      description: URL List contents.
+    - contextPath: Netskope.URLList.data.urls
+      description: List of URLs in URL List.
+    - contextPath: Netskope.URLList.data.type
+      description: URL List type ('exact' or 'regex').
+      type: string
+    - contextPath: Netskope.URLList.modify_by
+      description: User which last modified URL List.
+      type: string
+    - contextPath: Netskope.URLList.modify_time
+      description: Time which URL List was last modified.
+      type: date
+    - contextPath: Netskope.URLList.modify_type
+      description: URL List modification type ('Created', 'Edited' or 'Deleted').
+      type: string
+    - contextPath: Netskope.URLList.pending
+      description: URL List pending status ('1' if pending, '0' if not).
+      type: number
+  - arguments: []
+    description: Get all applied and pending URL lists
+    name: netskopev2-get-lists
+    outputs:
+    - contextPath: Netskope.List.id
+      description: URL List ID.
+      type: number
+    - contextPath: Netskope.List.name
+      description: URL List name.
+      type: string
+    - contextPath: Netskope.List.data
+      description: URL List contents.
+    - contextPath: Netskope.List.data.urls
+      description: List of URLs in URL List.
+    - contextPath: Netskope.List.data.type
+      description: URL List type ('exact' or 'regex').
+      type: string
+    - contextPath: Netskope.List.modify_by
+      description: User which last modified URL List.
+      type: string
+    - contextPath: Netskope.List.modify_time
+      description: Time which URL List was last modified.
+      type: date
+    - contextPath: Netskope.List.modify_type
+      description: URL List modification type ('Created', 'Edited' or 'Deleted').
+      type: string
+    - contextPath: Netskope.List.pending
+      description: URL List pending status ('1' if pending, '0' if not).
+      type: number
+  - arguments:
+    - description: Name of the URL list
+      name: list_name
+      required: true
+    description: Get URL list by ID
+    name: netskopev2-get-list
+    outputs:
+    - contextPath: Netskope.List.id
+      description: URL List ID.
+      type: number
+    - contextPath: Netskope.List.name
+      description: URL List name.
+      type: string
+    - contextPath: Netskope.List.data
+      description: URL List contents.
+    - contextPath: Netskope.List.data.urls
+      description: List of URLs in URL List.
+    - contextPath: Netskope.List.data.type
+      description: URL List type ('exact' or 'regex').
+      type: string
+    - contextPath: Netskope.List.modify_by
+      description: User which last modified URL List.
+      type: string
+    - contextPath: Netskope.List.modify_time
+      description: Time which URL List was last modified.
+      type: date
+    - contextPath: Netskope.List.modify_type
+      description: URL List modification type ('Created', 'Edited' or 'Deleted').
+      type: string
+    - contextPath: Netskope.List.pending
+      description: URL List pending status ('1' if pending, '0' if not).
+      type: number
+  dockerimage: demisto/python3:3.9.9.25564
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

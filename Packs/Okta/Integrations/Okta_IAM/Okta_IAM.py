@@ -1,22 +1,21 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
 # noqa: F401
 # noqa: F401
 # noqa: F401
 # noqa: F401
 
-
-import traceback
-import dateparser
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
 '''CONSTANTS'''
 
+BATCH_SIZE = 2000
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 DEPROVISIONED_STATUS = 'DEPROVISIONED'
-USER_IS_DISABLED_MSG = 'Action failed because the user is disabled.'
+USER_IS_DISABLED_MSG = 'User is already disabled.'
 USER_IS_DISABLED_ERROR = 'E0000007'
 ERROR_CODES_TO_SKIP = [
     'E0000016',  # user is already enabled
@@ -31,6 +30,7 @@ FETCH_QUERY_EXCEPTION_MSG = 'If you marked the "Query only application events co
                             'the IAM Configuration incident before fetching logs from Okta. ' \
                             'Alternatively, you can unmark this checkbox and provide a ' \
                             '"Fetch Query Filter" parameter instead.'
+GET_USER_ATTRIBUTES = ['id', 'login', 'email']
 
 '''CLIENT CLASS'''
 
@@ -44,10 +44,11 @@ class Client(BaseClient):
         uri = 'users/me'
         self._http_request(method='GET', url_suffix=uri)
 
-    def get_user(self, email):
+    def get_user(self, filter_name: str, filter_value: str):
+        filter_name = filter_name if filter_name == 'id' else f'profile.{filter_name}'
         uri = 'users'
         query_params = {
-            'filter': f'profile.login eq "{email}"'
+            'filter': f'{filter_name} eq "{filter_value}"'
         }
 
         res = self._http_request(
@@ -121,6 +122,66 @@ class Client(BaseClient):
         okta_fields.update({k: custom_properties[k].get('title') for k in custom_properties.keys()})
 
         return okta_fields
+
+    def http_request(self, method, url_suffix, full_url=None, params=None, data=None, headers=None):
+        if headers is None:
+            headers = self._headers
+        full_url = full_url if full_url else urljoin(self._base_url, url_suffix)
+
+        res = requests.request(
+            method,
+            full_url,
+            verify=self._verify,
+            headers=headers,
+            params=params,
+            json=data
+        )
+        return res
+
+    def search_group(self, group_name):
+        uri = 'groups'
+        query_params = {
+            'q': encode_string_results(group_name)
+        }
+        return self.http_request(
+            method="GET",
+            url_suffix=uri,
+            params=query_params
+        )
+
+    def get_group_by_id(self, group_id):
+        uri = f'groups/{group_id}'
+        return self.http_request(
+            method='GET',
+            url_suffix=uri
+        )
+
+    def get_group_members(self, group_id):
+        uri = f'groups/{group_id}/users'
+        return self.get_paged_results(uri)
+
+    def get_paged_results(self, uri, query_param=None):
+        response = self.http_request(
+            method="GET",
+            url_suffix=uri,
+            params=query_param
+        )
+        paged_results = response.json()
+        if response.status_code != 200:
+            raise Exception(
+                f'Error occurred while calling Okta API: {response.request.url}. Response: {response.json()}')
+        while "next" in response.links and len(response.json()) > 0:
+            next_page = response.links.get("next").get("url")
+            response = self._http_request(
+                method="GET",
+                full_url=next_page,
+                url_suffix=''
+            )
+            if response.status_code != 200:
+                raise Exception(
+                    f'Error occurred while calling Okta API: {response.request.url}. Response: {response.json()}')
+            paged_results += response.json()
+        return paged_results
 
     def get_app_user_assignment(self, application_id, user_id):
         uri = f'/apps/{application_id}/users/{user_id}'
@@ -246,23 +307,64 @@ class Client(BaseClient):
 '''HELPER FUNCTIONS'''
 
 
+def get_all_user_profiles():
+    query = 'type:"User Profile"'
+    email_to_user_profile = {}
+
+    user_profiles: List[dict] = []
+    search_indicators = IndicatorsSearcher(query=query, size=BATCH_SIZE)
+    for user_profile_res in search_indicators:
+        user_profiles.extend(user_profile_res.get('iocs') or [])
+
+    for user_profile in user_profiles:
+        user_profile = user_profile.get('CustomFields', {})
+        email_to_user_profile[user_profile.get('email')] = user_profile
+
+    return email_to_user_profile
+
+
+def get_event_username(log_entry):
+    for target in log_entry.get('target', []):
+        if target.get('type') == 'User':
+            return target.get('alternateId')
+    return None
+
+
+def should_drop_event(log_entry, email_to_user_profile):
+    """ Returns a boolean value indicates whether the incident should be dropped.
+
+    Args:
+        log_entry (dict): The log entry.
+
+    Returns:
+        (bool) True iff the event should be dropped.
+    """
+    username = get_event_username(log_entry)
+    if username is not None and email_to_user_profile.get(username) is None:
+        demisto.info(f'Dropping incident for user with username {username} - '
+                     f'User Profile does not exist in XSOAR.')
+        return True
+    return False
+
+
+def add_user_profile_data_to_entry(log_entry, email_to_user_profile):
+    username = get_event_username(log_entry)
+    user_profile = email_to_user_profile.get(username, {})
+    log_entry.update(user_profile)
+    log_entry['UserProfile'] = user_profile
+
+
 def get_query_filter(context):
-    application_ids = []
-
-    query_filter = '(eventType eq "application.user_membership.add" ' \
-                   'or eventType eq "application.user_membership.remove") and'
-
     iam_configuration = context.get('IAMConfiguration', [])
     if not iam_configuration:
         raise DemistoException(FETCH_QUERY_EXCEPTION_MSG)
 
-    for row in iam_configuration:
-        application_ids.append(row['ApplicationID'])
+    application_ids = [row['ApplicationID'] for row in iam_configuration]
 
-    query_suffix = '(' + ' or '.join([f'target.id co "{app_id}"' for app_id in application_ids]) + \
-                   ') or (eventType eq "user.account.update_profile")'
+    query_filter = '(eventType eq "application.user_membership.add" ' \
+                   'or eventType eq "application.user_membership.remove") and'
 
-    query_filter += query_suffix
+    query_filter += '(' + ' or '.join([f'target.id co "{app_id}"' for app_id in application_ids]) + ')'
 
     return query_filter
 
@@ -273,7 +375,7 @@ def is_rate_limit_error(e):
     return False
 
 
-def handle_exception(user_profile, e, action):
+def handle_exception(user_profile, e, action, okta_user=None):
     """ Handles failed responses from Okta API by setting the User Profile object with the results.
 
     Args:
@@ -294,9 +396,9 @@ def handle_exception(user_profile, e, action):
         error_message = str(e)
 
     if error_code == USER_IS_DISABLED_ERROR:
-        error_message = USER_IS_DISABLED_MSG
+        user_profile.set_user_is_already_disabled(okta_user)
 
-    if error_code in ERROR_CODES_TO_SKIP:
+    elif error_code in ERROR_CODES_TO_SKIP:
         user_profile.set_result(action=action,
                                 skip=True,
                                 skip_reason=error_message)
@@ -339,7 +441,7 @@ def test_module(client, is_fetch, fetch_query_filter, auto_generate_query_filter
         elif not fetch_query_filter:
             raise DemistoException(FETCH_QUERY_EXCEPTION_MSG)
     try:
-        dateparser.parse(first_fetch_str).strftime(DATE_FORMAT)
+        dateparser.parse(first_fetch_str).strftime(DATE_FORMAT)  # type: ignore
     except AttributeError:
         raise DemistoException('First fetch timestamp parameter is not in the correct format.')
 
@@ -358,10 +460,12 @@ def get_mapping_fields_command(client):
     return GetMappingFieldsResponse([incident_type_scheme])
 
 
-def get_user_command(client, args, mapper_in):
-    user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
+def get_user_command(client, args, mapper_in, mapper_out):
+    user_profile = IAMUserProfile(user_profile=args.get('user-profile'), mapper=mapper_out,
+                                  incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
     try:
-        okta_user = client.get_user(user_profile.get_attribute('email'))
+        iam_attr, iam_attr_value = user_profile.get_first_available_iam_user_attr(GET_USER_ATTRIBUTES)
+        okta_user = client.get_user(iam_attr, iam_attr_value)
         if not okta_user:
             error_code, error_message = IAMErrors.USER_DOES_NOT_EXIST
             user_profile.set_result(action=IAMActions.GET_USER,
@@ -386,15 +490,18 @@ def get_user_command(client, args, mapper_in):
     return user_profile
 
 
-def disable_user_command(client, args, is_command_enabled):
-    user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
+def disable_user_command(client, args, is_command_enabled, mapper_out):
+    user_profile = IAMUserProfile(user_profile=args.get('user-profile'), mapper=mapper_out,
+                                  incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
+    okta_user = None
     if not is_command_enabled:
         user_profile.set_result(action=IAMActions.DISABLE_USER,
                                 skip=True,
                                 skip_reason='Command is disabled.')
     else:
         try:
-            okta_user = client.get_user(user_profile.get_attribute('email'))
+            iam_attr, iam_attr_value = user_profile.get_first_available_iam_user_attr(GET_USER_ATTRIBUTES)
+            okta_user = client.get_user(iam_attr, iam_attr_value)
             if not okta_user:
                 _, error_message = IAMErrors.USER_DOES_NOT_EXIST
                 user_profile.set_result(action=IAMActions.DISABLE_USER,
@@ -413,20 +520,22 @@ def disable_user_command(client, args, is_command_enabled):
                 )
 
         except Exception as e:
-            handle_exception(user_profile, e, IAMActions.DISABLE_USER)
+            handle_exception(user_profile, e, IAMActions.DISABLE_USER, okta_user)
 
     return user_profile
 
 
 def create_user_command(client, args, mapper_out, is_command_enabled, is_update_user_enabled, is_enable_enabled):
-    user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
+    user_profile = IAMUserProfile(user_profile=args.get('user-profile'), mapper=mapper_out,
+                                  incident_type=IAMUserProfile.CREATE_INCIDENT_TYPE)
     if not is_command_enabled:
         user_profile.set_result(action=IAMActions.CREATE_USER,
                                 skip=True,
                                 skip_reason='Command is disabled.')
     else:
         try:
-            okta_user = client.get_user(user_profile.get_attribute('email'))
+            iam_attr, iam_attr_value = user_profile.get_first_available_iam_user_attr(GET_USER_ATTRIBUTES)
+            okta_user = client.get_user(iam_attr, iam_attr_value)
             if okta_user:
                 # if user exists, update its data
                 return update_user_command(client, args, mapper_out, is_update_user_enabled, is_enable_enabled,
@@ -453,7 +562,8 @@ def create_user_command(client, args, mapper_out, is_command_enabled, is_update_
 
 def update_user_command(client, args, mapper_out, is_command_enabled, is_enable_enabled,
                         is_create_user_enabled, create_if_not_exists):
-    user_profile = IAMUserProfile(user_profile=args.get('user-profile'))
+    user_profile = IAMUserProfile(user_profile=args.get('user-profile'), mapper=mapper_out,
+                                  incident_type=IAMUserProfile.UPDATE_INCIDENT_TYPE)
     allow_enable = args.get('allow-enable') == 'true'
     if not is_command_enabled:
         user_profile.set_result(action=IAMActions.UPDATE_USER,
@@ -461,7 +571,9 @@ def update_user_command(client, args, mapper_out, is_command_enabled, is_enable_
                                 skip_reason='Command is disabled.')
     else:
         try:
-            okta_user = client.get_user(user_profile.get_attribute('email'))
+            iam_attr, iam_attr_value = user_profile.get_first_available_iam_user_attr(GET_USER_ATTRIBUTES,
+                                                                                      use_old_user_data=True)
+            okta_user = client.get_user(iam_attr, iam_attr_value)
             if okta_user:
                 user_id = okta_user.get('id')
 
@@ -630,18 +742,23 @@ def fetch_incidents(client, last_run, first_fetch_str, fetch_limit, query_filter
     incidents = last_run.get('incidents', [])
     last_run_full_url = last_run.get('last_run_full_url')
 
-    first_fetch = dateparser.parse(first_fetch_str).strftime(DATE_FORMAT)
+    first_fetch_date = dateparser.parse(first_fetch_str)
+    assert first_fetch_date is not None, f'could not parse {first_fetch_str}'
+    first_fetch = first_fetch_date.strftime(DATE_FORMAT)
     last_run_time = last_run.get('last_run_time', first_fetch)  # if last_run_time is undefined, use first_fetch
     time_now = datetime.now().strftime(DATE_FORMAT)
 
     demisto.debug(f'Okta: Fetching logs from {last_run_time} to {time_now}.')
     if not incidents:
+        email_to_user_profile = get_all_user_profiles()
+
         log_events, last_run_full_url = client.get_logs(last_run_full_url, last_run_time, time_now,
                                                         query_filter, auto_generate_filter, context)
         for entry in log_events:
-            # mapping is done at the classification and mapping stage
-            incident = {'rawJSON': json.dumps(entry)}
-            incidents.append(incident)
+            if not should_drop_event(entry, email_to_user_profile):
+                add_user_profile_data_to_entry(entry, email_to_user_profile)
+                incident = {'rawJSON': json.dumps(entry)}
+                incidents.append(incident)
 
     next_run = {
         'incidents': incidents[fetch_limit:],
@@ -650,6 +767,151 @@ def fetch_incidents(client, last_run, first_fetch_str, fetch_limit, query_filter
     }
 
     return incidents[:fetch_limit], next_run
+
+
+class OutputContext:
+    """
+        Class to build a generic output and context.
+    """
+
+    def __init__(self, success=None, active=None, id=None, username=None, email=None, errorCode=None,
+                 errorMessage=None, details=None, displayName=None, members=None):
+        self.instanceName = demisto.callingContext['context']['IntegrationInstance']
+        self.brand = demisto.callingContext['context']['IntegrationBrand']
+        self.command = demisto.command().replace('-', '_').title().replace('_', '')
+        self.success = success
+        self.active = active
+        self.id = id
+        self.username = username
+        self.email = email
+        self.errorCode = errorCode
+        self.errorMessage = errorMessage
+        self.details = details
+        self.displayName = displayName  # Used in group
+        self.members = members  # Used in group
+        self.data = {
+            "brand": self.brand,
+            "instanceName": self.instanceName,
+            "success": success,
+            "active": active,
+            "id": id,
+            "username": username,
+            "email": email,
+            "errorCode": errorCode,
+            "errorMessage": errorMessage,
+            "details": details,
+            "displayName": displayName,
+            "members": members
+        }
+        # Remoove empty values
+        self.data = {
+            k: v
+            for k, v in self.data.items()
+            if v is not None
+        }
+
+
+def get_group_command(client, args):
+    scim = safe_load_json(args.get('scim'))
+    group_id = scim.get('id')
+    group_name = scim.get('displayName')
+
+    if not (group_id or group_name):
+        return_error("You must supply either 'id' or 'displayName' in the scim data")
+
+    group_search_result = None
+    if not group_id:
+        res = client.search_group(group_name)
+        res_json = res.json()
+
+        if res.status_code == 200:
+            if len(res_json) < 1:
+                generic_iam_context = OutputContext(success=False, displayName=group_name, errorCode=404,
+                                                    errorMessage="Group Not Found", details=res_json)
+            else:
+                group_search_result = res_json
+        else:
+            generic_iam_context = OutputContext(success=False, displayName=group_name, id=group_id,
+                                                errorCode=res_json.get('errorCode'),
+                                                errorMessage=res_json.get('errorSummary'),
+                                                details=res_json)
+
+        if not group_search_result:
+            return CommandResults(
+                raw_response=generic_iam_context.data,
+                outputs_prefix=generic_iam_context.command,
+                outputs_key_field='id',
+                outputs=generic_iam_context.data,
+                readable_output=tableToMarkdown('Okta Get Group:', generic_iam_context.data, removeNull=True)
+            )
+
+    if group_search_result and len(group_search_result) > 1:
+        generic_iam_context_data_list = []
+
+        for group in group_search_result:
+            group_name = group.get('profile', {}).get('name')
+            generic_iam_context = OutputContext(success=True, id=group.get('id'), displayName=group_name)
+            generic_iam_context_data_list.append(generic_iam_context.data)
+
+        return CommandResults(
+            raw_response=generic_iam_context_data_list,
+            outputs_prefix=generic_iam_context.command,
+            outputs_key_field='id',
+            outputs=generic_iam_context_data_list,
+            readable_output=tableToMarkdown('Okta Get Group:', generic_iam_context_data_list, removeNull=True)
+        )
+    elif not group_id and isinstance(group_search_result, list):
+        group_id = group_search_result[0].get('id')
+
+    res = client.get_group_by_id(group_id)
+    res_json = res.json()
+    if res.status_code == 200:
+        group_member_profiles = []
+        include_members = args.get('includeMembers')
+        if include_members.lower() == 'true':
+            group_members = client.get_group_members(group_id)
+            for member in group_members:
+                if member.get('status') != DEPROVISIONED_STATUS:
+                    profile = member.get('profile', {})
+                    group_member_profile = {
+                        "value": member.get('id'),
+                        "display": profile.get('login')
+                    }
+                    group_member_profiles.append(group_member_profile)
+        generic_iam_context = OutputContext(success=True, id=res_json.get('id'),
+                                            displayName=res_json.get('profile', {}).get('name'),
+                                            members=group_member_profiles)
+    elif res.status_code == 404:
+        generic_iam_context = OutputContext(success=False, displayName=group_name, id=group_id, errorCode=404,
+                                            errorMessage="Group Not Found", details=res_json)
+    else:
+        generic_iam_context = OutputContext(success=False, displayName=group_name, id=group_id,
+                                            errorCode=res_json.get('errorCode'),
+                                            errorMessage=res_json.get('errorSummary'),
+                                            details=res_json)
+
+    return CommandResults(
+        raw_response=generic_iam_context.data,
+        outputs_prefix=generic_iam_context.command,
+        outputs_key_field='id',
+        outputs=generic_iam_context.data,
+        readable_output=tableToMarkdown('Okta Get Group:', generic_iam_context.data, removeNull=True)
+    )
+
+
+def get_logs_command(client, args):
+    filter = args.get('filter')
+    since = args.get('since')
+    until = args.get('until')
+    log_events, _ = client.get_logs(query_filter=filter, last_run_time=since, time_now=until)
+
+    return CommandResults(
+        raw_response=log_events,
+        outputs_prefix='Okta.Logs.Events',
+        outputs_key_field='uuid',
+        outputs=log_events,
+        readable_output=tableToMarkdown('Okta Log Events:', log_events)
+    )
 
 
 def main():
@@ -672,7 +934,7 @@ def main():
 
     is_fetch = params.get('isFetch')
     first_fetch_str = params.get('first_fetch')
-    fetch_limit = int(params.get('max_fetch'))
+    fetch_limit = int(params.get('max_fetch', 1))
     auto_generate_query_filter = params.get('auto_generate_query_filter')
     fetch_query_filter = params.get('fetch_query_filter')
     context = demisto.getIntegrationContext()
@@ -694,7 +956,7 @@ def main():
     demisto.debug(f'Command being called is {command}')
 
     if command == 'iam-get-user':
-        user_profile = get_user_command(client, args, mapper_in)
+        user_profile = get_user_command(client, args, mapper_in, mapper_out)
 
     elif command == 'iam-create-user':
         user_profile = create_user_command(client, args, mapper_out, is_create_enabled,
@@ -705,7 +967,7 @@ def main():
                                            is_create_enabled, create_if_not_exists)
 
     elif command == 'iam-disable-user':
-        user_profile = disable_user_command(client, args, is_disable_enabled)
+        user_profile = disable_user_command(client, args, is_disable_enabled, mapper_out)
 
     if user_profile:
         return_results(user_profile)
@@ -733,6 +995,12 @@ def main():
             context = set_configuration(args)
             demisto.setIntegrationContext(context)
 
+        elif command == 'iam-get-group':
+            return_results(get_group_command(client, args))
+
+        elif command == 'okta-get-logs':
+            return_results(get_logs_command(client, args))
+
         elif command == 'fetch-incidents':
             last_run = demisto.getLastRun()
             context = demisto.getIntegrationContext()
@@ -741,9 +1009,9 @@ def main():
             demisto.incidents(incidents)
             demisto.setLastRun(next_run)
 
-    except Exception:
+    except Exception as e:
         # For any other integration command exception, return an error
-        return_error(f'Failed to execute {command} command. Traceback: {traceback.format_exc()}')
+        return_error(f'Failed to execute {command} command. Error: {str(e)}')
 
 
 from IAMApiModule import *  # noqa: E402

@@ -19,7 +19,7 @@ args:
   description: The IPv4 address to check (can be used instead of the value argument).
 scripttarget: 0
 runonce: false
-dockerimage: demisto/netutils:1.0.0.14492
+dockerimage: demisto/netutils:1.0.0.24101
 runas: DBotWeakRole
 tests:
 - IsRFC1918-Test

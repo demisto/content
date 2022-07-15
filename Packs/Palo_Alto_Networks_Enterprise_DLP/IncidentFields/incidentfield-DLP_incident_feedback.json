@@ -1,0 +1,31 @@
+{
+    "id": "incident_pandlpincidentfeedback",
+    "version": -1,
+    "modified": "2022-02-14T21:41:30.93881212Z",
+    "name": "PAN DLP Incident Feedback",
+    "ownerOnly": true,
+    "description": "User provided feedback to the DLP incident, such as true positive or false positive",
+    "cliName": "pandlpincidentfeedback",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Data Loss Prevention"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.5.0"
+}

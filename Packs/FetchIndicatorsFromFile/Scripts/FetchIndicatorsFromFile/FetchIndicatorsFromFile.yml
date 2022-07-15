@@ -107,5 +107,5 @@ tags:
 - indicators
 timeout: '0'
 type: python
-dockerimage: demisto/xlrd-py3:1.0.0.21492
+dockerimage: demisto/py3-tools:0.0.1.25751
 fromversion: 5.5.0

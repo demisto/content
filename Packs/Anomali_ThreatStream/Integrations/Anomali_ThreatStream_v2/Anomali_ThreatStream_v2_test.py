@@ -2,7 +2,7 @@ import os
 import json
 import demistomock as demisto
 from tempfile import mkdtemp
-from Anomali_ThreatStream_v2 import main, file_name_to_valid_string, get_file_reputation
+from Anomali_ThreatStream_v2 import main, file_name_to_valid_string, get_file_reputation, Client, get_indicators
 import emoji
 import pytest
 
@@ -69,9 +69,16 @@ expected_import_json = {'objects': [{'srcip': '8.8.8.8', 'itype': 'mal_ip', 'con
                                     {'srcip': '1.1.1.1', 'itype': 'apt_ip'}],
                         'meta': {'classification': 'private', 'confidence': 30, 'allow_unresolved': False}}
 
+INDICATOR = [{
+    "resource_uri": "/api/v2/intelligence/123456789/",
+    "status": "active",
+    "uuid": "12345678-dead-beef-a6cc-eeece19516f6",
+    "value": "www.demisto.com",
+}]
+
 
 def test_ioc_approval_500_error(mocker):
-    mocker.patch('Anomali_ThreatStream_v2.http_request', side_effect=http_request_with_approval_mock)
+    mocker.patch.object(Client, 'http_request', side_effect=http_request_with_approval_mock)
     mocker.patch.object(demisto, 'args', return_value=package_500_error)
     mocker.patch.object(demisto, 'command', return_value='threatstream-import-indicator-with-approval')
     mocker.patch.object(demisto, 'results')
@@ -100,7 +107,7 @@ def test_import_ioc_without_approval(mocker):
     }
     with open(file_obj['path'], 'w') as f:
         json.dump(mock_objects, f)
-    http_mock = mocker.patch('Anomali_ThreatStream_v2.http_request', side_effect=http_request_without_approval_mock)
+    http_mock = mocker.patch.object(Client, 'http_request', side_effect=http_request_without_approval_mock)
     mocker.patch.object(demisto, 'args', return_value={'file_id': 1, 'classification': 'private',
                                                        'allow_unresolved': 'no', 'confidence': 30})
     mocker.patch.object(demisto, 'command', return_value='threatstream-import-indicator-without-approval')
@@ -133,7 +140,73 @@ def test_get_file_reputation(mocker, file_hash, expected_result_file_path, raw_r
     mocker.patch('Anomali_ThreatStream_v2.search_indicator_by_params', return_value=raw_response)
     mocker.patch.object(demisto, 'results')
 
-    get_file_reputation(file_hash)
+    client = Client(
+        base_url='',
+        use_ssl=False,
+        default_threshold='high',
+        reliability='B - Usually reliable'
+    )
+
+    get_file_reputation(client, file_hash)
     context = demisto.results.call_args_list[0][0][0].get('EntryContext')
 
     assert context == expected_result
+
+
+class TestGetIndicators:
+    @staticmethod
+    def test_sanity(mocker):
+        """
+        Given
+            a limit above the number of available indicators
+        When
+            calling the get_indicator command
+        Then
+            verify that the maximum available amount is returned.
+        """
+        mocker.patch.object(Client, 'http_request', side_effect=[
+            {'objects': INDICATOR * 50},
+            {'objects': []},
+        ])
+        results = mocker.patch.object(demisto, 'results')
+        client = Client(
+            base_url='',
+            use_ssl=False,
+            default_threshold='high',
+            reliability='B - Usually reliable',
+        )
+
+        get_indicators(client, limit='7000')
+
+        assert len(results.call_args_list[0][0][0].get('EntryContext', {}).get('ThreatStream.Indicators', [])) == 50
+
+    @staticmethod
+    def test_pagination(mocker):
+        """
+        Given
+            a limit above the page size
+        When
+            calling the get_indicator command
+        Then
+            verify that the requested amount is returned.
+        """
+        mocker.patch.object(Client, 'http_request', side_effect=[
+            {'objects': INDICATOR * 1000},
+            {'objects': INDICATOR * 1000},
+            {'objects': INDICATOR * 1000},
+            {'objects': INDICATOR * 1000},
+            {'objects': INDICATOR * 1000},
+            {'objects': INDICATOR * 1000},
+            {'objects': INDICATOR * 1000},
+        ])
+        results = mocker.patch.object(demisto, 'results')
+        client = Client(
+            base_url='',
+            use_ssl=False,
+            default_threshold='high',
+            reliability='B - Usually reliable',
+        )
+
+        get_indicators(client, limit='7000')
+
+        assert len(results.call_args_list[0][0][0].get('EntryContext', {}).get('ThreatStream.Indicators', [])) == 7000

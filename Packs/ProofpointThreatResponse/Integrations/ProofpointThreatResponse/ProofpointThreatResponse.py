@@ -1,10 +1,12 @@
-import demistomock as demisto
-from CommonServerPython import *
-
-''' IMPORTS '''
 import json
 import requests
-from datetime import date
+from datetime import date, timedelta
+
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+import dateparser
+
+''' IMPORTS '''
 
 requests.packages.urllib3.disable_warnings()
 
@@ -16,7 +18,8 @@ if BASE_URL and BASE_URL[-1] != '/':
 API_KEY = demisto.params().get('apikey')
 VERIFY_CERTIFICATE = not demisto.params().get('insecure')
 # How many time before the first fetch to retrieve incidents
-FIRST_FETCH, _ = parse_date_range(demisto.params().get('first_fetch', '12 hours') or '12 hours', date_format=TIME_FORMAT)
+FIRST_FETCH, _ = parse_date_range(demisto.params().get('first_fetch', '12 hours') or '12 hours',
+                                  date_format=TIME_FORMAT)
 
 ''' COMMAND FUNCTIONS '''
 
@@ -245,7 +248,10 @@ def get_emails_context(event):
                 'body': email.get('body'),
                 'body_type': email.get('bodyType'),
                 'headers': email.get('headers'),
-                'urls': email.get('urls')
+                'urls': email.get('urls'),
+                'sender_vap': email.get('sender', {}).get('vap'),
+                'recipient_vap': email.get('recipient', {}).get('vap'),
+                'attachments': email.get('attachments'),
             }))
 
     return emails_context
@@ -321,6 +327,7 @@ def get_incident_command():
     """
     args = demisto.args()
     incident_id = args.pop('incident_id')
+    expand_events = args.get('expand_events')
     fullurl = BASE_URL + 'api/incidents/{}.json'.format(incident_id)
     incident_data = requests.get(
         fullurl,
@@ -328,7 +335,10 @@ def get_incident_command():
             'Content-Type': 'application/json',
             'Authorization': API_KEY
         },
-        verify=VERIFY_CERTIFICATE
+        params={
+            'expand_events': expand_events,
+        },
+        verify=VERIFY_CERTIFICATE,
     )
 
     if incident_data.status_code < 200 or incident_data.status_code >= 300:
@@ -750,6 +760,119 @@ def ingest_alert_command():
     return_outputs('The alert was successfully ingested to TRAP', {}, {})
 
 
+def close_incident_command():
+    args = demisto.args()
+    incident_id = args.get('incident_id')
+    details = args.get('details')
+    summary = args.get('summary')
+    request_body = {
+        "summary": summary,
+        "detail": details
+    }
+
+    fullurl = BASE_URL + f'api/incidents/{incident_id}/close.json'
+    incident_data = requests.post(
+        fullurl,
+        headers={
+            'Content-Type': 'application/json',
+            'Authorization': API_KEY
+        },
+        json=request_body,
+        verify=VERIFY_CERTIFICATE
+    )
+
+    if incident_data.status_code < 200 or incident_data.status_code >= 300:
+        return_error('Incident closure failed. URL: {}, '
+                     'StatusCode: {}'.format(fullurl, incident_data.status_code))
+
+    return_outputs('The incident {} was successfully closed'.format(incident_id), {}, {})
+
+
+def search_quarantine():
+    arg_time = dateparser.parse(demisto.args().get('time'))
+    if isinstance(arg_time, datetime):
+        emailTAPtime = int(arg_time.timestamp())
+    else:
+        return_error("Timestamp was bad")
+
+    lstAlert = []
+    mid = demisto.args().get('message_id')
+    recipient = demisto.args().get('recipient')
+
+    incidents_list = get_incidents_request({})
+    found = {'email': False, 'mid': False, 'quarantine': False}
+    resQ = []
+
+    # Collecting emails inside alert to find those with same recipient and messageId
+    for incident in incidents_list:
+        for alert in incident.get('events'):
+            for email in alert.get('emails'):
+                if email.get('messageId') == mid and email.get('recipient').get('email') == recipient and email.get(
+                        'messageDeliveryTime', {}).get('millis'):
+                    found['mid'] = True
+                    emailTRAPtimestamp = int(email.get('messageDeliveryTime', {}).get('millis') / 1000)
+                    if emailTAPtime == emailTRAPtimestamp:
+                        found['email'] = True
+                        lstAlert.append({
+                            'incidentid': incident.get('id'),
+                            'alertid': alert.get('id'),
+                            'alerttime': alert.get('received'),
+                            'incidenttime': incident.get('created_at'),
+                            'messageId': mid,
+                            'quarantine_results': incident.get('quarantine_results')
+                        })
+
+    quarantineFoundcpt = 0
+
+    # Go though the alert list, and check the quarantine results:
+    for alert in lstAlert:
+        for quarantine in alert.get('quarantine_results'):
+            if quarantine.get('messageId') == mid and quarantine.get('recipient') == recipient:
+                found['quarantine'] = True
+                tsquarantine = dateparser.parse(quarantine.get("startTime"))
+                tsalert = dateparser.parse(alert.get("alerttime"))
+                if isinstance(tsquarantine, datetime) and isinstance(tsalert, datetime):
+                    diff = (tsquarantine - tsalert).total_seconds()
+                    # we want to make sure quarantine starts 2 minuts after creating the alert.
+                    if 0 < diff < 120:
+                        resQ.append({
+                            'quarantine': quarantine,
+                            'alert': {
+                                'id': alert.get('alertid'),
+                                'time': alert.get('alerttime')
+                            },
+                            'incident': {
+                                'id': alert.get('incidentid'),
+                                'time': alert.get('incidenttime')
+                            }
+                        })
+                    else:
+                        quarantineFoundcpt += 1
+                else:
+                    demisto.debug(f"Failed to parse timestamp of incident: {alert=} {quarantine=}.")
+
+    if quarantineFoundcpt > 0:
+        return CommandResults(
+            readable_output=f"{mid} Message ID matches to {quarantineFoundcpt} emails quarantined but time alert does not match")
+    if not found['mid']:
+        return CommandResults(readable_output=f"Message ID {mid} not found in TRAP incidents")
+
+    midtxt = f'{mid} Message ID found in TRAP alerts,'
+    if not found['email']:
+        return CommandResults(
+            readable_output=f"{midtxt} but timestamp between email delivery time and time given as argument doesn't match")
+    elif not found['quarantine']:
+        demisto.debug("\n".join([json.dumps(alt, indent=4) for alt in lstAlert]))
+        return CommandResults(f"{midtxt} but not in the quarantine list meaning that email has not be quarantined.")
+
+    return CommandResults(
+        outputs_prefix='ProofPointTRAP.Quarantine',
+        outputs=resQ,
+        readable_output=tableToMarkdown("Quarantine Result", resQ),
+        raw_response=resQ
+    )
+
+
 ''' EXECUTION CODE '''
 
 
@@ -802,6 +925,12 @@ def main():
 
     elif command == 'proofpoint-tr-ingest-alert':
         ingest_alert_command()
+
+    elif command == 'proofpoint-tr-close-incident':
+        close_incident_command()
+
+    elif command == 'proofpoint-tr-verify-quarantine':
+        return_results(search_quarantine())
 
 
 if __name__ == '__builtin__' or __name__ == 'builtins':

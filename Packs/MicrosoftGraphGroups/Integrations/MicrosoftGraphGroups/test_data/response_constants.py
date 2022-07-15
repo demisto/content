@@ -151,3 +151,107 @@ RESPONSE_CREATE_GROUP = {
     "securityIdentifier": "S-1-12-1-464174966-1127616274-1724460434-658509210",
     "visibility": None
 }
+RESPONSE_LIST_MEMBERS_UNDER_100 = {
+        "@odata.context": "someLink",
+        "value": [
+            {
+                "id": "ID1",
+                "businessPhones": [
+                ],
+                "displayName": "mock1",
+                "givenName": "mock1",
+                "jobTitle": "test",
+                "mail": "mock1@demistodev.onmicrosoft.com",
+                "mobilePhone": "None",
+                "officeLocation": "None",
+                "preferredLanguage": "en-US",
+                "surname": "mock1",
+                "userPrincipalName": "mock1@demistodev.onmicrosoft.com"
+            },
+            {
+                "@odata.type": "#microsoft.graph.user",
+                "id": "ID2",
+                "businessPhones": [
+
+                ],
+                "displayName": "mock2",
+                "givenName": "mock2",
+                "jobTitle": "None",
+                "mail": "mock2@demistodev.onmicrosoft.com",
+                "mobilePhone": "050505050",
+                "officeLocation": "None",
+                "preferredLanguage": "en-US",
+                "surname": "mock2",
+                "userPrincipalName": "mock2@demistodev.onmicrosoft.com"
+            },
+            {
+                "@odata.type": "#microsoft.graph.user",
+                "id": "ID3",
+                "businessPhones": [
+
+                ],
+                "displayName": "mock3",
+                "givenName": "mock3",
+                "jobTitle": "None",
+                "mail": "None",
+                "mobilePhone": "None",
+                "officeLocation": "None",
+                "preferredLanguage": "None",
+                "surname": "mock3",
+                "userPrincipalName": "mock3@demistodev.onmicrosoft.com"
+            }
+        ]
+    }
+RESPONSE_LIST_MEMBERS_ABOVE_100 = {
+        "@odata.context": "someLink",
+        "@odata.nextLink": "someNextLink",
+        "value": [
+            {
+                "@odata.type": "#microsoft.graph.user",
+                "id": "ID1",
+                "businessPhones": [
+                ],
+                "displayName": "mock1",
+                "givenName": "mock1",
+                "jobTitle": "test",
+                "mail": "mock1@demistodev.onmicrosoft.com",
+                "mobilePhone": "None",
+                "officeLocation": "None",
+                "preferredLanguage": "en-US",
+                "surname": "mock1",
+                "userPrincipalName": "mock1@demistodev.onmicrosoft.com"
+            },
+            {
+                "@odata.type": "#microsoft.graph.user",
+                "id": "ID2",
+                "businessPhones": [
+
+                ],
+                "displayName": "mock2",
+                "givenName": "mock2",
+                "jobTitle": "None",
+                "mail": "mock2@demistodev.onmicrosoft.com",
+                "mobilePhone": "050505050",
+                "officeLocation": "None",
+                "preferredLanguage": "en-US",
+                "surname": "mock2",
+                "userPrincipalName": "mock2@demistodev.onmicrosoft.com"
+            },
+            {
+                "@odata.type": "#microsoft.graph.user",
+                "id": "ID3",
+                "businessPhones": [
+
+                ],
+                "displayName": "mock3",
+                "givenName": "mock3",
+                "jobTitle": "None",
+                "mail": "None",
+                "mobilePhone": "None",
+                "officeLocation": "None",
+                "preferredLanguage": "None",
+                "surname": "mock3",
+                "userPrincipalName": "mock3@demistodev.onmicrosoft.com"
+            }
+        ]
+}

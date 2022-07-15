@@ -25,13 +25,15 @@ INTEGRATION_CONTEXT_NAME = 'AlienVaultOTX'
 
 
 class Client(BaseClient):
-    def __init__(self, base_url, headers, verify, proxy, default_threshold, reliability, create_relationships=True):
+    def __init__(self, base_url, headers, verify, proxy, default_threshold, max_indicator_relationships,
+                 reliability, create_relationships=True):
 
         BaseClient.__init__(self, base_url=base_url, headers=headers, verify=verify, proxy=proxy, )
 
         self.reliability = reliability
         self.create_relationships = create_relationships
         self.default_threshold = default_threshold
+        self.max_indicator_relationships = 0 if not max_indicator_relationships else max_indicator_relationships
 
     def test_module(self) -> Dict:
         """Performs basic GET request to check if the API is reachable and authentication is successful.
@@ -71,11 +73,14 @@ class Client(BaseClient):
                                         url_suffix=suffix,
                                         params=params)
         except DemistoException as e:
-            if e.res.status_code == 404:
-                result = 404
-            elif e.res.status_code == 400:
-                demisto.debug(f'{e.res.text} response received from server when trying to get api:{e.res.url}')
-                raise Exception(f'The command could not be execute: {argument} is invalid.')
+            if hasattr(e.res, 'status_code'):
+                if e.res.status_code == 404:
+                    result = 404
+                elif e.res.status_code == 400:
+                    demisto.debug(f'{e.res.text} response received from server when trying to get api:{e.res.url}')
+                    raise Exception(f'The command could not be execute: {argument} is invalid.')
+                else:
+                    raise
             else:
                 raise
         return result
@@ -84,25 +89,40 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def calculate_dbot_score(client: Client, pulse_info: Union[dict, None]) -> float:
+def calculate_dbot_score(client: Client, raw_response: Union[dict, None]) -> float:
     """
     calculate DBot score for query
-    :param pulse_info: returned from general section as dictionary
-    :return: score - good (if 0), bad (if grater than default), suspicious if between
+
+    Args:
+        client: Client object with request
+        raw_response: The response gotten from the server
+
+    :returns:
+        score - good (if 0), bad (if grater than default), suspicious if between
     """
     default_threshold = int(client.default_threshold)
-    if isinstance(pulse_info, dict):
-        count = int(pulse_info.get('count', '0'))
-        if count and count >= 0:
-            if count == 0:
-                return Common.DBotScore.GOOD
-
-            if 0 < count < default_threshold:
-                return Common.DBotScore.SUSPICIOUS
-
+    false_Positive = {}
+    pulase_info_dict = {}
+    validation = []
+    if isinstance(raw_response, dict):
+        false_Positive = raw_response.get('false_positive', {})
+        validation = raw_response.get("validation", [])
+        pulase_info_dict = raw_response.get('pulse_info', {})
+    if false_Positive and false_Positive[0].get("assessment") == "accepted":
+        return Common.DBotScore.GOOD
+    else:
+        if not validation and pulase_info_dict:
+            count = int(pulase_info_dict.get('count', '0'))
             if count >= default_threshold:
                 return Common.DBotScore.BAD
-    return 0
+            elif 0 < count < default_threshold:
+                return Common.DBotScore.SUSPICIOUS
+            else:
+                return Common.DBotScore.NONE
+        elif len(validation) == 1:
+            return Common.DBotScore.SUSPICIOUS
+        else:
+            return Common.DBotScore.GOOD
 
 
 def create_list_by_ec(list_entries: list, list_type: str) -> list:
@@ -150,26 +170,135 @@ def create_pulse_by_ec(entry: dict) -> dict:
     return assign_params(**pulse_by_ec)
 
 
-def create_attack_pattern_relationships(client: Client, raw_response: dict, entity_a: str, entity_a_type: str):
-    relationships: list = []
+def extract_attack_ids(raw_response: dict):
+    """
+    extract the attack_ids field from the raw response if exists
 
+    Args:
+        raw_response: The response gotten from the server
+
+    :returns:
+        the attack_ids list of all the attack_ids that exists in the response.
+    """
+    pulses = dict_safe_get(raw_response, ['pulse_info', 'pulses']) or [{}]
+    attack_ids = []
+    for pulse in pulses:
+        if pulse.get('attack_ids'):
+            attack_ids.extend(pulse.get('attack_ids'))
+    return attack_ids
+
+
+def relationships_manager(client: Client, entity_a: str, entity_a_type: str, indicator_type: str, attack_ids: list,
+                          indicator: str, field_for_passive_dns_rs: str, feed_indicator_type_for_passive_dns_rs: str):
+    """
+    manage the relationships creation
+
+    Args:
+        client: Client object with request
+        entity_a: str the first entity of the relationship
+        entity_a_type: str the type of the first entity
+        indicator_type: str the indicator type to get the related information by
+        entity_b_type: str the indicator to get the related information by
+
+    :returns:
+        a list of the relationships that were created
+    """
+    relationships = create_relationships(client, attack_ids, entity_a, entity_a_type, 'display_name',
+                                         FeedIndicatorType.indicator_type_by_server_version("STIX Attack Pattern"))
+
+    if client.max_indicator_relationships > 0:
+        limit = str(client.max_indicator_relationships)
+        _, _, urls_raw_response = alienvault_get_related_urls_by_indicator_command(client, indicator_type, indicator,
+                                                                                   limit)
+        urls_raw_response = delete_duplicated_entities(urls_raw_response.get('url_list', []), 'url')
+        relationships += create_relationships(client, urls_raw_response, entity_a, entity_a_type, 'url',
+                                              FeedIndicatorType.URL)
+
+        _, _, hash_raw_response = alienvault_get_related_hashes_by_indicator_command(client, indicator_type, indicator,
+                                                                                     limit)
+        hash_raw_response = delete_duplicated_entities(hash_raw_response.get('data', []), 'hash')
+        relationships += create_relationships(client, hash_raw_response, entity_a, entity_a_type, 'hash',
+                                              FeedIndicatorType.File)
+
+        _, _, passive_dns_raw_response = alienvault_get_passive_dns_data_by_indicator_command(client, indicator_type,
+                                                                                              indicator, limit)
+        passive_dns_raw_response = delete_duplicated_entities(passive_dns_raw_response.get('passive_dns', []),
+                                                              field_for_passive_dns_rs)
+        passive_dns_raw_response = validate_string_is_not_url(passive_dns_raw_response, field_for_passive_dns_rs)
+        passive_dns_raw_response = passive_dns_raw_response[0:client.max_indicator_relationships]
+        relationships += create_relationships(client, passive_dns_raw_response, entity_a,
+                                              entity_a_type, field_for_passive_dns_rs,
+                                              feed_indicator_type_for_passive_dns_rs)
+
+    return relationships
+
+
+def create_relationships(client: Client, relevant_field: list, entity_a: str,
+                         entity_a_type: str, relevant_id: str, entity_b_type: str):
+    """
+    create relationships list for the given fields
+
+    Args:
+        client: Client object with request
+        relevant_field: the field that holds the relevant display name(entity_b) for the relationship
+        entity_a: str the first entity of the relationship
+        entity_a_type: str the type of the first entity
+        relevant_id: str the exact key where the display name is located inside the relevant_field
+        entity_b_type: str the type of the second entity
+
+    :returns:
+        a list of the relationships that were created
+    """
+    relationships: list = []
     if not client.create_relationships:
         return relationships
 
-    # pulse_info.pulses.[0].attack_ids.display_name - can contain a list of attack_ids
-    pulses = dict_safe_get(raw_response, ['pulse_info', 'pulses'], [''])
-    if pulses and isinstance(pulses, list) and 'attack_ids' in pulses[0]:
-        display_names = [attack_id.get('display_name') for attack_id in pulses[0].get('attack_ids')]
+    if relevant_field and isinstance(relevant_field, list) and relevant_id in relevant_field[0]:
+        display_names = [item.get(relevant_id) for item in relevant_field]
         if display_names:
             relationships = [EntityRelationship(
                 name=EntityRelationship.Relationships.INDICATOR_OF,
                 entity_a=entity_a,
                 entity_a_type=entity_a_type,
                 entity_b=display_name,
-                entity_b_type=FeedIndicatorType.indicator_type_by_server_version("STIX Attack Pattern"),
+                entity_b_type=entity_b_type,
                 source_reliability=client.reliability,
                 brand=INTEGRATION_NAME) for display_name in display_names]
     return relationships
+
+
+def delete_duplicated_entities(entities_list: List[Dict], field_name: str):
+    """delete duplicated results from a response
+
+    Args:
+        entities_list: The list of the entities brought back from the query.
+        field_name: The field to compare according to between the given entities.
+
+    Returns:
+        a list without duplicated entities.
+    """
+    unique_dict: Dict = {}
+    for entity_dict in entities_list:
+        if isinstance(entity_dict, dict) and (ind_value := entity_dict.get(field_name)) not in unique_dict.keys():
+            unique_dict[ind_value] = entity_dict
+    return list(unique_dict.values())
+
+
+def validate_string_is_not_url(entities_list: List[Dict], field_name: str):
+    """delete url type entities from a given list.
+
+    Args:
+        entities_list: The list of the entities brought back from the query.
+        field_name: The field to compare according to between the given entities.
+
+    Returns:
+        a list without url type entities.
+    """
+    return [dict for dict in entities_list if not auto_detect_indicator_type(dict.get(field_name)) == "URL"]
+
+
+def lowercase_protocol_callback(pattern: re.Match) -> str:
+    return pattern.group(0).lower()
 
 
 ''' COMMANDS '''
@@ -217,12 +346,15 @@ def ip_command(client: Client, ip_address: str, ip_version: str) -> List[Command
                                     argument=ip_)
         if raw_response and raw_response != 404:
             ip_version = FeedIndicatorType.IP if ip_version == 'IPv4' else FeedIndicatorType.IPv6
-            relationships = create_attack_pattern_relationships(client, raw_response=raw_response,
-                                                                entity_a=ip_, entity_a_type=ip_version)
+            relationships = relationships_manager(client, entity_a=ip_, entity_a_type=ip_version,
+                                                  indicator_type=ip_version, indicator=ip_,
+                                                  field_for_passive_dns_rs="hostname",
+                                                  feed_indicator_type_for_passive_dns_rs=FeedIndicatorType.Domain,
+                                                  attack_ids=extract_attack_ids(raw_response))
 
             dbot_score = Common.DBotScore(indicator=ip_, indicator_type=DBotScoreType.IP,
                                           integration_name=INTEGRATION_NAME,
-                                          score=calculate_dbot_score(client, raw_response.get('pulse_info', {})),
+                                          score=calculate_dbot_score(client, raw_response),
                                           reliability=client.reliability)
 
             ip_object = Common.IP(ip=ip_, dbot_score=dbot_score, asn=raw_response.get('asn'),
@@ -236,9 +368,14 @@ def ip_command(client: Client, ip_address: str, ip_version: str) -> List[Command
                 'IP': ip_
             }
 
+            human_readable_context = {
+                'Address': ip_object.to_context().get('IP(val.Address && val.Address == obj.Address)').get('Address'),
+                'Geo': ip_object.to_context().get('IP(val.Address && val.Address == obj.Address)').get('Geo')
+            }
+
             human_readable = tableToMarkdown(
                 name=title,
-                t=ip_object.to_context().get('IP(val.Address && val.Address == obj.Address)'))
+                t=human_readable_context)
 
             command_results.append(CommandResults(
                 readable_output=human_readable,
@@ -249,9 +386,9 @@ def ip_command(client: Client, ip_address: str, ip_version: str) -> List[Command
                 relationships=relationships
             ))
         else:
-            command_results.append(CommandResults(
-                readable_output=f'IP {ip_} could not be found.'))
-
+            command_results.append(create_indicator_result_with_dbotscore_unknown(indicator=ip_,
+                                                                                  indicator_type=DBotScoreType.IP,
+                                                                                  reliability=client.reliability))
     if not command_results:
         return [CommandResults(f'{INTEGRATION_NAME} - Could not find any results for given query.')]
     return command_results
@@ -276,12 +413,15 @@ def domain_command(client: Client, domain: str) -> List[CommandResults]:
     for domain in domains_list:
         raw_response = client.query(section='domain', argument=domain)
         if raw_response and raw_response != 404:
-            relationships = create_attack_pattern_relationships(client, raw_response=raw_response,
-                                                                entity_a=domain, entity_a_type=FeedIndicatorType.Domain)
+            relationships = relationships_manager(client, entity_a=domain, indicator_type='domain',
+                                                  entity_a_type=FeedIndicatorType.Domain, indicator=domain,
+                                                  field_for_passive_dns_rs='address',
+                                                  feed_indicator_type_for_passive_dns_rs=FeedIndicatorType.IP,
+                                                  attack_ids=extract_attack_ids(raw_response))
 
             dbot_score = Common.DBotScore(indicator=domain, indicator_type=DBotScoreType.DOMAIN,
                                           integration_name=INTEGRATION_NAME,
-                                          score=calculate_dbot_score(client, raw_response.get('pulse_info', {})),
+                                          score=calculate_dbot_score(client, raw_response),
                                           reliability=client.reliability)
             domain_object = Common.Domain(domain=domain, dbot_score=dbot_score, relationships=relationships)
 
@@ -303,8 +443,9 @@ def domain_command(client: Client, domain: str) -> List[CommandResults]:
                 relationships=relationships
             ))
         else:
-            command_results.append(CommandResults(
-                readable_output=f'Domain {domain} could not be found.'))
+            command_results.append(create_indicator_result_with_dbotscore_unknown(indicator=domain,
+                                                                                  indicator_type=DBotScoreType.DOMAIN,
+                                                                                  reliability=client.reliability))
     if not command_results:
         return [CommandResults(f'{INTEGRATION_NAME} - Could not find any results for given query')]
 
@@ -333,15 +474,18 @@ def file_command(client: Client, file: str) -> List[CommandResults]:
                                              sub_section='analysis')
         raw_response_general = client.query(section='file',
                                             argument=hash_)
-        if raw_response_analysis and raw_response_general and \
-                raw_response_general != 404 and raw_response_analysis != 404:
-            relationships = create_attack_pattern_relationships(client, raw_response=raw_response_general,
-                                                                entity_a=hash_, entity_a_type=FeedIndicatorType.File)
+        if raw_response_analysis and raw_response_general and (
+                shortcut := dict_safe_get(raw_response_analysis, ['analysis', 'info', 'results'],
+                                          {})) and raw_response_general != 404 and raw_response_analysis != 404:
 
-            shortcut = dict_safe_get(raw_response_analysis, ['analysis', 'info', 'results'], {})
+            relationships = create_relationships(client, extract_attack_ids(raw_response_general), hash_,
+                                                 FeedIndicatorType.File, 'display_name',
+                                                 FeedIndicatorType.indicator_type_by_server_version(
+                                                     "STIX Attack Pattern"))
+
             dbot_score = Common.DBotScore(
                 indicator=hash_, indicator_type=DBotScoreType.FILE, integration_name=INTEGRATION_NAME,
-                score=calculate_dbot_score(client, raw_response_general.get('pulse_info', {})),
+                score=calculate_dbot_score(client, raw_response_general),
                 malicious_description=raw_response_general.get('pulse_info', {}).get('pulses'),
                 reliability=client.reliability)
 
@@ -373,8 +517,9 @@ def file_command(client: Client, file: str) -> List[CommandResults]:
                 relationships=relationships
             ))
         else:
-            command_results.append(CommandResults(
-                readable_output=f'File {hash_} could not be found.'))
+            command_results.append(create_indicator_result_with_dbotscore_unknown(indicator=hash_,
+                                                                                  indicator_type=DBotScoreType.FILE,
+                                                                                  reliability=client.reliability))
     if not command_results:
         return [CommandResults(f'{INTEGRATION_NAME} - Could not find any results for given query')]
 
@@ -396,30 +541,34 @@ def url_command(client: Client, url: str) -> List[CommandResults]:
 
     title = f'{INTEGRATION_NAME} - Results for url query'
     command_results: List[CommandResults] = []
-    raws: list = []
 
     for url in urls_list:
+        url = re.sub(r'(\w+)://', lowercase_protocol_callback, url)
         raw_response = client.query(section='url', argument=url)
         if raw_response:
             if raw_response == 404:
-                command_results.append(CommandResults(readable_output=f'No matches for URL {url}'))
+                command_results.append(create_indicator_result_with_dbotscore_unknown(indicator=url,
+                                                                                      indicator_type=DBotScoreType.URL,
+                                                                                      reliability=client.reliability))
             else:
-                raws.append(raw_response)
 
                 relationships = []
                 if client.create_relationships:
-                    relationships = create_attack_pattern_relationships(
-                        client, raw_response=raw_response, entity_a=url, entity_a_type=FeedIndicatorType.URL)
+                    indicator = FeedIndicatorType.indicator_type_by_server_version("STIX Attack Pattern")
+                    relationships = create_relationships(client, extract_attack_ids(raw_response), url,
+                                                         FeedIndicatorType.URL, 'display_name', indicator)
+
                     domain = raw_response.get('domain')
                     if domain:
                         relationships.extend([EntityRelationship(
-                            name=EntityRelationship.Relationships.HOSTED_ON, entity_a=url, entity_a_type=FeedIndicatorType.URL,
+                            name=EntityRelationship.Relationships.HOSTED_ON, entity_a=url,
+                            entity_a_type=FeedIndicatorType.URL,
                             entity_b=domain, entity_b_type=FeedIndicatorType.Domain,
                             source_reliability=client.reliability, brand=INTEGRATION_NAME)])
 
                 dbot_score = Common.DBotScore(
                     indicator=url, indicator_type=DBotScoreType.URL, integration_name=INTEGRATION_NAME,
-                    score=calculate_dbot_score(client, raw_response.get('pulse_info')), reliability=client.reliability)
+                    score=calculate_dbot_score(client, raw_response), reliability=client.reliability)
 
                 url_object = Common.URL(url=url, dbot_score=dbot_score, relationships=relationships)
 
@@ -442,7 +591,7 @@ def url_command(client: Client, url: str) -> List[CommandResults]:
                     relationships=relationships
                 ))
 
-    if not raws:
+    if not command_results:
         command_results.append(CommandResults(f'{INTEGRATION_NAME} - Could not find any results for given query'))
     return command_results
 
@@ -473,7 +622,7 @@ def alienvault_search_hostname_command(client: Client, hostname: str) -> Tuple[s
             },
             outputPaths.get("dbotscore"): {
                 'Indicator': raw_response.get('indicator'),
-                'Score': calculate_dbot_score(client, raw_response.get('pulse_info')),
+                'Score': calculate_dbot_score(client, raw_response),
                 'Type': 'hostname',
                 'Vendor': 'AlienVault OTX v2',
                 'Reliability': client.reliability
@@ -514,7 +663,7 @@ def alienvault_search_cve_command(client: Client, cve_id: str) -> Tuple[str, Dic
             },
             outputPaths.get("dbotscore"): {
                 'Indicator': raw_response.get('indicator'),
-                'Score': calculate_dbot_score(client, raw_response.get('pulse_info')),
+                'Score': calculate_dbot_score(client, raw_response),
                 'Type': 'cve',
                 'Vendor': 'AlienVault OTX v2',
                 'Reliability': client.reliability
@@ -529,7 +678,8 @@ def alienvault_search_cve_command(client: Client, cve_id: str) -> Tuple[str, Dic
 
 
 @logger
-def alienvault_get_related_urls_by_indicator_command(client: Client, indicator_type: str, indicator: str) \
+def alienvault_get_related_urls_by_indicator_command(client: Client, indicator_type: str, indicator: str,
+                                                     limit: str = '') \
         -> Tuple[str, Dict, Dict]:
     """Get related urls by indicator (IPv4,IPv6,domain,hostname,url)
 
@@ -537,21 +687,27 @@ def alienvault_get_related_urls_by_indicator_command(client: Client, indicator_t
         client: Client object with request
         indicator_type: IPv4,IPv6,domain,hostname,url
         indicator: indicator its self (google.com)
+        limit: the maximum number of indicators to fetch
 
     Returns:
         Outputs
     """
+    if indicator_type == "IP":
+        indicator_type = "IPv4"
+    params = {}
+    if limit:
+        params['limit'] = limit
     raw_response = client.query(section=indicator_type,
                                 argument=indicator,
-                                sub_section='url_list')
+                                sub_section='url_list',
+                                params=params)
     if raw_response and raw_response != 404:
         title = f'{INTEGRATION_NAME} - Related url list to queried indicator'
         context_entry: list = create_list_by_ec(list_entries=raw_response.get('url_list', {}), list_type='url_list')
         context: dict = {
             'AlienVaultOTX.URL(val.URL.Data && val.URL.Data == obj.URL.Data)': context_entry
         }
-        human_readable = tableToMarkdown(t=context_entry,
-                                         name=title)
+        human_readable = tableToMarkdown(t=context_entry, name=title)
 
         return human_readable, context, raw_response
     else:
@@ -559,7 +715,8 @@ def alienvault_get_related_urls_by_indicator_command(client: Client, indicator_t
 
 
 @logger
-def alienvault_get_related_hashes_by_indicator_command(client: Client, indicator_type: str, indicator: str) \
+def alienvault_get_related_hashes_by_indicator_command(client: Client, indicator_type: str, indicator: str,
+                                                       limit: str = '') \
         -> Tuple[str, Dict, Dict]:
     """Get related file hashes by indicator (IPv4,IPv6,domain,hostname)
 
@@ -567,13 +724,20 @@ def alienvault_get_related_hashes_by_indicator_command(client: Client, indicator
            client: Client object with request
            indicator_type: IPv4,IPv6,domain,hostname
            indicator: indicator its self (google.com)
+           limit: the maximum number of indicators to fetch
 
        Returns:
            Outputs
        """
+    if indicator_type == "IP":
+        indicator_type = "IPv4"
+    params = {}
+    if limit:
+        params['limit'] = limit
     raw_response = client.query(section=indicator_type,
                                 argument=indicator,
-                                sub_section='malware')
+                                sub_section='malware',
+                                params=params)
     if raw_response and raw_response != 404:
         title = f'{INTEGRATION_NAME} - Related malware list to queried indicator'
         context_entry: dict = {
@@ -590,21 +754,27 @@ def alienvault_get_related_hashes_by_indicator_command(client: Client, indicator
 
 
 @logger
-def alienvault_get_passive_dns_data_by_indicator_command(client: Client, indicator_type: str, indicator: str) \
-        -> Tuple[str, Dict, Dict]:
+def alienvault_get_passive_dns_data_by_indicator_command(client: Client, indicator_type: str, indicator: str,
+                                                         limit: str = '') -> Tuple[str, Dict, Dict]:
     """Get related file hashes by indicator (IPv4,IPv6,domain,hostname)
 
        Args:
            client: Client object with request
            indicator_type: IPv4,IPv6,domain,hostname
            indicator: indicator its self (google.com)
-
+           limit: the maximum number of indicators to fetch
        Returns:
            Outputs
        """
+    if indicator_type == "IP":
+        indicator_type = "IPv4"
+    params = {}
+    if limit:
+        params['limit'] = limit
     raw_response = client.query(section=indicator_type,
                                 argument=indicator,
-                                sub_section='passive_dns')
+                                sub_section='passive_dns',
+                                params=params)
     if raw_response and raw_response != 404:
         title = f'{INTEGRATION_NAME} - Related passive dns list to queried indicator'
         context_entry: dict = {
@@ -701,10 +871,10 @@ def main():
     verify_ssl = not params.get('insecure', False)
     proxy = params.get('proxy')
     default_threshold = int(params.get('default_threshold', 2))
+    max_indicator_relationships = arg_to_number(params.get('max_indicator_relationships', 0))
     token = params.get('api_token')
     reliability = params.get('integrationReliability')
     reliability = reliability if reliability else DBotScoreReliability.C
-
     if DBotScoreReliability.is_valid_type(reliability):
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
     else:
@@ -717,7 +887,8 @@ def main():
         proxy=proxy,
         default_threshold=default_threshold,
         reliability=reliability,
-        create_relationships=argToBoolean(params.get('create_relationships'))
+        create_relationships=argToBoolean(params.get('create_relationships')),
+        max_indicator_relationships=max_indicator_relationships
     )
 
     command = demisto.command()

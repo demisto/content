@@ -77,12 +77,13 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Select if sample is a URL or a file
+      description: Select if sample is a URL, file, or a file that should be fetched from a URL
       isArray: false
       name: kind
       predefined:
       - url
       - file
+      - fetch
       required: true
       secret: false
     - auto: PREDEFINED
@@ -709,7 +710,7 @@ script:
     execution: false
     name: triage-delete-profile
     description: Update the profile with the specified ID or name. The stored profile is overwritten, so it is important that the submitted profile has all fields, with the exception of the ID
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.8.24399
   feed: false
   isfetch: false
   longRunning: false

@@ -1,0 +1,74 @@
+{
+ "name": "OTSecurity API Incoming Mapper v1",
+ "id": "OTSecurity API Incoming Mapper v1",
+ "description": "Sample mapper of OT Security incidents",
+ "feed": false,
+ "mapping": {
+  "Blank": {
+   "dontMapEventToLabels": false,
+   "internalMapping": {
+
+   }
+  },
+  "OTSecurity Rogue Device Found": {
+   "dontMapEventToLabels": false,
+   "internalMapping": {
+    "MAC Address": {
+     "complex": null,
+     "simple": "incident_details.offense_source"
+    },
+    "OTSecurity Substation Location": {
+     "complex": null,
+     "simple": "incident_details.location"
+    },
+    "OTSecurity Substation Name": {
+     "complex": null,
+     "simple": "incident_details.substation_id"
+    },
+    "details": {
+     "complex": null,
+     "simple": "incident_details.description"
+    }
+   }
+  },
+  "dbot_classification_incident_type_all": {
+   "dontMapEventToLabels": false,
+   "internalMapping": {
+    "name": {
+     "complex": {
+      "accessor": "",
+      "filters": [
+
+      ],
+      "root": "category",
+      "transformers": [
+       {
+        "args": {
+         "prefix": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": "New "
+          }
+         },
+         "suffix": {
+          "isContext": false,
+          "value": {
+           "complex": null,
+           "simple": " - API Triggered"
+          }
+         }
+        },
+        "operator": "concat"
+       }
+      ]
+     },
+     "simple": ""
+    }
+   }
+  }
+ },
+ "type": "mapping-incoming",
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

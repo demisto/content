@@ -1,6 +1,7 @@
 import os
 import json
 import enum
+from typing import List
 from Tests.scripts.utils.content_packs_util import IGNORED_FILES
 
 CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../../..'))  # full path to content root repo
@@ -8,6 +9,29 @@ PACKS_FOLDER = "Packs"  # name of base packs folder inside content repo
 PACKS_FULL_PATH = os.path.join(CONTENT_ROOT_PATH, PACKS_FOLDER)  # full path to Packs folder in content repo
 IGNORED_PATHS = [os.path.join(PACKS_FOLDER, p) for p in IGNORED_FILES]
 LANDING_PAGE_SECTIONS_PATH = os.path.abspath(os.path.join(__file__, '../landingPage_sections.json'))
+BASE_PACK_DEPENDENCY_DICT = {
+    'Base':
+        {
+            'mandatory': True,
+            'author': 'Cortex XSOAR',
+            'minVersion': '1.0.0',
+            'name': 'Base',
+            'certification': ''
+        }
+}
+
+
+SIEM_RULES_OBJECTS = ['ParsingRule', 'ModelingRule', 'CorrelationRule']
+XSIAM_MP = "marketplacev2"
+XSOAR_MP = "xsoar"
+XSIAM_START_TAG = "<~XSIAM>"
+XSIAM_END_TAG = "</~XSIAM>"
+XSOAR_START_TAG = "<~XSOAR>"
+XSOAR_END_TAG = "</~XSOAR>"
+TAGS_BY_MP = {
+    XSIAM_MP: (XSIAM_START_TAG, XSIAM_END_TAG),
+    XSOAR_MP: (XSOAR_START_TAG, XSOAR_END_TAG)
+}
 
 
 class BucketUploadFlow(object):
@@ -39,7 +63,8 @@ class GCPConfig(object):
     """ Google cloud storage basic configurations
 
     """
-    STORAGE_BASE_PATH = "content/packs"  # configurable base path for packs in gcs, can be modified
+    CONTENT_PACKS_PATH = "content/packs"
+    PRODUCTION_STORAGE_BASE_PATH = "content/packs"
     IMAGES_BASE_PATH = "content/packs"  # images packs prefix stored in metadata
     BUILD_PATH_PREFIX = "content/builds"
     BUILD_BASE_PATH = ""
@@ -54,10 +79,33 @@ class GCPConfig(object):
     BASE_PACK = "Base"  # base pack name
     INDEX_NAME = "index"  # main index folder name
     CORE_PACK_FILE_NAME = "corepacks.json"  # core packs file name
-    BUILD_BUCKET_PACKS_ROOT_PATH = 'content/builds/{branch}/{build}/content/packs'
+    BUILD_BUCKET_PACKS_ROOT_PATH = 'content/builds/{branch}/{build}/{marketplace}/content/packs'
 
     with open(os.path.join(os.path.dirname(__file__), 'core_packs_list.json'), 'r') as core_packs_list_file:
         CORE_PACKS_LIST = json.load(core_packs_list_file)
+    with open(os.path.join(os.path.dirname(__file__), 'core_packs_mpv2_list.json'), 'r') as core_packs_list_file:
+        CORE_PACKS_MPV2_LIST = json.load(core_packs_list_file)
+
+    with open(os.path.join(os.path.dirname(__file__), 'upgrade_core_packs_list.json'), 'r') as upgrade_core_packs_list:
+        packs_list = json.load(upgrade_core_packs_list)
+        CORE_PACKS_LIST_TO_UPDATE = packs_list.get("update_core_packs_list")
+    CORE_PACKS_MPV2_LIST_TO_UPDATE: List[str] = []
+
+    @classmethod
+    def get_core_packs(cls, marketplace):
+        mapping = {
+            'xsoar': cls.CORE_PACKS_LIST,
+            'marketplacev2': cls.CORE_PACKS_MPV2_LIST,
+        }
+        return mapping.get(marketplace, GCPConfig.CORE_PACKS_LIST)
+
+    @classmethod
+    def get_core_packs_to_upgrade(cls, marketplace):
+        mapping = {
+            'xsoar': cls.CORE_PACKS_LIST_TO_UPDATE,
+            'marketplacev2': cls.CORE_PACKS_MPV2_LIST_TO_UPDATE,
+        }
+        return mapping.get(marketplace, GCPConfig.CORE_PACKS_LIST_TO_UPDATE)
 
 
 class PackTags(object):
@@ -68,6 +116,7 @@ class PackTags(object):
     USE_CASE = "Use Case"
     TRANSFORMER = "Transformer"
     FILTER = "Filter"
+    COLLECTION = "Collection"
 
 
 class Metadata(object):
@@ -84,6 +133,42 @@ class Metadata(object):
     CURRENT_VERSION = 'currentVersion'
     SERVER_MIN_VERSION = 'serverMinVersion'
     HIDDEN = 'hidden'
+    NAME = 'name'
+    ID = 'id'
+    DESCRIPTION = 'description'
+    CREATED = 'created'
+    UPDATED = 'updated'
+    LEGACY = 'legacy'
+    SUPPORT = 'support'
+    SUPPORT_DETAILS = 'supportDetails'
+    EULA_LINK = 'eulaLink'
+    AUTHOR = 'author'
+    AUTHOR_IMAGE = 'authorImage'
+    CERTIFICATION = 'certification'
+    PRICE = 'price'
+    VERSION_INFO = 'versionInfo'
+    COMMIT = 'commit'
+    DOWNLOADS = 'downloads'
+    TAGS = 'tags'
+    CATEGORIES = 'categories'
+    CONTENT_ITEMS = 'contentItems'
+    SEARCH_RANK = 'searchRank'
+    INTEGRATIONS = 'integrations'
+    USE_CASES = 'useCases'
+    KEY_WORDS = 'keywords'
+    DEPENDENCIES = 'dependencies'
+    ALL_LEVELS_DEPENDENCIES = 'allLevelDependencies'
+    PREMIUM = 'premium'
+    VENDOR_ID = 'vendorId'
+    PARTNER_ID = 'partnerId'
+    PARTNER_NAME = 'partnerName'
+    CONTENT_COMMIT_HASH = 'contentCommitHash'
+    PREVIEW_ONLY = 'previewOnly'
+    MANDATORY = 'mandatory'
+    VIDEOS = 'videos'
+    DISPLAYED_IMAGES = 'displayedImages'
+    EMAIL = 'email'
+    URL = 'url'
 
 
 class PackFolders(enum.Enum):
@@ -104,6 +189,20 @@ class PackFolders(enum.Enum):
     CLASSIFIERS = 'Classifiers'
     INDICATOR_TYPES = 'IndicatorTypes'
     CONNECTIONS = "Connections"
+    GENERIC_DEFINITIONS = "GenericDefinitions"
+    GENERIC_FIELDS = "GenericFields"
+    GENERIC_MODULES = "GenericModules"
+    GENERIC_TYPES = "GenericTypes"
+    LISTS = 'Lists'
+    PREPROCESS_RULES = "PreProcessRules"
+    JOBS = 'Jobs'
+    PARSING_RULES = 'ParsingRules'
+    MODELING_RULES = 'ModelingRules'
+    CORRELATION_RULES = 'CorrelationRules'
+    XSIAM_DASHBOARDS = 'XSIAMDashboards'
+    XSIAM_REPORTS = 'XSIAMReports'
+    TRIGGERS = 'Triggers'
+    WIZARDS = 'Wizards'
 
     @classmethod
     def pack_displayed_items(cls):
@@ -111,20 +210,31 @@ class PackFolders(enum.Enum):
             PackFolders.SCRIPTS.value, PackFolders.DASHBOARDS.value, PackFolders.INCIDENT_FIELDS.value,
             PackFolders.INCIDENT_TYPES.value, PackFolders.INTEGRATIONS.value, PackFolders.PLAYBOOKS.value,
             PackFolders.INDICATOR_FIELDS.value, PackFolders.REPORTS.value, PackFolders.INDICATOR_TYPES.value,
-            PackFolders.LAYOUTS.value, PackFolders.CLASSIFIERS.value, PackFolders.WIDGETS.value
+            PackFolders.LAYOUTS.value, PackFolders.CLASSIFIERS.value, PackFolders.WIDGETS.value,
+            PackFolders.GENERIC_DEFINITIONS.value, PackFolders.GENERIC_FIELDS.value, PackFolders.GENERIC_MODULES.value,
+            PackFolders.GENERIC_TYPES.value, PackFolders.LISTS.value, PackFolders.JOBS.value,
+            PackFolders.PARSING_RULES.value, PackFolders.MODELING_RULES.value, PackFolders.CORRELATION_RULES.value,
+            PackFolders.XSIAM_DASHBOARDS.value, PackFolders.XSIAM_REPORTS.value, PackFolders.TRIGGERS.value,
+            PackFolders.WIZARDS.value,
         }
 
     @classmethod
     def yml_supported_folders(cls):
         return {PackFolders.INTEGRATIONS.value, PackFolders.SCRIPTS.value, PackFolders.PLAYBOOKS.value,
-                PackFolders.TEST_PLAYBOOKS.value}
+                PackFolders.TEST_PLAYBOOKS.value, PackFolders.PARSING_RULES.value, PackFolders.MODELING_RULES.value,
+                PackFolders.CORRELATION_RULES.value}
 
     @classmethod
     def json_supported_folders(cls):
-        return {PackFolders.CLASSIFIERS.value, PackFolders.CONNECTIONS.value, PackFolders.DASHBOARDS.value,
-                PackFolders.INCIDENT_FIELDS.value, PackFolders.INCIDENT_TYPES.value, PackFolders.INDICATOR_FIELDS.value,
-                PackFolders.LAYOUTS.value, PackFolders.INDICATOR_TYPES.value, PackFolders.REPORTS.value,
-                PackFolders.WIDGETS.value}
+        return {
+            PackFolders.CLASSIFIERS.value, PackFolders.CONNECTIONS.value, PackFolders.DASHBOARDS.value,
+            PackFolders.INCIDENT_FIELDS.value, PackFolders.INCIDENT_TYPES.value, PackFolders.INDICATOR_FIELDS.value,
+            PackFolders.LAYOUTS.value, PackFolders.INDICATOR_TYPES.value, PackFolders.REPORTS.value,
+            PackFolders.WIDGETS.value, PackFolders.GENERIC_DEFINITIONS.value, PackFolders.GENERIC_FIELDS.value,
+            PackFolders.GENERIC_MODULES.value, PackFolders.GENERIC_TYPES.value, PackFolders.LISTS.value,
+            PackFolders.PREPROCESS_RULES.value, PackFolders.JOBS.value, PackFolders.XSIAM_DASHBOARDS.value,
+            PackFolders.XSIAM_REPORTS.value, PackFolders.TRIGGERS.value, PackFolders.WIZARDS.value,
+        }
 
 
 class PackIgnored(object):
@@ -146,6 +256,36 @@ class PackIgnored(object):
         PackFolders.PLAYBOOKS.value: ["_README.md"],
     }
     NESTED_DIRS = [PackFolders.INTEGRATIONS.value, PackFolders.SCRIPTS.value]
+
+
+PACK_FOLDERS_TO_ID_SET_KEYS = {
+    PackFolders.SCRIPTS.value: 'scripts',
+    PackFolders.INTEGRATIONS.value: 'integrations',
+    PackFolders.PLAYBOOKS.value: "playbooks",
+    PackFolders.TEST_PLAYBOOKS.value: "TestPlaybooks",
+    PackFolders.CLASSIFIERS.value: "Classifiers",
+    PackFolders.INCIDENT_FIELDS.value: "IncidentFields",
+    PackFolders.INCIDENT_TYPES.value: "IncidentTypes",
+    PackFolders.INDICATOR_FIELDS.value: "IndicatorFields",
+    PackFolders.INDICATOR_TYPES.value: "IndicatorTypes",
+    PackFolders.LISTS.value: "Lists",
+    PackFolders.JOBS.value: "Jobs",
+    PackFolders.GENERIC_TYPES.value: "GenericTypes",
+    PackFolders.GENERIC_FIELDS.value: "GenericFields",
+    PackFolders.GENERIC_MODULES.value: "GenericModules",
+    PackFolders.GENERIC_DEFINITIONS.value: "GenericDefinitions",
+    PackFolders.LAYOUTS.value: "Layouts",
+    PackFolders.REPORTS.value: "Reports",
+    PackFolders.WIDGETS.value: "Widgets",
+    PackFolders.DASHBOARDS.value: "Dashboards",
+    PackFolders.PARSING_RULES.value: "ParsingRules",
+    PackFolders.MODELING_RULES.value: "ModelingRules",
+    PackFolders.CORRELATION_RULES.value: "CorrelationRules",
+    PackFolders.XSIAM_DASHBOARDS.value: "XSIAMDashboards",
+    PackFolders.XSIAM_REPORTS.value: "XSIAMReports",
+    PackFolders.TRIGGERS.value: "Triggers",
+    PackFolders.WIZARDS.value: "Wizards"
+}
 
 
 class PackStatus(enum.Enum):
@@ -172,6 +312,19 @@ class PackStatus(enum.Enum):
     FAILED_DECRYPT_PACK = "Failed to decrypt pack: a premium pack," \
                           " which should be encrypted, seems not to be encrypted."
     FAILED_METADATA_REFORMATING = "Failed to reparse and create metadata.json when missing dependencies"
+    NOT_RELEVANT_FOR_MARKETPLACE = "Pack is not relevant for current marketplace."
+    CHANGES_ARE_NOT_RELEVANT_FOR_MARKETPLACE = "Pack changes are not relevant for current marketplace."
+    FAILED_CREATING_DEPENDENCIES_ZIP_SIGNING = "Failed creating dependencies zip since a depending pack or this " \
+                                               "pack failed signing or zipping"
+    FAILED_CREATING_DEPENDENCIES_ZIP_UPLOADING = "Failed uploading pack while creating dependencies zip"
+
+
+SKIPPED_STATUS_CODES = {
+    PackStatus.PACK_ALREADY_EXISTS.name,
+    PackStatus.PACK_IS_NOT_UPDATED_IN_RUNNING_BUILD.name,
+    PackStatus.NOT_RELEVANT_FOR_MARKETPLACE.name,
+    PackStatus.CHANGES_ARE_NOT_RELEVANT_FOR_MARKETPLACE.name,
+}
 
 
 class Changelog(object):
@@ -182,3 +335,35 @@ class Changelog(object):
     RELEASE_NOTES = 'releaseNotes'
     DISPLAY_NAME = 'displayName'
     RELEASED = 'released'
+    PULL_REQUEST_NUMBERS = 'pullRequests'
+
+
+RN_HEADER_BY_PACK_FOLDER = {
+    PackFolders.PLAYBOOKS.value: 'Playbooks',
+    PackFolders.INTEGRATIONS.value: 'Integrations',
+    PackFolders.SCRIPTS.value: 'Scripts',
+    PackFolders.INCIDENT_FIELDS.value: 'Incident Fields',
+    PackFolders.INDICATOR_FIELDS.value: 'Indicator Fields',
+    PackFolders.INDICATOR_TYPES.value: 'Indicator Types',
+    PackFolders.INCIDENT_TYPES.value: 'Incident Types',
+    PackFolders.PREPROCESS_RULES.value: 'PreProcess Rules',
+    PackFolders.CLASSIFIERS.value: 'Classifiers',
+    PackFolders.LAYOUTS.value: 'Layouts',
+    PackFolders.REPORTS.value: 'Reports',
+    PackFolders.WIDGETS.value: 'Widgets',
+    PackFolders.DASHBOARDS.value: 'Dashboards',
+    PackFolders.CONNECTIONS.value: 'Connections',
+    PackFolders.GENERIC_DEFINITIONS.value: 'Objects',
+    PackFolders.GENERIC_MODULES.value: 'Modules',
+    PackFolders.GENERIC_TYPES.value: 'Object Types',
+    PackFolders.GENERIC_FIELDS.value: 'Object Fields',
+    PackFolders.LISTS.value: 'Lists',
+    PackFolders.JOBS.value: 'Jobs',
+    PackFolders.PARSING_RULES.value: 'Parsing Rules',
+    PackFolders.MODELING_RULES.value: 'Modeling Rules',
+    PackFolders.CORRELATION_RULES.value: 'Correlation Rules',
+    PackFolders.XSIAM_DASHBOARDS.value: 'XSIAM Dashboards',
+    PackFolders.XSIAM_REPORTS.value: 'XSIAM Reports',
+    PackFolders.TRIGGERS.value: 'Triggers Recommendations',  # https://github.com/demisto/etc/issues/48153#issuecomment-1111988526
+    PackFolders.WIZARDS.value: 'Wizards',
+}

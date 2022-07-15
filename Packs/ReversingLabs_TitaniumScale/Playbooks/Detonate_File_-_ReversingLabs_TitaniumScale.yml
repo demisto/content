@@ -1,0 +1,237 @@
+id: Detonate File - ReversingLabs TitaniumScale
+version: -1
+name: Detonate File - ReversingLabs TitaniumScale
+description: Upload sample to ReversingLabs TitaniumScale instance and retrieve the
+  analysis report.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e06709dd-bfa4-4e24-8671-7892e266463e
+    type: start
+    task:
+      id: e06709dd-bfa4-4e24-8671-7892e266463e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: bfd76524-6f98-4aff-8913-2d98c9dfb87a
+    type: condition
+    task:
+      id: bfd76524-6f98-4aff-8913-2d98c9dfb87a
+      version: -1
+      name: Is ReversingLabs TitaniumScale  enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ReversingLabs TitaniumScale
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 272c05df-0bad-4770-865d-5e5c6af74838
+    type: title
+    task:
+      id: 272c05df-0bad-4770-865d-5e5c6af74838
+      version: -1
+      name: done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 1170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 7864c5c7-ebe5-4189-8284-6bf6f501ab4a
+    type: condition
+    task:
+      id: 7864c5c7-ebe5-4189-8284-6bf6f501ab4a
+      version: -1
+      name: Is there a file  to detonate?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.EntryID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: ebfaeb5b-0408-489a-8db8-ec3f66464073
+    type: regular
+    task:
+      id: ebfaeb5b-0408-489a-8db8-ec3f66464073
+      version: -1
+      name: reversinglabs-titaniumscale-upload-sample-and-get-results
+      description: Upload sample to TitaniumScale and retrieve analysis report.
+      script: ReversingLabs TitaniumScale|||reversinglabs-titaniumscale-upload-sample-and-get-results
+      type: regular
+      iscommand: true
+      brand: ReversingLabs TitaniumScale
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      entryId:
+        simple: ${inputs.EntryID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1185,
+        "width": 760,
+        "x": 70,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: EntryID
+  value:
+    simple: ${File.EntryID}
+  required: false
+  description: The Entry ID.
+  playbookInputQuery:
+outputs:
+- contextPath: File.SHA256
+  description: The SHA256 hash of the file.
+- contextPath: File.SHA1
+  description: The SHA1 hash of the file.
+- contextPath: File.SHA512
+  description: The SHA512 hash of the file.
+- contextPath: File.Name
+  description: The name of the file.
+- contextPath: File.EntryID
+  description: The Entry ID.
+- contextPath: File.Info
+  description: Information about the file.
+- contextPath: File.Type
+  description: The type of the file.
+- contextPath: File.MD5
+  description: MD5 hash of the file.
+- contextPath: DBotScore.Score
+  description: The actual score.
+- contextPath: DBotScore.Type
+  description: The indicator type.
+- contextPath: DBotScore.Indicator
+  description: The indicator that was tested.
+- contextPath: DBotScore.Vendor
+  description: The vendor used to calculate the score.
+- contextPath: ReversingLabs.tc_report
+  description: Full report
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

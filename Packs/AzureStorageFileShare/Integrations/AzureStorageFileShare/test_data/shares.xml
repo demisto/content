@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<EnumerationResults ServiceEndpoint="https://test.file.core.windows.net/">
+    <Shares>
+        <Share>
+            <Name>my-file-share</Name>
+            <Properties>
+                <Last-Modified>Thu, 05 Aug 2021 09:53:27 GMT</Last-Modified>
+                <Etag>"XXXXX"</Etag>
+                <LeaseStatus>unlocked</LeaseStatus>
+                <LeaseState>available</LeaseState>
+                <Quota>5120</Quota>
+                <AccessTier>TransactionOptimized</AccessTier>
+                <DefaultEncryptionScope>$account-encryption-key</DefaultEncryptionScope>
+                <DenyEncryptionScopeOverride>false</DenyEncryptionScopeOverride>
+            </Properties>
+        </Share>
+        <Share>
+            <Name>my-share</Name>
+            <Properties>
+                <Last-Modified>Sun, 01 Aug 2021 13:26:18 GMT</Last-Modified>
+                <Etag>"XXXXX"</Etag>
+                <LeaseStatus>unlocked</LeaseStatus>
+                <LeaseState>available</LeaseState>
+                <Quota>5120</Quota>
+                <AccessTier>TransactionOptimized</AccessTier>
+                <DefaultEncryptionScope>$account-encryption-key</DefaultEncryptionScope>
+                <DenyEncryptionScopeOverride>false</DenyEncryptionScopeOverride>
+            </Properties>
+        </Share>
+    </Shares>
+    <NextMarker/>
+</EnumerationResults>

@@ -1,0 +1,294 @@
+{
+    "description": "Maps incoming SafeNet Trusted Access alert fields.",
+    "feed": false,
+    "id": "SafeNet Trusted Access – Alert Mapper",
+    "mapping": {
+        "SafeNet Trusted Access Account Lockout Alert": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "SafeNet Trusted Access - Instance Name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "text",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "from": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Instance name:"
+                                        }
+                                    }
+                                },
+                                "operator": "substringFrom"
+                            },
+                            {
+                                "args": {},
+                                "operator": "trim"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "SafeNet Trusted Access - Username": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "text",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "from": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Username:"
+                                        }
+                                    }
+                                },
+                                "operator": "substringFrom"
+                            },
+                            {
+                                "args": {
+                                    "to": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Account:"
+                                        }
+                                    }
+                                },
+                                "operator": "substringTo"
+                            },
+                            {
+                                "args": {},
+                                "operator": "trim"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Tenant Name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "text",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "from": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Account:"
+                                        }
+                                    }
+                                },
+                                "operator": "substringFrom"
+                            },
+                            {
+                                "args": {
+                                    "to": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Instance name"
+                                        }
+                                    }
+                                },
+                                "operator": "substringTo"
+                            },
+                            {
+                                "args": {},
+                                "operator": "trim"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                }
+            }
+        },
+        "SafeNet Trusted Access Push Reject Alert": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "SafeNet Trusted Access - Instance Name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "text",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "from": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Instance name:"
+                                        }
+                                    }
+                                },
+                                "operator": "substringFrom"
+                            },
+                            {
+                                "args": {},
+                                "operator": "trim"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "SafeNet Trusted Access - Username": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "text",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "from": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "user account"
+                                        }
+                                    }
+                                },
+                                "operator": "substringFrom"
+                            },
+                            {
+                                "args": {
+                                    "to": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "in organization"
+                                        }
+                                    }
+                                },
+                                "operator": "substringTo"
+                            },
+                            {
+                                "args": {},
+                                "operator": "trim"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "Tenant Name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "text",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "from": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Organization name:"
+                                        }
+                                    }
+                                },
+                                "operator": "substringFrom"
+                            },
+                            {
+                                "args": {
+                                    "to": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Resource name"
+                                        }
+                                    }
+                                },
+                                "operator": "substringTo"
+                            },
+                            {
+                                "args": {},
+                                "operator": "trim"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "SafeNet Trusted Access - Instance Name": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "text",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "from": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "Instance name:"
+                                        }
+                                    }
+                                },
+                                "operator": "substringFrom"
+                            },
+                            {
+                                "args": {},
+                                "operator": "trim"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                },
+                "SafeNet Trusted Access - Username": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "text",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "from": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "user account"
+                                        }
+                                    }
+                                },
+                                "operator": "substringFrom"
+                            },
+                            {
+                                "args": {
+                                    "to": {
+                                        "isContext": false,
+                                        "value": {
+                                            "complex": null,
+                                            "simple": "in organization"
+                                        }
+                                    }
+                                },
+                                "operator": "substringTo"
+                            },
+                            {
+                                "args": {},
+                                "operator": "trim"
+                            }
+                        ]
+                    },
+                    "simple": ""
+                }
+            }
+        }
+    },
+    "name": "SafeNet Trusted Access – Alert Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

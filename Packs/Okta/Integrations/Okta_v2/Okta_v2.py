@@ -1,4 +1,6 @@
-from CommonServerPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 
 # IMPORTS
 # Disable insecure warnings
@@ -40,6 +42,10 @@ PROFILE_ARGS = [
     'managerId',
     'manager'
 ]
+GROUP_PROFILE_ARGS = [
+    'name',
+    'description'
+]
 
 
 class Client(BaseClient):
@@ -53,6 +59,19 @@ class Client(BaseClient):
         uri = 'groups'
         query_params = {
             'q': encode_string_results(group_name)
+        }
+        res = self._http_request(
+            method="GET",
+            url_suffix=uri,
+            params=query_params
+        )
+        if res and len(res) == 1:
+            return res[0].get('id')
+
+    def get_app_id(self, app_name):
+        uri = 'apps'
+        query_params = {
+            'q': encode_string_results(app_name)
         }
         res = self._http_request(
             method="GET",
@@ -189,6 +208,9 @@ class Client(BaseClient):
     @staticmethod
     def get_readable_logs(raw_logs):
         logs = []
+        browser = ""
+        device = ""
+        os = ""
         raw_logs = raw_logs if isinstance(raw_logs, list) else [raw_logs]
         for log in raw_logs:
             if log.get('client', {}).get('userAgent'):
@@ -199,8 +221,8 @@ class Client(BaseClient):
                 if (not os) or os.lower() == 'unknown':
                     os = 'Unknown OS'
                 device = log.get('client', {}).get('device')
-            if (not device) or device.lower() == 'unknown':
-                device = 'Unknown device'
+                if (not device) or device.lower() == 'unknown':
+                    device = 'Unknown device'
             targets = ''
             if log.get('target'):
                 for target in log.get('target'):
@@ -214,9 +236,9 @@ class Client(BaseClient):
                 'EventOutcome': log.get('outcome', {}).get('result') + (
                     f": {log.get('outcome', {}).get('reason')}" if log.get('outcome', {}).get('reason') else ''),
                 'EventSeverity': log.get('severity'),
-                'Client': f"{browser} on {os} {device}",
+                'Client': f"{browser} on {os} {device}" if browser else "Unknown client",
                 'RequestIP': log.get('client', {}).get('ipAddress'),
-                'ChainIP': log.get('request', {}).get('ipChain')[0].get('ip'),
+                'ChainIP': [ip_chain.get('ip') for ip_chain in log.get('request', {}).get('ipChain', [])],
                 'Targets': targets or '-',
                 'Time': time_published
             }
@@ -303,6 +325,31 @@ class Client(BaseClient):
         return users
 
     @staticmethod
+    def get_apps_context(raw_apps):
+        apps = []
+        raw_apps = raw_apps if isinstance(raw_apps, list) else [raw_apps]
+        for app in raw_apps:
+            app = {
+                'ID': app.get('id'),
+            }
+            apps.append(app)
+        return apps
+
+    @staticmethod
+    def get_groups_context(raw_groups):
+        groups = []
+        raw_groups = raw_groups if isinstance(raw_groups, list) else [raw_groups]
+        for group in raw_groups:
+            group = {
+                'ID': group.get('id'),
+                'Name': group.get('profile', {}).get('name'),
+                'Description': group.get('profile', {}).get('description'),
+                'Type': group.get('type')
+            }
+            groups.append(group)
+        return groups
+
+    @staticmethod
     def get_readable_users(raw_users, verbose='false'):
         raw_users = raw_users if isinstance(raw_users, list) else [raw_users]
         if verbose == 'true':
@@ -375,12 +422,33 @@ class Client(BaseClient):
             params=query_params
         )
 
+    def create_group(self, profile):
+        body = {
+            'profile': profile,
+        }
+        uri = 'groups'
+        return self._http_request(
+            method='POST',
+            url_suffix=uri,
+            json_data=body
+        )
+
     # Build profile dict with pre-defined keys (for user)
     @staticmethod
     def build_profile(args):
         profile = {}
         keys = args.keys()
         for key in PROFILE_ARGS:
+            if key in keys:
+                profile[key] = args[key]
+        return profile
+
+    # Build profile dict with pre-defined keys (for group)
+    @staticmethod
+    def build_group_profile(args):
+        profile = {}
+        keys = args.keys()
+        for key in GROUP_PROFILE_ARGS:
             if key in keys:
                 profile[key] = args[key]
         return profile
@@ -449,6 +517,22 @@ class Client(BaseClient):
             )
         return self.get_paged_results(uri)
 
+    def list_users(self, args):
+        # Base url - if none of the above specified - returns all the users (default 200 items)
+        uri = "users"
+        query_params = {}
+        for key, value in args.items():
+            if key == 'query':
+                key = 'q'
+            query_params[key] = encode_string_results(value)
+        if args.get('limit'):
+            return self._http_request(
+                method='GET',
+                url_suffix=uri,
+                params=query_params
+            )
+        return self.get_paged_results(uri, query_params)
+
     def list_groups(self, args):
         # Base url - if none of the the above specified - returns all the groups (default 200 items)
         uri = "groups"
@@ -503,11 +587,23 @@ class Client(BaseClient):
             url_suffix=uri
         )
 
-    def list_zones(self):
+    def list_zones(self, limit):
+        uri = 'zones'
+        if limit:
+            query_params = {'limit': encode_string_results(limit)}
+            return self._http_request(
+                method='GET',
+                url_suffix=uri,
+                params=query_params
+            )
+        return self.get_paged_results(uri)
+
+    def create_zone(self, zoneObject):
         uri = 'zones'
         return self._http_request(
-            method='GET',
-            url_suffix=uri
+            method='POST',
+            url_suffix=uri,
+            json_data=zoneObject
         )
 
     def update_zone(self, zoneObject):
@@ -518,6 +614,14 @@ class Client(BaseClient):
             method='PUT',
             url_suffix=uri,
             data=json.dumps(zoneObject)
+        )
+
+    def assign_group_to_app(self, group_id, app_id):
+        uri = f'apps/{app_id}/groups/{group_id}'
+        return self._http_request(
+            method="PUT",
+            url_suffix=uri,
+            resp_type='text'
         )
 
 
@@ -849,6 +953,27 @@ def get_group_members_command(client, args):
     )
 
 
+def list_users_command(client, args):
+    raw_response = client.list_users(args)
+    verbose = args.get('verbose')
+    users = client.get_readable_users(raw_response, verbose)
+    user_context = client.get_users_context(raw_response)
+    context = createContext(user_context, removeNull=True)
+    outputs = {
+        'Account(val.ID && val.ID == obj.ID)': context
+    }
+    if verbose == 'true':
+        readable_output = f"### Okta users found:\n {users}"
+    else:
+        readable_output = f"### Okta users found:\n {tableToMarkdown('Users', users)} "
+
+    return(
+        readable_output,
+        outputs,
+        raw_response
+    )
+
+
 def list_groups_command(client, args):
     raw_response = client.list_groups(args)
     groups = client.get_readable_groups(raw_response)
@@ -993,7 +1118,7 @@ def get_zone_command(client, args):
 
 
 def list_zones_command(client, args):
-    raw_response = client.list_zones()
+    raw_response = client.list_zones(args.get('limit'))
     if not raw_response:
         return 'No zones found.', {}, raw_response
     readable_output = tableToMarkdown('Okta Zones', raw_response, headers=[
@@ -1023,6 +1148,37 @@ def apply_zone_updates(zoneObject, zoneName, gatewayIPs, proxyIPs):
         zoneObject["proxies"] = [{"type": "CIDR", "value": cidr} for cidr in CIDRs]
 
     return zoneObject
+
+
+def create_zone_command(client, args):
+    zone_name = args.get('name')
+    gateway_ips = argToList(args.get('gateway_ips'))
+    proxies = argToList(args.get('proxies'))
+    if not (gateway_ips or proxies):
+        raise Exception("You must supply either 'gateway_ips' or 'proxies'.")
+
+    zoneObject = {
+        "name": '',
+        "type": "IP",
+        "status": "ACTIVE",
+        "gateways": [],
+        "proxies": []
+    }
+    zoneObject = apply_zone_updates(zoneObject, zone_name, gateway_ips, proxies)
+
+    raw_response = client.create_zone(zoneObject)
+    if not raw_response:
+        return 'Zone not created.', {}, raw_response
+    readable_output = tableToMarkdown('Okta Zones', raw_response, headers=[
+        'name', 'id', 'gateways', 'status', 'system', 'lastUpdated', 'created'])
+    outputs = {
+        'Okta.Zone(val.id && val.id === obj.id)': createContext(raw_response)
+    }
+    return (
+        readable_output,
+        outputs,
+        raw_response
+    )
 
 
 def update_zone_command(client, args):
@@ -1059,6 +1215,39 @@ def update_zone_command(client, args):
         return 'No zone found in Okta with this ID.', {}, {}
 
 
+def assign_group_to_app_command(client, args):
+
+    group_id = args.get('groupId')
+    if not group_id:
+        group_id = client.get_group_id(args.get('groupName'))
+        if group_id is None:
+            raise ValueError('Either group name not found or multiple groups include this name.')
+    app_id = client.get_app_id(args.get('appName'))
+    raw_response = client.assign_group_to_app(group_id, app_id)
+    readable_output = f"Group: {args.get('groupName')} added to PA App successfully"
+    return (
+        readable_output,
+        {},
+        raw_response
+    )
+
+
+def create_group_command(client, args):
+
+    profile = client.build_group_profile(args)
+    raw_response = client.create_group(profile)
+    group_context = client.get_groups_context(raw_response)
+    outputs = {
+        'OktaGroup(val.ID && val.ID === obj.ID)': createContext(group_context)
+    }
+    readable_output = f"Group Created: [GroupID:{raw_response['id']}, GroupName: {raw_response['profile']['name']}]"
+    return (
+        readable_output,
+        outputs,
+        raw_response
+    )
+
+
 def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
@@ -1090,6 +1279,7 @@ def main():
         'okta-create-user': create_user_command,
         'okta-update-user': update_user_command,
         'okta-get-group-members': get_group_members_command,
+        'okta-list-users': list_users_command,
         'okta-list-groups': list_groups_command,
         'okta-get-logs': get_logs_command,
         'okta-get-failed-logins': get_failed_login_command,
@@ -1100,7 +1290,10 @@ def main():
         'okta-clear-user-sessions': clear_user_sessions_command,
         'okta-list-zones': list_zones_command,
         'okta-get-zone': get_zone_command,
-        'okta-update-zone': update_zone_command
+        'okta-update-zone': update_zone_command,
+        'okta-create-zone': create_zone_command,
+        'okta-create-group': create_group_command,
+        'okta-assign-group-to-app': assign_group_to_app_command
 
     }
 

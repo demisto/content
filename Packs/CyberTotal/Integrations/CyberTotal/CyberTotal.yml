@@ -20,7 +20,6 @@ configuration:
   additionalinfo: A necessary token is a credential, used for CyberTotal API.
 - display: Fetch indicators
   name: feed
-  defaultvalue: ""
   type: 8
   required: false
 - display: Bad ip threshold
@@ -45,7 +44,6 @@ configuration:
   required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ""
   type: 8
   required: false
 - display: Use system proxy settings
@@ -855,7 +853,7 @@ script:
       description: If this domain is expired
       type: boolean
     description: Return domain whois information
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.8.24399
   runonce: false
   subtype: python3
 fromversion: 5.0.0

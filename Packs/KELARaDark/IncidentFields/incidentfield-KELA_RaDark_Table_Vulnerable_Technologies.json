@@ -1,0 +1,80 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "RaDark"
+    ],
+    "caseInsensitive": true,
+    "cliName": "kelaradarktablevulnerabletechnologies",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "Item ID",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "itemid",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "Hostname",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "hostname",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "Technology",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "technology",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "CVE Details",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "cvedetails",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        }
+    ],
+    "content": true,
+    "defaultRows": [],
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_kelaradarktablevulnerabletechnologies",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "KELA RaDark Table Vulnerable Technologies",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

@@ -18,7 +18,6 @@ configuration:
   required: true
 - display: Trust any certificate (not secure)
   name: unsecure
-  defaultvalue: ""
   type: 8
   required: false
 - display: Use system proxy settings
@@ -462,7 +461,7 @@ script:
       type: string
     description: Returns a list of banned IP addresses.
   runonce: false
-  dockerimage: demisto/python:2.7.18.20958
+  dockerimage: demisto/python:2.7.18.27799
 tests:
 - Fortigate Test
 fromversion: 5.0.0

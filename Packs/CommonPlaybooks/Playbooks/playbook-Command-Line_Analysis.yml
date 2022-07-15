@@ -1,0 +1,1568 @@
+id: Command-Line Analysis
+version: -1
+name: Command-Line Analysis
+description: "This playbook takes the command line from the alert and performs the following actions:\n- Checks for base64 string and decodes if exists\n- Extracts and enriches indicators from the command line\n- Checks specific arguments for malicious usage \n\nAt the end of the playbook, it sets a possible verdict for the command line, based on the finding:\n1. Indicators found in the command line\n2. Found AMSI techniques\n3. Found suspicious parameters\n4. Usage of malicious tools\n5. Indication of network activity"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a2848830-3438-4bea-87eb-793c8026f1ef
+    type: start
+    task:
+      id: a2848830-3438-4bea-87eb-793c8026f1ef
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "33"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": -1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: d0ba6b98-7de7-4621-8d6b-85a067f4f314
+    type: title
+    task:
+      id: d0ba6b98-7de7-4621-8d6b-85a067f4f314
+      version: -1
+      name: Command-Line Indicator Extraction
+      description: Extracts indicators from the command line.
+      type: title
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "23"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": 130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: cff18017-7f58-4d68-86b3-612ee9297bfb
+    type: regular
+    task:
+      id: cff18017-7f58-4d68-86b3-612ee9297bfb
+      version: -1
+      name: Enrich indicators
+      description: Enriches indicators from the command line.
+      script: Builtin|||enrichIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      indicatorsValues:
+        complex:
+          root: ExtractedIndicators
+          accessor: IP
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: ExtractedIndicators.URL
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: ExtractedIndicators.Domain
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: ExtractedIndicators.File
+                iscontext: true
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: c03e8d8d-8661-4743-891f-e6354f342c07
+    type: condition
+    task:
+      id: c03e8d8d-8661-4743-891f-e6354f342c07
+      version: -1
+      name: Found additional indicators?
+      description: Checks if indicators exist in the command line for which to enrich.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ExtractedIndicators
+                filters:
+                - - operator: isNotExists
+                    left:
+                      value:
+                        simple: ExtractedIndicators.Attack_Pattern
+                      iscontext: true
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 95c7a960-8b66-48f0-8510-ed22481ae4f2
+    type: condition
+    task:
+      id: 95c7a960-8b66-48f0-8510-ed22481ae4f2
+      version: -1
+      name: Is there a base64 string in the command-line?
+      description: Checks for a base64 string in the command line.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: MatchRegex
+                accessor: results
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": -540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: d3be2808-0367-4d39-80d5-8526a2abf84f
+    type: regular
+    task:
+      id: d3be2808-0367-4d39-80d5-8526a2abf84f
+      version: -1
+      name: Decode base64 string
+      description: Decodes an input in Base64 format.
+      scriptName: Base64Decode
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      value:
+        complex:
+          root: MatchRegex
+          accessor: results
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": -370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 9e5742ee-5780-4374-8762-1023b0163f02
+    type: title
+    task:
+      id: 9e5742ee-5780-4374-8762-1023b0163f02
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: bedf7a15-c692-464d-8d5f-22206898b99d
+    type: regular
+    task:
+      id: bedf7a15-c692-464d-8d5f-22206898b99d
+      version: -1
+      name: Check if base64 string exists in command-line
+      description: Extracts regex data from the provided text. The script support groups and looping.
+      scriptName: MatchRegexV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      data:
+        complex:
+          root: commandline
+      group:
+        simple: "1"
+      regex:
+        simple: (?:\s+)((?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4}))
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": -690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 5610ad88-bc53-45a1-865c-6a6b607e1a98
+    type: title
+    task:
+      id: 5610ad88-bc53-45a1-865c-6a6b607e1a98
+      version: -1
+      name: Command-Line Parameters
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "15"
+      - "19"
+      - "21"
+      - "22"
+      - "31"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: b027e4bc-d481-4f58-842d-395bd7ef348f
+    type: regular
+    task:
+      id: b027e4bc-d481-4f58-842d-395bd7ef348f
+      version: -1
+      name: Set command line verdict of networkActivity
+      description: Sets a value in context from the key entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      key:
+        simple: CommandlineVerdict.networkActivity
+      value:
+        simple: "True"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 961ec942-dacf-4f4a-8b34-7e2847919a5e
+    type: condition
+    task:
+      id: 961ec942-dacf-4f4a-8b34-7e2847919a5e
+      version: -1
+      name: Check for suspicious parameters usage
+      description: Checks for suspicious parameters usage.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: commandline
+                accessor: original
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: commandline.decoded
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: -w hidden
+        - operator: containsString
+          left:
+            value:
+              complex:
+                root: commandline
+                accessor: original
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: commandline.decoded
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: -WindowStyle Hidden
+          ignorecase: true
+        - operator: containsString
+          left:
+            value:
+              complex:
+                root: commandline
+                accessor: original
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: commandline.decoded
+            iscontext: true
+          right:
+            value:
+              simple: -window hidden
+          ignorecase: true
+        - operator: containsString
+          left:
+            value:
+              complex:
+                root: commandline
+                accessor: original
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: commandline.decoded
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: -noni
+          ignorecase: true
+        - operator: containsString
+          left:
+            value:
+              complex:
+                root: commandline
+                accessor: original
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: commandline.decoded
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: -NonInteractive
+          ignorecase: true
+        - operator: containsString
+          left:
+            value:
+              complex:
+                root: commandline
+                accessor: original
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: commandline.decoded
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: -nop
+          ignorecase: true
+        - operator: containsString
+          left:
+            value:
+              complex:
+                root: commandline
+                accessor: original
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: commandline.decoded
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: -noprofile
+          ignorecase: true
+        - operator: containsString
+          left:
+            value:
+              complex:
+                root: commandline
+                accessor: original
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: commandline.decoded
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: -ExecutionPolicy Bypass
+          ignorecase: true
+        - operator: containsString
+          left:
+            value:
+              complex:
+                root: commandline
+                accessor: original
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: commandline.decoded
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: Bypass
+          ignorecase: true
+        - operator: containsString
+          left:
+            value:
+              complex:
+                root: commandline
+                accessor: original
+            iscontext: true
+          right:
+            value:
+              simple: Invoke-Expression
+          ignorecase: true
+        - operator: containsString
+          left:
+            value:
+              complex:
+                root: commandline
+                accessor: original
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: commandline.decoded
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: -iex
+          ignorecase: true
+        - operator: containsString
+          left:
+            value:
+              complex:
+                root: commandline
+                accessor: original
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: commandline.decoded
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: ClipboardContents
+        - operator: containsString
+          left:
+            value:
+              complex:
+                root: commandline
+                accessor: original
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: commandline.decoded
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: Screenshot
+        - operator: containsString
+          left:
+            value:
+              complex:
+                root: commandline
+                accessor: original
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: commandline.decoded
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: Get-LSASecret
+        - operator: containsString
+          left:
+            value:
+              complex:
+                root: commandline
+                accessor: original
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: commandline.decoded
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: Get-GPPPassword
+    view: |-
+      {
+        "position": {
+          "x": 1380,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 2454d7b3-9568-4007-81ec-c1ef25acbcf3
+    type: condition
+    task:
+      id: 2454d7b3-9568-4007-81ec-c1ef25acbcf3
+      version: -1
+      name: Check for encoded command parameters
+      description: Checks for encoded command parameters.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: commandline
+            iscontext: true
+          right:
+            value:
+              simple: -EncodedCommand
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: commandline
+            iscontext: true
+          right:
+            value:
+              simple: -enc
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: commandline
+            iscontext: true
+          right:
+            value:
+              simple: –^e^C^
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": -860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 6f484473-7f55-4d72-8ce3-07361395169c
+    type: condition
+    task:
+      id: 6f484473-7f55-4d72-8ce3-07361395169c
+      version: -1
+      name: Check for network activity parameters
+      description: Checks for network activity parameters.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: commandline
+                accessor: original
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: commandline.decoded
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: (New-object System.net.webclient).DownlodFile()
+          ignorecase: true
+        - operator: containsString
+          left:
+            value:
+              complex:
+                root: commandline
+                accessor: original
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: commandline.decoded
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: (New-object System.net.Webclient).DownloadString()
+          ignorecase: true
+        - operator: containsString
+          left:
+            value:
+              complex:
+                root: commandline
+                accessor: original
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: commandline.decoded
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: Net.webclient
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: e3b1b82d-4b1c-4cd4-8273-f4b2b3f9477f
+    type: condition
+    task:
+      id: e3b1b82d-4b1c-4cd4-8273-f4b2b3f9477f
+      version: -1
+      name: Check for malicious tools usage
+      description: Checks for malicious tools usage.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: commandline
+                accessor: original
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: commandline.decoded
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: mimikatz
+        - operator: containsString
+          left:
+            value:
+              complex:
+                root: commandline
+                accessor: original
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: commandline.decoded
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: NinjaCopy
+        - operator: containsString
+          left:
+            value:
+              complex:
+                root: commandline
+                accessor: original
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: commandline.decoded
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: NetRipper
+        - operator: containsString
+          left:
+            value:
+              complex:
+                root: commandline
+                accessor: original
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: commandline.decoded
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: ThunderStruck
+        - operator: containsString
+          left:
+            value:
+              complex:
+                root: commandline
+                accessor: original
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: commandline.decoded
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: PsExec
+        - operator: containsString
+          left:
+            value:
+              complex:
+                root: commandline
+                accessor: original
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: commandline.decoded
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: Mimikittenz
+        - operator: containsString
+          left:
+            value:
+              complex:
+                root: commandline
+                accessor: original
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: commandline.decoded
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: MailRaider
+        - operator: containsString
+          left:
+            value:
+              complex:
+                root: commandline
+                accessor: original
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: commandline.decoded
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: VoiceTroll
+        - operator: containsString
+          left:
+            value:
+              complex:
+                root: commandline
+                accessor: original
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: commandline.decoded
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: Get-RickAstley
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: b355c8cd-9438-4d16-88cf-367aad8dc5a2
+    type: condition
+    task:
+      id: b355c8cd-9438-4d16-88cf-367aad8dc5a2
+      version: -1
+      name: Check for AMSI evasion techniques
+      description: Checks for AMSI evasion techniques.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: commandline
+                accessor: original
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: commandline.decoded
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: System.Management.Automation.AmsiUtils
+        - operator: containsString
+          left:
+            value:
+              complex:
+                root: commandline
+                accessor: original
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: commandline.decoded
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: amsiInitFailed
+        - operator: containsString
+          left:
+            value:
+              complex:
+                root: commandline
+                accessor: original
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: commandline.decoded
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: QQBtAHMAaQBVAHQAaQBsAHMA
+          ignorecase: true
+        - operator: containsString
+          left:
+            value:
+              complex:
+                root: commandline
+                accessor: original
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: commandline.decoded
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: YQBtAHMAaQBJAG4AaQB0AEYAYQBpAGwAZQBkAA==
+          ignorecase: true
+        - operator: containsString
+          left:
+            value:
+              complex:
+                root: commandline
+                accessor: original
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: commandline.decoded
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: LoadLibrary("amsi.dll")
+        - operator: containsString
+          left:
+            value:
+              complex:
+                root: commandline
+                accessor: original
+                transformers:
+                - operator: append
+                  args:
+                    item:
+                      value:
+                        simple: commandline.decoded
+                      iscontext: true
+            iscontext: true
+          right:
+            value:
+              simple: AmsiScanBuffer()
+    view: |-
+      {
+        "position": {
+          "x": 1810,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: c56fef87-e77c-452f-850d-8a76d44d6e30
+    type: regular
+    task:
+      id: c56fef87-e77c-452f-850d-8a76d44d6e30
+      version: -1
+      name: Extract indicators from command-line
+      description: Extracts indicators from the command line.
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      text:
+        complex:
+          root: commandline
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: inputs.CommandLine
+                iscontext: true
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": 260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 48fe6db5-28f2-46e8-8ca3-cfbcacaf3de3
+    type: regular
+    task:
+      id: 48fe6db5-28f2-46e8-8ca3-cfbcacaf3de3
+      version: -1
+      name: Set decoded commandline
+      description: Sets a value in context from the key entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: commandline.decoded
+      value:
+        complex:
+          root: inputs.CommandLine
+          transformers:
+          - operator: replaceMatch
+            args:
+              regex:
+                value:
+                  simple: (?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$
+              replaceWith:
+                value:
+                  simple: Base64.decoded
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": -200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: c89fbf52-da5f-4bab-836e-07a697e0fb71
+    type: regular
+    task:
+      id: c89fbf52-da5f-4bab-836e-07a697e0fb71
+      version: -1
+      name: Set command line verdict of maliciousTools
+      description: Sets a value in context from the key entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      key:
+        simple: CommandlineVerdict.maliciousTools
+      value:
+        simple: "True"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: b9b89f0b-8885-4908-8d0f-c785c90feddd
+    type: regular
+    task:
+      id: b9b89f0b-8885-4908-8d0f-c785c90feddd
+      version: -1
+      name: Set command line verdict of suspiciousParameters
+      description: Sets a value in context from the key entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      key:
+        simple: CommandlineVerdict.suspiciousParameters
+      value:
+        simple: "True"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1380,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 0fbff6eb-dc6e-4a75-876a-7dcb37dffa6b
+    type: regular
+    task:
+      id: 0fbff6eb-dc6e-4a75-876a-7dcb37dffa6b
+      version: -1
+      name: Set command line verdict of AMSI
+      description: Sets a value in context from the key entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      key:
+        simple: CommandlineVerdict.AMSI
+      value:
+        simple: "True"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1810,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: a390494c-e6e3-4d90-8d4a-9a072dc3bec6
+    type: regular
+    task:
+      id: a390494c-e6e3-4d90-8d4a-9a072dc3bec6
+      version: -1
+      name: 'Set command line verdict '
+      description: Sets a value in context from the key entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      key:
+        simple: CommandlineVerdict.base64
+      value:
+        simple: "True"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": -40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 7d374634-8e9f-42f4-821e-aae890e35f05
+    type: condition
+    task:
+      id: 7d374634-8e9f-42f4-821e-aae890e35f05
+      version: -1
+      name: Found indicators in the command-line?
+      description: Checks if indicators exist in the command line.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ExtractedIndicators
+                filters:
+                - - operator: isNotExists
+                    left:
+                      value:
+                        simple: ExtractedIndicators.Attack_Pattern
+                      iscontext: true
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 2240,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 8dae2f2c-fb4b-4ae8-83dd-1af6df62e0b7
+    type: regular
+    task:
+      id: 8dae2f2c-fb4b-4ae8-83dd-1af6df62e0b7
+      version: -1
+      name: Set command line verdict of foundIndicators
+      description: Sets a value in context from the key entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      key:
+        simple: CommandlineVerdict.foundIndicators
+      value:
+        simple: "True"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2240,
+          "y": 1130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: c422122e-9adf-4d20-8d37-110ed22f153e
+    type: regular
+    task:
+      id: c422122e-9adf-4d20-8d37-110ed22f153e
+      version: -1
+      name: Set original commandline
+      description: Sets a value in context from the key entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      key:
+        simple: commandline.original
+      value:
+        complex:
+          root: inputs.Commandline
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": -1045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "15_9_#default#": 0.71,
+      "17_11_yes": 0.44,
+      "17_4_#default#": 0.1,
+      "19_13_yes": 0.5,
+      "19_9_#default#": 0.85,
+      "21_9_#default#": 0.71,
+      "22_9_#default#": 0.85,
+      "31_9_#default#": 0.9,
+      "6_12_#default#": 0.57,
+      "6_5_yes": 0.31,
+      "7_4_#default#": 0.27,
+      "7_8_yes": 0.58
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2595,
+        "width": 2120,
+        "x": 500,
+        "y": -1200
+      }
+    }
+  }
+inputs:
+- key: Commandline
+  value: {}
+  required: true
+  description: The command line.
+  playbookInputQuery:
+outputs:
+- contextPath: MatchRegex
+  description: The regex found in the command line
+  type: unknown
+- contextPath: Indicators
+  description: Indicators extracted from the command line
+  type: unknown
+- contextPath: commandline
+  description: The command line
+  type: unknown
+- contextPath: CommandlineVerdict
+  description: The command line verdict
+  type: unknown
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

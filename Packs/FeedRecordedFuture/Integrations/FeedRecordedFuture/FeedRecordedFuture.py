@@ -23,6 +23,14 @@ RF_CRITICALITY_LABELS = {
     'Unusual': 5
 }
 
+RF_INDICATOR_TYPES = {
+    'ip': 'ip',
+    'domain': 'domain',
+    'url': 'url',
+    'CVE(vulnerability)': 'vulnerability',
+    'hash': 'hash'
+}
+
 
 class Client(BaseClient):
     """
@@ -38,7 +46,7 @@ class Client(BaseClient):
 
     def __init__(self, indicator_type: str, api_token: str, services: list, risk_rule: str = None,
                  fusion_file_path: str = None, insecure: bool = False,
-                 polling_timeout: int = 20, proxy: bool = False, threshold: int = 65,
+                 polling_timeout: int = 20, proxy: bool = False, threshold: int = 65, risk_score_threshold: int = 0,
                  tags: Optional[list] = None, tlp_color: Optional[str] = None):
         """
         Attributes:
@@ -51,6 +59,7 @@ class Client(BaseClient):
              polling_timeout: timeout of the polling request in seconds. Default: 20
              proxy: Sets whether use proxy when sending requests
              threshold: The minimum score from the feed in order to to determine whether the indicator is malicious.
+             risk_score_threshold: The minimum score to filter out the ingested indicators.
              tags: A list of tags to add to indicators
              :param tlp_color: Traffic Light Protocol color
         """
@@ -61,30 +70,32 @@ class Client(BaseClient):
         except (ValueError, TypeError):
             return_error('Please provide an integer value for "Request Timeout"')
 
-        self.risk_rule = risk_rule if risk_rule != "" else None
+        self.risk_rule = argToList(risk_rule)
         self.fusion_file_path = fusion_file_path if fusion_file_path != "" else None
         self.api_token = self.headers['X-RFToken'] = api_token
         self.services = services
         self.indicator_type = indicator_type
-        self.threshold = int(threshold)
+        self.threshold = int(threshold) if threshold else threshold
+        self.risk_score_threshold = int(risk_score_threshold) if risk_score_threshold else risk_score_threshold
         self.tags = tags
         self.tlp_color = tlp_color
         super().__init__(self.BASE_URL, proxy=proxy, verify=not insecure)
 
-    def _build_request(self, service, indicator_type):
+    def _build_request(self, service, indicator_type, risk_rule: Optional[str] = None) -> requests.PreparedRequest:
         """Builds the request for the Recorded Future feed.
         Args:
             service (str): The service from recorded future. Can be 'connectApi' or 'fusion'
             indicator_type (str) The indicator type. Can be 'domain', 'ip', 'hash' or 'url'
+            risk_rule(str): A risk rule that limits the fetched indicators
 
         Returns:
             requests.PreparedRequest: The prepared request which will be sent to the server
         """
         if service == 'connectApi':
-            if self.risk_rule is None:
-                url = self.BASE_URL + indicator_type + '/risklist'
+            if risk_rule:
+                url = self.BASE_URL + indicator_type + '/risklist?list=' + risk_rule
             else:
-                url = self.BASE_URL + indicator_type + '/risklist?list=' + self.risk_rule
+                url = self.BASE_URL + indicator_type + '/risklist'
 
             params = self.PARAMS
             params['gzip'] = True
@@ -112,17 +123,18 @@ class Client(BaseClient):
             raise DemistoException(f'Service unknown: {service}')
         return response.prepare()
 
-    def build_iterator(self, service, indicator_type):
+    def build_iterator(self, service, indicator_type, risk_rule: Optional[str] = None):
         """Retrieves all entries from the feed.
         Args:
             service (str): The service from recorded future. Can be 'connectApi' or 'fusion'
-            indicator_type (str) The indicator type. Can be 'domain', 'ip', 'hash' or 'url'
+            indicator_type (str): The indicator type. Can be 'domain', 'ip', 'hash' or 'url'
+            risk_rule (str): A risk rule that limits the fetched indicators
 
         Returns:
             list of feed dictionaries.
         """
         _session = requests.Session()
-        prepared_request = self._build_request(service, indicator_type)
+        prepared_request = self._build_request(service, indicator_type, risk_rule)
         # this is to honour the proxy environment variables
         rkwargs = _session.merge_environment_settings(
             prepared_request.url,
@@ -145,7 +157,8 @@ class Client(BaseClient):
                              " requests made to Recorded Future. ")
             else:
                 return_error(
-                    '{} - exception in request: {} {}'.format(self.SOURCE_NAME, response.status_code, response.content))
+                    '{} - exception in request: {} {}'
+                    .format(self.SOURCE_NAME, response.status_code, response.content))  # type: ignore
 
         if service == 'connectApi':
             response_content = gzip.decompress(response.content)
@@ -157,22 +170,26 @@ class Client(BaseClient):
                 f.write(response.text)
 
     def get_batches_from_file(self, limit):
+        # we do this try to make sure the file gets deleted at the end
+        try:
+            file_stream = open("response.txt", 'rt')
+            columns = file_stream.readline()  # get the headers from the csv file.
+            columns = columns.replace("\"", "").strip().split(",")  # type:ignore  # '"a","b"\n' -> ["a", "b"]
 
-        file_stream = open("response.txt", 'rt')
-        columns = file_stream.readline()  # get the headers from the csv file.
-        columns = columns.replace("\"", "").strip().split(",")  # '"a","b"\n' -> ["a", "b"]
+            batch_size = limit if limit else BATCH_SIZE
+            while True:
 
-        batch_size = limit if limit else BATCH_SIZE
-        while True:
+                feed_batch = [feed for _, feed in zip(range(batch_size + 1), file_stream) if feed]
 
-            feed_batch = [feed for _, feed in zip(range(batch_size + 1), file_stream) if feed]
-
-            if not feed_batch:
-                file_stream.close()
+                if not feed_batch:
+                    file_stream.close()
+                    return
+                yield csv.DictReader(feed_batch, fieldnames=columns)
+        finally:
+            try:
                 os.remove("response.txt")
-                return
-
-            yield csv.DictReader(feed_batch, fieldnames=columns)
+            except OSError:
+                pass
 
     def calculate_indicator_score(self, risk_from_feed):
         """Calculates the Dbot score of an indicator based on its Risk value from the feed.
@@ -190,20 +207,30 @@ class Client(BaseClient):
 
         return dbot_score
 
+    def check_indicator_risk_score(self, risk_score):
+        """Checks if the indicator risk score is above risk_score_threshold
+        Args:
+            risk_score (str): The indicator's risk score from the feed
+        Returns:
+            True if the indicator risk score is above risk_score_threshold, False otherwise.
+        """
+        return int(risk_score) >= self.risk_score_threshold
+
     def run_parameters_validations(self):
         """Checks validation of the risk_rule and fusion_file_path parameters
         Returns:
             None in success, Error otherwise
         """
-        if self.risk_rule is not None:
+        if self.risk_rule:
             if 'connectApi' not in self.services:
                 return_error("You entered a risk rule but the 'connectApi' service is not chosen. "
                              "Add the 'connectApi' service to the list or remove the risk rule.")
-
-            elif not is_valid_risk_rule(self, self.risk_rule):
-                return_error("The given risk rule does not exist, "
-                             "please make sure you entered it correctly. \n"
-                             "To see all available risk rules run the '!rf-get-risk-rules' command.")
+            else:
+                for risk_rule in self.risk_rule:
+                    if not is_valid_risk_rule(self, risk_rule):
+                        return_error(f"The given risk rule: {risk_rule} does not exist,"
+                                     f"please make sure you entered it correctly. \n"
+                                     f"To see all available risk rules run the '!rf-get-risk-rules' command.")
 
         if self.fusion_file_path is not None:
             if 'fusion' not in self.services:
@@ -246,7 +273,9 @@ def test_module(client: Client, *args) -> Tuple[str, dict, dict]:
     client.run_parameters_validations()
 
     for service in client.services:
-        client.build_iterator(service, client.indicator_type)
+        # if there are risk rules, select the first one for test
+        risk_rule = client.risk_rule[0] if client.risk_rule else None
+        client.build_iterator(service, client.indicator_type, risk_rule)
         client.get_batches_from_file(limit=1)
     return 'ok', {}, {}
 
@@ -271,6 +300,8 @@ def get_indicator_type(indicator_type, item):
         return FeedIndicatorType.Domain
     elif indicator_type == 'url':
         return FeedIndicatorType.URL
+    elif indicator_type == 'vulnerability':
+        return FeedIndicatorType.CVE
 
 
 def ip_to_indicator_type(ip):
@@ -322,30 +353,52 @@ def format_risk_string(risk_string):
     return f'{splitted_risk_string[0]} of {splitted_risk_string[1]} Risk Rules Triggered'
 
 
-def fetch_indicators_command(client, indicator_type, limit: Optional[int] = None):
-    """Fetches indicators from the Recorded Future feeds.
+def fetch_and_create_indicators(client, risk_rule: Optional[str] = None):
+    """Fetches indicators from the Recorded Future feeds,
+    and from each fetched indicator creates an indicator in XSOAR.
+
     Args:
         client(Client): Recorded Future Feed client.
+        risk_rule(str): A risk rule that limits the fetched indicators
+
+    Returns: None.
+
+    """
+    for indicators in fetch_indicators_command(client, client.indicator_type, risk_rule):
+        demisto.createIndicators(indicators)
+
+
+def fetch_indicators_command(client, indicator_type, risk_rule: Optional[str] = None, limit: Optional[int] = None):
+    """Fetches indicators from the Recorded Future feeds.
+    Args:
+        client(Client): Recorded Future Feed client
         indicator_type(str): The indicator type
+        risk_rule(str): A risk rule that limits the fetched indicators
         limit(int): Optional. The number of the indicators to fetch
     Returns:
         list. List of indicators from the feed
     """
-
+    indicators_value_set: Set[str] = set()
     for service in client.services:
-        client.build_iterator(service, indicator_type)
+        client.build_iterator(service, indicator_type, risk_rule)
         feed_batches = client.get_batches_from_file(limit)
         for feed_dicts in feed_batches:
             indicators = []
             for item in feed_dicts:
                 raw_json = dict(item)
                 raw_json['value'] = value = item.get('Name')
+                if value in indicators_value_set:
+                    continue
+                indicators_value_set.add(value)
                 raw_json['type'] = get_indicator_type(indicator_type, item)
                 score = 0
                 risk = item.get('Risk')
                 if isinstance(risk, str) and risk.isdigit():
                     raw_json['score'] = score = client.calculate_indicator_score(risk)
                     raw_json['Criticality Label'] = calculate_recorded_future_criticality_label(risk)
+                    # If the indicator risk score is lower than the risk score threshold we shouldn't create it.
+                    if not client.check_indicator_risk_score(risk):
+                        continue
                 lower_case_evidence_details_keys = []
                 evidence_details_value = item.get('EvidenceDetails', '{}')
                 if evidence_details_value:
@@ -376,7 +429,7 @@ def fetch_indicators_command(client, indicator_type, limit: Optional[int] = None
             yield indicators
 
 
-def get_indicators_command(client, args) -> Tuple[str, dict, dict]:
+def get_indicators_command(client, args) -> Tuple[str, Dict[Any, Any], List[Dict]]:  # pragma: no cover
     """Retrieves indicators from the Recorded Future feed to the war-room.
         Args:
             client(Client): Recorded Future Feed client.
@@ -387,17 +440,40 @@ def get_indicators_command(client, args) -> Tuple[str, dict, dict]:
     indicator_type = args.get('indicator_type', demisto.params().get('indicator_type'))
     limit = int(args.get('limit'))
 
-    indicators_list: List[Dict] = []
-    for indicators in fetch_indicators_command(client, indicator_type, limit):
-        indicators_list.extend(indicators)
+    human_readable: str = ''
+    entry_results: List[Dict]
+    indicators_list: List[Dict]
 
-        if limit and len(indicators_list) >= limit:
-            break
+    if client.risk_rule:
+        entry_results = []
+        for risk_rule in client.risk_rule:
+            indicators_list = []
+            for indicators in fetch_indicators_command(client, indicator_type, risk_rule, limit):
+                indicators_list.extend(indicators)
 
-    entry_result = camelize(indicators_list)
-    hr = tableToMarkdown('Indicators from RecordedFuture Feed:', entry_result, headers=['Value', 'Type'], removeNull=True)
+                if limit and len(indicators_list) >= limit:
+                    break
 
-    return hr, {}, entry_result
+            entry_result = camelize(indicators_list)
+            entry_results.extend(entry_result)
+            hr = tableToMarkdown(f'Indicators from RecordedFuture Feed for {risk_rule} risk rule:', entry_result,
+                                 headers=['Value', 'Type'], removeNull=True)
+            human_readable += f'\n{hr}'
+
+    else:  # there are no risk rules
+        indicators_list = []
+        risk_rule = None
+        for indicators in fetch_indicators_command(client, indicator_type, risk_rule, limit):
+            indicators_list.extend(indicators)
+
+            if limit and len(indicators_list) >= limit:
+                break
+
+        entry_results = camelize(indicators_list)
+        human_readable = tableToMarkdown('Indicators from RecordedFuture Feed:', entry_results,
+                                         headers=['Value', 'Type'], removeNull=True)
+
+    return human_readable, {}, entry_results
 
 
 def get_risk_rules_command(client: Client, args) -> Tuple[str, dict, dict]:
@@ -422,36 +498,12 @@ def get_risk_rules_command(client: Client, args) -> Tuple[str, dict, dict]:
     return hr, {'RecordedFutureFeed.RiskRule(val.Name == obj.Name)': entry_result}, result
 
 
-def remove_duplicate_indicators(indicators: List[Dict]):
-    """Removes duplicates in the indicators batch (including case letters duplicates)
-     due to performance issue - https://github.com/demisto/etc/issues/25033
-     The issue is resolved in server 6.0.1 but we still support earlier versions.
-
-        Args:
-            indicators: A list of indicators to remove duplicates from
-        Returns:
-            list. A list containing only unique indicators
-        """
-
-    non_duplicates_dict: Dict[str, Dict] = {}
-    for indicator in indicators:
-        indicator_value = indicator.get("value")
-        if indicator_value:
-            # each value is added to the dict only ones
-            if not non_duplicates_dict.get(str(indicator_value).lower()):
-                non_duplicates_dict[str(indicator_value.lower())] = indicator
-
-    unique_indicators_list = list(non_duplicates_dict.values())
-    return unique_indicators_list
-
-
-def main():
+def main():  # pragma: no cover
     params = demisto.params()
-    client = Client(params.get('indicator_type'), params.get('api_token'), params.get('services'),
+    client = Client(RF_INDICATOR_TYPES[params.get('indicator_type')], params.get('api_token'), params.get('services'),
                     params.get('risk_rule'), params.get('fusion_file_path'), params.get('insecure'),
                     params.get('polling_timeout'), params.get('proxy'), params.get('threshold'),
-                    argToList(params.get('feedTags'), params.get('tlp_color'))
-                    )
+                    params.get('risk_score_threshold'), argToList(params.get('feedTags')), params.get('tlp_color'))
     command = demisto.command()
     demisto.info('Command being called is {}'.format(command))
     # Switch case
@@ -462,10 +514,12 @@ def main():
     }
     try:
         if demisto.command() == 'fetch-indicators':
-            indicators_batch = fetch_indicators_command(client, client.indicator_type)
-            for indicators in indicators_batch:
-                unique_indicators_list = remove_duplicate_indicators(indicators)
-                demisto.createIndicators(unique_indicators_list)
+            if client.risk_rule:
+                for risk_rule in client.risk_rule:
+                    fetch_and_create_indicators(client, risk_rule)
+            else:  # there are no risk rules
+                fetch_and_create_indicators(client)
+
         else:
             readable_output, outputs, raw_response = commands[command](client, demisto.args())  # type:ignore
             return_outputs(readable_output, outputs, raw_response)

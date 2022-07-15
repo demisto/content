@@ -1,24 +1,24 @@
 id: QRadar_v3-test
 version: -1
+fromversion: 5.0.0
 name: QRadar_v3-test
-description: QRadar v3 test playbook. Tests commands of QRadar, validates outputs
-  and expected behaviour.
-starttaskid: "0"
+description: QRadar v3 test playbook. Tests commands of QRadar, validates outputs and expected behaviour.
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: ad8fa08a-5b42-4e41-87d3-816f291940be
+  '0':
+    id: '0'
+    taskid: cb9960aa-75bf-43fd-84fe-1d5ac6dfb6ab
     type: start
     task:
-      id: ad8fa08a-5b42-4e41-87d3-816f291940be
+      id: cb9960aa-75bf-43fd-84fe-1d5ac6dfb6ab
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     separatecontext: false
     view: |-
       {
@@ -32,25 +32,27 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "1":
-    id: "1"
-    taskid: 17bb21bd-a5ae-4711-8329-c8a730b675ec
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
+    taskid: 2a59fbbb-9295-44e9-84c7-12159c765356
     type: regular
     task:
-      id: 17bb21bd-a5ae-4711-8329-c8a730b675ec
+      id: 2a59fbbb-9295-44e9-84c7-12159c765356
       version: -1
       name: Delete Context
       description: Delete field from context
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       all:
-        simple: "yes"
+        simple: yes
     separatecontext: false
     view: |-
       {
@@ -64,22 +66,24 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "2":
-    id: "2"
-    taskid: 26db99c2-8b9f-4bc6-8159-7a10f4c8a1b8
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '2':
+    id: '2'
+    taskid: 9a6d4173-78df-407f-823e-188b37e3d4d0
     type: regular
     task:
-      id: 26db99c2-8b9f-4bc6-8159-7a10f4c8a1b8
+      id: 9a6d4173-78df-407f-823e-188b37e3d4d0
       version: -1
       name: Offense List
       description: Gets offenses from QRadar.
       script: '|||qradar-offenses-list'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "3"
+      - '3'
     scriptarguments:
       enrichment:
         simple: IPs
@@ -98,32 +102,26 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "3":
-    id: "3"
-    taskid: b96ba691-145c-4622-8bf2-3d41fc12b6a6
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '3':
+    id: '3'
+    taskid: 8cde41f2-f954-44c9-87c8-763ba4b36f64
     type: condition
     task:
-      id: b96ba691-145c-4622-8bf2-3d41fc12b6a6
+      id: 8cde41f2-f954-44c9-87c8-763ba4b36f64
       version: -1
       name: Validate Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "6"
+      yes:
+      - '6'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: QRadar.Offense.StartTime
-            iscontext: true
-          right:
-            value:
-              simple: "2021-03-31T10:01:32.622000+00:00"
       - - operator: containsGeneral
           left:
             value:
@@ -131,7 +129,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "1"
+              simple: '1'
       - - operator: containsGeneral
           left:
             value:
@@ -139,7 +137,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "2"
+              simple: '2'
       - - operator: containsGeneral
           left:
             value:
@@ -147,7 +145,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "1"
+              simple: '1'
       - - operator: containsGeneral
           left:
             value:
@@ -179,7 +177,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: OPEN
+              simple: CLOSED
     view: |-
       {
         "position": {
@@ -192,24 +190,26 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "4":
-    id: "4"
-    taskid: bcbe2b23-e197-4691-8b2d-5491352cf50d
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '4':
+    id: '4'
+    taskid: 1acbae73-fe96-406d-8eaf-2ea079079553
     type: title
     task:
-      id: bcbe2b23-e197-4691-8b2d-5491352cf50d
+      id: 1acbae73-fe96-406d-8eaf-2ea079079553
       version: -1
       name: Test Playbook Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
       description: ''
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 7545
+          "y": 9820
         }
       }
     note: false
@@ -217,29 +217,31 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "5":
-    id: "5"
-    taskid: 3d4ebc7f-213c-40bc-8d86-6fb0c31b8288
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '5':
+    id: '5'
+    taskid: ca32b4c3-66cb-4a82-89fb-e0dbec81cb73
     type: regular
     task:
-      id: 3d4ebc7f-213c-40bc-8d86-6fb0c31b8288
+      id: ca32b4c3-66cb-4a82-89fb-e0dbec81cb73
       version: -1
       name: Update Offense
       description: Update an offense.
       script: '|||qradar-offense-update'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
     scriptarguments:
       follow_up:
-        simple: "true"
+        simple: 'true'
       offense_id:
-        simple: "1"
+        simple: '1'
       protected:
-        simple: "true"
+        simple: 'true'
     separatecontext: false
     view: |-
       {
@@ -253,25 +255,27 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "6":
-    id: "6"
-    taskid: 3b8b8013-a9c9-4bbd-8db5-6f98a9662d3c
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
+    taskid: e0b8a08d-8aeb-4756-81bb-abc1191d0d98
     type: regular
     task:
-      id: 3b8b8013-a9c9-4bbd-8db5-6f98a9662d3c
+      id: e0b8a08d-8aeb-4756-81bb-abc1191d0d98
       version: -1
       name: Delete Context
       description: Delete field from context
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
     scriptarguments:
       all:
-        simple: "yes"
+        simple: yes
     separatecontext: false
     view: |-
       {
@@ -285,23 +289,25 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "7":
-    id: "7"
-    taskid: 9b5247a2-baa4-4222-805e-144168a4de86
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '7':
+    id: '7'
+    taskid: 9e584595-d925-4500-8730-354eb0a6f658
     type: condition
     task:
-      id: 9b5247a2-baa4-4222-805e-144168a4de86
+      id: 9e584595-d925-4500-8730-354eb0a6f658
       version: -1
       name: Validate Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "8"
+      yes:
+      - '8'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -310,7 +316,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "1"
+              simple: '1'
       - - operator: isTrue
           left:
             value:
@@ -333,27 +339,29 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "8":
-    id: "8"
-    taskid: 106f2716-ff20-434b-8d7b-50ff6ed878f9
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '8':
+    id: '8'
+    taskid: 7a1d8d8b-1af6-4c1a-81f7-167e19b03678
     type: regular
     task:
-      id: 106f2716-ff20-434b-8d7b-50ff6ed878f9
+      id: 7a1d8d8b-1af6-4c1a-81f7-167e19b03678
       version: -1
       name: Create Note To Offense
       description: Retrieve a list of notes for an offense.
       script: '|||qradar-offense-note-create'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "9"
+      - '9'
     scriptarguments:
       note_text:
         simple: Note Regarding The Offense
       offense_id:
-        simple: "1"
+        simple: '1'
     separatecontext: false
     view: |-
       {
@@ -367,23 +375,25 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "9":
-    id: "9"
-    taskid: 336e4b58-2a67-4552-8cf7-7559036aec74
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '9':
+    id: '9'
+    taskid: 001ff168-a18a-4162-8e63-1f853c5bc5f7
     type: condition
     task:
-      id: 336e4b58-2a67-4552-8cf7-7559036aec74
+      id: 001ff168-a18a-4162-8e63-1f853c5bc5f7
       version: -1
       name: Validate Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "12"
+      yes:
+      - '12'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -392,7 +402,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: 'API_user: demistoadmin'
+              simple: 'API_user: engadmin'
       - - operator: isEqualString
           left:
             value:
@@ -413,25 +423,27 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "10":
-    id: "10"
-    taskid: 413db05b-9c8a-406b-8d68-30d8a85ad37b
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '10':
+    id: '10'
+    taskid: 24ae2ec2-b584-4655-828d-42b9fdff434c
     type: regular
     task:
-      id: 413db05b-9c8a-406b-8d68-30d8a85ad37b
+      id: 24ae2ec2-b584-4655-828d-42b9fdff434c
       version: -1
       name: Note List
       description: Create a note on an offense.
       script: '|||qradar-offense-notes-list'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "11"
+      - '11'
     scriptarguments:
       offense_id:
-        simple: "1"
+        simple: '1'
       range:
         simple: 0-1
     separatecontext: false
@@ -447,23 +459,25 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "11":
-    id: "11"
-    taskid: 18fa4295-0c18-4f04-8edb-b0306e1ba57d
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '11':
+    id: '11'
+    taskid: dc8e1dba-24cd-4a2e-8317-62e9627d3f0b
     type: condition
     task:
-      id: 18fa4295-0c18-4f04-8edb-b0306e1ba57d
+      id: dc8e1dba-24cd-4a2e-8317-62e9627d3f0b
       version: -1
       name: Validate Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "13"
+      yes:
+      - '13'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: containsGeneral
           left:
@@ -493,25 +507,27 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "12":
-    id: "12"
-    taskid: 3c82c16f-2bbf-4a8e-86aa-1f9daf6ea27c
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '12':
+    id: '12'
+    taskid: 5ebf7c11-86bc-4210-895a-932bb3457105
     type: regular
     task:
-      id: 3c82c16f-2bbf-4a8e-86aa-1f9daf6ea27c
+      id: 5ebf7c11-86bc-4210-895a-932bb3457105
       version: -1
       name: Delete Context
       description: Delete field from context
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "10"
+      - '10'
     scriptarguments:
       all:
-        simple: "yes"
+        simple: yes
     separatecontext: false
     view: |-
       {
@@ -525,22 +541,24 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "13":
-    id: "13"
-    taskid: 2a032b3e-31e2-4918-8c46-960c23e99f2f
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '13':
+    id: '13'
+    taskid: bf2d2195-7eda-40bc-8738-86d6701ec8e2
     type: regular
     task:
-      id: 2a032b3e-31e2-4918-8c46-960c23e99f2f
+      id: bf2d2195-7eda-40bc-8738-86d6701ec8e2
       version: -1
       name: Get Closing Reasons List
       description: Retrieve a list of offense closing reasons.
       script: '|||qradar-closing-reasons'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "14"
+      - '14'
     scriptarguments:
       filter:
         simple: id <= 2
@@ -557,23 +575,25 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "14":
-    id: "14"
-    taskid: 1cb49e38-ef88-4868-8558-de3b3b5b367b
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '14':
+    id: '14'
+    taskid: d02a3d84-6478-4fca-8927-47608bf9fc20
     type: condition
     task:
-      id: 1cb49e38-ef88-4868-8558-de3b3b5b367b
+      id: d02a3d84-6478-4fca-8927-47608bf9fc20
       version: -1
       name: Validate Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "15"
+      yes:
+      - '15'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: hasLength
           left:
@@ -582,7 +602,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "2"
+              simple: '2'
       - - operator: containsGeneral
           left:
             value:
@@ -590,7 +610,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "1"
+              simple: '1'
       - - operator: containsGeneral
           left:
             value:
@@ -598,7 +618,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "2"
+              simple: '2'
       - - operator: containsGeneral
           left:
             value:
@@ -627,22 +647,24 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "15":
-    id: "15"
-    taskid: 8e3b06e7-2919-4bb9-87c4-52cd72f36509
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '15':
+    id: '15'
+    taskid: 2cd29850-8ddd-47b2-8198-c7764e8a35c4
     type: regular
     task:
-      id: 8e3b06e7-2919-4bb9-87c4-52cd72f36509
+      id: 2cd29850-8ddd-47b2-8198-c7764e8a35c4
       version: -1
       name: Rules List
       description: Retrieves a list of rules.
       script: '|||qradar-rules-list'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "16"
+      - '16'
     scriptarguments:
       filter:
         simple: id between 100001 AND 100006
@@ -661,23 +683,25 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "16":
-    id: "16"
-    taskid: c5dcdacd-2186-4a6c-8aa1-8103affa999c
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '16':
+    id: '16'
+    taskid: 2774a198-91ee-480a-8b01-6ab5fb6852be
     type: condition
     task:
-      id: c5dcdacd-2186-4a6c-8aa1-8103affa999c
+      id: 2774a198-91ee-480a-8b01-6ab5fb6852be
       version: -1
       name: Validate Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "17"
+      yes:
+      - '17'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: containsGeneral
           left:
@@ -702,7 +726,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "2007-08-09T14:38:27.862000+00:00"
+              simple: '2007-08-09T14:38:27.862000+00:00'
       - - operator: containsGeneral
           left:
             value:
@@ -726,7 +750,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "100001"
+              simple: '100001'
       - - operator: containsGeneral
           left:
             value:
@@ -734,7 +758,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "100003"
+              simple: '100003'
       - - operator: containsGeneral
           left:
             value:
@@ -742,7 +766,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "100006"
+              simple: '100006'
     view: |-
       {
         "position": {
@@ -755,27 +779,29 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "17":
-    id: "17"
-    taskid: 0c879284-c678-45da-82cd-1c2b371e1953
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '17':
+    id: '17'
+    taskid: ef360bae-e800-43ef-8d19-59f52ce63879
     type: regular
     task:
-      id: 0c879284-c678-45da-82cd-1c2b371e1953
+      id: ef360bae-e800-43ef-8d19-59f52ce63879
       version: -1
       name: Group Rule List
       description: Retrieves a list of the rule groups.
       script: '|||qradar-rule-groups-list'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "18"
+      - '18'
     scriptarguments:
       range:
         simple: 0-0
       rule_group_id:
-        simple: "125"
+        simple: '125'
     separatecontext: false
     view: |-
       {
@@ -789,23 +815,25 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "18":
-    id: "18"
-    taskid: 4f48ac78-ded9-46cf-8962-be62b436f314
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '18':
+    id: '18'
+    taskid: 8c33bf1d-f097-4698-84c1-8479508b5caa
     type: condition
     task:
-      id: 4f48ac78-ded9-46cf-8962-be62b436f314
+      id: 8c33bf1d-f097-4698-84c1-8479508b5caa
       version: -1
       name: Validate Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "19"
+      yes:
+      - '19'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -822,7 +850,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "125"
+              simple: '125'
       - - operator: isEqualString
           left:
             value:
@@ -851,25 +879,27 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "19":
-    id: "19"
-    taskid: 5d49fc17-b9d2-4566-8b7d-411734d3efc3
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '19':
+    id: '19'
+    taskid: 41d602e6-bb67-4539-87e5-e5eaf2fe4609
     type: regular
     task:
-      id: 5d49fc17-b9d2-4566-8b7d-411734d3efc3
+      id: 41d602e6-bb67-4539-87e5-e5eaf2fe4609
       version: -1
       name: Assets List
       description: Retrieves assets list.
       script: '|||qradar-assets-list'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "20"
+      - '20'
     scriptarguments:
       asset_id:
-        simple: "1003"
+        simple: '1007'
     separatecontext: false
     view: |-
       {
@@ -883,23 +913,25 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "20":
-    id: "20"
-    taskid: a286fcc8-bccb-40a1-8890-4b85f542d6bc
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '20':
+    id: '20'
+    taskid: 5e8bf793-684a-420f-8416-88571394f5f0
     type: condition
     task:
-      id: a286fcc8-bccb-40a1-8890-4b85f542d6bc
+      id: 5e8bf793-684a-420f-8416-88571394f5f0
       version: -1
       name: Validate Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "21"
+      yes:
+      - '21'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: containsGeneral
           left:
@@ -908,7 +940,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "1003"
+              simple: '1007'
       - - operator: containsGeneral
           left:
             value:
@@ -916,7 +948,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "0"
+              simple: '0'
     view: |-
       {
         "position": {
@@ -929,27 +961,29 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "21":
-    id: "21"
-    taskid: b620c2be-e585-43be-80c3-d538545b32e4
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '21':
+    id: '21'
+    taskid: a1c0d91c-41ac-4549-80f7-9ea910fd2c63
     type: regular
     task:
-      id: b620c2be-e585-43be-80c3-d538545b32e4
+      id: a1c0d91c-41ac-4549-80f7-9ea910fd2c63
       version: -1
       name: Create Reference Set
       description: Create a new reference set.
       script: '|||qradar-reference-set-create'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "22"
+      - '22'
     scriptarguments:
       element_type:
         simple: DATE
       ref_name:
-        simple: Test-Reference-Name
+        simple: Test-Reference-Name_2
       time_to_live:
         simple: 1 day
       timeout_type:
@@ -967,23 +1001,25 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "22":
-    id: "22"
-    taskid: 8cc07c48-9892-48c0-8df0-4925e6f8314c
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '22':
+    id: '22'
+    taskid: 072fd698-2a04-4edd-8a44-a2cfeeb92aff
     type: condition
     task:
-      id: 8cc07c48-9892-48c0-8df0-4925e6f8314c
+      id: 072fd698-2a04-4edd-8a44-a2cfeeb92aff
       version: -1
       name: Validate Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "25"
+      yes:
+      - '25'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -1008,7 +1044,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "0"
+              simple: '0'
       - - operator: isEqualString
           left:
             value:
@@ -1016,7 +1052,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Test-Reference-Name
+              simple: Test-Reference-Name_2
       - - operator: isEqualString
           left:
             value:
@@ -1037,287 +1073,27 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "23":
-    id: "23"
-    taskid: d361b7bb-0513-4479-8629-7253feede6d1
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '23':
+    id: '23'
+    taskid: 9b512ba4-9f5d-484e-88a7-068b2db7c2bf
     type: regular
     task:
-      id: d361b7bb-0513-4479-8629-7253feede6d1
+      id: 9b512ba4-9f5d-484e-88a7-068b2db7c2bf
       version: -1
       name: Get Reference Details
       description: Retrieve a list of reference sets.
       script: '|||qradar-reference-sets-list'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "27"
+      - '27'
     scriptarguments:
       ref_name:
-        simple: Test-Reference-Name
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 4395
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "25":
-    id: "25"
-    taskid: 8e7e6b4d-b831-4bd0-8ca7-fcab447069e7
-    type: regular
-    task:
-      id: 8e7e6b4d-b831-4bd0-8ca7-fcab447069e7
-      version: -1
-      name: Delete Context
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "26"
-    scriptarguments:
-      all:
-        simple: "yes"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3870
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "26":
-    id: "26"
-    taskid: a9257a35-b0e1-44ad-8629-798fed492aa8
-    type: regular
-    task:
-      id: a9257a35-b0e1-44ad-8629-798fed492aa8
-      version: -1
-      name: Add Value To Reference
-      description: Add or update an element in a reference set.
-      script: '|||qradar-reference-set-value-upsert'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "28"
-    scriptarguments:
-      date_value:
-        simple: "True"
-      ref_name:
-        simple: Test-Reference-Name
-      value:
-        simple: "2020-12-12T12:12:12Z"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 4045
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "27":
-    id: "27"
-    taskid: 8336d5c9-9b7b-4768-83d8-5545bfb5a1fd
-    type: condition
-    task:
-      id: 8336d5c9-9b7b-4768-83d8-5545bfb5a1fd
-      version: -1
-      name: Validate Outputs, With New Element Count
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "29"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: QRadar.Reference.NumberOfElements
-            iscontext: true
-          right:
-            value:
-              simple: "1"
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: QRadar.Reference.Name
-            iscontext: true
-          right:
-            value:
-              simple: Test-Reference-Name
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: QRadar.Reference.Data.Value
-            iscontext: true
-          right:
-            value:
-              simple: "1607775132000"
-      - - operator: isEqualString
-          left:
-            value:
-              simple: QRadar.Reference.TimeoutType
-            iscontext: true
-          right:
-            value:
-              simple: FIRST_SEEN
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 4570
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "28":
-    id: "28"
-    taskid: e9d82c29-e563-4df3-8a6b-f109f417fd8d
-    type: regular
-    task:
-      id: e9d82c29-e563-4df3-8a6b-f109f417fd8d
-      version: -1
-      name: Delete Context
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "23"
-    scriptarguments:
-      all:
-        simple: "yes"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 4220
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "29":
-    id: "29"
-    taskid: 0524b341-7479-4d71-8cdf-5ee5b5b9cd9d
-    type: regular
-    task:
-      id: 0524b341-7479-4d71-8cdf-5ee5b5b9cd9d
-      version: -1
-      name: Delete Reference Set Value
-      description: Remove a value from a reference set.
-      script: QRadar v3|||qradar-reference-set-value-delete
-      type: regular
-      iscommand: true
-      brand: QRadar v3
-    nexttasks:
-      '#none#':
-      - "30"
-    scriptarguments:
-      date_value:
-        simple: "True"
-      ref_name:
-        simple: Test-Reference-Name
-      value:
-        simple: "2020-12-12T12:12:12Z"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 4745
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "30":
-    id: "30"
-    taskid: 67c78425-adc9-4058-82da-041c3986e48b
-    type: regular
-    task:
-      id: 67c78425-adc9-4058-82da-041c3986e48b
-      version: -1
-      name: Delete Context
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "31"
-    scriptarguments:
-      all:
-        simple: "yes"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 4920
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "31":
-    id: "31"
-    taskid: bfa7b0ff-c939-41be-863f-53a8ca6a289d
-    type: regular
-    task:
-      id: bfa7b0ff-c939-41be-863f-53a8ca6a289d
-      version: -1
-      name: Get Reference With The Deleted Value
-      description: Retrieve a list of reference sets.
-      script: '|||qradar-reference-sets-list'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "32"
-    scriptarguments:
-      ref_name:
-        simple: Test-Reference-Name
+        simple: Test-Reference-Name_2
     separatecontext: false
     view: |-
       {
@@ -1331,23 +1107,97 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "32":
-    id: "32"
-    taskid: 77daece6-4bfd-48a4-8ed3-9ab4c9815b37
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '25':
+    id: '25'
+    taskid: c213a102-879c-4e83-886d-c548733a0e83
+    type: regular
+    task:
+      id: c213a102-879c-4e83-886d-c548733a0e83
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '60'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '26':
+    id: '26'
+    taskid: 2d521fc3-86fd-4e18-83dc-a643dd0628ec
+    type: regular
+    task:
+      id: 2d521fc3-86fd-4e18-83dc-a643dd0628ec
+      version: -1
+      name: Add Value To Reference
+      description: Add or update an element in a reference set.
+      script: '|||qradar-reference-set-value-upsert'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '28'
+    scriptarguments:
+      date_value:
+        simple: 'True'
+      ref_name:
+        simple: Test-Reference-Name_2
+      value:
+        simple: '2020-12-12T12:12:12Z'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '27':
+    id: '27'
+    taskid: e75c5dd3-468e-4c06-87eb-a6cee65c006e
     type: condition
     task:
-      id: 77daece6-4bfd-48a4-8ed3-9ab4c9815b37
+      id: e75c5dd3-468e-4c06-87eb-a6cee65c006e
       version: -1
-      name: Validate Outputs, Validate Element Count Decreased
+      name: Validate Outputs, With New Element Count
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "33"
+      yes:
+      - '29'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: containsGeneral
           left:
@@ -1356,7 +1206,31 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "0"
+              simple: '1'
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: QRadar.Reference.Name
+            iscontext: true
+          right:
+            value:
+              simple: Test-Reference-Name_2
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: QRadar.Reference.Data.Value
+            iscontext: true
+          right:
+            value:
+              simple: '1607775132000'
+      - - operator: isEqualString
+          left:
+            value:
+              simple: QRadar.Reference.TimeoutType
+            iscontext: true
+          right:
+            value:
+              simple: FIRST_SEEN
     view: |-
       {
         "position": {
@@ -1369,25 +1243,65 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "33":
-    id: "33"
-    taskid: f5d156f2-5cbe-4808-826e-0a78597ee431
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '28':
+    id: '28'
+    taskid: 8df0106a-1d28-4916-8544-886643e59ed9
     type: regular
     task:
-      id: f5d156f2-5cbe-4808-826e-0a78597ee431
+      id: 8df0106a-1d28-4916-8544-886643e59ed9
       version: -1
-      name: Delete Reference Set
-      description: Removes a reference set or purges its contents.
-      script: '|||qradar-reference-set-delete'
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
       type: regular
-      iscommand: true
-      brand: ""
+      iscommand: false
+      brand: ''
     nexttasks:
       '#none#':
-      - "34"
+      - '23'
     scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '29':
+    id: '29'
+    taskid: bbc4e670-cc0a-4b88-8787-9c1c7b076989
+    type: regular
+    task:
+      id: bbc4e670-cc0a-4b88-8787-9c1c7b076989
+      version: -1
+      name: Delete Reference Set Value
+      description: Remove a value from a reference set.
+      script: QRadar v3|||qradar-reference-set-value-delete
+      type: regular
+      iscommand: true
+      brand: QRadar v3
+    nexttasks:
+      '#none#':
+      - '30'
+    scriptarguments:
+      date_value:
+        simple: 'True'
       ref_name:
-        simple: Test-Reference-Name
+        simple: Test-Reference-Name_2
+      value:
+        simple: '2020-12-12T12:12:12Z'
     separatecontext: false
     view: |-
       {
@@ -1401,29 +1315,27 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "34":
-    id: "34"
-    taskid: df13cad0-a8ca-4b46-8a3e-048b4017a2da
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '30':
+    id: '30'
+    taskid: 1df9807b-99eb-4fab-81d7-103586312587
     type: regular
     task:
-      id: df13cad0-a8ca-4b46-8a3e-048b4017a2da
+      id: 1df9807b-99eb-4fab-81d7-103586312587
       version: -1
-      name: Get Domains List
-      description: Gets the list of domains. You must have the System Administrator
-        or Security Administrator permissions to call this endpoint if you are trying
-        to retrieve the details of all domains. You can retrieve details of domains
-        that are assigned to your Security Profile without having the System Administrator
-        or Security Administrator permissions. If you do not have the System Administrator
-        or Security Administrator permissions, then for each domain assigned to your
-        security profile you can only view the values for the id and name fields.
-        All other values return null.
-      script: '|||qradar-domains-list'
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
       type: regular
-      iscommand: true
-      brand: ""
+      iscommand: false
+      brand: ''
     nexttasks:
       '#none#':
-      - "35"
+      - '31'
+    scriptarguments:
+      all:
+        simple: yes
     separatecontext: false
     view: |-
       {
@@ -1437,32 +1349,28 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "35":
-    id: "35"
-    taskid: 8a5d06e2-deeb-4c9a-86ce-bc8d1e4b08fe
-    type: condition
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '31':
+    id: '31'
+    taskid: 30343abf-d40c-4ac4-8d43-285a044e3d41
+    type: regular
     task:
-      id: 8a5d06e2-deeb-4c9a-86ce-bc8d1e4b08fe
+      id: 30343abf-d40c-4ac4-8d43-285a044e3d41
       version: -1
-      name: Validate Outputs
-      type: condition
-      iscommand: false
-      brand: ""
+      name: Get Reference With The Deleted Value
+      description: Retrieve a list of reference sets.
+      script: '|||qradar-reference-sets-list'
+      type: regular
+      iscommand: true
+      brand: ''
     nexttasks:
-      "yes":
-      - "36"
+      '#none#':
+      - '32'
+    scriptarguments:
+      ref_name:
+        simple: Test-Reference-Name_2
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: QRadar.Domains.ID
-            iscontext: true
-          right:
-            value:
-              simple: "0"
     view: |-
       {
         "position": {
@@ -1475,28 +1383,34 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "36":
-    id: "36"
-    taskid: 0d841a4c-8823-4cdd-8af0-e575f5ac8cdc
-    type: regular
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '32':
+    id: '32'
+    taskid: 6e792615-c326-4901-8282-a995f4ba2472
+    type: condition
     task:
-      id: 0d841a4c-8823-4cdd-8af0-e575f5ac8cdc
+      id: 6e792615-c326-4901-8282-a995f4ba2472
       version: -1
-      name: Geolocations For IPs
-      description: Retrieves the MaxMind geoip data for the given IP address.
-      script: '|||qradar-geolocations-for-ip'
-      type: regular
-      iscommand: true
-      brand: ""
+      name: Validate Outputs, Validate Element Count Decreased
+      type: condition
+      iscommand: false
+      brand: ''
     nexttasks:
-      '#none#':
-      - "37"
-    scriptarguments:
-      ip:
-        simple: 1.2.3.4,1.2.3.5
-      ips:
-        simple: 1.2.3.4,1.2.3.5
+      yes:
+      - '33'
     separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: QRadar.Reference.NumberOfElements
+            iscontext: true
+          right:
+            value:
+              simple: '0'
     view: |-
       {
         "position": {
@@ -1509,23 +1423,166 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "37":
-    id: "37"
-    taskid: 81d750f9-597d-432d-8b91-d9b167691868
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '33':
+    id: '33'
+    taskid: 7ab5ef2f-4ecb-4b9b-8149-8630f3a6c4b4
+    type: regular
+    task:
+      id: 7ab5ef2f-4ecb-4b9b-8149-8630f3a6c4b4
+      version: -1
+      name: Delete Reference Set
+      description: Removes a reference set or purges its contents.
+      script: '|||qradar-reference-set-delete'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '34'
+    scriptarguments:
+      ref_name:
+        simple: Test-Reference-Name_2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '34':
+    id: '34'
+    taskid: 5ff0ad7f-5e14-4f23-8488-f66d1320bc97
+    type: regular
+    task:
+      id: 5ff0ad7f-5e14-4f23-8488-f66d1320bc97
+      version: -1
+      name: Get Domains List
+      description: Gets the list of domains. You must have the System Administrator or Security Administrator permissions to call this endpoint if you are trying to retrieve the details of all domains. You can retrieve details of domains that are assigned to your Security Profile without having the System Administrator or Security Administrator permissions. If you do not have the System Administrator or Security Administrator permissions, then for each domain assigned to your security profile you can only view the values for the id and name fields. All other values return null.
+      script: '|||qradar-domains-list'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '35'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '35':
+    id: '35'
+    taskid: e7f269b4-2998-41d8-8c77-9d9ab0d5eaa5
     type: condition
     task:
-      id: 81d750f9-597d-432d-8b91-d9b167691868
+      id: e7f269b4-2998-41d8-8c77-9d9ab0d5eaa5
       version: -1
       name: Validate Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "38"
+      yes:
+      - '36'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: QRadar.Domains.ID
+            iscontext: true
+          right:
+            value:
+              simple: '0'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6495
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '36':
+    id: '36'
+    taskid: c87ea6a1-a2d6-401a-8d13-4e0b743593b8
+    type: regular
+    task:
+      id: c87ea6a1-a2d6-401a-8d13-4e0b743593b8
+      version: -1
+      name: Geolocations For IPs
+      description: Retrieves the MaxMind geoip data for the given IP address.
+      script: '|||qradar-geolocations-for-ip'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '37'
+    scriptarguments:
+      ip:
+        simple: 1.2.3.4,1.2.3.5
+      ips:
+        simple: 1.2.3.4,1.2.3.5
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '37':
+    id: '37'
+    taskid: 518cce6e-ab03-4f8b-8e64-daa014ed572f
+    type: condition
+    task:
+      id: 518cce6e-ab03-4f8b-8e64-daa014ed572f
+      version: -1
+      name: Validate Outputs
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '38'
+    separatecontext: false
+    conditions:
+    - label: yes
       condition:
       - - operator: containsGeneral
           left:
@@ -1566,7 +1623,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "-122.3042"
+              simple: '-122.3042'
       - - operator: containsGeneral
           left:
             value:
@@ -1590,12 +1647,12 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "98275"
+              simple: '98275'
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 6145
+          "y": 6845
         }
       }
     note: false
@@ -1603,22 +1660,24 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "38":
-    id: "38"
-    taskid: d57c3a3f-56fe-447f-823a-5a9ffff1e5de
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '38':
+    id: '38'
+    taskid: f1d987d3-895f-4a4b-8ba3-5c3ac85ff63d
     type: regular
     task:
-      id: d57c3a3f-56fe-447f-823a-5a9ffff1e5de
+      id: f1d987d3-895f-4a4b-8ba3-5c3ac85ff63d
       version: -1
       name: Sources List
       description: Retrieves a list of log sources.
       script: '|||qradar-log-sources-list'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "39"
+      - '39'
     scriptarguments:
       filter:
         simple: id=112
@@ -1629,7 +1688,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6320
+          "y": 7020
         }
       }
     note: false
@@ -1637,23 +1696,25 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "39":
-    id: "39"
-    taskid: 73e23d42-8cb7-49e7-88e7-0900d0009bc4
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '39':
+    id: '39'
+    taskid: c9e67edd-47b1-4607-8ac3-30c4fbabfea5
     type: condition
     task:
-      id: 73e23d42-8cb7-49e7-88e7-0900d0009bc4
+      id: c9e67edd-47b1-4607-8ac3-30c4fbabfea5
       version: -1
       name: Validate Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "40"
+      yes:
+      - '40'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: containsGeneral
           left:
@@ -1662,7 +1723,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "112"
+              simple: '112'
       - - operator: containsGeneral
           left:
             value:
@@ -1670,7 +1731,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "5"
+              simple: '5'
       - - operator: containsGeneral
           left:
             value:
@@ -1678,7 +1739,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "12"
+              simple: '12'
       - - operator: isFalse
           left:
             value:
@@ -1693,7 +1754,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6495
+          "y": 7195
         }
       }
     note: false
@@ -1701,22 +1762,24 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "40":
-    id: "40"
-    taskid: 62fb82ca-bbeb-4b95-83f2-1d0c0b415437
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '40':
+    id: '40'
+    taskid: 9aed153f-354c-4f42-838d-956464449ab3
     type: regular
     task:
-      id: 62fb82ca-bbeb-4b95-83f2-1d0c0b415437
+      id: 9aed153f-354c-4f42-838d-956464449ab3
       version: -1
       name: Custom Properties
       description: Retrieves a list of event regex properties.
       script: '|||qradar-get-custom-properties'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "41"
+      - '41'
     scriptarguments:
       filter:
         simple: id = 129 OR id = 212
@@ -1725,7 +1788,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6670
+          "y": 7370
         }
       }
     note: false
@@ -1733,23 +1796,25 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "41":
-    id: "41"
-    taskid: 46ba912f-9dfa-4336-8656-2808183937e4
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '41':
+    id: '41'
+    taskid: 9c472316-f6dc-4cae-8467-d10dcbacec25
     type: condition
     task:
-      id: 46ba912f-9dfa-4336-8656-2808183937e4
+      id: 9c472316-f6dc-4cae-8467-d10dcbacec25
       version: -1
       name: Validate Outputs
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
-      "yes":
-      - "43"
+      yes:
+      - '43'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: containsGeneral
           left:
@@ -1779,7 +1844,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 6845
+          "y": 7545
         }
       }
     note: false
@@ -1787,22 +1852,24 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "43":
-    id: "43"
-    taskid: 844e1a22-97dc-42db-8507-440f87af13f4
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '43':
+    id: '43'
+    taskid: 5001c536-9066-41fd-805f-0f8a787b7278
     type: regular
     task:
-      id: 844e1a22-97dc-42db-8507-440f87af13f4
+      id: 5001c536-9066-41fd-805f-0f8a787b7278
       version: -1
       name: Get Saved Searches
       description: Retrieves a list of Ariel saved searches.
       script: '|||qradar-saved-searches-list'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "44"
+      - '44'
     scriptarguments:
       range:
         simple: 0-1
@@ -1811,7 +1878,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7020
+          "y": 7720
         }
       }
     note: false
@@ -1819,24 +1886,24 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "44":
-    id: "44"
-    taskid: 9364c2a7-fd86-4733-80ca-6dc398279c17
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '44':
+    id: '44'
+    taskid: 59d3d5d8-fd25-479f-8bdf-f185df69af66
     type: regular
     task:
-      id: 9364c2a7-fd86-4733-80ca-6dc398279c17
+      id: 59d3d5d8-fd25-479f-8bdf-f185df69af66
       version: -1
       name: Get Search IDs
-      description: Retrieves the list of Ariel searches IDs. Search status and results
-        can be polled by sending search ID to 'qradar-search-status-get' and 'qradar-search-results-get'
-        commands.
+      description: Retrieves the list of Ariel searches IDs. Search status and results can be polled by sending search ID to 'qradar-search-status-get' and 'qradar-search-results-get' commands.
       script: '|||qradar-searches-list'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "45"
+      - '45'
     scriptarguments:
       range:
         simple: 0-2
@@ -1845,7 +1912,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 7195
+          "y": 7895
         }
       }
     note: false
@@ -1853,49 +1920,42 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "45":
-    id: "45"
-    taskid: ffad7810-b764-4173-8977-a192d6478135
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '45':
+    id: '45'
+    taskid: 25acdd44-e631-40db-896b-a6e2f95542f9
     type: playbook
     task:
-      id: ffad7810-b764-4173-8977-a192d6478135
+      id: 25acdd44-e631-40db-896b-a6e2f95542f9
       version: -1
       name: QRadarFullSearch
-      description: This playbook runs a QRadar query and return its results to the
-        context.
+      description: This playbook runs a QRadar query and return its results to the context.
       playbookName: QRadarFullSearch
       type: playbook
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "4"
+      - '46'
     scriptarguments:
       interval:
-        simple: "1"
+        simple: '1'
       query_expression:
-        simple: SELECT QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory),
-          CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport,
-          destinationip, destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid),
-          RULENAME("creEventList"), sourcegeographiclocation, sourceMAC, sourcev6,
-          destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype),
-          credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP,
-          postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort,
-          preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime  FROM
-          events WHERE INOFFENSE(1)  limit 20 START 1605046453426
+        simple: SELECT QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME("creEventList"), sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime  FROM events WHERE INOFFENSE(1)  limit 20 START 1605046453426
       timeout:
-        simple: "600"
+        simple: '600'
     separatecontext: true
     loop:
       iscommand: false
-      exitCondition: ""
+      exitCondition: ''
       wait: 1
       max: 100
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 7370
+          "y": 8070
         }
       }
     note: false
@@ -1903,12 +1963,495 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '46':
+    id: '46'
+    taskid: 99a52538-6c7b-4d03-812d-885312d41eca
+    type: regular
+    task:
+      id: 99a52538-6c7b-4d03-812d-885312d41eca
+      version: -1
+      name: Get Source IPs
+      description: Get Source IPs
+      script: '|||qradar-ips-source-get'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '47'
+    scriptarguments:
+      range:
+        simple: 0-0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '47':
+    id: '47'
+    taskid: f8bf4da3-ac9f-49e0-808e-8fb5dc570f66
+    type: condition
+    task:
+      id: f8bf4da3-ac9f-49e0-808e-8fb5dc570f66
+      version: -1
+      name: Does Results Exists
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '48'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: QRadar.SourceIP.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '48':
+    id: '48'
+    taskid: 23999ddd-1f7c-4c2a-891c-3bbfe8822c40
+    type: regular
+    task:
+      id: 23999ddd-1f7c-4c2a-891c-3bbfe8822c40
+      version: -1
+      name: Get Local Destination IPs
+      description: Get Source IPs
+      script: '|||qradar-ips-local-destination-get'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '49'
+    scriptarguments:
+      range:
+        simple: 0-0
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '49':
+    id: '49'
+    taskid: 3a8ae52a-7b53-4195-8b33-6d595d3ad543
+    type: condition
+    task:
+      id: 3a8ae52a-7b53-4195-8b33-6d595d3ad543
+      version: -1
+      name: Does Results Exists
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '63'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: QRadar.LocalDestinationIP.ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '52':
+    id: '52'
+    taskid: ca7ce2fd-9446-45bc-86fd-2304455a1a0b
+    type: regular
+    task:
+      id: ca7ce2fd-9446-45bc-86fd-2304455a1a0b
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '26'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '60':
+    id: '60'
+    taskid: 50093311-6f1d-47ef-862c-2607da5a491f
+    type: regular
+    task:
+      id: 50093311-6f1d-47ef-862c-2607da5a491f
+      version: -1
+      name: 'create reference set with #'
+      description: Creates a new reference set.
+      script: QRadar v3|||qradar-reference-set-create
+      type: regular
+      iscommand: true
+      brand: QRadar v3
+    nexttasks:
+      '#none#':
+      - '61'
+    scriptarguments:
+      element_type:
+        simple: IP
+      ref_name:
+        simple: '# testing name'
+      time_to_live:
+        simple: 1 day
+      timeout_type:
+        simple: FIRST_SEEN
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '61':
+    id: '61'
+    taskid: e6761ba4-6116-4712-826f-87ccc79829c9
+    type: regular
+    task:
+      id: e6761ba4-6116-4712-826f-87ccc79829c9
+      version: -1
+      name: 'set value to reference set that contains #'
+      description: Adds or updates an element in a reference set.
+      script: QRadar v3|||qradar-reference-set-value-upsert
+      type: regular
+      iscommand: true
+      brand: QRadar v3
+    nexttasks:
+      '#none#':
+      - '62'
+    scriptarguments:
+      ref_name:
+        simple: '# testing name'
+      value:
+        simple: 8.8.8.8
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '62':
+    id: '62'
+    taskid: d7eedf4b-388d-4276-8f67-541aae92076d
+    type: regular
+    task:
+      id: d7eedf4b-388d-4276-8f67-541aae92076d
+      version: -1
+      name: 'delete reference set with #'
+      description: Removes a reference set or purges its contents.
+      script: QRadar v3|||qradar-reference-set-delete
+      type: regular
+      iscommand: true
+      brand: QRadar v3
+    nexttasks:
+      '#none#':
+      - '52'
+    scriptarguments:
+      ref_name:
+        simple: '# testing name'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '63':
+    id: '63'
+    taskid: cfe9cb61-d4ac-4520-8a56-e3c27e58a178
+    type: regular
+    task:
+      id: cfe9cb61-d4ac-4520-8a56-e3c27e58a178
+      version: -1
+      name: Get events with polling
+      description: Polling command to search for events of a specific offense.
+      script: QRadar v3|||qradar-search-retrieve-events
+      type: regular
+      iscommand: true
+      brand: QRadar v3
+    nexttasks:
+      '#none#':
+      - '64'
+    scriptarguments:
+      offense_id:
+        simple: '194'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '64':
+    id: '64'
+    taskid: a219be19-90f1-48ac-895a-7f7d736c8b76
+    type: condition
+    task:
+      id: a219be19-90f1-48ac-895a-7f7d736c8b76
+      version: -1
+      name: Validate polling
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '67'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: QRadar.SearchEvents.ID
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: QRadar.SearchEvents.Events
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '65':
+    id: '65'
+    taskid: 5d7b7d5d-741b-438c-81e2-8ba8fe487fff
+    type: regular
+    task:
+      id: 5d7b7d5d-741b-438c-81e2-8ba8fe487fff
+      version: -1
+      name: get events with polling custom query
+      description: Polling command to search for events of a specific offense.
+      script: QRadar v3|||qradar-search-retrieve-events
+      type: regular
+      iscommand: true
+      brand: QRadar v3
+    nexttasks:
+      '#none#':
+      - '66'
+    scriptarguments:
+      query_expression:
+        simple: SELECT * FROM events WHERE INOFFENSE(194) limit 3 start 3600000
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '66':
+    id: '66'
+    taskid: ecab50b5-72c2-4e01-85ca-4738fa7af9fb
+    type: condition
+    task:
+      id: ecab50b5-72c2-4e01-85ca-4738fa7af9fb
+      version: -1
+      name: Validate polling
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '4'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: QRadar.SearchEvents.ID
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: QRadar.SearchEvents.Events
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '67':
+    id: '67'
+    taskid: eca365ac-70f5-4773-8ca0-a5d1a98e2353
+    type: regular
+    task:
+      id: eca365ac-70f5-4773-8ca0-a5d1a98e2353
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '65'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 7560,
+        "height": 9835,
         "width": 380,
         "x": 50,
         "y": 50
@@ -1917,4 +2460,3 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 6.0.0

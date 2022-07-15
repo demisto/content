@@ -16,7 +16,7 @@ if [[ $? -ne 0 ]]
         echo `echo "$flake8_out" | grep $f`
         echo "python3 output:"
         echo "$flake8_py3_out"
-        echo "*** Please fix the errors according to the python version you are using"
+        echo "*** Please fix the errors according to the python version you are using ***"
       fi
     done
 fi
@@ -25,4 +25,4 @@ if [[ $errors -ne 0 ]]; then
   exit 1
 fi
 
-echo "Finished flake8 run"
+echo "Finished flake8 run - no errors were found"

@@ -2,7 +2,7 @@
     "name": "AlphaSOC Wisdom",
     "description": "DNS and IP threat intelligence via the AlphaSOC platform",
     "support": "partner",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "AlphaSOC",
     "url": "",
     "email": "support@alphasoc.com",
@@ -16,5 +16,9 @@
     "githubUser": [
         "ioj"
     ],
-    "certification": "certified"
+    "certification": "certified",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

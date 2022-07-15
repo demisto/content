@@ -33,6 +33,11 @@ DEX_ACCOUNT = '' if not DEX_ACCOUNT else DEX_ACCOUNT
 BASE_URL = PARAMS.get('url', '').strip().rstrip('/')
 # Should we use SSL
 USE_SSL = not PARAMS.get('insecure', False)
+try:
+    HTTP_TIMEOUT = int(demisto.params().get('timeout', 60))
+except ValueError as e:
+    demisto.debug(f'Failed casting timeout parameter to int, falling back to 60 - {e}')
+    HTTP_TIMEOUT = 60
 
 WEB_AUTH = ''
 LAST_JWT_FETCH = None
@@ -404,7 +409,7 @@ def web_api_login():
 
 def http_request(method: str, url_suffix: str, full_url: str = None, headers: Dict = None,
                  auth: Tuple = None, params: Dict = None, data: Dict = None, files: Dict = None,
-                 timeout: float = 10, resp_type: str = 'json') -> Any:
+                 timeout: float = HTTP_TIMEOUT, resp_type: str = 'json') -> Any:
     """
     A wrapper for requests lib to send our requests and handle requests
     and responses better

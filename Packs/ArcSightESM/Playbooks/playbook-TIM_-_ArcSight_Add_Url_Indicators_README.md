@@ -23,10 +23,10 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| ArcSightBlackListUrlActiveListID | ID of the black list Url Active List resource as appears in ArcSight. |  | Optional |
-| ArcsightBlackUrlValueFieldName | The name of the black list Active List field to insert the Url value to. |  | Optional |
-| ArcSightWhiteListUrlActiveListID | ID of the white list Url Active List resource as appears in ArcSight. |  | Optional |
-| ArcsightWhiteListUrlValueFieldName | The name of the white list Active List field to insert the Url value to. |  | Optional |
+| ArcSightBlackListUrlActiveListID | ID of the block list Url Active List resource as appears in ArcSight. |  | Optional |
+| ArcsightBlackUrlValueFieldName | The name of the block list Active List field to insert the Url value to. |  | Optional |
+| ArcSightWhiteListUrlActiveListID | ID of the allow list Url Active List resource as appears in ArcSight. |  | Optional |
+| ArcsightWhiteListUrlValueFieldName | The name of the allow list Active List field to insert the Url value to. |  | Optional |
 | ArcSightWatchListUrlActiveListID | ID of the watch list Url Active List resource as appears in ArcSight. |  | Optional |
 | ArcsightWatchListUrlValueFieldName | The name of the watch list Active List field to insert the Url value to. |  | Optional |
 

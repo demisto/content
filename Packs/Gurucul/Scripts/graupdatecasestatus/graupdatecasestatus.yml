@@ -1,0 +1,24 @@
+commonfields:
+  id: GRAUpdateCaseStatus
+  version: -1
+name: GRAUpdateCaseStatus
+script: |
+type: python
+tags:
+- post-processing
+comment: GRA Update Case Status
+enabled: true
+args:
+- name: closeNotes
+  description: Close Note
+- name: closeReason
+  description: Close reason
+scripttarget: 0
+subtype: python3
+timeout: 60ns
+runonce: false
+dockerimage: demisto/python3:3.9.7.24076
+runas: DBotWeakRole
+fromversion: 5.5.0
+tests:
+- TestGraPlayBook

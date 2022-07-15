@@ -1085,6 +1085,7 @@ Gets details of jobs.
 | GitLab.Job.ref | String | Reference name of the job. | 
 | GitLab.Job.stage | String | Stage of the job. | 
 | GitLab.Job.web_url | String | Web URL of the job. | 
+| GitLab.Job.status | String | The status of the job. |
 
 
 #### Command Example
@@ -1200,3 +1201,862 @@ Gets an artifact from a given artifact path, corresponding to a given job ID.
 >|---|---|---|
 >| Carbon Black Response Test | artifacts/failed_tests.txt | 6063195 |
 
+### gitlab-issue-edit
+***
+Edit an issue
+
+
+#### Base Command
+
+`gitlab-issue-edit`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| add_labels | The labels to add to the issue. | Optional | 
+| remove_labels | The labels to remove from the issue. | Optional | 
+| description | The description of the issue. | Optional | 
+| project_id | Project ID from which to retrieve the issue. | Required | 
+| issue_id | Issue ID. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitLab.Issue.id | Number | The issue ID. | 
+| GitLab.Issue.iid | Number | The issue IID. | 
+| GitLab.Issue.project_id | Number | The project ID of the issue. | 
+| GitLab.Issue.title | String | The issue title. | 
+| GitLab.Issue.description | String | The issue description. | 
+| GitLab.Issue.state | String | The issue state. | 
+| GitLab.Issue.created_at | Date | The time the issue was created. | 
+| GitLab.Issue.updated_at | Date | The time the issue was updated. | 
+| GitLab.Issue.closed_at | Date | The time the issue was closed. | 
+| GitLab.Issue.closed_by | String | The user who closed the issue. | 
+| GitLab.Issue.labels | String | Comma seperated values of the issue's labels. | 
+| GitLab.Issue.merge_requests_count | Number |  | 
+| GitLab.Issue.has_tasks | Boolean | Whether the issue has tasks or not. | 
+| GitLab.Issue.task_status | String | The status of the issue's tasks. | 
+
+
+#### Command Example
+```!gitlab-issue-edit project_id=123 issue_id=1 add_labels=label1,label2```
+
+#### Context Example
+```json
+{
+    "GitLab": {
+        "Issue": {
+            "_links": {
+                "award_emoji": "www.google.com",
+                "notes": "www.google.com",
+                "project": "www.google.com",
+                "self": "www.google.com"
+            },
+            "assignee": {
+                "avatar_url": "www.google.com",
+                "id": 9831,
+                "name": "wow",
+                "state": "active",
+                "username": "wow",
+                "web_url": "www.google.com"
+            },
+            "assignees": [
+                {
+                    "avatar_url": "www.google.com",
+                    "id": 9831,
+                    "name": "wow",
+                    "state": "active",
+                    "username": "wow",
+                    "web_url": "www.google.com"
+                }
+            ],
+            "author": {
+                "avatar_url": "www.google.com",
+                "id": 7127,
+                "name": "wow",
+                "state": "active",
+                "username": "wow",
+                "web_url": "www.google.com"
+            },
+            "blocking_issues_count": 0,
+            "closed_at": null,
+            "closed_by": null,
+            "confidential": false,
+            "created_at": "2021-07-15T16:25:57.419Z",
+            "description": "Issue Description",
+            "discussion_locked": null,
+            "downvotes": 0,
+            "due_date": null,
+            "epic": null,
+            "epic_iid": null,
+            "has_tasks": true,
+            "health_status": null,
+            "id": 40572,
+            "iid": 1,
+            "labels": [
+                "label1",
+                "label2"
+            ],
+            "merge_requests_count": 0,
+            "milestone": null,
+            "moved_to_id": null,
+            "project_id": 7959,
+            "references": {
+                "full": "wow",
+                "relative": "#1",
+                "short": "#1"
+            },
+            "service_desk_reply_to": null,
+            "state": "opened",
+            "subscribed": true,
+            "task_completion_status": {
+                "completed_count": 9,
+                "count": 46
+            },
+            "task_status": "9 of 46 tasks completed",
+            "time_stats": {
+                "human_time_estimate": null,
+                "human_total_time_spent": null,
+                "time_estimate": 0,
+                "total_time_spent": 0
+            },
+            "title": "wow",
+            "updated_at": "2021-08-19T13:54:12.337Z",
+            "upvotes": 0,
+            "user_notes_count": 3,
+            "web_url": "www.google.com",
+            "weight": null
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+### Edit Issue 1
+|_links|assignee|assignees|author|blocking_issues_count|closed_at|closed_by|confidential|created_at|description|discussion_locked|downvotes|due_date|epic|epic_iid|has_tasks|health_status|id|iid|labels|merge_requests_count|milestone|moved_to_id|project_id|references|service_desk_reply_to|state|subscribed|task_completion_status|task_status|time_stats|title|updated_at|upvotes|user_notes_count|web_url|weight|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| award_emoji: www.google.com<br>notes: www.google.com<br>project: www.google.com<br>self: www.google.com | avatar_url: www.google.com<br>id: 9831<br>name: wow<br>state: active<br>username: wow<br>web_url: www.google.com | {'avatar_url': 'www.google.com', 'id': 9831, 'name': 'wow', 'state': 'active', 'username': 'wow', 'web_url': 'www.google.com'} | avatar_url: www.google.com<br>id: 7127<br>name: wow<br>state: active<br>username: wow<br>web_url: www.google.com | 0 |  |  | false | 2021-07-15T16:25:57.419Z | Issue Description |  | 0 |  |  |  | true |  | 40572 | 1 | label1,<br>label2 | 0 |  |  | 7959 | full: wow<br>relative: #1<br>short: #1 |  | opened | true | completed_count: 9<br>count: 46 | 9 of 46 tasks completed | human_time_estimate: null<br>human_total_time_spent: null<br>time_estimate: 0<br>total_time_spent: 0 | wow | 2021-08-19T13:54:12.337Z | 0 | 3 | www.google.com |  |
+
+### gitlab-issue-create
+***
+Create an issue
+
+
+#### Base Command
+
+`gitlab-issue-create`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| labels | Comma separated values of labels to add to the issue. | Optional | 
+| title | The issue title. | Required | 
+| description | The issue description. | Required | 
+| project_id | Project ID of the created issue. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitLab.Issue.id | Number | The issue ID. | 
+| GitLab.Issue.iid | Number | The issue IID. | 
+| GitLab.Issue.project_id | Number | The project ID of the issue. | 
+| GitLab.Issue.title | String | The issue title. | 
+| GitLab.Issue.description | String | The issue description. | 
+| GitLab.Issue.state | String | The issue state. | 
+| GitLab.Issue.created_at | Date | The time the issue was created. | 
+| GitLab.Issue.updated_at | Date | The time the issue was updated. | 
+| GitLab.Issue.closed_at | Date | The time the issue was closed. | 
+| GitLab.Issue.closed_by | String | The user who closed the issue. | 
+| GitLab.Issue.labels | String | Comma seperated values of the issue's labels. | 
+| GitLab.Issue.merge_requests_count | Number |  | 
+| GitLab.Issue.has_tasks | Boolean | Whether the issue has tasks or not. | 
+| GitLab.Issue.task_status | String | The status of the issue's tasks. | 
+
+
+#### Command Example
+`gitlab-issue-create labels="a,b,c" title=wow description="bla bla" project_id=123`
+
+#### Context Example
+```json
+{
+    "GitLab": {
+        "Issue": {
+            "_links": {
+                "award_emoji": "www.google.com",
+                "notes": "www.google.com",
+                "project": "www.google.com",
+                "self": "www.google.com"
+            },
+            "assignee": {
+                "avatar_url": "www.google.com",
+                "id": 9831,
+                "name": "wow",
+                "state": "active",
+                "username": "wow",
+                "web_url": "www.google.com"
+            },
+            "assignees": [
+                {
+                    "avatar_url": "www.google.com",
+                    "id": 9831,
+                    "name": "wow",
+                    "state": "active",
+                    "username": "wow",
+                    "web_url": "www.google.com"
+                }
+            ],
+            "author": {
+                "avatar_url": "www.google.com",
+                "id": 7127,
+                "name": "wow",
+                "state": "active",
+                "username": "wow",
+                "web_url": "www.google.com"
+            },
+            "blocking_issues_count": 0,
+            "closed_at": null,
+            "closed_by": null,
+            "confidential": false,
+            "created_at": "2021-07-15T16:25:57.419Z",
+            "description": "Issue Description",
+            "discussion_locked": null,
+            "downvotes": 0,
+            "due_date": null,
+            "epic": null,
+            "epic_iid": null,
+            "has_tasks": true,
+            "health_status": null,
+            "id": 40572,
+            "iid": 1,
+            "labels": [
+                "label1",
+                "label2"
+            ],
+            "merge_requests_count": 0,
+            "milestone": null,
+            "moved_to_id": null,
+            "project_id": 7959,
+            "references": {
+                "full": "wow",
+                "relative": "#1",
+                "short": "#1"
+            },
+            "service_desk_reply_to": null,
+            "state": "opened",
+            "subscribed": true,
+            "task_completion_status": {
+                "completed_count": 9,
+                "count": 46
+            },
+            "task_status": "9 of 46 tasks completed",
+            "time_stats": {
+                "human_time_estimate": null,
+                "human_total_time_spent": null,
+                "time_estimate": 0,
+                "total_time_spent": 0
+            },
+            "title": "wow",
+            "updated_at": "2021-08-19T13:54:12.337Z",
+            "upvotes": 0,
+            "user_notes_count": 3,
+            "web_url": "www.google.com",
+            "weight": null
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+### Create Issue
+|_links|assignee|assignees|author|blocking_issues_count|closed_at|closed_by|confidential|created_at|description|discussion_locked|downvotes|due_date|epic|epic_iid|has_tasks|health_status|id|iid|labels|merge_requests_count|milestone|moved_to_id|project_id|references|service_desk_reply_to|state|subscribed|task_completion_status|task_status|time_stats|title|updated_at|upvotes|user_notes_count|web_url|weight|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| award_emoji: www.google.com<br>notes: www.google.com<br>project: www.google.com<br>self: www.google.com | avatar_url: www.google.com<br>id: 9831<br>name: wow<br>state: active<br>username: wow<br>web_url: www.google.com | {'avatar_url': 'www.google.com', 'id': 9831, 'name': 'wow', 'state': 'active', 'username': 'wow', 'web_url': 'www.google.com'} | avatar_url: www.google.com<br>id: 7127<br>name: wow<br>state: active<br>username: wow<br>web_url: www.google.com | 0 |  |  | false | 2021-07-15T16:25:57.419Z | Issue Description |  | 0 |  |  |  | true |  | 40572 | 1 | label1,<br>label2 | 0 |  |  | 7959 | full: wow<br>relative: #1<br>short: #1 |  | opened | true | completed_count: 9<br>count: 46 | 9 of 46 tasks completed | human_time_estimate: null<br>human_total_time_spent: null<br>time_estimate: 0<br>total_time_spent: 0 | wow | 2021-08-19T13:54:12.337Z | 0 | 3 | www.google.com |  |
+
+
+### gitlab-issues-list
+***
+List all issues
+
+
+#### Base Command
+
+`gitlab-issues-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| labels | Comma seperated values of labels to search issues by. | Optional | 
+| scope | On what scope to perform the search on. Possible values are: title, description, title,description. Default is title,description. | Optional | 
+| search | The search clause. | Optional | 
+| state | The state of the issue. Possible values are: opened, closed, all. Default is all. | Optional | 
+| project_id | Project ID from which to retrieve the Merge Requests. | Required | 
+| assignee_username | filter by assignee username. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitLab.Issue.id | Number | The issue ID. | 
+| GitLab.Issue.iid | Number | The issue IID. | 
+| GitLab.Issue.project_id | Number | The project ID of the issue. | 
+| GitLab.Issue.title | String | The issue title. | 
+| GitLab.Issue.description | String | The issue description. | 
+| GitLab.Issue.state | String | The issue state. | 
+| GitLab.Issue.created_at | Date | The time the issue was created. | 
+| GitLab.Issue.updated_at | Date | The time the issue was updated. | 
+| GitLab.Issue.closed_at | Date | The time the issue was closed. | 
+| GitLab.Issue.closed_by | String | The user who closed the issue. | 
+| GitLab.Issue.labels | String | Comma seperated values of the issue's labels. | 
+| GitLab.Issue.merge_requests_count | Number |  | 
+| GitLab.Issue.has_tasks | Boolean | Whether the issue has tasks or not. | 
+| GitLab.Issue.task_status | String | The status of the issue's tasks. | 
+
+
+#### Command Example
+```!gitlab-issues-list project_id=123 state=opened search="Summary"```
+
+#### Context Example
+```json
+{
+    "GitLab": {
+        "Issue": {
+            "_links": {
+                "award_emoji": "www.google.com",
+                "notes": "www.google.com",
+                "project": "www.google.com",
+                "self": "www.google.com"
+            },
+            "assignee": {
+                "avatar_url": "www.google.com",
+                "id": 9831,
+                "name": "wow",
+                "state": "active",
+                "username": "wow",
+                "web_url": "www.google.com"
+            },
+            "assignees": [
+                {
+                    "avatar_url": "www.google.com",
+                    "id": 9831,
+                    "name": "wow",
+                    "state": "active",
+                    "username": "wow",
+                    "web_url": "www.google.com"
+                }
+            ],
+            "author": {
+                "avatar_url": "www.google.com",
+                "id": 7127,
+                "name": "wow",
+                "state": "active",
+                "username": "wow",
+                "web_url": "www.google.com"
+            },
+            "blocking_issues_count": 0,
+            "closed_at": null,
+            "closed_by": null,
+            "confidential": false,
+            "created_at": "2021-07-15T16:25:57.419Z",
+            "description": "## Summary",
+            "discussion_locked": null,
+            "downvotes": 0,
+            "due_date": null,
+            "epic": null,
+            "epic_iid": null,
+            "has_tasks": true,
+            "health_status": null,
+            "id": 40572,
+            "iid": 1,
+            "labels": [],
+            "merge_requests_count": 0,
+            "milestone": null,
+            "moved_to_id": null,
+            "project_id": 7959,
+            "references": {
+                "full": "wow",
+                "relative": "#1",
+                "short": "#1"
+            },
+            "service_desk_reply_to": null,
+            "state": "opened",
+            "task_completion_status": {
+                "completed_count": 9,
+                "count": 46
+            },
+            "task_status": "9 of 46 tasks completed",
+            "time_stats": {
+                "human_time_estimate": null,
+                "human_total_time_spent": null,
+                "time_estimate": 0,
+                "total_time_spent": 0
+            },
+            "title": "wow",
+            "updated_at": "2021-08-19T13:52:28.302Z",
+            "upvotes": 0,
+            "user_notes_count": 3,
+            "web_url": "www.google.com",
+            "weight": null
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+### Issues Lists
+|_links|assignee|assignees|author|blocking_issues_count|closed_at|closed_by|confidential|created_at|description|discussion_locked|downvotes|due_date|epic|epic_iid|has_tasks|health_status|id|iid|labels|merge_requests_count|milestone|moved_to_id|project_id|references|service_desk_reply_to|state|subscribed|task_completion_status|task_status|time_stats|title|updated_at|upvotes|user_notes_count|web_url|weight|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| award_emoji: www.google.com<br>notes: www.google.com<br>project: www.google.com<br>self: www.google.com | avatar_url: www.google.com<br>id: 9831<br>name: wow<br>state: active<br>username: wow<br>web_url: www.google.com | {'avatar_url': 'www.google.com', 'id': 9831, 'name': 'wow', 'state': 'active', 'username': 'wow', 'web_url': 'www.google.com'} | avatar_url: www.google.com<br>id: 7127<br>name: wow<br>state: active<br>username: wow<br>web_url: www.google.com | 0 |  |  | false | 2021-07-15T16:25:57.419Z | Issue Description |  | 0 |  |  |  | true |  | 40572 | 1 |  | 0 |  |  | 7959 | full: wow<br>relative: #1<br>short: #1 |  | opened | true | completed_count: 9<br>count: 46 | 9 of 46 tasks completed | human_time_estimate: null<br>human_total_time_spent: null<br>time_estimate: 0<br>total_time_spent: 0 | wow | 2021-08-19T13:54:12.337Z | 0 | 3 | www.google.com |  |
+
+### gitlab-merge-requests-list
+***
+List all merge requests
+
+
+#### Base Command
+
+`gitlab-merge-requests-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| target_branch | The target branch of the Merge Request. Default is master. | Optional | 
+| state | The state of the Merge Request. Possible values are: opened, closed, locked, merged. Default is opened. | Optional | 
+| project_id | Project ID from which to retrieve the Merge Requests. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitLab.MergeRequest.id | Number | The merge request ID. | 
+| GitLab.MergeRequest.iid | Number | The merge request IID. | 
+| GitLab.MergeRequest.project_id | Number | The project ID of the merge request. | 
+| GitLab.MergeRequest.title | String | The merge request title. | 
+| GitLab.MergeRequest.description | String | The merge request description | 
+| GitLab.MergeRequest.state | String | The merge request state. | 
+| GitLab.MergeRequest.created_at | Date | The time the merge request was created. | 
+| GitLab.MergeRequest.updated_at | Date | The time the merge request was updated. | 
+| GitLab.MergeRequest.merged_at | Date | The time the merge request was merged. | 
+| GitLab.MergeRequest.closed_by | String | The user who closed the merge request. | 
+| GitLab.MergeRequest.closed_at | Date | The time the merge request was closed. | 
+| GitLab.MergeRequest.target_branch | String | The merge request target branch. | 
+| GitLab.MergeRequest.source_branch | String | The merge request source branch. | 
+| GitLab.MergeRequest.assignee | String | The merge request assignee. | 
+| GitLab.MergeRequest.sha | String | The merge request commit SHA. | 
+| GitLab.MergeRequest.merge_commit_sha | String | The merge request merge commit SHA. | 
+| GitLab.MergeRequest.squash_commit_sha | String | The merge request squash commit SHA. | 
+
+
+#### Command Example
+```!gitlab-merge-requests-list target_branch=development project_id=123 state=merged```
+
+#### Context Example
+```json
+{
+    "GitLab": {
+        "MergeRequest": [
+            {
+                "approvals_before_merge": null,
+                "assignee": null,
+                "assignees": [],
+                "author": {
+                    "avatar_url": "www.google.com",
+                    "id": 10582,
+                    "name": "wow",
+                    "state": "active",
+                    "username": "wow",
+                    "web_url": "www.google.com"
+                },
+                "blocking_discussions_resolved": true,
+                "closed_at": null,
+                "closed_by": null,
+                "created_at": "2021-08-16T12:16:06.143Z",
+                "description": null,
+                "discussion_locked": null,
+                "downvotes": 0,
+                "force_remove_source_branch": null,
+                "has_conflicts": false,
+                "id": 53852,
+                "iid": 18,
+                "labels": [],
+                "merge_commit_sha": "SHA",
+                "merge_status": "can_be_merged",
+                "merge_when_pipeline_succeeds": false,
+                "merged_at": "2021-08-16T19:07:14.962Z",
+                "merged_by": {
+                    "avatar_url": "www.google.com",
+                    "id": 9164,
+                    "name": "wow",
+                    "state": "active",
+                    "username": "wow",
+                    "web_url": "www.google.com"
+                },
+                "milestone": null,
+                "project_id": 7959,
+                "reference": "!18",
+                "references": {
+                    "full": "wow",
+                    "relative": "!18",
+                    "short": "!18"
+                },
+                "reviewers": [],
+                "sha": "SHA",
+                "should_remove_source_branch": null,
+                "source_branch": "1.0.1.23955-feature-branch",
+                "source_project_id": 7959,
+                "squash": false,
+                "squash_commit_sha": null,
+                "state": "merged",
+                "target_branch": "development",
+                "target_project_id": 7959,
+                "task_completion_status": {
+                    "completed_count": 0,
+                    "count": 0
+                },
+                "time_stats": {
+                    "human_time_estimate": null,
+                    "human_total_time_spent": null,
+                    "time_estimate": 0,
+                    "total_time_spent": 0
+                },
+                "title": "wow",
+                "updated_at": "2021-08-16T19:07:14.765Z",
+                "upvotes": 0,
+                "user_notes_count": 0,
+                "web_url": "www.google.com",
+                "work_in_progress": false
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+### Merge Request Lists to branch master in state opened
+|approvals_before_merge|assignee|assignees|author|blocking_discussions_resolved|closed_at|closed_by|created_at|description|discussion_locked|downvotes|force_remove_source_branch|has_conflicts|id|iid|labels|merge_commit_sha|merge_status|merge_when_pipeline_succeeds|merged_at|merged_by|milestone|project_id|reference|references|reviewers|sha|should_remove_source_branch|source_branch|source_project_id|squash|squash_commit_sha|state|target_branch|target_project_id|task_completion_status|time_stats|title|updated_at|upvotes|user_notes_count|web_url|work_in_progress|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+|  |  |  | avatar_url: www.google.com<br>id: 10582<br>name: wow<br>state: active<br>username: wow<br>web_url: www.google.com | true |  |  | 2021-08-16T12:16:06.143Z |  |  | 0 |  | false | 53852 | 18 |  | SHA | can_be_merged | false | 2021-08-16T19:07:14.962Z | avatar_url: www.google.com<br>id: 9164<br>name: wow<br>state: active<br>username: wow<br>web_url: www.google.com |  | 7959 | !18 | full: wow<br>relative: !18<br>short: !18 |  | SHA |  | 1.0.1.23955-feature-branch | 7959 | false |  | merged | development | 7959 | completed_count: 0<br>count: 0 | human_time_estimate: null<br>human_total_time_spent: null<br>time_estimate: 0<br>total_time_spent: 0 | wow | 2021-08-16T19:07:14.765Z | 0 | 0 | www.google.com | false |
+
+
+### gitlab-merge-request-get
+***
+Get a Merge Request
+
+
+#### Base Command
+
+`gitlab-merge-request-get`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | Project ID from which to retrieve the Merge Requests. | Required | 
+| merge_request_iid | Merge Request IID. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitLab.MergeRequest.id | Number | The merge request ID. | 
+| GitLab.MergeRequest.iid | Number | The merge request IID. | 
+| GitLab.MergeRequest.project_id | Number | The project ID of the merge request. | 
+| GitLab.MergeRequest.title | String | The merge request title. | 
+| GitLab.MergeRequest.description | String | The merge request description | 
+| GitLab.MergeRequest.state | String | The merge request state. | 
+| GitLab.MergeRequest.created_at | Date | The time the merge request was created. | 
+| GitLab.MergeRequest.updated_at | Date | The time the merge request was updated. | 
+| GitLab.MergeRequest.merged_at | Date | The time the merge request was merged. | 
+| GitLab.MergeRequest.closed_by | String | The user who closed the merge request. | 
+| GitLab.MergeRequest.closed_at | Date | The time the merge request was closed. | 
+| GitLab.MergeRequest.target_branch | String | The merge request target branch. | 
+| GitLab.MergeRequest.source_branch | String | The merge request source branch. | 
+| GitLab.MergeRequest.assignee | String | The merge request assignee. | 
+| GitLab.MergeRequest.sha | String | The merge request commit SHA. | 
+| GitLab.MergeRequest.merge_commit_sha | String | The merge request merge commit SHA. | 
+| GitLab.MergeRequest.squash_commit_sha | String | The merge request squash commit SHA. | 
+
+
+#### Command Example
+```!gitlab-merge-request-get project_id=123 merge_request_iid=18```
+
+#### Context Example
+```json
+{
+    "GitLab": {
+        "MergeRequest": {
+                "approvals_before_merge": null,
+                "assignee": null,
+                "assignees": [],
+                "author": {
+                    "avatar_url": "www.google.com",
+                    "id": 10582,
+                    "name": "wow",
+                    "state": "active",
+                    "username": "wow",
+                    "web_url": "www.google.com"
+                },
+                "blocking_discussions_resolved": true,
+                "closed_at": null,
+                "closed_by": null,
+                "created_at": "2021-08-16T12:16:06.143Z",
+                "description": null,
+                "discussion_locked": null,
+                "downvotes": 0,
+                "force_remove_source_branch": null,
+                "has_conflicts": false,
+                "id": 53852,
+                "iid": 18,
+                "labels": [],
+                "merge_commit_sha": "SHA",
+                "merge_status": "can_be_merged",
+                "merge_when_pipeline_succeeds": false,
+                "merged_at": "2021-08-16T19:07:14.962Z",
+                "merged_by": {
+                    "avatar_url": "www.google.com",
+                    "id": 9164,
+                    "name": "wow",
+                    "state": "active",
+                    "username": "wow",
+                    "web_url": "www.google.com"
+                },
+                "milestone": null,
+                "project_id": 7959,
+                "reference": "!18",
+                "references": {
+                    "full": "wow",
+                    "relative": "!18",
+                    "short": "!18"
+                },
+                "reviewers": [],
+                "sha": "SHA",
+                "should_remove_source_branch": null,
+                "source_branch": "1.0.1.23955-feature-branch",
+                "source_project_id": 7959,
+                "squash": false,
+                "squash_commit_sha": null,
+                "state": "merged",
+                "target_branch": "development",
+                "target_project_id": 7959,
+                "task_completion_status": {
+                    "completed_count": 0,
+                    "count": 0
+                },
+                "time_stats": {
+                    "human_time_estimate": null,
+                    "human_total_time_spent": null,
+                    "time_estimate": 0,
+                    "total_time_spent": 0
+                },
+                "title": "wow",
+                "updated_at": "2021-08-16T19:07:14.765Z",
+                "upvotes": 0,
+                "user_notes_count": 0,
+                "web_url": "www.google.com",
+                "work_in_progress": false
+            }
+    }
+}
+```
+
+#### Human Readable Output
+
+### Merge Request 18
+|approvals_before_merge|assignee|assignees|author|blocking_discussions_resolved|closed_at|closed_by|created_at|description|discussion_locked|downvotes|force_remove_source_branch|has_conflicts|id|iid|labels|merge_commit_sha|merge_status|merge_when_pipeline_succeeds|merged_at|merged_by|milestone|project_id|reference|references|reviewers|sha|should_remove_source_branch|source_branch|source_project_id|squash|squash_commit_sha|state|target_branch|target_project_id|task_completion_status|time_stats|title|updated_at|upvotes|user_notes_count|web_url|work_in_progress|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+|  |  |  | avatar_url: www.google.com<br>id: 10582<br>name: wow<br>state: active<br>username: wow<br>web_url: www.google.com | true |  |  | 2021-08-16T12:16:06.143Z |  |  | 0 |  | false | 53852 | 18 |  | SHA | can_be_merged | false | 2021-08-16T19:07:14.962Z | avatar_url: www.google.com<br>id: 9164<br>name: wow<br>state: active<br>username: wow<br>web_url: www.google.com |  | 7959 | !18 | full: wow<br>relative: !18<br>short: !18 |  | SHA |  | 1.0.1.23955-feature-branch | 7959 | false |  | merged | development | 7959 | completed_count: 0<br>count: 0 | human_time_estimate: null<br>human_total_time_spent: null<br>time_estimate: 0<br>total_time_spent: 0 | wow | 2021-08-16T19:07:14.765Z | 0 | 0 | www.google.com | false |
+
+
+
+### gitlab-group-projects-list
+***
+Get the list of projects of a given group.
+
+
+#### Base Command
+
+`gitlab-group-projects-list`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_id | Group ID from which to retrieve the projects. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitLab.Project.id | Number | The project ID. | 
+| GitLab.Project.name | String | The project name. | 
+| GitLab.Project.path_with_namespace | String | The project path with namespace. | 
+
+
+#### Command Example
+```!gitlab-group-projects-list group_id=1```
+
+#### Context Example
+```json
+{
+    "GitLab": {
+        "Project": {
+            "id": 7988,
+            "description": "",
+            "name": "wow",
+            "name_with_namespace": "a / b / c / wow",
+            "path": "wow",
+            "path_with_namespace": "x/a/b/c/wow",
+            "created_at": "2021-07-15T17:53:45.964Z",
+            "default_branch": "development",
+            "tag_list": [],
+            "ssh_url_to_repo": "wow",
+            "http_url_to_repo": "www.google.com",
+            "web_url": "www.google.com",
+            "readme_url": "www.google.com",
+            "avatar_url": null,
+            "forks_count": 0,
+            "star_count": 0,
+            "last_activity_at": "2021-08-12T03:05:08.722Z",
+            "namespace": {
+                "id": 10665,
+                "name": "wow",
+                "path": "wow",
+                "kind": "group",
+                "full_path": "a/b/c",
+                "parent_id": 10664,
+                "avatar_url": null,
+                "web_url": "www.google.com"
+            },
+            "container_registry_image_prefix": "www.google.com",
+            "_links": {
+                "self": "www.google.com",
+                "issues": "www.google.com",
+                "merge_requests": "www.google.com",
+                "repo_branches": "www.google.com",
+                "labels": "www.google.com",
+                "events": "www.google.com",
+                "members": "www.google.com"
+            },
+            "packages_enabled": false,
+            "empty_repo": false,
+            "archived": false,
+            "visibility": "public",
+            "resolve_outdated_diff_discussions": false,
+            "container_registry_enabled": false,
+            "container_expiration_policy": {
+                "cadence": "1d",
+                "enabled": false,
+                "keep_n": 10,
+                "older_than": "90d",
+                "name_regex": ".*",
+                "name_regex_keep": null,
+                "next_run_at": "2021-07-16T17:53:46.012Z"
+            },
+            "issues_enabled": true,
+            "merge_requests_enabled": true,
+            "wiki_enabled": false,
+            "jobs_enabled": true,
+            "snippets_enabled": false,
+            "service_desk_enabled": false,
+            "service_desk_address": null,
+            "can_create_merge_request_in": false,
+            "issues_access_level": "enabled",
+            "repository_access_level": "enabled",
+            "merge_requests_access_level": "enabled",
+            "forking_access_level": "enabled",
+            "wiki_access_level": "disabled",
+            "builds_access_level": "enabled",
+            "snippets_access_level": "disabled",
+            "pages_access_level": "enabled",
+            "operations_access_level": "enabled",
+            "analytics_access_level": "enabled",
+            "emails_disabled": false,
+            "shared_runners_enabled": true,
+            "lfs_enabled": false,
+            "creator_id": 7127,
+            "import_status": "finished",
+            "open_issues_count": 1,
+            "ci_default_git_depth": 50,
+            "ci_forward_deployment_enabled": true,
+            "public_jobs": true,
+            "build_timeout": 3600,
+            "auto_cancel_pending_pipelines": "enabled",
+            "build_coverage_regex": null,
+            "ci_config_path": "wow",
+            "shared_with_groups": [],
+            "only_allow_merge_if_pipeline_succeeds": false,
+            "allow_merge_on_skipped_pipeline": false,
+            "restrict_user_defined_variables": true,
+            "request_access_enabled": true,
+            "only_allow_merge_if_all_discussions_are_resolved": true,
+            "remove_source_branch_after_merge": true,
+            "printing_merge_request_link_enabled": true,
+            "merge_method": "merge",
+            "suggestion_commit_message": "",
+            "auto_devops_enabled": false,
+            "auto_devops_deploy_strategy": "continuous",
+            "autoclose_referenced_issues": true,
+            "approvals_before_merge": 0,
+            "mirror": false,
+            "external_authorization_classification_label": null,
+            "marked_for_deletion_at": null,
+            "marked_for_deletion_on": null,
+            "requirements_enabled": true,
+            "security_and_compliance_enabled": null,
+            "compliance_frameworks": [],
+            "issues_template": "",
+            "merge_requests_template": ""
+        }
+    }
+}
+```
+
+#### Human Readable Output
+### List Group Projects
+|_links|allow_merge_on_skipped_pipeline|analytics_access_level|approvals_before_merge|archived|auto_cancel_pending_pipelines|auto_devops_deploy_strategy|auto_devops_enabled|autoclose_referenced_issues|avatar_url|build_coverage_regex|build_timeout|builds_access_level|can_create_merge_request_in|ci_config_path|ci_default_git_depth|ci_forward_deployment_enabled|compliance_frameworks|container_expiration_policy|container_registry_enabled|container_registry_image_prefix|created_at|creator_id|default_branch|description|emails_disabled|empty_repo|external_authorization_classification_label|forking_access_level|forks_count|http_url_to_repo|id|import_status|issues_access_level|issues_enabled|issues_template|jobs_enabled|last_activity_at|lfs_enabled|marked_for_deletion_at|marked_for_deletion_on|merge_method|merge_requests_access_level|merge_requests_enabled|merge_requests_template|mirror|name|name_with_namespace|namespace|only_allow_merge_if_all_discussions_are_resolved|only_allow_merge_if_pipeline_succeeds|open_issues_count|operations_access_level|packages_enabled|pages_access_level|path|path_with_namespace|printing_merge_request_link_enabled|public_jobs|readme_url|remove_source_branch_after_merge|repository_access_level|request_access_enabled|requirements_enabled|resolve_outdated_diff_discussions|restrict_user_defined_variables|security_and_compliance_enabled|service_desk_address|service_desk_enabled|shared_runners_enabled|shared_with_groups|snippets_access_level|snippets_enabled|ssh_url_to_repo|star_count|suggestion_commit_message|tag_list|visibility|web_url|wiki_access_level|wiki_enabled|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| self: www.google.com<br>issues: www.google.com<br>merge_requests: www.google.com<br>repo_branches: www.google.com<br>labels: www.google.com<br>events: www.google.com<br>members: www.google.com | false | enabled | 0 | false | enabled | continuous | false | true |  |  | 3600 | enabled | false | wow | 50 | true |  | cadence: 1d<br>enabled: false<br>keep_n: 10<br>older_than: 90d<br>name_regex: .*<br>name_regex_keep: null<br>next_run_at: 2021-07-16T17:53:46.012Z | false | www.google.com | 2021-07-15T17:53:45.964Z | 7127 | development |  | false | false |  | enabled | 0 | www.google.com | 7988 | finished | enabled | true |  | true | 2021-08-12T03:05:08.722Z | false |  |  | merge | enabled | true |  | false | wow | a / b / c / wow | id: 10665<br>name: wow<br>path: wow<br>kind: group<br>full_path: a/b/c<br>parent_id: 10664<br>avatar_url: null<br>web_url: www.google.com | true | false | 1 | enabled | false | enabled | wow | x/a/b/c/wow | true | true | www.google.com | true | enabled | true | true | false | true |  |  | false | true |  | disabled | false | wow | 0 |  |  | public | www.google.com | disabled | false |
+
+### gitlab-raw-file-get
+***
+Get raw file
+
+
+#### Base Command
+
+`gitlab-raw-file-get`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | Project ID to get the file from. | Required | 
+| file_path | The file path. | Required | 
+| ref | The branch to retrieve the file from. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GitLab.File.ref | String | The branch the file's content was taken from. | 
+| GitLab.File.path | String | The file path. | 
+| GitLab.File.content | String | The file content. | 
+
+
+#### Command Example
+```!gitlab-raw-file-get project_id=123 ref=master file=wow.py```
+
+#### Human Readable Output
+### Raw file wow.py on branch master
+|content|path|ref|
+|---|---|---|
+| wow | wow.py | master |

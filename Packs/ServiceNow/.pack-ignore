@@ -29,3 +29,10 @@ ignore=BA101
 ignore=BA101
 [file:incidentfield-ServiceNow_Ticket_Number.json]
 ignore=IF100
+
+[known_words]
+lookback
+InfoFile
+
+[file:classifier-ServiceNow.json]
+ignore=BA101

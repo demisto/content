@@ -1,0 +1,244 @@
+id: Recorded Future External Usecase
+version: -1
+name: Recorded Future External Usecase
+description: Implements an external usecase for Recorded Future Identity
+  Data
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3c177359-031c-487c-8913-6d28b4b3d7a2
+    type: start
+    task:
+      id: 3c177359-031c-487c-8913-6d28b4b3d7a2
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 9cdc1106-7c5e-4e70-833f-487feaee3d62
+    type: regular
+    task:
+      id: 9cdc1106-7c5e-4e70-833f-487feaee3d62
+      version: -1
+      name: recordedfuture-identity-search
+      description: Get email values that were leaked.
+      script: Recorded Future Identity|||recordedfuture-identity-search
+      type: regular
+      iscommand: true
+      brand: Recorded Future Identity
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      domain-type:
+        simple: Authorization
+      latest-downloaded:
+        simple: All time
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: bbeb0540-862e-4d88-8ccc-b11d1169e11f
+    type: title
+    task:
+      id: bbeb0540-862e-4d88-8ccc-b11d1169e11f
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 62fecd00-e591-44a9-8fb7-0f6444154138
+    type: condition
+    task:
+      id: 62fecd00-e591-44a9-8fb7-0f6444154138
+      version: -1
+      name: Check If any creds were found
+      description: Check if any creds were found
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: RecordedFuture.Credentials
+                accessor: SearchIdentities
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 1515d66b-8659-4e54-866b-909890a70c72
+    type: regular
+    task:
+      id: 1515d66b-8659-4e54-866b-909890a70c72
+      version: -1
+      name: recordedfuture-identity-lookup
+      description: Perform a lookup command using data from context
+      script: Recorded Future Identity|||recordedfuture-identity-lookup
+      type: regular
+      iscommand: true
+      brand: Recorded Future Identity
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      first-downloaded:
+        simple: All time
+      identities:
+        simple: ${RecordedFuture.Credentials.SearchIdentities}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 4dee6e8a-fe47-4211-8f69-f8d81f9130aa
+    type: regular
+    task:
+      id: 4dee6e8a-fe47-4211-8f69-f8d81f9130aa
+      version: -1
+      name: Please check the credentials in WarRoom and make action.
+      description: Manual task for user to perform some action according to output
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 39777a93-e6e9-4f1e-8af9-127e374d156e
+    type: regular
+    task:
+      id: 39777a93-e6e9-4f1e-8af9-127e374d156e
+      version: -1
+      name: Delete Identity Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      key:
+        simple: RecordedFuture.Credentials
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1285,
+        "width": 970,
+        "x": 50,
+        "y": -70
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.0.0
+tests:
+- TestIdentityRecordedFuture.yml

@@ -145,3 +145,41 @@ def test_filtered():
     ]
     filtered_entries = ArcSightESMv2.filter_entries(entries, entry_filter)
     assert filtered_entries == expected_output
+
+
+def test_get_case(mocker, requests_mock):
+    """
+    Given:
+        - Case with nested event field of type int with large value in it (larger than 10000000000000000)
+
+    When:
+        - Running get-case command
+
+    Then:
+        - Ensure the the value of the test_big_int_number field is a string
+    """
+    mocker.patch.object(demisto, 'getIntegrationContext', return_value={'auth_token': 'token'})
+    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, 'params', return_value=PARAMS)
+    requests_mock.get(
+        PARAMS['server'] + '/www/manager-service/rest/CaseService/getResourceById',
+        json={
+            'cas.getResourceByIdResponse': {
+                'cas.return': {
+                    'createdTimestamp': 1629097454417,
+                    'events': [
+                        {
+                            'test_object': {
+                                'test_big_int_number': 10000000000000001,
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+    )
+    import ArcSightESMv2
+    ArcSightESMv2.get_case_command()
+    results = demisto.results.call_args[0][0]
+    events = results['Contents']['events']
+    assert events[0]['test_object']['test_big_int_number'] == '10000000000000001'

@@ -6,3 +6,24 @@ ignore=BA101
 
 [file:classifier-MSGraphMail_-_Incoming_Mapper_-_Email_Communication.json]
 ignore=BA101
+
+[file:pack_metadata.json]
+ignore=PA129
+
+[file:PreprocessEmail.yml]
+ignore=SC106
+
+[file:incidentfield-Email_Generated_Codes.json]
+ignore=IF115
+
+[known_words]
+SendEmailReply
+
+[file:classifier-MSGraphMail_-_Classifier_-_Email_Communication.json]
+ignore=BA101
+
+[file:classifier-Gmail_-_Classifier_-_Email_Communication.json]
+ignore=BA101
+
+[file:classifier-EWS_-_Classifier_-_Email_Communication.json]
+ignore=BA101

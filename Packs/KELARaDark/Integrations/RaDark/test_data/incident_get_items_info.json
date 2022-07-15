@@ -1,0 +1,44 @@
+{
+  "INCIDENT_GET_ITEMS_RESPONSE": {
+    "data": {
+      "aggregation": {
+        "sub_type": 2,
+        "type": "leaked_credentials"
+      },
+      "incidents": [
+        {
+          "id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "email": "test@test.com",
+          "domain": "test.com",
+          "password": null,
+          "password_type": null,
+          "source": "Test Source",
+          "posted_date": 1568062800
+        }
+      ]
+    }
+  },
+  "INCIDENT_GET_ITEMS_ARGS": {
+    "incident_id": "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy"
+  },
+  "INCIDENT_GET_ITEMS_COMMAND_RESULTS": {
+    "readable_output": "Incident contains 1 item. Full details can be found on \"items\" tab.",
+    "outputs_prefix": "Radark.itemDetails",
+    "outputs_key_field": "items",
+    "outputs": {
+      "items": [
+        {
+          "item_id": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+          "email": "test@test.com",
+          "domain": "test.com",
+          "password": "-",
+          "password_type": "-",
+          "source": "Test Source",
+          "date": "2019-09-09T21:00:00Z"
+        }
+      ],
+      "details": "Incident contains 1 item. Full details can be found on \"items\" tab."
+    }
+  }
+}
+

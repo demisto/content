@@ -236,7 +236,8 @@ script:
       description: The count of registry modifications in this process.
       type: Number
     - contextPath: CarbonBlackEDR.ProcessSearch.Results.interface_ip
-      description: The IP address of the network interface(s) on the endpoint that generated the message.
+      description: The IP address of the network interface(s) on the endpoint that
+        generated the message.
       type: Number
     - contextPath: CarbonBlackEDR.ProcessSearch.Results.process_pid
       description: The pid of the process.
@@ -394,7 +395,8 @@ script:
       description: The count of registry modifications in this process.
       type: Number
     - contextPath: CarbonBlackEDR.Process.process.interface_ip
-      description: The IP address of the network interface(s) on the endpoint that generated the message.
+      description: The IP address of the network interface(s) on the endpoint that
+        generated the message.
       type: Number
     - contextPath: CarbonBlackEDR.Process.process.process_pid
       description: The pid of the process.
@@ -755,7 +757,8 @@ script:
       description: The count of registry modifications in this process.
       type: Number
     - contextPath: CarbonBlackEDR.Events.interface_ip
-      description: The IP address of the network interface(s) on the endpoint that generated the message.
+      description: The IP address of the network interface(s) on the endpoint that
+        generated the message.
       type: Number
     - contextPath: CarbonBlackEDR.Events.process_pid
       description: The pid of the process.
@@ -1247,7 +1250,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Text description of blacklist
+      description: Text description of block list
       isArray: false
       name: text
       required: true
@@ -1515,7 +1518,8 @@ script:
       description: The count of network connections in this process.
       type: Number
     - contextPath: CarbonBlackEDR.Alert.Results.interface_ip
-      description: The IP address of the network interface(s) on the endpoint that generated the message.
+      description: The IP address of the network interface(s) on the endpoint that
+        generated the message.
       type: String
     - contextPath: CarbonBlackEDR.Alert.Results.status
       description: The status of the alert. One of Resolved, Unresolved, In Progress,
@@ -1561,7 +1565,8 @@ script:
       description: The value of the resource.
       type: String
     - contextPath: CarbonBlackEDR.Alert.Results.os_type
-      description: The operating system type of the computer for this process; one of windows, linux, osx.
+      description: The operating system type of the computer for this process; one
+        of Windows, Linux, OSX.
       type: String
     - contextPath: CarbonBlackEDR.Alert.Results.childproc_count
       description: The count of processes launched by this process.
@@ -1708,7 +1713,8 @@ script:
       description: The version of Carbon Black.
       type: Number
     - contextPath: CarbonBlackEDR.BinaryMetadata.os_type
-      description: The operating system type of the computer for this process; one of windows, linux, osx.
+      description: The operating system type of the computer for this process; one
+        of Windows, Linux, OSX.
       type: String
     - contextPath: CarbonBlackEDR.BinaryMetadata.file_desc
       description: |-
@@ -1998,7 +2004,7 @@ script:
       secret: false
     - default: true
       description: Query sensors with specified IP address
-      isArray: false
+      isArray: true
       name: ip
       required: false
       secret: false
@@ -2076,7 +2082,7 @@ script:
     - contextPath: Endpoint.Processor
       description: The model of the processor.
       type: String
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.10.1.26972
   feed: false
   isfetch: true
   longRunning: false

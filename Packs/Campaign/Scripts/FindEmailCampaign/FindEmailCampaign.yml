@@ -136,6 +136,20 @@ args:
   predefined:
   - 'true'
   - 'false'
+- auto: PREDEFINED
+  default: false
+  defaultValue: 'false'
+  description: 'Whether to plot incidents-indicators relations to canvas. Default
+    is "false". Skipping the canvas plotting stage would improve runtime. Note that canvas plotting
+    would be skipped anyway if the number of incidents exceeds a certain threshold in order to
+    avoid performance issues.'
+  isArray: false
+  name: plotCanvas
+  predefined:
+  - 'true'
+  - 'false'
+  required: false
+  secret: false
 comment: Find a campaign of emails based on their textual similarity.
 commonfields:
   id: FindEmailCampaign
@@ -204,7 +218,7 @@ tags:
 - phishing
 timeout: '0'
 type: python
-dockerimage: demisto/sklearn:1.0.0.22342
+dockerimage: demisto/sklearn:1.0.0.29944
 tests:
 - No tests (auto formatted)
 runonce: true

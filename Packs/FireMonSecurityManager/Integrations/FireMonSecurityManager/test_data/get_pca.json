@@ -1,0 +1,107 @@
+{
+    "requestId": "4d43a412-4cd7-4565-b3e7-2fbdcea3484b",
+    "pcaResult": {
+        "startDate": "2021-08-25T09:43:42+0000",
+        "endDate": "2021-08-25T09:43:50+0000",
+        "device": {
+            "id": 9,
+            "name": "testDevice",
+            "managementIp": "any",
+            "parents": [],
+            "children": [],
+            "securityConcernIndex": 2.41,
+            "devicePack": {
+                "type": "DEVICE_PACK",
+                "id": 47,
+                "artifactId": "test-artifact",
+                "groupId": "test-grp",
+                "version": "9.3.16",
+                "artifacts": [
+                    {
+                        "name": "dc.zip",
+                        "checksum": "439fd2e191d744cb5161e68803ea410f"
+                    }
+                ],
+                "buildDate": "2021-02-19T16:07:59+0000",
+                "deviceName": "testDevice Firewall",
+                "deviceType": "FIREWALL",
+                "vendor": "vendor",
+                "collectionConfig": {
+                    "id": 22,
+                    "name": "default",
+                    "changePattern": "log(?:_?)id=\"?\\d+\"?.*?type=\"?event.+",
+                    "changeCriterion": [
+                        {
+                            "pattern": "user=\\\"(?<userName>\\S+)\\\"(?:,|\\s)*ui=\\\"(?:GUI\\()?(?<hostName>[^\"\\)]+)\\)?\\\"(?:,|\\s)*action=(?:Add|add|Edit|Delete|delete|Move|move).*?(?:cfgpath|cfg_path)=\\\"(?:router.*?|firewall.*?|system.interface.*?|system.admin)\\\"",
+                            "timeoutSeconds": 45,
+                            "continueMatch": false,
+                            "parentUserName": "testParent",
+                            "retrieveOnMatch": true
+                        }
+                    ],
+                    "usagePattern": "log(?:_?)id=\"?\\d+\"?.*?type=\"?traffic.+",
+                    "usageCriterion": [
+                        {
+                            "pattern": "type=\"?traffic\"?.+?srcip=\"?(?<src>\\S+)\"?.+?dstip=\"?(?<dst>\\S+)\"?[, ](?!dstp).+?proto=\"?(?<proto>\\d+)\"?.+?policyid=\"?(?<ruleNumber>\\d+)\"?.+?service=\"(?<svc>\\S+)\".+",
+                            "fields": [],
+                            "dynamicFields": []
+                        }
+                    ],
+                    "createdDate": "2021-04-26T07:03:55+0000",
+                    "lastModifiedDate": "2021-04-26T07:03:55+0000",
+                    "createdBy": "com.fm.platform.domain.User@68c8bf66",
+                    "lastModifiedBy": "com.fm.platform.domain.User@68c8bf66",
+                    "usageKeys": [
+                        "RULE_NUMBER"
+                    ],
+                    "activatedForDevicePack": false
+                },
+                "behaviorTranslator": "translator",
+                "normalization": true,
+                "usage": true,
+                "change": true,
+                "usageSyslog": true,
+                "changeSyslog": true,
+                "active": false,
+                "supportsDiff": true,
+                "supportsManualRetrieval": true,
+                "implicitDrop": false,
+                "diffDynamicRoutes": false,
+                "automation": false,
+                "lookupNoIntfRoutes": true,
+                "automationCli": false,
+                "ssh": true,
+                "sharedNetworks": false,
+                "sharedServices": false,
+                "supportedTypes": [
+                    "USERS",
+                    "ZONES"
+                ],
+                "diffIgnorePatterns": [
+                    "^\\s*set\\s+((auth-)?password|passwd).*$",
+                    "^\\s*[+/=[[:alnum:]]+\\s*$",
+                    "^\\s*#.*$",
+                    "([[:digit:]]+w)?[[:digit:]]+d[[:digit:]]+h([[:digit:]]+m)?\\s*$",
+                    "^\\s*DEK-Info.*$"
+                ],
+                "convertableTo": []
+            },
+            "gpcDirtyDate": "2021-05-24T12:14:12+0000",
+            "gpcComputeDate": "1970-01-01T00:00:00+0000",
+            "gpcImplementDate": "1970-01-01T00:00:00+0000",
+            "state": "ACTIVE",
+            "managedType": "MANAGED",
+            "gpcStatus": "NOT_IMPORTED",
+            "updateMemberRuleDoc": false
+        },
+        "sciBefore": 1.92,
+        "sciAfter": 1.92,
+        "sciDelta": 0.0,
+        "deviceComplexityBefore": 0.4,
+        "deviceComplexityAfter": 0.4,
+        "deviceComplexityDelta": 0.0,
+        "controlFailureCount": 0,
+        "preChangeAssessmentControls": [],
+        "affectedRules": []
+    }
+}

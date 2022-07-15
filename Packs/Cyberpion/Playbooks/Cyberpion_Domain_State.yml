@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 030c7c85-d984-4a22-859a-fddd8daaf6a7
+    taskid: 48191b21-6aaa-4fd3-8434-5f3aac29dd06
     type: start
     task:
-      id: 030c7c85-d984-4a22-859a-fddd8daaf6a7
+      id: 48191b21-6aaa-4fd3-8434-5f3aac29dd06
       version: -1
       name: ""
       iscommand: false
@@ -33,10 +33,10 @@ tasks:
     quietmode: 0
   "2":
     id: "2"
-    taskid: 7f8479d2-9339-4717-8dcc-d85188f03534
+    taskid: a3d4210b-33f7-49a2-83e5-29f6696a1e17
     type: regular
     task:
-      id: 7f8479d2-9339-4717-8dcc-d85188f03534
+      id: a3d4210b-33f7-49a2-83e5-29f6696a1e17
       version: -1
       name: cyberpion-get-domain-state
       description: Retrieves domain's info and current state
@@ -49,7 +49,7 @@ tasks:
       - "6"
     scriptarguments:
       domain:
-        simple: ${incident.cyberpiondomain}
+        simple: ${incident.cyberpionasset}
     separatecontext: false
     view: |-
       {
@@ -69,10 +69,10 @@ tasks:
     quietmode: 0
   "4":
     id: "4"
-    taskid: 15abe8eb-f8ee-4270-81b4-c6e393a1b3c6
+    taskid: ecb5c8a2-7b19-4fb5-8e13-cf2946f8b0d4
     type: title
     task:
-      id: 15abe8eb-f8ee-4270-81b4-c6e393a1b3c6
+      id: ecb5c8a2-7b19-4fb5-8e13-cf2946f8b0d4
       version: -1
       name: Done
       type: title
@@ -94,10 +94,10 @@ tasks:
     quietmode: 0
   "6":
     id: "6"
-    taskid: 35e2419d-62da-4f99-8e8a-f2e46cbed0e9
+    taskid: c335ef8b-6ac2-4261-8ec2-63efa88e99d3
     type: regular
     task:
-      id: 35e2419d-62da-4f99-8e8a-f2e46cbed0e9
+      id: c335ef8b-6ac2-4261-8ec2-63efa88e99d3
       version: -1
       name: Wait for manual review
       description: |-
@@ -124,10 +124,10 @@ tasks:
     quietmode: 0
   "7":
     id: "7"
-    taskid: 5b962ce5-4481-4e9e-8269-01e562709a8c
+    taskid: 9e6bfced-fcfa-4f58-80c0-a777cc2556bb
     type: regular
     task:
-      id: 5b962ce5-4481-4e9e-8269-01e562709a8c
+      id: 9e6bfced-fcfa-4f58-80c0-a777cc2556bb
       version: -1
       name: Close investigation
       description: commands.local.cmd.close.inv

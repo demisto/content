@@ -1,0 +1,19 @@
+{
+    "name": "Azure Active Directory Identity and Access (Deprecated) (Deprecated)",
+    "description": "Deprecated. No available replacement.",
+    "support": "xsoar",
+    "currentVersion": "1.2.10",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Identity and Access Management"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

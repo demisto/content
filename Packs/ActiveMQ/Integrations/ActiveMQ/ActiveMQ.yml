@@ -17,18 +17,11 @@ configuration:
   name: client-id
   required: false
   type: 0
-- display: |-
-    ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
-    ‎                                           Basic Authentication
-    Username
+- display: '---------------------------- Basic Authentication ----------------------------                         Username'
   name: credentials
-  defaultvalue: ""
-  type: 9
   required: false
-- display: |-
-    ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
-    ‎                                           Certificate Authentication
-    Client certificate (.pem)
+  type: 9
+- display: '--------------------- Certificate Authentication ---------------------                         Client certificate (.pem)'
   name: client_cert
   required: false
   type: 12
@@ -40,11 +33,8 @@ configuration:
   name: root_ca
   required: false
   type: 12
-- display: |-
-    ┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉┉
-    ‎                                           Fetch Incidents
-    Subscription ID
-  defaultvalue: '1'
+- defaultvalue: '1'
+  display: '---------------------------- Fetch Incidents ----------------------------                         Subscription ID'
   name: subscription-id
   required: false
   type: 0
@@ -116,12 +106,13 @@ script:
     description: Subscribes to and reads messages from a topic or queue. Must provide either queue-name or topic-name. You can't provide both.
     execution: false
     name: activemq-subscribe
-  dockerimage: demisto/stomp:latest
+  dockerimage: demisto/py3-tools:1.0.0.31193
+  feed: false
+  isfetch: true
   longRunning: false
   longRunningPort: false
-  isfetch: true
   runonce: false
   script: '-'
-  subtype: python2
+  subtype: python3
   type: python
 fromversion: 5.0.0

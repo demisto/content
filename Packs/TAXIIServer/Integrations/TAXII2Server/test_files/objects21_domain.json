@@ -1,0 +1,158 @@
+{
+    "more": true,
+    "next": "3",
+    "objects": [
+        {
+            "created": "2021-12-19T16:11:15.530719Z",
+            "description": "",
+            "extensions": {
+                "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777": {
+                    "calculatedTime": "2021-12-19T16:11:15.523598+02:00",
+                    "comments": [
+                        {
+                            "category": "Sighting",
+                            "content": "Created",
+                            "created": "2021-12-19T16:11:15.41092+02:00",
+                            "entryId": "",
+                            "id": "644e8ef8-de0a-45bd-8f48-41a88200982a",
+                            "modified": "0001-01-01T00:00:00Z",
+                            "sortValues": null,
+                            "source": "@DBot",
+                            "type": "IndicatorCommentTimeLine",
+                            "user": "@DBot",
+                            "version": 0
+                        }
+                    ],
+                    "expirationSource": {
+                        "brand": "",
+                        "expirationInterval": 0,
+                        "expirationPolicy": "never",
+                        "instance": "",
+                        "moduleId": "",
+                        "setTime": "2021-12-19T16:11:15.410878+02:00",
+                        "source": "indicatorType",
+                        "user": ""
+                    },
+                    "expirationStatus": "active",
+                    "extension_type": "property_extension",
+                    "firstSeen": "2021-12-19T16:11:15.523598+02:00",
+                    "firstSeenEntryID": "8072@e99f97d1-7225-4c75-896c-3c960febbe8c",
+                    "id": "5212677",
+                    "indicator_type": "Attack Pattern",
+                    "investigationIDs": [
+                        "e99f97d1-7225-4c75-896c-3c960febbe8c"
+                    ],
+                    "lastReputationRun": "2021-12-19T16:11:15.410938+02:00",
+                    "lastSeen": "2021-12-19T16:11:15.523598+02:00",
+                    "lastSeenEntryID": "8072@e99f97d1-7225-4c75-896c-3c960febbe8c",
+                    "modified": "2021-12-19T16:11:15.53072+02:00",
+                    "score": 0,
+                    "sortValues": [
+                        " \u0001\u0016a\u000b+\u0013<3-0",
+                        "5212677"
+                    ],
+                    "source": "DBot",
+                    "timestamp": "2021-12-19T16:11:15.530719+02:00",
+                    "value": "T1195",
+                    "version": 1
+                }
+            },
+            "id": "attack-pattern--fcd476c2-9a09-5ed5-a32f-a9a22163d1a7",
+            "modified": "2021-12-19T16:11:15.530720Z",
+            "name": "T1195",
+            "spec_version": "2.1",
+            "type": "attack-pattern"
+        },
+        {
+            "created": "2021-12-19T16:11:15.530719Z",
+            "created_by_ref": "identity--749249c0-f7c7-5428-a4ad-ea5e1627a221",
+            "description": "This schema adds TIM data to the object",
+            "extension_types": [
+                "property-extension"
+            ],
+            "id": "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777",
+            "modified": "2021-12-19T16:11:15.530720Z",
+            "name": "Cortex XSOAR TIM Attack Pattern",
+            "schema": "https://github.com/demisto/content/blob/4265bd5c71913cd9d9ed47d9c37d0d4d3141c3eb/Packs/TAXIIServer/doc_files/XSOAR_indicator_schema.json",
+            "spec_version": "2.1",
+            "type": "extension-definition",
+            "version": "1.0"
+        },
+        {
+            "created": "2021-12-19T16:11:15.530695Z",
+            "description": "",
+            "extensions": {
+                "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777": {
+                    "calculatedTime": "2021-12-19T16:11:15.523545+02:00",
+                    "comments": [
+                        {
+                            "category": "Sighting",
+                            "content": "Created",
+                            "created": "2021-12-19T16:11:15.382832+02:00",
+                            "entryId": "",
+                            "id": "fcb648ae-cc62-4a62-8850-c41ef862d2d8",
+                            "modified": "0001-01-01T00:00:00Z",
+                            "sortValues": null,
+                            "source": "@DBot",
+                            "type": "IndicatorCommentTimeLine",
+                            "user": "@DBot",
+                            "version": 0
+                        }
+                    ],
+                    "expirationSource": {
+                        "brand": "",
+                        "expirationInterval": 0,
+                        "expirationPolicy": "never",
+                        "instance": "",
+                        "moduleId": "",
+                        "setTime": "2021-12-19T16:11:15.382816+02:00",
+                        "source": "indicatorType",
+                        "user": ""
+                    },
+                    "expirationStatus": "active",
+                    "extension_type": "property_extension",
+                    "firstSeen": "2021-12-19T16:11:15.523545+02:00",
+                    "firstSeenEntryID": "8072@e99f97d1-7225-4c75-896c-3c960febbe8c",
+                    "id": "5212676",
+                    "indicator_type": "Attack Pattern",
+                    "investigationIDs": [
+                        "e99f97d1-7225-4c75-896c-3c960febbe8c"
+                    ],
+                    "lastReputationRun": "2021-12-19T16:11:15.382836+02:00",
+                    "lastSeen": "2021-12-19T16:11:15.523545+02:00",
+                    "lastSeenEntryID": "8072@e99f97d1-7225-4c75-896c-3c960febbe8c",
+                    "modified": "2021-12-19T16:11:15.530696+02:00",
+                    "score": 0,
+                    "sortValues": [
+                        " \u0001\u0016a\u000b+\u0013<0\u000f(",
+                        "5212676"
+                    ],
+                    "source": "DBot",
+                    "timestamp": "2021-12-19T16:11:15.530695+02:00",
+                    "value": "T1105",
+                    "version": 1
+                }
+            },
+            "id": "attack-pattern--29265197-ca3e-56b8-bc7c-649a92b9df1e",
+            "modified": "2021-12-19T16:11:15.530696Z",
+            "name": "T1105",
+            "spec_version": "2.1",
+            "type": "attack-pattern"
+        },
+        {
+            "created": "2021-12-19T16:11:15.530695Z",
+            "created_by_ref": "identity--749249c0-f7c7-5428-a4ad-ea5e1627a221",
+            "description": "This schema adds TIM data to the object",
+            "extension_types": [
+                "property-extension"
+            ],
+            "id": "extension-definition--1ffe4bee-95e7-4e36-9a17-f56dbab3c777",
+            "modified": "2021-12-19T16:11:15.530696Z",
+            "name": "Cortex XSOAR TIM Attack Pattern",
+            "schema": "https://github.com/demisto/content/blob/4265bd5c71913cd9d9ed47d9c37d0d4d3141c3eb/Packs/TAXIIServer/doc_files/XSOAR_indicator_schema.json",
+            "spec_version": "2.1",
+            "type": "extension-definition",
+            "version": "1.0"
+        }
+    ]
+}

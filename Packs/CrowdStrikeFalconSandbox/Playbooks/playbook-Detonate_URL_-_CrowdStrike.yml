@@ -2,8 +2,9 @@ id: detonate_url_-_crowdstrike
 version: -1
 name: Detonate URL - CrowdStrike
 fromversion: 5.0.0
-description: Detonate one or more files using the CrowdStrike Falcon Sandbox integration. This playbook returns relevant reports to the War Room and file reputations to the context data.
+description: Deprecated. Use the cs-falcon-sandbox-submit-url command with polling=true instead.
 starttaskid: "0"
+deprecated: true
 tasks:
   "0":
     id: "0"
@@ -41,7 +42,7 @@ tasks:
       version: -1
       name: Is CrowdStrike enabled?
       description: |
-        Verify that there is a valid instance of CrowdStrike enabled.
+        Verify there is a valid instance of CrowdStrike enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -125,7 +126,7 @@ tasks:
       id: 4a4fb455-3725-4948-8a5c-98028d2073cf
       version: -1
       name: CrowdStrike Scan
-      description: Download the pdf report to the War Room.
+      description: Downloads the PDF report to the War Room.
       script: VxStream|||crowdstrike-scan
       type: regular
       iscommand: true
@@ -159,7 +160,7 @@ tasks:
       id: db9e268a-d1ff-4aa9-83c7-2bb90fa1ccd8
       version: -1
       name: CrowdStrike Upload Sample
-      description: Upload samle to crowdstrike.
+      description: Uploads a sample to CrowdStrike.
       script: VxStream|||crowdstrike-submit-url
       type: regular
       iscommand: true
@@ -243,7 +244,7 @@ tasks:
 
         1. Initiate the operation.
         2. Poll to check if the operation completed.
-        3. (optional) Get the results of the operation.
+        3. (Optional) Get the results of the operation.
       playbookName: GenericPolling
       type: playbook
       iscommand: false
@@ -295,8 +296,7 @@ tasks:
     task:
       id: 2f73943a-4e0e-4375-8c46-7ad0d607944f
       version: -1
-      name: Was job created ? (could be it wasn't created because file type is not
-        supported)
+      name: Was a job created ? (A job is not created if the file type is not supported.)
       type: condition
       iscommand: false
       brand: ""
@@ -354,20 +354,20 @@ inputs:
   value:
     simple: "100"
   required: false
-  description: Environment ID to submit the file to. To get all IDs run the crowdstrike-get-environments
+  description: The environment ID to submit the file to. To get all IDs run the crowdstrike-get-environments
     command.
   playbookInputQuery:
 - key: Interval
   value:
     simple: "5"
   required: false
-  description: Polling frequency - how often the polling command should run (minutes)
+  description: Polling frequency - how often the polling command should run (minutes).
   playbookInputQuery:
 - key: Timeout
   value:
     simple: "30"
   required: false
-  description: How much time to wait before a timeout occurs  (minutes)
+  description: How much time to wait before a timeout occurs (minutes).
   playbookInputQuery:
 - key: dontThrowErrorOnFileDetonation
   value:
@@ -379,46 +379,46 @@ inputs:
   playbookInputQuery:
 outputs:
 - contextPath: File.SHA256
-  description: SHA256 hash of the file
+  description: The SHA256 hash of the file.
   type: string
 - contextPath: File.Malicious
-  description: The File malicious description
+  description: The file malicious description.
   type: unknown
 - contextPath: File.Type
-  description: File type e.g. "PE"
+  description: File type, for example "PE".
   type: string
 - contextPath: File.Size
-  description: File size
+  description: The file size.
   type: number
 - contextPath: File.MD5
-  description: MD5 hash of the file
+  description: The MD5 hash of the file.
   type: string
 - contextPath: File.Name
-  description: Filename
+  description: The file name.
   type: string
 - contextPath: File.SHA1
-  description: SHA1 hash of the file
+  description: The SHA1 hash of the file.
   type: string
 - contextPath: File
-  description: The File object
+  description: The file object.
   type: unknown
 - contextPath: File.Malicious.Vendor
-  description: For malicious files, the vendor that made the decision
+  description: The vendor that decided the file was malicious.
   type: string
 - contextPath: DBotScore
-  description: The DBotScore object
+  description: The DBotScore object.
   type: unknown
 - contextPath: DBotScore.Indicator
-  description: The indicator we tested
+  description: The tested indicator.
   type: string
 - contextPath: DBotScore.Type
-  description: The type of the indicator
+  description: The indicator type.
   type: string
 - contextPath: DBotScore.Vendor
-  description: Vendor used to calculate the score
+  description: The vendor used to calculate the score.
   type: string
 - contextPath: DBotScore.Score
-  description: The actual score
+  description: The actual score.
   type: number
 tests:
-- Test-Detonate URL - Crowdstrike
+- No test - deprecated.

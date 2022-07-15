@@ -1,0 +1,10 @@
+{
+  "name": "organizations/xsoar-organization/roles/xsoar_demo_97",
+  "title": "Demo role",
+  "description": "Test role",
+  "includedPermissions": [
+    "accessapproval.requests.approve",
+    "aiplatform.artifacts.get"
+  ],
+  "etag": "BwXTjvmkWFI="
+}

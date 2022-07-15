@@ -2,18 +2,18 @@ id: Azure SecurityCenter - Test
 version: -1
 name: Azure SecurityCenter - Test
 starttaskid: "0"
-description: ""
 tasks:
   "0":
     id: "0"
-    taskid: e630883d-4ae6-4d1e-8fe7-bf6459fcecec
+    taskid: bc3d4f03-06bb-4d3f-89c6-92b3dbf72c00
     type: start
     task:
-      id: e630883d-4ae6-4d1e-8fe7-bf6459fcecec
+      id: bc3d4f03-06bb-4d3f-89c6-92b3dbf72c00
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -30,12 +30,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 79f474fc-42dc-488b-8f73-089d45917629
+    taskid: 54be4c1e-bf44-4cee-8535-cb1334e6a633
     type: regular
     task:
-      id: 79f474fc-42dc-488b-8f73-089d45917629
+      id: 54be4c1e-bf44-4cee-8535-cb1334e6a633
       version: -1
       name: azure-sc-list-aps
       description: Lists auto provisioning settings in the subscription.
@@ -46,8 +48,6 @@ tasks:
     nexttasks:
       '#none#':
       - "2"
-    scriptarguments:
-      subscription_id: {}
     separatecontext: false
     view: |-
       {
@@ -61,12 +61,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: caabcb2b-08b2-49f5-8270-32bfafe56845
+    taskid: 0ba02cf8-862a-4f60-8502-41bde0bd47fa
     type: regular
     task:
-      id: caabcb2b-08b2-49f5-8270-32bfafe56845
+      id: 0ba02cf8-862a-4f60-8502-41bde0bd47fa
       version: -1
       name: azure-sc-get-aps
       description: Returns details of a specific auto provisioning setting.
@@ -80,7 +82,6 @@ tasks:
     scriptarguments:
       setting_name:
         simple: ${AzureSecurityCenter.AutoProvisioningSetting.Name}
-      subscription_id: {}
     separatecontext: false
     view: |-
       {
@@ -94,12 +95,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: d47639d4-387e-4f63-8399-a40516e0e5c3
+    taskid: b389eb60-22af-484a-8bd1-6db69f54ea14
     type: regular
     task:
-      id: d47639d4-387e-4f63-8399-a40516e0e5c3
+      id: b389eb60-22af-484a-8bd1-6db69f54ea14
       version: -1
       name: azure-sc-list-alert
       description: Lists alerts for the subscription according to the specified filters.
@@ -126,15 +129,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 0e9b6296-cb3d-4959-8335-36461e1ea79e
+    taskid: fc03a1a4-213d-41ad-8cf8-292cf12412b3
     type: regular
     task:
-      id: 0e9b6296-cb3d-4959-8335-36461e1ea79e
+      id: fc03a1a4-213d-41ad-8cf8-292cf12412b3
       version: -1
       name: azure-sc-list-jit
-      description: Lists all policies for protecting resources using Just-in-Time access control.
+      description: Lists all policies for protecting resources using Just-in-Time
+        access control.
       script: '|||azure-sc-list-jit'
       type: regular
       iscommand: true
@@ -142,10 +148,6 @@ tasks:
     nexttasks:
       '#none#':
       - "5"
-    scriptarguments:
-      asc_location: {}
-      resource_group_name: {}
-      subscription_id: {}
     separatecontext: false
     view: |-
       {
@@ -159,15 +161,18 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 19021d00-c31b-47e1-8a30-4da8a27c2912
+    taskid: 5e5dd517-22c6-4bb7-8f22-fc32dbf51b01
     type: regular
     task:
-      id: 19021d00-c31b-47e1-8a30-4da8a27c2912
+      id: 5e5dd517-22c6-4bb7-8f22-fc32dbf51b01
       version: -1
       name: azure-sc-list-location
-      description: The location of the responsible ASC of the specific subscription. For each subscription there is only one responsible location.
+      description: The location of the responsible ASC of the specific subscription.
+        For each subscription there is only one responsible location.
       script: '|||azure-sc-list-location'
       type: regular
       iscommand: true
@@ -175,8 +180,6 @@ tasks:
     nexttasks:
       '#none#':
       - "6"
-    scriptarguments:
-      subscription_id: {}
     separatecontext: false
     view: |-
       {
@@ -190,12 +193,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: ec04a461-930d-44b3-8fa8-89e26286ebf8
+    taskid: d9522e7a-384c-46e7-8219-ff348cc35d22
     type: regular
     task:
-      id: ec04a461-930d-44b3-8fa8-89e26286ebf8
+      id: d9522e7a-384c-46e7-8219-ff348cc35d22
       version: -1
       name: azure-sc-list-storage
       description: Lists all the storage accounts available under the subscription.
@@ -206,8 +211,6 @@ tasks:
     nexttasks:
       '#none#':
       - "7"
-    scriptarguments:
-      subscription_id: {}
     separatecontext: false
     view: |-
       {
@@ -221,12 +224,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 6ca8e140-b9c9-4d6f-8f20-630e7d02e9c1
+    taskid: 2b0b8474-4d96-4603-84f8-4fe501d2116a
     type: regular
     task:
-      id: 6ca8e140-b9c9-4d6f-8f20-630e7d02e9c1
+      id: 2b0b8474-4d96-4603-84f8-4fe501d2116a
       version: -1
       name: azure-sc-update-aps
       description: Updates a specific auto provisioning setting.
@@ -242,7 +247,6 @@ tasks:
         simple: "Off"
       setting_name:
         simple: default
-      subscription_id: {}
     separatecontext: false
     view: |-
       {
@@ -256,12 +260,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 232d4c8c-a18a-467e-852e-7ce4202a85d0
+    taskid: d6af1cb9-4845-42e6-8b7c-43b91a68bc6e
     type: regular
     task:
-      id: 232d4c8c-a18a-467e-852e-7ce4202a85d0
+      id: d6af1cb9-4845-42e6-8b7c-43b91a68bc6e
       version: -1
       name: azure-list-subscriptions
       description: Lists available subscriptions for this application.
@@ -269,6 +275,9 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
     separatecontext: false
     view: |-
       {
@@ -282,12 +291,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 68245350-d24e-47d9-8d3e-8de18fbf3d0b
+    taskid: 7cfb5ba1-c7a0-4638-8385-9681dbde59e2
     type: regular
     task:
-      id: 68245350-d24e-47d9-8d3e-8de18fbf3d0b
+      id: 7cfb5ba1-c7a0-4638-8385-9681dbde59e2
       version: -1
       name: azure-sc-get-alert
       description: Get an alert that is associated a resource group or a subscription.
@@ -320,12 +331,43 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 6089a836-2ce7-45cc-8ce7-d116d6693190
+    type: regular
+    task:
+      id: 6089a836-2ce7-45cc-8ce7-d116d6693190
+      version: -1
+      name: azure-get-secure-score
+      description: Retrieve the Secure Score for the provided subscription and score
+        name
+      script: '|||azure-get-secure-score'
+      type: regular
+      iscommand: true
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1640,
+        "height": 1805,
         "width": 380,
         "x": 50,
         "y": 50
@@ -335,3 +377,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+description: ''

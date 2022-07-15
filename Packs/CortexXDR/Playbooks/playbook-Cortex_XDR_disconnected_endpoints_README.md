@@ -32,8 +32,8 @@ This playbook does not use any sub-playbooks.
 ### Commands
 * setIncident
 * send-mail
-* closeInvestigation
 * xdr-get-endpoints
+* closeInvestigation
 
 ## Playbook Inputs
 ---

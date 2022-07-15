@@ -1,0 +1,388 @@
+id: a60ae34e-7a00-4a06-81ca-2ca6ea1d58ba
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: Test-AlibabaCloud
+fromversion: 6.0.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 4d75f2de-9a4a-4c4c-8f14-34e5598c5d72
+    type: start
+    task:
+      id: 4d75f2de-9a4a-4c4c-8f14-34e5598c5d72
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: eb2c99d3-26c4-49b1-8253-2415e9f70b60
+    type: regular
+    task:
+      id: eb2c99d3-26c4-49b1-8253-2415e9f70b60
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      all:
+        simple: "yes"
+      index: {}
+      key: {}
+      keysToKeep: {}
+      subplaybook: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: da986d0f-edf7-406a-82df-ad01156f59c9
+    type: title
+    task:
+      id: da986d0f-edf7-406a-82df-ad01156f59c9
+      version: -1
+      name: ECS Instance
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 643d1613-3229-48d5-8b9a-32d83559b798
+    type: regular
+    task:
+      id: 643d1613-3229-48d5-8b9a-32d83559b798
+      version: -1
+      name: ali-instance (present)
+      description: |-
+        Create, Start, Stop, Restart or Terminate an Instance in ECS. Add or Remove Instance to/from a Security Group.
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ali_instance_module.html
+      script: '|||ali-instance'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      allocate_public_ip: {}
+      auto_renew: {}
+      auto_renew_period: {}
+      availability_zone: {}
+      count: {}
+      count_tag: {}
+      description: {}
+      force: {}
+      host_name:
+        simple: testserver
+      image_id:
+        simple: ubuntu_20_04_x64_20G_alibase_20210420.vhd
+      instance_charge_type: {}
+      instance_ids: {}
+      instance_name: {}
+      instance_tags: {}
+      instance_type:
+        simple: ecs.n4.small
+      internet_charge_type: {}
+      key_name: {}
+      max_bandwidth_in: {}
+      max_bandwidth_out: {}
+      password: {}
+      period: {}
+      security_groups:
+        simple: sg-bp1fy1o431n7m0hta5tt
+      state:
+        simple: present
+      system_disk_category: {}
+      system_disk_description: {}
+      system_disk_name: {}
+      system_disk_size: {}
+      user_data: {}
+      vswitch_id:
+        simple: vsw-bp1aclhyjkdy98ujfzspt
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 7996e720-7e77-4f20-86e0-584f41afc9b2
+    type: condition
+    task:
+      id: 7996e720-7e77-4f20-86e0-584f41afc9b2
+      version: -1
+      name: check ali-instance
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AlibabaCloud.AliInstance.status
+            iscontext: true
+          right:
+            value:
+              simple: CHANGED
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 8ca6b1dd-4561-4bd3-8999-1136aacdc588
+    type: regular
+    task:
+      id: 8ca6b1dd-4561-4bd3-8999-1136aacdc588
+      version: -1
+      name: ali-instance-info
+      description: |-
+        Gather information on instances of Alibaba Cloud ECS.
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ali_instance_info_module.html
+      script: '|||ali-instance-info'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      availability_zone: {}
+      instance_ids: {}
+      instance_names:
+        simple: xsoar_testserver
+      instance_tags: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 93e05d74-3283-404b-8ac6-d9c9437bb003
+    type: condition
+    task:
+      id: 93e05d74-3283-404b-8ac6-d9c9437bb003
+      version: -1
+      name: check ali-instance-info
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: AlibabaCloud.AliInstanceInfo.status
+            iscontext: true
+          right:
+            value:
+              simple: SUCCESS
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: AlibabaCloud.AliInstanceInfo.instances
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 8c40b68a-e77a-4104-8761-76e09cc97472
+    type: title
+    task:
+      id: 8c40b68a-e77a-4104-8761-76e09cc97472
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 58206c38-a9ff-4a5b-820f-6dd382371921
+    type: regular
+    task:
+      id: 58206c38-a9ff-4a5b-820f-6dd382371921
+      version: -1
+      name: ali-instance (absent)
+      description: |-
+        Create, Start, Stop, Restart or Terminate an Instance in ECS. Add or Remove Instance to/from a Security Group.
+         Further documentation available at https://docs.ansible.com/ansible/2.9/modules/ali_instance_module.html
+      script: '|||ali-instance'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      allocate_public_ip: {}
+      auto_renew: {}
+      auto_renew_period: {}
+      availability_zone: {}
+      count: {}
+      count_tag: {}
+      description: {}
+      force:
+        simple: "Yes"
+      host_name: {}
+      ignore-outputs:
+        simple: "true"
+      image_id: {}
+      instance_charge_type: {}
+      instance_ids: {}
+      instance_name:
+        simple: testserver
+      instance_tags: {}
+      instance_type: {}
+      internet_charge_type: {}
+      key_name: {}
+      max_bandwidth_in: {}
+      max_bandwidth_out: {}
+      password: {}
+      period: {}
+      security_groups: {}
+      state:
+        simple: absent
+      system_disk_category: {}
+      system_disk_description: {}
+      system_disk_name: {}
+      system_disk_size: {}
+      user_data: {}
+      vswitch_id: {}
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "4_5_yes": 0.58
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1405,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

@@ -32,6 +32,8 @@ FIELD_TYPE_DICT = {
 
 ACCOUNT_STATUS_DICT = {1: 'Active', 2: 'Inactive', 3: 'Locked'}
 
+API_ENDPOINT = demisto.params().get('api_endpoint', 'api')
+
 
 def parser(date_str, date_formats=None, languages=None, locales=None, region=None, settings=None) -> datetime:
     """Wrapper of dateparser.parse to support return type value
@@ -124,7 +126,7 @@ def search_records_by_report_soap_request(token, report_guid):
 
 def search_records_soap_request(
         token, app_id, display_fields, field_id, field_name, search_value, date_operator='',
-        numeric_operator='', max_results=10,
+        field_to_search_by_id='', numeric_operator='', max_results=10, level_id='',
         sort_type: str = 'Ascending'
 ):
     request_body = '<?xml version="1.0" encoding="UTF-8"?>' + \
@@ -161,11 +163,19 @@ def search_records_soap_request(
                             f'        <Value>{search_value}</Value>' + \
                             '</NumericFilterCondition >'
         else:
-            request_body += '<TextFilterCondition>' + \
-                            '        <Operator>Contains</Operator>' + \
-                            f'        <Field name="{field_name}">{field_id}</Field>' + \
-                            f'        <Value>{search_value}</Value>' + \
-                            '</TextFilterCondition >'
+
+            if field_to_search_by_id and field_to_search_by_id.lower() == field_name.lower():
+                request_body += '<ContentFilterCondition>' + \
+                                f'        <Level>{level_id}</Level>' + \
+                                '        <Operator>Equals</Operator>' + \
+                                f'        <Values><Value>{search_value}</Value></Values>' + \
+                                '</ContentFilterCondition>'
+            else:
+                request_body += '<TextFilterCondition>' + \
+                                '        <Operator>Contains</Operator>' + \
+                                f'        <Field name="{field_name}">{field_id}</Field>' + \
+                                f'        <Value>{search_value}</Value>' + \
+                                '</TextFilterCondition >'
 
         request_body += '</Conditions></Filter>'
 
@@ -259,12 +269,12 @@ def get_occurred_time(fields: Union[List[dict], dict], field_id: str) -> str:
 
 
 class Client(BaseClient):
-    def __init__(self, base_url, username, password, instance_name, domain, **kwargs):
+    def __init__(self, base_url, username, password, instance_name, domain, timeout, **kwargs):
         self.username = username
         self.password = password
         self.instance_name = instance_name
         self.domain = domain
-        super(Client, self).__init__(base_url=base_url, headers=REQUEST_HEADERS, **kwargs)
+        super(Client, self).__init__(base_url=base_url, headers=REQUEST_HEADERS, timeout=timeout, **kwargs)
 
     def do_request(self, method, url_suffix, data=None, params=None):
         if not REQUEST_HEADERS.get('Authorization'):
@@ -288,7 +298,7 @@ class Client(BaseClient):
             'Password': self.password
         }
         try:
-            res = self._http_request('POST', '/api/core/security/login', json_data=body)
+            res = self._http_request('POST', f'{API_ENDPOINT}/core/security/login', json_data=body)
         except DemistoException as e:
             if '<html>' in str(e):
                 raise DemistoException(f"Check the given URL, it can be a redirect issue. Failed with error: {str(e)}")
@@ -332,13 +342,13 @@ class Client(BaseClient):
         if cache.get(app_id):
             levels = cache[app_id]
         else:
-            all_levels_res = self.do_request('GET', f'/api/core/system/level/module/{app_id}')
+            all_levels_res = self.do_request('GET', f'{API_ENDPOINT}/core/system/level/module/{app_id}')
             for level in all_levels_res:
                 if level.get('RequestedObject') and level.get('IsSuccessful'):
                     level_id = level.get('RequestedObject').get('Id')
 
                     fields = {}
-                    level_res = self.do_request('GET', f'/api/core/system/fielddefinition/level/{level_id}')
+                    level_res = self.do_request('GET', f'{API_ENDPOINT}/core/system/fielddefinition/level/{level_id}')
                     for field in level_res:
                         if field.get('RequestedObject') and field.get('IsSuccessful'):
                             field_item = field.get('RequestedObject')
@@ -366,7 +376,7 @@ class Client(BaseClient):
         return level_data
 
     def get_record(self, app_id, record_id):
-        res = self.do_request('GET', f'/api/core/content/{record_id}')
+        res = self.do_request('GET', f'{API_ENDPOINT}/core/content/{record_id}')
 
         if not isinstance(res, dict):
             res = res.json()
@@ -454,7 +464,7 @@ class Client(BaseClient):
 
     def search_records(
             self, app_id, fields_to_display=None, field_to_search='', search_value='',
-            numeric_operator='', date_operator='', max_results=10,
+            field_to_search_by_id='', numeric_operator='', date_operator='', max_results=10,
             sort_type: str = 'Ascending'
     ):
         demisto.debug(f'searching for records {field_to_search}:{search_value}')
@@ -468,11 +478,13 @@ class Client(BaseClient):
         search_field_name = ''
         search_field_id = ''
         fields_mapping = level_data['mapping']
+        level_id = level_data['level']
         for field in fields_mapping.keys():
             field_name = fields_mapping[field]['Name']
             if field_name in fields_to_display:
                 fields_xml += f'<DisplayField name="{field_name}">{field}</DisplayField>'
-            if field_name == field_to_search:
+            if (field_to_search and field_name.lower() == field_to_search.lower()) or \
+               (field_to_search_by_id and field_name.lower() == field_to_search_by_id.lower()):
                 search_field_name = field_name
                 search_field_id = field
 
@@ -480,10 +492,11 @@ class Client(BaseClient):
             'archer-search-records',
             app_id=app_id, display_fields=fields_xml,
             field_id=search_field_id, field_name=search_field_name,
-            numeric_operator=numeric_operator,
+            field_to_search_by_id=field_to_search_by_id, numeric_operator=numeric_operator,
             date_operator=date_operator, search_value=search_value,
             max_results=max_results,
             sort_type=sort_type,
+            level_id=level_id
         )
 
         if not res:
@@ -531,15 +544,19 @@ class Client(BaseClient):
         if cache['fieldValueList'].get(field_id):
             return cache.get('fieldValueList').get(field_id)
 
-        res = self.do_request('GET', f'/api/core/system/fielddefinition/{field_id}')
+        res = self.do_request('GET', f'{API_ENDPOINT}/core/system/fielddefinition/{field_id}')
 
         errors = get_errors_from_res(res)
         if errors:
             return_error(errors)
 
         if res.get('RequestedObject') and res.get('IsSuccessful'):
+
+            if res.get('RequestedObject').get('Type') != 4:
+                raise Exception('The command returns values only for fields of type "Values List".\n')
+
             list_id = res['RequestedObject']['RelatedValuesListId']
-            values_list_res = self.do_request('GET', f'/api/core/system/valueslistvalue/valueslist/{list_id}')
+            values_list_res = self.do_request('GET', f'{API_ENDPOINT}/core/system/valueslistvalue/valueslist/{list_id}')
             if values_list_res.get('RequestedObject') and values_list_res.get('IsSuccessful'):
                 values_list = []
                 for value in values_list_res['RequestedObject'].get('Children'):
@@ -584,7 +601,7 @@ class Client(BaseClient):
         Returns:
             fields, raw response
         """
-        res = self.do_request('GET', f'/api/core/system/fielddefinition/application/{app_id}')
+        res = self.do_request('GET', f'{API_ENDPOINT}/core/system/fielddefinition/application/{app_id}')
 
         fields = []
         for field in res:
@@ -652,11 +669,11 @@ def generate_field_value(client, field_name, field_data, field_val):
         if not isinstance(field_val, list):
             field_val = [field_val]
         for item in field_val:
-            tmp_id = next(f for f in field_data['ValuesList'] if f['Name'] == item)
+            tmp_id = next((f for f in field_data['ValuesList'] if f['Name'] == item), None)
             if tmp_id:
                 list_ids.append(tmp_id['Id'])
             else:
-                raise Exception(f'Failed to create field {field_name} with the value {field_data}')
+                raise Exception(f'Failed to create the field: {field_name} with the value: {item}')
         return 'Value', {'ValuesListIds': list_ids}
 
     # when field type is External Links
@@ -732,19 +749,18 @@ def test_module(client: Client, params: dict) -> str:
                 client, {}, params['applicationId'], params['applicationDateField']
             )}
         fetch_incidents_command(client, params, last_run)
-
         return 'ok'
 
-    return 'ok' if client.do_request('GET', '/api/core/system/application') else 'Connection failed.'
+    return 'ok' if client.do_request('GET', f'{API_ENDPOINT}/core/system/application') else 'Connection failed.'
 
 
 def search_applications_command(client: Client, args: Dict[str, str]):
     app_id = args.get('applicationId')
     limit = args.get('limit')
-    endpoint_url = '/api/core/system/application/'
+    endpoint_url = f'{API_ENDPOINT}/core/system/application/'
 
     if app_id:
-        endpoint_url = f'/api/core/system/application/{app_id}'
+        endpoint_url = f'{API_ENDPOINT}/core/system/application/{app_id}'
         res = client.do_request('GET', endpoint_url)
     elif limit:
         res = client.do_request('GET', endpoint_url, params={"$top": limit})
@@ -785,7 +801,7 @@ def get_application_fields_command(client: Client, args: Dict[str, str]):
 def get_field_command(client: Client, args: Dict[str, str]):
     field_id = args.get('fieldID')
 
-    res = client.do_request('GET', f'/api/core/system/fielddefinition/{field_id}')
+    res = client.do_request('GET', f'{API_ENDPOINT}/core/system/fielddefinition/{field_id}')
 
     errors = get_errors_from_res(res)
     if errors:
@@ -812,7 +828,7 @@ def get_field_command(client: Client, args: Dict[str, str]):
 def get_mapping_by_level_command(client: Client, args: Dict[str, str]):
     level = args.get('level')
 
-    res = client.do_request('GET', f'/api/core/system/fielddefinition/level/{level}')
+    res = client.do_request('GET', f'{API_ENDPOINT}/core/system/fielddefinition/level/{level}')
 
     items = []
     for item in res:
@@ -863,7 +879,7 @@ def create_record_command(client: Client, args: Dict[str, str]):
 
     body = {'Content': {'LevelId': level_data['level'], 'FieldContents': field_contents}}
 
-    res = client.do_request('Post', '/api/core/content', data=body)
+    res = client.do_request('Post', f'{API_ENDPOINT}/core/content', data=body)
 
     errors = get_errors_from_res(res)
     if errors:
@@ -876,7 +892,7 @@ def create_record_command(client: Client, args: Dict[str, str]):
 
 def delete_record_command(client: Client, args: Dict[str, str]):
     record_id = args.get('contentId')
-    res = client.do_request('Delete', f'/api/core/content/{record_id}')
+    res = client.do_request('Delete', f'{API_ENDPOINT}/core/content/{record_id}')
 
     errors = get_errors_from_res(res)
     if errors:
@@ -894,7 +910,7 @@ def update_record_command(client: Client, args: Dict[str, str]):
     field_contents = generate_field_contents(client, fields_values, level_data['mapping'])
 
     body = {'Content': {'Id': record_id, 'LevelId': level_data['level'], 'FieldContents': field_contents}}
-    res = client.do_request('Put', '/api/core/content', data=body)
+    res = client.do_request('Put', f'{API_ENDPOINT}/core/content', data=body)
 
     errors = get_errors_from_res(res)
     if errors:
@@ -967,7 +983,7 @@ def upload_file_command(client: Client, args: Dict[str, str]) -> str:
     file_name, file_bytes = get_file(entry_id)
     body = {'AttachmentName': file_name, 'AttachmentBytes': file_bytes}
 
-    res = client.do_request('POST', '/api/core/content/attachment', data=body)
+    res = client.do_request('POST', f'{API_ENDPOINT}/core/content/attachment', data=body)
 
     errors = get_errors_from_res(res)
     if errors:
@@ -1004,7 +1020,7 @@ def upload_and_associate_command(client: Client, args: Dict[str, str]):
 
 def download_file_command(client: Client, args: Dict[str, str]):
     attachment_id = args.get('fileId')
-    res = client.do_request('GET', f'/api/core/content/attachment/{attachment_id}')
+    res = client.do_request('GET', f'{API_ENDPOINT}/core/content/attachment/{attachment_id}')
 
     errors = get_errors_from_res(res)
     if errors:
@@ -1021,9 +1037,9 @@ def download_file_command(client: Client, args: Dict[str, str]):
 def list_users_command(client: Client, args: Dict[str, str]):
     user_id = args.get('userId')
     if user_id:
-        res = client.do_request('GET', f'/api/core/system/user/{user_id}')
+        res = client.do_request('GET', f'{API_ENDPOINT}/core/system/user/{user_id}')
     else:
-        res = client.do_request('GET', '/api/core/system/user')
+        res = client.do_request('GET', f'{API_ENDPOINT}/core/system/user')
 
     errors = get_errors_from_res(res)
     if errors:
@@ -1031,7 +1047,6 @@ def list_users_command(client: Client, args: Dict[str, str]):
 
     if isinstance(res, dict):
         res = [res]
-
     users = []
     for user in res:
         if user.get('RequestedObject') and user.get('IsSuccessful'):
@@ -1056,6 +1071,7 @@ def list_users_command(client: Client, args: Dict[str, str]):
 def search_records_command(client: Client, args: Dict[str, str]):
     app_id = args.get('applicationId')
     field_to_search = args.get('fieldToSearchOn')
+    field_to_search_by_id = args.get('fieldToSearchById')
     search_value = args.get('searchValue')
     max_results = args.get('maxResults', 10)
     date_operator = args.get('dateOperator')
@@ -1078,7 +1094,7 @@ def search_records_command(client: Client, args: Dict[str, str]):
         fields_to_get = [fields_mapping[next(iter(fields_mapping))]['Name']]
 
     records, raw_res = client.search_records(
-        app_id, fields_to_get, field_to_search, search_value,
+        app_id, fields_to_get, field_to_search, search_value, field_to_search_by_id,
         numeric_operator, date_operator, max_results=max_results,
         sort_type=sort_type,
     )
@@ -1122,7 +1138,7 @@ def search_records_by_report_command(client: Client, args: Dict[str, str]):
         else:
             level_id = raw_records['Records']['Record']['@levelId']
 
-        level_res = client.do_request('GET', f'/api/core/system/fielddefinition/level/{level_id}')
+        level_res = client.do_request('GET', f'{API_ENDPOINT}/core/system/fielddefinition/level/{level_id}')
         fields = {}
         for field in level_res:
             if field.get('RequestedObject') and field.get('IsSuccessful'):
@@ -1269,7 +1285,8 @@ def main():
         params.get('instanceName'),
         params.get('userDomain'),
         verify=not params.get('insecure', False),
-        proxy=params.get('proxy', False)
+        proxy=params.get('proxy', False),
+        timeout=int(params.get('timeout', 400))
     )
     commands = {
         'archer-search-applications': search_applications_command,

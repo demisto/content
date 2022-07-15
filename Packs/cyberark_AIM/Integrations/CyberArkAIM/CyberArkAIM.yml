@@ -1,0 +1,155 @@
+commonfields:
+  id: CyberArkAIM
+  version: -1
+name: CyberArkAIM
+display: CyberArk AIM (Deprecated)
+category: Authentication
+description: Deprecated. Use the CyberArk AIM v2 integration instead.
+configuration:
+- display: Server URL (e.g. https://192.168.0.1)
+  name: server
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Port
+  name: port
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: AppID as configured in AIM
+  name: appid
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: API Username
+  name: username
+  defaultvalue: ""
+  type: 0
+  required: false
+- display: API Password
+  name: password
+  defaultvalue: ""
+  type: 4
+  required: false
+- display: "Fetches credentials"
+  name: isFetchCredentials
+  defaultvalue: "true"
+  type: 8
+  required: false
+- display: Folder to search in safe
+  name: folder
+  defaultvalue: ""
+  type: 0
+  required: true
+- display: Safe to search in
+  name: safe
+  defaultvalue: isFetchCredentials
+  type: 0
+  required: true
+- display: Credential names - comma-separated list of credentials names in vault
+  name: credentialNames
+  defaultvalue: ""
+  type: 12
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: ""
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: ""
+  type: 8
+  required: false
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: cyber-ark-aim-query
+    arguments:
+    - name: username
+      description: Username to query
+    - name: address
+      description: Address to query
+    - name: safe
+      description: Safe to query
+    - name: folder
+      description: Folder to query
+    - name: object
+      description: Object to query
+    - name: query
+      description: Defines a free query using account properties, including Safe,
+        folder, and object. When this method is specified, all other search criteria
+        are ignored
+    - name: queryFormat
+      auto: PREDEFINED
+      predefined:
+      - Exact
+      - Regexp
+      description: Defines the query format, which can optionally use regular expressions
+    - name: reason
+      description: The reason for retrieving the password. This reason will be audited
+        in the Credential Provider audit log.
+    - name: database
+      description: Defines search criteria according to the Database account property
+    outputs:
+    - contextPath: CyberArk.AIM.Folder
+      description: Account folder
+    - contextPath: CyberArk.AIM.PasswordChangeInProcess
+      description: Is password change in process
+    - contextPath: CyberArk.AIM.Content
+      description: Account content
+    - contextPath: CyberArk.AIM.CreationMethod
+      description: Account creation method
+    - contextPath: CyberArk.AIM.Name
+      description: Account name
+    - contextPath: CyberArk.AIM.PolicyID
+      description: Account policy ID
+    - contextPath: CyberArk.AIM.CPMDisabled
+      description: Account CPM disabled
+    - contextPath: CyberArk.AIM.Address
+      description: Account address
+    - contextPath: CyberArk.AIM.Safe
+      description: Account safe
+    - contextPath: CyberArk.AIM.UserName
+      description: Account username
+    - contextPath: CyberArk.AIM.DeviceType
+      description: Account device type
+    description: Search credentials in CyberArk using arguments to narrow the search.
+      Cannot return more than one result.
+  - name: list-credentials
+    arguments:
+    - name: identifier
+      default: true
+      description: When used, command will return a specific credential
+    description: Lists all credentials available
+  - name: reset-credentials
+    arguments:
+    - name: immediateChangeByCPM
+      description: Signal the CPM that the change is effective immediately
+      auto: PREDEFINED
+      predefined:
+      - "Yes"
+      - "No"
+      defaultValue: "Yes"
+    - name: accountId
+      required: true
+      default: true
+      description: Account Id to reset password
+    description: 'This method marks the account for an immediate password change by
+      the CPM to a new random password. '
+  - name: account-details
+    arguments:
+    - name: keywords
+      required: true
+      default: true
+      description: Keywords matching the account
+    - name: safe
+      description: Specify a safe rather then using instance specific.
+    description: This method returns information about an account. If more than one
+      account meets the search criteria, only the first account will be returned.
+  runonce: false
+tests:
+- No test
+deprecated: true
+fromversion: 5.0.0

@@ -1,0 +1,58 @@
+{
+  "Attribute": [
+    {
+      "id": "69583",
+      "event_id": "145",
+      "object_id": "0",
+      "object_relation": null,
+      "category": "Payload delivery",
+      "type": "md5",
+      "to_ids": true,
+      "uuid": "56d769fd-c228-4b8a-b1c7-5126c0a8ab16",
+      "timestamp": "1456957949",
+      "distribution": "5",
+      "sharing_group_id": "0",
+      "comment": "Imported via the freetext import.",
+      "deleted": false,
+      "disable_correlation": false,
+      "first_seen": null,
+      "last_seen": null,
+      "value": "71a868cdcc6b79b7d274e3b558cd4596",
+      "Event": {
+        "org_id": "1",
+        "distribution": "1",
+        "id": "145",
+        "info": "DDOS.TF = (new) ELF & Win32 DDoS service with ASP + PHP/MySQL MOF webshells - MMD-0048-2016",
+        "orgc_id": "7",
+        "uuid": "56d76936-0d34-44ff-a8c5-5280c0a8ab16"
+      }
+    },
+    {
+      "id": "69586",
+      "event_id": "145",
+      "object_id": "0",
+      "object_relation": null,
+      "category": "Payload delivery",
+      "type": "md5",
+      "to_ids": true,
+      "uuid": "56d769fd-cb5c-480f-9f82-5126c0a8ab16",
+      "timestamp": "1456957949",
+      "distribution": "5",
+      "sharing_group_id": "0",
+      "comment": "Imported via the freetext import.",
+      "deleted": false,
+      "disable_correlation": false,
+      "first_seen": null,
+      "last_seen": null,
+      "value": "3e0d96cd1e0a97e61d96b7863f39a1d4",
+      "Event": {
+        "org_id": "1",
+        "distribution": "1",
+        "id": "145",
+        "info": "DDOS.TF = (new) ELF & Win32 DDoS service with ASP + PHP/MySQL MOF webshells - MMD-0048-2016",
+        "orgc_id": "7",
+        "uuid": "56d76936-0d34-44ff-a8c5-5280c0a8ab16"
+      }
+    }
+  ]
+}

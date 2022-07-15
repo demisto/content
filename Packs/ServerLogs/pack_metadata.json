@@ -2,7 +2,7 @@
     "name": "ServerLogs",
     "description": "Dashboard widget to display server logs. Makes troubleshooting more convenient by reducing the need to download the zipped server logs or remoting into the server itself.",
     "support": "community",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.2",
     "author": "Matt Houston",
     "url": "",
     "email": "",
@@ -10,5 +10,9 @@
     "categories": [],
     "tags": [],
     "useCases": [],
-    "keywords": []
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
 }

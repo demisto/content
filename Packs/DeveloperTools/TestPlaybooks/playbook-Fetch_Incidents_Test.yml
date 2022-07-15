@@ -1,0 +1,864 @@
+id: Fetch Incidents Test
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: Fetch Incidents Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2d04959b-053b-449c-8504-0bda1fe27354
+    type: start
+    task:
+      id: 2d04959b-053b-449c-8504-0bda1fe27354
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 06a7596c-6db0-4ecb-8da5-c0bf9f43df49
+    type: condition
+    task:
+      id: 06a7596c-6db0-4ecb-8da5-c0bf9f43df49
+      version: -1
+      name: Check If Incidents exist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: IncidentsCheck.ConditionMet
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 26074e49-6b29-4d6a-8fd9-ded45f989e06
+    type: regular
+    task:
+      id: 26074e49-6b29-4d6a-8fd9-ded45f989e06
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: db3eb6fa-f009-46b0-87ff-76eb33a13804
+    type: title
+    task:
+      id: db3eb6fa-f009-46b0-87ff-76eb33a13804
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: e0ea2027-5364-4b49-86f5-6aed5c35a5b7
+    type: regular
+    task:
+      id: e0ea2027-5364-4b49-86f5-6aed5c35a5b7
+      version: -1
+      name: Check If Fields Exist
+      description: Receive fields and context. Verifies that these field exists in
+        context.
+      scriptName: VerifyObjectFieldsList
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      object:
+        simple: ${foundIncidents}
+      fields_to_search:
+        simple: ${searchField}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 2509bb5a-c256-4d7e-8845-19baa61833b1
+    type: condition
+    task:
+      id: 2509bb5a-c256-4d7e-8845-19baa61833b1
+      version: -1
+      name: Do all the indicator fields exist?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: CheckIfFieldsExists.FieldsExists
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 5eae02de-ef1b-44dc-8b0b-7df129f33d21
+    type: playbook
+    task:
+      id: 5eae02de-ef1b-44dc-8b0b-7df129f33d21
+      version: -1
+      name: GenericPolling - waiting to fetch Incidents.
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      AdditionalPollingCommandArgNames:
+        simple: size
+      AdditionalPollingCommandArgValues:
+        simple: "1"
+      Ids:
+        simple: ${searchQuery}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: query
+      PollingCommandName:
+        simple: VerifyEnoughIncidents
+      Timeout:
+        simple: "5"
+      dt:
+        simple: IncidentsCheck(val.ConditionMet==false).Query
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 1b979897-97c5-413a-8cdf-e23a787a61d4
+    type: regular
+    task:
+      id: 1b979897-97c5-413a-8cdf-e23a787a61d4
+      version: -1
+      name: VerifyIntegrationHealth
+      description: Heath check for integration
+      scriptName: VerifyIntegrationHealth
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      integration_name:
+        simple: ${sourceBrand}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 78296bae-dc0b-4e35-818d-9e6fed2bd671
+    type: condition
+    task:
+      id: 78296bae-dc0b-4e35-818d-9e6fed2bd671
+      version: -1
+      name: Check Health status
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isTrue
+          left:
+            value:
+              simple: IntegrationHealth.isHealthy
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 6a5736c1-0bfc-48f8-80e3-13f2fc6fa536
+    type: regular
+    task:
+      id: 6a5736c1-0bfc-48f8-80e3-13f2fc6fa536
+      version: -1
+      name: Set Incidents Search Query
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      key:
+        simple: searchQuery
+      value:
+        simple: sourceInstance:${Instances.instanceName}*
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 3fa9cbf7-480f-48b5-8c4d-49192c0b704c
+    type: regular
+    task:
+      id: 3fa9cbf7-480f-48b5-8c4d-49192c0b704c
+      version: -1
+      name: SearchIncidentsV2
+      description: Searches Demisto incidents
+      scriptName: SearchIncidentsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      extend-context:
+        simple: Incidents=
+      query:
+        simple: ${searchQuery}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: a3329f63-f23a-439e-81de-919adb7b3f8d
+    type: regular
+    task:
+      id: a3329f63-f23a-439e-81de-919adb7b3f8d
+      version: -1
+      name: VerifyEnoughIncidents
+      description: Returns whether there are enough incidents in the system.
+      scriptName: VerifyEnoughIncidents
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      query:
+        simple: ${searchQuery}
+      size:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: a6c3f60e-51d9-4394-8553-ef51e95f93c9
+    type: condition
+    task:
+      id: a6c3f60e-51d9-4394-8553-ef51e95f93c9
+      version: -1
+      name: Check If Incidents exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: foundIncidents
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 4b950e3f-635e-4660-87bb-d86d53cc419c
+    type: playbook
+    task:
+      id: 4b950e3f-635e-4660-87bb-d86d53cc419c
+      version: -1
+      name: GenericPolling - Waiting to finish fetch.
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      Ids:
+        simple: ${sourceBrand}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: integration_name
+      PollingCommandName:
+        simple: VerifyIntegrationHealth
+      Timeout:
+        simple: "10"
+      dt:
+        simple: IntegrationHealth(val.fetchDone==false).integrationName
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 2540385f-49bf-4cb3-8f83-7a82da8d0d3d
+    type: regular
+    task:
+      id: 2540385f-49bf-4cb3-8f83-7a82da8d0d3d
+      version: -1
+      name: GetInstanceName
+      description: Given an integration name, returns the instance name.
+      scriptName: GetInstanceName
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      integration_name:
+        simple: ${sourceBrand}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 365d402b-b893-4bd9-89ed-869edb7ae7cc
+    type: condition
+    task:
+      id: 365d402b-b893-4bd9-89ed-869edb7ae7cc
+      version: -1
+      name: Instance name should not contain spaces.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsString
+          left:
+            value:
+              simple: Instances.instanceName
+            iscontext: true
+          right:
+            value:
+              simple: ' '
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 1fc1c12a-a2de-45e8-8761-6b9330559448
+    type: condition
+    task:
+      id: 1fc1c12a-a2de-45e8-8761-6b9330559448
+      version: -1
+      name: Check if there are playbook inputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "27"
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.sourcebrand
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.searchfield
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: faaf3d57-ebcc-4923-8d73-ac8eab39679f
+    type: regular
+    task:
+      id: faaf3d57-ebcc-4923-8d73-ac8eab39679f
+      version: -1
+      name: Get Incident Fields to search
+      description: send HTTP GET requests
+      script: '|||demisto-api-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      extend-context:
+        simple: serverConfig=
+      uri:
+        simple: /system/config
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 4df6d543-fcd0-41b9-8770-6b80d48266b0
+    type: regular
+    task:
+      id: 4df6d543-fcd0-41b9-8770-6b80d48266b0
+      version: -1
+      name: Set sourcebrand
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      key:
+        simple: sourceBrand
+      value:
+        simple: ${serverConfig.response.sysConf.sourcebrand}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 8e6f08cc-8631-4b87-857c-87866eb30492
+    type: regular
+    task:
+      id: 8e6f08cc-8631-4b87-857c-87866eb30492
+      version: -1
+      name: Set searchField
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      key:
+        simple: searchField
+      value:
+        simple: ${serverConfig.response.sysConf.searchfield}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: a74f3249-4ef1-49dd-865c-1b97f7152c7f
+    type: regular
+    task:
+      id: a74f3249-4ef1-49dd-865c-1b97f7152c7f
+      version: -1
+      name: Set searchField
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      key:
+        simple: searchField
+      value:
+        simple: ${inputs.searchfield}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 2641e1a7-6786-42a2-8477-258305e216d8
+    type: regular
+    task:
+      id: 2641e1a7-6786-42a2-8477-258305e216d8
+      version: -1
+      name: Set sourcebrand
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      key:
+        simple: sourceBrand
+      value:
+        simple: ${inputs.sourcebrand}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 835
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3360,
+        "width": 835,
+        "x": -180,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: sourcebrand
+  value: {}
+  required: false
+  description: Id of Integration that we want to test.
+  playbookInputQuery: null
+- key: searchfield
+  value: {}
+  required: false
+  description: Comma separated list of fields to confirm that exists in all incidents.
+  playbookInputQuery: null
+outputs: []
+fromversion: 6.0.0

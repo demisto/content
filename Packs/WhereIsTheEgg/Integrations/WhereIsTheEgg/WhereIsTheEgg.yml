@@ -1,0 +1,24 @@
+commonfields:
+  id: Where is the egg?
+  version: -1
+name: Where is the egg?
+display: Where is the egg?
+fromversion: 5.0.0
+category: Utilities
+description: Don't ask, just try.
+configuration: []
+scriptNotVisible: true
+defaultEnabled: true
+tests:
+- No test
+script:
+  script: ''
+  type: javascript
+  commands:
+  - name: clue
+    arguments:
+    - name: magic-word
+      default: true
+      description: yep
+    description: try me
+  runonce: false

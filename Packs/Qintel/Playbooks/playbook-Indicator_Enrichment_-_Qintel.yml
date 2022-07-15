@@ -1,0 +1,487 @@
+id: Indicator Enrichment - Qintel
+version: -1
+name: Indicator Enrichment - Qintel
+description: Enriches indicators from Qintel products
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3a5c1fab-e0f0-4a19-834d-a893cef07b01
+    type: start
+    task:
+      id: 3a5c1fab-e0f0-4a19-834d-a893cef07b01
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+      - "5"
+      - "18"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: d327caf4-4d40-42f5-8027-f0ec4ab9246d
+    type: condition
+    task:
+      id: d327caf4-4d40-42f5-8027-f0ec4ab9246d
+      version: -1
+      name: Are there IPs to enrich?
+      description: Determines if there are input IPs to enrich
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.IP
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: e64303a3-a0ef-4589-87d3-17637e933d29
+    type: condition
+    task:
+      id: e64303a3-a0ef-4589-87d3-17637e933d29
+      version: -1
+      name: Are there CVEs to enrich?
+      description: Determines if there are input CVEs to enrich
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.CVE
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 56d92431-1702-4bdb-8bc8-2f176dc38dab
+    type: title
+    task:
+      id: 56d92431-1702-4bdb-8bc8-2f176dc38dab
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 41d4bf11-988c-417a-8127-85fe81955841
+    type: regular
+    task:
+      id: 41d4bf11-988c-417a-8127-85fe81955841
+      version: -1
+      name: QSentry IP enrichment
+      description: Queries Qintel for IP reputation data
+      script: QintelQSentry|||ip
+      type: regular
+      iscommand: true
+      brand: QintelQSentry
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      ip:
+        simple: ${inputs.IP.Address}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: efd7378a-e331-4501-8cbb-9f88358dd462
+    type: condition
+    task:
+      id: efd7378a-e331-4501-8cbb-9f88358dd462
+      version: -1
+      name: Is QSentry enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    scriptarguments:
+      brandname:
+        simple: QintelQSentry
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 0c602970-fcda-4f49-8ed5-377063ab44d6
+    type: condition
+    task:
+      id: 0c602970-fcda-4f49-8ed5-377063ab44d6
+      version: -1
+      name: Is PMI enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "16"
+      "yes":
+      - "15"
+    scriptarguments:
+      brandname:
+        simple: QintelPMI
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: 052948db-ec2a-4c43-8105-2c100bd63806
+    type: regular
+    task:
+      id: 052948db-ec2a-4c43-8105-2c100bd63806
+      version: -1
+      name: PMI CVE enrichment
+      description: Queries Qintel for CVE intelligence
+      script: QintelPMI|||cve
+      type: regular
+      iscommand: true
+      brand: QintelPMI
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      cve:
+        simple: ${inputs.CVE.ID}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: f2854d46-d00e-47cb-883e-e7bc7d860d92
+    type: title
+    task:
+      id: f2854d46-d00e-47cb-883e-e7bc7d860d92
+      version: -1
+      name: Skip Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: b9b80e96-ea8a-4f73-82dd-d2af9d11e693
+    type: condition
+    task:
+      id: b9b80e96-ea8a-4f73-82dd-d2af9d11e693
+      version: -1
+      name: Are there Emails to enrich?
+      description: Determines if there are input emails to enrich
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "21"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Email
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1030,
+          "y": 265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 9276b055-2d8f-4876-8f4e-48bb0703dd10
+    type: condition
+    task:
+      id: 9276b055-2d8f-4876-8f4e-48bb0703dd10
+      version: -1
+      name: Is QWatch enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "21"
+      "yes":
+      - "20"
+    scriptarguments:
+      brandname:
+        simple: QintelQWatch
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1030,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: b98b3736-25f8-466a-8a62-eb8d3c795b80
+    type: regular
+    task:
+      id: b98b3736-25f8-466a-8a62-eb8d3c795b80
+      version: -1
+      name: QWatch Email Enrichment
+      description: Search QWatch for exposed credentials
+      script: QintelQWatch|||qintel-qwatch-exposures
+      type: regular
+      iscommand: true
+      brand: QintelQWatch
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      email:
+        simple: ${inputs.Email.Address}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1030,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "21":
+    id: "21"
+    taskid: 16bc86cf-a777-42fa-843e-7e7a29b02f3a
+    type: title
+    task:
+      id: 16bc86cf-a777-42fa-843e-7e7a29b02f3a
+      version: -1
+      name: Skip Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "6"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1500,
+          "y": 600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_9_yes": 0.64,
+      "13_15_yes": 0.4,
+      "13_16_no": 0.23,
+      "18_19_yes": 0.66,
+      "18_21_#default#": 0.49,
+      "1_10_yes": 0.41,
+      "5_13_yes": 0.64,
+      "5_16_#default#": 0.57
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1065,
+        "width": 2200,
+        "x": -320,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: IP
+  value:
+    simple: ${IP}
+  required: false
+  description: IPs to be enriched
+  playbookInputQuery:
+- key: Domain
+  value:
+    simple: ${Domain}
+  required: false
+  description: Domains to be enriched
+  playbookInputQuery:
+- key: CVE
+  value:
+    simple: ${CVE}
+  required: false
+  description: CVEs to be enriched
+  playbookInputQuery:
+- key: Email
+  value:
+    simple: ${Account.Email}
+  required: false
+  description: Email to be enriched
+  playbookInputQuery:
+outputs: []
+tests:
+- QintelPMI-Test
+- QintelQWatch-Test
+- QintelQSentry-Test
+fromversion: 6.0.0

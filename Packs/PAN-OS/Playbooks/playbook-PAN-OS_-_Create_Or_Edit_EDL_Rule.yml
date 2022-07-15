@@ -177,7 +177,7 @@ tasks:
       version: -1
       name: Add new source to the rule
       description: Add the element in the input as the new source of the rule
-      script: Panorama|||panorama-edit-rule
+      script: Panorama|||pan-os-edit-rule
       type: regular
       iscommand: true
       brand: Panorama
@@ -216,7 +216,7 @@ tasks:
       version: -1
       name: Add the new destination to the rule
       description: Add the element in the input as the new destination of the rule
-      script: Panorama|||panorama-edit-rule
+      script: Panorama|||pan-os-edit-rule
       type: regular
       iscommand: true
       brand: Panorama
@@ -255,7 +255,7 @@ tasks:
       version: -1
       name: Create an outbound rule
       description: Add the element in the input as the new destination of the rule.
-      script: Panorama|||panorama-create-rule
+      script: Panorama|||pan-os-create-rule
       type: regular
       iscommand: true
       brand: Panorama
@@ -312,7 +312,7 @@ tasks:
       version: -1
       name: Move the rule into its position
       description: Changes the location of a policy rule.
-      script: Panorama|||panorama-move-rule
+      script: Panorama|||pan-os-move-rule
       type: regular
       iscommand: true
       brand: Panorama
@@ -378,7 +378,7 @@ tasks:
       version: -1
       name: Create an inbound rule
       description: Add the element in the input as the new source of the rule
-      script: Panorama|||panorama-create-rule
+      script: Panorama|||pan-os-create-rule
       type: regular
       iscommand: true
       brand: Panorama
@@ -434,7 +434,7 @@ tasks:
       version: -1
       name: Retrieve EDL information from PAN-OS
       description: Returns information for an external dynamic list
-      script: '|||panorama-get-edl'
+      script: '|||pan-os-get-edl'
       type: regular
       iscommand: true
       brand: ""
@@ -557,7 +557,7 @@ tasks:
       version: -1
       name: Add the new destination to the rule
       description: Add the element in the input as the new destination of the rule
-      script: Panorama|||panorama-edit-rule
+      script: Panorama|||pan-os-edit-rule
       type: regular
       iscommand: true
       brand: Panorama
@@ -597,7 +597,7 @@ tasks:
       version: -1
       name: Create an outbound rule
       description: Add the element in the input as the new destination of the rule.
-      script: Panorama|||panorama-create-rule
+      script: Panorama|||pan-os-create-rule
       type: regular
       iscommand: true
       brand: Panorama

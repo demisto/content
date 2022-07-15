@@ -1,0 +1,56 @@
+{
+	"defaultIncidentType": "",
+	"description": "Maps an Salesforce_Fusion user data to a User Profile data.",
+	"id": "User Profile - Salesforce Fusion (Incoming)",
+	"mapping": {
+		"User Profile": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"City": {
+					"complex": null,
+					"simple": "Facility_Location__c"
+				},
+				"Email": {
+					"complex": null,
+					"simple": "Work_Email__c"
+				},
+				"Given Name": {
+					"complex": null,
+					"simple": "FF__First_Name__c"
+				},
+				"Surname": {
+					"complex": null,
+					"simple": "FF__Last_Name__c"
+				},
+				"Mobile Phone": {
+					"complex": null,
+					"simple": "FF__Mobile_Phone__c"
+				},
+				"Work Phone": {
+					"complex": null,
+					"simple": "Work_Mobile_SMS__c"
+				},
+				"Title": {
+					"complex": null,
+					"simple": "FF__Title__c"
+				},
+				"Location": {
+					"complex": null,
+					"simple": "Building__c"
+				},
+				"Display Name": {
+					"complex": null,
+					"simple": "Name"
+				},
+				"Username": {
+					"complex": null,
+					"simple": "Name"
+				}
+			}
+		}
+	},
+	"name": "User Profile - Salesforce Fusion (Incoming)",
+	"type": "mapping-incoming",
+	"version": -1,
+	"fromVersion": "6.0.0"
+}

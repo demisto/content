@@ -1,6 +1,7 @@
 id: TIM - Run Enrichment For Url Indicators
 version: -1
 fromversion: 5.5.0
+toversion: 5.9.9
 name: TIM - Run Enrichment For Url Indicators
 description: |-
     This playbook processes indicators by enriching indicators

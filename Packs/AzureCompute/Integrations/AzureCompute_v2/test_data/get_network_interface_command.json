@@ -1,0 +1,40 @@
+{
+    "name": "testnic",
+    "id": "nic_id",
+    "etag": "tag",
+    "location": "eastus",
+    "properties": {
+        "provisioningState": "Succeeded",
+        "resourceGuid": "cf8c1a94-3e31-42e7-9121-2edf24ea52f8",
+        "ipConfigurations": [
+            {
+                "name": "ipconfig1",
+                "id": "nic_id",
+                "type": "Microsoft.Network/networkInterfaces/ipConfigurations",
+                "properties": {
+                    "provisioningState": "Succeeded",
+                    "privateIPAddress": "10.0.0.4"
+                }
+            }
+        ],
+        "dnsSettings": {
+            "dnsServers": [],
+            "appliedDnsServers": []
+        },
+        "macAddress": "00-22-48-1C-73-AF",
+        "enableAcceleratedNetworking": false,
+        "vnetEncryptionSupported": false,
+        "enableIPForwarding": false,
+        "networkSecurityGroup": {
+            "id": "security_group_id"
+        },
+        "primary": "true",
+        "virtualMachine": {
+            "id": "vm_id"
+        },
+        "hostedWorkloads": [],
+        "tapConfigurations": [],
+        "nicType": "Standard"
+    },
+    "type": "Microsoft.Network/networkInterfaces"
+}

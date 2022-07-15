@@ -2,16 +2,22 @@
     "name": "Unisys Stealth",
     "description": "This integration is intended to aid companies in integrating with the Stealth EcoAPI service. Using the included commands, security teams can trigger dynamically isolation of users or endpoints from the rest of the Stealth network.",
     "support": "community",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.2",
     "author": "Unisys",
     "url": "",
     "email": "",
     "created": "2021-07-06T19:01:59Z",
-    "categories": [],
+    "categories": [
+        "Endpoint"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],
     "githubUser": [
         "sowelljo"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

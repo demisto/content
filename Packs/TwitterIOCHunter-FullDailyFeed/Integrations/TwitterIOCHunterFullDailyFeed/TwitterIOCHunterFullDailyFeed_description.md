@@ -1,0 +1,1 @@
+Select the type of feed you want to pull. If you select filtered by Username or hashtag provide it as the filter.

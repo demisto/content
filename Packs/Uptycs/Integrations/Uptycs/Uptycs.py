@@ -12,8 +12,8 @@ import jwt
 from datetime import datetime, timedelta
 import requests
 from typing import List
-from signal import signal, SIGPIPE, SIG_DFL
-signal(SIGPIPE, SIG_DFL)
+from signal import signal, SIGPIPE, SIG_DFL  # type: ignore[no-redef]
+signal(SIGPIPE, SIG_DFL)  # type: ignore[operator]
 # disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 

@@ -1,0 +1,17 @@
+{
+    "total_count": 1,
+    "results": [
+        {
+            "name": "Test Policy",
+            "description": "test policy",
+            "constraints": [
+                {
+                    "type": "os_version",
+                    "operator": "equals",
+                    "os_version": "1.2.3"
+                }
+            ],
+            "id": 1
+        }
+    ]
+}

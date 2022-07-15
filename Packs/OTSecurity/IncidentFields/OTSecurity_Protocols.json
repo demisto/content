@@ -1,0 +1,45 @@
+{
+ "id": "incident_otsecurityprotocols",
+ "version": -1,
+ "fromVersion": "6.0.0",
+ "modified": "2021-11-29T06:36:45.975750149Z",
+ "name": "OTSecurity Protocols",
+ "ownerOnly": false,
+ "cliName": "otsecurityprotocols",
+ "type": "grid",
+ "closeForm": false,
+ "editForm": true,
+ "required": false,
+ "neverSetAsRequired": false,
+ "isReadOnly": false,
+ "useAsKpi": false,
+ "locked": false,
+ "system": false,
+ "content": true,
+ "group": 0,
+ "hidden": false,
+ "associatedTypes": [
+  "OTSecurity Rogue Device Found"
+ ],
+ "associatedToAll": false,
+ "unmapped": false,
+ "unsearchable": true,
+ "caseInsensitive": true,
+ "columns": [
+  {
+   "key": "protocols",
+   "displayName": "Protocols",
+   "type": "shortText",
+   "required": false,
+   "script": "",
+   "width": 150,
+   "isDefault": true,
+   "fieldCalcScript": "",
+   "isReadOnly": false,
+   "selectValues": null
+  }
+ ],
+ "defaultRows": null,
+ "sla": 0,
+ "threshold": 72
+}

@@ -141,6 +141,7 @@ class Client:
             'query_string': query_string,
             'page_size': self.fetch_size,
             'page': 1,
+            'order_field': 'last_timestamp'
         }
         raw_response = self.http_request(params=params, url_suffix='search/detections')  # type: ignore
         demisto.info("\n\n Queried Successfully\n\n")
@@ -148,13 +149,14 @@ class Client:
         incidents = []
         if 'results' in raw_response:
             res: Union[List[Dict], Dict] = raw_response.get('results')  # type: ignore
-            detections: List[Dict] = [res] if not isinstance(res, List) else sorted(res, key=lambda h: h.get('id'))
+            detections: List[Dict] = [res] if not isinstance(res, List) \
+                else sorted(res, key=lambda h: h.get('id'))  # type: ignore
 
             try:
                 for detection in detections:
                     incidents.append(create_incident_from_detection(detection))  # type: ignore
                     # format from response: %Y-%m-%dT%H:%M:%SZ
-                    response_last_timestamp = datetime.strptime(detection.get('last_timestamp'),    # type: ignore
+                    response_last_timestamp = datetime.strptime(detection.get('last_timestamp'),  # type: ignore
                                                                 "%Y-%m-%dT%H:%M:%SZ").strftime("%Y-%m-%dT%H%M")
                     last_timestamp = max_timestamp(last_timestamp, response_last_timestamp)  # type: ignore
 

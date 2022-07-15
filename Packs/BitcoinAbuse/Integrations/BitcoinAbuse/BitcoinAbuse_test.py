@@ -18,7 +18,9 @@ client = BitcoinAbuseClient(
     api_key='',
     initial_fetch_interval='',
     reader_config=READER_CONFIG,
-    have_fetched_first_time=False
+    have_fetched_first_time=False,
+    feed_tags=['Tag1', 'Tag2'],
+    tlp_color='WHITE'
 )
 
 

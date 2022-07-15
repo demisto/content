@@ -1,2 +1,8 @@
 [file:README.md]
 ignore=RM104
+
+[file:C2sec.yml]
+ignore=IN145
+
+[file:C2sec_image.png]
+ignore=IM111

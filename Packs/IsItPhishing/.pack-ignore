@@ -1,0 +1,5 @@
+[file:IsItPhishing.yml]
+ignore=IN144
+
+[file:IsItPhishing_image.png]
+ignore=IM111

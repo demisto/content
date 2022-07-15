@@ -3,6 +3,7 @@ from CommonServerPython import *
 from dateutil.parser import parse
 from SymantecDLP import main, get_cache_path
 import os
+from unittest.mock import MagicMock
 
 
 def test_get_incident_attributes():
@@ -291,3 +292,41 @@ def test_self_signed_secure_ssl(mocker):
         main()
     except Exception as ex:
         assert 'certificate' in str(ex).lower()
+
+
+def test_fetch_incidents(mocker):
+    """
+    Given:
+        - 2 DLP incidents to fetch
+        - Fetch limit set to 1
+
+    When:
+        - Fetching incidents
+
+    Then:
+        - Ensure last run is set as expected with the incident fetched
+    """
+    dlp_incident1 = {
+        'incident': {
+            'incidentCreationDate': 'date1'
+        }
+    }
+    dlp_incident2 = {
+        'incident': {
+            'incidentCreationDate': 'date2'
+        }
+    }
+    import SymantecDLP
+    last_run = mocker.patch.object(demisto, 'setLastRun')
+    client = MagicMock()
+    mocker.patch('SymantecDLP.helpers.serialize_object', side_effect=[{'incidentId': [1, 2]}, dlp_incident1, dlp_incident2])
+    mocker.patch.object(SymantecDLP, 'get_incident_binaries', return_value=(None, None, None, None,))
+    SymantecDLP.fetch_incidents(
+        client=client,
+        fetch_time='3 days',
+        fetch_limit=1,
+        last_run={},
+        saved_report_id=''
+    )
+    last_run = last_run.call_args[0][0]
+    assert last_run == {'last_fetched_event_iso': 'date1', 'last_incident_id': 1}

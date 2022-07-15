@@ -1,0 +1,16 @@
+commonfields:
+  id: IronscalesEmailFieldTrigger
+  version: -1
+name: IronscalesEmailFieldTrigger
+script: ""
+type: python
+tags:
+- field-change-triggered
+comment: Automatically changes email field when choosing classification
+fromversion: 6.0.0
+enabled: true
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.9.7.24076
+runas: DBotWeakRole

@@ -70,7 +70,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: QRadar,QRadar_v2
+                        simple: QRadar,QRadar_v2,QRadar v3
                 - - operator: isEqualString
                     left:
                       value:
@@ -145,7 +145,7 @@ tasks:
     task:
       id: 62c150d2-69d9-432a-8dff-d37eb6127849
       version: -1
-      name: Add IPs to QRadar black list IP reference set
+      name: Add IPs to QRadar block list IP reference set
       description: Add or update a value in a reference set.
       script: '|||qradar-update-reference-set-value'
       type: regular
@@ -207,7 +207,7 @@ tasks:
     task:
       id: 22f3d335-ddda-4b60-88ea-69c9de1f0de3
       version: -1
-      name: Is there a Qradar black list IP Reference Set and values?
+      name: Is there a Qradar block list IP Reference Set and values?
       type: condition
       iscommand: false
       brand: ""
@@ -269,7 +269,7 @@ tasks:
     task:
       id: 5c2a1583-8de8-4372-8120-38dd52762e4b
       version: -1
-      name: Is there a Qradar white list IP Reference Set and values?
+      name: Is there a Qradar allow list IP Reference Set and values?
       type: condition
       iscommand: false
       brand: ""
@@ -331,7 +331,7 @@ tasks:
     task:
       id: 51cc5048-684f-48ac-87b0-fd221cda659e
       version: -1
-      name: Add IPs to QRadar white list IP reference set
+      name: Add IPs to QRadar allow list IP reference set
       description: Add or update a value in a reference set.
       script: '|||qradar-update-reference-set-value'
       type: regular
@@ -722,7 +722,7 @@ inputs:
 - key: QRadarBlackListIPReferenceSetName
   value: {}
   required: false
-  description: The name of the QRadar black list IP reference set to insert the data
+  description: The name of the QRadar block list IP reference set to insert the data
     to.
   playbookInputQuery: null
 - key: ""
@@ -748,7 +748,7 @@ inputs:
 - key: QRadarWhiteListIPReferenceSetName
   value: {}
   required: false
-  description: The name of the QRadar white list IP reference set to insert the data
+  description: The name of the QRadar allow list IP reference set to insert the data
     in to.
   playbookInputQuery: null
 - key: QRadarWatchListIPReferenceSetName

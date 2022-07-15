@@ -1,6 +1,6 @@
 id: PAN-OS Query Logs For Indicators Test
 version: -1
-fromversion: 5.0.0
+fromversion: "6.1.0"
 name: PAN-OS Query Logs For Indicators Test
 description: This is a test playbook for PAN-OS Query Logs For Indicators
 starttaskid: "0"

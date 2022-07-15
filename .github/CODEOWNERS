@@ -4,39 +4,76 @@
 /Tests/Marketplace/landingPage_sections.json @demisto/content-leaders @michalgold
 
 # Marketplace & Upload-Flow
-/Tests/Marketplace/upload_git_snapshot.py @guyfreund
-/Tests/Marketplace/install_packs.sh @guyfreund
-/Tests/Marketplace/configure_and_install_packs.py @guyfreund
-/Tests/Marketplace/copy_and_upload_packs.py @guyfreund
-/Tests/Marketplace/marketplace_services.py @guyfreund
-/Tests/Marketplace/marketplace_statistics.py @guyfreund
-/Tests/Marketplace/marketplace_constants.py @guyfreund
-/Tests/Marketplace/zip_packs.py @guyfreund
-/Tests/Marketplace/upload_packs.py @guyfreund
-/Tests/Marketplace/packs_dependencies.py @guyfreund
-/Tests/Marketplace/search_and_install_packs.py @guyfreund
-/Tests/scripts/prepare_content_packs_for_testing.sh @guyfreund
-/Utils/trigger_test_upload_flow.sh @guyfreund
-/Utils/trigger_upload_packs_to_production.sh @guyfreund
+/Tests/Marketplace/upload_git_snapshot.py @Noy-Maimon
+/Tests/Marketplace/install_packs.sh @Noy-Maimon
+/Tests/Marketplace/configure_and_install_packs.py @Noy-Maimon
+/Tests/Marketplace/copy_and_upload_packs.py @Noy-Maimon
+/Tests/Marketplace/marketplace_services.py @Noy-Maimon
+/Tests/Marketplace/marketplace_statistics.py @Noy-Maimon
+/Tests/Marketplace/marketplace_constants.py @Noy-Maimon
+/Tests/Marketplace/zip_packs.py @Noy-Maimon
+/Tests/Marketplace/upload_packs.py @Noy-Maimon
+/Tests/Marketplace/packs_dependencies.py @Noy-Maimon
+/Tests/Marketplace/search_and_install_packs.py @Noy-Maimon
+/Tests/scripts/prepare_content_packs_for_testing.sh @Noy-Maimon
+/Utils/trigger_test_upload_flow.sh @Noy-Maimon
+/Utils/trigger_upload_packs_to_production.sh @Noy-Maimon
+
+# Test Collection
+/Tests/scripts/collect_tests_and_content_packs.py @dorschw
+
+# PANW Products
+/Packs/PaloAltoNetworksIoT/Integrations/ @bakatzir
+/Packs/PaloAltoNetworksIoT3rdParty/Integrations/ @bakatzir
+/Packs/Palo_Alto_Networks_Enterprise_DLP/ @DeanArbel
+/Packs/PAN-OS/Integrations/ @GuyAfik
+/Packs/PrismaAccess/Integrations/ @bakatzir
+/Packs/PrismaCloudCompute/Integrations/ @GuyAfik
+/Packs/PrismaCloud/Integrations/ @bakatzir
+/Packs/PrismaSaasSecurity/Integrations/ @yaakovpraisler
 
 # Important Integrations
 /Packs/Jira/Integrations/JiraV2/* @demisto/content-leaders
 /Packs/ServiceNow/Integrations/ServiceNowv2/* @demisto/content-leaders
 /Packs/EWS/Integrations/EWSv2/* @demisto/content-leaders
 /Packs/ArcSightESM/Integrations/ArcSightESMv2/* @demisto/content-leaders
-/Packs/QRadar/Integrations/QRadar_v2/* @demisto/content-leaders
+/Packs/QRadar/Integrations/QRadar_v3/* @tkatzir
 /Packs/Slack/Integrations/Slack/* @demisto/content-leaders
 /Packs/SplunkPy/Integrations/SplunkPy/* @demisto/content-leaders
 /Packs/Active_Directory_Query/Integrations/Active_Directory_Query/* @demisto/content-leaders
 /Packs/VirusTotal/Integrations/integration-VirusTotal_5.5.yml @demisto/content-leaders
-/Packs/VirusTotal/* @jochman
+/Packs/ContentManagement/* @adi88d
 
 # Important Scripts
-/Packs/CommonScripts/Scripts/SetGridField/* @yaakovi
+/Packs/CommonScripts/Scripts/SetGridField/* @yaakovi @David-BMS @altmannyarden
 /Packs/CommonScripts/Scripts/SearchIncidentsV2/* @demisto/content-leaders
+/Packs/CommonScripts/Scripts/ParseEmailFiles/* @moishce
+
+# Common Packs
+/Packs/CommonTypes/ @michalgold @altmannyarden @idovandijk
+/Packs/CommonPlaybooks/ @michalgold @altmannyarden @idovandijk
+/Packs/CommonDashboards/ @michalgold @altmannyarden @idovandijk
+
 
 # Build related
-.circleci/config.yml @avidan-H @DinaMeylakh
-.gitlab/ci/* @avidan-H @DinaMeylakh
-.gitlab/* @avidan-H @DinaMeylakh
-.gitlab-ci.yml @avidan-H @DinaMeylakh
+.circleci/config.yml @esharf
+.gitlab/ci/* @esharf
+.gitlab/* @esharf
+.gitlab-ci.yml @esharf
+/Tests/scripts/wait_in_line_for_xsiam_env.sh @daryakoval
+
+# SDK Related
+.gitlab/ci/sdk-nightly.yml @dorschw
+Utils/trigger_nightly_sdk_build.sh @dorschw
+
+# XDR Related
+/Packs/CortexXDR/Integrations/ @dansterenson
+/Packs/Core/Integrations/ @dansterenson
+/Packs/ApiModules/Scripts/CoreIRApiModule/* @dansterenson
+
+# Dependencies
+pyproject.toml @ilaner
+poetry.lock @ilaner
+
+# Devcontainers
+.devcontainer/* @ilaner

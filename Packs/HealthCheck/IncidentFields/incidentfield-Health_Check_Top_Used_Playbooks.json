@@ -1,0 +1,49 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "System Diagnostics and Health Check"
+    ],
+    "caseInsensitive": true,
+    "cliName": "healthchecktopusedplaybooks",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "Playbook Name",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "playbookname",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        }
+    ],
+    "content": true,
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_healthchecktopusedplaybooks",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Health Check Top Used Playbooks",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

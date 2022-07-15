@@ -1,4 +1,5 @@
 # pylint: disable=no-member
+from collections import Counter
 from CommonServerUserPython import *
 from CommonServerPython import *
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -10,11 +11,25 @@ from html.parser import HTMLParser
 from html import unescape
 from re import compile as _Re
 import pandas as pd
+from langdetect import detect
+from langdetect.lang_detect_exception import LangDetectException
+
+ANY_LANGUAGE = 'Any'
+OTHER_LANGUAGE = 'Other'
 
 
 def hash_word(word, hash_seed):
     return str(hash_djb2(word, int(hash_seed)))
 
+
+CODES_TO_LANGUAGES = {'en': 'English',
+                      'de': 'German',
+                      'fr': 'French',
+                      'es': 'Spanish',
+                      'pt': 'Portuguese',
+                      'it': 'Italian',
+                      'nl': 'Dutch',
+                      }
 
 html_patterns = [
     re.compile(r"(?is)<(script|style).*?>.*?(</\1>)"),
@@ -23,6 +38,8 @@ html_patterns = [
     re.compile(r"&nbsp;"),
     re.compile(r" +")
 ]
+
+LANGUAGE_KEY = 'language'
 
 
 def create_text_result(original_text, tokenized_text, original_words_to_tokens, hash_seed=None):
@@ -51,8 +68,8 @@ def clean_html_from_text(text):
 class Tokenizer:
     def __init__(self, clean_html=True, remove_new_lines=True, hash_seed=None, remove_non_english=True,
                  remove_stop_words=True, remove_punct=True, remove_non_alpha=True, replace_emails=True,
-                 replace_numbers=True, lemma=True, replace_urls=True, language='English',
-                 tokenization_method='byWords'):
+                 replace_numbers=True, lemma=True, replace_urls=True, language=ANY_LANGUAGE,
+                 tokenization_method='tokenizer'):
         self.number_pattern = "NUMBER_PATTERN"
         self.url_pattern = "URL_PATTERN"
         self.email_pattern = "EMAIL_PATTERN"
@@ -75,14 +92,6 @@ class Tokenizer:
         self.nlp = None
         self.html_parser = HTMLParser()
         self._unicode_chr_splitter = _Re('(?s)((?:[\ud800-\udbff][\udc00-\udfff])|.)').split
-        self.languages_to_model_names = {'English': 'en_core_web_sm',
-                                         'German': 'de_core_news_sm',
-                                         'French': 'fr_core_news_sm',
-                                         'Spanish': 'es_core_news_sm',
-                                         'Portuguese': 'pt_core_news_sm',
-                                         'Italian': 'it_core_news_sm',
-                                         'Dutch': 'nl_core_news_sm'
-                                         }
         self.spacy_count = 0
         self.spacy_reset_count = 500
 
@@ -110,8 +119,7 @@ class Tokenizer:
         return re.sub(r"\s+", " ", text).strip()
 
     def handle_tokenizaion_method(self, text):
-        language = self.language
-        if language in self.languages_to_model_names:
+        if self.tokenization_method == 'tokenizer':
             tokens_list, original_words_to_tokens = self.tokenize_text_spacy(text)
         else:
             tokens_list, original_words_to_tokens = self.tokenize_text_other(text)
@@ -138,7 +146,7 @@ class Tokenizer:
 
     def tokenize_text_spacy(self, text):
         if self.nlp is None or self.spacy_count % self.spacy_reset_count == 0:
-            self.init_spacy_model(self.language)
+            self.init_spacy_model()
         doc = self.nlp(text)  # type: ignore
         self.spacy_count += 1
         original_text_indices_to_words = self.map_indices_to_words(text)
@@ -173,14 +181,8 @@ class Tokenizer:
                 original_words_to_tokens[original_word].append(token_to_add)
         return tokens_list, original_words_to_tokens
 
-    def init_spacy_model(self, language):
-        try:
-            self.nlp = spacy.load(self.languages_to_model_names[language],
-                                  disable=['parser', 'ner', 'textcat'])
-        except Exception:
-            return_error("The specified language is not supported in this docker. In order to pre-process text "
-                         "using this language, it's required to change this docker. Please check at the documentation "
-                         "or contact us for help.")
+    def init_spacy_model(self):
+        self.nlp = spacy.load('en_core_web_sm', disable=['parser', 'ner', 'textcat'])
 
     def word_tokenize(self, text):
         if not isinstance(text, list):
@@ -274,11 +276,20 @@ def remove_line_breaks(text):
     return re.sub(r"\s+", " ", text.replace("\r", " ").replace("\n", " ")).strip()
 
 
-def pre_process_batch(data, source_text_field, target_text_field, remove_html_tags, pre_process_type, hash_seed):
-    raw_text_data = [x[source_text_field] for x in data]
+def clean_text_of_single_text(text, remove_html_tags):
     if remove_html_tags:
-        raw_text_data = [clean_html_from_text(x) for x in raw_text_data]
-    raw_text_data = [remove_line_breaks(x) for x in raw_text_data]
+        text = clean_html_from_text(text)
+    return remove_line_breaks(text)
+
+
+def clean_text_of_incidents_list(data, source_text_field, remove_html_tags):
+    for inc in data:
+        inc[source_text_field] = clean_text_of_single_text(inc[source_text_field], remove_html_tags)
+    return data
+
+
+def pre_process_batch(data, source_text_field, target_text_field, pre_process_type, hash_seed):
+    raw_text_data = [x[source_text_field] for x in data]
     tokenized_text_data = []
     for raw_text in raw_text_data:
         tokenized_text = pre_process_single_text(raw_text, hash_seed, pre_process_type)
@@ -334,6 +345,36 @@ def remove_short_text(data, text_field, target_text_field, remove_short_threshol
     return data, description
 
 
+def remove_foreign_language(data, text_field, language):
+    description = ""
+    for inc in data:
+        is_correct_lang, actual_language = is_text_in_input_language(inc[text_field], language)
+        inc['is_correct_lang'] = is_correct_lang
+        inc[LANGUAGE_KEY] = actual_language
+    filtered_data = [inc for inc in data if inc['is_correct_lang']]
+    dropped_count = len(data) - len(filtered_data)
+    if dropped_count > 0:
+        lang_counter = Counter(inc[LANGUAGE_KEY] for inc in data).most_common()
+        description += "Dropped %d sample(s) that were detected as being in foreign languages. " % dropped_count
+        description += 'Found language counts: {}'.format(', '.join(['{}:{}'.format(lang, count) for lang, count
+                                                                     in lang_counter]))
+        description += "\n"
+    return filtered_data, description
+
+
+def is_text_in_input_language(text, input_language):
+    if input_language in [ANY_LANGUAGE, OTHER_LANGUAGE]:
+        return True, 'UNK'
+    if '<html' in text:
+        text = clean_html_from_text(text)
+    try:
+        actual_language = detect(text)
+    except LangDetectException:
+        return True, 'UNK'
+    is_correct_lang = actual_language in CODES_TO_LANGUAGES and CODES_TO_LANGUAGES[actual_language] == input_language
+    return is_correct_lang, actual_language
+
+
 def get_tf_idf_similarity_arr(documents):
     tfidf = TfidfVectorizer(stop_words="english", min_df=1).fit_transform(documents)
     pairwise_similarity = tfidf * tfidf.T
@@ -378,9 +419,16 @@ def main():
     remove_html_tags = demisto.args()['cleanHTML'] == 'true'
     whitelist_fields = demisto.args().get('whitelistFields').split(",") if demisto.args().get(
         'whitelistFields') else None
+    language = demisto.args().get('language', ANY_LANGUAGE)
     # if input is a snigle string (from DbotPredictPhishingWords):
     if input_type == 'string':
-        res = pre_process_single_text(raw_text=demisto.args().get('input'),
+        input_str = demisto.args().get('input')
+        input_str = clean_text_of_single_text(input_str, remove_html_tags)
+        is_correct_lang, actual_language = is_text_in_input_language(input_str, language)
+        if not is_correct_lang:
+            return_error("Input text was detected as as being in a different language from {} ('{}' found)."
+                         .format(language, actual_language))
+        res = pre_process_single_text(raw_text=input_str,
                                       hash_seed=hash_seed, pre_process_type=pre_process_type)
         return res
     output_original_text_fields = demisto.args().get('outputOriginalTextFields', 'false') == 'true'
@@ -394,7 +442,15 @@ def main():
     # clean text
     if pre_process_type not in PRE_PROCESS_TYPES:
         return_error('Pre-process type {} is not supported'.format(pre_process_type))
-    data = pre_process_batch(data, DBOT_TEXT_FIELD, DBOT_PROCESSED_TEXT_FIELD, remove_html_tags, pre_process_type,
+
+    # clean html and new lines
+    data = clean_text_of_incidents_list(data, DBOT_TEXT_FIELD, remove_html_tags)
+    # filter incidents not in specified languages
+    data, desc = remove_foreign_language(data, DBOT_TEXT_FIELD, language)
+    description += desc
+
+    # apply tokenizer
+    data = pre_process_batch(data, DBOT_TEXT_FIELD, DBOT_PROCESSED_TEXT_FIELD, pre_process_type,
                              hash_seed)
 
     # remove short emails

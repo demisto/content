@@ -30,8 +30,8 @@ configuration:
   name: validate_certs
   required: true
   type: 4
-description: Manage Kubernetes
-display: Kubernetes
+description: Manage Kubernetes. Deprecated. Use Ansible Kubernetes (from the Ansible Kubernetes pack) instead.
+display: Ansible Kubernetes (Deprecated)
 name: Kubernetes
 script:
   commands:
@@ -389,7 +389,7 @@ script:
         and I(kind).
     - contextPath: Kubernetes.result.status
       description: Current status details for the object.
-  dockerimage: demisto/ansible-runner:1.0.0.16542
+  dockerimage: demisto/ansible-runner:1.0.0.21184
   runonce: false
   script: ''
   subtype: python3
@@ -397,3 +397,4 @@ script:
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
+deprecated: true

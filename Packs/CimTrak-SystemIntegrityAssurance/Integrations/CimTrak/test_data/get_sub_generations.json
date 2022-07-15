@@ -1,0 +1,53 @@
+{
+    "name": "get_sub_generations",
+    "execute": "response_raw = CimTrak.get_sub_generations_command(client,{'objectId': 2})\n\nresponse = response_raw[0].outputs\nif len(response_raw) > 1:\n\tret_results: List[Dict[str, Any]] = response_raw[1].outputs\n\tresponse['results'] = list()\n\tresponse_raw[1].outputs\n\tresponse['results'].append(ret_results)\n",
+    "posts": [
+        {
+            "url": "https://test.com/CimTrakRestAPI/v1/Client.getSubGenerations",
+            "reply": {
+                "status": "success",
+                "errorCode": "",
+                "errorDescription": "",
+                "results": [
+                    {
+                        "caseSensitive": 0,
+                        "agentObjectId": 1,
+                        "subGenerationId": 261,
+                        "objectId": 2,
+                        "generationId": 252,
+                        "subRevision": 1,
+                        "notes": "",
+                        "creationDate": "2022-03-12 13:11:13",
+                        "files": 0,
+                        "directories": 1,
+                        "totalSize": 0,
+                        "revision": 228,
+                        "userName": "admin"
+                    }
+                ]
+            }
+        }
+    ],
+    "response": {
+        "status": "success",
+        "errorCode": "",
+        "errorDescription": "",
+        "results": [
+            {
+                "caseSensitive": 0,
+                "agentObjectId": 1,
+                "subGenerationId": 261,
+                "objectId": 2,
+                "generationId": 252,
+                "subRevision": 1,
+                "notes": "",
+                "creationDate": "2022-03-12 13:11:13",
+                "files": 0,
+                "directories": 1,
+                "totalSize": 0,
+                "revision": 228,
+                "userName": "admin"
+            }
+        ]
+    }
+}

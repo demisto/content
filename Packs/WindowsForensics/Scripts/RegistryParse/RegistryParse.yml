@@ -31,7 +31,7 @@ comment: "This command uses the Registry Parse automation to extract critical fo
 commonfields:
   id: RegistryParse
   version: -1
-dockerimage: demisto/python3:3.9.5.21272
+dockerimage: demisto/python3:3.9.7.24076
 enabled: true
 name: RegistryParse
 outputs:

@@ -1,8 +1,17 @@
 # HYAS Insight
 HYAS Insight is a threat investigation and attribution solution that uses exclusive data sources and non-traditional mechanisms to improve visibility and productivity for analysts, researchers, and investigators while increasing the accuracy of findings. HYAS Insight connects attack instances and campaigns to billions of indicators of compromise to deliver insights and visibility. With an easy-to-use user interface, transforms, and API access, HYAS Insight combines rich threat data into a powerful research and attribution solution. HYAS Insight is complemented by the HYAS Intelligence team that helps organizations to better understand the nature of the threats they face on a daily basis.
 
-Use the HYAS Insight integration to interactively lookup PassiveDNS, DynamicDNS, WHOIS, Malware Information – either as playbook tasks or through API calls in the War Room.
-This integration was integrated and tested with version 1.0.0 of HYAS Insight
+Use the HYAS Insight integration to interactively lookup PassiveDNS, DynamicDNS, WHOIS, Malware and C2 Attribution Information.
+
+## How to get a HYAS API Key
+In order to obtain a HYAS Insight API key to use with Cortex XSOAR, please contact your HYAS Insight Admin. If you are unsure who your Admin is, you can also contact HYAS Support via email at support@hyas.com, by visiting the HYAS website https://www.hyas.com/contact, or by using the HYAS Insight web UI by clicking the ‘help’ icon at the top right of the screen, to request a key.
+
+## Partner Contributed Integration
+### Integration Author: HYAS
+Support and maintenance for this integration are provided by the author. Please use the following contact details:
+    **Email:** support@hyas.com
+    **URL:** https://www.hyas.com/contact
+
 ## Configure HYAS Insight on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -69,88 +78,87 @@ Returns PassiveDNS records for the provided indicator value.
     "HYAS": {
         "PassiveDNS": [
             {
-                "count": "10571",
+                "count": "273983",
                 "domain": "domain.org",
-                "first_seen": "2019-03-14T23:36:40Z",
+                "first_seen": "2015-06-08T19:16:18Z",
                 "ip": {
                     "geo": {
-                        "city_name": "Cutlerville",
+                        "city_name": "Boston",
                         "country_iso_code": "US",
                         "country_name": "United States",
-                        "location_latitude": "42.8409",
-                        "location_longitude": "-85.6636",
-                        "postal_code": "12345"
+                        "location_latitude": "42.3584",
+                        "location_longitude": "-71.0598",
+                        "postal_code": "02108"
                     },
-                    "ip": "",
+                    "ip": "65.254.244.180",
                     "isp": {
-                        "autonomous_system_number": "AS12345",
-                        "autonomous_system_organization": "System LLX",
-                        "ip_address": "",
-                        "isp": "System LLX",
-                        "organization": "System LLX"
+                        "autonomous_system_number": "AS29873",
+                        "autonomous_system_organization": "Newfold Digital, Inc.",
+                        "ip_address": "65.254.244.180",
+                        "isp": "Newfold Digital, Inc.",
+                        "organization": "Newfold Digital, Inc."
                     }
                 },
-                "ipv4": "",
-                "last_seen": "2021-07-16T15:29:13.033000Z",
-                "sources": [
-                    "hyas",
-                    "farsight"
-                ]
-            },
-            {
-                "count": "151",
-                "domain": "domain.org",
-                "first_seen": "2011-08-02T12:15:17Z",
-                "ip": {
-                    "geo": {
-                        "city_name": "Chicago",
-                        "country_iso_code": "US",
-                        "country_name": "United States",
-                        "location_latitude": "41.8500",
-                        "location_longitude": "-87.6500",
-                        "postal_code": "60666"
-                    },
-                    "ip": "",
-                    "isp": {
-                        "autonomous_system_number": "AS12345",
-                        "autonomous_system_organization": "System LLX",
-                        "ip_address": "",
-                        "isp": "System LLX",
-                        "organization": "System LLX"
-                    }
-                },
-                "ipv4": "",
-                "last_seen": "2012-06-18T08:36:11Z",
+                "ipv4": "65.254.244.180",
+                "last_seen": "2021-11-08T22:39:59Z",
                 "sources": [
                     "farsight"
                 ]
             },
             {
-                "count": "7439",
+                "count": "62645",
                 "domain": "domain.org",
-                "first_seen": "2014-04-08T03:30:41Z",
+                "first_seen": "2010-07-13T17:29:58Z",
                 "ip": {
                     "geo": {
-                        "city_name": "Denver",
+                        "city_name": "Tukwila",
                         "country_iso_code": "US",
                         "country_name": "United States",
-                        "location_latitude": "39.7392",
-                        "location_longitude": "-104.9847",
-                        "postal_code": "80208"
+                        "location_latitude": "47.4740",
+                        "location_longitude": "-122.2610",
+                        "postal_code": "98178"
                     },
-                    "ip": "",
+                    "ip": "216.34.94.184",
                     "isp": {
-                        "autonomous_system_number": "AS46606",
-                        "autonomous_system_organization": "Unified Layer",
-                        "ip_address": "",
-                        "isp": "Unified Layer",
-                        "organization": "Unified Layer"
+                        "autonomous_system_number": "AS3561",
+                        "autonomous_system_organization": "CenturyLink Communications, LLC",
+                        "ip_address": "216.34.94.184",
+                        "isp": "Dotster, Inc.",
+                        "organization": "Dotster, Inc."
                     }
                 },
-                "ipv4": "",
-                "last_seen": "2018-11-25T08:06:47Z",
+                "ipv4": "216.34.94.184",
+                "last_seen": "2015-06-08T17:50:06Z",
                 "sources": [
                     "farsight"
+                ]
+            },
+            {
+                "count": "1",
+                "domain": "biszhu.com.domain.org",
+                "first_seen": "2017-09-05T00:00:00Z",
+                "ip": {
+                    "geo": {
+                        "city_name": "Boston",
+                        "country_iso_code": "US",
+                        "country_name": "United States",
+                        "location_latitude": "42.3584",
+                        "location_longitude": "-71.0598",
+                        "postal_code": "02108"
+                    },
+                    "ip": "65.254.244.180",
+                    "isp": {
+                        "autonomous_system_number": "AS29873",
+                        "autonomous_system_organization": "Newfold Digital, Inc.",
+                        "ip_address": "65.254.244.180",
+                        "isp": "Newfold Digital, Inc.",
+                        "organization": "Newfold Digital, Inc."
+                    }
+                },
+                "ipv4": "65.254.244.180",
+                "last_seen": "2017-09-05T00:00:00Z",
+                "sources": [
+                    "zetalytics"
                 ]
             }
         ]
@@ -163,9 +171,9 @@ Returns PassiveDNS records for the provided indicator value.
 >### HYAS PassiveDNS records for domain : domain.org
 >|Count|Domain|First seen|City Name|Country Code|Country Name|Latitude|Longitude|Postal Code|IP|ISP ASN|ISP ASN Organization|ISP IP Address|ISP|ISP Organization|IPV4|Last Seen|Sources|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 10571 | domain.org | 2019-03-14T23:36:40Z | Cutlerville | US | United States | 42.8409 | -85.6636 | 12345 |  | AS12345 | System LLX |  | System LLX | System LLX |  | 2021-07-16T15:29:13.033000Z | hyas,<br/>farsight |
->| 151 | domain.org | 2011-08-02T12:15:17Z | Chicago | US | United States | 41.8500 | -87.6500 | 60666 |  | AS12345 | System LLX |  | System LLX | System LLX |  | 2012-06-18T08:36:11Z | farsight |
->| 7439 | domain.org | 2014-04-08T03:30:41Z | Denver | US | United States | 39.7392 | -104.9847 | 80208 |  | AS46606 | Unified Layer |  | Unified Layer | Unified Layer |  | 2018-11-25T08:06:47Z | farsight |
+>| 273983 | domain.org | 2015-06-08T19:16:18Z | Boston | US | United States | 42.3584 | -71.0598 | 02108 | 65.254.244.180 | AS29873 | Newfold Digital, Inc. | 65.254.244.180 | Newfold Digital, Inc. | Newfold Digital, Inc. | 65.254.244.180 | 2021-11-08T22:39:59Z | farsight |
+>| 62645 | domain.org | 2010-07-13T17:29:58Z | Tukwila | US | United States | 47.4740 | -122.2610 | 98178 | 216.34.94.184 | AS3561 | CenturyLink Communications, LLC | 216.34.94.184 | Dotster, Inc. | Dotster, Inc. | 216.34.94.184 | 2015-06-08T17:50:06Z | farsight |
+>| 1 | biszhu.com.domain.org | 2017-09-05T00:00:00Z | Boston | US | United States | 42.3584 | -71.0598 | 02108 | 65.254.244.180 | AS29873 | Newfold Digital, Inc. | 65.254.244.180 | Newfold Digital, Inc. | Newfold Digital, Inc. | 65.254.244.180 | 2017-09-05T00:00:00Z | zetalytics |
 
 
 ### hyas-get-dynamic-dns-records-by-indicator
@@ -210,28 +218,28 @@ Returns DynamicDNS records for the provided indicator value.
                 "a_record": "4.4.4.4",
                 "account": "free",
                 "created": "2019-03-30T14:39:49Z",
-                "created_ip": "",
-                "domain": "domain.org",
-                "domain_creator_ip": "",
-                "email": ""
+                "created_ip": "78.191.27.210",
+                "domain": "seyir.duckdns.org",
+                "domain_creator_ip": "78.191.25.0",
+                "email": "halbayrak75@gmail.com"
             },
             {
                 "a_record": "4.4.4.4",
                 "account": "free",
                 "created": "2020-05-09T03:39:28Z",
-                "created_ip": "",
-                "domain": "domain.org",
-                "domain_creator_ip": "",
-                "email": ""
+                "created_ip": "42.3.24.108",
+                "domain": "tempoary.duckdns.org",
+                "domain_creator_ip": "42.3.24.36",
+                "email": "benson877204@gmail.com"
             },
             {
                 "a_record": "4.4.4.4",
                 "account": "free",
                 "created": "2020-05-09T03:39:24Z",
-                "created_ip": "",
+                "created_ip": "42.3.24.108",
                 "domain": "bensonwonghk.duckdns.org",
-                "domain_creator_ip": "",
-                "email": ""
+                "domain_creator_ip": "42.3.24.108",
+                "email": "benson877204@gmail.com"
             }
         ]
     }
@@ -243,9 +251,9 @@ Returns DynamicDNS records for the provided indicator value.
 >### HYAS DynamicDNS records for ip : 4.4.4.4
 >|A Record|Account|Created Date|Account Holder IP Address|Domain|Domain Creator IP Address|Email Address|
 >|---|---|---|---|---|---|---|
->| 4.4.4.4 | free | 2019-03-30T14:39:49Z |  | domain.org |  |  |
->| 4.4.4.4 | free | 2020-05-09T03:39:28Z |  | domain.org |  |  |
->| 4.4.4.4 | free | 2020-05-09T03:39:24Z |  | bensonwonghk.duckdns.org | |  |
+>| 4.4.4.4 | free | 2019-03-30T14:39:49Z | 78.191.27.210 | seyir.duckdns.org | 78.191.25.0 | halbayrak75@gmail.com |
+>| 4.4.4.4 | free | 2020-05-09T03:39:28Z | 42.3.24.108 | tempoary.duckdns.org | 42.3.24.36 | benson877204@gmail.com |
+>| 4.4.4.4 | free | 2020-05-09T03:39:24Z | 42.3.24.108 | bensonwonghk.duckdns.org | 42.3.24.108 | benson877204@gmail.com |
 
 
 ### hyas-get-whois-records-by-indicator
@@ -289,82 +297,13 @@ Returns WHOIS records for the provided indicator value.
 
 
 #### Command Example
-```!hyas-get-whois-records-by-indicator indicator_type="domain" indicator_value="domain.net" limit="3"```
+```!hyas-get-whois-records-by-indicator indicator_type="domain" indicator_value="dulieuonline.net" limit="3"```
 
 #### Context Example
 ```json
 {
     "HYAS": {
         "WHOIS": [
-            {
-                "address": [],
-                "city": [
-                    "ha noi"
-                ],
-                "country": [],
-                "domain": "domain.net",
-                "domain_2tld": "None",
-                "domain_created_datetime": "2015-05-22T00:00:00Z",
-                "domain_expires_datetime": "2016-05-22T00:00:00Z",
-                "domain_updated_datetime": "2017-06-14T19:06:36.577650Z",
-                "email": [
-                    "ngoc.mycomputer@gmail.com"
-                ],
-                "idn_name": "None",
-                "nameserver": [
-                    "ns2.inet.vn",
-                    "ns1.inet.vn"
-                ],
-                "phone": [
-                    {
-                        "phone": "+123456789123",
-                        "phone_info": {
-                            "carrier": "Viettel",
-                            "country": "Vietnam",
-                            "geo": "Vietnam"
-                        }
-                    }
-                ],
-                "privacy_punch": false,
-                "registrar": "onlinenic, inc."
-            },
-            {
-                "address": [],
-                "city": [
-                    "hcm"
-                ],
-                "country": [
-                    "VN"
-                ],
-                "domain": "domain.net",
-                "domain_2tld": "None",
-                "domain_created_datetime": "2019-10-29T09:48:04Z",
-                "domain_expires_datetime": "2020-10-29T09:48:04Z",
-                "domain_updated_datetime": "2019-10-31T01:09:53.933724Z",
-                "email": [
-                    "",
-                    "abuse-contact@publicdomainregistry.com"
-                ],
-                "idn_name": "None",
-                "nameserver": [
-                    "viendong.mars.orderbox-dns.com",
-                    "viendong.venus.orderbox-dns.com",
-                    "viendong.earth.orderbox-dns.com",
-                    "viendong.mercury.orderbox-dns.com"
-                ],
-                "phone": [
-                    {
-                        "phone": "+84909095309",
-                        "phone_info": {
-                            "carrier": "MobiFone",
-                            "country": "Vietnam",
-                            "geo": "Vietnam"
-                        }
-                    }
-                ],
-                "privacy_punch": false,
-                "registrar": "pdr ltd. d/b/a publicdomainregistry.comvien dong co., ltd."
-            },
             {
                 "address": [
                     "32 duong 885 kp 5 tt ba tri",
@@ -376,13 +315,13 @@ Returns WHOIS records for the provided indicator value.
                 "country": [
                     "VN"
                 ],
-                "domain": "domain.net",
-                "domain_2tld": "domain.net",
+                "domain": "dulieuonline.net",
+                "domain_2tld": "dulieuonline.net",
                 "domain_created_datetime": "2019-10-29T09:48:04Z",
                 "domain_expires_datetime": "2020-10-29T09:48:04Z",
                 "domain_updated_datetime": "None",
                 "email": [
-                    "",
+                    "viendongonline@gmail.com",
                     "dns@cloudflare.com"
                 ],
                 "idn_name": "None",
@@ -399,6 +338,74 @@ Returns WHOIS records for the provided indicator value.
                 ],
                 "privacy_punch": true,
                 "registrar": "pdr ltd. d/b/a publicdomainregistry.com"
+            },
+            {
+                "address": [],
+                "city": [
+                    "hcm"
+                ],
+                "country": [
+                    "VN"
+                ],
+                "domain": "dulieuonline.net",
+                "domain_2tld": "None",
+                "domain_created_datetime": "2019-10-29T09:48:04Z",
+                "domain_expires_datetime": "2020-10-29T09:48:04Z",
+                "domain_updated_datetime": "2019-10-30T06:23:09.543083Z",
+                "email": [
+                    "viendongonline@gmail.com",
+                    "hostmaster@dulieuonline.net"
+                ],
+                "idn_name": "None",
+                "nameserver": [],
+                "phone": [
+                    {
+                        "phone": "+84909095309",
+                        "phone_info": {
+                            "carrier": "MobiFone",
+                            "country": "Vietnam",
+                            "geo": "Vietnam"
+                        }
+                    }
+                ],
+                "privacy_punch": true,
+                "registrar": "pdrltd.d/b/apublicdomainregistry.com"
+            },
+            {
+                "address": [],
+                "city": [
+                    "hcm"
+                ],
+                "country": [
+                    "VN"
+                ],
+                "domain": "dulieuonline.net",
+                "domain_2tld": "None",
+                "domain_created_datetime": "2019-10-29T09:48:04Z",
+                "domain_expires_datetime": "2020-10-29T09:48:04Z",
+                "domain_updated_datetime": "2019-10-31T09:04:17.873274Z",
+                "email": [
+                    "viendongonline@gmail.com"
+                ],
+                "idn_name": "None",
+                "nameserver": [
+                    "viendong.mars.orderbox-dns.com",
+                    "viendong.venus.orderbox-dns.com",
+                    "viendong.mercury.orderbox-dns.com",
+                    "viendong.earth.orderbox-dns.com"
+                ],
+                "phone": [
+                    {
+                        "phone": "+84909095309",
+                        "phone_info": {
+                            "carrier": "MobiFone",
+                            "country": "Vietnam",
+                            "geo": "Vietnam"
+                        }
+                    }
+                ],
+                "privacy_punch": false,
+                "registrar": "pdr ltd. d/b/a publicdomainregistry.com"
             }
         ]
     }
@@ -407,12 +414,12 @@ Returns WHOIS records for the provided indicator value.
 
 #### Human Readable Output
 
->### HYAS WHOIS records for domain : domain.net
+>### HYAS WHOIS records for domain : dulieuonline.net
 >|Address|City|Country|Domain|Domain_2tld|Domain Created Time|Domain Expires Time|Domain Updated Time|Email Address|IDN Name|Nameserver|Phone Info|Privacy_punch|Registrar|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->|  | ha noi |  | domain.net | None | 2015-05-22T00:00:00Z | 2016-05-22T00:00:00Z | 2017-06-14T19:06:36.577650Z | ngoc.mycomputer@gmail.com | None | ns2.inet.vn,<br/>ns1.inet.vn | {'phone': '+123456789123', 'phone_info': {'carrier': 'Viettel', 'country': 'Vietnam', 'geo': 'Vietnam'}} | false | onlinenic, inc. |
->|  | hcm | VN | domain.net | None | 2019-10-29T09:48:04Z | 2020-10-29T09:48:04Z | 2019-10-31T01:09:53.933724Z | "",<br/>abuse-contact@publicdomainregistry.com | None | viendong.mars.orderbox-dns.com,<br/>viendong.venus.orderbox-dns.com,<br/>viendong.earth.orderbox-dns.com,<br/>viendong.mercury.orderbox-dns.com | {'phone': '+84909095309', 'phone_info': {'carrier': 'MobiFone', 'country': 'Vietnam', 'geo': 'Vietnam'}} | false | pdr ltd. d/b/a publicdomainregistry.comvien dong co., ltd. |
->| 32 duong 885 kp 5 tt ba tri,<br/>vn | hcm | VN | domain.net | domain.net | 2019-10-29T09:48:04Z | 2020-10-29T09:48:04Z | None | "",<br/>dns@cloudflare.com | None |  | {'phone': '+84909095309', 'phone_info': {'carrier': 'MobiFone', 'country': 'Vietnam', 'geo': 'Vietnam'}} | true | pdr ltd. d/b/a publicdomainregistry.com |
+>| 32 duong 885 kp 5 tt ba tri,<br/>vn | hcm | VN | dulieuonline.net | dulieuonline.net | 2019-10-29T09:48:04Z | 2020-10-29T09:48:04Z | None | viendongonline@gmail.com,<br/>dns@cloudflare.com | None |  | {'phone': '+84909095309', 'phone_info': {'carrier': 'MobiFone', 'country': 'Vietnam', 'geo': 'Vietnam'}} | true | pdr ltd. d/b/a publicdomainregistry.com |
+>|  | hcm | VN | dulieuonline.net | None | 2019-10-29T09:48:04Z | 2020-10-29T09:48:04Z | 2019-10-30T06:23:09.543083Z | viendongonline@gmail.com,<br/>hostmaster@dulieuonline.net | None |  | {'phone': '+84909095309', 'phone_info': {'carrier': 'MobiFone', 'country': 'Vietnam', 'geo': 'Vietnam'}} | true | pdrltd.d/b/apublicdomainregistry.com |
+>|  | hcm | VN | dulieuonline.net | None | 2019-10-29T09:48:04Z | 2020-10-29T09:48:04Z | 2019-10-31T09:04:17.873274Z | viendongonline@gmail.com | None | viendong.mars.orderbox-dns.com,<br/>viendong.venus.orderbox-dns.com,<br/>viendong.mercury.orderbox-dns.com,<br/>viendong.earth.orderbox-dns.com | {'phone': '+84909095309', 'phone_info': {'carrier': 'MobiFone', 'country': 'Vietnam', 'geo': 'Vietnam'}} | false | pdr ltd. d/b/a publicdomainregistry.com |
 
 
 ### hyas-get-whois-current-records-by-domain
@@ -461,7 +468,7 @@ Returns WHOIS Current records for the provided indicator value.
     "HYAS": {
         "WHOISCurrent": {
             "abuse_emails": [
-                ""
+                "abuse@godaddy.com"
             ],
             "address": [],
             "city": [],
@@ -472,12 +479,12 @@ Returns WHOIS Current records for the provided indicator value.
             "domain_2tld": "hyas.com",
             "domain_created_datetime": "2001-05-01T23:42:14",
             "domain_expires_datetime": "2026-05-01T23:42:14",
-            "domain_updated_datetime": "2020-06-30T15:43:39",
+            "domain_updated_datetime": "2020-06-30T22:43:34",
             "email": [],
-            "idn_name": "None",
+            "idn_name": "146",
             "nameserver": [
-                "n1.domaincontrol.com",
-                "n2.domaincontrol.com"
+                "ns09.domaincontrol.com",
+                "ns10.domaincontrol.com"
             ],
             "organization": [
                 "HYAS Infosec Inc."
@@ -495,9 +502,9 @@ Returns WHOIS Current records for the provided indicator value.
 #### Human Readable Output
 
 >### HYAS WHOISCurrent records for domain : www.hyas.com
->|Abuse Emails|Address|City|Country|Domain|Domain_2tld|Domain Created Time|Domain Expires Time|Domain Updated Time|Email Address|IDN Name|Nameserver|Organization|Phone Info|Registrar|State|
->|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->|  |  |  | Canada | hyas.com | hyas.com | 2001-05-01T23:42:14 | 2026-05-01T23:42:14 | 2020-06-30T15:43:39 |  | None | n1.domaincontrol.com,<br/>n2.domaincontrol.com | HYAS Infosec Inc. |  | GoDaddy.com, LLC | British Columbia |
+>|Abuse Emails|Country|Domain|Domain_2tld|Domain Created Time|Domain Expires Time|Domain Updated Time|IDN Name|Nameserver|Organization|Registrar|State|
+>|---|---|---|---|---|---|---|---|---|---|---|---|
+>| abuse@godaddy.com | Canada | hyas.com | hyas.com | 2001-05-01T23:42:14 | 2026-05-01T23:42:14 | 2020-06-30T22:43:34 | 146 | ns09.domaincontrol.com,<br/>ns10.domaincontrol.com | HYAS Infosec Inc. | GoDaddy.com, LLC | British Columbia |
 
 
 ### hyas-get-malware-samples-records-by-indicator
@@ -539,31 +546,31 @@ Returns Malware Sample records for the provided indicator value.
     "HYAS": {
         "MalwareSamples": [
             {
-                "datetime": "2021-06-03",
+                "datetime": "2021-11-06",
                 "domain": "butterfly.bigmoney.biz",
-                "ipv4": "",
-                "ipv6": null,
-                "md5": "f8e537c178999f4ab1609576c6f5751e",
-                "sha1": null,
-                "sha256": null
+                "ipv4": "106.187.43.98",
+                "ipv6": "None",
+                "md5": "d3a107934774f288481a66d6a4c6b3f3",
+                "sha1": "None",
+                "sha256": "None"
             },
             {
-                "datetime": "2021-05-18",
+                "datetime": "2021-11-06",
                 "domain": "butterfly.bigmoney.biz",
-                "ipv4": "",
-                "ipv6": null,
-                "md5": "5fb3ee62c7bd0d801d76e272f51fe137",
-                "sha1": null,
-                "sha256": null
+                "ipv4": "106.187.43.98",
+                "ipv6": "None",
+                "md5": "af73babf3276037b2d662fda0e3e40b3",
+                "sha1": "None",
+                "sha256": "None"
             },
             {
-                "datetime": "2021-05-18",
+                "datetime": "2021-11-02",
                 "domain": "butterfly.bigmoney.biz",
-                "ipv4": "",
-                "ipv6": null,
-                "md5": "a20473e3a24c52ac3d89d7489b500189",
-                "sha1": null,
-                "sha256": null
+                "ipv4": "106.187.43.98",
+                "ipv6": "None",
+                "md5": "70d72fcb14219b3c4649b9b7cc14afa0",
+                "sha1": "None",
+                "sha256": "None"
             }
         ]
     }
@@ -575,9 +582,9 @@ Returns Malware Sample records for the provided indicator value.
 >### HYAS MalwareSamples records for domain : butterfly.bigmoney.biz
 >|Datetime|Domain|IPV4 Address|IPV6 Address|MD5 Value|SHA1 Value|SHA256 Value|
 >|---|---|---|---|---|---|---|
->| 2021-06-03 | butterfly.bigmoney.biz |  | None | f8e537c178999f4ab1609576c6f5751e | None | None |
->| 2021-05-18 | butterfly.bigmoney.biz |  | None | 5fb3ee62c7bd0d801d76e272f51fe137 | None | None |
->| 2021-05-18 | butterfly.bigmoney.biz |  | None | a20473e3a24c52ac3d89d7489b500189 | None | None |
+>| 2021-11-06 | butterfly.bigmoney.biz | 106.187.43.98 | None | d3a107934774f288481a66d6a4c6b3f3 | None | None |
+>| 2021-11-06 | butterfly.bigmoney.biz | 106.187.43.98 | None | af73babf3276037b2d662fda0e3e40b3 | None | None |
+>| 2021-11-02 | butterfly.bigmoney.biz | 106.187.43.98 | None | 70d72fcb14219b3c4649b9b7cc14afa0 | None | None |
 
 
 ### hyas-get-associated-ips-by-hash
@@ -600,11 +607,11 @@ Returns associated IP's for the provided hash value.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | HYAS.HASH-IP.md5 | String | The provided MD5 value | 
-| HYAS.HASH-IP.ips | String | Associated IPS  for the provided MD5 value | 
+| HYAS.HASH-IP.ips | Unknown | Associated IPS for the provided MD5 value | 
 
 
 #### Command Example
-```!hyas-get-associated-ips-by-hash md5="1d0a97c41afe5540edd0a8c1fb9a0f2d"```
+```!hyas-get-associated-ips-by-hash md5="1d0a97c41afe5540edd0a8c1fb9a0f1c"```
 
 #### Context Example
 ```json
@@ -614,7 +621,7 @@ Returns associated IP's for the provided hash value.
             "ips": [
                 "106.187.43.98"
             ],
-            "md5": "1d0a97c41afe5540edd0a8c1fb9a0f2d"
+            "md5": "1d0a97c41afe5540edd0a8c1fb9a0f1c"
         }
     }
 }
@@ -622,7 +629,7 @@ Returns associated IP's for the provided hash value.
 
 #### Human Readable Output
 
->### HYAS HASH-IP records for md5 : 1d0a97c41afe5540edd0a8c1fb9a0f2d
+>### HYAS HASH-IP records for md5 : 1d0a97c41afe5540edd0a8c1fb9a0f1c
 >|Associated IPs|
 >|---|
 >| 106.187.43.98 |
@@ -647,12 +654,12 @@ Returns associated Domain's for the provided hash value.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| HYAS.HASH-DOMAIN.domains | String | Associated Domains for the provided MD5 value | 
+| HYAS.HASH-DOMAIN.domains | Unknown | Associated Domains for the provided MD5 value | 
 | HYAS.HASH-DOMAIN.md5 | String | The provided MD5 value | 
 
 
 #### Command Example
-```!hyas-get-associated-domains-by-hash md5="1d0a97c41afe5540edd0a8c1fb9a0f2d"```
+```!hyas-get-associated-domains-by-hash md5="1d0a97c41afe5540edd0a8c1fb9a0f1c"```
 
 #### Context Example
 ```json
@@ -660,11 +667,11 @@ Returns associated Domain's for the provided hash value.
     "HYAS": {
         "HASH-DOMAIN": {
             "domains": [
-                "domain.es",
+                "butterfly.sinip.es",
                 "qwertasdfg.sinip.es",
                 "butterfly.bigmoney.biz"
             ],
-            "md5": "1d0a97c41afe5540edd0a8c1fb9a0f2d"
+            "md5": "1d0a97c41afe5540edd0a8c1fb9a0f1c"
         }
     }
 }
@@ -672,10 +679,106 @@ Returns associated Domain's for the provided hash value.
 
 #### Human Readable Output
 
->### HYAS HASH-DOMAIN records for md5 : 1d0a97c41afe5540edd0a8c1fb9a0f2d
+>### HYAS HASH-DOMAIN records for md5 : 1d0a97c41afe5540edd0a8c1fb9a0f1c
 >|Associated Domains|
 >|---|
->| domain.es |
+>| butterfly.sinip.es |
 >| qwertasdfg.sinip.es |
 >| butterfly.bigmoney.biz |
+
+
+### hyas-get-c2attribution-records-by-indicator
+***
+Return C2 Attribution records for the provided indicator value.
+
+
+#### Base Command
+
+`hyas-get-c2attribution-records-by-indicator`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| indicator_type | Indicator Type. Possible values are: ip, domain, sha256, email. | Required | 
+| indicator_value | Indicator Value. | Required | 
+| limit | The maximum number of results to return. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| HYAS.C2_Attribution.actor_ipv4 | String | The actor ipv4 | 
+| HYAS.C2_Attribution.c2_domain | String | The c2 domain | 
+| HYAS.C2_Attribution.c2_ip | String | The c2 ip | 
+| HYAS.C2_Attribution.c2_url | String | The C2 panel url | 
+| HYAS.C2_Attribution.datetime | String | C2 Attribution datetime | 
+| HYAS.C2_Attribution.email | String | The actor email | 
+| HYAS.C2_Attribution.email_domain | String | The email domain | 
+| HYAS.C2_Attribution.referrer_domain | String | The referrer domain | 
+| HYAS.C2_Attribution.referrer_ipv4 | String | The referrer ipv4 | 
+| HYAS.C2_Attribution.referrer_url | String | The referrer url | 
+| HYAS.C2_Attribution.sha256 | String | The sha256 malware hash | 
+
+
+#### Command Example
+```!hyas-get-c2attribution-records-by-indicator indicator_type=domain indicator_value=himionsa.com limit=3```
+
+#### Context Example
+```json
+{
+    "HYAS": {
+        "C2_Attribution": [
+            {
+                "actor_ipv4": "197.210.53.224",
+                "c2_domain": "himionsa.com",
+                "c2_ip": "89.208.229.55",
+                "c2_url": "http://himionsa.com/rich/panel/pvqdq929bsx_a_d_m1n_a.php?mazm=report",
+                "datetime": "2020-02-21T10:16:06Z",
+                "email": "None",
+                "email_domain": "None",
+                "referrer_domain": "None",
+                "referrer_ipv4": "None",
+                "referrer_url": "None",
+                "sha256": "None"
+            },
+            {
+                "actor_ipv4": "197.210.84.26",
+                "c2_domain": "himionsa.com",
+                "c2_ip": "89.208.229.55",
+                "c2_url": "http://himionsa.com/rich/panel/pvqdq929bsx_a_d_m1n_a.php?mazm=report",
+                "datetime": "2020-02-20T13:08:36Z",
+                "email": "None",
+                "email_domain": "None",
+                "referrer_domain": "None",
+                "referrer_ipv4": "None",
+                "referrer_url": "None",
+                "sha256": "None"
+            },
+            {
+                "actor_ipv4": "197.210.53.79",
+                "c2_domain": "himionsa.com",
+                "c2_ip": "89.208.229.55",
+                "c2_url": "http://himionsa.com/rich/panel/pvqdq929bsx_a_d_m1n_a.php?mazm=report",
+                "datetime": "2020-02-21T09:03:46Z",
+                "email": "None",
+                "email_domain": "None",
+                "referrer_domain": "None",
+                "referrer_ipv4": "None",
+                "referrer_url": "None",
+                "sha256": "None"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### HYAS C2_Attribution records for domain : himionsa.com
+>|Actor IPv4|C2 Domain|C2 IP|C2 URL|Datetime|Email|Email Domain|Referrer Domain|Referrer IPv4|Referrer URL|SHA256|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| 197.210.53.224 | himionsa.com | 89.208.229.55 | http:<span>//</span>himionsa.com/rich/panel/pvqdq929bsx_a_d_m1n_a.php?mazm=report | 2020-02-21T10:16:06Z | None | None | None | None | None | None |
+>| 197.210.84.26 | himionsa.com | 89.208.229.55 | http:<span>//</span>himionsa.com/rich/panel/pvqdq929bsx_a_d_m1n_a.php?mazm=report | 2020-02-20T13:08:36Z | None | None | None | None | None | None |
+>| 197.210.53.79 | himionsa.com | 89.208.229.55 | http:<span>//</span>himionsa.com/rich/panel/pvqdq929bsx_a_d_m1n_a.php?mazm=report | 2020-02-21T09:03:46Z | None | None | None | None | None | None |
 

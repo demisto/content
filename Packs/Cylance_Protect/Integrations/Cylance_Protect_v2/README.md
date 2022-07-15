@@ -1,7 +1,7 @@
 <!-- HTML_DOC -->
 <h2>Overview</h2>
 <p>Use the Cylance Protect v2 integration to manage endpoints, streamline remediation, and response from Cortex XSOAR.</p>
-<p>This integration was integrated and tested with version 2.0.5 rev6 of Cylance Protect.</p>
+<p>This integration was integrated and tested with version 2.0.5 rev6 of Cylance Protect and Optics.</p>
 <h2>Prerequisites</h2>
 <p>Before you integrate Cylance Protect on Cortex XSOAR, you need to obtain a Cylance token.</p>
 <ol>
@@ -90,6 +90,9 @@
 <li><a href="#h_5039804193441541937926117">Delete a hash from a list: cylance-protect-delete-hash-from-lists</a></li>
 <li><a href="#h_1587684564731541937931567">Get details of a policy: cylance-protect-get-policy-details</a></li>
 <li><a href="#h_2255369916021541937938187">Delete devices: cylance-protect-delete-devices</a></li>
+<li><a href="#h_2255369916021541937938188">Create a new Instaquery: cylance-optics-create-instaquery</a></li>
+<li><a href="#h_2255369916021541937938189">Get Instaquery result: cylance-optics-get-instaquery-result</a></li>
+<li><a href="#h_2255369916021541937938190">List current Instaquery: cylance-optics-list-instaquery</a></li>   
 </ol>
 <h3 id="h_2673377171530178254852">1. List console device resources for a tenant</h3>
 <hr>
@@ -1803,3 +1806,132 @@ Allows a caller to request a specific device resource belonging to a Tenant by h
 >|AgentVersion|BackgroundDetection|DateFirstRegistered|DateOffline|DlcmStatus|HostName|Id|IpAddresses|IsSafe|MacAddresses|Name|OsKernelVersion|OsVersion|Policy|Products|State|UpdateAvailable|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1.2.1418 | false | 2017-12-29T04:07:56 | 2020-02-07T02:25:34.151 | Unknown | WIN-5HMOGIEG6M5 | b4eceeb0-8699-4d42-b853-155513042d6e | 127.0.0.1 | true | 02-76-91-6B-0A-BB | WIN-5HMOGIEG6M5 | 6.3.0 | Microsoft Windows Server 2012 R2 Standard | Default | {u'status': u'Offline', u'version': u'1.2.1418', u'name': u'protect'} | Offline | false |
+
+<h3 id="h_2255369916021541937938188">21. Create a new Instaquery</h3>
+### cylance-optics-create-instaquery
+***
+Create a cylance InstaQuery
+
+
+#### Base Command
+
+`cylance-optics-create-instaquery`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | InstaQuery name. | Required | 
+| description | InstaQuery description. | Required | 
+| artifact | InstaQuery artifact, select from the list. Possible values are: File, Process, NetworkConnection, RegistryKey. | Required | 
+| match_value_type | InstaQuery value type to match, select from the list. Possible values are: File.Path, File.Md5, File.Sha2, File.Owner, File.CreationDateTime, Process.Name, Process.Commandline, Process.PrimaryImagePath, Process.PrimaryImageMd5, Process.StartDateTime, NetworkConnection.DestAddr, NetworkConnection.DestPort, RegistryKey.ProcessName, RegistryKey.ProcessPrimaryImagePath, RegistryKey.ValueName, RegistryKey.FilePath, RegistryKey.FileMd5, RegistryKey.IsPersistencePoint. | Required | 
+| match_values | Value to search in InstaQuery. | Required | 
+| zone | Zone of the object. | Required | 
+| match_type | Match type fuzzy or exact. Possible values are: Fuzzy, Exact. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| InstaQuery.New.id | string | The unique identifier of the created InstaQuery. | 
+| InstaQuery.New.created_at | date | The Date and Time that the InstaQuery was created. | 
+| InstaQuery.New.progress | string | The progress of the InstaQuery. | 
+
+
+#### Command Example
+``` 
+!cylance-optics-create-instaquery name="Test Insta continue" description="Test only" artifact="File" match_value_type="File.Path" match_values="exe" zone="6608ca0e-88c6-4647-b276-271cc5ea4295" match_type="Fuzzy"
+```
+
+#### Human Readable Output
+| Result            |                                  |
+|-------------------|----------------------------------|
+| case_sensitive    | false                            |
+| artifact          | File                             |
+| created_at        | 2022-05-05T05:52:36Z             |
+| description       | Test only                        |
+| id                | 9E2CCDA5A93918C588E6865ED6FEEA70 |
+| match_type        | Fuzzy                            |
+| match_value_type  | Path                             |
+| match_values      | exe                              |
+| name              | Test Insta continue              |
+| progress          |                                  |
+| results_available | false                            |
+| zones             | 6608CA0E88C64647B276271CC5EA4295 |
+
+
+<h3 id="h_2255369916021541937938189">22. Get Instaquery result</h3>
+### cylance-optics-get-instaquery-result
+***
+Get a cylance InstaQuery search result
+
+
+#### Base Command
+
+`cylance-optics-get-instaquery-result`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query_id | InstaQuery ID. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| InstaQuery.Results.result | string | The InstaQuery results. | 
+
+
+#### Command Example
+``` 
+!cylance-optics-get-instaquery-result query_id=9E2CCDA5A93918C588E6865ED6FEEA70
+```
+
+#### Human Readable Output
+
+|        | Result                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+|--------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| id     | 9E2CCDA5A93918C588E6865ED6FEEA70                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| result | false                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| status | {u'@timestamp': 1651729959.177779, u'HostName': u'windows-server-', u'DeviceId': u' 65DB26864E364409B50DDC23291A3511 ', u'@version': u'1', u'CorrelationId': u' 9E2CCDA5A93918C588E6865ED6FEEA70 ', u'Result': u'{"FirstObservedTime": "1970-01-01T00:00:00.000Z", "LastObservedTime": "1970-01-01T00:00:00.000Z", "Uid": "dHrtLYQzbt9oJPxO8HaeyA==", "Type": "File", "Properties": {"Path": "c:\\program files\\cylance\\optics\\ cyoptics.exe ", "CreationDateTime": "2021-03-29T22:34:14.000Z", "Md5": " A081D3268531485BF95DC1A15A5BC6B0 ", "Sha256": " 256809AABD3AB57949003B9AFCB556A9973222CDE81929982DAE7D306648E462 ", "Owner": "NT AUTHORITY\\SYSTEM", "SuspectedFileType": "Executable/PE", "FileSignature": "", "Size": "594104", "OwnerUid": "P3p6fdq3FlMsld6Rz95EOA=="}}'} |
+
+
+<h3 id="h_2255369916021541937938190">23. List current Instaqueries</h3>
+### cylance-optics-list-instaquery
+***
+Get a list of InstaQuery
+
+
+#### Base Command
+
+`cylance-optics-list-instaquery`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| page | number of page to collect. | Optional | 
+| page_size | number of items per page to collect. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| InstaQuery.List | string | The list of InstaQuery | 
+
+
+#### Command Example
+``` 
+!cylance-optics-list-instaquery page_size="10"
+```
+
+#### Human Readable Output
+|                       | Result                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+|-----------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| page_items            | {u'match_type': u'Fuzzy', u'name': u'Test Insta continue', u'created_at': u'2022-05-05T05:52:36Z', u'artifact': u'File', u'case_sensitive': False, u'zones': [u'6608CA0E88C64647B276271CC5EA4295'], u'progress': {u'queried': 0, u'responded': 0}, u'match_value_type': u'Path', u'results_available': True, u'match_values': [u'exe'], u'id': u'9E2CCDA5A93918C588E6865ED6FEEA70', u'description': u'Test only'} |
+| page_number           | 1                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| page_size             | 10                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| total_number_of_items | 8                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| total_pages           | 1                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+

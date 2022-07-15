@@ -1,0 +1,38 @@
+{
+    "data": {
+        "id": 1,
+        "type": "fileDownload",
+        "status": "COMPLETED",
+        "metadata": {
+            "connection": "remote:hast:123:",
+            "paths": [
+                "C:\\path.exe"
+            ],
+            "compress": "true"
+        },
+        "results": {
+            "completed": [
+                "C:\\path.exe"
+            ],
+            "failed": [],
+            "fileResults": [
+                {
+                    "response": {
+                        "source": "C:\\path.exe",
+                        "target": "C:\\path",
+                        "totalBytes": 1000,
+                        "transferHash": "1234567890",
+                        "totalTimeMs": 205,
+                        "avgBytesPerSecond": 0
+                    },
+                    "finalPath": "C:\\path"
+                }
+            ]
+        },
+        "error": null,
+        "startTime": "2021-09-05T13:46:16.606Z",
+        "endTime": "2021-09-05T13:46:16.900Z",
+        "createdAt": "2021-09-05T13:46:16.603Z",
+        "updatedAt": "2021-09-05T13:46:16.603Z"
+    }
+}

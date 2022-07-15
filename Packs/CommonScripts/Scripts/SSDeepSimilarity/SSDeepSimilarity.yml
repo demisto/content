@@ -1,0 +1,40 @@
+commonfields:
+  id: SSDeepSimilarity
+  version: -1
+name: SSDeepSimilarity
+script: ''
+type: python
+tags: []
+comment: This script finds similar files that can be related to each other by fuzzy
+  hash (SSDeep).
+enabled: true
+args:
+- name: ssdeep_hash
+  required: true
+  description: The SSDeep hash to check for similarity against.
+- name: ssdeep_hashes_to_compare
+  required: true
+  description: A list of SSDeep hashes to check for similarity to the ssdeep_hash
+    input.
+  isArray: true
+- name: output_key
+  description: |-
+    The context key to which the list of SSDeep hashes will be outputted.
+    In case used, the default outputs will not contain the results.
+    In order to get results, replace the SSDeepSimilarity in default outputs with the output_key provided.
+  defaultValue: SSDeepSimilarity
+outputs:
+  - contextPath: SSDeepSimilarity.compared_hashes.similarityValue
+    description: The difference calculation score between the ssdeep_hash and the compared hash.
+    type: number
+  - contextPath: SSDeepSimilarity.compared_hashes.hash
+    description: The hash compared to the ssdeep_hash.
+    type: string
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/ssdeep:1.0.0.23743
+runas: DBotWeakRole
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)

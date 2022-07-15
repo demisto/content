@@ -1,0 +1,18 @@
+{
+  "empty_response": {
+    "data": {}
+  },
+  "raw_response": {
+    "data": {
+      "getDownloadUrl": {
+        "url": "dummy_link"
+      }
+    }
+  },
+  "outputs": {
+    "downloadId": 1,
+    "getDownloadUrl": {
+      "url": "dummy_link"
+    }
+  }
+}

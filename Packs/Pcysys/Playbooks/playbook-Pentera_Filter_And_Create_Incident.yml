@@ -84,11 +84,11 @@ tasks:
     nexttasks:
       '#default#':
       - '3'
-      yes:
+      'yes':
       - '1'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: greaterThan
           left:
@@ -178,11 +178,11 @@ tasks:
     nexttasks:
       '#default#':
       - '8'
-      yes:
+      'yes':
       - '20'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: isEqualString
           left:
@@ -233,11 +233,11 @@ tasks:
     nexttasks:
       '#default#':
       - '8'
-      yes:
+      'yes':
       - '10'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: isEqualString
           left:
@@ -312,11 +312,11 @@ tasks:
     nexttasks:
       '#default#':
       - '8'
-      yes:
+      'yes':
       - '12'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: isEqualString
           left:
@@ -391,11 +391,11 @@ tasks:
     nexttasks:
       '#default#':
       - '8'
-      yes:
+      'yes':
       - '14'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: isEqualString
           left:
@@ -943,11 +943,11 @@ tasks:
     nexttasks:
       '#default#':
       - '8'
-      yes:
+      'yes':
       - '26'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: isNotEmpty
           left:
@@ -1018,11 +1018,11 @@ tasks:
     nexttasks:
       '#default#':
       - '8'
-      yes:
+      'yes':
       - '24'
     separatecontext: false
     conditions:
-    - label: yes
+    - label: 'yes'
       condition:
       - - operator: isEqualString
           left:

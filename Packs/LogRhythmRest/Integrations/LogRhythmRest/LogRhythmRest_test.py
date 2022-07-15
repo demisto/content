@@ -26,3 +26,11 @@ def test_get_time_frame():
     start, end = get_time_frame('Custom', '2019-04-01', '2019-04-20')
     assert end.strftime(date_format) == '2019-04-20'
     assert start.strftime(date_format) == '2019-04-01'
+
+
+def test_http_request(requests_mock, mocker):
+    import LogRhythmRest
+    LogRhythmRest.BASE_URL = "https://www.test.com"
+    requests_mock.get('https://www.test.com/lr-drilldown-cache-api/drilldown/', status_code=204)
+    result = LogRhythmRest.http_request('GET', "lr-drilldown-cache-api/drilldown/", headers={})
+    assert result == {}

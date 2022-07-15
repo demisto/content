@@ -1,0 +1,4 @@
+!guardicore-get-incidents from_time="2020-12-12T15:31:17Z" to_time="2022-07-07T15:31:17Z" limit=1
+!guardicore-search-endpoint ip_address=172.16.1.111
+!guardicore-get-incident id="c2acca07-e9bf-4d63-9a26-ff6c749d24d2"
+!endpoint ip=1.1.1.1

@@ -1,0 +1,22 @@
+{
+    "name": "Lansweeper",
+    "description": "Lansweeper content pack allows users to search specific assets, providing detailed information about each asset such as it’s type, operating system, serial number and much more contextual information.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Lansweeper",
+    "url": "https://www.lansweeper.com/contact-support/",
+    "email": "",
+    "categories": [
+        "IT Services"
+    ],
+    "tags": [
+        "Compliance"
+    ],
+    "useCases": [],
+    "keywords": ["ITAM","Asset"],
+    "githubUser": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

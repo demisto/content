@@ -1,4 +1,4 @@
-Whitelists indicators from PhishLabs that were classified as false positives, according to a defined period of time.
+Adds indicators from PhishLabs that were classified as false positives to allow list, according to a defined period of time.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -20,7 +20,7 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Since | The whitelist indicators within this duration (from now). | 1h | Optional |
+| Since | The allow list indicators within this duration (from now). | 1h | Optional |
 
 ## Playbook Outputs
 ---

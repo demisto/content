@@ -1,0 +1,11 @@
+{
+    "taskInfo": {
+        "id": 1,
+        "status": "STARTED",
+        "metadata": {
+            "connection": "remote:host:123:"
+        },
+        "startTime": "2021-09-13T11:32:41.050Z"
+    },
+    "status": "ACCEPTED"
+}

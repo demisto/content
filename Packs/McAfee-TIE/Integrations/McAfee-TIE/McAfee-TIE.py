@@ -176,53 +176,75 @@ def test():
         client.disconnect()
 
 
-def file(hash):
-    config = get_client_config()
-    with DxlClient(config) as client:
-        client.connect()
-        # Create the McAfee Threat Intelligence Exchange (TIE) client
-        tie_client = TieClient(client)
-
-        hash_type = get_hash_type(hash)
-        hash_type_key = HASH_TYPE_KEYS.get(hash_type)
-        if not hash_type_key:
-            return create_error_entry('file argument must be sha1(40 charecters) or sha256(64 charecters) or md5(32 charecters)')
-
-        hash_param = {}
-        hash_param[hash_type_key] = hash
-
+def safe_get_file_reputation(tie_client, hash_param):
+    try:
         res = tie_client.get_file_reputation(hash_param)
-        reputations = res.values()
+    except Exception as e:
+        demisto.info("McAfee failed to get file reputation with error: " + str(e))
+        return None
+    return res
+
+
+def file(hash_inputs):
+    hash_list = []
+
+    for hash_value in hash_inputs:
+        config = get_client_config()
+        with DxlClient(config) as client:
+            client.connect()
+            # Create the McAfee Threat Intelligence Exchange (TIE) client
+            tie_client = TieClient(client)
+
+            hash_type = get_hash_type(hash_value)
+            hash_type_key = HASH_TYPE_KEYS.get(hash_type)
+            if not hash_type_key:
+                return create_error_entry('file argument must be sha1(40 charecters) or sha256(64 charecters)'
+                                          ' or md5(32 charecters)')
+
+            hash_param = {}
+            reputations = {}
+            context_file = {}
+            hash_param[hash_type_key] = hash_value
+            hash_type_uppercase = hash_type.upper()
+            res = safe_get_file_reputation(tie_client, hash_param)
+            if not res:
+                dbot_score = [{'Indicator': hash_value, 'Type': 'hash', 'Vendor': VENDOR_NAME, 'Score': 0},
+                              {'Indicator': hash_value, 'Type': 'file', 'Vendor': VENDOR_NAME, 'Score': 0}]
+                context_file[hash_type_uppercase] = hash_value
+                context_file['TrustLevel'] = 0
+                context_file['Vendor'] = VENDOR_NAME
+            else:
+                reputations = res.values()
+
+                # create context
+                tl_score = get_thrust_level_and_score(reputations)
+
+                context_file[hash_type_uppercase] = hash_value
+                context_file['TrustLevel'] = tl_score['trust_level']
+                context_file['Vendor'] = tl_score['vendor']
+
+                dbot_score = [{'Indicator': hash_value, 'Type': 'hash', 'Vendor': tl_score['vendor'],
+                               'Score': tl_score['score']},
+                              {'Indicator': hash_value, 'Type': 'file', 'Vendor': tl_score['vendor'],
+                               'Score': tl_score['score']}]
+                if tl_score['score'] >= 2:
+                    context_file['Malicious'] = {
+                        'Vendor': tl_score['vendor'],
+                        'Score': tl_score['score'],
+                        'Description': 'Trust level is ' + str(tl_score['trust_level'])
+                    }
+            ec = {'DBotScore': dbot_score, outputPaths['file']: context_file}
 
         table = reputations_to_table(reputations)
-
-        # creaet context
-        context_file = {}
-        hash_type_uppercase = hash_type.upper()
-        tl_score = get_thrust_level_and_score(reputations)
-
-        context_file[hash_type_uppercase] = hash
-        context_file['TrustLevel'] = tl_score['trust_level']
-        context_file['Vendor'] = tl_score['vendor']
-
-        dbot_score = [{'Indicator': hash, 'Type': 'hash', 'Vendor': tl_score['vendor'], 'Score': tl_score['score']},
-                      {'Indicator': hash, 'Type': 'file', 'Vendor': tl_score['vendor'], 'Score': tl_score['score']}]
-        if tl_score['score'] >= 2:
-            context_file['Malicious'] = {
-                'Vendor': tl_score['vendor'],
-                'Score': tl_score['score'],
-                'Description': 'Trust level is ' + str(tl_score['trust_level'])
-            }
-        ec = {'DBotScore': dbot_score, outputPaths['file']: context_file}
-
-        return {
+        hash_list.append({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
             'Contents': reputations,
             'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('McAfee TIE Hash Reputations For %s:' % (hash,), table),
+            'HumanReadable': tableToMarkdown('McAfee TIE Hash Reputations For %s:' % (hash_value,), table),
             'EntryContext': ec
-        }
+        })
+    return hash_list
 
 
 def file_references(hash):
@@ -300,7 +322,7 @@ def main():
             test()
             demisto.results('ok')
         elif demisto.command() == 'file':
-            results = file(args.get('file'))
+            results = file(argToList(args.get('file')))
             demisto.results(results)
         elif demisto.command() == 'tie-file-references':
             results = file_references(args.get('file'))

@@ -1,10 +1,11 @@
-IT service management. Cortex XSOAR interfaces with ServiceNow to help streamline security-related service management and IT operations. For example, you can use the ‘ServiceNow’ integration in order to:
+IT service management. Cortex XSOAR interfaces with ServiceNow to help streamline security-related service management and IT operations. For example, you can use the `ServiceNow` integration in order to:
 
-- View, create, update or delete a ServiceNow ticket directly from the Cortex XSOAR CLI and enrich it with Cortex XSOAR data.
+- View, create, update or delete a ServiceNow ticket directly from the Cortex XSOAR CLI, and enrich it with Cortex XSOAR data.
 - View, create, update and delete records from any ServiceNow table.
 - Query ServiceNow data with the ServiceNow query syntax.
+- Manage Security Incident Response (SIR) tickets with Cortex XSOAR, update tickets and enrich them with data.
 
-Please refer to ServiceNow documentation for additional information. We especially recommend the Operators available for filters and queries page: https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html
+Please refer to ServiceNow documentation for additional information. We especially recommend the [Operators available for filters and queries](https://docs.servicenow.com/bundle/sandiego-platform-user-interface/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html?cshalt=yes) page.
 
 This integration was integrated and tested with the Orlando version of ServiceNow.
 
@@ -12,6 +13,13 @@ This integration was integrated and tested with the Orlando version of ServiceNo
 1. Get, update, create, and delete ServiceNow tickets, as well as add links and comments, or upload files to the tickets.
 2. Fetch newly created incidents.
 3. Get, update, create, delete records from any ServiceNow table.
+
+## Required Permissions
+To use ServiceNow on Cortex XSOAR, ensure your user account has the *rest_api_explorer* and *web_service_admin* roles.
+ These roles are required to make API calls.
+ Also add to your user account the specific tables that you want to have access to.
+ However, these permissions may not suffice for managing records in some tables. Make sure you have the correct role so you have permissions to work with the relevant table.
+ 
 ## Wrapper Scripts
 There are 3 scripts that serve as examples for wrapping the following generic commands:
 servicenow-query-table - ServiceNowQueryIncident
@@ -28,15 +36,14 @@ These scripts are wrapped around the incident table, so to wrap them around anot
 4. To ensure that mirroring works:
    1. Select the **Fetches incidents** radio button.
    2. Under **Classifier**, select ServiceNow Classifier.
-   3. Under **Incident type**, select ServiceNowTicket.
-   4. Under **Mapper (incoming)**, select ServiceNow - Incoming Mapper.
-   5. Under **Mapper (outgoing)**, select ServiceNow - Outgoing Mapper.
-   6. To enable mirroring when closing an incident or ticket in Cortex XSOAR and ServiceNow, select the **Close Mirrored XSOAR Incident** and **Close Mirrored ServiceNow Ticket** checkboxes, respectively.
+   3. Under **Mapper (incoming)**, select ServiceNow - Incoming Mapper.
+   4. Under **Mapper (outgoing)**, select ServiceNow - Outgoing Mapper.
+   5. To enable mirroring when closing an incident or ticket in Cortex XSOAR and ServiceNow, select the **Close Mirrored XSOAR Incident** and **Close Mirrored ServiceNow Ticket** checkboxes, respectively.
 
         ![image](https://raw.githubusercontent.com/demisto/content/8038ce7e02dfd47b75adc9bedf1f7e9747dd77d5/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/closing-params.png)
         
 ## Instance Creation Flow
-The integration supports two types of authorization:
+This integration supports two types of authorization:
 1. Basic authorization using username and password.
 2. OAuth 2.0 authorization.
 
@@ -50,7 +57,7 @@ To use OAuth 2.0 authorization follow the next steps:
 
 **Notes:**
 1. When running the `!servicenow-oauth-login` command, a refresh token is generated and will be used to produce new access tokens after the current access token has expired.
-2. Every time the refresh token expires you will have to run the `servicenow-oauth-login` command again. Hence, we recommend to set the `Refresh Token Lifespan` field in the endpoint created in step 1 to a long period (can be set to several years). 
+2. Every time the refresh token expires you will have to run the `servicenow-oauth-login` command again. Hence, we recommend setting the `Refresh Token Lifespan` field in the endpoint created in step 1 to a long period (can be set to several years). 
 
 
 ### Using Multi Factor Authentication (MFA)
@@ -83,95 +90,263 @@ If MFA is enabled for your user, follow the next steps:
 | comment_tag | Choose the tag to add to an entry to mirror it as a comment in ServiceNow. | False |
 | work_notes_tag | Choose the tag to add to an entry to mirror it as a work note in ServiceNow. | False |
 | file_tag | Choose the tag to add to an entry to mirror it as a file in ServiceNow. | False |
+| file_tag_from_service_now | Choose the tag to add to an entry to mirror it as a file from ServiceNow. | False |
 | update_timestamp_field | Timestamp field to query for updates as part of the mirroring flow. | False |
 | mirror_limit | The maximum number of incidents to mirror incoming each time | False |
 | close_incident | Close XSOAR Incident. When selected, closing the ServiceNow ticket is mirrored in Cortex XSOAR. | False |
 | close_ticket | Close ServiceNow Ticket. When selected, closing the XSOAR incident is mirrored in ServiceNow. | False |
 | proxy | Use system proxy settings | False |
 | insecure | Trust any certificate \(not secure\) | False |
+| lookback | Advanced: Minutes to look back when fetching. | False
 
 5. Click **Test** to validate the URLs, token, and connection.
 6. Click **Done.**
-
-Note: Fetch incidents and mirroring is not currently supported for the ServiceNow Security Incident Response (SIR) module.
 
 ## Fetch Incidents
 The integration fetches newly created tickets according to the following parameters,
 which you define in the instance configuration: ticket_type, query, and limit.
 For the first fetch, the integration will fetch incidents that were created 10 minutes earlier. 
-After that, it will fetch incidents that were created after the timestamp of the last fetch.
+After that, the integration will fetch incidents created after the timestamp of the last fetch.
+
+**look-back parameter note**:
+In case the **look-back** parameter is initialized with a certain value and during a time that incidents were fetched, if changing 
+the look back to a number that is greater than the previous value, then in the initial incident fetching there will be incidents duplications.
+If the integration was already set with look back > 0, and the look-back is not being increased at any point of time, then those incident duplications would not occur.
 
 ## Configure Incident Mirroring
-**This feature is compliant with XSOAR version 6.0 and above.**
-This part walks you through setting up the ServiceNow v2 integration to mirror incidents from ServiceNow in Cortex XSOAR. 
-It includes steps for configuring the integration and incoming and outgoing mappers. However, it does not cover every option available in the integration nor classification and mapping features. 
-For information about **Classification and Mapping** visit: [Classification and Mapping](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/incidents/classification-and-mapping.html).
-
+**This feature is compliant with XSOAR version 6.0 and above.**  
 When mirroring incidents, you can make changes in ServiceNow that will be reflected in Cortex XSOAR, or vice versa. 
-You can also attach files from either of the systems, which will then be available in the other system. 
+You can also attach files from either of the systems which will then be available in the other system.  
 
-This is made possible by the addition of 3 new functions in the integration, which are applied with the following options:
-- External schema support
-- Can sync mirror in
-- Can sync mirror out
+The following instructions include steps for configuring the integration and incoming and outgoing mappers. However, they do not cover every option available in the integration nor classification and mapping features. 
+For information about classification and mapping see [Classification and Mapping](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-6/cortex-xsoar-admin/incidents/classification-and-mapping.html).  
 
-![image](https://raw.githubusercontent.com/demisto/content/d9bd0725e4bce1d68b949e66dcdd8f42931b1a88/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/mirror-configuration.png)
+**Note:**  
+- For Cortex XSOAR version 6.1 only, the final source of truth for an incident are the values in Cortex XSOAR.  For example, if you change the severity in Cortex XSOAR and then change it back in ServiceNow, the final value that will be presented is the one in Cortex XSOAR. For versions 6.2 and later, if mirroring is in both directions then the latest update is the source of truth. 
+- The mirroring settings apply only for incidents that are fetched after applying the settings. Pre-existing comments or work notes are not fetched/mirrored at the time of incident creation.
+- To use a custom mapper, you must first duplicate the mapper and edit the field in the copy of the mapper. If you detach the out of the box mapper and make changes to it, the pack does not automatically get updates.
 
-#### STEP 1 - Modify the incoming mapper.
-1. Navigate to **Classification and Mapping** and click **ServiceNow - Incoming Mapper**.
-2. Under the Incident Type dropdown, select **ServiceNow Ticket**.
-3. Change the mapping according to your needs.
-4. Save your changes.
-    
-##### 5 fields have been added to support the mirroring feature:
-- **dbotMirrorDirection** - determines whether mirroring is incoming, outgoing, or both. Default is Both.
-    - You can choose the mirror direction when configuring the ServiceNow instance using the **Incident Mirroring Direction** field.
+To set up incident mirroring you need to:  
+1. Configure the ServiceNow Service Account roles.
+2. Configure mirroring for ServiceNow trigger incidents or configure mirroring for other trigger incidents.
 
-- **dbotMirrorId** - determines the incident ID in the 3rd party integration. In this case, the ServiceNow sys ID field.
-- **dbotMirrorInstance** - determines the ServiceNow instance with which to mirror.
-- **dbotMirrorLastSync** - determines the field by which to indicate the last time that the systems synchronized.
-- **dbotMirrorTags** - determines the tags that you need to add in Cortex XSOAR for entries to be pushed to ServiceNow.
-    - You can set the tags in the instance configuration, using **Comment Entry Tag**, **Work Note Entry Tag** and **File Entry Tag**.
+### Configure the ServiceNow Service Account Roles  
+To use ServiceNow on Cortex XSOAR, ensure your service account has the following roles required to make API calls:  
+- Rest_api_explorer
+- Snc_platform_rest_api_access
+- Itil (Needed to access the sys_journal_field to allow comments, work notes, and files to be mirrored in and out.)  
+**Note:**  
+If your organization does not allow assigning the Itil role, you need to give service account elevated
+privileges to the sys_journal_field (see this ServiceNow community link for [giving elevated read access](https://community.servicenow.com/community?id=community_question&sys_id=b4051bf4db4c1cd823f4a345ca9619dc) and potential risks).   
 
-![image](https://raw.githubusercontent.com/demisto/content/d9bd0725e4bce1d68b949e66dcdd8f42931b1a88/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/mirror-fields.png)
+You then need to add to your user account the specific tables you want to have access to.  
+These permissions may not suffice for managing records in some tables. Make sure you
+have the correct role so you have permissions to work with the relevant table.  
 
-#### STEP 2 - Modify the outgoing mapper.
-1. Under **Classification and Mapping**, click **ServiceNow - Outgoing Mapper.**
-The left side of the screen shows the ServiceNow fields to which to map and the right side of the
+### Configure Incident Mirroring When the Trigger Incident is ServiceNow  
+When the trigger incident is ServiceNow, you use the **ServiceNow Classifier** and leave the Incident type as N/A, with either the default incoming and outgoing mappers or optional custom mappers.
+
+#### STEP 1 - Configure the ServiceNow v2 Integration Instance for Mirroring.
+1. Navigate to **Integrations** and search for **ServiceNow v2**.
+2. Click **Add instance**.
+3. Select **Fetches incidents**.
+4. Under **Classifier**, select **ServiceNow Classifier**.  
+    **Note:**  
+    You define either the **Classifier** or the **Incident type** (not both). It is recommended to define the **Classifier** and leave **Incident type** N/A to enable labeling custom incident types under the ServiceNow Classifier.
+
+5. Under **Mapper (incoming)**, for default mapping select ServiceNow - Incoming Mapper. For custom mapping, follow the instructions in STEP 2 and then select the custom mapper name.
+6. Under **Mapper (outgoing)**, for default mapping select ServiceNow - Outgoing Mapper. For
+custom mapping, follow the instructions in STEP 3 and then select the custom mapper name.
+
+ ![image](https://raw.githubusercontent.com/demisto/content-docs/5781a9024dc9f7e6418c82d7b7318f07d49fc863/docs/doc_imgs/integrations/snowv2-configuration-settings.png)
+
+7. Enter the connection parameters.  
+    - Confirm whether your organization uses basic authorization or OAuth authorization (most use basic) and enter the relevant authorization details.  
+    -  Leave **ServiceNow API Version** empty since ServiceNow typically automatically provides the appropriate version. 
+8. Under **The query to use when fetching incidents**, the default query is to filter for new incidents: stateNOT IN6,7, where 6= resolved incidents and 7= closed incidents. For a different query, ask your ServiceNow representative to provide the exact states and their numbers.
+9. Select **Get incident attachments** to retrieve attachments from ServiceNow incident creation in Cortex XSOAR.
+10. Select the **Incident Mirroring Direction**:  
+    - **In** - Mirrors changes on the ServiceNow ticket in to the Cortex XSOAR ticket.
+    - **Out** - Mirrors changes on the Cortex XSOAR ticket to the ServiceNow ticket.
+    - **Both** - Mirrors changes both in and out on both tickets.
+11. Set the Timestamp field to query as part of the mirroring flow. This defines the ticket_last_update - the epoch timestamp when the ServiceNow incident was last updated. The default is sys_updated_on.
+12. Enter the relevant **Comment Entry Tag**, **Work Note Entry Tag**, **File Entry Tag To ServiceNow** and **File Entry Tag From ServiceNow** values.  
+These values are mapped to the **dbotMirrorTags** incident field in Cortex XSOAR, which defines how Cortex XSOAR handles comments when you tag them in the War Room.  
+**Note:**  
+These tags work only for mirroring comments, work notes, and files from Cortex XSOAR to ServiceNow.
+
+![image](https://raw.githubusercontent.com/demisto/content-docs/954dfad984230fde68dc45bd3dd50bde8338413a/docs/doc_imgs/integrations/mirror-tags.png)
+
+13. Configure any **Custom Fields to Mirror**. These must start with "u_". This is available for ServiceNow v2 version 2.2.10 and later.  
+  **Note:**  
+  To enable mirroring custom fields, make a copy of the incoming and outgoing mappers and add the custom fields to the copies (see STEP 2 and STEP 3). Select these copies in the integration instance **Mapper (incoming)** and **Mapper (outgoing)** settings.
+14. To enable mirroring when closing an incident or ticket in Cortex XSOAR and ServiceNow, select **Close Mirrored XSOAR Incident** and **Close Mirrored ServiceNow Ticket** respectively.
+15. Click **Done**.
+
+#### STEP 2 (Optional) Configure the Incoming Mapper by Incident Type for Custom Fields  
+**Note:**
+Any modifications require that the mappers be cloned before any changes can be applied.
+
+1. Navigate to **Classification and Mapping** and for **Incidents** search for the **ServiceNow - Incoming Mapper**.
+2. Select it and click **Duplicate**.
+3. Under the **Incident Type** dropdown, select ServiceNow Create Ticket and Mirror.
+4. Verify the mapper has these fields mapped. They will pull the values configured on the integration instance settings at the time of ingestion.
+  
+     ![image](https://raw.githubusercontent.com/demisto/content-docs/ad6522b9c6822f5c4f9798c8aaa1a63c353ddbe3/docs/doc_imgs/snowv2-incoming-mapper.png) 
+
+    - **dbotMirrorId** - dbotMirrorId - the field used by the third-party integration to identify the ticket. This should be the sys_id of the ServiceNow ticket. The value is mapped to incident.servicenowticketid.
+    - **dbotMirrorDirection** - determines whether mirroring is incoming, outgoing, or both. Default is Both. This should match the instance configuration.        
+    - **dbotMirrorInstance** - determines the ServiceNow instance with which to mirror. This should match the instance configuration.
+    - **dbotMirrorLastSync** - determines the field by which to indicate the last time that the systems synchronized.
+    - **dbotMirrorTags** - determines the tags that you need to add in Cortex XSOAR for entries to be pushed to ServiceNow. They should be copied from the tags in the instance configuration. These are also the tags that must be put on the War Room record in order for it to sync.
+      - To mirror files, use the **ForServiceNow** tag. 
+      - To mirror general notes, use the **comments** tag.
+      - To mirror private notes that can be read only by users with the necessary permissions, use the **work_notes** tag.
+    - Configure any custom fields you want mapped to Cortex XSOAR. Custom fields start with “u_” and are available for ServiceNow v2 version 2.2.10 and later. These must be added to the integration instance **Custom Fields to Mirror** setting.
+
+#### STEP 3 - Modify the Outgoing Mapper  
+**Note:**  
+Any modifications require that the mappers be cloned before any changes can be applied.
+1. Navigate to **Classification and Mapping**, and for **Incidents** search for the **ServiceNow - Outgoing Mapper.**
+2. Select it and click **Duplicate**.  
+  The left side of the screen shows the ServiceNow fields to which to map and the right side of the
 screen shows the Cortex XSOAR fields by which you are mapping.
+3. Under the **Incident Type** dropdown, select **ServiceNow Ticket**.
+4. Under **Schema Type**, select **incident**. The Schema Type represents the ServiceNow entity that
+you are mapping to. In our example it is an incident, but it can also be any other kind of ticket that
+ServiceNow supports.
+5. On the right side of the screen, under **Incident**, select the incident based on which you want to
+match.
+6. Change the mapping according to your needs, including any fields you want mapped outward to ServiceNow and any custom fields. Make sure the custom fields you want mirrored are added to the integration instance settings.
+7. Save your changes.
+
+![image](https://raw.githubusercontent.com/demisto/content/d9bd0725e4bce1d68b949e66dcdd8f42931b1a88/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/outgoing-mapper.png)
+
+
+#### STEP 4 - Create an Incident in ServiceNow  
+For purposes of this use case, it can be a simple incident. The new ticket will be ingested in Cortex XSOAR in approximately one minute.
+
+#### STEP 5 - Add a Note to the Incident in Cortex XSOAR    
+In the example below, we have written *A comment from Cortex XSOAR to ServiceNow*.
+1. Click Actions > Tags and add the comments tag.
+2. Add a file to the incident and mark it with the ForServiceNow tag.
+
+![image](https://raw.githubusercontent.com/demisto/content/d9bd0725e4bce1d68b949e66dcdd8f42931b1a88/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/mirror-files.png)  
+
+3. Navigate back to the incident in ServiceNow and within approximately one minute, the changes will be reflected there, too.  
+  You can make additional changes like closing the incident or changing severity and those will be reflected in both systems.
+
+![image](https://raw.githubusercontent.com/demisto/content/d9bd0725e4bce1d68b949e66dcdd8f42931b1a88/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/ticket-example.png)
+
+
+### Configure Incident Mirroring When the Trigger Incident is **Not** ServiceNow  
+
+You can set up any source integration to create a ServiceNow ticket based on a fetched incident and mirror the ticket in Cortex XSOAR. To do this you need to:    
+- Configure the ServiceNow v2 integration to map the appropriate fields from the **ServiceNow Create Ticket and Mirror** incident type to the relevant trigger incident type (for example, Phishing Custom).
+- Set up the source integration to create a ServiceNow ticket and start mirroring.
+
+#### STEP 1 - Configure the ServiceNow v2 Integration Instance for Mirroring.
+1. Navigate to **Classification and Mapping**. For **Incidents**, search for **ServiceNow - Incoming Mapper** and **ServiceNow - Outgoing Mapper**.
+2. For each mapper, click **Duplicate**.  
+   Your copied mappers will be called **ServiceNow - Incoming Mapper_copy** and **ServiceNow - Outgoing Mapper_copy**, you can rename them. The copied mappers appear in the drop down for the **Mapper (incoming)** and **Mapper (outgoing)** integration instance settings fields.
+3. Navigate to **Integrations** and search for **ServiceNow v2**.
+4. Click **Add instance**.
+5. Select **Do not Fetch**.
+6. Under **Classifier**, select ServiceNow Classifier.  
+    **Note:**  
+    You define either the **Classifier** or the **Incident type** (not both). It is recommended to define the **Classifier** and leave **Incident type** N/A to enable labeling custom incident types under the ServiceNow Classifier.
+
+7. Under **Mapper (incoming)**, select **ServiceNow - Incoming Mapper_copy** (or whatever you renamed it).
+8. Under **Mapper (outgoing)**, select **ServiceNow - Outgoing Mapper_copy** (or whatever you renamed it). 
+9. Enter the connection parameters.  
+    - Confirm whether your organization uses basic authorization or OAuth authorization (most use basic) and enter the relevant authorization details.  
+    -  Leave **ServiceNow API Version** empty since ServiceNow typically automatically provides the appropriate version. 
+10. Under **The query to use when fetching incidents**, the default query is to filter for new incidents: stateNOT IN6,7, where 6= resolved incidents and 7= closed incidents. For a different query, ask your ServiceNow representative to provide the exact states and their numbers.
+11. Select **Get incident attachments** to retrieve attachments from ServiceNow incident creation in Cortex XSOAR.
+12. Select the **Incident Mirroring Direction**:  
+    - **In** - Mirrors changes on the ServiceNow ticket in to the Cortex XSOAR ticket.
+    - **Out** - Mirrors changes on the Cortex XSOAR ticket to the ServiceNow ticket.
+    - **Both** - Mirrors changes both in and out on both tickets.
+13. Set the **Timestamp field to query as part of the mirroring flow**. This defines the ticket_last_update - the epoch timestamp when the ServiceNow incident was last updated. The default is sys_updated_on.
+14. Enter the relevant **Comment Entry Tag**, **Work Note Entry Tag**, **File Entry Tag To ServiceNow** and **File Entry Tag From ServiceNow** values.
+These values are mapped to the **dbotMirrorTags** incident field in Cortex XSOAR, which defines how Cortex XSOAR handles comments when you tag them in the War Room.  
+**Note:**  
+These tags work only for mirroring comments from Cortex XSOAR to ServiceNow.
+
+![image](https://raw.githubusercontent.com/demisto/content-docs/954dfad984230fde68dc45bd3dd50bde8338413a/docs/doc_imgs/integrations/mirror-tags.png)
+
+15. Configure any **Custom Fields to Mirror**. These must start with "u_". This is available for ServiceNow v2 version 2.2.10 and later.  
+  **Note:**  
+  To enable mirroring custom fields, make a copy of the incoming and outgoing mappers and add the custom fields to the copies (see STEP 2 and STEP 3). Select these copies in the integration instance **Mapper (incoming)** and **Mapper (outgoing)** settings.
+16. To enable mirroring when closing an incident or ticket in Cortex XSOAR and ServiceNow, select **Close Mirrored XSOAR Incident** and **Close Mirrored ServiceNow Ticket** respectively.
+17. Click **Done**.
+
+#### STEP 2 (Optional) Configure the Incoming Mapper by Incident Type for Custom Fields  
+**Note:**
+Any modifications require that the mappers be cloned before any changes can be applied.
+
+1. Navigate to **Classification and Mapping** and for **Incidents** search for the **ServiceNow - Incoming Mapper_copy** (or whatever you renamed it).
+2. Under the **Incident Type** dropdown, select the relevant triggering incident type, for example Phishing.
+3. Verify the mapper has these fields mapped. They will pull the values configured on the integration instance settings at the time of ingestion.
+  
+     ![image](https://raw.githubusercontent.com/demisto/content-docs/ad6522b9c6822f5c4f9798c8aaa1a63c353ddbe3/docs/doc_imgs/snowv2-incoming-mapper.png) 
+
+    - **dbotMirrorId** - dbotMirrorId - the field used by the third-party integration to identify the ticket. This should be the sys_id of the ServiceNow ticket. The value is mapped to incident.servicenowticketid.
+    - **dbotMirrorDirection** - determines whether mirroring is incoming, outgoing, or both. Default is Both. This should match the instance configuration.        
+    - **dbotMirrorInstance** - determines the ServiceNow instance with which to mirror. This should match the instance configuration.
+    - **dbotMirrorLastSync** - determines the field by which to indicate the last time that the systems synchronized.
+    - **dbotMirrorTags** - determines the tags that you need to add in Cortex XSOAR for entries to be pushed to ServiceNow. They should be copied from the tags in the instance configuration. These are also the tags that must be put on the War Room record in order for it to sync.
+      - To mirror files from XSOAR to ServiceNow, use the **ForServiceNow** tag. 
+      - Mirrored files from ServiceNow to XSOAR will be tagged by *default* with the **FromServiceNow** tag.
+      - To mirror general notes, use the **comments** tag.
+      - To mirror private notes that can be read only by users with the necessary permissions, use the **work_notes** tag.
+    - Configure any custom fields you want mapped to Cortex XSOAR. Custom fields start with “u_” and are available for ServiceNow v2 version 2.2.10 and later. These must be added to the integration instance **Custom Fields to Mirror** setting.  
+4. Save your changes.
+
+#### STEP 3 - Modify the Outgoing Mapper for Custom Fields  
+**Note:**  
+Any modifications require that the mappers be cloned before any changes can be applied.
+1. Navigate to **Classification and Mapping**, and for **Incidents** search for the **ServiceNow - Outgoing Mapper_copy** (or whatever you renamed it).
 2. Under the **Incident Type** dropdown, select **ServiceNow Ticket**.
 3. Under **Schema Type**, select **incident**. The Schema Type represents the ServiceNow entity that
 you are mapping to. In our example it is an incident, but it can also be any other kind of ticket that
 ServiceNow supports.
 4. On the right side of the screen, under **Incident**, select the incident based on which you want to
-match.
-5. Change the mapping according to your needs.
+match.  
+   The left side of the screen shows the ServiceNow fields to which to map and the right side of the screen shows the Cortex XSOAR fields by which you are mapping.
+5. Change the mapping according to your needs, including any fields you want mapped outward to ServiceNow and any custom fields. Make sure the custom fields you want mirrored are added to the integration instance settings.
 6. Save your changes.
 
 ![image](https://raw.githubusercontent.com/demisto/content/d9bd0725e4bce1d68b949e66dcdd8f42931b1a88/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/outgoing-mapper.png)
 
+#### STEP 4 - Set up Your Source Integration  
+Set up your source integration so that after fetching a trigger incident a ServiceNow ticket is created and mirroring starts.  
+1. Fetch an incident with your chosen integration. For example, for Phishing using any email integration (Gmail, MSGraph, O365).
+2. Classify and map the incident fields.
+3. Create a task in the playbook that creates a ServiceNow ticket followed by a set incident task that starts the mirroring capability.  
 
+Example:
+The following shows the Create New Record playbook task, which creates a ServiceNow ticket.  
 
-#### STEP 3 - Create an incident in ServiceNow. For purposes of this use case, it can be a very simple incident
+![image](https://raw.githubusercontent.com/demisto/content-docs/20d4fb13f3d1c822f3f3be479cc281c45dbc5667/docs/doc_imgs/integrations/snowv2-create-new-record.png)
 
-#### STEP 4 - In Cortex XSOAR, the new ticket will be ingested in approximately one minute.
-1. Add a note to the incident. In the example below, we have written A comment from Cortex XSOAR to ServiceNow.
-2. Click Actions > Tags and add the comments tag.
-3. Add a file to the incident and mark it with the ForServiceNow tag.
+The Create New Record task is followed by the Set Mirroring Fields task, which starts the mirroring capability.  
 
-![image](https://raw.githubusercontent.com/demisto/content/d9bd0725e4bce1d68b949e66dcdd8f42931b1a88/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/mirror-files.png)
-4. Navigate back to the incident in ServiceNow and within approximately one minute, the changes will be reflected there, too.
-* You can make additional changes like closing the incident or changing severity and those will be reflected in both systems.
+![image](https://raw.githubusercontent.com/demisto/content-docs/996d0dbad4430d325e030d7a75251d8d38ca7778/docs/doc_imgs/integrations/snowv2-set-mirroring-fields.png)
+
+The new ServiceNow ticket will be ingested in Cortex XSOAR in approximately one minute.
+
+#### STEP 5 - Add a Note to the Incident in Cortex XSOAR  
+In the example below, we have written *A comment from Cortex XSOAR to ServiceNow*.
+1. Click Actions > Tags and add the comments tag.
+2. Add a file to the incident and mark it with the ForServiceNow tag.
+
+![image](https://raw.githubusercontent.com/demisto/content/d9bd0725e4bce1d68b949e66dcdd8f42931b1a88/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/mirror-files.png)  
+
+3. Navigate back to the incident in ServiceNow and within approximately one minute, the changes will be reflected there, too.  
+  You can make additional changes like closing the incident or changing severity and those will be reflected in both systems.
 
 ![image](https://raw.githubusercontent.com/demisto/content/d9bd0725e4bce1d68b949e66dcdd8f42931b1a88/Packs/ServiceNow/Integrations/ServiceNowv2/doc_files/ticket-example.png)
-
-
-**Notes**
-- The final 'source of truth' for the incident for Cortex XSOAR are the values in Cortex XSOAR. 
-  Meaning, if you change the severity in Cortex XSOAR and then change it back in ServiceNow, the final value that will be presented is the one in Cortex XSOAR.
-- The integration queries ServiceNow for modified records based on the timestamp field set in the *update_timestamp_field* integration parameter and the limit set in the *mirror_limit* integration parameter.
-      If more records are modified in the timeframe when they are queried than are configured in the *limit* parameter, the extra records won't be mirrored in and the incidents in Cortex XSOAR will not be updated.  
-
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
@@ -248,7 +423,7 @@ Retrieves ticket information by ticket ID.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | Ticket system ID for which to retrieve information. | Optional | 
-| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident". | Optional | 
+| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", or "sn_si_incident". Default is "incident". | Optional |
 | number | Ticket number to retrieve. | Optional | 
 | get_attachments | If "true" will retrieve ticket attachments. Default is "false". | Optional | 
 | custom_fields | Custom fields on which to query. For example: state_code=AR,time_zone=PST. | Optional | 
@@ -340,7 +515,7 @@ Creates new ServiceNow ticket.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | short_description | Short description of the ticket. | Optional | 
-| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident". | Optional | 
+| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", or "sn_si_incident". Default is "incident". | Optional |
 | urgency | Ticket urgency. You can either select from the predefined options or enter another value, for example: "Urgent" or "5". | Optional | 
 | severity | Ticket severity. You can either select from the predefined options or enter another value, for example: "Urgent" or "5". | Optional | 
 | impact | Ticket impact. | Optional | 
@@ -353,7 +528,8 @@ Creates new ServiceNow ticket.
 | business_duration | Business duration, in the format: YYYY-MM-DD HH:MM:SS. | Optional | 
 | business_service | Business service. | Optional | 
 | business_stc | Business source. | Optional | 
-| calendar_duration | Calendar duration, in the format: YYYY-MM-DD HH:MM:SS. | Optional | 
+| business_criticality | Business criticallity of the ticket. | Optional |
+| calendar_duration | Calendar duration, in the format: YYYY-MM-DD HH:MM:SS. | Optional |
 | caller_id | Caller ID (UID format). | Optional | 
 | category | Category of the ticket. | Optional | 
 | caused_by | UID Format | Optional | 
@@ -385,9 +561,10 @@ Creates new ServiceNow ticket.
 | parent_incident | UID Format | Optional | 
 | problem_id | UID Format | Optional | 
 | reassignment_count | The number of users included in this ticket. | Optional | 
-| reopen_count | How many times the ticket has been reopened. | Optional | 
-| resolved_at | The date/time that the ticket was resolved, in the format: YYYY-MM-DD HH:MM:SS. | Optional | 
-| resolved_by | ID of the user that resolved the ticket. | Optional | 
+| reopen_count | How many times the ticket has been reopened. | Optional |
+| resolved_at | The date/time that the ticket was resolved, in the format: YYYY-MM-DD HH:MM:SS. | Optional |
+| resolved_by | ID of the user that resolved the ticket. | Optional |
+| risk_score | Incident risk score. | Optional |
 | rfc | UID | Optional | 
 | sla_due | SLA due date/time, in the format: YYYY-MM-DD HH:MM:SS. | Optional | 
 | subcategory | Ticket subcategory. | Optional | 
@@ -491,7 +668,7 @@ Updates the specified ticket.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | short_description | Short description of the ticket. | Optional | 
-| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident". | Optional | 
+| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", or "sn_si_incident". Default is "incident". | Optional |
 | urgency | Ticket urgency. You can either select from the predefined options or enter another value, for example: "Urgent" or "5". | Optional | 
 | severity | Ticket severity. You can either select from the predefined options or enter another value, for example: "Urgent" or "5". | Optional | 
 | impact | Ticket impact. | Optional | 
@@ -502,9 +679,10 @@ Updates the specified ticket.
 | approval_set | The ticket approval set date/time, in the format: "2016-07-02 21:51:11". | Optional | 
 | assigned_to | User assigned to the ticket. | Optional | 
 | business_duration | Business duration, in the format: YYYY-MM-DD HH:MM:SS. | Optional | 
-| business_service | Business service. | Optional | 
-| business_stc | Business source. | Optional | 
-| calendar_duration | Calendar duration, in the format: YYYY-MM-DD HH:MM:SS. | Optional | 
+| business_service | Business service. | Optional |
+| business_stc | Business source. | Optional |
+| business_criticality | Business criticallity of the ticket. | Optional |
+| calendar_duration | Calendar duration, in the format: YYYY-MM-DD HH:MM:SS. | Optional |
 | caller_id | Caller ID (UID format). | Optional | 
 | category | Category name. | Optional | 
 | caused_by | UID format. | Optional | 
@@ -538,7 +716,8 @@ Updates the specified ticket.
 | reassignment_count | The number of users included in this ticket. | Optional | 
 | reopen_count | The number of times the ticket has been reopened. | Optional | 
 | resolved_at | Date/time the ticket was resolved, in the format: YYYY-MM-DD HH:MM:SS. | Optional | 
-| resolved_by | Resolved by (UID format). | Optional | 
+| resolved_by | Resolved by (UID format). | Optional |
+| risk_score | Incident risk score. | Optional |
 | rfc | UID | Optional | 
 | sla_due | SLA due date/time, in the format: YYYY-MM-DD HH:MM:SS. | Optional | 
 | subcategory | Ticket subcategory. | Optional | 
@@ -562,6 +741,7 @@ Updates the specified ticket.
 | approval | Ticket approval. | Optional | 
 | additional_fields | Additional fields in the format: fieldname1=value;fieldname2=value; | Optional | 
 | input_display_value | Flag that indicates whether to set field values using the display value or the actual value. True will treat the input value as the display value. False treats the input values as actual values. The default setting is false. | Optional |
+| clear_fields | A comma-separated list of fields to clear. | Optional | 
 
 For more information regarding the input_display_value Argument, please see: https://docs.servicenow.com/bundle/orlando-platform-administration/page/administer/exporting-data/concept/query-parameters-display-value.html
 
@@ -615,7 +795,7 @@ Deletes a ticket from ServiceNow.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | Ticket System ID | Required | 
-| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". | Optional | 
+| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", or "sn_si_incident". | Optional |
 
 
 #### Context Output
@@ -647,7 +827,7 @@ Retrieves ticket information according to the supplied query.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | limit | The maximum number of tickets to retrieve. | Optional | 
-| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident". | Optional | 
+| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", or "sn_si_incident". Default is "incident". | Optional |
 | query | The query to run. To learn about querying in ServiceNow, see https://docs.servicenow.com/bundle/istanbul-servicenow-platform/page/use/common-ui-elements/reference/r_OpAvailableFiltersQueries.html | Optional | 
 | offset | Starting record index to begin retrieving records from. | Optional | 
 | additional_fields | Additional fields to present in the War Room entry and incident context. | Optional || system_params | System parameters in the format: fieldname1=value;fieldname2=value. For example: "sysparm_display_value=al;&sysparm_exclude_reference_link=True" | Optional | 
@@ -792,7 +972,7 @@ Adds a link to the specified ticket.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | Ticket System ID. | Required | 
-| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident". | Optional | 
+| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", or "sn_si_incident". Default is "incident". | Optional |
 | link | The actual link to publish in ServiceNow ticket, in a valid URL format, for example, http://www.demisto.com. | Required | 
 | post-as-comment | Whether to publish the link as comment on the ticket. Can be "true" or "false". If false will publish the link as WorkNote. | Optional | 
 | text | The text to represent the link. | Optional | 
@@ -831,7 +1011,7 @@ Adds a comment to the specified ticket, by ticket ID.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | Ticket System ID. | Required | 
-| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident". | Optional | 
+| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", or "sn_si_incident". Default is "incident". | Optional |
 | comment | Comment to add. | Required | 
 | post-as-comment | Whether to publish the note as comment on the ticket. Can be "true" or "false". Default is "false". | Optional | 
 
@@ -869,7 +1049,7 @@ Uploads a file to the specified ticket.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | Ticket System ID. | Required | 
-| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident". | Optional | 
+| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", or "sn_si_incident". Default is "incident". | Optional |
 | file_id | War Room entry ID that includes the file. | Required | 
 | file_name | Filename of the uploaded file to override the existing file name in the entry. | Optional | 
 
@@ -976,6 +1156,7 @@ Queries the specified table in ServiceNow.
 
 #### Command Example
 ```!servicenow-query-table table_name=alm_asset fields=asset_tag,sys_updated_by,display_name query=display_nameCONTAINSMacBook limit=4```
+```!servicenow-query-table table_name=sys_journal_field query=element_id=<SYS_ID>^ORDERBYsys_created_on limit=10 fields=value,name,element,sys_created_by,sys_created_on```
 
 #### Context Example
 ```
@@ -1096,6 +1277,7 @@ Updates a record in the specified ServiceNow table.
 | fields | Fields and their values to update in the record, in the format: fieldname1=value;fieldname2=value;... | Optional | 
 | custom_fields | Custom (user defined) fields and their values to update in the record, in the format: fieldname1=value;fieldname2=value;... | Optional |
 | input_display_value | Flag that indicates whether to set field values using the display value or the actual value. True will treat the input value as the display value. False treats the input values as actual values. The default setting is false. | Optional |
+| clear_fields | A comma-separated list of fields to clear. | Optional | 
 
 For more information regarding the input_display_value Argument, please see: https://docs.servicenow.com/bundle/orlando-platform-administration/page/administer/exporting-data/concept/query-parameters-display-value.html
 
@@ -1785,7 +1967,7 @@ Adds a tag to a ticket. The tag will be visible in the label_entry table and can
 | id | Ticket System ID. | Required | 
 | tag_id | Tag system ID. Can be retrieved using the "!servicenow-query-table table_name=label fields=name,active,sys_id" command. | Required | 
 | title | Tag title. For example: "Incident - INC000001". | Required | 
-| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", or "sc_req_item". Default is "incident". | Optional | 
+| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", or "sn_si_incident". Default is "incident". | Optional |
 
 
 #### Context Output
@@ -2045,10 +2227,263 @@ Get remote data from a remote incident. This method does not update the current 
 
 There is no context output for this command.
 
+### servicenow-get-tasks-for-co
+***
+gets the tasks associated to change request
 
-### Troubleshooting
 
-* Ensure that the date and time in SNOW are the same as the date and time in XSOAR to prevent mirroring issues.
-* If the date displayed in the layout is incorrect, please follow these steps to resolve the issue:
-1. Navigate to the `incoming-mapper` which you are using.
-2. In every field which uses the ``DateStringToISOFormat`` script, change the argument ``dayfirst`` to be ``true``.
+#### Base Command
+
+`servicenow-get-tasks-for-co`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | ID of the change request. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ServiceNow.Tasks.ID | String | Task ID | 
+| ServiceNow.Tasks.Description | Unknown | Description of task | 
+| ServiceNow.Tasks.Name | Unknown | Name of task | 
+| ServiceNow.Tasks.State | Unknown | state of task | 
+
+#### Command example
+```!servicenow-get-tasks-for-co id="1234"```
+#### Context Example
+```json
+{
+    "ServiceNow": {
+        "Tasks": {
+            "ServiceNow.Tasks(val.ID===obj.ID)": [
+                {
+                    "Description": "test",
+                    "ID": "1234",
+                    "Name": "CTASK0010007",
+                    "State": "1 - New"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### ServiceNow Catalog Items
+>|ID|Name|State|Description|
+>|---|---|---|---|
+>| 1234 | CTASK0010007 | 1 - New | test |
+
+### servicenow-create-co-from-template
+***
+Create a change request from a template.
+
+
+#### Base Command
+
+`servicenow-create-co-from-template`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| template | Template for creating a standard change request. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ServiceNow.Ticket.ID | Unknown | ServiceNow ticket ID. | 
+| ServiceNow.Ticket.OpenedBy | Unknown | ServiceNow ticket opener ID. | 
+| ServiceNow.Ticket.CreatedOn | Unknown | ServiceNow ticket creation date. | 
+| ServiceNow.Ticket.Assignee | Unknown | ServiceNow ticket assignee ID. | 
+| ServiceNow.Ticket.State | Unknown | ServiceNow ticket state. | 
+| ServiceNow.Ticket.Summary | Unknown | ServiceNow ticket short summary. | 
+| ServiceNow.Ticket.Number | Unknown | ServiceNow ticket number. | 
+| ServiceNow.Ticket.Active | Unknown | ServiceNow ticket active. | 
+| ServiceNow.Ticket.AdditionalComments | Unknown | ServiceNow ticket comments. | 
+| ServiceNow.Ticket.Priority | Unknown | ServiceNow ticket priority. | 
+| ServiceNow.Ticket.OpenedAt | Unknown | ServiceNow ticket opening time. | 
+| ServiceNow.Ticket.ResolvedBy | Unknown | ServiceNow ticket resolver ID. | 
+| ServiceNow.Ticket.CloseCode | Unknown | ServiceNow ticket close code. | 
+
+#### Command example
+```!servicenow-create-co-from-template template=1234```
+#### Context Example
+```json
+{
+    "ServiceNow": {
+        "Ticket": {
+            "ServiceNow.Ticket(val.ID===obj.ID)": {
+                "Active": {
+                    "display_value": "true",
+                    "value": true
+                },
+                "AdditionalComments": {
+                    "display_value": "",
+                    "value": ""
+                },
+                "CloseCode": {
+                    "display_value": "",
+                    "value": ""
+                },
+                "CreatedOn": {
+                    "display_value": "03/05/2022 08:17:00",
+                    "display_value_internal": "2022-05-03 08:17:00",
+                    "value": "2022-05-03 15:17:00"
+                },
+                "Creator": "1234",
+                "ID": {
+                    "display_value": "1234",
+                    "value": "1234"
+                },
+                "Number": {
+                    "display_value": "CHG001234",
+                    "value": "CHG001234"
+                },
+                "OpenedAt": {
+                    "display_value": "03/05/2022 08:17:00",
+                    "display_value_internal": "2022-05-03 08:17:00",
+                    "value": "2022-05-03 15:17:00"
+                },
+                "OpenedBy": "1234",
+                "Priority": [
+                    "4 - Low"
+                ],
+                "State": {
+                    "display_value": "New",
+                    "value": -5
+                },
+                "Summary": {
+                    "display_value": "Add network switch to cabinet",
+                    "value": "Add network switch to cabinet"
+                }
+            },
+            "Ticket(val.ID===obj.ID)": {
+                "Active": {
+                    "display_value": "true",
+                    "value": true
+                },
+                "AdditionalComments": {
+                    "display_value": "",
+                    "value": ""
+                },
+                "CloseCode": {
+                    "display_value": "",
+                    "value": ""
+                },
+                "CreatedOn": {
+                    "display_value": "03/05/2022 08:17:00",
+                    "display_value_internal": "2022-05-03 08:17:00",
+                    "value": "2022-05-03 15:17:00"
+                },
+                "Creator": "1234",
+                "ID": {
+                    "display_value": "1234",
+                    "value": "1234"
+                },
+                "Number": {
+                    "display_value": "CHG001234",
+                    "value": "CHG001234"
+                },
+                "OpenedAt": {
+                    "display_value": "03/05/2022 08:17:00",
+                    "display_value_internal": "2022-05-03 08:17:00",
+                    "value": "2022-05-03 15:17:00"
+                },
+                "OpenedBy": "6b0e49021b158150042611b4bd4bcb5e",
+                "Priority": [
+                    "4 - Low"
+                ],
+                "State": {
+                    "display_value": "New",
+                    "value": -5
+                },
+                "Summary": {
+                    "display_value": "Add network switch to cabinet",
+                    "value": "Add network switch to cabinet"
+                }
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### ServiceNow ticket was created successfully.
+>|System ID|Number|Impact|Urgency|Priority|State|Created On|Created By|Active|Description|Opened At|Short Description|
+>|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 1234 | CHG001234 | 3 - Ministry | 3 - Low | 4 - Low | -5 - New | 2022-05-03 15:17:00 | admin_cnt_test_Jan2022-01 | true | This standard change template describes adding a new network switch to a datacenter cabinet | 2022-05-03 15:17:00 | Add network switch to cabinet |
+
+### servicenow-generic-api-call
+***
+Generic call to ServiceNow api
+
+
+#### Base Command
+
+`servicenow-generic-api-call`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| method | action to be performed on path. Possible values are: GET, POST, PATCH, DELETE. Default is 0. | Required | 
+| path | the API path starting with forward slash (/). | Required | 
+| body | json to send in body. | Optional | 
+| headers | json of headers to add. | Optional | 
+| sc_api | Service Catalog Call. Possible values are: true, false. Default is false. | Optional | 
+| cr_api | Change Request Call. Possible values are: true, false. Default is false. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ServiceNow.Generic.Response | string | Generic response to servicenow api | 
+
+#### Command example
+```!servicenow-generic-api-call method=GET path="/table/sn_cmdb_workspace_cmdb_ci_demo"```
+#### Context Example
+```json
+{
+    "ServiceNow": {
+        "Generic": {
+            "Response": {
+                "result": [
+                    {
+                        "sys_created_by": "admin_test_Nov2020-01",
+                        "sys_created_on": "2021-02-13 13:36:55",
+                        "sys_id": "1234",
+                        "sys_mod_count": "0",
+                        "sys_tags": "",
+                        "sys_updated_by": "admin_test_Nov2020-01",
+                        "sys_updated_on": "2021-02-13 13:36:55"
+                    }
+                ]
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Request for GET method is successful
+
+
+### Troubleshooting  
+The following are tips for handling issues with mirroring incidents between ServiceNow and Cortex XSOAR.
+
+| **Issue** | **Recommendation**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| --- |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Mirroring is not working. | Open Context Data and search for dbot. Confirm the dbot fields are configured correctly either through the mapper for that specific incident type or using setIncident. Specifically, make sure the integration instance is configured correctly for the mirroring direction (ingoing, outgoing, both) - dbotMirrorId, dbotMirrorDirection, dbotMirrorInstance, dbotMirrorTags                                                                                                                                                                                                                                                                                                                                                                                                                |   
+| Comments and work notes from before incident creation are not fetched/mirrored. | Mirroring settings apply only for incidents that are fetched after applying the settings. <br></br> For example, if a user creates a ServiceNow incident with added comments/work notes and then defines a ServiceNow integration instance with mirroring in Cortex XSOAR, those comments/work notes are not fetched with the incident in Cortex XSOAR. <br></br> To fetch pre-existing comments/work notes, you can use the **servicenow-get-ticket-notes command**.  <br></br> This command requires elevated privileges to the **sys_journal_field**. This is done by assigning the **Itil** role (see this ServiceNow community link on [giving elevated read access](https://community.servicenow.com/community?id=community_question&sys_id=b4051bf4db4c1cd823f4a345ca9619dc) and potential risks). |  
+| Ticket is not closing. | Verify the integration instance is configured correctly for the **Close Mirrored XSOAR Incident** or **Close Mirrored ServiceNow Ticket** fields.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| Required fields are not getting sent. | This may be a mapping issue, specifically if close reason and close notes are required.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| Auto-Extract extracts sys_id as a file. | This is by design. To resolve this:  <br></br> - Turn off Auto-Extract for all fields and only used on specific fields.  <br></br> - Turn off Auto-Extract at the incident level and use the task level for extraction.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| Date displayed in the Cortex XSOAR layout is not aligned with ServiceNow. | 1. Navigate to the `incoming-mapper` you are using. <br></br> 2. For every field that uses the ``DateStringToISOFormat`` script, change the ``dayfirst`` argument  to ``true``.

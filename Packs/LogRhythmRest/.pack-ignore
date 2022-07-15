@@ -1,2 +1,15 @@
 [file:README.md]
 ignore=RM104
+
+[file:LogRhythmRest.yml]
+ignore=IN145
+
+[file:LogRhythmRestV2.yml]
+ignore=IN126
+
+
+[file:LogRhythmRest_image.png]
+ignore=IM111
+
+[file:LogRhythmRestV2_image.png]
+ignore=IM111

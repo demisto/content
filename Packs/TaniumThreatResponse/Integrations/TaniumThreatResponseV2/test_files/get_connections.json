@@ -1,0 +1,33 @@
+[
+    {
+        "sessionId": null,
+        "ip": "1.1.1.1",
+        "hostname": "hostname",
+        "clientId": "123",
+        "platform": "Windows",
+        "eid": "2",
+        "initiatedAt": 1631090906852,
+        "status": "disconnected",
+        "message": "The connection has been disconnected.",
+        "connectedAt": 1631090912528,
+        "hasTools": true,
+        "userId": "1",
+        "personaId": 0,
+        "id": "remote:hostname:123:2"
+    },
+    {
+        "sessionId": null,
+        "ip": "1.2.3.4",
+        "hostname": "hostlinux",
+        "clientId": "123",
+        "platform": "Linux",
+        "initiatedAt": 1631515720180,
+        "status": "disconnected",
+        "message": "The connection has been disconnected.",
+        "connectedAt": 1631515723872,
+        "hasTools": true,
+        "userId": "1",
+        "personaId": 0,
+        "id": "remote:hostlinux:123:"
+    }
+]

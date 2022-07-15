@@ -925,7 +925,7 @@ There are no input arguments for this command.
     </tr>
     <tr>
       <td>action</td>
-      <td>Set to "block" to blacklist the URL, "permit" to whitelist it</td>
+      <td>Set to "block" to block list the URL, "permit" to add to allow list</td>
       <td>Required</td>
     </tr>
     <tr>

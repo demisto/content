@@ -11,8 +11,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 * O365 - Security And Compliance - Search
-* Hard delete
-* Soft delete
+* O365 - Security And Compliance - Search Action - Delete
 * O365 - Security And Compliance - Search Action - Preview
 
 ### Integrations
@@ -20,6 +19,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Scripts
 * PrintErrorEntry
+* Set
 
 ### Commands
 * o365-sc-remove-search
@@ -40,6 +40,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | force | Whether to replace the existing search. If "true", the existing search will be removed and a new search will be created. If "false", the existing search will be used and any new search configurations will be ignored. | false | Required |
 | preview | Whether to preview the results using the search action "Preview". Possible values are: "true" and "false" or leave empty to select manually. | true | Required |
 | delete_type | Specify the delete type to perform on the search results. Possible values are Hard and Soft or leave empty to select manually. \(Hard = Unrecoverable, Soft=Recoverable\) | Soft | Required |
+| search_polling_timeout | Amount of time to poll before declaring a timeout for the compliance search and resuming the playbook \(in minutes\). | 45 | Optional |
+| search_polling_interval | The frequency that the polling command will run for compliance search. | 3 | Optional |
+| search_action_polling_timeout | Amount of time to poll before declaring a timeout for the search action and resuming the playbook \(in minutes\). | 45 | Optional |
+| search_action_polling_interval | The frequency that the polling command will run for the search action that was chosen. | 3 | Optional |
 
 ## Playbook Outputs
 ---

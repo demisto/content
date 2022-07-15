@@ -85,20 +85,21 @@ def error_parser(resp_err: requests.Response, api: str = 'graph') -> str:
         return resp_err.text
 
 
-def translate_severity(severity: str) -> int:
+def translate_severity(severity: str) -> float:
     """
     Translates Demisto text severity to int severity
     :param severity: Demisto text severity
     :return: Demisto integer severity
     """
     severity_dictionary = {
-        'Unknown': 0,
-        'Low': 1,
-        'Medium': 2,
-        'High': 3,
-        'Critical': 4
+        'Unknown': 0.0,
+        'Informational': 0.5,
+        'Low': 1.0,
+        'Medium': 2.0,
+        'High': 3.0,
+        'Critical': 4.0
     }
-    return severity_dictionary.get(severity, 0)
+    return severity_dictionary.get(severity, 0.0)
 
 
 def create_incidents(demisto_user: dict, incidents: list) -> dict:
@@ -253,6 +254,9 @@ def create_adaptive_card(body: list, actions: list = None) -> dict:
             '$schema': 'http://adaptivecards.io/schemas/adaptive-card.json',
             'version': '1.0',
             'type': 'AdaptiveCard',
+            'msteams': {
+                'width': 'Full'
+            },
             'body': body
         }
     }
@@ -1158,9 +1162,19 @@ def send_message():
             or channel_name == INCIDENT_NOTIFICATIONS_CHANNEL:
         # Got a notification from server
         channel_name = demisto.params().get('incident_notifications_channel', 'General')
-        severity: int = int(demisto.args().get('severity'))
-        severity_threshold: int = translate_severity(demisto.params().get('min_incident_severity', 'Low'))
-        if severity < severity_threshold:
+        severity: float = float(demisto.args().get('severity'))
+
+        # Adding disable and not enable because of adding new boolean parameter always defaults to false value in server
+        if (disable_auto_notifications := demisto.params().get('auto_notifications')) is not None:
+            disable_auto_notifications = argToBoolean(disable_auto_notifications)
+        else:
+            disable_auto_notifications = False
+
+        if not disable_auto_notifications:
+            severity_threshold: float = translate_severity(demisto.params().get('min_incident_severity', 'Low'))
+            if severity < severity_threshold:
+                return
+        else:
             return
 
     team_member: str = demisto.args().get('team_member', '') or demisto.args().get('to', '')
@@ -1555,50 +1569,55 @@ def messages() -> Response:
     """
     Main handler for messages sent to the bot
     """
-    demisto.debug('Processing POST query...')
-    headers: dict = cast(Dict[Any, Any], request.headers)
-    if validate_auth_header(headers) is False:
-        demisto.info(f'Authorization header failed: {str(headers)}')
-    else:
-        request_body: dict = request.json
-        integration_context: dict = get_integration_context()
-        service_url: str = request_body.get('serviceUrl', '')
-        if service_url:
-            service_url = service_url[:-1] if service_url.endswith('/') else service_url
-            integration_context['service_url'] = service_url
-            set_integration_context(integration_context)
-
-        channel_data: dict = request_body.get('channelData', {})
-        event_type: str = channel_data.get('eventType', '')
-
-        conversation: dict = request_body.get('conversation', {})
-        conversation_type: str = conversation.get('conversationType', '')
-        conversation_id: str = conversation.get('id', '')
-
-        message_text: str = request_body.get('text', '')
-
-        # Remove bot mention
-        bot_name = integration_context.get('bot_name', '')
-        formatted_message: str = message_text.replace(f'<at>{bot_name}</at>', '')
-
-        value: dict = request_body.get('value', {})
-
-        if event_type == 'teamMemberAdded':
-            demisto.info('New Microsoft Teams team member was added')
-            member_added_handler(integration_context, request_body, channel_data)
-        elif value:
-            # In TeamsAsk process
-            demisto.info('Got response from user in MicrosoftTeamsAsk process')
-            entitlement_handler(integration_context, request_body, value, conversation_id)
-        elif conversation_type == 'personal':
-            demisto.info('Got direct message to the bot')
-            direct_message_handler(integration_context, request_body, conversation, formatted_message)
+    try:
+        demisto.debug('Processing POST query...')
+        headers: dict = cast(Dict[Any, Any], request.headers)
+        if validate_auth_header(headers) is False:
+            demisto.info(f'Authorization header failed: {str(headers)}')
         else:
-            demisto.info('Got message mentioning the bot')
-            message_handler(integration_context, request_body, channel_data, formatted_message)
-    demisto.info('Finished processing Microsoft Teams activity successfully')
-    demisto.updateModuleHealth('')
-    return Response(status=200)
+            request_body: dict = request.json
+            integration_context: dict = get_integration_context()
+            service_url: str = request_body.get('serviceUrl', '')
+            if service_url:
+                service_url = service_url[:-1] if service_url.endswith('/') else service_url
+                integration_context['service_url'] = service_url
+                set_integration_context(integration_context)
+
+            channel_data: dict = request_body.get('channelData', {})
+            event_type: str = channel_data.get('eventType', '')
+
+            conversation: dict = request_body.get('conversation', {})
+            conversation_type: str = conversation.get('conversationType', '')
+            conversation_id: str = conversation.get('id', '')
+
+            message_text: str = request_body.get('text', '')
+
+            # Remove bot mention
+            bot_name = integration_context.get('bot_name', '')
+            formatted_message: str = message_text.replace(f'<at>{bot_name}</at>', '')
+
+            value: dict = request_body.get('value', {})
+
+            if event_type == 'teamMemberAdded':
+                demisto.info('New Microsoft Teams team member was added')
+                member_added_handler(integration_context, request_body, channel_data)
+            elif value:
+                # In TeamsAsk process
+                demisto.info('Got response from user in MicrosoftTeamsAsk process')
+                entitlement_handler(integration_context, request_body, value, conversation_id)
+            elif conversation_type == 'personal':
+                demisto.info('Got direct message to the bot')
+                direct_message_handler(integration_context, request_body, conversation, formatted_message)
+            else:
+                demisto.info('Got message mentioning the bot')
+                message_handler(integration_context, request_body, channel_data, formatted_message)
+        demisto.info('Finished processing Microsoft Teams activity successfully')
+        demisto.updateModuleHealth('')
+        return Response(status=200)
+    except Exception as e:
+        err_msg = f'Error occurred when handling incoming message {str(e)}'
+        demisto.error(err_msg)
+        return Response(response=err_msg, status=400)
 
 
 def ring_user_request(call_request_data):

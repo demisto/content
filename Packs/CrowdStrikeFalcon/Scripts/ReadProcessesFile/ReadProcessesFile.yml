@@ -1,0 +1,16 @@
+comment: Load and return the processes file (generated from the cs-falcon-rtr-list-processes command) content.
+commonfields:
+  id: ReadProcessesFile
+  version: -1
+enabled: false
+name: ReadProcessesFile
+script: '-'
+system: false
+type: python
+tags:
+- dynamic-section
+subtype: python3
+dockerimage: demisto/python3:3.10.4.29342
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

@@ -100,7 +100,11 @@ def fetch_credentials(client, args: dict):
     demisto.debug('name of cred used: ', creds_name)
 
     if creds_name:
-        creds_list = [client.get_credentials(creds_name)]
+        try:
+            creds_list = [client.get_credentials(creds_name)]
+        except Exception as e:
+            demisto.debug(f"Could not fetch credentials: {creds_name}. Error: {e}")
+            creds_list = []
     else:
         creds_list = client.list_credentials()
     credentials = []
@@ -118,7 +122,17 @@ def test_module(client: Client) -> str:
     :param client: the client object with the given params
     :return: ok if the request succeeded
     """
-    client.list_credentials()
+    if client._credentials_list:
+        client.list_credentials()
+    else:
+        try:
+            # Running a dummy credential just to check connection itself.
+            client.get_credentials("test_cred")
+        except DemistoException as e:
+            if 'Error in API call [500]' in e.message or 'Error in API call [404]' in e.message:
+                return 'ok'
+            else:
+                raise e
     return "ok"
 
 

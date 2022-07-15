@@ -1,0 +1,78 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
+
+def createSystemContext(system):
+    context = {}
+    context["AutoID"] = system["EPOBranchNode.AutoID"]
+    context["CPUSerialNum"] = system["EPOComputerProperties.CPUSerialNum"]
+    context["CPUSpeed"] = system["EPOComputerProperties.CPUSpeed"]
+    context["CPUType"] = system["EPOComputerProperties.CPUType"]
+    context["ComputerName"] = system["EPOComputerProperties.ComputerName"]
+    context["DefaultLangID"] = system["EPOComputerProperties.DefaultLangID"]
+    context["Description"] = system["EPOComputerProperties.Description"]
+    context["DomainName"] = system["EPOComputerProperties.DomainName"]
+    context["FreeDiskSpace"] = system["EPOComputerProperties.FreeDiskSpace"]
+    context["FreeMemory"] = system["EPOComputerProperties.FreeMemory"]
+    context["IPAddress"] = system["EPOComputerProperties.IPAddress"]
+    context["Hostname"] = system["EPOComputerProperties.IPHostName"]
+    context["IPSubnet"] = system["EPOComputerProperties.IPSubnet"]
+    context["IPSubnetMask"] = system["EPOComputerProperties.IPSubnetMask"]
+    context["IPV4x"] = system["EPOComputerProperties.IPV4x"]
+    context["IPV6"] = system["EPOComputerProperties.IPV6"]
+    context["IPXAddress"] = system["EPOComputerProperties.IPXAddress"]
+    context["IsPortable"] = system["EPOComputerProperties.IsPortable"]
+    context["LastAgentHandler"] = system["EPOComputerProperties.LastAgentHandler"]
+    context["NetAddress"] = system["EPOComputerProperties.NetAddress"]
+    context["NumOfCPU"] = system["EPOComputerProperties.NumOfCPU"]
+    context["OSBitMode"] = system["EPOComputerProperties.OSBitMode"]
+    context["OSBuildNum"] = system["EPOComputerProperties.OSBuildNum"]
+    context["OSOEMID"] = system["EPOComputerProperties.OSOEMID"]
+    context["OSPlatform"] = system["EPOComputerProperties.OSPlatform"]
+    context["OSServicePackVer"] = system["EPOComputerProperties.OSServicePackVer"]
+    context["OSType"] = system["EPOComputerProperties.OSType"]
+    context["OSVersion"] = system["EPOComputerProperties.OSVersion"]
+    context["ParentID"] = system["EPOComputerProperties.ParentID"]
+    context["SubnetAddress"] = system["EPOComputerProperties.SubnetAddress"]
+    context["SubnetMask"] = system["EPOComputerProperties.SubnetMask"]
+    context["SystemDescription"] = system["EPOComputerProperties.SystemDescription"]
+    context["SysvolFreeSpace"] = system["EPOComputerProperties.SysvolFreeSpace"]
+    context["SysvolTotalSpace"] = system["EPOComputerProperties.SysvolTotalSpace"]
+    context["TimeZone"] = system["EPOComputerProperties.TimeZone"]
+    context["TotalDiskSpace"] = system["EPOComputerProperties.TotalDiskSpace"]
+    context["TotalPhysicalMemory"] = system["EPOComputerProperties.TotalPhysicalMemory"]
+    context["UserName"] = system["EPOComputerProperties.UserName"]
+    context["UserProperty1"] = system["EPOComputerProperties.UserProperty1"]
+    context["UserProperty2"] = system["EPOComputerProperties.UserProperty2"]
+    context["UserProperty3"] = system["EPOComputerProperties.UserProperty3"]
+    context["UserProperty4"] = system["EPOComputerProperties.UserProperty4"]
+    context["Vdi"] = system["EPOComputerProperties.Vdi"]
+    context["AgentGUID"] = system["EPOLeafNode.AgentGUID"]
+    context["AgentVersion"] = system["EPOLeafNode.AgentVersion"]
+    context["ExcludedTags"] = system["EPOLeafNode.ExcludedTags"]
+    context["LastUpdate"] = system["EPOLeafNode.LastUpdate"]
+    context["ManagedState"] = system["EPOLeafNode.ManagedState"]
+    context["Tags"] = system["EPOLeafNode.Tags"]
+
+    return context
+
+
+resp = demisto.executeCommand("epo-command", {"command": "system.find", "searchText": demisto.args()["searchText"]})
+res_error = []
+for res in resp:
+    if isError(res):
+        res_error.append(res)
+    else:
+        endpoint = []
+        context = {}
+        for entry in demisto.get(res, 'Contents'):
+            endpoint.append(createSystemContext(entry))
+
+        context["Endpoint(val.Hostname == obj.Hostname)"] = endpoint
+
+        demisto.results({'Type': entryTypes['note'],
+                        'Contents': demisto.get(res, 'Contents'),
+                         'ContentsFormat': formats['json'],
+                         'HumanReadable': demisto.get(res, 'HumanReadable'),
+                         'ReadableContentsFormat': formats['markdown'],
+                         'EntryContext': context})

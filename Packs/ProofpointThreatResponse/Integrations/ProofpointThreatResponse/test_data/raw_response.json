@@ -82,7 +82,23 @@
                                 "vap": false,
                                 "email": "sabrina.test@test.com"
                             },
-                            "subject": "[EXTERNAL] FW: Message from test Reception 01:28 PM, March 30, 2021"
+                            "subject": "[EXTERNAL] FW: Message from test Reception 01:28 PM, March 30, 2021",
+                            "attachments": [
+                                {
+                                    "timestamp": {
+                                        "epochSecond": 1629455474,
+                                        "nano": 0
+                                    },
+                                    "safename": "9e7d56ad15ebe0705686ffbae32827ag.JPG",
+                                    "realnamePII": {
+                                        "secret": "test.JPG"
+                                    },
+                                    "size": 26091,
+                                    "contentType": "image/jpeg",
+                                    "md5": "12ddf622c090be352f4cb7c1df0e7f1k",
+                                    "sha256": "g82a86a8dd3ce77c203177de514a4d6851bba0a13caa7f273567a096df816f1c"
+                                }
+                            ]
                         }
                     ],
                     "source": "Proofpoint TAP",

@@ -1,0 +1,89 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Tanium Threat Response",
+    "mapping": {
+        "Tanium TR Incident": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Alert ID": {
+                    "complex": null,
+                    "simple": "id"
+                },
+                "Last Update Time": {
+                    "complex": null,
+                    "simple": "updatedAt"
+                },
+                "Source Hostname": {
+                    "complex": null,
+                    "simple": "computerName"
+                },
+                "Source IP": {
+                    "complex": null,
+                    "simple": "computerIpAddress"
+                },
+                "Start Time": {
+                    "complex": null,
+                    "simple": "createdAt"
+                },
+                "State": {
+                    "complex": null,
+                    "simple": "state"
+                },
+                "Tanium Threat Response Event Id": {
+                    "complex": null,
+                    "simple": "eid"
+                },
+                "Tanium Threat Response GUID": {
+                    "complex": null,
+                    "simple": "guid"
+                },
+                "Tanium Threat Response Intel Doc Id": {
+                    "complex": null,
+                    "simple": "intelDocId"
+                },
+                "Tanium Threat Response Intel Doc Revision Id": {
+                    "complex": null,
+                    "simple": "intelDocRevisionId"
+                },
+                "Tanium Threat Response Priority": {
+                    "complex": null,
+                    "simple": "priority"
+                },
+                "Tanium Threat Response Scan Config Id": {
+                    "complex": null,
+                    "simple": "scanConfigId"
+                },
+                "Tanium Threat Response Scan Config Revision Id": {
+                    "complex": null,
+                    "simple": "scanConfigRevisionId"
+                },
+                "Tanium Threat Response Type": {
+                    "complex": null,
+                    "simple": "type"
+                },
+                "details": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "details",
+                        "transformers": []
+                    },
+                    "simple": ""
+                },
+                "occurred": {
+                    "complex": null,
+                    "simple": "alertedAt"
+                },
+                "severity": {
+                    "complex": null,
+                    "simple": "severity"
+                }
+            }
+        }
+    },
+    "name": "Tanium Threat Response",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

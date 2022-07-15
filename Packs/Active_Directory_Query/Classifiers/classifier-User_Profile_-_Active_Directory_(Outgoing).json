@@ -82,7 +82,7 @@
      "complex": null,
      "simple": "zipcode"
     },
-    "samaccountname": {
+    "sAMAccountName": {
      "complex": {
       "accessor": "",
       "filters": [
@@ -137,10 +137,6 @@
     "userPrincipalName": {
      "complex": null,
      "simple": "username"
-    },
-    "ou":{
-     "complex": null,
-     "simple": ""
     }
    }
   },
@@ -213,7 +209,7 @@
      "complex": null,
      "simple": "zipcode"
     },
-    "samaccountname": {
+    "sAMAccountName": {
      "complex": {
       "accessor": "",
       "filters": [
@@ -272,10 +268,6 @@
     "manageremail": {
      "complex": null,
      "simple": "manageremail"
-    },
-    "ou":{
-     "complex": null,
-     "simple": ""
     }
    }
   }

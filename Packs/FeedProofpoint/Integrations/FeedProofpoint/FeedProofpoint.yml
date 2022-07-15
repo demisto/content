@@ -73,7 +73,6 @@ configuration:
     list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
-  defaultvalue: ""
   required: false
   type: 8
 - additionalinfo: The indicator type in the feed to fetch. Domain is referring to
@@ -132,7 +131,7 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: proofpoint-get-indicators
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.8.24399
   feed: true
   isfetch: false
   longRunning: false

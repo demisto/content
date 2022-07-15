@@ -19,7 +19,6 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 
 import requests
-import traceback
 from typing import Dict, Any
 
 # Disable insecure warnings
@@ -123,7 +122,7 @@ def main() -> None:
     """
 
     # TODO: make sure you properly handle authentication
-    # api_key = demisto.params().get('apikey')
+    # api_key = demisto.params().get('credentials', {}).get('password')
 
     # get the service API url
     base_url = urljoin(demisto.params()['url'], '/api/v1')
@@ -162,7 +161,6 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 

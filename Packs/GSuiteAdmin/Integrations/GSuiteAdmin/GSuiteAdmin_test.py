@@ -225,6 +225,34 @@ def test_user_create_command(gsuite_client, mocker):
     assert command_result.outputs_prefix == 'GSuite.User'
 
 
+def test_user_get_command(gsuite_client, mocker):
+    """
+    Scenario: gsuite-user-get should works if valid arguments are provided.
+
+    Given:
+    - Command args.
+
+    When:
+    - Calling gsuite-user-create command with the arguments provided.
+
+    Then:
+    - Ensure CommandResult entry should be as expected.
+    """
+    from GSuiteAdmin import user_get_command
+    args = {'user': 'testuser'}
+    with open('test_data/user_create_response.json') as file:
+        api_response = json.load(file)
+    with open('test_data/user_get_entry_context.json') as file:
+        expected_entry_context = json.load(file)
+    mocker.patch('GSuiteAdmin.GSuiteClient.http_request', return_value=api_response)
+    command_result = user_get_command(gsuite_client, args)
+    assert command_result.readable_output == expected_entry_context['HumanReadable']
+    assert command_result.outputs == expected_entry_context['EntryContext']['GSuite.User(val.id == obj.id)']
+    assert command_result.raw_response == expected_entry_context['Contents']
+    assert command_result.outputs_key_field == ['id']
+    assert command_result.outputs_prefix == 'GSuite.User'
+
+
 @patch('GSuiteAdmin.GSuiteClient.http_request')
 def test_user_alias_add_command_success(mocker_http_request, gsuite_client):
     """
@@ -329,6 +357,36 @@ def test_group_create_command_failure(mocker_http_request, gsuite_client):
 
     with pytest.raises(Exception, match="SOME_ERROR"):
         group_create_command(gsuite_client, {})
+
+
+@patch('GSuiteAdmin.GSuiteClient.http_request')
+def test_group_get_command(mocker_http_request, gsuite_client):
+    """
+    Scenario: For gsuite-group-get command
+
+    Given:
+    - Command args.
+
+    When:
+    - Calling gsuite-group-get command with the parameters provided.
+
+    Then:
+    - Ensure command's  raw_response, outputs, readable_output, outputs_key_field, outputs_prefix should be as expected.
+    """
+    from GSuiteAdmin import group_get_command
+
+    with open('test_data/group_get_test_data.json', encoding='utf-8') as data:
+        test_data = json.load(data)
+    response = test_data.get('response_data', {})
+    mocker_http_request.return_value = response
+
+    result = group_get_command(gsuite_client, test_data.get('args', {}))
+
+    assert result.raw_response == response
+    assert result.outputs == response
+    assert result.readable_output.startswith("### " + HR_MESSAGES['GROUP_GET_SUCCESS'].format(response['name']))
+    assert result.outputs_key_field == 'id'
+    assert result.outputs_prefix == OUTPUT_PREFIX['GROUP']
 
 
 def test_prepare_args_for_role_assignment_list():

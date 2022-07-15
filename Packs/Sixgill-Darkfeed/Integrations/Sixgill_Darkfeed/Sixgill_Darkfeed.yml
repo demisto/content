@@ -86,18 +86,16 @@ configuration:
   type: 8
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
   type: 8
   required: false
 - display: Incremental Feed
-  defaultvalue: true
+  defaultvalue: 'true'
   hidden: true
   name: feedIncremental
   required: false
   type: 8
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ""
   type: 8
   required: false
 - additionalinfo: Supports CSV values.
@@ -125,7 +123,7 @@ script:
     description: Fetching Sixgill DarkFeed indicators
     execution: true
     name: sixgill-get-indicators
-  dockerimage: demisto/sixgill:1.0.0.20925
+  dockerimage: demisto/sixgill:1.0.0.23434
   feed: true
   isfetch: false
   longRunning: false

@@ -2,7 +2,7 @@ Freeing the analyst with autonomous decisions.
 This integration was integrated and tested with version 6.1.0 of SumoLogicSEC.
 
 ## Prerequisites
-Only use this integration if your Cloud SIEM portal url ends with `.sumologic.net` - this can be verified via the url in your browser when logged into Cloud SIEM.
+Only use this integration if your Cloud SIEM portal url ends with `.sumologic.com` - this can be verified via the url in your browser when logged into Cloud SIEM.
 
 You'll need an access key in order to complete the instance setup. Instructions on how to generate access keys can be found [here](https://help.sumologic.com/Manage/Security/Access-Keys).
 
@@ -265,7 +265,7 @@ Get entity details for a specific entity ID
 | SumoLogicSec.Entity.FirstSeen | Date | When the Entity was first seen | 
 | SumoLogicSec.Entity.Hostname | String | Entity hostname | 
 | SumoLogicSec.Entity.Id | String | Entity ID | 
-| SumoLogicSec.Entity.IsWhitelisted | Boolean | Whether or not the Entity is whitelisted | 
+| SumoLogicSec.Entity.IsWhitelisted | Boolean | Whether or not the Entity is on allow list | 
 | SumoLogicSec.Entity.LastSeen | Date | When the Entity was last seen | 
 | SumoLogicSec.Entity.Name | String | The Entity name | 
 | SumoLogicSec.Entity.OperatingSystem | String | Entity Operating System \(observed or from inventory\) | 
@@ -430,7 +430,7 @@ Search entities using the available filters
 | SumoLogicSec.EntityList.FirstSeen | Date | When the Entity was first seen | 
 | SumoLogicSec.EntityList.Id | String | Entity ID | 
 | SumoLogicSec.EntityList.IpHostname | String | Hostname associated with IP Entity | 
-| SumoLogicSec.EntityList.IsWhitelisted | Boolean | Whether or not the Entity is whitelisted | 
+| SumoLogicSec.EntityList.IsWhitelisted | Boolean | Whether or not the Entity is on allow list | 
 | SumoLogicSec.EntityList.LastSeen | Date | When the Entity was last seen | 
 | SumoLogicSec.EntityList.Name | String | The Entity name | 
 | SumoLogicSec.EntityList.OperatingSystem | String | Entity Operating System \(observed or from inventory\) | 

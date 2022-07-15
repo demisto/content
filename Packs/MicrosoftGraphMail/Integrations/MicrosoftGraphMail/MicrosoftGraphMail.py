@@ -4,12 +4,14 @@ from CommonServerUserPython import *
 from typing import Union, Optional
 
 ''' IMPORTS '''
-import requests
 import base64
+from bs4 import BeautifulSoup
 import binascii
+import urllib3
+from urllib.parse import quote
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBAL VARS '''
 
@@ -62,17 +64,22 @@ class MsGraphClient:
     ITEM_ATTACHMENT = '#microsoft.graph.itemAttachment'
     FILE_ATTACHMENT = '#microsoft.graph.fileAttachment'
 
-    def __init__(self, self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url, use_ssl, proxy,
-                 ok_codes, mailbox_to_fetch, folder_to_fetch, first_fetch_interval, emails_fetch_limit):
+    def __init__(self, self_deployed, tenant_id, auth_and_token_url, enc_key,
+                 app_name, base_url, use_ssl, proxy, ok_codes, mailbox_to_fetch, folder_to_fetch, first_fetch_interval,
+                 emails_fetch_limit, timeout=10, endpoint='com', certificate_thumbprint=None, private_key=None,
+                 display_full_email_body=False):
 
         self.ms_client = MicrosoftClient(self_deployed=self_deployed, tenant_id=tenant_id, auth_id=auth_and_token_url,
                                          enc_key=enc_key, app_name=app_name, base_url=base_url, verify=use_ssl,
-                                         proxy=proxy, ok_codes=ok_codes)
+                                         proxy=proxy, ok_codes=ok_codes, timeout=timeout, endpoint=endpoint,
+                                         certificate_thumbprint=certificate_thumbprint, private_key=private_key)
 
         self._mailbox_to_fetch = mailbox_to_fetch
         self._folder_to_fetch = folder_to_fetch
         self._first_fetch_interval = first_fetch_interval
         self._emails_fetch_limit = emails_fetch_limit
+        # whether to display the full email body for the fetch-incidents
+        self.display_full_email_body = display_full_email_body
 
     def pages_puller(self, response: dict, page_count: int) -> list:
         """ Gets first response from API and returns all pages
@@ -113,7 +120,10 @@ class MsGraphClient:
         odata = f'{odata}&$top={page_size}' if odata else f'$top={page_size}'
 
         if search:
-            odata = f'{odata}&$search="{search}"'
+            # Data is being handled as a JSON so in cases the search phrase contains double quote ",
+            # we should escape it.
+            search = search.replace('"', '\\"')
+            odata = f'{odata}&$search="{quote(search)}"'
         suffix = with_folder if folder_id else no_folder
         if odata:
             suffix += f'?{odata}'
@@ -381,7 +391,7 @@ class MsGraphClient:
                 '@odata.type': cls.FILE_ATTACHMENT,
                 'contentBytes': b64_encoded_data.decode('utf-8'),
                 'isInline': is_inline,
-                'name': attach_name if provided_names else uploaded_file_name,
+                'name': attach_name if provided_names or not uploaded_file_name else uploaded_file_name,
                 'size': file_size
             }
             file_attachments_result.append(attachment)
@@ -446,7 +456,7 @@ class MsGraphClient:
 
     @staticmethod
     def build_message(to_recipients, cc_recipients, bcc_recipients, subject, body, body_type, flag, importance,
-                      internet_message_headers, attach_ids, attach_names, attach_cids, manual_attachments):
+                      internet_message_headers, attach_ids, attach_names, attach_cids, manual_attachments, reply_to):
         """
         Builds valid message dict.
         For more information https://docs.microsoft.com/en-us/graph/api/resources/message?view=graph-rest-1.0
@@ -455,6 +465,7 @@ class MsGraphClient:
             'toRecipients': MsGraphClient._build_recipient_input(to_recipients),
             'ccRecipients': MsGraphClient._build_recipient_input(cc_recipients),
             'bccRecipients': MsGraphClient._build_recipient_input(bcc_recipients),
+            'replyTo': MsGraphClient._build_recipient_input(reply_to),
             'subject': subject,
             'body': MsGraphClient._build_body_input(body=body, body_type=body_type),
             'bodyPreview': body[:255],
@@ -514,7 +525,7 @@ class MsGraphClient:
         return parsed_email
 
     @staticmethod
-    def build_reply(to_recipients, comment):
+    def build_reply(to_recipients, comment, attach_ids, attach_names, attach_cids):
         """
         Builds the reply message that includes recipients to reply and reply message.
 
@@ -524,12 +535,22 @@ class MsGraphClient:
         :type comment: ``str``
         :param comment: The message to reply.
 
+        :type attach_ids: ``list``
+        :param attach_ids: List of uploaded to War Room regular attachments to send
+
+        :type attach_names: ``list``
+        :param attach_names: List of regular attachments names to send
+
+        :type attach_cids: ``list``
+        :param attach_cids: List of uploaded to War Room inline attachments to send
+
         :return: Returns legal reply message.
         :rtype: ``dict``
         """
         return {
             'message': {
-                'toRecipients': MsGraphClient._build_recipient_input(to_recipients)
+                'toRecipients': MsGraphClient._build_recipient_input(to_recipients),
+                'attachments': MsGraphClient._build_file_attachments_input(attach_ids, attach_names, attach_cids, [])
             },
             'comment': comment
         }
@@ -664,26 +685,38 @@ class MsGraphClient:
         :return: Fetched emails and exclude ids list that contains the new ids of fetched emails
         :rtype: ``list`` and ``list``
         """
-        target_modified_time = add_second_to_str_date(last_fetch)  # workaround to Graph API bug
         suffix_endpoint = f"/users/{self._mailbox_to_fetch}/mailFolders/{folder_id}/messages"
         # If you add to the select filter the $ sign, The 'internetMessageHeaders' field not contained within the
         # API response, (looks like a bug in graph API).
         params = {
-            "$filter": f"receivedDateTime gt {target_modified_time}",
+            "$filter": f"receivedDateTime ge {last_fetch}",
             "$orderby": "receivedDateTime asc",
             "select": "*",
-            "$top": self._emails_fetch_limit
+            "$top": len(exclude_ids) + self._emails_fetch_limit  # fetch extra incidents
         }
 
         fetched_emails = self.ms_client.http_request(
             'GET', suffix_endpoint, params=params
-        ).get('value', [])[:self._emails_fetch_limit]
+        ).get('value', [])
 
-        if exclude_ids:  # removing emails in order to prevent duplicate incidents
-            fetched_emails = [email for email in fetched_emails if email.get('id') not in exclude_ids]
+        fetched_emails_ids = {email.get('id') for email in fetched_emails}
+        exclude_ids_set = set(exclude_ids)
+        if not fetched_emails or not (filtered_new_email_ids := fetched_emails_ids - exclude_ids_set):
+            # no new emails
+            demisto.debug(f'No new emails: {fetched_emails_ids=}. {exclude_ids_set=}')
+            return [], exclude_ids, last_fetch
+        new_emails = [mail for mail in fetched_emails
+                      if mail.get('id') in filtered_new_email_ids][:self._emails_fetch_limit]
+        last_email_time = new_emails[-1].get('receivedDateTime')
+        if last_email_time == last_fetch:
+            # next fetch will need to skip existing exclude_ids
+            excluded_ids_for_nextrun = exclude_ids + [email.get('id') for email in new_emails]
+        else:
+            # next fetch will need to skip messages the same time as last_email
+            excluded_ids_for_nextrun = [email.get('id') for email in new_emails if
+                                        email.get('receivedDateTime') == last_email_time]
 
-        fetched_emails_ids = [email.get('id') for email in fetched_emails]
-        return fetched_emails, fetched_emails_ids
+        return new_emails, excluded_ids_for_nextrun, last_email_time
 
     @staticmethod
     def _parse_item_as_dict(email):
@@ -803,12 +836,21 @@ class MsGraphClient:
         """
         parsed_email = MsGraphClient._parse_item_as_dict(email)
 
-        if email.get('hasAttachments', False):  # handling attachments of fetched email
-            parsed_email['Attachments'] = self._get_email_attachments(message_id=email.get('id', ''))
+        # handling attachments of fetched email
+        attachments = self._get_email_attachments(message_id=email.get('id', ''))
+        if attachments:
+            parsed_email['Attachments'] = attachments
+
+        parsed_email['Mailbox'] = self._mailbox_to_fetch
+
+        body = email.get('bodyPreview', '')
+        if not body or self.display_full_email_body:
+            # parse HTML into plain-text
+            body = get_text_from_html(parsed_email.get('Body') or '')
 
         incident = {
             'name': parsed_email['Subject'],
-            'details': email.get('bodyPreview', '') or parsed_email['Body'],
+            'details': body,
             'labels': MsGraphClient._parse_email_as_labels(parsed_email),
             'occurred': parsed_email['ModifiedTime'],
             'attachment': parsed_email.get('Attachments', []),
@@ -816,27 +858,6 @@ class MsGraphClient:
         }
 
         return incident
-
-    @staticmethod
-    def _get_next_run_time(fetched_emails, start_time):
-        """
-        Returns received time of last email if exist, else utc time that was passed as start_time.
-
-        The elements in fetched emails are ordered by modified time in ascending order,
-        meaning the last element has the latest received time.
-
-        :type fetched_emails: ``list``
-        :param fetched_emails: List of fetched emails
-
-        :type start_time: ``str``
-        :param start_time: utc string of format Y-m-dTH:M:SZ
-
-        :return: Returns str date of format Y-m-dTH:M:SZ
-        :rtype: `str`
-        """
-        next_run_time = fetched_emails[-1].get('receivedDateTime') if fetched_emails else start_time
-
-        return next_run_time
 
     @logger
     def fetch_incidents(self, last_run):
@@ -851,9 +872,8 @@ class MsGraphClient:
         :return: Next run data and parsed fetched incidents
         :rtype: ``dict`` and ``list``
         """
-        start_time = get_now_utc()
         last_fetch = last_run.get('LAST_RUN_TIME')
-        exclude_ids = last_run.get('LAST_RUN_IDS', [])
+        exclude_ids = list(set(last_run.get('LAST_RUN_IDS', [])))  # remove any possible duplicates
         last_run_folder_path = last_run.get('LAST_RUN_FOLDER_PATH')
         folder_path_changed = (last_run_folder_path != self._folder_to_fetch)
         last_run_account = last_run.get('LAST_RUN_ACCOUNT')
@@ -871,18 +891,18 @@ class MsGraphClient:
             last_fetch, _ = parse_date_range(self._first_fetch_interval, date_format=DATE_FORMAT, utc=True)
             demisto.info(f"MS-Graph-Listener: initialize fetch and pull emails from date :{last_fetch}")
 
-        fetched_emails, fetched_emails_ids = self._fetch_last_emails(folder_id=folder_id, last_fetch=last_fetch,
-                                                                     exclude_ids=exclude_ids)
+        fetched_emails, exclude_ids, next_run_time = self._fetch_last_emails(
+            folder_id=folder_id, last_fetch=last_fetch, exclude_ids=exclude_ids)
         incidents = list(map(self._parse_email_as_incident, fetched_emails))
-        next_run_time = MsGraphClient._get_next_run_time(fetched_emails, start_time)
         next_run = {
             'LAST_RUN_TIME': next_run_time,
-            'LAST_RUN_IDS': fetched_emails_ids,
+            'LAST_RUN_IDS': exclude_ids,
             'LAST_RUN_FOLDER_ID': folder_id,
             'LAST_RUN_FOLDER_PATH': self._folder_to_fetch,
             'LAST_RUN_ACCOUNT': self._mailbox_to_fetch,
         }
         demisto.info(f"MS-Graph-Listener: fetched {len(incidents)} incidents")
+        demisto.debug(next_run)
 
         return next_run, incidents
 
@@ -913,26 +933,6 @@ def upload_file(filename, content, attachments_list):
         'path': file_result['FileID'],
         'name': file_result['File']
     })
-
-
-def add_second_to_str_date(date_string, seconds=1):
-    """
-    Add seconds to date string.
-
-    Is used as workaround to Graph API bug, for more information go to:
-    https://stackoverflow.com/questions/35729273/office-365-graph-api-greater-than-filter-on-received-date
-
-    :type date_string: ``str``
-    :param date_string: Date string to add seconds
-
-    :type seconds: int
-    :param seconds: Seconds to add to date, by default is set to 1
-
-    :return: Date time string appended seconds
-    :rtype: ``str``
-    """
-    added_result = datetime.strptime(date_string, DATE_FORMAT) + timedelta(seconds=seconds)
-    return datetime.strftime(added_result, DATE_FORMAT)
 
 
 def get_now_utc():
@@ -1041,11 +1041,14 @@ def build_mail_object(raw_response: Union[dict, list], user_id: str, get_body: b
             'Headers': 'internetMessageHeaders',
             'Flag': 'flag',
             'Importance': 'importance',
+            'InternetMessageID': 'internetMessageId',
+            'ConversationID': 'conversationId',
         }
 
         contact_properties = {
             'Sender': 'sender',
             'From': 'from',
+            'Recipients': 'toRecipients',
             'CCRecipients': 'ccRecipients',
             'BCCRecipients': 'bccRecipients',
             'ReplyTo': 'replyTo'
@@ -1126,6 +1129,23 @@ def parse_folders_list(folders_list):
     return [{FOLDER_MAPPING[k]: v for (k, v) in f.items() if k in FOLDER_MAPPING} for f in folders_list]
 
 
+def get_text_from_html(html):
+    # parse HTML into plain-text
+    soup = BeautifulSoup(html, features="html.parser")
+
+    # kill all script and style elements
+    for script in soup(["script", "style"]):
+        script.extract()  # rip it out
+    # get text
+    text = soup.get_text()
+    # break into lines and remove leading and trailing space on each line
+    lines = (line.strip() for line in text.splitlines())
+    # break multi-headlines into a line each
+    chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
+    # drop blank lines
+    return '\n'.join(chunk for chunk in chunks if chunk)
+
+
 ''' COMMANDS '''
 
 
@@ -1157,7 +1177,7 @@ def list_mails_command(client: MsGraphClient, args):
         human_readable = tableToMarkdown(
             human_readable_header,
             mail_context,
-            headers=['Subject', 'From', 'SendTime', 'ID']
+            headers=['Subject', 'From', 'Recipients', 'SendTime', 'ID', 'InternetMessageID']
         )
     else:
         human_readable = '### No mails were found'
@@ -1243,7 +1263,7 @@ def get_message_command(client: MsGraphClient, args):
     human_readable = tableToMarkdown(
         f'Results for message ID {message_id}',
         mail_context,
-        headers=['ID', 'Subject', 'SendTime', 'Sender', 'From', 'HasAttachments', 'Body']
+        headers=['ID', 'Subject', 'SendTime', 'Sender', 'From', 'Recipients', 'HasAttachments', 'Body']
     )
     return_outputs(
         human_readable,
@@ -1261,7 +1281,7 @@ def list_attachments_command(client: MsGraphClient, args):
     if attachments:
         attachment_list = [{
             'ID': attachment.get('id'),
-            'Name': attachment.get('name'),
+            'Name': attachment.get('name') or attachment.get('id'),
             'Type': attachment.get('contentType')
         } for attachment in attachments]
         attachment_entry = {'ID': message_id, 'Attachment': attachment_list, 'UserID': user_id}
@@ -1397,6 +1417,7 @@ def prepare_args(command, args):
             'to_recipients': argToList(args.get('to')),
             'cc_recipients': argToList(args.get('cc')),
             'bcc_recipients': argToList(args.get('bcc')),
+            'reply_to': argToList(args.get('replyTo')),
             'subject': args.get('subject', ''),
             'body': email_body,
             'body_type': args.get('bodyType', 'html'),
@@ -1413,7 +1434,10 @@ def prepare_args(command, args):
         return {
             'to_recipients': argToList(args.get('to')),
             'message_id': args.get('ID', ''),
-            'comment': args.get('body')
+            'comment': args.get('body'),
+            'attach_ids': argToList(args.get('attachIDs')),
+            'attach_names': argToList(args.get('attachNames')),
+            'attach_cids': argToList((args.get('attachCIDs')))
         }
 
     return args
@@ -1445,6 +1469,7 @@ def build_recipients_human_readable(message_content):
     to_recipients = []
     cc_recipients = []
     bcc_recipients = []
+    reply_to_recipients = []
 
     for recipients_dict in message_content.get('toRecipients', {}):
         to_recipients.append(recipients_dict.get('emailAddress', {}).get('address'))
@@ -1455,7 +1480,10 @@ def build_recipients_human_readable(message_content):
     for recipients_dict in message_content.get('bccRecipients', {}):
         bcc_recipients.append(recipients_dict.get('emailAddress', {}).get('address'))
 
-    return to_recipients, cc_recipients, bcc_recipients
+    for recipients_dict in message_content.get('replyTo', {}):
+        reply_to_recipients.append(recipients_dict.get('emailAddress', {}).get('address'))
+
+    return to_recipients, cc_recipients, bcc_recipients, reply_to_recipients
 
 
 def send_email_command(client: MsGraphClient, args):
@@ -1471,10 +1499,11 @@ def send_email_command(client: MsGraphClient, args):
     message_content.pop('attachments', None)
     message_content.pop('internet_message_headers', None)
 
-    to_recipients, cc_recipients, bcc_recipients = build_recipients_human_readable(message_content)
+    to_recipients, cc_recipients, bcc_recipients, reply_to_recipients = build_recipients_human_readable(message_content)
     message_content['toRecipients'] = to_recipients
     message_content['ccRecipients'] = cc_recipients
     message_content['bccRecipients'] = bcc_recipients
+    message_content['replyTo'] = reply_to_recipients
 
     message_content = assign_params(**message_content)
     human_readable = tableToMarkdown('Email was sent successfully.', message_content)
@@ -1485,7 +1514,7 @@ def send_email_command(client: MsGraphClient, args):
 
 def prepare_outputs_for_reply_mail_command(reply, email_to, message_id):
     reply.pop('attachments', None)
-    to_recipients, cc_recipients, bcc_recipients = build_recipients_human_readable(reply)
+    to_recipients, cc_recipients, bcc_recipients, _ = build_recipients_human_readable(reply)
     reply['toRecipients'] = to_recipients
     reply['ccRecipients'] = cc_recipients
     reply['bccRecipients'] = bcc_recipients
@@ -1536,10 +1565,13 @@ def reply_to_command(client: MsGraphClient, args):
     to_recipients = prepared_args.get('to_recipients')
     message_id = prepared_args.get('message_id')
     comment = prepared_args.get('comment')
+    attach_ids = prepared_args.get('attach_ids')
+    attach_names = prepared_args.get('attach_names')
+    attach_cids = prepared_args.get('attach_cids')
     email = args.get('from')
 
     suffix_endpoint = f'/users/{email}/messages/{message_id}/reply'
-    reply = client.build_reply(to_recipients, comment)
+    reply = client.build_reply(to_recipients, comment, attach_ids, attach_names, attach_cids)
     client.ms_client.http_request('POST', suffix_endpoint, json_data=reply, resp_type="text")
 
     return_outputs(f'### Replied to: {", ".join(to_recipients)} with comment: {comment}')
@@ -1559,24 +1591,46 @@ def main():
     args: dict = demisto.args()
     params: dict = demisto.params()
     self_deployed: bool = params.get('self_deployed', False)
-    tenant_id: str = params.get('tenant_id', '')
-    auth_and_token_url: str = params.get('auth_id', '')
-    enc_key: str = params.get('enc_key', '')
-    base_url: str = urljoin(params.get('url', ''), '/v1.0')
+    # There're several options for tenant_id & auth_and_token_url due to the recent credentials set supoort enhancment.
+    tenant_id: str = params.get('tenant_id', '') or params.get('_tenant_id', '') or (params.get('creds_tenant_id')
+                                                                                     or {}).get('password', '')
+    auth_and_token_url: str = params.get('auth_id', '') or params.get('_auth_id', '') or (params.get('creds_auth_id')
+                                                                                          or {}).get('password', '')
+    enc_key: str = params.get('enc_key', '') or (params.get('credentials') or {}).get('password', '')
+    server = params.get('url', '')
+    base_url: str = urljoin(server, '/v1.0')
+    endpoint = GRAPH_BASE_ENDPOINTS.get(server, 'com')
     app_name: str = 'ms-graph-mail'
     ok_codes: tuple = (200, 201, 202, 204)
     use_ssl: bool = not params.get('insecure', False)
     proxy: bool = params.get('proxy', False)
+    certificate_thumbprint: str = params.get('certificate_thumbprint', '')
+    private_key: str = params.get('private_key', '')
+
+    if not self_deployed and not enc_key:
+        raise DemistoException('Key must be provided. For further information see '
+                               'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
+    elif not enc_key and not (certificate_thumbprint and private_key):
+        raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
+    if not auth_and_token_url:
+        raise Exception('ID must be provided.')
+    if not tenant_id:
+        raise Exception('Token must be provided.')
 
     # params related to mailbox to fetch incidents
     mailbox_to_fetch = params.get('mailbox_to_fetch', '')
     folder_to_fetch = params.get('folder_to_fetch', 'Inbox')
     first_fetch_interval = params.get('first_fetch', '15 minutes')
     emails_fetch_limit = int(params.get('fetch_limit', '50'))
+    timeout = arg_to_number(params.get('timeout', '10') or '10')
+    display_full_email_body = argToBoolean(params.get("display_full_email_body", False))
 
     client: MsGraphClient = MsGraphClient(self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url,
                                           use_ssl, proxy, ok_codes, mailbox_to_fetch, folder_to_fetch,
-                                          first_fetch_interval, emails_fetch_limit)
+                                          first_fetch_interval, emails_fetch_limit, timeout, endpoint,
+                                          certificate_thumbprint=certificate_thumbprint,
+                                          private_key=private_key, display_full_email_body=display_full_email_body
+                                          )
 
     command = demisto.command()
     LOG(f'Command being called is {command}')

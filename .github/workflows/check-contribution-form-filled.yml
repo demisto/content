@@ -9,23 +9,21 @@ permissions:
 jobs:
   contribution_form_filled_verification:
     runs-on: ubuntu-latest
-    # This status check only runs for: forked PRS that don't contain the '[Marketplace Contribution]' in their title, the head branch is not a test branch and the PR don't have the 'Contribution Form Filled' label.
-    if: github.repository == 'demisto/content' && github.event.pull_request.head.repo.fork == true && contains(github.head_ref, 'xsoar-bot-contrib-ContributionTestPack') == false && contains(github.event.pull_request.labels.*.name, 'Contribution Form Filled') == false && contains(github.event.pull_request.title, '[Marketplace Contribution]') == false
+    # This status check only runs for: forked PRS that don't contain the '[Marketplace Contribution]' in their title and the head branch is not a test branch.
+    if: github.repository == 'demisto/content' && github.event.pull_request.head.repo.fork == true && contains(github.head_ref, 'xsoar-bot-contrib-ContributionTestPack') == false && contains(github.event.pull_request.title, '[Marketplace Contribution]') == false
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          ref: master
+        uses: actions/checkout@v3
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
-          python-version: '3.8'
+          python-version: '3.9'
       - name: Install Python Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pipenv
+          pip install pipenv==2021.5.29
           cd Utils/github_workflow_scripts
-          pipenv install --dev
+          pipenv sync
       - name: Check if contribution form needs to be filled
         env:
           PR_NUMBER: ${{ github.event.pull_request.number }}

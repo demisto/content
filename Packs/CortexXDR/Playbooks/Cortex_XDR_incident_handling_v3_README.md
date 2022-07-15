@@ -8,25 +8,27 @@ After the remediation, if there are no new alerts, the playbook stops the alert 
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Palo Alto Networks - Hunting And Threat Detection
-* Cortex XDR Alerts Handling
-* Block Indicators - Generic v2
-* Cortex XDR device control violations
 * Calculate Severity - Generic v2
+* Block Indicators - Generic v2
 * Entity Enrichment - Generic v3
+* Cortex XDR device control violations
+* Cortex XDR Alerts Handling
+* Palo Alto Networks - Hunting And Threat Detection
 
 ### Integrations
 * CortexXDRIR
 * Cortex XDR - IR
 
 ### Scripts
-This playbook does not use any scripts.
+* Set
+* DBotFindSimilarIncidents
+* SetGridField
 
 ### Commands
-* linkIncidents
 * xdr-update-incident
-* closeInvestigation
+* linkIncidents
 * xdr-get-incident-extra-data
+* closeInvestigation
 
 ## Playbook Inputs
 ---
@@ -42,7 +44,7 @@ This playbook does not use any scripts.
 | CriticalHostnames | A comma-separated list of names of critical endpoints in the organization. This will affect the calculated severity of the incident. |  | Optional |
 | CriticalADGroups | CSV of DN names of critical Active Directory groups. This will affect the severity calculated for this incident. |  | Optional |
 | InternalHostRegex | This is provided for the script IsInternalHostName that checks if the detected host names are internal or external if the hosts match the organization's naming convention. For example, the host testpc1 will have the following regex \\w\{6\}\\d\{1\}. |  | Optional |
-| InternalDomainName | The organizations internal domain name. This is provided for the script IsInternalHostName that checks if the detected host names are internal or external if the hosts contain the internal domains suffix. For example, xsoar.com. If there is more than one domain, use the \| character to separate values such as \(xsoar.com\|test.com\). |  | Optional |
+| InternalDomainName | The organizations internal domain name. This is provided for the script IsInternalHostName that checks if the detected host names are internal or external if the hosts contain the internal domains suffix. For example, paloaltonetworks.com. If there is more than one domain, use the \| character to separate values such as \(paloaltonetworks.com\|test.com\). |  | Optional |
 | TimeStamp | Timestamp in relative date format for query device control events from Cortex XDR. | 10 days | Optional |
 | AutoRemediation | Whether remediation will be run automatically or manually. If set to "True" - remediation will be automatic. | False | Optional |
 

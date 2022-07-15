@@ -1,0 +1,30 @@
+{
+    "fromVersion": "5.5.0",
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GRACase"
+    ],
+    "caseInsensitive": true,
+    "cliName": "gracaseweblink",
+    "closeForm": false,
+    "content": true,
+    "description": "GRA Case Weblink",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_gracaseweblink",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GRA Case Weblink",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "url",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1
+}

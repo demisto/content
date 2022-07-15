@@ -1,0 +1,16 @@
+{
+  "Content-Length": "0",
+  "Last-Modified": "Wed, 18 Aug 2021 14:36:06 GMT",
+  "ETag": "0x8D962558312C6F1",
+  "Server": "Windows-Azure-Blob/1.0 Microsoft-HTTPAPI/2.0",
+  "x-ms-request-id": "bca2eb81-301e-0004-0d1c-979d33000000",
+  "x-ms-version": "2020-10-02",
+  "x-ms-lease-status": "unlocked",
+  "x-ms-lease-state": "available",
+  "x-ms-has-immutability-policy": "false",
+  "x-ms-has-legal-hold": "false",
+  "x-ms-immutable-storage-with-versioning-enabled": "false",
+  "x-ms-default-encryption-scope": "$account-encryption-key",
+  "x-ms-deny-encryption-scope-override": "false",
+  "Date": "Sun, 22 Aug 2021 06:09:53 GMT"
+}

@@ -1,0 +1,107 @@
+id: IndicatorMaliciousRatioCalculation_test
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: IndicatorMaliciousRatioCalculation_test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 50115134-5eca-4aea-87d9-4a4e7c2fa8ac
+    type: start
+    task:
+      id: 50115134-5eca-4aea-87d9-4a4e7c2fa8ac
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: f7947f6e-3575-4fac-8f59-4bc913d610f9
+    type: regular
+    task:
+      id: f7947f6e-3575-4fac-8f59-4bc913d610f9
+      version: -1
+      name: run-script
+      description: Return indicators appears in resolved incidents, and resolved incident
+        ids.
+      scriptName: IndicatorMaliciousRatioCalculation
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 5728f07a-dc28-48bc-828b-e4d47c4129f2
+    type: title
+    task:
+      id: 5728f07a-dc28-48bc-828b-e4d47c4129f2
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 385,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0

@@ -1,5 +1,11 @@
 [file:AutofocusV2.yml]
-ignore=IN136
+ignore=IN136,IN145
 
 [file:README.md]
 ignore=RM102,RM106
+
+[file:FeedAutofocusDaily.yml]
+ignore=IN145
+
+[file:FeedAutofocus.yml]
+ignore=IN145

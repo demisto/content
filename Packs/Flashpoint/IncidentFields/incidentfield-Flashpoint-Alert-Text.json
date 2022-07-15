@@ -1,0 +1,31 @@
+{
+    "id": "incident_flashpointalerttext",
+    "version": -1,
+    "modified": "2021-08-19T19:42:00.449406383+05:30",
+    "name": "Flashpoint Alert Text",
+    "ownerOnly": false,
+    "description": "The body of the alert.",
+    "cliName": "flashpointalerttext",
+    "type": "html",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Flashpoint Alerts"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.0.0"
+}

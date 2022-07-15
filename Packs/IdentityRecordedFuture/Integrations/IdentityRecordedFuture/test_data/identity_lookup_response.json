@@ -1,0 +1,130 @@
+{
+    "identities": [
+      {
+        "identity": {
+          "subjects": [
+            "realname@fake.com"
+          ]
+        },
+        "count": 1,
+        "credentials": [
+          {
+            "subject": "realname@fake.com",
+            "dumps": [
+              {
+                "name": "Dark Web Dump 2018",
+                "description": "This combo list of email addresses and clear passwords is not associated with any specific breach. It was obtained through Recorded Future’s proprietary sources. No further information is available about the source of this data.",
+                "downloaded": "2018-06-07T00:00:00.000Z",
+                "type": "Combo List",
+                "breaches": [
+                  {
+                    "name": "string",
+                    "domain": "string",
+                    "type": "string",
+                    "breached": "2021-12-28T13:38:40.030Z",
+                    "start": "2021-12-28T13:38:40.030Z",
+                    "stop": "2021-12-28T13:38:40.030Z",
+                    "precision": "year",
+                    "description": "string",
+                    "site_description": "string"
+                  }
+                ]
+              }
+            ],
+            "first_downloaded": "2018-06-07T00:00:00.000Z",
+            "latest_downloaded": "2018-06-07T00:00:00.000Z",
+            "exposed_secret": {
+              "type": "clear",
+              "hashes": [
+                {
+                  "algorithm": "SHA1",
+                  "hash": "15c3cfa739d45508ac5050cc7cfmklsiofm448fff"
+                },
+                {
+                  "algorithm": "SHA256",
+                  "hash": "7a3064782bf5a5c378afklgjoafigj835jg98j5cc1e52c551fc6ef6bc06"
+                },
+                {
+                  "algorithm": "NTLM",
+                  "hash": "73ef3934aff5jkflfgjoitjgb51eb450"
+                },
+                {
+                  "algorithm": "MD5",
+                  "hash": "b5226ddbuhg47hgj30bef85a"
+                }
+              ],
+              "details": {
+                "properties": [
+                  "Letter",
+                  "Number",
+                  "UpperCase",
+                  "LowerCase",
+                  "AtLeast8Characters"
+                ],
+                "clear_text_hint": "Lo"
+              },
+              "effectively_clear": true
+            }
+          }
+        ]
+      },
+      {
+        "identity": {
+          "subjects": [
+            "notreal@notfake.com"
+          ]
+        },
+        "count": 1,
+        "credentials": [
+          {
+            "subject": "notreal@notfake.com",
+            "dumps": [
+              {
+                "name": "Dark Web Password Dump 2021-09-09"
+              }
+            ],
+            "first_downloaded": "2021-09-09T19:40:56.000Z",
+            "latest_downloaded": "2021-09-09T19:40:56.000Z",
+            "exposed_secret": {
+              "hashes": [
+                {
+                  "algorithm": "SHA1",
+                  "hash": "d9314f7edsdfgsdfg44g4g4ge89a0b0fc3fb0"
+                },
+                {
+                  "algorithm": "SHA256",
+                  "hash": "7b4127c3eded3dfef3f2fsf1f2a022da7628879b92f8f6e72efc"
+                },
+                {
+                  "algorithm": "NTLM",
+                  "hash": "3d2272lkio69f359e0a23fqfqf14bf64fa7"
+                },
+                {
+                  "algorithm": "MD5",
+                  "hash": "529b4a236ijf848fj41c1d05c1"
+                }
+              ],
+              "details": {
+                "properties": [
+                  "Letter",
+                  "Number",
+                  "UpperCase",
+                  "LowerCase",
+                  "AtLeast16Characters"
+                ]
+              },
+              "effectively_clear": false
+            },
+            "compromise": {
+              "exfiltration_date": "2021-09-09T19:40:56.000Z"
+            },
+            "authorization_service": {
+              "url": "https://id.notfake.com",
+              "domain": "fake1.com"
+            }
+          }
+        ]
+      }
+    ],
+    "count": 2
+  }

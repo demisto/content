@@ -7,7 +7,7 @@ This pack provides the necessary configuration and checks for determining the le
 - Retrieves information about the user account that initiated the connections
 - Calculates the time and distance between user login attempts
 - Generates a geographical map of the deduced travel path of the user
-- Determines, based on whitelisted IPs, manager decision and supposed speed of travel, whether the traveler is an impossible traveler
+- Determines, based on IPs on allow list, manager decision and supposed speed of travel, whether the traveler is an impossible traveler
 - Allows the analyst to block IPs used by the user and disable the user in case of compromise
 
 

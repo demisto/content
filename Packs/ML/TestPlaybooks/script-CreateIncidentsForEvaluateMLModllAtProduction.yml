@@ -84,4 +84,4 @@ subtype: python2
 runonce: false
 dockerimage: demisto/python:2.7.18.10627
 runas: DBotWeakRole
-fromversion: 5.5.0
+fromversion: 5.0.0

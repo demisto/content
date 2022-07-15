@@ -1,4 +1,4 @@
-[file:integration-CarbonBlackDefense.yml]
+[file:CarbonBlackDefense.yml]
 ignore=IN126
 
 [file:classifier-mapper-incoming-Carbon_Black_Endpoint_Standard_Incoming_Mapper.json]
@@ -12,3 +12,6 @@ ignore=IF100
 
 [file:incidentfield-CarbonBlackES_Last_Event_Time.json]
 ignore=IF100
+
+[file:CarbonBlackLiveResponseCloud.yml]
+ignore=IN145

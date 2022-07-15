@@ -1,0 +1,31 @@
+{
+    "snapshots": [
+        {
+            "uuid": "1234567890",
+            "username": null,
+            "hostname": "hostname",
+            "created": "1583675642000",
+            "connectionId": "local:hostname:2020_03_08T13.54.02.119Z.db",
+            "size": 993603584,
+            "isUpload": false,
+            "name": "2020_03_08T13.54.02.119Z.db",
+            "recorderVersion": 1,
+            "evidenceType": "snapshot",
+            "completed": "2021-03-10T16:22:42.523Z"
+        },
+        {
+            "uuid": "12345678901",
+            "username": null,
+            "hostname": "hostname",
+            "created": "1583677562000",
+            "connectionId": "local:hostname:2020_03_08T14.26.02.234Z.db",
+            "size": 999419904,
+            "isUpload": false,
+            "name": "2020_03_08T14.26.02.234Z.db",
+            "recorderVersion": 1,
+            "evidenceType": "snapshot",
+            "completed": "2021-03-10T16:22:42.525Z"
+        }
+    ],
+    "totalCount": 18
+}

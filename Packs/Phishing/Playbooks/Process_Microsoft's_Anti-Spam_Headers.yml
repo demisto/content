@@ -1,0 +1,1379 @@
+id: Process Microsoft's Anti-Spam Headers
+version: -1
+name: Process Microsoft's Anti-Spam Headers
+description: |-
+        This playbook stores the SCL, BCL, and PCL scores if they exist to the associated incident fields (Phishing SCL Score, Phishing PCL Score, and Phishing BCL Score).
+        It also does the following:
+        1) Sets the email classification to "spam" if the SCL score is equal to or greater than 5.
+        2) Sets the incident severity according to the playbook inputs (default is: PCL/BCL - Medium, SCL - Low). The severity of the incident is set only when one (or more) of the following occurs:
+          - PCL (Phishing Confidence Level) For a score between and including 4-8: The message content is likely to be phishing.
+          - [BCL](https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/bulk-complaint-level-values?view=o365-worldwide) (Bulk Complaint Level) For a score between and including 4-7: The message is from a bulk sender that generates a mixed number of complaints. 
+            For a score between and including 8-9: The message is from a bulk sender that generates a high number of complaints.
+          - [SCL](https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/spam-confidence-levels?view=o365-worldwide) (Spam Confidence Level) For a score between and including 5-6: Spam filtering marks the message as spam. 
+            For a score of 9: Spam filtering marks the message as high confidence spam. See [anti-spam stamps](https://docs.microsoft.com/en-us/exchange/antispam-and-antimalware/antispam-protection/antispam-stamps?view=exchserver-2019).
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 605fdd42-0a46-460c-8dd7-c36ce8fa26db
+    type: start
+    task:
+      id: 605fdd42-0a46-460c-8dd7-c36ce8fa26db
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "30"
+      - "31"
+      - "32"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": -220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: ad4eb847-00ab-48d2-8166-cb97372b069e
+    type: condition
+    task:
+      id: ad4eb847-00ab-48d2-8166-cb97372b069e
+      description: ""
+      version: -1
+      name: Check X-Microsoft-Antispam Header
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "29"
+      "yes":
+      - "53"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: match
+          left:
+            value:
+              complex:
+                root: incident.emailheaders
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: incident.emailheaders.headername
+                      iscontext: true
+                    right:
+                      value:
+                        simple: X-Microsoft-Antispam
+                accessor: headervalue
+            iscontext: true
+          right:
+            value:
+              simple: .*BCL:[4-9];.*
+    view: |-
+      {
+        "position": {
+          "x": -410,
+          "y": 150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: a5ab5409-1255-4a1a-8930-6b218aa07274
+    type: title
+    task:
+      id: a5ab5409-1255-4a1a-8930-6b218aa07274
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 2310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "20":
+    id: "20"
+    taskid: 455f7bbe-da60-444d-854b-93ea59d1f921
+    type: regular
+    task:
+      id: 455f7bbe-da60-444d-854b-93ea59d1f921
+      version: -1
+      name: Set PCL score
+      description: Sets the value of the "phishingpclscore" incident field.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      phishingpclscore:
+        complex:
+          root: incident.emailheaders
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: incident.emailheaders.headername
+                iscontext: true
+              right:
+                value:
+                  simple: X-MS-Exchange-Organization-PCL
+          accessor: headervalue
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 227.5,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "22":
+    id: "22"
+    taskid: e3df5fa2-ce9b-4e7f-8200-1f2c8b41e7a1
+    type: regular
+    task:
+      id: e3df5fa2-ce9b-4e7f-8200-1f2c8b41e7a1
+      version: -1
+      name: Set MicrosoftHeadersSeverityCheck (Medium)
+      description: Sets the Microsoft Headers BCL-PCL severity in context.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      key:
+        simple: Email.MicrosoftHeadersSeverityCheck
+      value:
+        simple: ${BCL-PCL-Severity}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1480,
+          "y": 1920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "23":
+    id: "23"
+    taskid: 21500b48-153f-433b-82e8-7328125a8ace
+    type: regular
+    task:
+      id: 21500b48-153f-433b-82e8-7328125a8ace
+      version: -1
+      name: Set Email Classification to "Spam"
+      description: Sets the "emailclassification" incident field value to "Spam".
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      emailclassification:
+        simple: Spam
+      phishingsubtype:
+        simple: Automatic
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1660,
+          "y": 1180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "26":
+    id: "26"
+    taskid: 202b821d-15f6-4e32-897c-5825ce5737da
+    type: condition
+    task:
+      id: 202b821d-15f6-4e32-897c-5825ce5737da
+      description: ""
+      version: -1
+      name: Check X-MS-Exchange-Organization-PCL Header
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "29"
+      "yes":
+      - "20"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: match
+          left:
+            value:
+              complex:
+                root: incident.emailheaders
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: incident.emailheaders.headername
+                      iscontext: true
+                    right:
+                      value:
+                        simple: X-MS-Exchange-Organization-PCL
+                accessor: headervalue
+            iscontext: true
+          right:
+            value:
+              simple: '[4-9]'
+    view: |-
+      {
+        "position": {
+          "x": 227.5,
+          "y": 150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "27":
+    id: "27"
+    taskid: c70e3a10-3200-4e9b-845e-c40fc45a92d3
+    type: condition
+    task:
+      id: c70e3a10-3200-4e9b-845e-c40fc45a92d3
+      description: ""
+      version: -1
+      name: Check X-MS-Exchange-Organization-SCL Header
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "29"
+      "yes":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: match
+          left:
+            value:
+              complex:
+                root: incident.emailheaders
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: incident.emailheaders.headername
+                      iscontext: true
+                    right:
+                      value:
+                        simple: X-MS-Exchange-Organization-SCL
+                accessor: headervalue
+            iscontext: true
+          right:
+            value:
+              simple: '[5-9]'
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "28":
+    id: "28"
+    taskid: 489dcd85-c14a-465c-8301-54b0f4ff1e3b
+    type: condition
+    task:
+      id: 489dcd85-c14a-465c-8301-54b0f4ff1e3b
+      description: ""
+      version: -1
+      name: Check X-Forefront-Antispam-Report Header
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "29"
+      "yes":
+      - "35"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: match
+          left:
+            value:
+              complex:
+                root: incident.emailheaders
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: incident.emailheaders.headername
+                      iscontext: true
+                    right:
+                      value:
+                        simple: X-Forefront-Antispam-Report
+                accessor: headervalue
+            iscontext: true
+          right:
+            value:
+              simple: .*SCL:[5-9];.*
+    view: |-
+      {
+        "position": {
+          "x": 1900,
+          "y": 150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "29":
+    id: "29"
+    taskid: fd149735-c83e-4209-8d56-5e28c3dcfd94
+    type: title
+    task:
+      id: fd149735-c83e-4209-8d56-5e28c3dcfd94
+      version: -1
+      name: Header not found
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "30":
+    id: "30"
+    taskid: 46e572fb-7790-4f89-8c40-7365a65e0517
+    type: title
+    task:
+      id: 46e572fb-7790-4f89-8c40-7365a65e0517
+      version: -1
+      name: Check BCL score
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -410,
+          "y": -60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "31":
+    id: "31"
+    taskid: 76d7b0fd-489b-4555-87c3-9ff66e69545d
+    type: title
+    task:
+      id: 76d7b0fd-489b-4555-87c3-9ff66e69545d
+      version: -1
+      name: Check PCL score
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "26"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 227.5,
+          "y": -60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "32":
+    id: "32"
+    taskid: 73e1b417-87c0-4b6d-8189-f5c02580d4b0
+    type: title
+    task:
+      id: 73e1b417-87c0-4b6d-8189-f5c02580d4b0
+      version: -1
+      name: Check SCL score
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "28"
+      - "27"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1620,
+          "y": -60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "34":
+    id: "34"
+    taskid: a18f7a54-ee16-4951-8376-5b9494b542d0
+    type: regular
+    task:
+      id: a18f7a54-ee16-4951-8376-5b9494b542d0
+      version: -1
+      name: Set SCL-Exchange score
+      description: Sets the Spam Confidence Level (SCL) value in the context after extraction.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      key:
+        simple: SCL-Exchange
+      value:
+        complex:
+          root: incident.emailheaders
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: incident.emailheaders.headername
+                iscontext: true
+              right:
+                value:
+                  simple: X-MS-Exchange-Organization-SCL
+          accessor: headervalue
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "35":
+    id: "35"
+    taskid: 81a87f1b-7d8e-489e-88a0-e77ca32c0a6d
+    type: regular
+    task:
+      id: 81a87f1b-7d8e-489e-88a0-e77ca32c0a6d
+      version: -1
+      name: Set SCL-Forefront score
+      description: Sets the Spam Confidence Level (SCL) value in context after extraction.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      key:
+        simple: SCL-Forefront
+      value:
+        complex:
+          root: incident.emailheaders
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: incident.emailheaders.headername
+                iscontext: true
+              right:
+                value:
+                  simple: X-Forefront-Antispam-Report
+          accessor: headervalue
+          transformers:
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case:
+                value:
+                  simple: "true"
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: SCL:[5-9]
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: '[5-9]'
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1900,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "37":
+    id: "37"
+    taskid: 45e3ba3c-dece-4528-86ce-b1b59ffe980c
+    type: condition
+    task:
+      id: 45e3ba3c-dece-4528-86ce-b1b59ffe980c
+      description: ''
+      version: -1
+      name: Determine SCL score
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Both (Exchange):
+      - "54"
+      Both (Forefront):
+      - "56"
+      SCL-Exchange:
+      - "55"
+      SCL-Forefront:
+      - "57"
+    separatecontext: false
+    conditions:
+    - label: SCL-Exchange
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${SCL-Exchange}
+            iscontext: true
+      - - operator: isNotExists
+          left:
+            value:
+              simple: ${SCL-Forefront}
+            iscontext: true
+    - label: SCL-Forefront
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${SCL-Forefront}
+            iscontext: true
+      - - operator: isNotExists
+          left:
+            value:
+              simple: ${SCL-Exchange}
+            iscontext: true
+    - label: Both (Exchange)
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: ${SCL-Exchange}
+            iscontext: true
+          right:
+            value:
+              simple: ${SCL-Forefront}
+    - label: Both (Forefront)
+      condition:
+      - - operator: greaterThan
+          left:
+            value:
+              simple: ${SCL-Forefront}
+            iscontext: true
+          right:
+            value:
+              simple: ${SCL-Exchange}
+    view: |-
+      {
+        "position": {
+          "x": 1660,
+          "y": 640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "38":
+    id: "38"
+    taskid: 13d15274-9037-49d9-89d8-231c8acf4296
+    type: regular
+    task:
+      id: 13d15274-9037-49d9-89d8-231c8acf4296
+      version: -1
+      name: Set SCL score
+      description: Sets the value of the "phishingsclscore" incident field.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      phishingsclscore:
+        simple: ${SCL-Exchange}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1230,
+          "y": 950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "39":
+    id: "39"
+    taskid: b174d8b2-6573-4774-8198-c02bda8a5222
+    type: regular
+    task:
+      id: b174d8b2-6573-4774-8198-c02bda8a5222
+      version: -1
+      name: Set SCL score
+      description: Sets the value of the "phishingsclscore" incident field.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      phishingsclscore:
+        simple: ${SCL-Forefront}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2090,
+          "y": 950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "44":
+    id: "44"
+    taskid: 3fc4be30-d1d8-4b5e-81ed-1dce1bf65fa5
+    type: title
+    task:
+      id: 3fc4be30-d1d8-4b5e-81ed-1dce1bf65fa5
+      version: -1
+      name: Set Incident Severity
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "45"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "45":
+    id: "45"
+    taskid: 0dd57700-406c-4c19-8de4-1cfad2c8d3e3
+    type: condition
+    task:
+      id: 0dd57700-406c-4c19-8de4-1cfad2c8d3e3
+      description: ''
+      version: -1
+      name: Determine final Severity
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      BCL-PCL:
+      - "22"
+      Both:
+      - "52"
+      SCL:
+      - "46"
+    separatecontext: false
+    conditions:
+    - label: BCL-PCL
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: inputs.SCL-Severity
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: ${BCL-PCL-Severity}
+            iscontext: true
+    - label: SCL
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: ${BCL-PCL-Severity}
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.SCL-Severity
+            iscontext: true
+    - label: Both
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.SCL-Severity
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: inputs.PCL-Severity
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 1540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "46":
+    id: "46"
+    taskid: 3e77e94f-592e-4295-8ad8-eec74dfcdbfe
+    type: regular
+    task:
+      id: 3e77e94f-592e-4295-8ad8-eec74dfcdbfe
+      version: -1
+      name: Set MicrosoftHeadersSeverityCheck (Low)
+      description: Sets the Microsoft Headers SCL severity in context.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      key:
+        simple: Email.MicrosoftHeadersSeverityCheck
+      value:
+        simple: ${inputs.SCL-Severity}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 1920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "47":
+    id: "47"
+    taskid: 2fa9dfeb-0446-43bc-8c5f-b17d068d16d1
+    type: title
+    task:
+      id: 2fa9dfeb-0446-43bc-8c5f-b17d068d16d1
+      version: -1
+      name: Calculate BCL/PCL severity
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "48"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -80,
+          "y": 625
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "48":
+    id: "48"
+    taskid: 0d7c7f37-faf1-4416-82b3-d92e0438d263
+    type: condition
+    task:
+      id: 0d7c7f37-faf1-4416-82b3-d92e0438d263
+      description: ''
+      version: -1
+      name: Check BCL/PCL values
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "51"
+      BCL:
+      - "50"
+      PCL:
+      - "49"
+    separatecontext: false
+    conditions:
+    - label: PCL
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: ${BCL}
+            iscontext: true
+    - label: BCL
+      condition:
+      - - operator: isNotExists
+          left:
+            value:
+              simple: ${PCL}
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -80,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "49":
+    id: "49"
+    taskid: be2701ca-09a6-4c67-84a3-f463fa5507ea
+    type: regular
+    task:
+      id: be2701ca-09a6-4c67-84a3-f463fa5507ea
+      version: -1
+      name: Set PCL Severity
+      description: Sets the Phishing Confidence Level (PCL) severity in context.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      key:
+        simple: BCL-PCL-Severity
+      value:
+        simple: ${inputs.PCL-Severity}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -340,
+          "y": 1150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "50":
+    id: "50"
+    taskid: 930c7725-5436-4f12-8eb2-aeb4ad5a9a19
+    type: regular
+    task:
+      id: 930c7725-5436-4f12-8eb2-aeb4ad5a9a19
+      version: -1
+      name: Set BCL Severity
+      description: Sets the Bulk Complaint Level (BCL) severity in context.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      key:
+        simple: BCL-PCL-Severity
+      value:
+        simple: ${inputs.BCL-Severity}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 1150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "51":
+    id: "51"
+    taskid: 0942526e-d878-45c1-850f-7443d03aacb5
+    type: condition
+    task:
+      id: 0942526e-d878-45c1-850f-7443d03aacb5
+      description: ''
+      version: -1
+      name: Choose the highest severity
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      BCL:
+      - "50"
+      PCL:
+      - "49"
+    separatecontext: false
+    conditions:
+    - label: PCL
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: inputs.PCL-Severity
+            iscontext: true
+          right:
+            value:
+              simple: inputs.BCL-Severity
+            iscontext: true
+    - label: BCL
+      condition:
+      - - operator: greaterThan
+          left:
+            value:
+              simple: inputs.BCL-Severity
+            iscontext: true
+          right:
+            value:
+              simple: inputs.PCL-Severity
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": -80,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "52":
+    id: "52"
+    taskid: a37026fc-4045-4880-81b0-b35a6c7b9a89
+    type: condition
+    task:
+      id: a37026fc-4045-4880-81b0-b35a6c7b9a89
+      description: ''
+      version: -1
+      name: Choose the highest severity
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      BCL-PCL:
+      - "22"
+      SCL:
+      - "46"
+    separatecontext: false
+    conditions:
+    - label: BCL-PCL
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: ${BCL-PCL-Severity}
+            iscontext: true
+          right:
+            value:
+              simple: inputs.SCL-Severity
+            iscontext: true
+    - label: SCL
+      condition:
+      - - operator: greaterThan
+          left:
+            value:
+              simple: inputs.SCL-Severity
+            iscontext: true
+          right:
+            value:
+              simple: ${BCL-PCL-Severity}
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 1750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "53":
+    id: "53"
+    taskid: 6987092a-727c-4df0-8d23-e1dbdc33a4e3
+    type: regular
+    task:
+      id: 6987092a-727c-4df0-8d23-e1dbdc33a4e3
+      version: -1
+      name: Set BCL score
+      description: Sets the value of the "phishingbclscore" incident field.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      phishingbclscore:
+        complex:
+          root: incident.emailheaders
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: incident.emailheaders.headername
+                iscontext: true
+              right:
+                value:
+                  simple: X-Microsoft-Antispam
+          accessor: headervalue
+          transformers:
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case:
+                value:
+                  simple: "true"
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: BCL:[4-9]
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: '[4-9]'
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -410,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "54":
+    id: "54"
+    taskid: f4736539-733f-4a55-8dce-c2a4b2e8ce20
+    type: title
+    task:
+      id: f4736539-733f-4a55-8dce-c2a4b2e8ce20
+      version: -1
+      name: Both - Exchange
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "38"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1030,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "55":
+    id: "55"
+    taskid: a1ed2fa6-9f20-483b-85c2-42e7795bc060
+    type: title
+    task:
+      id: a1ed2fa6-9f20-483b-85c2-42e7795bc060
+      version: -1
+      name: SCL - Exchange
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "38"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1440,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "56":
+    id: "56"
+    taskid: 2d08b456-f3fe-4931-8778-245bc94c3b90
+    type: title
+    task:
+      id: 2d08b456-f3fe-4931-8778-245bc94c3b90
+      version: -1
+      name: Both - Forefront
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "39"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2290,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "57":
+    id: "57"
+    taskid: ad2ac72c-2f52-440e-8a2f-e95ccb617377
+    type: title
+    task:
+      id: ad2ac72c-2f52-440e-8a2f-e95ccb617377
+      version: -1
+      name: SCL - Forefront
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "39"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1880,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "1_29_#default#": 0.14,
+      "26_29_#default#": 0.32,
+      "27_29_#default#": 0.26,
+      "28_29_#default#": 0.14,
+      "45_22_BCL-PCL": 0.68,
+      "51_49_PCL": 0.46,
+      "51_50_BCL": 0.45,
+      "52_10_#default#": 0.48
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2595,
+        "width": 3080,
+        "x": -410,
+        "y": -220
+      }
+    }
+  }
+inputs:
+- key: BCL-Severity
+  value:
+    simple: "2"
+  required: true
+  description: |-
+    Sets the minimum severity of an incident with a Bulk Complaint Level (BCL) score equal to or greater than 4.
+
+    Possible values: 0 (Unknown), 1 (Low), 2 (Medium), 3 (High), 4 (Critical).
+  playbookInputQuery:
+- key: PCL-Severity
+  value:
+    simple: "2"
+  required: true
+  description: |-
+    Sets the minimum severity of an incident with a Phishing Confidence Level (PCL) score equal to or greater than 4.
+
+    Possible values: 0 (Unknown), 1 (Low), 2 (Medium), 3 (High), 4 (Critical).
+  playbookInputQuery:
+- key: SCL-Severity
+  value:
+    simple: "1"
+  required: true
+  description: |-
+    Sets the minimum severity of an incident with a Spam Confidence Level (SCL) score equal to or greater than 5.
+
+    Possible values: 0 (Unknown), 1 (Low), 2 (Medium), 3 (High), 4 (Critical).
+  playbookInputQuery:
+outputs:
+- contextPath: Email.MicrosoftHeadersSeverityCheck
+  description: |
+    Possible Values:
+
+    Medium: PCL or BCL scores are equal to or greater than 4.
+
+    High: BCL score is equal to or greater than 8.
+  type: string
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

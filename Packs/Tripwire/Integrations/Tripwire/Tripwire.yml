@@ -50,8 +50,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Tripwire is a file integrity management (FIM), FIM monitors files and
-  folders on systems and is triggered when they have changed.
+description: Tripwire is a file integrity management (FIM), FIM monitors files and folders on systems and is triggered when they have changed.
 display: Tripwire
 name: Tripwire
 script:
@@ -70,8 +69,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Element names of elements versions to fetch. (case insensitive)
-        .comma seperated
+      description: Element names of elements versions to fetch. (case insensitive) .comma seperated
       isArray: true
       name: element_names
       required: false
@@ -101,8 +99,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Possible Hashes value (md5, sha1, sha256, sha512) of elements versions
-        to fetch. comma seperated.
+      description: Possible Hashes value (md5, sha1, sha256, sha512) of elements versions to fetch. comma seperated.
       isArray: true
       name: version_hashes
       required: false
@@ -114,19 +111,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        Start detected time of element versions to fetch.
-        The format can be either relative e.g. "2 days" or date time "2020-11-24T17:07:27Z".
-        When using start time , please make sure to use end time too, if not end time will be set to current time by default.
+      description: "Start detected time of element versions to fetch.\nThe format can be either relative e.g. \"2 days\" or date time \"2020-11-24T17:07:27Z\".\nWhen using start time , please make sure to use end time too, if not end time will be set to current time by default."
       isArray: false
       name: start_detected_time
       required: false
       secret: false
     - default: false
-      description: |-
-        Start received time of element versions to fetch.
-        The format can be either relative e.g. "2 days" or date time "2020-11-24T17:07:27Z".
-        When using start time , please make sure to use end time too, if not end time will be set to current time by default.
+      description: "Start received time of element versions to fetch.\nThe format can be either relative e.g. \"2 days\" or date time \"2020-11-24T17:07:27Z\".\nWhen using start time , please make sure to use end time too, if not end time will be set to current time by default."
       isArray: false
       name: start_received_time
       required: false
@@ -145,17 +136,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: |-
-        End detected time of element versions to fetch.
-        The format can be either relative e.g. "2 days" or date time "2020-11-24T17:07:27Z"
+      description: "End detected time of element versions to fetch.\nThe format can be either relative e.g. \"2 days\" or date time \"2020-11-24T17:07:27Z\""
       isArray: false
       name: end_detected_time
       required: false
       secret: false
     - default: false
-      description: |-
-        End received time of element versions to fetch.
-        The format can be either relative e.g. "2 days" or date time "2020-11-24T17:07:27Z"
+      description: "End received time of element versions to fetch.\nThe format can be either relative e.g. \"2 days\" or date time \"2020-11-24T17:07:27Z\""
       isArray: false
       name: end_received_time
       required: false
@@ -264,8 +251,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns a list of all rules or those that match the provided filter
-      criteria.
+    description: Returns a list of all rules or those that match the provided filter criteria.
     execution: false
     name: tripwire-rules-list
     outputs:
@@ -401,8 +387,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: IP addresses of nodes to fetch (only finds agent nodes). comma
-        seperated.
+      description: IP addresses of nodes to fetch (only finds agent nodes). comma seperated.
       isArray: true
       name: node_ips
       required: false
@@ -445,8 +430,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Returns a list of all nodes or those that match the provided filter
-      criteria.
+    description: Returns a list of all nodes or those that match the provided filter criteria.
     execution: false
     name: tripwire-nodes-list
     outputs:
@@ -540,7 +524,7 @@ script:
     - contextPath: Tripwire.Nodes.version
       description: Versions of nodes.
       type: String
-  dockerimage: demisto/python3:3.9.6.22912
+  dockerimage: demisto/python3:3.10.5.31797
   feed: false
   isfetch: true
   longRunning: false
@@ -552,3 +536,5 @@ script:
 defaultmapperin: Tripwire-mapper
 defaultclassifier: Tripwire
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

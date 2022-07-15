@@ -1,0 +1,4236 @@
+id: LogRhythmRestV2-test
+version: -1
+name: LogRhythmRestV2-test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c8154d91-78c4-42b0-8423-08ff7abef1ac
+    type: start
+    task:
+      id: c8154d91-78c4-42b0-8423-08ff7abef1ac
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 412238d0-6dac-4257-867a-50fb9e180072
+    type: regular
+    task:
+      id: 412238d0-6dac-4257-867a-50fb9e180072
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "77"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 1ce76cf7-1880-4a11-8907-1b7dbfb5beac
+    type: regular
+    task:
+      id: 1ce76cf7-1880-4a11-8907-1b7dbfb5beac
+      version: -1
+      name: lr-alarms-list
+      script: '|||lr-alarms-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      alarm_status:
+        simple: Opened
+      count:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 86dbc8ca-2496-474c-8bef-046897ce1868
+    type: condition
+    task:
+      id: 86dbc8ca-2496-474c-8bef-046897ce1868
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Alarm.alarmDataCached
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Alarm.alarmId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Alarm.alarmRuleName
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LogRhythm.Alarm.alarmStatus
+            iscontext: true
+          right:
+            value:
+              simple: Opened
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Alarm.dateInserted
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Alarm.entityName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 11217f7d-be7d-4a40-8cfb-a68dac2476ba
+    type: regular
+    task:
+      id: 11217f7d-be7d-4a40-8cfb-a68dac2476ba
+      version: -1
+      name: lr-alarm-update status to New
+      script: '|||lr-alarm-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      alarm_id:
+        complex:
+          root: AlarmID
+      alarm_status:
+        simple: New
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: e22a6fa6-31fc-4913-8207-22531c00729a
+    type: regular
+    task:
+      id: e22a6fa6-31fc-4913-8207-22531c00729a
+      version: -1
+      name: lr-alarm-add-comment
+      script: '|||lr-alarm-add-comment'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      alarm_comment:
+        simple: test comment
+      alarm_id:
+        complex:
+          root: AlarmID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 66487ea4-576a-4def-8cd0-a404da512257
+    type: regular
+    task:
+      id: 66487ea4-576a-4def-8cd0-a404da512257
+      version: -1
+      name: lr-alarm-history-list
+      script: '|||lr-alarm-history-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      alarm_id:
+        complex:
+          root: AlarmID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 7d226cc7-9d42-4067-8310-b104dd576fde
+    type: condition
+    task:
+      id: 7d226cc7-9d42-4067-8310-b104dd576fde
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LogRhythm.AlarmHistory.alarmId
+            iscontext: true
+          right:
+            value:
+              simple: AlarmID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LogRhythm.AlarmHistory.comments
+            iscontext: true
+          right:
+            value:
+              simple: 'Changed status to: New'
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LogRhythm.AlarmHistory.comments
+            iscontext: true
+          right:
+            value:
+              simple: 'Changed RBP to: 10'
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LogRhythm.AlarmHistory.comments
+            iscontext: true
+          right:
+            value:
+              simple: 'Comment: test comment'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 032d9369-e1c4-4d61-8f56-3192828d400d
+    type: regular
+    task:
+      id: 032d9369-e1c4-4d61-8f56-3192828d400d
+      version: -1
+      name: lr-alarm-events-list
+      script: '|||lr-alarm-events-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "73"
+    scriptarguments:
+      alarm_id:
+        complex:
+          root: AlarmID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 02f091fc-847e-4634-8893-04c7e3e77609
+    type: regular
+    task:
+      id: 02f091fc-847e-4634-8893-04c7e3e77609
+      version: -1
+      name: lr-alarm-summary
+      script: '|||lr-alarm-summary'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "75"
+    scriptarguments:
+      alarm_id:
+        complex:
+          root: AlarmID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3315
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 3b63da87-cf66-4f89-8dfa-0c19a7a1bf66
+    type: regular
+    task:
+      id: 3b63da87-cf66-4f89-8dfa-0c19a7a1bf66
+      version: -1
+      name: lr-cases-list
+      script: '|||lr-cases-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      priority:
+        simple: "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 374918e5-ee7b-45e8-86c0-76f8d6f0d015
+    type: condition
+    task:
+      id: 374918e5-ee7b-45e8-86c0-76f8d6f0d015
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "95"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Case.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Case.number
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Case.dateCreated
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Case.dateUpdated
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Case.owner.number
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Case.owner.name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: LogRhythm.Case.owner.disabled
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Case.lastUpdatedBy.number
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Case.lastUpdatedBy.name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: LogRhythm.Case.lastUpdatedBy.disabled
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Case.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Case.status.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Case.status.number
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LogRhythm.Case.priority
+            iscontext: true
+          right:
+            value:
+              simple: "5"
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Case.entity.number
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Case.entity.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Case.entity.fullName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Case.collaborators.number
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Case.collaborators.name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: LogRhythm.Case.collaborators.disabled
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 5d6ffc7c-c2bb-485b-80a0-6eeb43f90b11
+    type: regular
+    task:
+      id: 5d6ffc7c-c2bb-485b-80a0-6eeb43f90b11
+      version: -1
+      name: lr-case-create
+      script: '|||lr-case-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "96"
+    scriptarguments:
+      name:
+        simple: case created from test playbook
+      priority:
+        simple: "1"
+      summary:
+        simple: test summary
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: b54f5e32-92c8-46db-87de-343571a9caa4
+    type: regular
+    task:
+      id: b54f5e32-92c8-46db-87de-343571a9caa4
+      version: -1
+      name: lr-case-update
+      script: '|||lr-case-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      case_id:
+        complex:
+          root: LogRhythm.Case
+          accessor: id
+      priority:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 7f00009d-89fd-4360-8451-8cafd5161cf1
+    type: condition
+    task:
+      id: 7f00009d-89fd-4360-8451-8cafd5161cf1
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LogRhythm.Case.priority
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 00af188a-558c-4d06-87f4-c3413e1b8730
+    type: regular
+    task:
+      id: 00af188a-558c-4d06-87f4-c3413e1b8730
+      version: -1
+      name: lr-case-status-change
+      script: '|||lr-case-status-change'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      case_id:
+        complex:
+          root: LogRhythm.Case
+          accessor: id
+      status:
+        simple: Incident
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: ddac3934-36c8-4d55-8771-d22c9cc5b01a
+    type: condition
+    task:
+      id: ddac3934-36c8-4d55-8771-d22c9cc5b01a
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LogRhythm.Case.status.name
+            iscontext: true
+          right:
+            value:
+              simple: Incident
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LogRhythm.Case.status.number
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: d75b9922-bb54-4388-86f6-390ed4255649
+    type: regular
+    task:
+      id: d75b9922-bb54-4388-86f6-390ed4255649
+      version: -1
+      name: lr-case-evidence-list
+      script: '|||lr-case-evidence-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "100"
+    scriptarguments:
+      case_id:
+        complex:
+          root: LogRhythm.Case
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 4015
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 9faf74e2-c261-42ee-8423-07a217b36c03
+    type: regular
+    task:
+      id: 9faf74e2-c261-42ee-8423-07a217b36c03
+      version: -1
+      name: lr-case-alarm-evidence-add
+      script: '|||lr-case-alarm-evidence-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      alarm_numbers:
+        complex:
+          root: AlarmID
+      case_id:
+        complex:
+          root: LogRhythm.Case
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 2615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 8ab4d505-49a9-470f-8b48-001eb298f35e
+    type: condition
+    task:
+      id: 8ab4d505-49a9-470f-8b48-001eb298f35e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LogRhythm.AlarmEvidence.CaseID
+            iscontext: true
+          right:
+            value:
+              simple: LogRhythm.Case.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.AlarmEvidence.Evidences.number
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LogRhythm.AlarmEvidence.Evidences.type
+            iscontext: true
+          right:
+            value:
+              simple: alarm
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LogRhythm.AlarmEvidence.Evidences.alarm.alarmId
+            iscontext: true
+          right:
+            value:
+              simple: AlarmID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 4af759f2-a224-4805-8fa7-dfece7c5f884
+    type: regular
+    task:
+      id: 4af759f2-a224-4805-8fa7-dfece7c5f884
+      version: -1
+      name: lr-case-note-evidence-add
+      script: '|||lr-case-note-evidence-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "97"
+    scriptarguments:
+      case_id:
+        complex:
+          root: LogRhythm.Case
+          accessor: id
+      note:
+        simple: note from test playbook
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 2965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 43b4b19e-ff8c-4c13-811b-fc343f63227c
+    type: regular
+    task:
+      id: 43b4b19e-ff8c-4c13-811b-fc343f63227c
+      version: -1
+      name: lr-case-file-evidence-add
+      script: '|||lr-case-file-evidence-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "101"
+    scriptarguments:
+      case_id:
+        complex:
+          root: LogRhythm.Case
+          accessor: id
+      entryId:
+        complex:
+          root: File
+          accessor: EntryID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 3490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 05399cf4-d74d-4674-8d5c-51adfdc652af
+    type: regular
+    task:
+      id: 05399cf4-d74d-4674-8d5c-51adfdc652af
+      version: -1
+      name: lr-case-evidence-delete - file
+      script: '|||lr-case-evidence-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "102"
+    scriptarguments:
+      case_id:
+        complex:
+          root: LogRhythm.Case
+          accessor: id
+      evidence_number:
+        complex:
+          root: LogRhythm.FileEvidence.Evidences
+          accessor: number
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 4365
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 06187c94-a0df-45ed-8391-814f53b667c1
+    type: regular
+    task:
+      id: 06187c94-a0df-45ed-8391-814f53b667c1
+      version: -1
+      name: lr-case-file-evidence-download
+      script: '|||lr-case-file-evidence-download'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      case_id:
+        complex:
+          root: LogRhythm.Case
+          accessor: id
+      evidence_number:
+        complex:
+          root: LogRhythm.FileEvidence.Evidences
+          accessor: number
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 3840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 89657e4f-3b90-4373-8ed8-df89e45bc034
+    type: regular
+    task:
+      id: 89657e4f-3b90-4373-8ed8-df89e45bc034
+      version: -1
+      name: lr-case-tags-add
+      script: '|||lr-case-tags-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      case_id:
+        complex:
+          root: LogRhythm.Case
+          accessor: id
+      tag_numbers:
+        complex:
+          root: LogRhythm.Tag.[0]
+          accessor: number
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ','
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: LogRhythm.Tag.[1].number
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 5415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: aedeef77-cf34-4599-87d9-59a9224a9e17
+    type: condition
+    task:
+      id: aedeef77-cf34-4599-87d9-59a9224a9e17
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: LogRhythm.Case.tags.number
+            iscontext: true
+          right:
+            value:
+              simple: LogRhythm.Tag.[0].number
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LogRhythm.Case.tags.number
+            iscontext: true
+          right:
+            value:
+              simple: LogRhythm.Tag.[1].number
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 5590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: c62780ac-41f7-4c44-84d7-39329e591124
+    type: regular
+    task:
+      id: c62780ac-41f7-4c44-84d7-39329e591124
+      version: -1
+      name: lr-case-tags-remove
+      script: '|||lr-case-tags-remove'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "107"
+    scriptarguments:
+      case_id:
+        complex:
+          root: LogRhythm.Case
+          accessor: id
+      tag_numbers:
+        complex:
+          root: LogRhythm.Tag.[0]
+          accessor: number
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ','
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: LogRhythm.Tag.[1].number
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 5765
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: bdda2799-358c-46cf-82d1-54aaf28ba284
+    type: regular
+    task:
+      id: bdda2799-358c-46cf-82d1-54aaf28ba284
+      version: -1
+      name: lr-tags-list
+      script: '|||lr-tags-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: ef813ec2-1d09-49d5-8a91-254ef175b8c4
+    type: condition
+    task:
+      id: ef813ec2-1d09-49d5-8a91-254ef175b8c4
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Tag.number
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Tag.text
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Tag.dateCreated
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Tag.createdBy.number
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Tag.createdBy.name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: LogRhythm.Tag.createdBy.disabled
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 4ab9f210-e85d-4a5d-8197-649cb21555b3
+    type: regular
+    task:
+      id: 4ab9f210-e85d-4a5d-8197-649cb21555b3
+      version: -1
+      name: lr-case-collaborators-list
+      script: '|||lr-case-collaborators-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      case_id:
+        complex:
+          root: LogRhythm.Case
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 6115
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: c548b9e8-2337-45ec-857f-fcdd754c337e
+    type: condition
+    task:
+      id: c548b9e8-2337-45ec-857f-fcdd754c337e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "39"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.CaseCollaborator.owner.number
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.CaseCollaborator.owner.name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: LogRhythm.CaseCollaborator.owner.disabled
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.CaseCollaborator.collaborators.number
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.CaseCollaborator.collaborators.name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: LogRhythm.CaseCollaborator.collaborators.disabled
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LogRhythm.CaseCollaborator.CaseID
+            iscontext: true
+          right:
+            value:
+              simple: LogRhythm.Case.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 6290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 261b62dd-795b-4a79-809a-dbed912f0226
+    type: regular
+    task:
+      id: 261b62dd-795b-4a79-809a-dbed912f0226
+      version: -1
+      name: lr-case-collaborators-update
+      script: '|||lr-case-collaborators-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "110"
+    scriptarguments:
+      case_id:
+        complex:
+          root: LogRhythm.Case
+          accessor: id
+      collaborators:
+        simple: "1"
+      owner:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 6465
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 0b6ff2fd-b783-44db-86de-96ce1a1506ab
+    type: regular
+    task:
+      id: 0b6ff2fd-b783-44db-86de-96ce1a1506ab
+      version: -1
+      name: lr-entities-list
+      script: '|||lr-entities-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 09e9ea3a-c2d3-4b40-8d32-9c6bc83d3f34
+    type: condition
+    task:
+      id: 09e9ea3a-c2d3-4b40-8d32-9c6bc83d3f34
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "113"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Entity.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Entity.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Entity.fullName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Entity.recordStatusName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Entity.shortDesc
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Entity.dateUpdated
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 92ebec54-b63a-439f-8161-6d471101d42a
+    type: regular
+    task:
+      id: 92ebec54-b63a-439f-8161-6d471101d42a
+      version: -1
+      name: lr-hosts-list
+      script: '|||lr-hosts-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: ae4f2af7-c284-45a6-8bf9-09c4521ab52f
+    type: condition
+    task:
+      id: ae4f2af7-c284-45a6-8bf9-09c4521ab52f
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Host.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Host.entity.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Host.entity.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Host.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Host.recordStatusName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 4d7c3c1f-8ed2-4b93-845a-24cbea1743ef
+    type: regular
+    task:
+      id: 4d7c3c1f-8ed2-4b93-845a-24cbea1743ef
+      version: -1
+      name: lr-users-list
+      script: '|||lr-users-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "79"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 67a7ec0f-a620-4eda-89f9-981f4c8f49af
+    type: regular
+    task:
+      id: 67a7ec0f-a620-4eda-89f9-981f4c8f49af
+      version: -1
+      name: lr-lists-get
+      script: '|||lr-lists-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 5ddb1a67-7a3a-4077-8b8e-432a8cfc0a46
+    type: condition
+    task:
+      id: 5ddb1a67-7a3a-4077-8b8e-432a8cfc0a46
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "49"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.List.listType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.List.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.List.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.List.shortDescription
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.List.useContext
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: LogRhythm.List.autoImportOption.enabled
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: LogRhythm.List.autoImportOption.usePatterns
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: LogRhythm.List.autoImportOption.replaceExisting
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.List.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.List.guid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.List.dateCreated
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.List.dateUpdated
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.List.readAccess
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.List.writeAccess
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: LogRhythm.List.restrictedRead
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.List.entityName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.List.entryCount
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: LogRhythm.List.needToNotify
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: LogRhythm.List.doesExpire
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.List.owner
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.List.longDescription
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.List.timeToLiveSeconds
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.List.revisitDate
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3315
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: 8f932dbb-4179-4b0f-83fd-27ac4ba030c3
+    type: regular
+    task:
+      id: 8f932dbb-4179-4b0f-83fd-27ac4ba030c3
+      version: -1
+      name: lr-list-details-and-items-get
+      description: Returns list details and list items based on list GUID.
+      script: '|||lr-list-details-and-items-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "80"
+    scriptarguments:
+      list_guid:
+        simple: EA778B8F-20CA-4413-9A2D-CF69FB536793
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 4bc6fc1d-90da-4a75-89f0-53b16053c29d
+    type: regular
+    task:
+      id: 4bc6fc1d-90da-4a75-89f0-53b16053c29d
+      version: -1
+      name: lr-list-items-add
+      script: '|||lr-list-items-add'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      items:
+        simple: '{"listItemDataType": "PortRange","listItemType": "PortRange","value":
+          "200,300","valueAsListReference":{"listType": "Network"}}'
+      list_guid:
+        simple: EA778B8F-20CA-4413-9A2D-CF69FB536793
+      list_id:
+        simple: EA778B8F-20CA-4413-9A2D-CF69FB536793
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: 09249f3e-043f-4171-839f-7445d10b4f94
+    type: condition
+    task:
+      id: 09249f3e-043f-4171-839f-7445d10b4f94
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "81"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LogRhythm.ListItemsAdd.guid
+            iscontext: true
+          right:
+            value:
+              simple: EA778B8F-20CA-4413-9A2D-CF69FB536793
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.ListItemsAdd.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.ListItemsAdd.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.ListItemsAdd.dateCreated
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4015
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: b3cb3af7-6fda-45af-8ba1-8b0540cee7de
+    type: regular
+    task:
+      id: b3cb3af7-6fda-45af-8ba1-8b0540cee7de
+      version: -1
+      name: lr-list-items-remove
+      script: '|||lr-list-items-remove'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "109"
+    scriptarguments:
+      items:
+        simple: '{"listItemDataType": "PortRange","listItemType": "PortRange","value":
+          "200,300","valueAsListReference":{"listType": "Network"}}'
+      list_guid:
+        simple: EA778B8F-20CA-4413-9A2D-CF69FB536793
+      list_id:
+        simple: EA778B8F-20CA-4413-9A2D-CF69FB536793
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: 3fed5330-d666-4413-828c-f3e0ffda837f
+    type: regular
+    task:
+      id: 3fed5330-d666-4413-828c-f3e0ffda837f
+      version: -1
+      name: endpoint
+      script: '|||endpoint'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "86"
+    scriptarguments:
+      hostname:
+        simple: test-host
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 5590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: b8fdbaeb-8064-413a-86f4-eeaa39e1789c
+    type: regular
+    task:
+      id: b8fdbaeb-8064-413a-86f4-eeaa39e1789c
+      version: -1
+      name: lr-alarm-update
+      script: '|||lr-alarm-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "70"
+    scriptarguments:
+      alarm_id:
+        complex:
+          root: AlarmID
+      alarm_status:
+        simple: Working
+      rbp:
+        simple: "10"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: d9436760-7cac-437f-87b3-0d2cfe5d4f25
+    type: regular
+    task:
+      id: d9436760-7cac-437f-87b3-0d2cfe5d4f25
+      version: -1
+      name: Set AlarmID context
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "78"
+    scriptarguments:
+      key:
+        simple: AlarmID
+      value:
+        complex:
+          root: LogRhythm.Alarm
+          accessor: alarmId
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: 1b82d7b2-43d7-42ab-8446-7023a58bd3f9
+    type: title
+    task:
+      id: 1b82d7b2-43d7-42ab-8446-7023a58bd3f9
+      version: -1
+      name: ALARM API
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "71"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: 7b8284fe-444e-41fe-81a9-e064e30980d9
+    type: title
+    task:
+      id: 7b8284fe-444e-41fe-81a9-e064e30980d9
+      version: -1
+      name: CASE API
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: 366a8db0-8dc5-4aa5-8e7a-2683a214ffbf
+    type: title
+    task:
+      id: 366a8db0-8dc5-4aa5-8e7a-2683a214ffbf
+      version: -1
+      name: ADMIN API
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "35"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: 81ef2320-0948-44be-8b91-b605858652d0
+    type: condition
+    task:
+      id: 81ef2320-0948-44be-8b91-b605858652d0
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: LogRhythm.Alarm
+                accessor: alarmId
+            iscontext: true
+          right:
+            value:
+              simple: AlarmID
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: LogRhythm.Alarm
+                accessor: alarmStatus
+            iscontext: true
+          right:
+            value:
+              simple: Working
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: 55f53253-38f2-4288-8fcc-4c06d35327b5
+    type: regular
+    task:
+      id: 55f53253-38f2-4288-8fcc-4c06d35327b5
+      version: -1
+      name: lr-alarms-list filter by alarm_id
+      script: '|||lr-alarms-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "69"
+    scriptarguments:
+      alarm_id:
+        complex:
+          root: AlarmID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: d41bf670-eba9-46d1-8e90-edb29edc2afd
+    type: regular
+    task:
+      id: d41bf670-eba9-46d1-8e90-edb29edc2afd
+      version: -1
+      name: lr-alarms-list filter by alarm_id
+      script: '|||lr-alarms-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "72"
+    scriptarguments:
+      alarm_id:
+        complex:
+          root: AlarmID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: bb66d135-e2e5-4268-822d-2930bd9fd581
+    type: condition
+    task:
+      id: bb66d135-e2e5-4268-822d-2930bd9fd581
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "63"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: LogRhythm.Alarm
+                accessor: alarmId
+            iscontext: true
+          right:
+            value:
+              simple: AlarmID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: LogRhythm.Alarm
+                accessor: alarmStatus
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: 45d9f8c6-1bd2-4419-8fa4-bb2ab41d2e0f
+    type: condition
+    task:
+      id: 45d9f8c6-1bd2-4419-8fa4-bb2ab41d2e0f
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.AlarmEvents.serviceName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.AlarmEvents.priority
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.AlarmEvents.entityName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.AlarmEvents.logMessage
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: 71839164-e177-437b-8d1e-4f2c0b88bb30
+    type: condition
+    task:
+      id: 71839164-e177-437b-8d1e-4f2c0b88bb30
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "76"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.AlarmSummary.additionalDetails
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.AlarmSummary.alarmRuleGroup
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.AlarmSummary.alarmRuleId
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.AlarmSummary.briefDescription
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.AlarmSummary.dateInserted
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.AlarmSummary.rbpAvg
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.AlarmSummary.rbpMax
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: fc1879c7-bfb2-4bfd-8146-9a785c05ed72
+    type: title
+    task:
+      id: fc1879c7-bfb2-4bfd-8146-9a785c05ed72
+      version: -1
+      name: Test ALARM API Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "77":
+    id: "77"
+    taskid: a5f3b9fa-51bd-4ca4-812d-8badd25d4cf3
+    type: regular
+    task:
+      id: a5f3b9fa-51bd-4ca4-812d-8badd25d4cf3
+      version: -1
+      name: lr-alarms-list - get the latest alarm
+      script: '|||lr-alarms-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      count:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: 5d1e33f4-e938-4608-8647-7c41964e8886
+    type: regular
+    task:
+      id: 5d1e33f4-e938-4608-8647-7c41964e8886
+      version: -1
+      name: Delete LogRhythm.Alarm context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "67"
+      - "88"
+      - "68"
+      - "66"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: LogRhythm.Alarm
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "79":
+    id: "79"
+    taskid: 16746319-e635-4017-8638-a0c4ec807519
+    type: condition
+    task:
+      id: 16746319-e635-4017-8638-a0c4ec807519
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "46"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.User.userType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.User.fullName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.User.objectPermissions
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.User.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.User.dateUpdated
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "80":
+    id: "80"
+    taskid: 0ed900ed-b8d9-41dd-8e40-49abbf54c3f0
+    type: condition
+    task:
+      id: 0ed900ed-b8d9-41dd-8e40-49abbf54c3f0
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "51"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.ListDetails.listType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.ListDetails.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.ListDetails.name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: LogRhythm.ListDetails.autoImportOption.enabled
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: LogRhythm.ListDetails.autoImportOption.usePatterns
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: LogRhythm.ListDetails.autoImportOption.replaceExisting
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.ListDetails.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.ListDetails.guid
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.ListDetails.dateCreated
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.ListDetails.dateUpdated
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.ListDetails.revisitDate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.ListDetails.readAccess
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.ListDetails.writeAccess
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: LogRhythm.ListDetails.restrictedRead
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.ListDetails.entityName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.ListDetails.entryCount
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: LogRhythm.ListDetails.needToNotify
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: LogRhythm.ListDetails.doesExpire
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.ListDetails.owner
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.ListDetails.listItemsCount
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.ListDetails.items.displayValue
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.ListDetails.items.value
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3665
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "81":
+    id: "81"
+    taskid: 20d72c37-cc72-4b85-8404-792187493173
+    type: regular
+    task:
+      id: 20d72c37-cc72-4b85-8404-792187493173
+      version: -1
+      name: lr-list-details-and-items-get
+      script: '|||lr-list-details-and-items-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "82"
+    scriptarguments:
+      list_guid:
+        simple: EA778B8F-20CA-4413-9A2D-CF69FB536793
+      list_id:
+        simple: EA778B8F-20CA-4413-9A2D-CF69FB536793
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "82":
+    id: "82"
+    taskid: 7b0fad56-b6e6-4c5f-83d3-44885b7c8db1
+    type: condition
+    task:
+      id: 7b0fad56-b6e6-4c5f-83d3-44885b7c8db1
+      version: -1
+      name: Verify added item
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "53"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: LogRhythm.ListDetails.items.value
+            iscontext: true
+          right:
+            value:
+              simple: 200,300
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4365
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "84":
+    id: "84"
+    taskid: 24252dfc-9506-43b4-85ac-1e9a1a0cf18b
+    type: regular
+    task:
+      id: 24252dfc-9506-43b4-85ac-1e9a1a0cf18b
+      version: -1
+      name: lr-list-details-and-items-get
+      script: '|||lr-list-details-and-items-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "85"
+    scriptarguments:
+      list_guid:
+        simple: EA778B8F-20CA-4413-9A2D-CF69FB536793
+      list_id:
+        simple: EA778B8F-20CA-4413-9A2D-CF69FB536793
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "85":
+    id: "85"
+    taskid: 8e77fa2f-507b-4ead-8384-8a6d42a17378
+    type: condition
+    task:
+      id: 8e77fa2f-507b-4ead-8384-8a6d42a17378
+      version: -1
+      name: Verify deleted item
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "112"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: LogRhythm.ListDetails.items.value
+            iscontext: true
+          right:
+            value:
+              simple: 200,300
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 5065
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "86":
+    id: "86"
+    taskid: 3c00dd25-2a88-4459-8090-cbd86228927d
+    type: condition
+    task:
+      id: 3c00dd25-2a88-4459-8090-cbd86228927d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "87"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Endpoint.Hostname
+            iscontext: true
+          right:
+            value:
+              simple: test-host
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Endpoint.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Endpoint.OS
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 5765
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "87":
+    id: "87"
+    taskid: 9c098f9b-699b-4b3a-8611-fd25aba0f2b9
+    type: title
+    task:
+      id: 9c098f9b-699b-4b3a-8611-fd25aba0f2b9
+      version: -1
+      name: Test ADMIN API Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 5955
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "88":
+    id: "88"
+    taskid: 3ddf7042-7bea-4e27-8128-3aa92fd7717f
+    type: title
+    task:
+      id: 3ddf7042-7bea-4e27-8128-3aa92fd7717f
+      version: -1
+      name: SEARCH API
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "89"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "89":
+    id: "89"
+    taskid: 463d432f-f3ec-4d58-8262-83772c7cf37b
+    type: playbook
+    task:
+      id: 463d432f-f3ec-4d58-8262-83772c7cf37b
+      version: -1
+      name: LogRhythmRestV2 - Search query
+      description: 'This playbook used generic polling to gets query result using
+        the command: lr-execute-search-query'
+      playbookName: LogRhythmRestV2 - Search query
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "91"
+    scriptarguments:
+      max_massage:
+        simple: "10"
+      number_of_days:
+        simple: "7"
+      query_timeout:
+        simple: "60"
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "90":
+    id: "90"
+    taskid: aaa0d334-3f03-4b92-8583-f859924d4fd1
+    type: title
+    task:
+      id: aaa0d334-3f03-4b92-8583-f859924d4fd1
+      version: -1
+      name: Test SEARCH API Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "91":
+    id: "91"
+    taskid: 8e461520-5b06-4070-8b42-521d71debf16
+    type: condition
+    task:
+      id: 8e461520-5b06-4070-8b42-521d71debf16
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "90"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: startWith
+          left:
+            value:
+              simple: LogRhythm.Search.TaskStatus
+            iscontext: true
+          right:
+            value:
+              simple: Completed
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Search.TaskId
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: LogRhythm.Search.Results
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "94":
+    id: "94"
+    taskid: 87169942-e934-4277-8998-8d8e1e898ec0
+    type: title
+    task:
+      id: 87169942-e934-4277-8998-8d8e1e898ec0
+      version: -1
+      name: Test CASE API Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 6815
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "95":
+    id: "95"
+    taskid: 351cc64a-d208-4d23-8707-c19dc260dfc0
+    type: regular
+    task:
+      id: 351cc64a-d208-4d23-8707-c19dc260dfc0
+      version: -1
+      name: Delete LogRhythm.Case context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: LogRhythm.Case
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "96":
+    id: "96"
+    taskid: c4f55eaf-40fb-4e03-80c7-012bcc685cb7
+    type: condition
+    task:
+      id: c4f55eaf-40fb-4e03-80c7-012bcc685cb7
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Case.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Case.number
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Case.dateCreated
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Case.dateUpdated
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Case.owner.number
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Case.owner.name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: LogRhythm.Case.owner.disabled
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Case.lastUpdatedBy.number
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Case.lastUpdatedBy.name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: LogRhythm.Case.lastUpdatedBy.disabled
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LogRhythm.Case.name
+            iscontext: true
+          right:
+            value:
+              simple: case created from test playbook
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LogRhythm.Case.status.name
+            iscontext: true
+          right:
+            value:
+              simple: Created
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LogRhythm.Case.status.number
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LogRhythm.Case.priority
+            iscontext: true
+          right:
+            value:
+              simple: "1"
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Case.entity.number
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Case.entity.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Case.entity.fullName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Case.collaborators.number
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Case.collaborators.name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: LogRhythm.Case.collaborators.disabled
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LogRhythm.Case.summary
+            iscontext: true
+          right:
+            value:
+              simple: test summary
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "97":
+    id: "97"
+    taskid: 6d827c1d-c191-43f3-8047-2fe19526e027
+    type: condition
+    task:
+      id: 6d827c1d-c191-43f3-8047-2fe19526e027
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "98"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LogRhythm.NoteEvidence.CaseID
+            iscontext: true
+          right:
+            value:
+              simple: LogRhythm.Case.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.NoteEvidence.Evidences.number
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LogRhythm.NoteEvidence.Evidences.type
+            iscontext: true
+          right:
+            value:
+              simple: note
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LogRhythm.NoteEvidence.Evidences.text
+            iscontext: true
+          right:
+            value:
+              simple: note from test playbook
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 3140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "98":
+    id: "98"
+    taskid: 36db288f-66c0-4d24-8d42-cbbf6d92ba83
+    type: regular
+    task:
+      id: 36db288f-66c0-4d24-8d42-cbbf6d92ba83
+      version: -1
+      name: Create file
+      description: |
+        Will create a file (using the given data input or entry ID) and upload it to current investigation war room.
+      scriptName: FileCreateAndUpload
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      data:
+        simple: This is dummy data for Logrhythm test
+      filename:
+        simple: Logrhythm_test_file.txt
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 3315
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "100":
+    id: "100"
+    taskid: 387a9775-a2d0-4b84-866b-872beaa553cf
+    type: condition
+    task:
+      id: 387a9775-a2d0-4b84-866b-872beaa553cf
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              simple: LogRhythm.CaseEvidence.Evidences
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LogRhythm.CaseEvidence.Evidences.file.name
+            iscontext: true
+          right:
+            value:
+              simple: Logrhythm_test_file.txt
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LogRhythm.CaseEvidence.Evidences.text
+            iscontext: true
+          right:
+            value:
+              simple: note from test playbook
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LogRhythm.CaseEvidence.Evidences.alarm.alarmId
+            iscontext: true
+          right:
+            value:
+              simple: AlarmID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 4190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "101":
+    id: "101"
+    taskid: d826ff22-39d9-467b-8d5d-d45b4bd0053b
+    type: condition
+    task:
+      id: d826ff22-39d9-467b-8d5d-d45b4bd0053b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LogRhythm.FileEvidence.CaseID
+            iscontext: true
+          right:
+            value:
+              simple: LogRhythm.Case.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.FileEvidence.Evidences.number
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LogRhythm.FileEvidence.Evidences.type
+            iscontext: true
+          right:
+            value:
+              simple: file
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LogRhythm.FileEvidence.Evidences.file.name
+            iscontext: true
+          right:
+            value:
+              simple: Logrhythm_test_file.txt
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LogRhythm.FileEvidence.Evidences.file.size
+            iscontext: true
+          right:
+            value:
+              simple: "37"
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 3665
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "102":
+    id: "102"
+    taskid: dc0be89b-9d14-42e8-803a-fb2d2b44b364
+    type: regular
+    task:
+      id: dc0be89b-9d14-42e8-803a-fb2d2b44b364
+      version: -1
+      name: lr-case-evidence-delete - alarm
+      script: '|||lr-case-evidence-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "103"
+    scriptarguments:
+      case_id:
+        complex:
+          root: LogRhythm.Case
+          accessor: id
+      evidence_number:
+        complex:
+          root: LogRhythm.AlarmEvidence.Evidences
+          accessor: number
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 4540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "103":
+    id: "103"
+    taskid: 1498704c-460b-473b-8d88-5ffbf81c0456
+    type: regular
+    task:
+      id: 1498704c-460b-473b-8d88-5ffbf81c0456
+      version: -1
+      name: lr-case-evidence-delete - alarm
+      script: '|||lr-case-evidence-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "104"
+    scriptarguments:
+      case_id:
+        complex:
+          root: LogRhythm.Case
+          accessor: id
+      evidence_number:
+        complex:
+          root: LogRhythm.NoteEvidence.Evidences
+          accessor: number
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 4715
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "104":
+    id: "104"
+    taskid: b78564ce-15bf-4844-83b5-5c80509444fa
+    type: regular
+    task:
+      id: b78564ce-15bf-4844-83b5-5c80509444fa
+      version: -1
+      name: lr-case-evidence-list
+      script: '|||lr-case-evidence-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "105"
+    scriptarguments:
+      case_id:
+        complex:
+          root: LogRhythm.Case
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 4890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "105":
+    id: "105"
+    taskid: b1788003-8352-4cd0-89ea-327bc67f2961
+    type: condition
+    task:
+      id: b1788003-8352-4cd0-89ea-327bc67f2961
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "106"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              simple: LogRhythm.CaseEvidence.Evidences
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 5065
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "106":
+    id: "106"
+    taskid: f417bf3f-4916-4b1c-8972-8d532a5f4964
+    type: regular
+    task:
+      id: f417bf3f-4916-4b1c-8972-8d532a5f4964
+      version: -1
+      name: lr-tags-list
+      script: '|||lr-tags-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      count:
+        simple: "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 5240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "107":
+    id: "107"
+    taskid: 9ee6be43-7d15-4d17-8919-87d7f201d93c
+    type: condition
+    task:
+      id: 9ee6be43-7d15-4d17-8919-87d7f201d93c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              simple: LogRhythm.Case.tags
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 5940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "109":
+    id: "109"
+    taskid: be7436d5-01b7-4567-813c-a852b4a7b52b
+    type: condition
+    task:
+      id: be7436d5-01b7-4567-813c-a852b4a7b52b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "84"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LogRhythm.ListItemsRemove.guid
+            iscontext: true
+          right:
+            value:
+              simple: EA778B8F-20CA-4413-9A2D-CF69FB536793
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.ListItemsRemove.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.ListItemsRemove.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.ListItemsRemove.dateCreated
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 4715
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "110":
+    id: "110"
+    taskid: 409b0651-39d6-4ea2-8ba3-6359503b46e0
+    type: condition
+    task:
+      id: 409b0651-39d6-4ea2-8ba3-6359503b46e0
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "94"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.CaseCollaborator.owner.number
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.CaseCollaborator.owner.name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: LogRhythm.CaseCollaborator.owner.disabled
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.CaseCollaborator.collaborators.number
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.CaseCollaborator.collaborators.name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: LogRhythm.CaseCollaborator.collaborators.disabled
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LogRhythm.CaseCollaborator.CaseID
+            iscontext: true
+          right:
+            value:
+              simple: LogRhythm.Case.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 6640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "111":
+    id: "111"
+    taskid: 155994a3-c7ce-4fa8-8c83-e00eae6cba5c
+    type: condition
+    task:
+      id: 155994a3-c7ce-4fa8-8c83-e00eae6cba5c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "61"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Network.name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Network.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Network.shortDesc
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Network.longDesc
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: LogRhythm.Network.riskLevel
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: LogRhythm.Network.recordStatusName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 5415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "112":
+    id: "112"
+    taskid: 7da0ba23-697d-4d00-8dc6-77a13c005a44
+    type: regular
+    task:
+      id: 7da0ba23-697d-4d00-8dc6-77a13c005a44
+      version: -1
+      name: lr-networks-list
+      description: Returns all networks that match the specified criteria.
+      script: '|||lr-networks-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "111"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 5240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "113":
+    id: "113"
+    taskid: ee3d119b-226b-4c40-8190-cd2676f48f17
+    type: regular
+    task:
+      id: ee3d119b-226b-4c40-8190-cd2676f48f17
+      version: -1
+      name: lr-hosts-status-update
+      description: Updates the status of a Host to retire or activate it.
+      script: '|||lr-hosts-status-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "114"
+    scriptarguments:
+      host_id:
+        simple: "7"
+      host_status:
+        simple: Retired
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "114":
+    id: "114"
+    taskid: 8adcb672-1e40-4602-8a5a-e69b6fba71ca
+    type: regular
+    task:
+      id: 8adcb672-1e40-4602-8a5a-e69b6fba71ca
+      version: -1
+      name: lr-hosts-list
+      description: Returns all hosts that match the specified criteria.
+      script: '|||lr-hosts-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "115"
+    scriptarguments:
+      host_id:
+        simple: "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "115":
+    id: "115"
+    taskid: ac5965d9-4fcd-462d-8182-21f92c499e53
+    type: condition
+    task:
+      id: ac5965d9-4fcd-462d-8182-21f92c499e53
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "116"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LogRhythm.Host.id
+            iscontext: true
+          right:
+            value:
+              simple: "7"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: LogRhythm.Host.recordStatusName
+            iscontext: true
+          right:
+            value:
+              simple: Retired
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "116":
+    id: "116"
+    taskid: 91a5a79b-1f72-4dad-8f75-7b89dc67a19d
+    type: regular
+    task:
+      id: 91a5a79b-1f72-4dad-8f75-7b89dc67a19d
+      version: -1
+      name: lr-hosts-status-update
+      description: Updates the status of a Host to retire or activate it.
+      script: '|||lr-hosts-status-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      host_id:
+        simple: "7"
+      host_status:
+        simple: Active
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 6820,
+        "width": 1670,
+        "x": 50,
+        "y": 60
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.5.0
+description: ''

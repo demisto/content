@@ -1,16 +1,16 @@
 args:
 - auto: PREDEFINED
-  defaultValue: "True"
+  defaultValue: 'True'
   description: is it widget or playbook task
   name: isWidget
   predefined:
-  - "True"
-  - "False"
+  - 'True'
+  - 'False'
 comment: Present or analyze workers usage
 commonfields:
   id: HealthCheckWorkers
   version: -1
-dockerimage: demisto/python3:3.9.5.21272
+dockerimage: demisto/python3:3.10.4.29342
 enabled: true
 name: HealthCheckWorkers
 outputs:

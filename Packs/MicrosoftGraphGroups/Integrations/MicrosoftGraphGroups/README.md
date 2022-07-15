@@ -1,5 +1,5 @@
 <p>
-Microsoft Graph Groups enables you to create and manage different types of groups and group functionality according to your requirements.
+Azure Active Directory Groups enables you to create and manage different types of groups and group functionality according to your requirements.
 
 This integration was integrated and tested with version 1.0 of Microsoft Graph Groups API
 </p>
@@ -15,14 +15,14 @@ For more details about the authentication used in this integration, see <a href=
 <li>Directory.ReadWrite.All - Application</li>
 <li>Group.ReadWrite.All - Application</li>
 
-<h2>Configure Microsoft Graph Groups on Cortex XSOAR</h2>
+<h2>Configure Azure Active Directory Groups on Cortex XSOAR</h2>
 
 <li>Manage the organization groups.</li>
 
 <ol>
   <li>Navigate to&nbsp;<strong>Settings</strong>&nbsp;&gt;&nbsp;<strong>Integrations</strong>
   &nbsp;&gt;&nbsp;<strong>Servers &amp; Services</strong>.</li>
-  <li>Search for Microsoft Graph Groups.</li>
+  <li>Search for Azure Active Directory Groups.</li>
   <li>
     Click&nbsp;<strong>Add instance</strong>&nbsp;to create and configure a new integration instance.
     <ul>
@@ -31,6 +31,8 @@ For more details about the authentication used in this integration, see <a href=
    <li><strong>ID (received from the admin consent - see Detailed Instructions (?)</strong></li>
    <li><strong>Token (received from the admin consent - see Detailed Instructions (?) section)</strong></li>
    <li><strong>Key (received from the admin consent - see Detailed Instructions (?)</strong></li>
+   <li><strong>Certificate Thumbprint</strong></li>
+   <li><strong>Private Key</strong></li>
    <li><strong>Trust any certificate (not secure)</strong></li>
    <li><strong>Use system proxy settings</strong></li>
     </ul>

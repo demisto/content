@@ -17,7 +17,7 @@ tags:
 - indicator-format
 timeout: '0'
 type: python
-dockerimage: demisto/tld
+dockerimage: demisto/py3-tools:0.0.1.30715
 runas: DBotWeakRole
 runonce: false
 subtype: python3

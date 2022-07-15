@@ -4,8 +4,12 @@ import pytest
 
 import demistomock as demisto
 from CommonServerPython import CommandResults
-from GitHub import main, BASE_URL, list_branch_pull_requests, list_all_projects_command, \
-    add_issue_to_project_board_command
+from GitHub import main, list_branch_pull_requests, list_all_projects_command, \
+    add_issue_to_project_board_command, get_path_data, github_releases_list_command, get_branch_command, \
+    list_issue_comments
+import GitHub
+
+REGULAR_BASE_URL = 'https://api.github.com'
 
 MOCK_PARAMS = {
     'user': 'test',
@@ -21,7 +25,7 @@ def load_test_data(json_path):
 
 def test_search_code(requests_mock, mocker):
     raw_response = load_test_data('./test_data/search_code_response.json')
-    requests_mock.get(f'{BASE_URL}/search/code?q=create_artifacts%2borg%3ademisto&page=0&per_page=10',
+    requests_mock.get(f'{REGULAR_BASE_URL}/search/code?q=create_artifacts%2borg%3ademisto&page=0&per_page=10',
                       json=raw_response)
 
     mocker.patch.object(demisto, 'params', return_value=MOCK_PARAMS)
@@ -68,6 +72,32 @@ LIST_TEAM_MEMBERS_CASES = [
     (200, {'page': 1, 'per_page': 100}),
     (40, {'page': 1, 'per_page': 40})
 ]
+
+
+RETURN_ERROR_TARGET = 'GitHub.return_error'
+
+
+@pytest.mark.parametrize('params, expected_result', [
+    ({'credentials': {'password': '1234'}}, "Insert api token or private key")
+])
+def test_missing_params(mocker, params, expected_result):
+    """
+    Given:
+      - Case 1: credentials with no sshkey.
+    When:
+      - all the required parameters are missing.
+    Then:
+      - Ensure the exception message as expected.
+      - Case 1: Should return "Insert api token or private key" error message.
+    """
+
+    mocker.patch.object(demisto, 'params', return_value=params)
+    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
+    main()
+    assert return_error_mock.call_count == 1
+    # call_args last call with a tuple of args list and kwargs
+    err_msg = return_error_mock.call_args[0][0]
+    assert expected_result in err_msg
 
 
 @pytest.mark.parametrize('limit, expected_result', SEARCH_CASES)
@@ -183,7 +213,7 @@ def test_list_all_projects_command(mocker, requests_mock):
         Assert that only the filtered projects are returned.
     """
     mocker.patch.object(demisto, 'args', return_value={'project_filter': '22,24'})
-    requests_mock.get(f'{BASE_URL}/projects?per_page=100', json=PROJECTS_TEST)
+    requests_mock.get(f'{REGULAR_BASE_URL}/projects?per_page=100', json=PROJECTS_TEST)
     mocker.patch('GitHub.get_project_details', side_effect=get_project_d)
     mocker_output = mocker.patch('GitHub.return_results')
 
@@ -218,10 +248,151 @@ def test_add_issue_to_project_board_command(mocker, requests_mock, response_code
         Assert the message returned is as expected.
     """
     mocker.patch.object(demisto, 'args', return_value={'column_id': 'column_id', 'issue_unique_id': '11111'})
-    requests_mock.post(f'{BASE_URL}/projects/columns/column_id/cards', status_code=response_code,
+    requests_mock.post(f'{REGULAR_BASE_URL}/projects/columns/column_id/cards', status_code=response_code,
                        content=response_content)
     mocker_results = mocker.patch(mocked_return)
 
     add_issue_to_project_board_command()
 
     assert mocker_results.call_args[0][0] == expected_result
+
+
+def test_get_path_data_command(requests_mock, mocker):
+    """
+    Given:
+    - Demisto args
+
+    When:
+    - Calling 'GitHub-get-path-data' command.
+
+    Then:
+    - Ensure expected CommandResults object is returned.
+
+    """
+    mocker.patch.object(demisto, 'args', return_value={'branch_name': 'Update-Docker-Image', 'repository': 'content',
+                                                       'organization': 'demisto',
+                                                       'relative_path': 'Packs/BitcoinAbuse/pack_metadata.json'})
+    GitHub.TOKEN, GitHub.USE_SSL = '', ''
+    test_get_file_data_command_response = load_test_data(
+        './test_data/get_path_data_response.json')
+    requests_mock.get('https://api.github.com/repos/demisto/content/contents/Packs/BitcoinAbuse/pack_metadata.json?ref'
+                      '=Update-Docker-Image',
+                      json=test_get_file_data_command_response['response'])
+    mocker_results = mocker.patch('GitHub.return_results')
+    get_path_data()
+
+    command_results: CommandResults = mocker_results.call_args[0][0]
+    assert command_results.outputs_prefix == 'GitHub.PathData'
+    assert command_results.outputs_key_field == 'url'
+    assert command_results.raw_response == test_get_file_data_command_response['response']
+    assert command_results.outputs == test_get_file_data_command_response['expected']
+
+
+def test_releases_list_command(requests_mock, mocker):
+    """
+    Given:
+    - Demisto args
+
+    When:
+    - Calling 'GitHub-releases_list' command.
+
+    Then:
+    - Ensure expected CommandResults object is returned.
+
+    """
+    mocker.patch.object(demisto, 'args', return_value={'repository': 'demisto-sdk', 'organization': 'demisto',
+                                                       'limit': 2})
+    GitHub.TOKEN, GitHub.USE_SSL = '', ''
+    GitHub.HEADERS = dict()
+    GitHub.BASE_URL = 'https://api.github.com/'
+    test_releases_list_command_data = load_test_data(
+        './test_data/releases_get_response.json')
+    requests_mock.get(f'{GitHub.BASE_URL}/repos/demisto/demisto-sdk/releases?per_page=100&page=1',
+                      json=test_releases_list_command_data['response'])
+    mocker_results = mocker.patch('GitHub.return_results')
+    github_releases_list_command()
+
+    command_results: CommandResults = mocker_results.call_args[0][0]
+    assert command_results.outputs_prefix == 'GitHub.Release'
+    assert command_results.outputs_key_field == 'id'
+    assert command_results.outputs == test_releases_list_command_data['expected']
+
+
+def test_get_branch(requests_mock, mocker):
+    """
+    Given:
+        A branch name that does not have an author or parents
+    When:
+        Running the get_branch_command function.
+    Then:
+        Assert that the flow succeeded and that the output is as expected
+    """
+    mocker.patch.object(demisto, 'args', return_value={'branch_name': 'my-branch'})
+    GitHub.TOKEN, GitHub.USE_SSL = '', ''
+    GitHub.HEADERS = dict()
+    GitHub.BASE_URL = 'https://api.github.com/'
+    GitHub.USER_SUFFIX = '/repos/user/repo'
+    raw_response = load_test_data('./test_data/get_branch_response.json')
+    requests_mock.get(f'{GitHub.BASE_URL}/repos/user/repo/branches/my-branch',
+                      json=raw_response)
+    mocker_results = mocker.patch('GitHub.return_outputs')
+
+    get_branch_command()
+    return_outputs_res: CommandResults = mocker_results.call_args.kwargs.get('outputs')
+    assert return_outputs_res == {
+        'GitHub.Branch(val.Name === obj.Name && val.CommitSHA === obj.CommitSHA)': {'Name': 'my_branch',
+                                                                                    'CommitSHA': 'dsfsdf',
+                                                                                    'CommitNodeID': '45678=',
+                                                                                    'CommitAuthorID': None,
+                                                                                    'CommitAuthorLogin': None,
+                                                                                    'CommitParentSHA': ['dfg',
+                                                                                                        'srdtfy'],
+                                                                                    'Protected': False}}
+
+
+@pytest.mark.parametrize('mock_params, expected_url', [
+    ({'url': 'example.com', 'token': 'testtoken'}, 'example.com'),
+    ({'token': 'testtoken'}, 'https://api.github.com'),
+])
+def test_url_parameter_value(mocker, mock_params, expected_url):
+    mocker.patch.object(demisto, 'params', return_value=mock_params)
+
+    main()
+
+    assert GitHub.BASE_URL == expected_url
+
+
+def test_list_issue_comments_no_since(mocker):
+    """
+    Given:
+        A call to list_issue_comments
+    When:
+        No since date was provided
+    Then:
+        The url_suffix argument provided to the http request should not include a since parameter
+    """
+    patched_request = mocker.patch('GitHub.http_request')
+    GitHub.ISSUE_SUFFIX = 'test'
+    issue_number = 1234
+    since_date = None
+    list_issue_comments(issue_number, since_date)
+    request_args = patched_request.call_args
+    assert 'since' not in request_args.kwargs['url_suffix']
+
+
+def test_list_issue_comments_since(mocker):
+    """
+    Given:
+        A call to list_issue_comments
+    When:
+        since date was provided
+    Then:
+        The url_suffix argument provided to the http request should include a since parameter
+    """
+    patched_request = mocker.patch('GitHub.http_request')
+    GitHub.ISSUE_SUFFIX = 'test'
+    issue_number = 1234
+    since_date = '2022-10-01'
+    list_issue_comments(issue_number, since_date)
+    request_args = patched_request.call_args
+    assert 'since' in request_args.kwargs['params']

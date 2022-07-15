@@ -30,12 +30,25 @@ configuration:
   name: proxy
   required: false
   type: 8
+- defaultvalue: 'true'
+  display: Create relationships
+  name: create_relationships
+  required: false
+  type: 8
+- additionalinfo: Maximal value is 1000.
+  defaultvalue: '10'
+  display: Maximum number of relationships to fetch per indicator
+  name: max_num_of_relationships
+  required: false
+  type: 0
 - defaultvalue: '1'
+  hidden: true
   display: Blacklists appearances threshold
   name: threshold
   required: false
   type: 0
 - display: Compromised (is malicious)
+  hidden: true
   name: compromised_is_malicious
   required: false
   type: 8
@@ -55,8 +68,8 @@ script:
   commands:
   - arguments:
     - default: true
-      description: URL to query.
-      isArray: false
+      description: A comma-separated list of URLs to query.
+      isArray: true
       name: url
       required: true
       secret: false
@@ -74,27 +87,45 @@ script:
     - contextPath: URL.Malicious.Description
       description: Description of the malicious URL.
       type: string
+    - contextPath: URL.Tags
+      description: A list of tags associated with the queried malware URL.
+      type: string
+    - contextPath: URL.Relationships.EntityA
+      description: The source of the relationship.
+      type: String
+    - contextPath: URL.Relationships.EntityB
+      description: The destination of the relationship.
+      type: String
+    - contextPath: URL.Relationships.Relationship
+      description: The name of the relationship.
+      type: String
+    - contextPath: URL.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: String
+    - contextPath: URL.Relationships.EntityBType
+      description: The type of the destination of the relationship.
+      type: String
     - contextPath: URLhaus.URL.ID
       description: Unique identifier of the URLhaus database entry.
-      type: string
+      type: String
     - contextPath: URLhaus.URL.Status
       description: The current status of the URL.
-      type: string
+      type: String
     - contextPath: URLhaus.URL.Host
       description: The extracted host of the malware URL (IP address or domain name/FQDN).
-      type: string
+      type: String
     - contextPath: URLhaus.URL.DateAdded
       description: Date the URL was added to URLhaus.
       type: date
     - contextPath: URLhaus.URL.Threat
       description: The threat corresponding to this malware URL.
-      type: string
+      type: String
     - contextPath: URLhaus.URL.Blacklist.Name
-      description: Name of the blacklist.
+      description: Name of the block list.
       type: String
     - contextPath: URLhaus.URL.Tags
       description: A list of tags associated with the queried malware URL.
-      type: string
+      type: String
     - contextPath: URLhaus.URL.Payload.Name
       description: Payload file name.
       type: String
@@ -123,15 +154,15 @@ script:
       description: Reliability of the source providing the intelligence data.
       type: String
     - contextPath: URLhaus.URL.Blacklist.Status
-      description: Status of the URL in the blacklist.
+      description: Status of the URL in the block list.
       type: String
     - contextPath: URLhaus.URL.Payload.VT.Link
       description: Link to the VirusTotal report.
       type: String
   - arguments:
     - default: true
-      description: Domain to query.
-      isArray: false
+      description: A comma-separated list of domains to query.
+      isArray: true
       name: domain
       required: true
       secret: false
@@ -142,6 +173,24 @@ script:
     outputs:
     - contextPath: Domain.Name
       description: The domain name, for example, google.com.
+      type: String
+    - contextPath: Domain.Tags
+      description: A list of tags associated with the queried malware domain.
+      type: string
+    - contextPath: Domain.Relationships.EntityA
+      description: The source of the relationship.
+      type: String
+    - contextPath: Domain.Relationships.EntityB
+      description: The destination of the relationship.
+      type: String
+    - contextPath: Domain.Relationships.Relationship
+      description: The name of the relationship.
+      type: String
+    - contextPath: Domain.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: String
+    - contextPath: Domain.Relationships.EntityBType
+      description: The type of the destination of the relationship.
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -159,10 +208,10 @@ script:
       description: Reliability of the source providing the intelligence data.
       type: String
     - contextPath: URLhaus.Domain.FirstSeen
-      description: Date that the IP was seen for the first time (UTC).
+      description: Date that the IP address was seen for the first time (UTC).
       type: Date
     - contextPath: URLhaus.Domain.Blacklist.Name
-      description: The status of the domain in different blacklists.
+      description: The status of the domain in different block lists.
       type: String
     - contextPath: URLhaus.Domain.URL
       description: URLs observed on this domain.
@@ -174,12 +223,12 @@ script:
       description: Description of the malicious domain.
       type: String
     - contextPath: URLhaus.Domain.Blacklist.Status
-      description: Status of the URL in the blacklist.
+      description: Status of the domain in the block list.
       type: String
   - arguments:
     - default: true
-      description: MD5 hash or SHA256 hash of the file to query.
-      isArray: false
+      description: A comma-separated list of MD5 or SHA256 hashes of the file to query.
+      isArray: true
       name: file
       required: true
       secret: false
@@ -196,6 +245,27 @@ script:
       type: String
     - contextPath: File.SHA256
       description: SHA256 hash of the file.
+      type: String
+    - contextPath: File.SSDeep
+      description: SSDeep of the file.
+      type: String
+    - contextPath: File.Type
+      description: Type of the file.
+      type: String
+    - contextPath: File.Relationships.EntityA
+      description: The source of the relationship.
+      type: String
+    - contextPath: File.Relationships.EntityB
+      description: The destination of the relationship.
+      type: String
+    - contextPath: File.Relationships.Relationship
+      description: The name of the relationship.
+      type: String
+    - contextPath: File.Relationships.EntityAType
+      description: The type of the source of the relationship.
+      type: String
+    - contextPath: File.Relationships.EntityBType
+      description: The type of the destination of the relationship.
       type: String
     - contextPath: URLhaus.File.MD5
       description: MD5 hash of the file.
@@ -287,7 +357,7 @@ script:
     - contextPath: File.Extension
       description: File extension.
       type: string
-  dockerimage: demisto/python3:3.9.6.22912
+  dockerimage: demisto/python3:3.10.4.29342
   feed: false
   isfetch: false
   longRunning: false

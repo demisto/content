@@ -1,0 +1,171 @@
+{
+    "id": 0,
+    "os_version_id": 0,
+    "server_group_id": 0,
+    "organization_id": 0,
+    "uuid": "095be615-a8ad-4c33-8e9c-c7612fbf6c9f",
+    "name": "string",
+    "instance_id": "string",
+    "refresh_interval": 0,
+    "last_update_time": "string",
+    "last_refresh_time": "string",
+    "uptime": 0,
+    "needs_reboot": true,
+    "timezone": "string",
+    "tags": [
+        "string"
+    ],
+    "deleted": true,
+    "create_time": "2019-08-24T14:15:22Z",
+    "os_version": "string",
+    "os_name": "string",
+    "os_family": "string",
+    "ip_addrs": [
+        "string"
+    ],
+    "ip_addrs_private": [
+        "string"
+    ],
+    "hostname": "string",
+    "patches": 0,
+    "details": {
+        "CPU": "string",
+        "DISKS": [
+            {
+                "SIZE": "string",
+                "TYPE": "string"
+            }
+        ],
+        "MODEL": "string",
+        "NICS": [
+            {
+                "CONNECTED": true,
+                "DEVICE": "string",
+                "IPS": [
+                    "string"
+                ],
+                "MAC": "string",
+                "TYPE": "string",
+                "VENDOR": "string"
+            }
+        ],
+        "RAM": "string",
+        "SERIAL": "string",
+        "SERVICETAG": "string",
+        "VENDOR": "string",
+        "VERSION": "string"
+    },
+    "agent_version": "string",
+    "custom_name": "string",
+    "exception": true,
+    "total_count": 0,
+    "server_policies": [
+        {
+            "id": 0,
+            "organization_id": 0,
+            "name": "string",
+            "policy_type_name": "patch",
+            "configuration": {
+                "auto_patch": true,
+                "auto_reboot": true,
+                "notify_user": true,
+                "missed_patch_window": true,
+                "patch_rule": "all",
+                "device_filters_enabled": true,
+                "device_filters": [
+                    {
+                        "field": "tag",
+                        "op": "in",
+                        "value": [
+                            "Windows",
+                            "Win10"
+                        ]
+                    }
+                ],
+                "include_optional": true,
+                "notify_reboot_user": true,
+                "notify_deferred_reboot_user": true,
+                "custom_notification_patch_message": "Necessary Windows updates are about to be installed!",
+                "custom_notification_patch_message_mac": "Necessary Mac updates are about to be installed!",
+                "custom_notification_reboot_message": "Necessary Windows updates are about to be installed! Reboot Needed!",
+                "custom_notification_reboot_message_mac": "Necessary Mac updates are about to be installed! Reboot Needed!",
+                "custom_notification_max_delays": 0,
+                "custom_notification_deferment_periods": [
+                    1,
+                    4,
+                    8
+                ],
+                "custom_pending_reboot_notification_message": "Your computer needs to restart to finish installing updates!",
+                "custom_pending_reboot_notification_message_mac": "Your Mac needs to restart to finish installing updates!",
+                "custom_pending_reboot_notification_max_delays": 0,
+                "custom_pending_reboot_notification_deferment_periods": [
+                    2,
+                    4,
+                    6
+                ],
+                "notify_user_message_timeout": 15,
+                "notify_deferred_reboot_user_timeout": 15,
+                "notify_user_auto_deferral_enabled": false,
+                "notify_deferred_reboot_user_auto_deferral_enabled": false
+            },
+            "schedule_days": 0,
+            "schedule_weeks_of_month": 0,
+            "schedule_months": 0,
+            "schedule_time": "string",
+            "server_groups": [
+                0
+            ]
+        }
+    ],
+    "policy_status": [
+        {
+            "id": 0,
+            "organization_id": 0,
+            "policy_id": 0,
+            "server_id": 0,
+            "policy_name": "string",
+            "policy_type_name": "patch",
+            "status": 0,
+            "result": "string",
+            "create_time": "string",
+            "next_remediation": "2019-08-24T14:15:22Z"
+        }
+    ],
+    "last_scan_failed": true,
+    "pending": true,
+    "compliant": true,
+    "display_name": "string",
+    "commands": [
+        {
+            "command_type_name": "InstallUpdate",
+            "args": "KB12345 KB67890",
+            "exec_time": "2017-06-29T16:39:50.951Z"
+        }
+    ],
+    "pending_patches": 0,
+    "connected": true,
+    "last_process_time": "string",
+    "next_patch_time": "string",
+    "notification_count": 0,
+    "reboot_notification_count": 0,
+    "patch_deferral_count": 0,
+    "is_delayed_by_notification": true,
+    "reboot_is_delayed_by_notification": true,
+    "is_delayed_by_user": true,
+    "reboot_is_delayed_by_user": true,
+    "last_disconnect_time": "2019-08-24T14:15:22Z",
+    "needs_attention": true,
+    "serial_number": "string",
+    "status": {
+        "device_status": "string",
+        "agent_status": "string",
+        "policy_status": "string",
+        "policy_statuses": [
+            {
+                "id": 0,
+                "compliant": true
+            }
+        ]
+    },
+    "last_logged_in_user": "string"
+}

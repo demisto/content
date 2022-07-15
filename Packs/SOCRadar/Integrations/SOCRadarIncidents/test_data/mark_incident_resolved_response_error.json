@@ -1,0 +1,6 @@
+{
+  "data": null,
+  "is_success": false,
+  "message": "An error occurred while marking the incident(s) as resolved. Incident IDs: 0",
+  "response_code": 500
+}

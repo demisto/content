@@ -1,0 +1,32 @@
+{
+    "id": "incident_phishingpclscore",
+    "version": -1,
+    "modified": "2021-07-12T10:39:08.845242282Z",
+    "name": "Phishing PCL Score",
+    "ownerOnly": false,
+    "description": "Phishing Confidence Level score (Microsoft headers)",
+    "cliName": "phishingpclscore",
+    "type": "number",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Phishing",
+        "Phishing Alerts"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

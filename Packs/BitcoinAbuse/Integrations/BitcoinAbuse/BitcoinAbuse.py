@@ -47,7 +47,7 @@ class BitcoinAbuseClient(BaseClient):
         '30 Days': '30d'
     }
 
-    def __init__(self, base_url, insecure, proxy, api_key, initial_fetch_interval, reader_config,
+    def __init__(self, base_url, insecure, proxy, api_key, initial_fetch_interval, reader_config, feed_tags, tlp_color,
                  have_fetched_first_time):
         super().__init__(base_url=base_url, verify=not insecure, proxy=proxy)
         self.server_url = base_url
@@ -56,6 +56,8 @@ class BitcoinAbuseClient(BaseClient):
         self.reader_config = reader_config
         self.have_fetched_first_time = have_fetched_first_time
         self.insecure = insecure
+        self.feed_tags = feed_tags
+        self.tlp_color = tlp_color
 
     def report_address(self, address: str, abuse_type_id: int, abuse_type_other: Optional[str],
                        abuser: str, description: str) -> Dict:
@@ -86,7 +88,7 @@ class BitcoinAbuseClient(BaseClient):
             )
         )
 
-    def get_indicators(self) -> List[Dict]:
+    def get_indicators(self) -> Tuple[List[Dict], bool]:
         """
         Builds CSV module client and performs the API call to Bitcoin Abuse service.
         If the call was successful, returns list of indicators.
@@ -103,7 +105,7 @@ class BitcoinAbuseClient(BaseClient):
         params = self.build_params_for_csv_module()
         csv_module_client = Client(**params)
 
-        indicators = fetch_indicators_command(
+        indicators, no_update = fetch_indicators_command(
             client=csv_module_client,
             default_indicator_type='Cryptocurrency Address',
             auto_detect=False,
@@ -140,7 +142,7 @@ class BitcoinAbuseClient(BaseClient):
             indicator['fields']['reportscount'] = indicator_count
             indicator['fields']['cryptocurrencyaddresstype'] = 'bitcoin'
 
-        return indicators_without_duplicates
+        return indicators_without_duplicates, no_update
 
     def build_fetch_indicators_url_suffixes(self) -> Set[str]:
         """
@@ -187,6 +189,9 @@ class BitcoinAbuseClient(BaseClient):
         params['encoding'] = 'utf-8'
 
         params['insecure'] = self.insecure
+
+        params['feedTags'] = self.feed_tags
+        params['tlp_color'] = self.tlp_color
 
         return params
 
@@ -296,9 +301,14 @@ def bitcoin_abuse_fetch_indicators_command(bitcoin_client: BitcoinAbuseClient) -
     Returns:
 
     """
-    indicators = bitcoin_client.get_indicators()
-    for b in batch(indicators, batch_size=2000):
-        demisto.createIndicators(b)  # type: ignore
+    indicators, no_update = bitcoin_client.get_indicators()
+    if is_demisto_version_ge('6.5.0'):
+        for b in batch(indicators, batch_size=2000):
+            demisto.createIndicators(b, noUpdate=no_update)  # type: ignore
+    else:
+        for b in batch(indicators, batch_size=2000):
+            demisto.createIndicators(b, noUpdate=no_update)  # type: ignore
+
     demisto.setIntegrationContext({'have_fetched_first_time': True})
 
 
@@ -313,7 +323,7 @@ def bitcoin_abuse_get_indicators_command(bitcoin_client: BitcoinAbuseClient, arg
     Returns:
         CommandResults.
     """
-    indicators = bitcoin_client.get_indicators()
+    indicators, _ = bitcoin_client.get_indicators()
     limit = arg_to_number(args.get('limit', 50), 'limit')
     truncated_indicators_list = indicators[:limit]
     return CommandResults(
@@ -332,6 +342,8 @@ def main() -> None:
     api_key = params.get('api_key', '')
     insecure = params.get('insecure', False)
     proxy = params.get('proxy', False)
+    feed_tags = argToList(params.get('feedTags'))
+    tlp_color = params.get('tlp_color')
     initial_fetch_interval = params.get('initial_fetch_interval', '30 Days')
 
     have_fetched_first_time = argToBoolean(demisto.getIntegrationContext().get('have_fetched_first_time', False))
@@ -344,6 +356,8 @@ def main() -> None:
             api_key=api_key,
             initial_fetch_interval=initial_fetch_interval,
             reader_config=READER_CONFIG,
+            feed_tags=feed_tags,
+            tlp_color=tlp_color,
             have_fetched_first_time=have_fetched_first_time)
 
         if command == 'test-module':
@@ -360,7 +374,6 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 

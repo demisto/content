@@ -1,5 +1,12 @@
 Assigns analysts who are not out of the office to the shift handover incident. Use the ManageOOOusers automation to add or remove analysts from the out-of-office list.
 
+## Permissions
+---
+
+This automation runs using the default Limited User role, unless you explicitly change the permissions.
+For more information, see the section about permissions here: [https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html)
+
 ## Script Data
 ---
 

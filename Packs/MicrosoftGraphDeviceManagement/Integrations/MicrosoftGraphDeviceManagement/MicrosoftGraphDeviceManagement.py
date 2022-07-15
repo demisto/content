@@ -1,11 +1,11 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
-
 ''' IMPORTS '''
-import requests
-from typing import Tuple, Any
 import json
+from typing import Any, Tuple
+
+import demistomock as demisto  # noqa: F401
+import requests
+from CommonServerPython import *  # noqa: F401
+
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
@@ -32,15 +32,21 @@ HEADERS: dict = {
 
 class MsGraphClient:
     def __init__(self, self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url, use_ssl, proxy,
-                 ok_codes):
+                 ok_codes, certificate_thumbprint, private_key):
         self.ms_client = MicrosoftClient(self_deployed=self_deployed, tenant_id=tenant_id, auth_id=auth_and_token_url,
                                          enc_key=enc_key, app_name=app_name, base_url=base_url, verify=use_ssl,
-                                         proxy=proxy, ok_codes=ok_codes)
+                                         proxy=proxy, ok_codes=ok_codes, certificate_thumbprint=certificate_thumbprint,
+                                         private_key=private_key)
 
     def list_managed_devices(self, limit: int) -> Tuple[list, Any]:
         url_suffix: str = '/deviceManagement/managedDevices'
         raw_response = self.ms_client.http_request('GET', url_suffix)
         return raw_response.get('value', [])[:limit], raw_response
+
+    def find_managed_devices(self, device_name: str) -> Tuple[Any, str]:
+        url_suffix: str = f"/deviceManagement/managedDevices?$filter=deviceName eq '{device_name}'"
+        raw_response = self.ms_client.http_request('GET', url_suffix)
+        return raw_response.get('value', []), raw_response
 
     def get_managed_device(self, device_id: str) -> Tuple[Any, str]:
         url_suffix: str = f'/deviceManagement/managedDevices/{device_id}'
@@ -237,6 +243,22 @@ def list_managed_devices_command(client: MsGraphClient, args: dict) -> None:
     return_outputs(human_readable, entry_context, raw_response)
 
 
+def find_managed_devices_command(client: MsGraphClient, args: dict) -> None:
+    device_name: str = str(args.get('device_name'))
+    list_raw_devices, raw_response = client.find_managed_devices(device_name)
+    list_devices: list = [build_device_object(device) for device in list_raw_devices if device]
+    entry_context: dict = {'MSGraphDeviceManagement.Device(val.ID === obj.ID)': list_devices}
+    human_readable: str = f'Managed device {device_name} not found.'
+    if list_devices:
+        name: str = f'List managed devices with name {device_name}'
+        if len(list_devices) == 1:
+            name = f'Managed device {list_devices[0].get("Name", "")}'
+        human_readable = tableToMarkdown(name=name, t=list_raw_devices, headers=HEADERS['raw_device'],
+                                         headerTransform=lambda h: SPECIAL_HEADERS.get(h, pascalToSpace(h)),
+                                         removeNull=True)
+    return_outputs(human_readable, entry_context, raw_response)
+
+
 def get_managed_device_command(client: MsGraphClient, args: dict) -> None:
     device_id: str = str(args.get('device_id'))
     raw_response, device_id = client.get_managed_device(device_id)
@@ -354,7 +376,7 @@ def windows_device_defender_scan_command(client: MsGraphClient, args: dict) -> N
 def wipe_device_command(client: MsGraphClient, args: dict) -> None:
     keep_enrollment_data: bool = bool(args.get('keep_enrollment_data'))
     keep_user_data: bool = bool(args.get('keep_user_data'))
-    mac_os_unlock_code: str = str(args.get('mac_os_unlock_code'))
+    mac_os_unlock_code: str = str(args.get('mac_os_unlock_code', ""))
     device_id: str = str(args.get('device_id'))
     client.wipe_device(keep_enrollment_data, keep_user_data, mac_os_unlock_code, device_id, 'wipe')
     return_outputs('Wipe device action activated successfully.', {}, {})
@@ -389,9 +411,17 @@ def main():
     ok_codes: tuple = (200, 201, 202, 204)
     use_ssl: bool = not params.get('insecure', False)
     proxy: bool = params.get('proxy', False)
+    certificate_thumbprint: str = params.get('certificate_thumbprint', '')
+    private_key: str = params.get('private_key', '')
+    if not self_deployed and not enc_key:
+        raise DemistoException('Key must be provided. For further information see '
+                               'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
+    elif not enc_key and not (certificate_thumbprint and private_key):
+        raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
 
     client: MsGraphClient = MsGraphClient(self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url,
-                                          use_ssl, proxy, ok_codes)
+                                          use_ssl, proxy, ok_codes, certificate_thumbprint=certificate_thumbprint,
+                                          private_key=private_key)
 
     command: str = demisto.command()
     LOG(f'Command being called is {command}')
@@ -440,6 +470,8 @@ def main():
             wipe_device_command(client, args)
         elif command == 'msgraph-update-windows-device-account':
             update_windows_device_account_command(client, args)
+        elif command == 'msgraph-find-managed-devices-by-name':
+            find_managed_devices_command(client, args)
 
     # log exceptions
     except Exception as err:

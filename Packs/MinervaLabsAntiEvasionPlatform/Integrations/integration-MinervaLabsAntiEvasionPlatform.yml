@@ -22,7 +22,6 @@ configuration:
   required: true
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ""
   type: 8
   required: false
 - display: Fetch incidents
@@ -35,7 +34,6 @@ configuration:
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
   type: 8
   required: false
 script:
@@ -745,7 +743,7 @@ script:
     description: Moves all the events from Archive state to New event state.
   isfetch: true
   runonce: false
-  dockerimage: demisto/python:2.7.18.20958
+  dockerimage: demisto/python:2.7.18.27799
 tests:
-- Minerva Test playbook
+  - No tests
 fromversion: 5.0.0

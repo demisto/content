@@ -894,7 +894,97 @@ script:
     - contextPath: Cylance.Device.Deleted
       description: A boolean to check if the device was deleted.
       type: boolean
-  dockerimage: demisto/pyjwt:1.0.0.23135
+  - name: cylance-optics-create-instaquery
+    arguments:
+    - name: name
+      description: |
+        InstaQuery name
+        ok test
+      required: true
+    - name: description
+      description: InstaQuery description
+      required: true
+    - name: artifact
+      description: InstaQuery artifact, select from the list
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - File
+      - Process
+      - NetworkConnection
+      - RegistryKey
+    - name: match_value_type
+      description: InstaQuery value type to match, select from the list
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - File.Path
+      - File.Md5
+      - File.Sha2
+      - File.Owner
+      - File.CreationDateTime
+      - Process.Name
+      - Process.Commandline
+      - Process.PrimaryImagePath
+      - Process.PrimaryImageMd5
+      - Process.StartDateTime
+      - NetworkConnection.DestAddr
+      - NetworkConnection.DestPort
+      - RegistryKey.ProcessName
+      - RegistryKey.ProcessPrimaryImagePath
+      - RegistryKey.ValueName
+      - RegistryKey.FilePath
+      - RegistryKey.FileMd5
+      - RegistryKey.IsPersistencePoint
+    - name: match_values
+      description: Value to search in InstaQuery
+      required: true
+    - name: zone
+      description: Zone of the object
+      required: true
+    - name: match_type
+      description: Match type fuzzy or exact
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Fuzzy
+      - Exact
+    description: Create a cylance InstaQuery to search for artifacts in one or multiple
+      zones.
+    outputs:
+    - contextPath: InstaQuery.New.id
+      description: The unique identifier of the created InstaQuery.
+      type: string
+    - contextPath: InstaQuery.New.created_at
+      description: The Date and Time that the InstaQuery was created.
+      type: date
+    - contextPath: InstaQuery.New.progress
+      description: The progress of the InstaQuery.
+      type: string
+  - name: cylance-optics-get-instaquery-result
+    arguments:
+    - name: query_id
+      description: InstaQuery ID
+      required: true
+    description: Get a cylance InstaQuery search result.
+    outputs:
+    - contextPath: InstaQuery.Results.result
+      description: The InstaQuery results.
+      type: string
+  - name: cylance-optics-list-instaquery
+    arguments:
+    - name: page_number
+      description: The page number to collect. If not specified, the default is 1.
+      defaultValue: "1"
+    - name: page_size
+      description: The page size. If not specified, the default is 20.
+      defaultValue: "20"
+    description: Get a list of all current InstaQueries.
+    outputs:
+    - contextPath: InstaQuery.List
+      description: The list of InstaQuery
+      type: string
+  dockerimage: demisto/pyjwt:1.0.0.24033
   isfetch: true
   runonce: false
   script: ''

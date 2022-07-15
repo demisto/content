@@ -1,0 +1,20 @@
+{
+    "response": [
+        {
+            "isCaseSensitive": false,
+            "naturalId": "PH_SYS_Group_DyWatchList_1638781157796",
+            "displayName": "Resource Issues Test4",
+            "description": "Servers, network or storage devices",
+            "valuePattern": null,
+            "ageOut": "1d",
+            "topGroup": false,
+            "entries": null,
+            "dataCreationType": "USER",
+            "valueType": "STRING",
+            "custId": 1,
+            "name": "PH_SYS_Group_DyWatchList_1638781157796",
+            "id": 111
+        }
+    ],
+    "status": "Success"
+}

@@ -1,2 +1,6 @@
-[file:integration-SumoLogic.yml]
-ignore=IN126
+[file:SumoLogic.yml]
+ignore=IN126,IN145
+
+
+[file:SumoLogic_image.png]
+ignore=IM111

@@ -18,7 +18,7 @@ Update Grid Table from items or key value pairs.
 | overwrite | True if to overwrite Grid Data, False otherwise. |
 | columns | Comma-separated list of grid columns to populate (as appear in the original Grid), for example: (col1,col2,..,coln). |
 | keys | Keys to retrieve from items or &quot;\*&quot; for max keys \(limited when item list to columns amount\) \- Key will not be columns correlated. If you want to leave an empty column, please provide a place holder name that should not be in the context data such as "PLACE_HOLDER" |
-| sort_by | Column name to sort the rows by. |
+| sort_by | Columns names by which to sort the rows. |
 
 ## Command Example
 Assume the following:
@@ -78,5 +78,14 @@ keys="name, value"
 Grid after update: \
 ![Grid](https://github.com/demisto/content/raw/4510eafaf6cfeb48a42d9032dd0e71200b288ad5/Packs/Legacy/Scripts/SetGridField/doc_files/grid_list_update.png) 
 
+## Troubleshooting
+
+The first time you run `SetGridField` on a newly created grid field, you may see an error similar to the following:
+
+![Screen Shot 2021-12-21 at 10 36 03 PM](doc_files/troubleshoot.png)
+
+To resolve the error:
+1. Make sure the grid field is associated with the incident type the field is being used in.
+2. Run the following command to initialize the grid field: `!setIncident <GRID_FIELD_NAME>=[]`
 
 

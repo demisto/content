@@ -4,15 +4,15 @@ args:
   description: Is widget or playbook command
   name: isWidget
   predefined:
-  - "False"
-  - "True"
+  - 'False'
+  - 'True'
 - description: Define the thresholds
   name: Thresholds
 comment: Number of dropped incidents
 commonfields:
   id: HealthCheckNumberOfDroppedIncidents
   version: -1
-dockerimage: demisto/python3:3.9.5.21272
+dockerimage: demisto/python3:3.10.4.29342
 enabled: true
 name: HealthCheckNumberOfDroppedIncidents
 outputs:

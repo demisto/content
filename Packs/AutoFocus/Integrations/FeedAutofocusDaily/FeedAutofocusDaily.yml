@@ -95,8 +95,8 @@ configuration:
   name: feedTags
   required: false
   type: 0
-description: Use the AutoFocus Daily feed to export threat intelligence data produced by AutoFocus and connected services to provide actionable data for the Palo Alto Networks firewall as well as third party TIP and SIEM solutions. AutoFocus feed return a list which includes IP addresses, domains, URLs, and hash indicators which are updated daily.
-display: AutoFocus Daily Feed
+description: Deprecated. No available replacement.
+display: AutoFocus Daily Feed (Deprecated)
 name: AutoFocus Daily Feed
 script:
   commands:
@@ -119,7 +119,7 @@ script:
     description: Gets indicators from AutoFocus.
     execution: false
     name: autofocus-daily-get-indicators
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.10.1.25933
   feed: true
   isfetch: false
   longRunning: false
@@ -129,5 +129,6 @@ script:
   subtype: python3
   type: python
 fromversion: 5.5.0
+deprecated: true
 tests:
   - No tests

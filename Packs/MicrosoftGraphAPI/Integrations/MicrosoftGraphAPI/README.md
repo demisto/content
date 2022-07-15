@@ -32,7 +32,8 @@ For example, if we wish to use the [List applications](https://docs.microsoft.co
 
 For more information, refer to the following [article](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#self-deployed-application). 
 
-The ***Application Secret*** and the ***Tenant ID*** integration parameters are required for this method.
+The *Application Secret* and the *Tenant ID* integration parameters are required for this method.
+Alternatively, *Private Key* and *Certificate Thumbprint* can replace *Application Secret* for the Certificate Authorization flow.
 
 The integration supports only Application permission type, and does not support Delegated permission type. 
 
@@ -55,6 +56,8 @@ The integration supports only Application permission type, and does not support 
 | app_id | Application ID | True |
 | scope | Scope (Required for using Cortex XSOAR Azure app) | False |
 | app_secret | Application Secret (Required for using self deployed Azure app) | False |
+| Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app. | False |
+| Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
 | tenant_id | Tenant ID (Required for using self deployed Azure app) | False |
 | azure_ad_endpoint | Azure AD endpoint associated with a national cloud | False |
 | insecure | Trust any certificate \(not secure\) | False |
@@ -65,6 +68,20 @@ The integration supports only Application permission type, and does not support 
 ## Commands
 You can execute the command from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+### msgraph-api-auth-start
+***
+Run this command to start the authorization process and follow the instructions in the command results.
+
+### msgraph-api-auth-complete
+***
+Run this command to complete the authorization process.
+Should be used after running the ***msgraph-api-auth-start*** command.
+
+### msgraph-api-test
+***
+Tests connectivity to Microsoft when using Cortex XSOAR Azure app.
+
 ### msgraph-api-request
 ***
 Run a Microsoft Graph API query.
@@ -81,9 +98,8 @@ Run a Microsoft Graph API query.
 | http_method | The HTTP method used for the request to Microsoft Graph. Possible values are: "GET", "POST", "DELETE", "PUT", or "PATCH". Default is "GET". | Optional | 
 | api_version | The version of the Microsoft Graph API to use. Possible values are: "v1.0" or "beta". Default is "v1.0". | Optional | 
 | request_body | The request body (required for POST queries). | Optional | 
-| odata | OData system query options, e.g. $filter=startswith(givenName, 'J'). For more details see https://docs.microsoft.com/en-us/graph/query-parameters. Default is "$top=10". | Optional |
+| odata | OData system query options, e.g. $filter=startswith(givenName, 'J'). For more details see https://docs.microsoft.com/en-us/graph/query-parameters. It is recommended to use the $top query option to limit the result. | Optional |
 | populate_context | If "true", will populate the API response to the context data. Default is "true". | Optional | 
-
 
 #### Context Output
 
@@ -100,9 +116,3 @@ We can see that according to the [HTTP request](https://docs.microsoft.com/en-us
  - The resource is ***/applications***
  
 So in order to list all the applications using the integration, we would run the command: `!msgraph-api resource=/applications http_method=GET`
-
-## Notes
-- In order to limit the number of results returned from Microsoft Graph API, the default value of the *odata* command argument is `$top=10`.
-Some of the Graph APIs do not support the `top` resource, and in that case the following error message will be returned: `This resource does not support custom page sizes. Please retry without a page size argument.`
-In this case, you can modify the *odata* command argument to not include the `top` resource.
-For example, run the command with the *odata* command argument set to `$count=true` to include a count of the total number of items in a collection alongside the page of data values returned from Microsoft Graph.

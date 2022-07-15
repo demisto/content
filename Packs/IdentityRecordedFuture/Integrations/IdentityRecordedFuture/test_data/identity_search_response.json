@@ -1,0 +1,12 @@
+[
+    {
+        "login": "fake1@fake1.com",
+        "domain": "fake1.com"
+    },
+    {
+        "login": "fake12@fake1.com",
+        "domain": "fake1.com"
+    },
+    "fake13@fake1.com",
+    "fake14@fake1.com"
+]

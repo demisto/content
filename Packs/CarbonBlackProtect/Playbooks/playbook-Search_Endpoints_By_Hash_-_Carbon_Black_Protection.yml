@@ -67,7 +67,7 @@ tasks:
       id: 255f2625-68d4-4475-81a2-663da89a39d6
       version: -1
       name: Check if the hashes are included in any rules
-      description: If the hashes have been approved or blocked in the past, they will be in existing rules. It is useful to see whether the hash was in some blacklist or whitelist or a person marked them as such, possibly with a comment explaining their reasons.
+      description: If the hashes have been approved or blocked in the past, they will be in existing rules. It is useful to see whether the hash was in some block list or allow list or a person marked them as such, possibly with a comment explaining their reasons.
       scriptName: CBPFindRule
       type: regular
       iscommand: false

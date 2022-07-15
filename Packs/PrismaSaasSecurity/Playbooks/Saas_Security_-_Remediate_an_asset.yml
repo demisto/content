@@ -1,0 +1,224 @@
+id: SaaS Security - Remediate an Asset
+version: -1
+name: SaaS Security - Remediate an Asset
+description: |-
+  Take a remediation action over an asset:
+    Use this playbook as a sub-playbook to take a remediation action on an asset. Available remediation actions are 1) Remove public sharing, 2) Quarantine, and 3) Restore.
+    This playbook implements polling by continuously running the `saas-security-remediation-status-get`
+    command to get the remediation status for a given asset ID, until the operation completes.
+
+  The remote action should have the following structure:
+    1. Initiate the operation - provide the Asset ID and the remediation action.
+    2. Poll to check if the operation completed.
+    3. Get the results of the operation.
+
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7e1071f2-d436-463c-8def-b8c9b67646b5
+    type: start
+    task:
+      id: 7e1071f2-d436-463c-8def-b8c9b67646b5
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 4069d62a-3ced-4aba-838b-9a1f1d6e1130
+    type: regular
+    task:
+      id: 4069d62a-3ced-4aba-838b-9a1f1d6e1130
+      version: -1
+      name: Remediate asset
+      description: Remediates an asset.
+      script: '|||saas-security-asset-remediate'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      asset_id:
+        simple: ${inputs.asset_id}
+      remediation_type:
+        simple: ${inputs.remediation_type}
+      remove_inherited_sharing:
+        simple: ${inputs.remove_inherited_sharing}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 5f908fcc-46b9-4592-8e7e-00622e81e18b
+    type: playbook
+    task:
+      id: 5f908fcc-46b9-4592-8e7e-00622e81e18b
+      version: -1
+      name: GenericPolling
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      AdditionalPollingCommandArgNames:
+        simple: remediation_type
+      AdditionalPollingCommandArgValues:
+        simple: ${inputs.remediation_type}
+      Ids:
+        simple: ${inputs.asset_id}
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: asset_id
+      PollingCommandName:
+        simple: saas-security-remediation-status-get
+      Timeout:
+        simple: "10"
+      dt:
+        simple: SaasSecurity.Remediation(val.Status == "pending" ).asset_id
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 0199bd9b-4a0c-41b4-85ad-32064519eefd
+    type: regular
+    task:
+      id: 0199bd9b-4a0c-41b4-85ad-32064519eefd
+      version: -1
+      name: Get remediation status
+      description: Get the remediation status for a given asset ID.
+      script: '|||saas-security-remediation-status-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      asset_id:
+        simple: ${inputs.asset_id}
+      remediation_type:
+        simple: ${inputs.remediation_type}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 5052b241-4b4a-4f45-85ba-6b95e7b9207f
+    type: title
+    task:
+      id: 5052b241-4b4a-4f45-85ba-6b95e7b9207f
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: asset_id
+  value: {}
+  required: true
+  description: The ID of the asset to remediate
+  playbookInputQuery:
+- key: remediation_type
+  value: {}
+  required: true
+  description: |-
+    The remediation action to take.
+    Possible values: Remove public sharing, Quarantine, Restore.
+  playbookInputQuery:
+- key: remove_inherited_sharing
+  value: {}
+  required: false
+  description: ' Used when remediation type is “remove_public_sharing”, when set to
+    true, all the parent folder sharing url will be removed.'
+  playbookInputQuery:
+outputs: []
+fromversion: 6.0.0
+tests:
+- No tests

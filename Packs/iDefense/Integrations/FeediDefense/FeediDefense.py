@@ -38,7 +38,7 @@ def custom_build_iterator(client: Client, feed: Dict, limit, **kwargs) -> List:
 
     while more_indicators:
         params['page'] = page_number
-        demisto.debug(f"Initiating API call to iDefense with url: {feed.get('url', client.url)} ,with parameters: "
+        demisto.debug(f"Initiating API call to ACTI with url: {feed.get('url', client.url)} ,with parameters: "
                       f"{params} and page number: {page_number} ")
         try:
 
@@ -75,7 +75,7 @@ def custom_build_iterator(client: Client, feed: Dict, limit, **kwargs) -> List:
                 .format(err_type, exception.errno, exception.strerror)
             raise DemistoException(err_msg, exception)
 
-    demisto.debug(f"Received in total {len(result)} indicators from iDefense Feed")
+    demisto.debug(f"Received in total {len(result)} indicators from ACTI Feed")
     return result
 
 
@@ -131,13 +131,13 @@ def build_feed_filters(params: dict) -> Dict[str, Optional[Union[str, list]]]:
 
 def main():
     params = {k: v for k, v in demisto.params().items() if v is not None}
-
+    parameters = demisto.params()
     filters: Dict[str, Optional[Union[str, list]]] = build_feed_filters(params)
     indicators_type: list = argToList(params.get('indicator_type', []))
     params['feed_name_to_config'] = create_fetch_configuration(indicators_type, filters, params)
 
     params['headers'] = {"Content-Type": "application/json",
-                         'auth-token': params.get('api_token')}
+                         'auth-token': parameters.get('api_token').get("password")}
 
     feed_main(params, 'iDefense Feed', 'idefense')
 

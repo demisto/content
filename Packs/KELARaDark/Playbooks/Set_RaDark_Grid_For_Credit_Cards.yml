@@ -1,0 +1,245 @@
+description: Set grid for RaDark - Credit Cards incidents.
+id: Set RaDark Grid For Credit Cards
+inputs: []
+name: Set RaDark Grid For Credit Cards
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Playbook triggered.
+      id: f2491b9f-e948-4c4d-8191-135d36b2ece0
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: f2491b9f-e948-4c4d-8191-135d36b2ece0
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": -1760,
+          "y": 540
+        }
+      }
+  "4":
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Done.
+      id: 175e433c-5e9f-4f5d-8142-6a06226410f6
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 175e433c-5e9f-4f5d-8142-6a06226410f6
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -1760,
+          "y": 1080
+        }
+      }
+  "8":
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      columns:
+        simple: Item ID, Bin, Number, Source, Date
+      context_path:
+        simple: Radark.itemDetails.items
+      grid_id:
+        simple: kelaradarktablecreditcards
+      keys:
+        simple: item_id, bin, number, source, date
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates a Grid table from items or key-value pairs.
+      id: f5b6f844-9a7e-4e39-8d67-63faab5fdc61
+      iscommand: false
+      name: Set Grid - Credit Cards
+      script: SetGridField
+      type: regular
+      version: -1
+    taskid: f5b6f844-9a7e-4e39-8d67-63faab5fdc61
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -1970,
+          "y": 880
+        }
+      }
+  "14":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.kelaradarksubtype
+          operator: isEqualString
+          right:
+            value:
+              simple: "13"
+      label: "13"
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: incident.kelaradarksubtype
+          operator: isEqualString
+          right:
+            value:
+              simple: "24"
+      label: "24"
+    id: "14"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "26"
+      "13":
+      - "8"
+      "24":
+      - "27"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Return the sub type of the incident in order to set the proper
+        grid table.
+      id: 362f9722-e683-4150-8f81-ae1008755721
+      iscommand: false
+      name: RaDark - Extract Credit Cards Grid Type
+      type: condition
+      version: -1
+    taskid: 362f9722-e683-4150-8f81-ae1008755721
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -1760,
+          "y": 650
+        }
+      }
+  "26":
+    id: "26"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: No action required.
+      id: f9f82034-f926-4a6f-882e-2293428135f8
+      iscommand: false
+      name: No Grid Type Incident
+      type: title
+      version: -1
+    taskid: f9f82034-f926-4a6f-882e-2293428135f8
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -2420,
+          "y": 880
+        }
+      }
+  "27":
+    id: "27"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      columns:
+        simple: Item ID, Bin, Number, Source, Date
+      context_path:
+        simple: Radark.itemDetails.items
+      grid_id:
+        simple: kelaradarktablecreditcardsfrominstantmessaging
+      keys:
+        simple: item_id, bin, number, source, date
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates a Grid table from items or key-value pairs.
+      id: 00892fe2-1c7c-4109-85aa-b8a92dda275a
+      iscommand: false
+      name: Set Grid - Credit Cards From Instant Messaging
+      script: SetGridField
+      type: regular
+      version: -1
+    taskid: 00892fe2-1c7c-4109-85aa-b8a92dda275a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -1560,
+          "y": 880
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 605,
+        "width": 1240,
+        "x": -2420,
+        "y": 540
+      }
+    }
+  }
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

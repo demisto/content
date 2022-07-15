@@ -1,0 +1,2820 @@
+id: Containment Plan
+version: -1
+name: Containment Plan
+description: |-
+  This playbook handles all the containment actions available with Cortex XSIAM, including:  
+  * Isolate endpoint
+  * Disable account
+  * Quarantine file
+  * Block indicators
+  * Clear user session (currently, the playbook supports only Okta)
+
+  Note: The playbook inputs enable manipulating the execution flow; read the input descriptions for details.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8aa2ff75-9b37-45eb-8c00-1233cf5410ac
+    type: start
+    task:
+      id: 8aa2ff75-9b37-45eb-8c00-1233cf5410ac
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "49"
+      - "50"
+      - "51"
+      - "48"
+      - "58"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 510,
+          "y": -420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: bda1af20-c8d7-4e92-86c1-8dc1108e4f89
+    type: regular
+    task:
+      id: bda1af20-c8d7-4e92-86c1-8dc1108e4f89
+      version: -1
+      name: Auto add to XSIAM hash block list
+      description: Block lists requested files which have not already been block listed or added to allow list.
+      script: '|||core-blocklist-files'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "100"
+    scriptarguments:
+      comment:
+        complex:
+          root: alert
+          accessor: alertname
+      hash_list:
+        complex:
+          root: foundIncidents.CustomFields
+          filters:
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: foundIncidents.CustomFields.initiatorpath
+                iscontext: true
+              right:
+                value:
+                  simple: c:\windows\explorer.exe
+              ignorecase: true
+          accessor: initiatorsha256
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.FileHash
+                iscontext: true
+          - operator: uniq
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 7aeac4ae-aa00-4ab6-82f1-9c7927984fad
+    type: condition
+    task:
+      id: 7aeac4ae-aa00-4ab6-82f1-9c7927984fad
+      version: -1
+      name: Should isolate endpoint?
+      description: Whether to isolate the endpoint.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "57"
+      "yes":
+      - "95"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.HostContainment
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": -1690,
+          "y": -120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 471b79d5-f113-4979-821e-3b112793def4
+    type: condition
+    task:
+      id: 471b79d5-f113-4979-821e-3b112793def4
+      version: -1
+      name: Should quarantine file?
+      description: Whether to quarantine the file automatically, manually or not at all.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "53"
+      Manual:
+      - "86"
+      "yes":
+      - "99"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoContainment
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.FileContainment
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.FileRemediation
+            iscontext: true
+          right:
+            value:
+              simple: Quarantine
+          ignorecase: true
+      - - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: Core.quarantineFiles.status
+                accessor: status
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+    - label: Manual
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.FileContainment
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.FileRemediation
+            iscontext: true
+          right:
+            value:
+              simple: Quarantine
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 80,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: fa8dc9cd-4532-4f3b-8f99-4009202369c1
+    type: playbook
+    task:
+      id: fa8dc9cd-4532-4f3b-8f99-4009202369c1
+      version: -1
+      name: Block Account - Generic
+      description: |-
+        This playbook blocks malicious usernames using all integrations that you have enabled.
+
+        Supported integrations for this playbook:
+        * Active Directory
+        * PAN-OS - This requires PAN-OS 9.1 or higher.
+      playbookName: Block Account - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      Username:
+        complex:
+          root: inputs.Username
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -570,
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 585cb24c-cfe1-45cd-8c5d-370621442364
+    type: title
+    task:
+      id: 585cb24c-cfe1-45cd-8c5d-370621442364
+      version: -1
+      name: Isolate Device
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1690,
+          "y": -265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: abb87f28-a965-4d8d-8069-eb635815bb13
+    type: title
+    task:
+      id: abb87f28-a965-4d8d-8069-eb635815bb13
+      version: -1
+      name: Disable Account
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "103"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -810,
+          "y": -265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: ed18bff1-e327-4889-85e8-65d66ff9ef5a
+    type: title
+    task:
+      id: ed18bff1-e327-4889-85e8-65d66ff9ef5a
+      version: -1
+      name: Quarantine File
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "98"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 80,
+          "y": -265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 1784b84c-0c06-44ae-8230-83edc6deccba
+    type: title
+    task:
+      id: 1784b84c-0c06-44ae-8230-83edc6deccba
+      version: -1
+      name: Block Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "63"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": -265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: 8b4e0785-cd46-4a32-86bc-b27e956a6bbc
+    type: title
+    task:
+      id: 8b4e0785-cd46-4a32-86bc-b27e956a6bbc
+      version: -1
+      name: Done - Quarantine File
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 80,
+          "y": 1140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: b3640a3e-9300-4984-8845-e2dc2daadff8
+    type: title
+    task:
+      id: b3640a3e-9300-4984-8845-e2dc2daadff8
+      version: -1
+      name: Done - Block Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 1140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 7be5f3e1-543e-4d12-802d-9bd2a34a535e
+    type: title
+    task:
+      id: 7be5f3e1-543e-4d12-802d-9bd2a34a535e
+      version: -1
+      name: Done - Disable Account
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -810,
+          "y": 1140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 9efd63de-667a-4155-87a7-ab0cee543341
+    type: title
+    task:
+      id: 9efd63de-667a-4155-87a7-ab0cee543341
+      version: -1
+      name: Done - Isolate Device
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1470,
+          "y": 1150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: f495b99b-b851-438c-8fc8-0db9145c81a2
+    type: title
+    task:
+      id: f495b99b-b851-438c-8fc8-0db9145c81a2
+      version: -1
+      name: Clear User Sessions
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "60"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1630,
+          "y": -265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: f8ecacaf-8730-4a7e-8488-b2bcbe146837
+    type: condition
+    task:
+      id: f8ecacaf-8730-4a7e-8488-b2bcbe146837
+      version: -1
+      name: Is Okta enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "62"
+      "yes":
+      - "64"
+    scriptarguments:
+      brandname:
+        simple: Okta v2
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1630,
+          "y": -120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: 1a245de2-c6b0-498a-8e84-6575e9ebe21e
+    type: regular
+    task:
+      id: 1a245de2-c6b0-498a-8e84-6575e9ebe21e
+      version: -1
+      name: Auto clear user sessions
+      description: |-
+        Removes all active identity provider sessions. This forces the user to authenticate on the next operation. Optionally revokes OpenID Connect and OAuth refresh and access tokens issued to the user.
+        For more information and examples:
+        https://developer.okta.com/docs/reference/api/users/#user-sessions
+      script: '|||okta-clear-user-sessions'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "62"
+    scriptarguments:
+      userId:
+        complex:
+          root: Account
+          accessor: ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2530,
+          "y": 615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: 8044136b-f6b3-4018-8f0b-dbc8e25b89b8
+    type: title
+    task:
+      id: 8044136b-f6b3-4018-8f0b-dbc8e25b89b8
+      version: -1
+      name: Done - Clear User Sessions
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1630,
+          "y": 1140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: 2f73eee6-e877-4c46-865c-4c90b06283f2
+    type: condition
+    task:
+      id: 2f73eee6-e877-4c46-865c-4c90b06283f2
+      version: -1
+      name: Should block indicators?
+      description: Whether to block the indicators automatically, manually, or not at all.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "54"
+      Manual:
+      - "75"
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoContainment
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.BlockIndicators
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    - label: Manual
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.BlockIndicators
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": -120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: 197c6050-72e0-403a-8bc3-b6ea0983cccb
+    type: condition
+    task:
+      id: 197c6050-72e0-403a-8bc3-b6ea0983cccb
+      version: -1
+      name: Should clear user sessions?
+      description: Asks which user sessions should be cleared. If no value is selected, the following tasks will be ignored.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "62"
+      Manual:
+      - "81"
+      "yes":
+      - "83"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoContainment
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.ClearUserSessions
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    - label: Manual
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.ClearUserSessions
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 2000,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: e2c69b99-1d07-42f8-8716-c05c14f2ac0a
+    type: condition
+    task:
+      id: e2c69b99-1d07-42f8-8716-c05c14f2ac0a
+      version: -1
+      name: Should disable user?
+      description: Whether to disable the account automatically, manually, or not at all.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "56"
+      Manual:
+      - "90"
+      "yes":
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoContainment
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.UserContainment
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    - label: Manual
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.UserContainment
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": -810,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: 9b514bb2-0d79-45c5-86a5-1ab21e3a3fd0
+    type: regular
+    task:
+      id: 9b514bb2-0d79-45c5-86a5-1ab21e3a3fd0
+      version: -1
+      name: Auto endpoint isolation
+      description: Isolates the specified endpoint.
+      script: '|||core-isolate-endpoint'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "57"
+    scriptarguments:
+      endpoint_id:
+        complex:
+          root: inputs.EndpointID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1690,
+          "y": 465
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: c13243c5-c515-4ea6-88bd-472694793d22
+    type: collection
+    task:
+      id: c13243c5-c515-4ea6-88bd-472694793d22
+      version: -1
+      name: Manual endpoint isolation
+      description: Asks which endpoint should be isolated. If no value is selected, the following tasks will be ignored.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "71"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2110,
+          "y": 465
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Endpoint Isolation - Action Needed
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: false
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: |-
+            Should isolate the following endpoint?
+            Endpoint name: ${Core.Endpoint.endpoint_name}
+            Endpoint type: ${Core.Endpoint.endpoint_type}
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: Manual
+        - simple: "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Endpoint Isolation
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: c37ea7bb-e4ee-4d00-8c75-0490268300a6
+    type: condition
+    task:
+      id: c37ea7bb-e4ee-4d00-8c75-0490268300a6
+      version: -1
+      name: Check user answer
+      description: Check the user answer.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Manual:
+      - "72"
+      "No":
+      - "57"
+    separatecontext: false
+    conditions:
+    - label: "No"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Endpoint Isolation.Answers
+                accessor: "0"
+            iscontext: true
+          right:
+            value:
+              simple: "No"
+          ignorecase: true
+    - label: Manual
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Endpoint Isolation.Answers
+                accessor: "0"
+            iscontext: true
+          right:
+            value:
+              simple: Manual
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": -2110,
+          "y": 675
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: 16849499-a666-4b33-8fb0-1f185024db69
+    type: regular
+    task:
+      id: 16849499-a666-4b33-8fb0-1f185024db69
+      version: -1
+      name: Endpoint isolation
+      description: Manual endpoint isolation.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "57"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -2340,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "74":
+    id: "74"
+    taskid: 5a3905e8-73cd-4d5f-8625-6033e1abe97f
+    type: regular
+    task:
+      id: 5a3905e8-73cd-4d5f-8625-6033e1abe97f
+      version: -1
+      name: Add to XSIAM hash block list
+      description: Block lists requested files which have not already been block listed or added to allow lists.
+      script: '|||core-blocklist-files'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "102"
+    scriptarguments:
+      hash_list:
+        complex:
+          root: BlockIndicatorsList
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": 675
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: 121a06ba-35b9-4ae0-8d66-5b1a36d515d5
+    type: collection
+    task:
+      id: 121a06ba-35b9-4ae0-8d66-5b1a36d515d5
+      version: -1
+      name: Choose indicators to block
+      description: Asks which indicators should be blocked. If no value is selected, the following tasks will be ignored.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "76"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Block Indicators
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: false
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Which file should be blocked?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: inputs.FilePath
+            transformers:
+            - operator: uniq
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Which IP or Domain should be blocked?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: inputs.IP
+            transformers:
+            - operator: append
+              args:
+                item:
+                  value:
+                    simple: inputs.Domain
+                  iscontext: true
+            - operator: uniq
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Block Indicators
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: 871fca10-93d2-41f1-8194-aa74ba9103d1
+    type: condition
+    task:
+      id: 871fca10-93d2-41f1-8194-aa74ba9103d1
+      version: -1
+      name: Check user answer
+      description: Check the user answer.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "54"
+      All:
+      - "77"
+      IP or Domain:
+      - "102"
+    separatecontext: false
+    conditions:
+    - label: All
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Block Indicators.Answers
+                accessor: "0"
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    - label: IP or Domain
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Block Indicators.Answers
+                accessor: "1"
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "77":
+    id: "77"
+    taskid: c6f3ade9-838c-47ca-8029-9917b3713e92
+    type: regular
+    task:
+      id: c6f3ade9-838c-47ca-8029-9917b3713e92
+      version: -1
+      name: Set selected indicators to block
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "74"
+    scriptarguments:
+      key:
+        simple: BlockIndicatorsList
+      value:
+        complex:
+          root: foundIncidents.CustomFields
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: foundIncidents.CustomFields.initiatorpath
+                iscontext: true
+              right:
+                value:
+                  simple: Block Indicators.Answers.0
+                iscontext: true
+              ignorecase: true
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: foundIncidents.CustomFields.initiatorpath
+                iscontext: true
+              right:
+                value:
+                  simple: c:\windows\explorer.exe
+              ignorecase: true
+          accessor: initiatorsha256
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.FileHash
+                iscontext: true
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 520,
+          "y": 470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "79":
+    id: "79"
+    taskid: 9b4b5d34-f5ea-4866-8cdc-df9efa11686c
+    type: condition
+    task:
+      id: 9b4b5d34-f5ea-4866-8cdc-df9efa11686c
+      version: -1
+      name: Check user answer
+      description: Check the user answer.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "62"
+      "yes":
+      - "80"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Clear User Sessions.Answers
+                accessor: "0"
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 2000,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "80":
+    id: "80"
+    taskid: a1048b41-09ed-409a-8578-9008dc63d55f
+    type: regular
+    task:
+      id: a1048b41-09ed-409a-8578-9008dc63d55f
+      version: -1
+      name: Set selected users for sessions clearing
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "84"
+    scriptarguments:
+      key:
+        simple: ClearSessionsUserList
+      value:
+        complex:
+          root: Clear User Sessions.Answers
+          accessor: "0"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2000,
+          "y": 615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "81":
+    id: "81"
+    taskid: 312b0b1e-7fb4-41d2-801b-62f21a952bba
+    type: collection
+    task:
+      id: 312b0b1e-7fb4-41d2-801b-62f21a952bba
+      version: -1
+      name: Choose user to to execute clean session
+      description: Asks which user's sessions should be cleared. If no value is selected, the following tasks will be ignored.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "79"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2000,
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Clear User Sessions
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: false
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Which users should the session be cleared for?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: inputs.Username
+            filters:
+            - - operator: notContainsGeneral
+                left:
+                  value:
+                    simple: inputs.Username
+                  iscontext: true
+                right:
+                  value:
+                    simple: administrator
+                ignorecase: true
+            - - operator: notContainsGeneral
+                left:
+                  value:
+                    simple: inputs.Username
+                  iscontext: true
+                right:
+                  value:
+                    simple: system
+                ignorecase: true
+            transformers:
+            - operator: uniq
+            - operator: RegexExtractAll
+              args:
+                error_if_no_match: {}
+                ignore_case: {}
+                multi_line: {}
+                period_matches_newline: {}
+                regex:
+                  value:
+                    simple: '[^\\]+$'
+                unpack_matches: {}
+            - operator: concat
+              args:
+                prefix: {}
+                suffix:
+                  value:
+                    simple: inputs.IAMUserDomain
+                  iscontext: true
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Clear User Sessions
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "82":
+    id: "82"
+    taskid: c02f86dc-2b86-4bf9-8750-1303abaea42f
+    type: regular
+    task:
+      id: c02f86dc-2b86-4bf9-8750-1303abaea42f
+      version: -1
+      name: Clear user sessions
+      description: |-
+        Removes all active identity provider sessions. This forces the user to authenticate upon the next operation. Optionally revokes OpenID Connect and OAuth refresh and access tokens issued to the user.
+        For more information and examples:
+        https://developer.okta.com/docs/reference/api/users/#user-sessions
+      script: '|||okta-clear-user-sessions'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "62"
+    scriptarguments:
+      userId:
+        complex:
+          root: Account
+          accessor: ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2000,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "83":
+    id: "83"
+    taskid: 00b4d391-7aa0-4af6-8d39-5fb70f2da912
+    type: regular
+    task:
+      id: 00b4d391-7aa0-4af6-8d39-5fb70f2da912
+      version: -1
+      name: Get Okta user ID
+      description: Fetches information for a single user. You must enter one or more
+        parameters for the command to run.
+      script: '|||okta-get-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "61"
+    scriptarguments:
+      username:
+        complex:
+          root: inputs.Username
+          filters:
+          - - operator: notContainsGeneral
+              left:
+                value:
+                  simple: inputs.Username
+                iscontext: true
+              right:
+                value:
+                  simple: administrator
+              ignorecase: true
+          - - operator: notContainsGeneral
+              left:
+                value:
+                  simple: inputs.Username
+                iscontext: true
+              right:
+                value:
+                  simple: system
+              ignorecase: true
+          transformers:
+          - operator: uniq
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: '[^\\]+$'
+              unpack_matches: {}
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: inputs.IAMUserDomain
+                iscontext: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2530,
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "84":
+    id: "84"
+    taskid: 2a30594a-78be-440f-8c28-55172de55ee2
+    type: regular
+    task:
+      id: 2a30594a-78be-440f-8c28-55172de55ee2
+      version: -1
+      name: Get Okta user ID
+      description: Fetches information for a single user. You must enter one or more
+        parameters for the command to run.
+      script: '|||okta-get-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "82"
+    scriptarguments:
+      username:
+        complex:
+          root: ClearSessionsUserList
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2000,
+          "y": 795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "86":
+    id: "86"
+    taskid: 2d5d1305-428e-4bbb-8216-ab28390cc8cb
+    type: collection
+    task:
+      id: 2d5d1305-428e-4bbb-8216-ab28390cc8cb
+      version: -1
+      name: Choose files to quarantine
+      description: Asks which file should be quarantined. If no value is selected, the following tasks will be ignored.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "87"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -150,
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Quarantine Files
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: false
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Which files should be quarantined?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: inputs.FilePath
+            transformers:
+            - operator: uniq
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Quarantine Files
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "87":
+    id: "87"
+    taskid: 1795d90a-c71b-4208-8cb8-b380933352d1
+    type: condition
+    task:
+      id: 1795d90a-c71b-4208-8cb8-b380933352d1
+      version: -1
+      name: Check user answer
+      description: Check the user answer.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "53"
+      "yes":
+      - "88"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Quarantine Files.Answers
+                accessor: "0"
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": -150,
+          "y": 470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "88":
+    id: "88"
+    taskid: 29384e7e-5b0a-47ca-802c-8d2621c025ac
+    type: regular
+    task:
+      id: 29384e7e-5b0a-47ca-802c-8d2621c025ac
+      version: -1
+      name: Set selected files to quarantine
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "89"
+    scriptarguments:
+      key:
+        simple: FileQuarantineList
+      value:
+        complex:
+          root: Quarantine Files.Answers
+          accessor: "0"
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -150,
+          "y": 675
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "89":
+    id: "89"
+    taskid: a21d6d0b-0775-404f-80dc-e3c5f68d16ae
+    type: regular
+    task:
+      id: a21d6d0b-0775-404f-80dc-e3c5f68d16ae
+      version: -1
+      name: File quarantine
+      description: Quarantines a file on selected endpoints. You can select up to 1000 endpoints.
+      script: '|||core-quarantine-files'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      endpoint_id_list:
+        complex:
+          root: inputs.EndpointID
+      file_hash:
+        complex:
+          root: foundIncidents.CustomFields
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: foundIncidents.CustomFields.initiatorpath
+                iscontext: true
+              right:
+                value:
+                  simple: Quarantine Files.Answers.0
+                iscontext: true
+              ignorecase: true
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: foundIncidents.CustomFields.initiatorpath
+                iscontext: true
+              right:
+                value:
+                  simple: c:\windows\explorer.exe
+              ignorecase: true
+          accessor: initiatorsha256
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.FileHash
+                iscontext: true
+      file_path:
+        complex:
+          root: FileQuarantineList
+      interval_in_seconds:
+        simple: "20"
+      timeout_in_seconds:
+        simple: "120"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -150,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "90":
+    id: "90"
+    taskid: f0246d0e-b8f9-44b8-87fc-b7e184f37ee9
+    type: collection
+    task:
+      id: f0246d0e-b8f9-44b8-87fc-b7e184f37ee9
+      version: -1
+      name: Choose users to disable
+      description: Asks which user should be disabled. If no value is selected, the following tasks will be ignored.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "91"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1050,
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Disable Users
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: false
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Which users should be disabled?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: inputs.Username
+            transformers:
+            - operator: uniq
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Disable Users
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "91":
+    id: "91"
+    taskid: e17a7867-45a1-441d-8155-b9a19b3f87b8
+    type: condition
+    task:
+      id: e17a7867-45a1-441d-8155-b9a19b3f87b8
+      version: -1
+      name: Check user answer
+      description: Check the user answer.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "56"
+      "yes":
+      - "92"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Disable Users.Answers
+                accessor: "0"
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": -1050,
+          "y": 470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "92":
+    id: "92"
+    taskid: 1c23dbb4-137c-4f56-8cf8-9e92cac56dc2
+    type: regular
+    task:
+      id: 1c23dbb4-137c-4f56-8cf8-9e92cac56dc2
+      version: -1
+      name: Set selected users to disable
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "94"
+    scriptarguments:
+      key:
+        simple: DisableUserList
+      value:
+        complex:
+          root: Disable Users.Answers
+          accessor: "0"
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1050,
+          "y": 675
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "94":
+    id: "94"
+    taskid: 43db538e-fb9d-477b-8fe1-ffa8fb263f41
+    type: playbook
+    task:
+      id: 43db538e-fb9d-477b-8fe1-ffa8fb263f41
+      version: -1
+      name: Block Account - Generic
+      description: |-
+        This playbook blocks malicious usernames using all integrations that you have enabled.
+
+        Supported integrations for this playbook:
+        * Active Directory
+        * PAN-OS - This requires PAN-OS 9.1 or higher.
+      playbookName: Block Account - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      Username:
+        complex:
+          root: DisableUserList
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -1050,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "95":
+    id: "95"
+    taskid: 7afd5f31-21a5-4dd6-8446-2985bb2a51f3
+    type: regular
+    task:
+      id: 7afd5f31-21a5-4dd6-8446-2985bb2a51f3
+      version: -1
+      name: Get endpoint info
+      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields is concatenated using the AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoints from the start of the result set (start by counting from 0).
+      script: '|||core-get-endpoints'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "97"
+    scriptarguments:
+      endpoint_id_list:
+        complex:
+          root: inputs.EndpointID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -1690,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "97":
+    id: "97"
+    taskid: 2b4142c1-4639-47c2-85e9-a4460195acd4
+    type: condition
+    task:
+      id: 2b4142c1-4639-47c2-85e9-a4460195acd4
+      version: -1
+      name: Should isolate device automatically?
+      description: Whether to isolate the endpoint automatically or manually.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "57"
+      Manual:
+      - "70"
+      "Yes":
+      - "68"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoContainment
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: Core.Endpoint
+                accessor: endpoint_type
+            iscontext: true
+          right:
+            value:
+              simple: WORKSTATION
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Core.Endpoint
+                accessor: is_isolated
+            iscontext: true
+          right:
+            value:
+              simple: AGENT_UNISOLATED
+          ignorecase: true
+      - - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: Core.Endpoint
+                accessor: endpoint_status
+            iscontext: true
+          right:
+            value:
+              simple: DISCONNECTED
+          ignorecase: true
+    - label: Manual
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoContainment
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+        - operator: notContainsGeneral
+          left:
+            value:
+              complex:
+                root: Core.Endpoint
+                accessor: endpoint_type
+            iscontext: true
+          right:
+            value:
+              simple: WORKSTATION
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Core.Endpoint
+                accessor: is_isolated
+            iscontext: true
+          right:
+            value:
+              simple: AGENT_UNISOLATED
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": -1690,
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "98":
+    id: "98"
+    taskid: 528cc2ad-75e3-42f0-8853-efb6792cf7f9
+    type: regular
+    task:
+      id: 528cc2ad-75e3-42f0-8853-efb6792cf7f9
+      version: -1
+      name: Get file quarantine status
+      description: Retrieves the quarantine status for a selected file.
+      script: '|||core-get-quarantine-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      endpoint_id:
+        complex:
+          root: alert
+          accessor: agentid
+      file_hash:
+        complex:
+          root: alert
+          filters:
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: alert.initiatorpath
+                iscontext: true
+              right:
+                value:
+                  simple: c:\windows\explorer.exe
+              ignorecase: true
+          accessor: initiatorsha256
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: alert.targetprocesssha256
+                iscontext: true
+      file_path:
+        complex:
+          root: alert.initiatorpath
+          filters:
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: alert.initiatorpath
+                iscontext: true
+              right:
+                value:
+                  simple: c:\windows\explorer.exe
+              ignorecase: true
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: alert.targetprocesscmd
+                iscontext: true
+          - operator: replaceMatch
+            args:
+              regex:
+                value:
+                  simple: \"
+              replaceWith: {}
+          - operator: uniq
+    continueonerror: true
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 80,
+          "y": -120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "99":
+    id: "99"
+    taskid: 5dd466f5-7ca2-4764-8a79-0d6212fe8de5
+    type: regular
+    task:
+      id: 5dd466f5-7ca2-4764-8a79-0d6212fe8de5
+      version: -1
+      name: Auto file quarantine
+      description: Quarantines a file on selected endpoints. You can select up to 1000 endpoints.
+      script: '|||core-quarantine-files'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      endpoint_id_list:
+        complex:
+          root: inputs.EndpointID
+      file_hash:
+        complex:
+          root: foundIncidents.CustomFields
+          filters:
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: foundIncidents.CustomFields.initiatorpath
+                iscontext: true
+              right:
+                value:
+                  simple: c:\windows\explorer.exe
+              ignorecase: true
+          accessor: initiatorsha256
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.FileHash
+                iscontext: true
+      file_path:
+        complex:
+          root: foundIncidents.CustomFields.initiatorpath
+          filters:
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: foundIncidents.CustomFields.initiatorpath
+                iscontext: true
+              right:
+                value:
+                  simple: c:\windows\explorer.exe
+              ignorecase: true
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.FilePath
+                iscontext: true
+      interval_in_seconds:
+        simple: "20"
+      timeout_in_seconds:
+        simple: "120"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "100":
+    id: "100"
+    taskid: 68bcdc76-840b-4cf8-8eb6-0092768a87a4
+    type: playbook
+    task:
+      id: 68bcdc76-840b-4cf8-8eb6-0092768a87a4
+      version: -1
+      name: Block Indicators - Generic v2
+      description: |+
+        This playbook blocks malicious Indicators using all integrations that are enabled, using the following sub-playbooks:
+
+        - Block URL - Generic
+        - Block Account - Generic
+        - Block IP - Generic v2
+        - Block File - Generic v2
+        - Block Email - Generic
+        - Block Domain - Generic
+
+      playbookName: Block Indicators - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      AutoCommit:
+        simple: "No"
+      CustomBlockRule:
+        simple: "True"
+      CustomURLCategory:
+        simple: Demisto Remediation - Malicious URLs
+      DomainToBlock:
+        complex:
+          root: inputs.Domain
+      IP:
+        complex:
+          root: inputs.IP
+          transformers:
+          - operator: uniq
+      MD5:
+        complex:
+          root: inputs.FileHash
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: inputs.FileHash
+                iscontext: true
+              right:
+                value:
+                  simple: "32"
+      SHA256:
+        complex:
+          root: inputs.FileHash
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: inputs.FileHash
+                iscontext: true
+              right:
+                value:
+                  simple: "64"
+      URL:
+        complex:
+          root: inputs.URL
+      URLListName:
+        simple: Demisto Remediation - URL EDL
+      Username:
+        complex:
+          root: inputs.Username
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1200,
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "102":
+    id: "102"
+    taskid: 3a7f262b-bb45-42b4-825f-92e697038488
+    type: playbook
+    task:
+      id: 3a7f262b-bb45-42b4-825f-92e697038488
+      version: -1
+      name: Block Indicators - Generic v2
+      description: |+
+        This playbook blocks malicious Indicators using all integrations that are enabled, using the following sub-playbooks:
+
+        - Block URL - Generic
+        - Block Account - Generic
+        - Block IP - Generic v2
+        - Block File - Generic v2
+        - Block Email - Generic
+        - Block Domain - Generic
+
+      playbookName: Block Indicators - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      AutoCommit:
+        simple: "No"
+      CustomBlockRule:
+        simple: "True"
+      CustomURLCategory:
+        simple: Demisto Remediation - Malicious URLs
+      DomainToBlock:
+        complex:
+          root: inputs.Domain
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: inputs.Domain
+                iscontext: true
+              right:
+                value:
+                  simple: Block Indicators.Answers.1
+                iscontext: true
+          transformers:
+          - operator: uniq
+      IP:
+        complex:
+          root: inputs.IP
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: inputs.IP
+                iscontext: true
+              right:
+                value:
+                  simple: Block Indicators.Answers.1
+                iscontext: true
+              ignorecase: true
+          transformers:
+          - operator: uniq
+      MD5:
+        complex:
+          root: inputs.FileHash
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: inputs.FileHash
+                iscontext: true
+              right:
+                value:
+                  simple: "32"
+          - - operator: in
+              left:
+                value:
+                  simple: inputs.FileHash
+                iscontext: true
+              right:
+                value:
+                  simple: BlockIndicatorsList
+                iscontext: true
+              ignorecase: true
+      SHA256:
+        complex:
+          root: inputs.FileHash
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: inputs.FileHash
+                iscontext: true
+              right:
+                value:
+                  simple: "64"
+          - - operator: in
+              left:
+                value:
+                  simple: inputs.FileHash
+                iscontext: true
+              right:
+                value:
+                  simple: BlockIndicatorsList
+                iscontext: true
+              ignorecase: true
+          transformers:
+          - operator: uniq
+      URL:
+        complex:
+          root: inputs.URL
+      URLListName:
+        simple: Demisto Remediation - URL EDL
+      Username:
+        complex:
+          root: inputs.Username
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "103":
+    id: "103"
+    taskid: fdeae51c-6c98-49db-8798-4b329f69d773
+    type: condition
+    task:
+      id: fdeae51c-6c98-49db-8798-4b329f69d773
+      version: -1
+      name: Is Active Directory Query v2 enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "56"
+      "yes":
+      - "67"
+    scriptarguments:
+      brandname:
+        simple: Active Directory Query v2
+    results:
+    - brandInstances
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": -810,
+          "y": -120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "103_56_no": 0.21,
+      "29_57_#default#": 0.15,
+      "29_95_yes": 0.63,
+      "35_53_#default#": 0.15,
+      "35_86_Manual": 0.65,
+      "35_99_yes": 0.73,
+      "60_62_no": 0.11,
+      "60_64_yes": 0.43,
+      "63_25_yes": 0.72,
+      "63_54_#default#": 0.13,
+      "63_75_Manual": 0.63,
+      "64_62_#default#": 0.22,
+      "64_81_Manual": 0.61,
+      "64_83_yes": 0.9,
+      "67_45_yes": 0.37,
+      "67_56_#default#": 0.1,
+      "67_90_Manual": 0.42,
+      "71_57_No": 0.13,
+      "71_72_Manual": 0.62,
+      "76_102_IP or Domain": 0.89,
+      "76_54_#default#": 0.22,
+      "76_77_All": 0.41,
+      "79_62_#default#": 0.3,
+      "79_80_yes": 0.44,
+      "87_53_#default#": 0.25,
+      "87_88_yes": 0.56,
+      "91_56_#default#": 0.28,
+      "91_92_yes": 0.53,
+      "97_68_Yes": 0.76,
+      "97_70_Manual": 0.67
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1635,
+        "width": 5250,
+        "x": -2340,
+        "y": -420
+      }
+    }
+  }
+inputs:
+- key: AutoContainment
+  value:
+    simple: "False"
+  required: false
+  description: |-
+    Whether to execute containment plan (except isolation) automatically.
+    The specific containment playbook inputs should also be set to 'True'.
+  playbookInputQuery:
+- key: HostContainment
+  value:
+    simple: "True"
+  required: false
+  description: Whether to execute endpoint isolation automatically.
+  playbookInputQuery:
+- key: UserContainment
+  value:
+    simple: "True"
+  required: false
+  description: Set to 'True' to disable the user account.
+  playbookInputQuery:
+- key: BlockIndicators
+  value:
+    simple: "True"
+  required: false
+  description: Set to 'True' to block the indicators.
+  playbookInputQuery:
+- key: FileContainment
+  value:
+    simple: "True"
+  required: false
+  description: Set to 'True' to quarantine the identified file.
+  playbookInputQuery:
+- key: ClearUserSessions
+  value:
+    simple: "True"
+  required: false
+  description: Set to 'True' to clear the user active Okta sessions.
+  playbookInputQuery:
+- key: EndpointID
+  value: {}
+  required: false
+  description: The endpoint ID to run commands over.
+  playbookInputQuery:
+- key: Username
+  value: {}
+  required: false
+  description: The username to disable.
+  playbookInputQuery:
+- key: FileHash
+  value: {}
+  required: false
+  description: The file hash to block.
+  playbookInputQuery:
+- key: FilePath
+  value: {}
+  required: false
+  description: The path of the file to block.
+  playbookInputQuery:
+- key: IP
+  value: {}
+  required: false
+  description: The IP indicators.
+  playbookInputQuery:
+- key: Domain
+  value: {}
+  required: false
+  description: The domain indicators.
+  playbookInputQuery:
+- key: URL
+  value: {}
+  required: false
+  description: The URL indicator.
+  playbookInputQuery:
+- key: FileRemediation
+  value:
+    simple: Quarantine
+  required: false
+  description: "Choose 'Quarantine' or 'Delete'  to avoid file remediation conflicts. \nFor example, choosing 'Quarantine' ignores the 'Delete file' task under the eradication playbook and will execute only file quarantine."
+  playbookInputQuery:
+- key: IAMUserDomain
+  value:
+    simple: '@demisto.com'
+  required: false
+  description: The Okta IAM users domain. The domain will be appended to the username. e.g. username@IAMUserDomain.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.6.0
+marketplaces: ["marketplacev2"]

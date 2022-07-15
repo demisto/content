@@ -22,7 +22,8 @@ BASE_URL = "https://api.security.microsoft.com"
 class Client:
     @logger
     def __init__(self, app_id: str, verify: bool, proxy: bool, base_url: str = BASE_URL, tenant_id: str = None,
-                 enc_key: str = None, client_credentials: bool = False):
+                 enc_key: str = None, client_credentials: bool = False, certificate_thumbprint: Optional[str] = None,
+                 private_key: Optional[str] = None):
         if '@' in app_id:
             app_id, refresh_token = app_id.split('@')
             integration_context = get_integration_context()
@@ -49,6 +50,8 @@ class Client:
             # used for client credentials flow
             tenant_id=tenant_id,
             enc_key=enc_key,
+            certificate_thumbprint=certificate_thumbprint,
+            private_key=private_key,
         )
         self.ms_client = MicrosoftClient(**client_args)  # type: ignore
 
@@ -128,6 +131,25 @@ class Client:
         updated_incident = self.ms_client.http_request(method='PATCH', url_suffix=f'api/incidents/{incident_id}',
                                                        json_data=body, timeout=timeout)
         return updated_incident
+
+    @logger
+    def get_incident(self, incident_id: int, timeout: int) -> Dict:
+        """
+        GET request to get single incident.
+        Args:
+            incident_id (int): incident's id
+            timeout (int): waiting time for command execution
+
+
+       Returns( Dict): request results as dict:
+                    { '@odata.context',
+                      'value': updated incident,
+                    }
+
+        """
+        incident = self.ms_client.http_request(
+            method='GET', url_suffix=f'api/incidents/{incident_id}', timeout=timeout)
+        return incident
 
     @logger
     def advanced_hunting(self, query: str, timeout: int):
@@ -243,8 +265,10 @@ def _get_meta_data_for_incident(raw_incident: Dict) -> Dict:
         'Active alerts': f'{alerts_status.count("Active") + alerts_status.count("New")} / {len(alerts_status)}',
         'Service sources': list({alert.get('serviceSource', '') for alert in alerts_list}),
         'Detection sources': list({alert.get('detectionSource', '') for alert in alerts_list}),
-        'First activity': str(min(first_activity_list, key=lambda x: dateparser.parse(x))) if alerts_list else '',
-        'Last activity': str(max(last_activity_list, key=lambda x: dateparser.parse(x))) if alerts_list else '',
+        'First activity': str(min(first_activity_list,
+                                  key=lambda x: dateparser.parse(x))) if alerts_list else '',  # type: ignore
+        'Last activity': str(max(last_activity_list,
+                                 key=lambda x: dateparser.parse(x))) if alerts_list else '',  # type: ignore
         'Devices': [{'device name': device.get('deviceDnsName', ''),
                      'risk level': device.get('riskScore', ''),
                      'tags': ','.join(device.get('tags', []))
@@ -266,7 +290,8 @@ def convert_incident_to_readable(raw_incident: Dict) -> Dict:
         raw_incident = {}
 
     incident_meta_data = _get_meta_data_for_incident(raw_incident)
-    device_groups = {device.get('device name') for device in incident_meta_data.get('Devices', [])}
+    device_groups = {device.get('device name') for device in incident_meta_data.get('Devices', [])
+                     if device.get('device name')}
     return {
         'Incident name': raw_incident.get('incidentName'),
         'Tags': ', '.join(raw_incident.get('tags', [])),
@@ -371,6 +396,33 @@ def microsoft_365_defender_incident_update_command(client: Client, args: Dict) -
 
 
 @logger
+def microsoft_365_defender_incident_get_command(client: Client, args: Dict) -> CommandResults:
+    """
+    Get an incident.
+    Args:
+        client(Client): Microsoft 365 Defender's client to preform the API calls.
+        args(Dict): Demisto arguments:
+              - id (int)        - incident's id (required)
+              - timeout (int)   - waiting time for command execution
+
+    Returns: CommandResults
+    """
+    incident_id = arg_to_number(args.get('id'))
+    timeout = arg_to_number(args.get('timeout', TIMEOUT))
+
+    incident = client.get_incident(incident_id=incident_id, timeout=timeout)
+    if incident.get('@odata.context'):
+        del incident['@odata.context']
+
+    readable_incident = convert_incident_to_readable(incident)
+    human_readable_table = tableToMarkdown(name=f"Incident No. {incident_id}:", t=readable_incident,
+                                           headers=list(readable_incident.keys()))
+
+    return CommandResults(outputs_prefix='Microsoft365Defender.Incident', outputs_key_field='incidentId',
+                          outputs=incident, readable_output=human_readable_table)
+
+
+@logger
 def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int, timeout: int = None) -> List[Dict]:
     """
     Uses to fetch incidents into Demisto
@@ -400,7 +452,9 @@ def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int, tim
 
     last_run = last_run_dict.get('last_run')
     if not last_run:  # this is the first run
-        last_run = dateparser.parse(first_fetch_time).strftime(DATE_FORMAT)
+        first_fetch_date_time = dateparser.parse(first_fetch_time)
+        assert first_fetch_date_time is not None, f'could not parse {first_fetch_time}'
+        last_run = first_fetch_date_time.strftime(DATE_FORMAT)
 
     # creates incidents queue
     incidents_queue = last_run_dict.get('incidents_queue', [])
@@ -441,7 +495,8 @@ def fetch_incidents(client: Client, first_fetch_time: str, fetch_limit: int, tim
                 break
             offset += int(MAX_ENTRIES)
 
-        incidents.sort(key=lambda x: dateparser.parse(x['occurred']))  # sort the incidents by the creation time
+        # sort the incidents by the creation time
+        incidents.sort(key=lambda x: dateparser.parse(x['occurred']))  # type: ignore
         incidents_queue += incidents
 
     oldest_incidents = incidents_queue[:fetch_limit]
@@ -529,12 +584,14 @@ def main() -> None:
     # if your Client class inherits from BaseClient, system proxy is handled
     # out of the box by it, just pass ``proxy`` to the Client constructor
     proxy = params.get('proxy', False)
-    app_id = params.get('app_id')
+    app_id = params.get('app_id') or params.get('_app_id')
     base_url = params.get('base_url')
 
-    tenant_id = params.get('tenant_id')
+    tenant_id = params.get('tenant_id') or params.get('_tenant_id')
     client_credentials = params.get('client_credentials', False)
-    enc_key = params.get('enc_key')
+    enc_key = params.get('enc_key') or (params.get('credentials') or {}).get('password')
+    certificate_thumbprint = params.get('certificate_thumbprint')
+    private_key = params.get('private_key')
 
     first_fetch_time = params.get('first_fetch', '3 days').strip()
     fetch_limit = arg_to_number(params.get('max_fetch', 10))
@@ -545,6 +602,9 @@ def main() -> None:
     args = demisto.args()
 
     try:
+        if not app_id:
+            raise Exception('Application ID must be provided.')
+
         client = Client(
             app_id=app_id,
             verify=verify_certificate,
@@ -553,6 +613,8 @@ def main() -> None:
             tenant_id=tenant_id,
             enc_key=enc_key,
             client_credentials=client_credentials,
+            certificate_thumbprint=certificate_thumbprint,
+            private_key=private_key,
         )
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
@@ -582,6 +644,10 @@ def main() -> None:
             test_context_for_token(client)
             return_results(microsoft_365_defender_advanced_hunting_command(client, args))
 
+        elif command == 'microsoft-365-defender-incident-get':
+            test_context_for_token(client)
+            return_results(microsoft_365_defender_incident_get_command(client, args))
+
         elif command == 'fetch-incidents':
             fetch_limit = arg_to_number(fetch_limit)
             fetch_timeout = arg_to_number(fetch_timeout) if fetch_timeout else None
@@ -591,7 +657,6 @@ def main() -> None:
             raise NotImplementedError
     # Log exceptions and return errors
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 

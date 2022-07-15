@@ -20,6 +20,18 @@ configuration:
   name: enc_key
   required: false
   type: 4
+- additionalinfo: Used for certificate authentication. As appears in the "Certificates
+    & secrets" page of the app.
+  display: Certificate Thumbprint
+  name: certificate_thumbprint
+  required: false
+  type: 4
+- additionalinfo: Used for certificate authentication. The private key of the registered
+    certificate.
+  display: Private Key
+  name: private_key
+  required: false
+  type: 14
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -32,16 +44,15 @@ configuration:
   name: self_deployed
   required: false
   type: 8
-description: Use the Microsoft Graph Files integration to enable your app to get authorized
-  access to files in OneDrive, SharePoint, and MS Teams across your entire organization.
-  This integration requires admin consent.
-display: Microsoft Graph Files
+description: Use the O365 File Management (Onedrive/Sharepoint/Teams) integration
+  to enable your app to get authorized access to files in OneDrive, SharePoint, and
+  MS Teams across your entire organization. This integration requires admin consent.
+display: O365 File Management (Onedrive/Sharepoint/Teams)
 name: Microsoft_Graph_Files
 script:
   commands:
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: The MS Graph resource. Can be "drives", "groups", "sites", or "users".
       isArray: true
       name: object_type
@@ -51,37 +62,27 @@ script:
       - sites
       - users
       required: true
-      secret: false
-    - default: false
+    - auto: PREDEFINED
       description: |-
         MS Graph resource ID.
         For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.
-        For resource type 'group': To get a list of all groups that exists, configure the 'Microsoft Graph Groups' integration and use the msgraph-groups-list-groups command.
+        For resource type 'group': To get a list of all groups that exists, configure the 'Azure Active Directory Groups' integration and use the msgraph-groups-list-groups command.
         For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.
-        For resource type 'users': To get a list of all users that exists, configure the 'Microsoft Graph User' integration and use the msgraph-user-list command.
-      isArray: false
+        For resource type 'users': To get a list of all users that exists, configure the 'Azure Active Directory Users' integration and use the msgraph-user-list command.
       name: object_type_id
       predefined:
       - ''
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The ID of the item to delete.
         To get the ID of the file you want to delete, use the msgraph-list-drive-content command.
-      isArray: false
       name: item_id
       required: true
-      secret: false
-    deprecated: false
     description: Deletes an item from OneDrive.
-    execution: false
     name: msgraph-delete-file
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: The MS Graph resource. Can be "drives", "groups", "sites", or "users".
-      isArray: false
       name: object_type
       predefined:
       - drives
@@ -89,41 +90,26 @@ script:
       - users
       - sites
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         MS Graph resource ID.
         For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.
-        For resource type 'group': To get a list of all groups that exists, configure the 'Microsoft Graph Groups' integration and use the msgraph-groups-list-groups command.
+        For resource type 'group': To get a list of all groups that exists, configure the 'Azure Active Directory Groups' integration and use the msgraph-groups-list-groups command.
         For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.
-        For resource type 'users': To get a list of all users that exists, configure the 'Microsoft Graph User' integration and use the msgraph-user-list command.
-      isArray: false
+        For resource type 'users': To get a list of all users that exists, configure the 'Azure Active Directory Users' integration and use the msgraph-user-list command.
       name: object_type_id
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The ID of the folder in which to upload the file.
         To get the ID of a folder, use the msgraph-list-drive-content command.
-      isArray: false
       name: parent_id
       required: true
-      secret: false
-    - default: false
-      description: The name of the file to upload.
-      isArray: false
+    - description: The name of the file to upload.
       name: file_name
       required: true
-      secret: false
-    - default: false
-      description: The Cortex XSOAR entry ID of the file.
-      isArray: false
+    - description: The Cortex XSOAR entry ID of the file.
       name: entry_id
       required: true
-      secret: false
-    deprecated: false
     description: Uploads a file from Cortex XSOAR to the specified MS Graph resource.
-    execution: false
     name: msgraph-upload-new-file
     outputs:
     - contextPath: MsGraphFiles.UploadedFiles.ParentReference.DriveId
@@ -195,9 +181,7 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: The MS Graph resource. Can be "drives", "groups", "sites", or "users".
-      isArray: false
       name: object_type
       predefined:
       - drives
@@ -205,36 +189,24 @@ script:
       - sites
       - users
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         MS Graph resource ID.
         For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.
-        For resource type 'group': To get a list of all groups that exists, configure the 'Microsoft Graph Groups' integration and use the msgraph-groups-list-groups command.
+        For resource type 'group': To get a list of all groups that exists, configure the 'Azure Active Directory Groups' integration and use the msgraph-groups-list-groups command.
         For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.
-        For resource type 'users': To get a list of all users that exists, configure the 'Microsoft Graph User' integration and use the msgraph-user-list command.
-      isArray: false
+        For resource type 'users': To get a list of all users that exists, configure the 'Azure Active Directory Users' integration and use the msgraph-user-list command.
       name: object_type_id
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The MS Graph item ID of the file you want to replace.
         To get the ID of the file you want to replace, use the msgraph-list-drive-content command.
-      isArray: false
       name: item_id
       required: true
-      secret: false
-    - default: false
-      description: The Cortex XSOAR entry ID of the new file that will replace the
+    - description: The Cortex XSOAR entry ID of the new file that will replace the
         current file.
-      isArray: false
       name: entry_id
       required: true
-      secret: false
-    deprecated: false
     description: Replaces the content of the file in the specified MS Graph resource.
-    execution: false
     name: msgraph-replace-existing-file
     outputs:
     - contextPath: MsGraphFiles.ReplacedFiles.ParentReference.DriveId
@@ -305,9 +277,7 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: The MS Graph resource. Can be "drives", "groups", "sites", or "users".
-      isArray: false
       name: object_type
       predefined:
       - drives
@@ -315,37 +285,25 @@ script:
       - sites
       - users
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         MS Graph resource ID.
         For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.
-        For resource type 'group': To get a list of all groups that exists, configure the 'Microsoft Graph Groups' integration and use the msgraph-groups-list-groups command.
+        For resource type 'group': To get a list of all groups that exists, configure the 'Azure Active Directory Groups' integration and use the msgraph-groups-list-groups command.
         For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.
-        For resource type 'users': To get a list of all users that exists, configure the 'Microsoft Graph User' integration and use the msgraph-user-list command.
-      isArray: false
+        For resource type 'users': To get a list of all users that exists, configure the 'Azure Active Directory Users' integration and use the msgraph-user-list command.
       name: object_type_id
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The ID of the parent in which to upload the new folder.
         Parent can be either 'root' or another folder.
         To get the required folder ID, use the msgraph-list-drive-content command.
-      isArray: false
       name: parent_id
       required: true
-      secret: false
-    - default: false
-      description: The name of the new folder.
-      isArray: false
+    - description: The name of the new folder.
       name: folder_name
       required: true
-      secret: false
-    deprecated: false
     description: Creates a new folder in a drive with the specified parent item or
       path.
-    execution: false
     name: msgraph-create-new-folder
     outputs:
     - contextPath: MsGraph.Folder
@@ -406,32 +364,18 @@ script:
       description: The folder size.
       type: Number
   - arguments:
-    - default: false
-      description: |-
+    - description: |-
         The ID of the site for which to return available drive resources.
         To find a list of all sites, use the msgraph-list-sharepoint-sites command.
-      isArray: false
       name: site_id
-      required: false
-      secret: false
-    - default: false
-      description: The maximum number of results to return.
-      isArray: false
+    - description: The maximum number of results to return.
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The URL for the next results page.
         If a next page of results exists, you will find it in the Cortex XSOAR context under MsGraphFiles.ListDrives.OdataNextLink.
-      isArray: false
       name: next_page_url
-      required: false
-      secret: false
-    deprecated: false
     description: Returns the list of document libraries (drives) available for a target
       site.
-    execution: false
     name: msgraph-list-drives-in-site
     outputs:
     - contextPath: MsGraphFiles.ListDrives.Value.LastModifiedDateTime
@@ -473,9 +417,7 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: The MS Graph resource. Can be "drives", "groups", "sites", or "users".
-      isArray: false
       name: object_type
       predefined:
       - drives
@@ -483,20 +425,15 @@ script:
       - sites
       - users
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         MS Graph resource ID.
         For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.
-        For resource type 'group': To get a list of all groups that exists, configure the 'Microsoft Graph Groups' integration and use the msgraph-groups-list-groups command.
+        For resource type 'group': To get a list of all groups that exists, configure the 'Azure Active Directory Groups' integration and use the msgraph-groups-list-groups command.
         For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.
-        For resource type 'users': To get a list of all users that exists, configure the 'Microsoft Graph User' integration and use the msgraph-user-list command.
-      isArray: false
+        For resource type 'users': To get a list of all users that exists, configure the 'Azure Active Directory Users' integration and use the msgraph-user-list command.
       name: object_type_id
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The MS Graph item ID.
         It can be either 'root' or another folder.
         Passing a folder ID retrieves files from a specified folder.
@@ -505,27 +442,14 @@ script:
         To get the required folder ID, use the msgraph-list-drive-content command and leave the argument empty in order to get a list of folders that are located in the root.
 
         If your folder is nested inside another folder, pass the parent ID found when running the msgraph-list-drive-content command without an 'item_id' in this argument to get the required folder ID.
-      isArray: false
       name: item_id
-      required: false
-      secret: false
-    - default: false
-      description: The maximum number of results to return.
-      isArray: false
+    - description: The maximum number of results to return.
       name: limit
-      required: false
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The URL for the next results page.
         If a next page of results exists, you will find it in the Cortex XSOAR context under MsGraphFiles.ListChildren.OdataNextLink
-      isArray: false
       name: next_page_url
-      required: false
-      secret: false
-    deprecated: false
     description: Returns a list of files and folders in the specified drive.
-    execution: false
     name: msgraph-list-drive-content
     outputs:
     - contextPath: MsGraphFiles.ListChildren.Children.Value.OdataNextLink
@@ -586,9 +510,11 @@ script:
     - contextPath: MsGraphFiles.ListChildren.Children.OdataContext
       description: The OData query.
       type: String
-  - deprecated: false
+  - arguments:
+    - description: Keyword used to search for sites across a SharePoint tenant. If a keyword
+        is not provided, it returns all sites)
+      name: keyword
     description: Returns a list of the tenant sites.
-    execution: false
     name: msgraph-list-sharepoint-sites
     outputs:
     - contextPath: MsGraph.Sites
@@ -629,9 +555,7 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: false
       description: The MS Graph resource. Can be "drives", "groups", "sites", or "users".
-      isArray: false
       name: object_type
       predefined:
       - drives
@@ -639,29 +563,20 @@ script:
       - sites
       - users
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         MS Graph resource ID.
         For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.
-        For resource type 'group': To get a list of all groups that exists, configure the 'Microsoft Graph Groups' integration and use the msgraph-groups-list-groups command.
+        For resource type 'group': To get a list of all groups that exists, configure the 'Azure Active Directory Groups' integration and use the msgraph-groups-list-groups command.
         For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.
-        For resource type 'users': To get a list of all users that exists, configure the 'Microsoft Graph User' integration and use the msgraph-user-list command.
-      isArray: false
+        For resource type 'users': To get a list of all users that exists, configure the 'Azure Active Directory Users' integration and use the msgraph-user-list command.
       name: object_type_id
       required: true
-      secret: false
-    - default: false
-      description: |-
+    - description: |-
         The MS Graph item ID.
         To get the ID of the file you want to download, use the msgraph-list-drive-content command.
-      isArray: false
       name: item_id
       required: true
-      secret: false
-    deprecated: false
     description: Downloads the file contents of the drive item.
-    execution: false
     name: msgraph-download-file
     outputs:
     - contextPath: File.Size
@@ -694,15 +609,11 @@ script:
     - contextPath: File.MD5
       description: The MD5 hash of the file.
       type: String
-  dockerimage: demisto/python_pancloud:1.0.0.14303
-  feed: false
-  isfetch: false
-  longRunning: false
-  longRunningPort: false
+  dockerimage: demisto/python_pancloud:1.0.0.27257
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
+fromversion: 5.0.0
 tests:
 - test_MsGraphFiles
-fromversion: 5.0.0

@@ -1,0 +1,592 @@
+id: ACTI Incident Enrichment
+version: -1
+name: ACTI Incident Enrichment
+description: This playbook enriches Intelligence Alerts, Intelligence Reports, Malware
+  Families, Threat Actors, Threat Groups & Threat Campaigns
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ca91ceab-2a21-4811-894f-6f1ed01af071
+    type: start
+    task:
+      id: ca91ceab-2a21-4811-894f-6f1ed01af071
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+      - "9"
+      - "10"
+      - "11"
+      - "12"
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1287.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 35ed57f7-6a6b-45da-8943-b7e22e520eb7
+    type: regular
+    task:
+      id: 35ed57f7-6a6b-45da-8943-b7e22e520eb7
+      version: -1
+      name: Enrich IA
+      description: Fetches Intelligence Alerts & Intelligence Reports.
+      script: ACTI Indicator Query|||acti-getThreatIntelReport
+      type: regular
+      iscommand: true
+      brand: ACTI Indicator Query
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      uuid:
+        simple: ${inputs.ia_uuid}
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 05988938-b1b3-4d1e-8082-b4fbcf6f3b85
+    type: title
+    task:
+      id: 05988938-b1b3-4d1e-8082-b4fbcf6f3b85
+      version: -1
+      name: END
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1287.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: b8e15caa-d254-41d1-84c2-ae143ad76500
+    type: regular
+    task:
+      id: b8e15caa-d254-41d1-84c2-ae143ad76500
+      version: -1
+      name: Enrich IR
+      description: Fetches Intelligence Alerts & Intelligence Reports.
+      script: ACTI Indicator Query|||acti-getThreatIntelReport
+      type: regular
+      iscommand: true
+      brand: ACTI Indicator Query
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      uuid:
+        simple: ${inputs.ir_uuid}
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: fb422c08-2c1f-42a1-84f2-56fc6313e1ca
+    type: regular
+    task:
+      id: fb422c08-2c1f-42a1-84f2-56fc6313e1ca
+      version: -1
+      name: Enrich Malware Family
+      description: Checks reputation of a specific Malware Family/ Threat Campaign/
+        Threat Group/ Threat Actor.
+      script: ACTI Indicator Query|||acti-get-fundamentals-by-uuid
+      type: regular
+      iscommand: true
+      brand: ACTI Indicator Query
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      uuid:
+        simple: ${inputs.MalwareFamily_uuid}
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1062.5,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 23f032fd-7066-4f48-82a9-eb01160f9f4f
+    type: regular
+    task:
+      id: 23f032fd-7066-4f48-82a9-eb01160f9f4f
+      version: -1
+      name: Enrich Threat Group
+      description: Checks reputation of a specific Malware Family/ Threat Campaign/
+        Threat Group/ Threat Actor.
+      script: ACTI Indicator Query|||acti-get-fundamentals-by-uuid
+      type: regular
+      iscommand: true
+      brand: ACTI Indicator Query
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      uuid:
+        simple: ${inputs.ThreatGroup_uuid}
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1512.5,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 87e02af2-63e5-4cc6-8f73-f52fe9eac225
+    type: regular
+    task:
+      id: 87e02af2-63e5-4cc6-8f73-f52fe9eac225
+      version: -1
+      name: Enrich Threat Actor
+      description: Checks reputation of a specific Malware Family/ Threat Campaign/
+        Threat Group/ Threat Actor.
+      script: ACTI Indicator Query|||acti-get-fundamentals-by-uuid
+      type: regular
+      iscommand: true
+      brand: ACTI Indicator Query
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      uuid:
+        simple: ${inputs.ThreatActor_uuid}
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1962.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 86da01c7-124d-40e7-85b4-2518a5565f78
+    type: regular
+    task:
+      id: 86da01c7-124d-40e7-85b4-2518a5565f78
+      version: -1
+      name: Enrich Threat Campaign
+      description: Checks reputation of a specific Malware Family/ Threat Campaign/
+        Threat Group/ Threat Actor.
+      script: ACTI Indicator Query|||acti-get-fundamentals-by-uuid
+      type: regular
+      iscommand: true
+      brand: ACTI Indicator Query
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      uuid:
+        simple: ${inputs.ThreatCampaign_uuid}
+    reputationcalc: 2
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2412.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: bec1aa96-441a-4e76-8b31-4f420d69f301
+    type: condition
+    task:
+      id: bec1aa96-441a-4e76-8b31-4f420d69f301
+      version: -1
+      name: Is IA present?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.ia_uuid
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: cf92c2f1-0725-47d7-8738-cf2e02b4fbe9
+    type: condition
+    task:
+      id: cf92c2f1-0725-47d7-8738-cf2e02b4fbe9
+      version: -1
+      name: Is IR present?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.ir_uuid
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 68f8a124-8f6b-4ca9-82f3-fcff8874b24a
+    type: condition
+    task:
+      id: 68f8a124-8f6b-4ca9-82f3-fcff8874b24a
+      version: -1
+      name: Is Malware Family present?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.MalwareFamily_uuid
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1062.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 9aa44f9f-d90a-45d4-8532-e4b70924329f
+    type: condition
+    task:
+      id: 9aa44f9f-d90a-45d4-8532-e4b70924329f
+      version: -1
+      name: Is Threat Group present?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.ThreatGroup_uuid
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1512.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 41cce8d8-1d32-4b85-80fd-7f54bcfccce9
+    type: condition
+    task:
+      id: 41cce8d8-1d32-4b85-80fd-7f54bcfccce9
+      version: -1
+      name: Is Threat Actor present?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.ThreatActor_uuid
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 1962.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 6a22c567-27d9-4e13-87de-ad44972762da
+    type: condition
+    task:
+      id: 6a22c567-27d9-4e13-87de-ad44972762da
+      version: -1
+      name: Is Threat Campaign present?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.ThreatCampaign_uuid
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 2412.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 2630,
+        "x": 162.5,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: ia_uuid
+  value:
+    complex:
+      root: ${intelligence_alerts}
+      transformers:
+      - operator: uniq
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: ir_uuid
+  value:
+    complex:
+      root: ${intelligence_reports}
+      transformers:
+      - operator: uniq
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: MalwareFamily_uuid
+  value:
+    complex:
+      root: ${acti_malware_family_uuid}
+      transformers:
+      - operator: uniq
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: ThreatGroup_uuid
+  value:
+    complex:
+      root: ${acti_threat_groups_uuid}
+      transformers:
+      - operator: uniq
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: ThreatCampaign_uuid
+  value:
+    complex:
+      root: ${acti_threat_campaigns_uuid}
+      transformers:
+      - operator: uniq
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: ThreatActor_uuid
+  value:
+    complex:
+      root: ${acti_threat_actors_uuid}
+      transformers:
+      - operator: uniq
+  required: false
+  description: ""
+  playbookInputQuery: null
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

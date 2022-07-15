@@ -451,14 +451,15 @@ def http_return_data(method, url_suffix, full_url, headers, json_data):
     return json_data
 
 
-def create_client():
+def create_client(timeout: int = 15):
     from MicrosoftManagementActivity import Client
     base_url = 'https://manage.office.com/api/v1.0/'
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
 
     client = Client(base_url, verify=verify_certificate, proxy=proxy, self_deployed=True, auth_and_token_url="test",
-                    refresh_token="test", enc_key="test", auth_code="test", tenant_id="test", redirect_uri="")
+                    refresh_token="test", enc_key="test", auth_code="test", tenant_id="test", redirect_uri="",
+                    timeout=timeout)
 
     return client
 
@@ -576,7 +577,7 @@ def test_get_all_content_type_records(requests_mock):
 
     content_records = get_all_content_type_records(client, "audit.general", TIME_24_HOURS_AGO, TIME_ONE_MINUTE_AGO_STRING)
     content_record_ids = [record['Id'] for record in content_records]
-    assert set(content_record_ids) == set(["1234", "567", "89"])
+    assert set(content_record_ids) == {"1234", "567", "89"}
 
 
 def mock_get_access_token(requests_mock, access_token_resp):
@@ -630,3 +631,30 @@ def set_requests_mock(client, requests_mock, access_token_resp=GET_ACCESS_TOKEN_
     mock_list_subscriptions(requests_mock, client, list_subscriptions_resp)
     mock_list_content(requests_mock)
     mock_get_blob_data(requests_mock)
+
+
+@pytest.mark.parametrize('args_timeout,param_timeout,expected_timeout', ((0, 0, 15),
+                                                                         (None, None, 15),
+                                                                         (1, None, 1),
+                                                                         (1, 0, 1),
+                                                                         (None, 2, 2),
+                                                                         (0, 2, 2),
+                                                                         (3, 0, 3),
+                                                                         (3, 4, 3)))
+def test_timeout(args_timeout, param_timeout, expected_timeout):
+    """
+    Given
+            args and params, both of which may contain `timeout`
+    When
+            running get_timeout
+    Then
+            validate the output of get_timeout matches the logic, based on availability:
+             use arg, then param, then default.
+             Validate the Client and its MSClient get the expected value
+    """
+    from MicrosoftManagementActivity import calculate_timeout_value
+    timeout = calculate_timeout_value(params={'timeout': param_timeout}, args={'timeout': args_timeout})
+    assert timeout == expected_timeout
+    client = create_client(timeout=timeout)
+    assert client.timeout == expected_timeout
+    assert client.ms_client.timeout == expected_timeout

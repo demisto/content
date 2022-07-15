@@ -1213,7 +1213,7 @@ tasks:
     task:
       id: 338b43c9-b630-4501-88c8-12ee2929609d
       version: -1
-      name: Remove the device's MAC address from any whitelists
+      name: Remove the device's MAC address from any allow lists
       iscommand: false
       brand: ""
       description: ''

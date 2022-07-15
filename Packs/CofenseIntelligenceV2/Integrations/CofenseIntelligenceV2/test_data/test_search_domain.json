@@ -1,0 +1,116 @@
+{
+  "domain_search_response": {
+    "success": true,
+    "data": {
+      "page": {
+        "currentPage": 0,
+        "currentElements": 1,
+        "totalPages": 3,
+        "totalElements": 3
+      },
+      "threats": [
+        {
+          "id": 37614,
+          "relatedSearchTags": [
+            {}
+          ],
+          "feeds": [
+            {
+              "id": 23,
+              "permissions": {
+                "WRITE": false,
+                "READ": true,
+                "OWNER": false
+              },
+              "displayName": "Cofense"
+            }
+          ],
+          "blockSet": [
+            {
+              "malwareFamily": {
+                "familyName": "TrickBot",
+                "description": "Banking trojan that shows a similarity to the Dyre Banking Trojan"
+              },
+              "impact": "Major",
+              "confidence": 100,
+              "blockType": "Domain Name",
+              "role": "IDinfo",
+              "roleDescription": "3rd party location used by malware to identify the IP address of the infected       machine",
+              "infrastructureTypeSubclass": {
+                "description": "Host which responds to STUN protocol requests"
+              },
+              "data": "stun2.l.google.com",
+              "data_1": "stun2.l.google.com"
+            }
+          ],
+          "campaignBrandSet": [
+            {
+              "totalCount": 4,
+              "brand": {
+                "id": 2051,
+                "text": "None"
+              }
+            }
+          ],
+          "extractedStringSet": [],
+          "domainSet": [],
+          "senderEmailSet": [],
+          "executableSet": [
+            {
+              "malwareFamily": {
+                "familyName": "TrickBot",
+                "description": "Banking trojan that shows a similarity to the Dyre Banking Trojan"
+              },
+              "vendorDetections": [],
+              "fileName": "Preview.exe",
+              "type": "Download",
+              "dateEntered": 1586814184933,
+              "severityLevel": "Major",
+              "md5Hex": "506b0267b19d58dc7354a0386d3d6f15",
+              "fileNameExtension": "exe"
+            }
+          ],
+          "senderIpSet": [],
+          "senderNameSet": [],
+          "spamUrlSet": [],
+          "subjectSet": [
+            {
+              "totalCount": 4,
+              "subject": "redacted, my call"
+            }
+          ],
+          "campaignLanguageSet": [
+            {
+              "languageDefinition": {
+                "isoCode": "en",
+                "name": "English",
+                "nativeName": "English",
+                "family": "Indo-European"
+              }
+            }
+          ],
+          "campaignScreenshotSet": [],
+          "lastPublished": 1587153250195,
+          "firstPublished": 1587153246325,
+          "label": "Coronavirus - TrickBot",
+          "executiveSummary": "Coronavirus-themed emails deliver a link to Google Docs. The Google Docs page contains a link to download TrickBot. This sample is likely part of the TrickBot Anchor project.",
+          "hasReport": true,
+          "reportURL": "https://www.threathq.com/api/l/activethreatreport/37614/html",
+          "apiReportURL": "https://www.threathq.com/apiv1/t3/malware/37614/html",
+          "threatDetailURL": "https://www.threathq.com/p42/search/default?m=37614",
+          "deliveryMechanisms": [],
+          "malwareFamilySet": [
+            {
+              "familyName": "TrickBot",
+              "description": "Banking trojan that shows a similarity to the Dyre Banking Trojan"
+            }
+          ],
+          "threatType": "MALWARE",
+          "naicsCodes": []
+        }
+      ]
+    }
+  },
+  "mock_output": "{'Data': 'domain', 'Threats': [{'id': 37614, 'relatedSearchTags': [{}], 'feeds': [{'id': 23, 'permissions': {'WRITE': False, 'READ': True, 'OWNER': False}, 'displayName': 'Cofense'}], 'blockSet': [{'malwareFamily': {'familyName': 'TrickBot', 'description': 'Banking trojan that shows a similarity to the Dyre Banking Trojan'}, 'impact': 'Major', 'confidence': 100, 'blockType': 'Domain Name', 'role': 'IDinfo', 'roleDescription': '3rd party location used by malware to identify the IP address of the infected       machine', 'infrastructureTypeSubclass': {'description': 'Host which responds to STUN protocol requests'}, 'data': 'stun2.l.google.com', 'data_1': 'stun2.l.google.com'}], 'campaignBrandSet': [{'totalCount': 4, 'brand': {'id': 2051, 'text': 'None'}}], 'extractedStringSet': [], 'domainSet': [], 'senderEmailSet': [], 'executableSet': [{'malwareFamily': {'familyName': 'TrickBot', 'description': 'Banking trojan that shows a similarity to the Dyre Banking Trojan'}, 'vendorDetections': [], 'fileName': 'Preview.exe', 'type': 'Download', 'dateEntered': 1586814184933, 'severityLevel': 'Major', 'md5Hex': '506b0267b19d58dc7354a0386d3d6f15', 'fileNameExtension': 'exe'}], 'senderIpSet': [], 'senderNameSet': [], 'spamUrlSet': [], 'subjectSet': [{'totalCount': 4, 'subject': 'redacted, my call'}], 'campaignLanguageSet': [{'languageDefinition': {'isoCode': 'en', 'name': 'English', 'nativeName': 'English', 'family': 'Indo-European'}}], 'campaignScreenshotSet': [], 'lastPublished': 1587153250195, 'firstPublished': 1587153246325, 'label': 'Coronavirus - TrickBot', 'executiveSummary': 'Coronavirus-themed emails deliver a link to Google Docs. The Google Docs page contains a link to download TrickBot. This sample is likely part of the TrickBot Anchor project.', 'hasReport': True, 'reportURL': 'https://www.threathq.com/api/l/activethreatreport/37614/html', 'apiReportURL': 'https://www.threathq.com/apiv1/t3/malware/37614/html', 'threatDetailURL': 'https://www.threathq.com/p42/search/default?m=37614', 'deliveryMechanisms': [], 'malwareFamilySet': [{'familyName': 'TrickBot', 'description': 'Banking trojan that shows a similarity to the Dyre Banking Trojan'}], 'threatType': 'MALWARE', 'naicsCodes': []}]}",
+  "mock_readable": "### Cofense Domain Reputation for domain domain\n|Threat ID|Threat Type|Verdict|Executive Summary|Campaign|Malware Family Description|Last Published|Threat Report|\n|---|---|---|---|---|---|---|---|\n| 37614 | MALWARE | Malicious | Coronavirus-themed emails deliver a link to Google Docs. The Google Docs page contains a link to download TrickBot. This sample is likely part of the TrickBot Anchor project. | Coronavirus - TrickBot | Banking trojan that shows a similarity to the Dyre Banking Trojan | 2020-04-17 19:54:10 | [https://www.threathq.com/api/l/activethreatreport/37614/html](https://www.threathq.com/api/l/activethreatreport/37614/html) |\n"
+}

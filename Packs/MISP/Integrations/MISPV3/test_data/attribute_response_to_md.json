@@ -1,0 +1,39 @@
+[
+  {
+    "ID": "1",
+    "EventID": "2",
+    "Category": "Payload delivery",
+    "Type": "md5",
+    "Value": "6c73d338ec64e0e44bd54ea123456789",
+    "ToIDs": true,
+    "Event": {
+      "ID": "2",
+      "Info": "Test",
+      "OrganizationID": "1",
+      "OwnerOrganization.ID": "8",
+      "Distribution": "0",
+      "UUID": "5e6b322a-9f80-4e2f-9f2a-3cab0a123456"
+    },
+    "PublishTimestamp": "1623832501",
+    "Tag": [
+      {
+        "id": "1",
+        "Name": "Tag1"
+      },
+      {
+        "id": "2",
+        "Name": "misp-galaxy:tag2",
+        "is_galaxy": true,
+        "is_custom_galaxy": false,
+        "inherited": 1
+      },
+      {
+        "id": "3",
+        "Name": "misp-galaxy:tag3",
+        "is_galaxy": true,
+        "is_custom_galaxy": false,
+        "inherited": 0
+      }
+    ]
+  }
+]

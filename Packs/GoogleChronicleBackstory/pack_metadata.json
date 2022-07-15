@@ -1,8 +1,8 @@
 {
     "name": "Chronicle",
-    "description": "Use the Chronicle integration to retrieve Asset alerts or IOC Domain matches as Incidents. Use it to fetch a list of infected assets based on the indicator accessed. This integration also provides reputation and threat enrichment of indicators observed in the enterprise",
+    "description": "Retrieve Chronicle detections, impacted assets, IOC matches, and 3P alerts to enrich your XSOAR workflows.",
     "support": "partner",
-    "currentVersion": "2.0.3",
+    "currentVersion": "2.0.20",
     "certification": "certified",
     "author": "Chronicle",
     "url": "https://go.chronicle.security/contact",
@@ -105,10 +105,6 @@
         "ThreatConnect": {
             "mandatory": false,
             "display_name": "ThreatConnect"
-        },
-        "XFE": {
-            "mandatory": false,
-            "display_name": "IBM X-Force Exchange"
         },
         "NIST": {
             "mandatory": true,
@@ -360,5 +356,9 @@
         "Spamcop",
         "Pulsedive",
         "PAN-OS"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
     ]
 }

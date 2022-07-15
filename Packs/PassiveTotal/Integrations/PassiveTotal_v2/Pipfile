@@ -5,7 +5,7 @@ verify_ssl = true
 
 [dev-packages]
 pylint = "*"
-pytest = "==5.0.1"
+pytest = "==6.2.2"
 pytest-mock = "*"
 requests-mock = "*"
 pytest-asyncio = "*"
@@ -30,4 +30,4 @@ PySocks = "==1.7.1"
 PyYAML = "==5.1.2"
 
 [requires]
-python_version = "3.7"
+python_version = "3.9"

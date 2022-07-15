@@ -29,7 +29,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: 'A threat intelligence platform that collects and interprets intelligence data from open sources and manages indicator scoring, types, and attributes.'
+description: A threat intelligence platform that collects and interprets intelligence
+  data from open sources and manages indicator scoring, types, and attributes.
 display: ThreatQ v2
 name: ThreatQ v2
 script:
@@ -37,20 +38,12 @@ script:
   - arguments:
     - default: true
       description: Name of the object to search.
-      isArray: false
       name: name
       required: true
-      secret: false
-    - default: false
-      defaultValue: '10'
+    - defaultValue: '10'
       description: The maximum number of records to retrieve.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Searches for objects by name in the ThreatQ repository.
-    execution: false
     name: threatq-search-by-name
     outputs:
     - contextPath: ThreatQ.Indicator.ID
@@ -73,15 +66,11 @@ script:
       type: String
   - arguments:
     - default: true
-      defaultValue: ''
       description: The IP address to check.
       isArray: true
       name: ip
       required: true
-      secret: false
-    deprecated: false
     description: Checks the reputation of an IP address in ThreatQ.
-    execution: false
     name: ip
     outputs:
     - contextPath: DBotScore.Indicator
@@ -146,15 +135,11 @@ script:
       type: String
   - arguments:
     - default: true
-      defaultValue: ''
       description: URL to check
       isArray: true
       name: url
       required: true
-      secret: false
-    deprecated: false
     description: Checks the reputation of a URL in ThreatQ.
-    execution: false
     name: url
     outputs:
     - contextPath: DBotScore.Indicator
@@ -219,15 +204,11 @@ script:
       type: String
   - arguments:
     - default: true
-      defaultValue: ''
       description: File MD5, SHA-1 or SHA-256
       isArray: true
       name: file
       required: true
-      secret: false
-    deprecated: false
     description: Checks the reputation of a file in ThreatQ.
-    execution: false
     name: file
     outputs:
     - contextPath: DBotScore.Indicator
@@ -307,15 +288,11 @@ script:
       type: String
   - arguments:
     - default: true
-      defaultValue: ''
       description: The email address to check.
       isArray: true
       name: email
       required: true
-      secret: false
-    deprecated: false
     description: Checks the reputation of an email in ThreatQ.
-    execution: false
     name: email
     outputs:
     - contextPath: DBotScore.Indicator
@@ -384,10 +361,7 @@ script:
       isArray: true
       name: domain
       required: true
-      secret: false
-    deprecated: false
     description: Checks the reputation of a domain in ThreatQ.
-    execution: false
     name: domain
     outputs:
     - contextPath: DBotScore.Indicator
@@ -452,9 +426,8 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: false
-      description: The type of indicator, such as email address, IP address, Registry key, binary string, and so on.
-      isArray: false
+      description: The type of indicator, such as email address, IP address, Registry
+        key, binary string, and so on.
       name: type
       predefined:
       - Binary String
@@ -490,11 +463,9 @@ script:
       - Username
       - X-Mailer
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: 'The status of the indicator. Can be: "Active", "Expired", "Indirect", "Review", or "Whitelisted".'
-      isArray: false
+      description: 'The status of the indicator. Can be: "Active", "Expired", "Indirect",
+        "Review", or "Whitelisted".'
       name: status
       predefined:
       - Active
@@ -503,34 +474,23 @@ script:
       - Review
       - Whitelisted
       required: true
-      secret: false
-    - default: false
-      description: The indicator that was tested.
-      isArray: false
+    - description: The indicator that was tested.
       name: value
       required: true
-      secret: false
-    - default: false
-      description: List of Sources names, separated by commas.
+    - description: List of Sources names, separated by commas.
       isArray: true
       name: sources
-      required: false
-      secret: false
-    - default: false
-      description: Attributes names list, separated by commas. The i-th element in the attributes names list corresponds to the i-th element in the attributes values list.
+    - description: Attributes names list, separated by commas. The i-th element in
+        the attributes names list corresponds to the i-th element in the attributes
+        values list.
       isArray: true
       name: attributes_names
-      required: false
-      secret: false
-    - default: false
-      description: Attributes values list, separated by commas. The i-th element in the attributes values list corresponds to the i-th element in the attributes names list.
+    - description: Attributes values list, separated by commas. The i-th element in
+        the attributes values list corresponds to the i-th element in the attributes
+        names list.
       isArray: true
       name: attributes_values
-      required: false
-      secret: false
-    deprecated: false
     description: Creates a new indicator in ThreatQ.
-    execution: false
     name: threatq-create-indicator
     outputs:
     - contextPath: ThreatQ.Indicator.ID
@@ -573,22 +533,15 @@ script:
       description: The indicator type.
       type: String
   - arguments:
-    - default: false
-      description: The name of the attribute to add.
-      isArray: false
+    - description: The name of the attribute to add.
       name: name
       required: true
-      secret: false
-    - default: false
-      description: The value of the attribute to add.
-      isArray: false
+    - description: The value of the attribute to add.
       name: value
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: 'The type of the object to add. Can be: "indicator", "event", "adversary", or "attachment".'
-      isArray: false
+      description: 'The type of the object to add. Can be: "indicator", "event", "adversary",
+        or "attachment".'
       name: obj_type
       predefined:
       - indicator
@@ -596,22 +549,15 @@ script:
       - adversary
       - attachment
       required: true
-      secret: false
-    - default: false
-      description: The ID of the Object.
-      isArray: false
+    - description: The ID of the Object.
       name: obj_id
       required: true
-      secret: false
-    deprecated: false
     description: Adds an attribute to an object in ThreatQ.
-    execution: false
     name: threatq-add-attribute
   - arguments:
     - auto: PREDEFINED
-      default: false
-      description: 'The type of the object. Can be: "indicator", "event", "adversary", or "attachment".'
-      isArray: false
+      description: 'The type of the object. Can be: "indicator", "event", "adversary",
+        or "attachment".'
       name: obj_type
       predefined:
       - indicator
@@ -619,96 +565,62 @@ script:
       - event
       - attachment
       required: true
-      secret: false
-    - default: false
-      description: The ID of the object.
-      isArray: false
+    - description: The ID of the object.
       name: obj_id
       required: true
-      secret: false
-    - default: false
-      description: The ID of the attribute to modify.
-      isArray: false
+    - description: The ID of the attribute to modify.
       name: attribute_id
       required: true
-      secret: false
-    - default: false
-      description: The new value of the attribute.
-      isArray: false
+    - description: The new value of the attribute.
       name: attribute_value
       required: true
-      secret: false
-    deprecated: false
     description: Modifies an attribute for an object in ThreatQ.
-    execution: false
     name: threatq-modify-attribute
   - arguments:
-    - default: false
-      description: The ID of the first object.
-      isArray: false
+    - description: The ID of the first object.
       name: obj1_id
       required: true
-      secret: false
-    - default: false
-      description: The ID of the second object.
-      isArray: false
+    - description: The ID of the second object.
       name: obj2_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: 'The type of the first object. Can be: "indicator", "adversary", or "event".'
-      isArray: false
+      description: 'The type of the first object. Can be: "indicator", "adversary",
+        or "event".'
       name: obj1_type
       predefined:
       - indicator
       - adversary
       - event
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: 'The type of the second object. Can be: "indicator", "adversary", or "event".'
-      isArray: false
+      description: 'The type of the second object. Can be: "indicator", "adversary",
+        or "event".'
       name: obj2_type
       predefined:
       - indicator
       - adversary
       - event
       required: true
-      secret: false
-    deprecated: false
     description: Links two objects together in ThreatQ.
-    execution: false
     name: threatq-link-objects
   - arguments:
-    - default: false
-      description: Name of the adversary to create.
-      isArray: false
+    - description: Name of the adversary to create.
       name: name
       required: true
-      secret: false
-    - default: false
-      description: List of sources names, separated by commas.
+    - description: List of sources names, separated by commas.
       isArray: true
       name: sources
-      required: false
-      secret: false
-    - default: false
-      description: List of attributes names, separated by commas. The i-th element in the attributes names list corresponds to the i-th element in the attributes values list.
+    - description: List of attributes names, separated by commas. The i-th element
+        in the attributes names list corresponds to the i-th element in the attributes
+        values list.
       isArray: true
       name: attributes_names
-      required: false
-      secret: false
-    - default: false
-      description: List of attributes values, separated by commas. The i-th element in the attributes values list corresponds to the i-th element in the attributes names list.
+    - description: List of attributes values, separated by commas. The i-th element
+        in the attributes values list corresponds to the i-th element in the attributes
+        names list.
       isArray: true
       name: attributes_values
-      required: false
-      secret: false
-    deprecated: false
     description: Creates a new adversary in ThreatQ.
-    execution: false
     name: threatq-create-adversary
     outputs:
     - contextPath: ThreatQ.Adversary.Name
@@ -739,16 +651,12 @@ script:
       description: The last update date of the adversary.
       type: date
   - arguments:
-    - default: false
-      description: Title of the event.
-      isArray: false
+    - description: Title of the event.
       name: title
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: The type of the event, such as malware, watchlist, command and control, and so on.
-      isArray: false
+      description: The type of the event, such as malware, watchlist, command and
+        control, and so on.
       name: type
       predefined:
       - Spearphish
@@ -765,34 +673,23 @@ script:
       - Login Compromise
       - Incident
       required: true
-      secret: false
-    - default: false
-      description: 'Date that event happened. Can be: YYYY-mm-dd HH:MM:SS, YYYY-mm-dd'
-      isArray: false
+    - description: 'Date that event happened. Can be: YYYY-mm-dd HH:MM:SS, YYYY-mm-dd'
       name: date
       required: true
-      secret: false
-    - default: false
-      description: List of sources names, separated by commas.
+    - description: List of sources names, separated by commas.
       isArray: true
       name: sources
-      required: false
-      secret: false
-    - default: false
-      description: List of attributes names, separated by commas. The i-th element in the attributes names list corresponds to the i-th element in the attributes values list.
+    - description: List of attributes names, separated by commas. The i-th element
+        in the attributes names list corresponds to the i-th element in the attributes
+        values list.
       isArray: true
       name: attributes_names
-      required: false
-      secret: false
-    - default: false
-      description: List of attributes values, separated by commas. The i-th element in the attributes values list corresponds to the i-th element in the attributes names list.
+    - description: List of attributes values, separated by commas. The i-th element
+        in the attributes values list corresponds to the i-th element in the attributes
+        names list.
       isArray: true
       name: attributes_values
-      required: false
-      secret: false
-    deprecated: false
     description: Creates a new event in ThreatQ.
-    execution: false
     name: threatq-create-event
     outputs:
     - contextPath: ThreatQ.Event.ID
@@ -832,26 +729,18 @@ script:
       description: The date of the event that happened.
       type: date
   - arguments:
-    - default: false
-      description: The ID of the object.
-      isArray: false
+    - description: The ID of the object.
       name: obj_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The type of the object. Can be: "indicator", "event", or "adversary".'
-      isArray: false
       name: obj_type
       predefined:
       - indicator
       - event
       - adversary
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves related indicators for an object in ThreatQ.
-    execution: false
     name: threatq-get-related-indicators
     outputs:
     - contextPath: ThreatQ.Indicator.RelatedIndicator.ID
@@ -981,16 +870,12 @@ script:
       description: ID of the Adversary.
       type: number
   - arguments:
-    - default: false
-      description: The ID of the indicator.
-      isArray: false
+    - description: The ID of the indicator.
       name: id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: 'The new status of the indicator. Can be: "Active", "Expired", "Indirect", "Review", or "Whitelisted".'
-      isArray: false
+      description: 'The new status of the indicator. Can be: "Active", "Expired",
+        "Indirect", "Review", or "Whitelisted".'
       name: status
       predefined:
       - Active
@@ -999,10 +884,7 @@ script:
       - Review
       - Whitelisted
       required: true
-      secret: false
-    deprecated: false
     description: Updates an indicator status in ThreatQ.
-    execution: false
     name: threatq-update-status
     outputs:
     - contextPath: ThreatQ.Indicator.ID
@@ -1012,26 +894,18 @@ script:
       description: Status of the indicator.
       type: String
   - arguments:
-    - default: false
-      description: ID of the object.
-      isArray: false
+    - description: ID of the object.
       name: obj_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The type of the object. Can be: "indicator", "event", or "adversary".'
-      isArray: false
       name: obj_type
       predefined:
       - indicator
       - event
       - adversary
       required: true
-      secret: false
-    deprecated: false
     description: Retrieves related events of an object in ThreatQ.
-    execution: false
     name: threatq-get-related-events
     outputs:
     - contextPath: ThreatQ.Indicator.RelatedEvent.ID
@@ -1152,26 +1026,18 @@ script:
       description: ID of the Adversary.
       type: number
   - arguments:
-    - default: false
-      description: ID of the object.
-      isArray: false
+    - description: ID of the object.
       name: obj_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
       description: 'The type of the object. Can be: "indicator", "event", or "adversary".'
-      isArray: false
       name: obj_type
       predefined:
       - indicator
       - event
       - adversary
       required: true
-      secret: false
-    deprecated: false
     description: Retrieve related adversaries from an object in ThreatQ.
-    execution: false
     name: threatq-get-related-adversaries
     outputs:
     - contextPath: ThreatQ.Indicator.RelatedAdversary.ID
@@ -1265,16 +1131,12 @@ script:
       description: The ID of the Adversary.
       type: number
   - arguments:
-    - default: false
-      description: The file entry ID in Demisto.
-      isArray: false
+    - description: The file entry ID in Demisto.
       name: entry_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: Category of the file, such as CrowdStrike Intelligence, FireEye Analysis, PDF, and so on.
-      isArray: false
+      description: Category of the file, such as CrowdStrike Intelligence, FireEye
+        Analysis, PDF, and so on.
       name: file_category
       predefined:
       - Cuckoo
@@ -1302,27 +1164,17 @@ script:
       - ThreatQ CSV File
       - Whitepaper
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
-      defaultValue: 'off'
-      description: 'Zips malware files for safer downloading. Can be: "on", or "off". Default is off.'
-      isArray: false
+      defaultValue: off
+      description: 'Zips malware files for safer downloading. Can be: "on", or "off".
+        Default is off.'
       name: malware_safety_lock
       predefined:
-      - 'on'
-      - 'off'
-      required: false
-      secret: false
-    - default: false
-      description: Title of the File. Default is the file name.
-      isArray: false
+      - on
+      - off
+    - description: Title of the File. Default is the file name.
       name: title
-      required: false
-      secret: false
-    deprecated: false
     description: Uploads a file in ThreatQ.
-    execution: false
     name: threatq-upload-file
     outputs:
     - contextPath: ThreatQ.File.CreatedAt
@@ -1372,9 +1224,8 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      default: false
-      description: 'The type of the object. Can be: "indicator", "event", "attachment" or "adversary".'
-      isArray: false
+      description: 'The type of the object. Can be: "indicator", "event", "attachment"
+        or "adversary".'
       name: obj_type
       predefined:
       - indicator
@@ -1382,16 +1233,11 @@ script:
       - event
       - attachment
       required: true
-      secret: false
-    - default: false
-      description: The ID of the Object.
-      isArray: false
+    - description: The ID of the Object.
       name: obj_id
       required: true
-      secret: false
-    deprecated: false
-    description: Searches for an object by object type and ID. Generic and DBotScore contexts also may be generated.
-    execution: false
+    description: Searches for an object by object type and ID. Generic and DBotScore
+      contexts also may be generated.
     name: threatq-search-by-id
     outputs:
     - contextPath: ThreatQ.Indicator.ID
@@ -1542,55 +1388,39 @@ script:
       description: The attribute value of the file.
       type: String
   - arguments:
-    - default: false
-      description: The ID of the first object.
-      isArray: false
+    - description: The ID of the first object.
       name: obj1_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: 'The type of the first object. Can be: "adversary", "indicator", or "event".'
-      isArray: false
+      description: 'The type of the first object. Can be: "adversary", "indicator",
+        or "event".'
       name: obj1_type
       predefined:
       - adversary
       - indicator
       - event
       required: true
-      secret: false
-    - default: false
-      description: The ID of the second object.
-      isArray: false
+    - description: The ID of the second object.
       name: obj2_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: 'The type of the second object. Can be: "adversary", "indicator", or "event".'
-      isArray: false
+      description: 'The type of the second object. Can be: "adversary", "indicator",
+        or "event".'
       name: obj2_type
       predefined:
       - adversary
       - indicator
       - event
       required: true
-      secret: false
-    deprecated: false
     description: Unlinks two objects in ThreatQ.
-    execution: false
     name: threatq-unlink-objects
   - arguments:
-    - default: false
-      description: ID of the Object.
-      isArray: false
+    - description: ID of the Object.
       name: obj_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: 'The type of the object. Can be: "indicator", "event", "adversary" or "attachment".'
-      isArray: false
+      description: 'The type of the object. Can be: "indicator", "event", "adversary"
+        or "attachment".'
       name: obj_type
       predefined:
       - indicator
@@ -1598,22 +1428,15 @@ script:
       - adversary
       - attachment
       required: true
-      secret: false
-    deprecated: false
     description: Deletes an object in ThreatQ.
-    execution: false
     name: threatq-delete-object
   - arguments:
-    - default: false
-      description: ID of an Object.
-      isArray: false
+    - description: ID of an Object.
       name: obj_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: 'The type of the object. Can be: "indicator", "event", "adversary", or "attachment".'
-      isArray: false
+      description: 'The type of the object. Can be: "indicator", "event", "adversary",
+        or "attachment".'
       name: obj_type
       predefined:
       - indicator
@@ -1621,34 +1444,21 @@ script:
       - event
       - attachment
       required: true
-      secret: false
-    - default: false
-      description: The source name.
-      isArray: false
+    - description: The source name.
       name: source
       required: true
-      secret: false
-    deprecated: false
     description: Adds a source to an object in ThreatQ.
-    execution: false
     name: threatq-add-source
   - arguments:
-    - default: false
-      description: ID of the source.
-      isArray: false
+    - description: ID of the source.
       name: source_id
       required: true
-      secret: false
-    - default: false
-      description: ID of the object.
-      isArray: false
+    - description: ID of the object.
       name: obj_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: 'The type of the object. Can be: "indicator", "event", "adversary", or "attachment".'
-      isArray: false
+      description: 'The type of the object. Can be: "indicator", "event", "adversary",
+        or "attachment".'
       name: obj_type
       predefined:
       - indicator
@@ -1656,28 +1466,18 @@ script:
       - event
       - attachment
       required: true
-      secret: false
-    deprecated: false
     description: Deletes a source from an object in ThreatQ.
-    execution: false
     name: threatq-delete-source
   - arguments:
-    - default: false
-      description: ID of the attribute.
-      isArray: false
+    - description: ID of the attribute.
       name: attribute_id
       required: true
-      secret: false
-    - default: false
-      description: ID of the object.
-      isArray: false
+    - description: ID of the object.
       name: obj_id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: 'The type of the object. Can be: "indicator", "event", "adversary", or "attachment".'
-      isArray: false
+      description: 'The type of the object. Can be: "indicator", "event", "adversary",
+        or "attachment".'
       name: obj_type
       predefined:
       - indicator
@@ -1685,27 +1485,16 @@ script:
       - event
       - attachment
       required: true
-      secret: false
-    deprecated: false
     description: Deletes an attribute from an object in ThreatQ.
-    execution: false
     name: threatq-delete-attribute
   - arguments:
-    - default: false
-      description: ID of the Adversary to update.
-      isArray: false
+    - description: ID of the Adversary to update.
       name: id
       required: true
-      secret: false
-    - default: false
-      description: Name of the new adversary.
-      isArray: false
+    - description: Name of the new adversary.
       name: name
       required: true
-      secret: false
-    deprecated: false
     description: Updates an adversary name in ThreatQ.
-    execution: false
     name: threatq-edit-adversary
     outputs:
     - contextPath: ThreatQ.Adversary.Name
@@ -1736,22 +1525,14 @@ script:
       description: The last update date of the adversary.
       type: date
   - arguments:
-    - default: false
-      description: The ID of the indicator.
-      isArray: false
+    - description: The ID of the indicator.
       name: id
       required: true
-      secret: false
-    - default: false
-      description: The value of the new indicator.
-      isArray: false
+    - description: The value of the new indicator.
       name: value
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: The type of the new indicator, such as email address, Filename, Binary string and so on.
-      isArray: false
+      description: The type of the new indicator, such as email address, Filename,
+        Binary string and so on.
       name: type
       predefined:
       - Binary String
@@ -1786,17 +1567,9 @@ script:
       - User-agent
       - Username
       - X-Mailer
-      required: false
-      secret: false
-    - default: false
-      description: The description of the indicator.
-      isArray: false
+    - description: The description of the indicator.
       name: description
-      required: false
-      secret: false
-    deprecated: false
     description: Updates an indicator in ThreatQ.
-    execution: false
     name: threatq-edit-indicator
     outputs:
     - contextPath: ThreatQ.Indicator.ID
@@ -1839,28 +1612,16 @@ script:
       description: The ThreatQ Score of the indicator.
       type: number
   - arguments:
-    - default: false
-      description: The ID of the Event.
-      isArray: false
+    - description: The ID of the Event.
       name: id
       required: true
-      secret: false
-    - default: false
-      description: The title of the new event.
-      isArray: false
+    - description: The title of the new event.
       name: title
-      required: false
-      secret: false
-    - default: false
-      description: 'Date that event happened. Can be: YYYY-mm-dd HH:MM:SS, YYYY-mm-dd'
-      isArray: false
+    - description: 'Date that event happened. Can be: YYYY-mm-dd HH:MM:SS, YYYY-mm-dd'
       name: date
-      required: false
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: Type of the event, such as DoS Attack, Malware, Watchlist, and so on.
-      isArray: false
+      description: Type of the event, such as DoS Attack, Malware, Watchlist, and
+        so on.
       name: type
       predefined:
       - Spearphish
@@ -1876,17 +1637,9 @@ script:
       - Compromised PKI Certificate
       - Login Compromise
       - Incident
-      required: false
-      secret: false
-    - default: false
-      description: Description of the event.
-      isArray: false
+    - description: Description of the event.
       name: description
-      required: false
-      secret: false
-    deprecated: false
     description: Updates an event in ThreatQ.
-    execution: false
     name: threatq-edit-event
     outputs:
     - contextPath: ThreatQ.Event.ID
@@ -1926,16 +1679,12 @@ script:
       description: The date that the event happened.
       type: date
   - arguments:
-    - default: false
-      description: The ID of the indicator.
-      isArray: false
+    - description: The ID of the indicator.
       name: id
       required: true
-      secret: false
     - auto: PREDEFINED
-      default: false
-      description: 'The manual indicator score. Can be: "Generated Score" or "1", "2", "3", "4", "5", "6", "7", "8", "9" or "10".'
-      isArray: false
+      description: 'The manual indicator score. Can be: "Generated Score" or "1",
+        "2", "3", "4", "5", "6", "7", "8", "9" or "10".'
       name: score
       predefined:
       - Generated Score
@@ -1951,10 +1700,8 @@ script:
       - '9'
       - '10'
       required: true
-      secret: false
-    deprecated: false
-    description: Modifies an indicator's score in ThreatQ. The final indicator score is the highest of the manual and generated scores.
-    execution: false
+    description: Modifies an indicator's score in ThreatQ. The final indicator score
+      is the highest of the manual and generated scores.
     name: threatq-update-score
     outputs:
     - contextPath: ThreatQ.Indicator.ID
@@ -1997,34 +1744,19 @@ script:
       description: The ThreatQ Score of the indicator.
       type: number
   - arguments:
-    - default: false
-      description: The ID of the file.
-      isArray: false
+    - description: The ID of the file.
       name: id
       required: true
-      secret: false
-    deprecated: false
     description: Downloads a file from ThreatQ to Demisto.
-    execution: false
     name: threatq-download-file
   - arguments:
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The result page number to return. Default is 0.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of indicators return. Default is 50.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves all indicators in ThreatQ.
-    execution: false
     name: threatq-get-all-indicators
     outputs:
     - contextPath: ThreatQ.Indicator.ID
@@ -2067,23 +1799,13 @@ script:
       description: The ThreatQ Score of the indicator.
       type: number
   - arguments:
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The result page number to return. Default is 0.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
+    - defaultValue: '50'
       description: The maximum number of events to return. Default is 50.
-      isArray: false
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Retrieves all events in ThreatQ.
-    execution: false
     name: threatq-get-all-events
     outputs:
     - contextPath: ThreatQ.Event.ID
@@ -2123,23 +1845,14 @@ script:
       description: The date the event happened.
       type: date
   - arguments:
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The result page number to return. Default is 0.
-      isArray: false
       name: page
-      required: false
-      secret: false
-    - default: false
-      defaultValue: '50'
-      description: The maximum number of objects to return in one response (maximum is 200).
-      isArray: false
+    - defaultValue: '50'
+      description: The maximum number of objects to return in one response (maximum
+        is 200).
       name: limit
-      required: false
-      secret: false
-    deprecated: false
     description: Returns all adversaries in ThreatQ.
-    execution: false
     name: threatq-get-all-adversaries
     outputs:
     - contextPath: ThreatQ.Adversary.Name
@@ -2169,23 +1882,29 @@ script:
     - contextPath: ThreatQ.Adversary.CreatedAt
       description: The last update date of the adversary.
       type: date
-  - name: threatq-advanced-search
-    deprecated: true
-    arguments:
-    - name: query
+  - arguments:
+    - description: The search query.
+      name: query
       required: true
-      description: The search query.
-    - name: limit
+    - defaultValue: '10'
       description: The maximum number of results to return. Default is 10.
-      defaultValue: "10"
-    - name: indicator_type
+      name: limit
+    - description: 'The indicator type for which to search. Can be either the name
+        or the ID. Possible values: Binary String, CIDR Block, CVE, Email Address,
+        Email Attachment, Email Subject, File Mapping, File Path, Filename, FQDN,
+        Fuzzy Hash, GOST Hash, Hash ION, IP Address, IPv6 Address, MD5, Mutex,Password,
+        Registry Key, Service Name, SHA-1, SHA-256, SHA-384, SHA-512, String, x509
+        Serial, x509 Subject, URL, URL Path, User-agent, Username, X-Mailer'
+      name: indicator_type
       required: true
-      description: "The indicator type for which to search. Can be either the name or the ID. Possible values: Binary String, CIDR Block, CVE, Email Address, Email Attachment, Email Subject, File Mapping, File Path, Filename, FQDN, Fuzzy Hash, GOST Hash, Hash ION, IP Address, IPv6 Address, MD5, Mutex,Password, Registry Key, Service Name, SHA-1, SHA-256, SHA-384, SHA-512, String, x509 Serial, x509 Subject, URL, URL Path, User-agent, Username, X-Mailer"
+    deprecated: true
     description: Runs an advanced indicator search.
-  dockerimage: demisto/python3:3.9.5.21272
-  isfetch: false
+    name: threatq-advanced-search
+  dockerimage: demisto/python3:3.10.4.29342
   runonce: false
-  script: '-'
-  type: python
+  script: ''
   subtype: python3
+  type: python
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

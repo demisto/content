@@ -1170,7 +1170,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Add user to group membership
+              simple: Add user to application membership
     view: |-
       {
         "position": {

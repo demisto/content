@@ -78,7 +78,6 @@ configuration:
     list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
-  defaultvalue: ""
   required: false
   type: 8
 - additionalinfo: To fetch malware and phishing indicators select "all".
@@ -132,7 +131,7 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: cofense-get-indicators
-  dockerimage: demisto/python3:3.9.6.22912
+  dockerimage: demisto/python3:3.9.8.24399
   feed: true
   isfetch: false
   longRunning: false

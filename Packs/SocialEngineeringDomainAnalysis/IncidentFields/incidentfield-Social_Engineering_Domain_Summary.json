@@ -1,0 +1,32 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Social Engineering Domain Analysis Investigation",
+        "Social Engineering Domain Investigation"
+    ],
+    "caseInsensitive": true,
+    "cliName": "socialengineeringdomainanalysissummary",
+    "closeForm": false,
+    "content": true,
+    "description": "An HTML table",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_socialengineeringdomainanalysissummary",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Social Engineering Domain Analysis Summary",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "html",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

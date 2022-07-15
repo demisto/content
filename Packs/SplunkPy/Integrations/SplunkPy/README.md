@@ -33,8 +33,6 @@ This integration was integrated and tested with Splunk v7.2.
 | extractFields | The CSV fields that will be parsed out of _raw notable events. | False |
 | useSplunkTime | Uses the Splunk clock time for the fetch. | False |
 | unsecure | When selected, certificates are not checked (not secure). | False |
-| earliest_fetch_time_fieldname | The earliest time to fetch (the name of the Splunk field whose value defines the query's earliest time to fetch). | False |
-| latest_fetch_time_fieldname | The latest time to fetch (the name of the Splunk field whose value defines the query's latest time to fetch). | False |
 | app | The context of the application's namespace. | False |
 | hec_token | The HEC token (HTTP Event Collector). | False |
 | hec_url | The HEC URL. For example, https://localhost:8088. | False |
@@ -76,12 +74,51 @@ where the **$ASSETS_VALUE** is replaced with the **src**, **dest**, **src_ip** a
 where the **$IDENTITY_VALUE** is replaced with the **user** and **src_user** from the fetched notable event. The results are stored in the context of the incident under the **Identity** field.
 
 #### How to configure
-1. Configure the integration to fetch incidents (see the Integration documentation for details).
+1. Configure the integration to fetch incidents.
 2. *Enrichment Types*: Select the enrichment types you want to enrich each fetched notable with. If none are selected, the integration will fetch notables as usual (without enrichment).
 3. *Fetch events query*: The query for fetching events. The default query is for fetching notable events. You can edit this query to fetch other types of events. Note that to fetch notable events, make sure the query uses the \`notable\` macro.  
 4. *Enrichment Timeout (Minutes)*:  The timeout for each enrichment (default is 5min). When the selected timeout was reached, notable events that were not enriched will be saved without the enrichment.
 5. *Number of Events Per Enrichment Type*: The maximal amount of events to fetch per enrichment type (default to 20).
 
+#### Configure User Mapping between Splunk and Cortex XSOAR  
+When fetching incidents from Splunk to Cortex XSOAR and when mirroring incidents between Splunk and Cortex XSOAR, the Splunk Owner Name (user) associated with an incident needs to be mapped to the relevant Cortex XSOAR Owner Name (user).  
+You can use Splunk to define a user lookup table and then configure the SplunkPy integration instance to enable the user mapping. Alternatively, you can map the users with a script or a transformer.  
+
+**note:** Owner field in Xsoar incident can only be uses for mirroring-out and cannot be changed according to Splunk values. Mirroring-in will be available via the *Assigned User* incident field. 
+
+**Configure User Mapping Using Splunk**  
+1. Define the lookup table in Splunk.  
+   1. Under **App: Lookup Editor**, select **Lookup Editor**.  
+
+      ![image](https://raw.githubusercontent.com/demisto/content-docs/091b2154a54c6208428b84f2969836c71a36bafe/docs/doc_imgs/integrations/splunk-lookup-editor.png)  
+
+   2. Select **Create a New Lookup** > **KV Store lookup**.  
+
+      ![image](https://raw.githubusercontent.com/demisto/content-docs/5d64d0aa825b56327759c5c6ec1b81b1d9dcf493/docs/doc_imgs/integrations/kv-store-lookup.png)  
+
+   3. Enter the **Name** for the table. For example, **splunk_xsoar_users** is the default lookup table name defined in the SplunkPy integration settings.
+   4. Under **App**, select **Enterprise Security**.
+   5. Assign two **Key-value collection schema** fields, one for the Cortex XSOAR usernames and one for the corresponding Splunk usernames. For example, **xsoar_user** and **splunk_user** are the default field values defined in the SplunkPy integration settings.
+   6. Click **Create Lookup**. 
+
+      ![image](https://raw.githubusercontent.com/demisto/content-docs/ab6faddf6146cab19d13a8f3211b49ba70b166a7/docs/doc_imgs/integrations/new-lookup-table.png) 
+       
+     **Note:**  
+    If the user keys are defined already in another table, you can use that table name and relevant key names in the SplunkPy integration settings.
+    7. Add values to the table to map Cortex XSOAR users to the Splunk users.  
+
+      ![image](https://raw.githubusercontent.com/demisto/content-docs/79c67e22ea19619f3278b2956eb41375c4d77f3f/docs/doc_imgs/integrations/add-values-to-lookup-table.png)
+2. Configure the Splunk integration instance.  
+Define the lookup table in Splunk.  
+   1. Under **Settings** > **Integrations**, search for the SplunkPy integration and create an instance.
+   2. In the Integration Settings:  
+       1. Select **Enable user mapping**. 
+       2. Set **Users Lookup table name** to the name of the lookup table defined in Splunk. By default it is **splunk_xsoar_users**.
+       3. Set the **XSOAR user key**  to the field defined in the Splunk lookup table. By default it is **xsoar_user**.
+       4. Set the **SPLUNK user key** to the field defined in the Splunk lookup table. By default it is **splunk_user**. 
+
+          ![image](https://raw.githubusercontent.com/demisto/content-docs/9a41b8c19df9d5fd8120471bfde111de31caf033/docs/doc_imgs/integrations/user-mapping-settings-configuration.png)
+   
 
 #### Troubleshooting enrichment status
 Each enriched incident contains the following fields in the incident context:
@@ -98,9 +135,13 @@ Run the ***splunk-reset-enriching-fetch-mechanism*** command and the mechanism w
 - The drilldown search, does not support Splunk's advanced syntax. For example: Splunk filters (**|s**, **|h**, etc.)  
 
 ### Incident Mirroring
-**NOTE: This feature is available from Cortex XSOAR version 6.0.0**
-**NOTE: This feature is supported by Splunk Enterprise Security only**
-
+**Imporatnt Notes*** 
+ - This feature is available from Cortex XSOAR version 6.0.0.
+ - This feature is supported by Splunk Enterprise Security only.
+ - In order for the mirroring to work, the *Incident Mirroring Direction* parameter needs to be set before the incident is fetched.
+ - In order to ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Splunk. 
+ - For mirroring the *owner* field, the usernames need to be transformed to the corresponding in Cortex XSOAR and Splunk.
+ 
 You can enable incident mirroring between Cortex XSOAR incidents and Splunk notables.
 To setup the mirroring follow these instructions:
 1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
@@ -242,16 +283,22 @@ Searches Splunk for events.
 | app | The string that contains the application namespace in which to restrict searches. | Optional|
 | batch_limit | The maximum number of returned results to process at a time. For example, if 100 results are returned, and you specify a `batch_limit` of 10, the results will be processed 10 at a time over 10 iterations. This does not affect the search or the context and outputs returned. In some cases, specifying a `batch_size` enhances search performance. If you think that the search execution is suboptimal, it is  recommended to try several `batch_size` values to determine which works best for your search. The default is 25,000. | Optional |	
 | update_context | Determines whether the results will be entered into the context. | Optional |
+| polling | Use XSOAR built-in polling to retrieve the result when it's ready. | Optional |
+| interval_in_seconds | Interval in seconds between each poll. | Optional |
+| sid | The job sid. | Optional |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Splunk.Result | Unknown | The results of the Splunk search. The results are a JSON array, in which each item is a Splunk event. | 
+| Splunk.JobStatus | String | The search status. | 
 
 
 ##### Command Example
 ```!splunk-search query="* | head 3" earliest_time="-1000d"```
+
+**Note:** To display empty columns as well, the following should be added to the query: `| fillnull value=`
 
 ##### Human Readable Output
 ### Splunk Search results for query: * | head 3
@@ -939,6 +986,52 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Enriching fetch mechanism was reset successfully.
+
+### splunk-get-username-by-xsoar-user
+***
+Returns the Splunk's username matching the given Xsoar's username.
+
+
+#### Base Command
+
+`splunk-get-username-by-xsoar-user`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| xsoar_username | Xsoar username to match in splunk's usernames records. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Splunk.UserMapping.XsoarUser | String | xsoar user mapping. | 
+| Splunk.UserMapping.SplunkUser | String | splunk user mapping. | 
+
+
+#### Command Example
+```!splunk-get-username-by-xsoar-user xsoar_username=admin```
+
+#### Context Example
+```
+{
+    "Splunk": {
+        "UserMapping": [
+            {
+                "SplunkUser": "unassigned", 
+                "XsoarUser": "admin"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+### Xsoar-Splunk Username Mapping
+>|Xsoar User|Splunk User|
+>|---|---|
+>| admin | unassigned |
+
 
 ## Additional Information
 To get the HEC token

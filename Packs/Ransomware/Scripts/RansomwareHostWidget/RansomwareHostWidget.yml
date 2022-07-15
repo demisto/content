@@ -3,7 +3,7 @@ comment: Entry widget that returns the number of affectefd hosts in a Post Intru
 commonfields:
   id: RansomwareHostWidget
   version: -1
-dockerimage: demisto/python3:3.9.2.17246
+dockerimage: demisto/python3:3.9.7.24076
 enabled: true
 name: RansomwareHostWidget
 runas: DBotWeakRole

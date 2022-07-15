@@ -1,0 +1,23 @@
+commonfields:
+  id: VolRaw
+  version: -1
+name: VolRaw
+script: ''
+type: javascript
+tags:
+- agent
+- volatility
+comment: Execute volatility with command and file as parameters and returns raw output
+  from stdout.
+system: true
+args:
+- name: cmd
+  required: true
+  description: Volatility command to run
+- name: file
+  required: true
+  description: Path of file to pass as argument to Volatility
+scripttarget: 1
+dependson: {}
+timeout: 0s
+fromversion: 5.0.0

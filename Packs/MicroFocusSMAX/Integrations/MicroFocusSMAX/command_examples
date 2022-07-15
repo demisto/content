@@ -1,0 +1,8 @@
+!microfocus-smax-create-entities entities=`[ { "entity_type": "Incident", "properties": { "DisplayLabel": "Test incident", "Description": "Test incident description", "RegisteredForActualService": "11639", "Urgency": "NoDisruption" } } ]`
+!microfocus-smax-create-incident incident_name="Test incident" incident_description="Test incident description" impacted_service="11639" other_properities=`{"Status": "Ready","Urgency": "NoDisruption"}`
+!microfocus-smax-create-request request_name="Test Request" request_description="Test Request Description" requested_by="10388" requested_for="10388"
+!microfocus-smax-get-entity entity_type="Incident" entity_id="16989" entity_fields="Description,Urgency,Status,RegisteredForActualService"
+!microfocus-smax-query-entities entity_type="Incident" query_filter="Status = 'Ready'" entity_fields="Status,Urgency" order_by="Id desc" size="5"
+!microfocus-smax-update-entities entities=`[ { "entity_type": "Incident", "properties": { "Id": "16989", "Description": "Test Description" } } ]`
+!microfocus-smax-update-incident incident_id="17007" incident_description="Test Description" incident_status="Complete" incident_solution="Test Solution"
+!microfocus-smax-update-request request_id="17009" request_description="Test Description" request_status="RequestStatusPendingSpecialOperation"

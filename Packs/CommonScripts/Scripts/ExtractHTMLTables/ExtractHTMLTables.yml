@@ -1,0 +1,32 @@
+commonfields:
+  id: ExtractHTMLTables
+  version: -1
+name: ExtractHTMLTables
+script: ''
+type: python
+subtype: python2
+tags:
+- Utility
+comment: |-
+  Find tables inside HTML and extract the contents into objects using the following logic:
+  - If table has a single column, just create an array of strings from the values
+  - If table has 2 columns and has no header row, treat the first column as key and second as value and create a table of key/value
+  - If table has a header row, create a table of objects where attribute names are the headers
+  - If table does not have a header row, create table of objects where attribute names are cell1, cell2, cell3...
+enabled: true
+args:
+- name: html
+  required: true
+  default: true
+  description: The HTML to extract tables from
+- name: indexes
+  description: Extract only the tables with given indexes - 0 based
+outputs:
+- contextPath: HTMLTables
+  description: The extracted HTML tables
+scripttarget: 0
+runonce: false
+dockerimage: demisto/bs4:1.0.0.24033
+fromversion: 5.0.0
+tests:
+  - TestExtractHTMLTables

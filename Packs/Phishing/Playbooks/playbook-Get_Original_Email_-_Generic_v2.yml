@@ -1,0 +1,476 @@
+description: |-
+  This v2 playbook is used inside the phishing flow. The inputs in this version do not use labels and also allow the user to supply an email brand.
+  Note: You must have the necessary permissions in your email service to execute a global search.
+
+  To retrieve the email files directly from the email service providers, use one of the provided inputs (Agari Phishing Defense customers should also use the following):
+  - EWS: eDiscovery
+  - Gmail: Google Apps Domain-Wide Delegation of Authority
+  - MSGraph: As described in the [message-get API](https://docs.microsoft.com/en-us/graph/api/message-get) and the [user-list-messages API](https://docs.microsoft.com/en-us/graph/api/user-list-messages)
+  - EmailSecurityGateway retrieves EML files from:
+      * FireEye EX
+      * FireEye CM
+      * Proofpoint Protection Server
+      * Mimecast
+id: Get Original Email - Generic v2
+inputs:
+- description: The original email message ID to retrieve. This should hold the value
+    of the "Message-ID" header of the original email.
+  key: MessageID
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: The email address of the user to fetch the original email for. For Gmail, the authenticated user.
+  key: UserID
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: The original email subject.
+  key: EmailSubject
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: |-
+    If this value is provided, only the relevant playbook runs. If no value is provided, all sub-playbooks are run.
+    Possible values:
+    - Gmail
+    - EWS v2
+    - EWSO365
+    - MicrosoftGraphMail
+    - EmailSecurityGateway
+
+    Choosing EmailSecurityGateway executes the following if enabled:
+        - FireEye EX (Email Security)
+        - Proofpoint TAP
+        - Mimecast
+
+  key: EmailBrand
+  playbookInputQuery:
+  required: false
+  value: {}
+name: Get Original Email - Generic v2
+outputs:
+- contextPath: Email
+  description: The email object.
+  type: string
+- contextPath: File
+  description: The original email attachments.
+  type: string
+- contextPath: Email.To
+  description: The email recipient.
+  type: string
+- contextPath: Email.From
+  description: The email sender.
+  type: string
+- contextPath: Email.CC
+  description: The CC address of the email.
+  type: string
+- contextPath: Email.BCC
+  description: The BCC address of the email.
+  type: string
+- contextPath: Email.HTML
+  description: The email HTML.
+  type: string
+- contextPath: Email.Body
+  description: The email text body.
+  type: string
+- contextPath: Email.Headers
+  description: The email headers.
+  type: string
+- contextPath: Email.Subject
+  description: The email subject.
+  type: string
+- contextPath: Email.HeadersMap
+  description: The email headers map.
+  type: string
+- contextPath: reportedemailentryid
+  description: If the original EML was retrieved, this field holds the file's
+    Entry ID.
+  type: string
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 39f9f803-0a5c-48ce-852c-6b2cba1603e3
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 39f9f803-0a5c-48ce-852c-6b2cba1603e3
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": -130,
+          "y": -270
+        }
+      }
+  "3":
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: ba875fe0-ddb9-49d8-87bd-0244412ece59
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: ba875fe0-ddb9-49d8-87bd-0244412ece59
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -130,
+          "y": 390
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      MessageID:
+        complex:
+          root: inputs.MessageID
+      ThreadTopic:
+        complex:
+          root: inputs.EmailSubject
+      UserID:
+        complex:
+          root: inputs.UserID
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ""
+      description: |-
+        This playbook retrieves the original email using the Microsoft Graph Mail integration.
+        Note: You must have the necessary permissions in the Microsoft Graph Mail integration as described in the [message-get API](https://docs.microsoft.com/en-us/graph/api/message-get) and the [user-list-messages API](https://docs.microsoft.com/en-us/graph/api/user-list-messages).
+      id: 57283e40-45d3-4750-8b23-0282b034ca1b
+      iscommand: false
+      name: Get Original Email - Microsoft Graph Mail
+      playbookId: Get Original Email - Microsoft Graph Mail
+      type: playbook
+      version: -1
+    taskid: 57283e40-45d3-4750-8b23-0282b034ca1b
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -1300,
+          "y": 220
+        }
+      }
+  "11":
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      MessageID:
+        complex:
+          root: inputs.MessageID
+      TargetMailbox:
+        complex:
+          root: inputs.UserID
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ""
+      description: |-
+        This v2 playbook retrieves the original email in a thread as an EML file (and not an email object as in the previous version) by using the EWS v2 integration.
+        It also reduces the number of tasks to perform the fetch action.
+        Note: You must have the necessary eDiscovery permissions in the EWS integration to execute a global search.
+      id: d8997091-97e2-446d-820b-ee131a482796
+      iscommand: false
+      name: Get Original Email - EWS v2
+      playbookId: Get Original Email - EWS v2
+      type: playbook
+      version: -1
+    taskid: d8997091-97e2-446d-820b-ee131a482796
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -820,
+          "y": 220
+        }
+      }
+  "12":
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      MessageID:
+        complex:
+          root: inputs.MessageID
+      UserID:
+        complex:
+          root: inputs.UserID
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        This v2 playbook uses the reporter's email headers to retrieve the original email, which helps reduce the number of tasks to retrieve the original email. 
+        Use this playbook to retrieve the original email using the Gmail integration, including headers and attachments.
+        Note: You must have the necessary Google Apps Domain-Wide Delegation of Authority permissions in your Gmail service to execute global search.
+      id: 5481e887-03ee-44b2-8f26-411c0420cd3a
+      iscommand: false
+      name: Get Original Email - Gmail v2
+      playbookId: Get Original Email - Gmail v2
+      type: playbook
+      version: -1
+    taskid: 5481e887-03ee-44b2-8f26-411c0420cd3a
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": -340,
+          "y": 220
+        }
+      }
+  "13":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.EmailBrand
+          operator: isEqualString
+          right:
+            value:
+              simple: Gmail
+      label: Gmail
+    - condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.EmailBrand
+            iscontext: true
+          right:
+            value:
+              simple: EWS v2
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.EmailBrand
+            iscontext: true
+          right:
+            value:
+              simple: EWSO365
+      label: EWS
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.EmailBrand
+          operator: isEqualString
+          right:
+            value:
+              simple: MicrosoftGraphMail
+      label: MSGraph
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.EmailBrand
+          operator: isEqualString
+          right:
+            value:
+              simple: EmailSecurityGateway
+      label: Email Security
+    id: "13"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "14"
+      EWS:
+      - "11"
+      Email Security:
+      - "15"
+      Gmail:
+      - "12"
+      MSGraph:
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if "EmailBrand" has a valid value.
+      id: 3b8ffc22-29ed-4a57-84ff-8aed798de414
+      iscommand: false
+      name: Check EmailBrand
+      type: condition
+      version: -1
+    taskid: 3b8ffc22-29ed-4a57-84ff-8aed798de414
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -130,
+          "y": -120
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "10"
+      - "11"
+      - "12"
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e271a14b-f855-4fa9-8ed6-cc99faeff175
+      iscommand: false
+      name: No brand - run all
+      type: title
+      version: -1
+      description: ''
+    taskid: e271a14b-f855-4fa9-8ed6-cc99faeff175
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -130,
+          "y": 70
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 0
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      MessageID:
+        complex:
+          root: inputs.MessageID
+      UserID:
+        complex:
+          root: inputs.UserID
+    separatecontext: true
+    skipunavailable: true
+    task:
+      brand: ""
+      id: 2b98d9b9-44b1-42e2-8efa-38d45dc2376a
+      iscommand: false
+      name: Get Email From Email Gateway - Generic
+      playbookId: Get Email From Email Gateway - Generic
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 2b98d9b9-44b1-42e2-8efa-38d45dc2376a
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": 220
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "13_10_MSGraph": 0.9,
+      "13_11_EWS": 0.9,
+      "13_12_Gmail": 0.85,
+      "13_15_Email Security": 0.9
+    },
+    "paper": {
+      "dimensions": {
+        "height": 725,
+        "width": 2000,
+        "x": -1300,
+        "y": -270
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

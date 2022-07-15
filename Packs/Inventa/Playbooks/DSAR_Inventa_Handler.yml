@@ -1,0 +1,724 @@
+id: DSAR Inventa Handler
+version: -1
+name: DSAR Inventa Handler
+description: Handling DSAR requests
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 7dc09ba8-13c6-4678-8ec4-9ca5a1489912
+    type: start
+    task:
+      id: 7dc09ba8-13c6-4678-8ec4-9ca5a1489912
+      version: -1
+      name: ''
+      description: Entry point
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '31'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": -350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '9':
+    id: '9'
+    taskid: 8feb3370-b3ea-40ef-8d01-36e0b26541fa
+    type: regular
+    task:
+      id: 8feb3370-b3ea-40ef-8d01-36e0b26541fa
+      version: -1
+      name: get piis
+      description: Get PII details from daatasubjest
+      script: '|||inventa-get-sources-piis'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '27'
+    scriptarguments:
+      execution-timeout:
+        simple: '10'
+      retry-count:
+        simple: '3'
+      retry-interval:
+        simple: '5'
+      datasubject_id:
+        complex:
+          root: Inventa.DataSubjects
+          accessor: datasubject_id
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: PII Entities
+      output:
+        simple: ${Inventa.DSAR.piis}
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '15':
+    id: '15'
+    taskid: 9046859d-df10-42ab-8bdb-7258dbe7f760
+    type: title
+    task:
+      id: 9046859d-df10-42ab-8bdb-7258dbe7f760
+      version: -1
+      name: Done
+      description: Done
+      type: title
+      iscommand: false
+      brand: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 1440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '20':
+    id: '20'
+    taskid: e4f3e460-9a29-4c35-805d-721d2fd9d43b
+    type: regular
+    task:
+      id: e4f3e460-9a29-4c35-805d-721d2fd9d43b
+      version: -1
+      name: Link
+      description: commands.local.cmd.linkIncidents
+      script: Builtin|||linkIncidents
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - '29'
+    scriptarguments:
+      incidentId:
+        simple: ${incident.id}
+      linkedIncidentIDs:
+        complex:
+          root: foundIncidents.id
+          filters:
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: foundIncidents.id
+                iscontext: true
+              right:
+                value:
+                  simple: ${incident.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 870,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '21':
+    id: '21'
+    taskid: e639e5c0-da47-4a62-8f54-5ac076764609
+    type: regular
+    task:
+      id: e639e5c0-da47-4a62-8f54-5ac076764609
+      version: -1
+      name: Find related incidents
+      description: Searches Demisto incidents
+      scriptName: SearchIncidentsV2
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '30'
+    scriptarguments:
+      query:
+        simple: inventadsardatasubjectid:${incident.inventadsardatasubjectid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '27':
+    id: '27'
+    taskid: 230e0777-4e34-4f4c-8492-a114190a7f05
+    type: regular
+    task:
+      id: 230e0777-4e34-4f4c-8492-a114190a7f05
+      version: -1
+      name: PIIs to Grid
+      description: Creates a Grid table from items or key-value pairs.
+      scriptName: SetGridField
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments:
+      columns:
+        simple: piis
+      context_path:
+        simple: Inventa.Sources.piis
+      grid_id:
+        simple: inventadsarpiientities
+      keys:
+        simple: piis
+      sort_by:
+        simple: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '29':
+    id: '29'
+    taskid: b84ec5f3-8faf-4bd8-837f-102acf34ede0
+    type: title
+    task:
+      id: b84ec5f3-8faf-4bd8-837f-102acf34ede0
+      version: -1
+      name: Handle Context
+      description: Handle Context
+      type: title
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+      - '33'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '30':
+    id: '30'
+    taskid: 6fbb16e9-ec8b-4bab-877b-ad8e8f8479b8
+    type: condition
+    task:
+      id: 6fbb16e9-ec8b-4bab-877b-ad8e8f8479b8
+      version: -1
+      name: Check if related incidents list is empty
+      description: Check if related incidents found
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '20'
+      yes:
+      - '29'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              complex:
+                root: foundIncidents.id
+                filters:
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: foundIncidents.id
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ${incident.id}
+            iscontext: true
+          right:
+            value:
+              simple: '0'
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '31':
+    id: '31'
+    taskid: 08af62e7-7a8d-4dde-85d6-c7e1e62df1c6
+    type: regular
+    task:
+      id: 08af62e7-7a8d-4dde-85d6-c7e1e62df1c6
+      version: -1
+      name: Validate Inputs
+      description: Validates incident's inputs
+      script: '|||inventa-validate-incident-inputs'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '35'
+    scriptarguments:
+      birthday:
+        simple: ${incident.birthday}
+      cc_number:
+        simple: ${incident.inventacreditcardnumber}
+      city:
+        simple: ${incident.city}
+      datasubject_id:
+        simple: ${incident.inventadsardatasubjectid}
+      driver_license:
+        simple: ${incident.inventadriverlicense}
+      full_name:
+        simple: ${incident.fullname}
+      given_name:
+        simple: ${incident.givenname}
+      national_id:
+        simple: ${incident.inventanationalid}
+      passport_number:
+        simple: ${incident.inventapassportnumber}
+      phone_number:
+        simple: ${incident.phonenumber}
+      reason:
+        simple: ${incident.inventareportreason}
+      street_address:
+        simple: ${incident.streetaddress}
+      surname:
+        simple: ${incident.surname}
+      tax_id:
+        simple: ${incident.inventataxid}
+      ticket_id:
+        simple: ${incident.inventadsarinventaticket}
+      vehicle_number:
+        simple: ${incident.inventavehiclenumber}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": -200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '33':
+    id: '33'
+    taskid: 183a6396-3d16-4b81-879d-1692c228e7e2
+    type: regular
+    task:
+      id: 183a6396-3d16-4b81-879d-1692c228e7e2
+      version: -1
+      name: Get sources
+      description: Get sources details
+      script: Inventa|||inventa-get-sources
+      type: regular
+      iscommand: true
+      brand: Inventa
+    nexttasks:
+      '#none#':
+      - '34'
+    scriptarguments:
+      datasubject_id:
+        complex:
+          root: Inventa.DataSubjects
+          accessor: datasubject_id
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '34':
+    id: '34'
+    taskid: a52d5a4c-fe1a-4ae5-8d45-02cc350606d9
+    type: regular
+    task:
+      id: a52d5a4c-fe1a-4ae5-8d45-02cc350606d9
+      version: -1
+      name: Sources to Grid
+      description: Creates a Grid table from items or key-value pairs.
+      scriptName: SetGridField
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments:
+      columns:
+        simple: id, applianceName, timestamp, keyType, path, url, hostName, dbName, vendor, type, entityTypes, content
+      context_path:
+        simple: Inventa.Sources.sources
+      grid_id:
+        simple: inventasource
+      keys:
+        simple: id, applianceName, timestamp, keyType, path, url, hostName, dbName, vendor, type, entityTypes, content
+      sort_by:
+        simple: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '35':
+    id: '35'
+    taskid: c8ad3715-07f6-4e26-8807-70729962cda6
+    type: regular
+    task:
+      id: c8ad3715-07f6-4e26-8807-70729962cda6
+      version: -1
+      name: DataSubject id
+      description: Retrieves ID of a data subject from passed constraints
+      script: '|||inventa-get-datasubject-id'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '36'
+    scriptarguments:
+      birthday:
+        simple: ${incident.birthday}
+      cc_number:
+        simple: ${incident.inventacreditcardnumber}
+      city:
+        simple: ${incident.city}
+      driver_license:
+        simple: ${incident.inventadriverlicense}
+      full_name:
+        simple: ${incident.fullname}
+      given_name:
+        simple: ${incident.givenname}
+      national_id:
+        simple: ${incident.inventanationalid}
+      passport_number:
+        simple: ${incident.inventapassportnumber}
+      phone_number:
+        simple: ${incident.phonenumber}
+      street_address:
+        simple: ${incident.streetaddress}
+      surname:
+        simple: ${incident.surname}
+      tax_id:
+        simple: ${incident.inventataxid}
+      vehicle_number:
+        simple: ${incident.inventavehiclenumber}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Inventa DSAR DataSubject ID
+      output:
+        complex:
+          root: Inventa.DataSubjects
+          accessor: datasubject_id
+          transformers:
+          - operator: LastArrayElement
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '36':
+    id: '36'
+    taskid: 2ac23655-3d38-474b-88e6-842d82b81b5f
+    type: condition
+    task:
+      id: 2ac23655-3d38-474b-88e6-842d82b81b5f
+      version: -1
+      name: Check for Datasubject Id
+      description: Check for Datasubject Id
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#default#':
+      - '37'
+      yes:
+      - '21'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              complex:
+                root: Inventa.DataSubjects
+                accessor: datasubject_id
+                transformers:
+                - operator: LastArrayElement
+            iscontext: true
+          right:
+            value:
+              simple: '0'
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '37':
+    id: '37'
+    taskid: a041af30-f9dc-4db1-862f-9a92d87bb758
+    type: regular
+    task:
+      id: a041af30-f9dc-4db1-862f-9a92d87bb758
+      version: -1
+      name: Close the incident
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - '15'
+    scriptarguments:
+      closeNotes:
+        simple: |-
+          No such datasubject found in Inventa.
+          You may want to recheck whether inputs are correct and reopen the incident if needed.
+      closeReason:
+        simple: No such datasubject found in Inventa.
+      id:
+        complex:
+          root: incident
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1080,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1855,
+        "width": 1190,
+        "x": 270,
+        "y": -350
+      }
+    }
+  }
+inputs:
+- key: National ID
+  value:
+    simple: ${incident.inventanationalid}
+  required: false
+  description: ''
+  playbookInputQuery:
+- key: Passport Number
+  value:
+    simple: ${incident.inventapassportnumber}
+  required: false
+  description: ''
+  playbookInputQuery:
+- key: Driver License
+  value:
+    simple: ${incident.inventadriverlicense}
+  required: false
+  description: ''
+  playbookInputQuery:
+- key: Tax ID
+  value:
+    simple: ${incident.inventataxid}
+  required: false
+  description: ''
+  playbookInputQuery:
+- key: Credit Card Number
+  value:
+    simple: ${incident.inventacreditcardnumber}
+  required: false
+  description: ''
+  playbookInputQuery:
+- key: First Name
+  value:
+    simple: ${incident.firstname}
+  required: false
+  description: ''
+  playbookInputQuery:
+- key: Surname
+  value:
+    simple: ${incident.surname}
+  required: false
+  description: ''
+  playbookInputQuery:
+- key: Full Name
+  value:
+    simple: ${incident.inventafullname}
+  required: false
+  description: ''
+  playbookInputQuery:
+- key: Vehicle Number
+  value:
+    simple: ${incident.inventavehiclenumber}
+  required: false
+  description: ''
+  playbookInputQuery:
+- key: Phone Number
+  value:
+    simple: ${incident.phonenumber}
+  required: false
+  description: ''
+  playbookInputQuery:
+- key: Birthday
+  value:
+    simple: ${incident.inventabirthday}
+  required: false
+  description: ''
+  playbookInputQuery:
+- key: City
+  value:
+    simple: ${incident.city}
+  required: false
+  description: ''
+  playbookInputQuery:
+- key: Street Address
+  value:
+    simple: ${incident.streetaddress}
+  required: false
+  description: ''
+  playbookInputQuery:
+- key: Reason
+  value:
+    simple: ${incident.inventadsarreportreason}
+  required: false
+  description: ''
+  playbookInputQuery:
+- key: Ticket
+  value:
+    simple: ${incident.inventadsarinventaticket}
+  required: false
+  description: ''
+  playbookInputQuery:
+outputs:
+- contextPath: Inventa.PiiEntities.entities
+  description: entities for certain PII
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

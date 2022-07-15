@@ -1,0 +1,31 @@
+{
+    "id": "incident_flashpointsiteactornames",
+    "version": -1,
+    "modified": "2021-08-03T17:13:29.759151392+05:30",
+    "name": "Flashpoint Site Actor Names",
+    "description": "The handle of the user who created the message, authored the blog post, or posted a product for sale.",
+    "ownerOnly": false,
+    "cliName": "flashpointsiteactornames",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Flashpoint Alerts"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "5.0.0"
+}

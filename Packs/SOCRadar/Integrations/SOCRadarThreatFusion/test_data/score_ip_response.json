@@ -1,0 +1,92 @@
+{
+  "data": {
+    "classification": "ipv4",
+    "dns_info": {
+      "PTR": [
+        "Mock PTR Record"
+      ]
+    },
+    "findings": [
+      {
+        "extra_info": {
+          "last_seen_date": "2021-04-19 07:43:16",
+          "maintainer_name": "Mock Maintainer"
+        },
+        "reliability": 3,
+        "source_category": "Botnet & Malware>Malware",
+        "source_name": "Mock Maintainer 2"
+      },
+      {
+        "extra_info": {
+          "last_seen_date": "2021-04-19 10:42:54",
+          "maintainer_name": "Mock Maintainer 3"
+        },
+        "reliability": 2,
+        "source_category": "Attackers>Abuse",
+        "source_name": "Mock Maintainer 4"
+      }
+    ],
+    "geo_location": [
+      {
+        "AsnCode": 45899,
+        "AsnName": "VNPT Corp",
+        "Cidr": "Mock CIDR",
+        "CityName": "Ha Giang",
+        "CountryCode": "VN",
+        "CountryName": "Viet Nam",
+        "Ip": "1.1.1.1",
+        "Latitude": 22.83333,
+        "Longitude": 104.98333,
+        "RegionName": "Ha Giang",
+        "Timezone": "+07:00",
+        "ZipCode": "310000"
+      }
+    ],
+    "is_advance_investigation": false,
+    "is_whitelisted": false,
+    "remaining_credit": null,
+    "score": 640.0,
+    "score_details": {
+      "Attacker IP": 160.0,
+      "Botnet & Malware": 480.0
+    },
+    "value": "1.1.1.1",
+    "whitelist_sources": [],
+    "whois": {
+      "asn": "45899",
+      "asn_cidr": "Mock ASN CIDR",
+      "asn_country_code": "VN",
+      "asn_date": "2010-08-16",
+      "asn_description": "VNPT-AS-VN VNPT Corp, VN",
+      "asn_registry": "apnic",
+      "nets": [
+        {
+          "address": "Address",
+          "cidr": "Mock CIDR",
+          "city": null,
+          "country": "VN",
+          "created": null,
+          "description": "Description",
+          "emails": [
+            "Email 1",
+            "Email 2"
+          ],
+          "handle": "PTH13-AP",
+          "name": "VNPT-VN",
+          "postal_code": null,
+          "range": "IP Range",
+          "state": null,
+          "updated": null
+        }
+      ],
+      "nir": null,
+      "query": "1.1.1.1",
+      "raw": "Raw Whois",
+      "raw_referral": null,
+      "referral": null
+    }
+  },
+  "is_success": true,
+  "message": "Requested entity: 1.1.1.1 has been successfully processed.",
+  "response_code": 200
+}

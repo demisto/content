@@ -1,0 +1,54 @@
+{
+  "raw_response": {
+    "data": {
+      "vSphereHost": {
+        "descendantConnection": {
+          "edges": [
+            {
+              "node": {
+                "id": "dummy_datastore_id",
+                "name": "dummy-repo",
+                "capacity": 533621903360,
+                "isLocal": false,
+                "freeSpace": 188318314496,
+                "datastoreType": "NFS"
+              }
+            }
+          ],
+          "pageInfo": {
+            "endCursor": "Y3Vyc29yOmludDow",
+            "hasNextPage": false,
+            "hasPreviousPage": false
+          }
+        }
+      }
+    }
+  },
+  "outputs": {
+    "id": "dummy_id",
+    "Datastore": [
+      {
+        "id": "dummy_datastore_id",
+        "name": "dummy-repo",
+        "capacity": 533621903360,
+        "isLocal": false,
+        "freeSpace": 188318314496,
+        "datastoreType": "NFS"
+      }
+    ]
+  },
+  "empty_response": {
+    "data": {
+      "vSphereHost": {
+        "descendantConnection": {
+          "edges": []
+        }
+      }
+    }
+  },
+  "page_token": {
+    "next_page_token": "Y3Vyc29yOmludDow",
+    "has_next_page": false,
+    "name": "rubrik-gps-vm-datastore-list"
+  }
+}

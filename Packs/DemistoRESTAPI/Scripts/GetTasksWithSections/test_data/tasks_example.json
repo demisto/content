@@ -1,0 +1,566 @@
+{
+  "0": {
+    "evidenceData": {
+      "description": null,
+      "occurred": null,
+      "tags": null
+    },
+    "id": "0",
+    "isAutoSwitchedToQuietMode": false,
+    "isOverSize": false,
+    "nextTasks": {
+      "#none#": [
+        "1",
+        "2",
+        "6"
+      ]
+    },
+    "note": false,
+    "quietMode": 0,
+    "reputationCalc": 0,
+    "restrictedCompletion": false,
+    "scriptArguments": null,
+    "separateContext": false,
+    "task": {
+      "brand": "",
+      "conditions": null,
+      "id": "acaf794b-17da-49db-8ca8-35bec42a9e84",
+      "isCommand": false,
+      "isLocked": false,
+      "modified": "2021-10-25T14:18:43.001338105Z",
+      "name": "",
+      "playbookName": "",
+      "sortValues": null,
+      "type": "",
+      "version": 1
+    },
+    "taskId": "acaf794b-17da-49db-8ca8-35bec42a9e84",
+    "type": "start",
+    "view": {
+      "position": {
+        "x": 480,
+        "y": 50
+      }
+    }
+  },
+  "1": {
+    "evidenceData": {
+      "description": null,
+      "occurred": null,
+      "tags": null
+    },
+    "id": "1",
+    "isAutoSwitchedToQuietMode": false,
+    "isOverSize": false,
+    "nextTasks": null,
+    "note": false,
+    "quietMode": 0,
+    "reputationCalc": 0,
+    "restrictedCompletion": false,
+    "scriptArguments": {},
+    "separateContext": false,
+    "task": {
+      "brand": "",
+      "conditions": null,
+      "id": "67835af7-a1ef-462d-87cc-d3e09e8f940f",
+      "isCommand": false,
+      "isLocked": false,
+      "modified": "2021-10-25T14:23:06.632226499Z",
+      "name": "task 2",
+      "playbookName": "",
+      "sortValues": null,
+      "type": "regular",
+      "version": 1
+    },
+    "taskId": "67835af7-a1ef-462d-87cc-d3e09e8f940f",
+    "type": "regular",
+    "view": {
+      "position": {
+        "x": 50,
+        "y": 195
+      }
+    }
+  },
+  "10": {
+    "evidenceData": {
+      "description": null,
+      "occurred": null,
+      "tags": null
+    },
+    "id": "10",
+    "isAutoSwitchedToQuietMode": false,
+    "isOverSize": false,
+    "nextTasks": null,
+    "note": false,
+    "quietMode": 0,
+    "reputationCalc": 0,
+    "restrictedCompletion": false,
+    "scriptArguments": {
+    },
+    "separateContext": false,
+    "task": {
+      "brand": "",
+      "conditions": null,
+      "id": "67fc034d-8737-4756-8dfa-e2d0208a931e",
+      "isCommand": false,
+      "isLocked": false,
+      "modified": "2021-10-25T14:23:08.06097661Z",
+      "name": "task 7",
+      "playbookName": "",
+      "sortValues": null,
+      "type": "regular",
+      "version": 1
+    },
+    "taskId": "67fc034d-8737-4756-8dfa-e2d0208a931e",
+    "type": "regular",
+    "view": {
+      "position": {
+        "x": 265,
+        "y": 1010
+      }
+    }
+  },
+  "11": {
+    "evidenceData": {
+      "description": null,
+      "occurred": null,
+      "tags": null
+    },
+    "id": "11",
+    "isAutoSwitchedToQuietMode": false,
+    "isOverSize": false,
+    "nextTasks": {
+      "#none#": [
+        "13"
+      ]
+    },
+    "note": false,
+    "quietMode": 0,
+    "reputationCalc": 0,
+    "restrictedCompletion": false,
+    "scriptArguments": null,
+    "separateContext": false,
+    "task": {
+      "brand": "",
+      "conditions": null,
+      "id": "322de4dc-dcde-414a-8e98-7bdab27f356e",
+      "isCommand": false,
+      "isLocked": false,
+      "isTitleTask": true,
+      "modified": "2021-10-26T13:36:26.548075459Z",
+      "name": "Section 4",
+      "playbookName": "",
+      "sortValues": null,
+      "type": "title",
+      "version": 1
+    },
+    "taskId": "322de4dc-dcde-414a-8e98-7bdab27f356e",
+    "type": "title",
+    "view": {
+      "position": {
+        "x": -30,
+        "y": 545
+      }
+    }
+  },
+  "13": {
+    "evidenceData": {
+      "description": null,
+      "occurred": null,
+      "tags": null
+    },
+    "id": "13",
+    "isAutoSwitchedToQuietMode": false,
+    "isOverSize": false,
+    "nextTasks": null,
+    "note": false,
+    "quietMode": 0,
+    "reputationCalc": 0,
+    "restrictedCompletion": false,
+    "scriptArguments": null,
+    "separateContext": true,
+    "task": {
+      "brand": "",
+      "conditions": null,
+      "id": "896e05a0-4684-4fbe-8927-e1af2414410c",
+      "isCommand": false,
+      "isLocked": false,
+      "modified": "2021-10-26T13:36:26.290961647Z",
+      "name": "Access Investigation - Generic",
+      "playbookId": "access_investigation_-_generic",
+      "playbookName": "",
+      "sortValues": null,
+      "type": "playbook",
+      "version": 1
+    },
+    "taskId": "896e05a0-4684-4fbe-8927-e1af2414410c",
+    "type": "playbook",
+    "view": {
+      "position": {
+        "x": -230,
+        "y": 710
+      }
+    }
+  },
+  "2": {
+    "evidenceData": {
+      "description": null,
+      "occurred": null,
+      "tags": null
+    },
+    "id": "2",
+    "isAutoSwitchedToQuietMode": false,
+    "isOverSize": false,
+    "nextTasks": {
+      "#none#": [
+        "3"
+      ]
+    },
+    "note": false,
+    "quietMode": 0,
+    "reputationCalc": 0,
+    "restrictedCompletion": false,
+    "scriptArguments": {},
+    "separateContext": false,
+    "task": {
+      "brand": "",
+      "conditions": null,
+      "id": "a143901f-3edd-4c57-87d6-54604c16b828",
+      "isCommand": false,
+      "isLocked": false,
+      "modified": "2021-10-25T14:23:06.869321874Z",
+      "name": "task 1",
+      "playbookName": "",
+      "sortValues": null,
+      "type": "regular",
+      "version": 1
+    },
+    "taskId": "a143901f-3edd-4c57-87d6-54604c16b828",
+    "type": "regular",
+    "view": {
+      "position": {
+        "x": 480,
+        "y": 195
+      }
+    }
+  },
+  "3": {
+    "evidenceData": {
+      "description": null,
+      "occurred": null,
+      "tags": null
+    },
+    "id": "3",
+    "isAutoSwitchedToQuietMode": false,
+    "isOverSize": false,
+    "nextTasks": {
+      "#none#": [
+        "4",
+        "11"
+      ]
+    },
+    "note": false,
+    "quietMode": 0,
+    "reputationCalc": 0,
+    "restrictedCompletion": false,
+    "scriptArguments": null,
+    "separateContext": false,
+    "task": {
+      "brand": "",
+      "conditions": null,
+      "id": "980d21f1-d59e-49fe-84c0-0ee360940a36",
+      "isCommand": false,
+      "isLocked": false,
+      "isTitleTask": true,
+      "modified": "2021-10-25T14:23:07.057721706Z",
+      "name": "Section 1",
+      "playbookName": "",
+      "sortValues": null,
+      "type": "title",
+      "version": 1
+    },
+    "taskId": "980d21f1-d59e-49fe-84c0-0ee360940a36",
+    "type": "title",
+    "view": {
+      "position": {
+        "x": 480,
+        "y": 385
+      }
+    }
+  },
+  "4": {
+    "evidenceData": {
+      "description": null,
+      "occurred": null,
+      "tags": null
+    },
+    "id": "4",
+    "isAutoSwitchedToQuietMode": false,
+    "isOverSize": false,
+    "nextTasks": {
+      "#none#": [
+        "5",
+        "8"
+      ]
+    },
+    "note": false,
+    "quietMode": 0,
+    "reputationCalc": 0,
+    "restrictedCompletion": false,
+    "scriptArguments": null,
+    "separateContext": false,
+    "task": {
+      "brand": "",
+      "conditions": null,
+      "id": "455c630b-db0d-4d7a-80b6-f0f49d627fd5",
+      "isCommand": false,
+      "isLocked": false,
+      "isTitleTask": true,
+      "modified": "2021-10-25T14:23:07.253959547Z",
+      "name": "Section 2",
+      "playbookName": "",
+      "sortValues": null,
+      "type": "title",
+      "version": 1
+    },
+    "taskId": "455c630b-db0d-4d7a-80b6-f0f49d627fd5",
+    "type": "title",
+    "view": {
+      "position": {
+        "x": 480,
+        "y": 545
+      }
+    }
+  },
+  "5": {
+    "evidenceData": {
+      "description": null,
+      "occurred": null,
+      "tags": null
+    },
+    "id": "5",
+    "isAutoSwitchedToQuietMode": false,
+    "isOverSize": false,
+    "nextTasks": {
+      "#none#": [
+        "9"
+      ]
+    },
+    "note": false,
+    "quietMode": 0,
+    "reputationCalc": 0,
+    "restrictedCompletion": false,
+    "scriptArguments": {},
+    "separateContext": false,
+    "task": {
+      "brand": "",
+      "conditions": null,
+      "id": "10d00258-0059-484c-8fa3-c1e82ab7cc24",
+      "isCommand": false,
+      "isLocked": false,
+      "modified": "2021-10-25T14:23:07.476652267Z",
+      "name": "task 5",
+      "playbookName": "",
+      "sortValues": null,
+      "type": "regular",
+      "version": 1
+    },
+    "taskId": "10d00258-0059-484c-8fa3-c1e82ab7cc24",
+    "type": "regular",
+    "view": {
+      "position": {
+        "x": 265,
+        "y": 690
+      }
+    }
+  },
+  "6": {
+    "conditions": [
+      {
+        "condition": [
+          [
+            {
+              "ignoreCase": false,
+              "left": {
+                "isContext": true,
+                "value": {
+                  "complex": null,
+                  "simple": "a"
+                }
+              },
+              "operator": "isEqualString",
+              "right": {
+                "isContext": false,
+                "value": {
+                  "complex": null,
+                  "simple": "a"
+                }
+              }
+            }
+          ]
+        ],
+        "label": "yes"
+      }
+    ],
+    "evidenceData": {
+      "description": null,
+      "occurred": null,
+      "tags": null
+    },
+    "id": "6",
+    "isAutoSwitchedToQuietMode": false,
+    "isOverSize": false,
+    "nextTasks": {
+      "yes": [
+        "7"
+      ]
+    },
+    "note": false,
+    "quietMode": 0,
+    "reputationCalc": 0,
+    "restrictedCompletion": false,
+    "scriptArguments": {},
+    "separateContext": false,
+    "task": {
+      "brand": "",
+      "conditions": null,
+      "id": "2750a808-5ff3-4e92-8d1b-b815f0452aaf",
+      "isCommand": false,
+      "isLocked": false,
+      "modified": "2021-10-25T14:23:06.654915538Z",
+      "name": "task 3",
+      "playbookName": "",
+      "sortValues": null,
+      "type": "condition",
+      "version": 1
+    },
+    "taskId": "2750a808-5ff3-4e92-8d1b-b815f0452aaf",
+    "type": "condition",
+    "view": {
+      "position": {
+        "x": 910,
+        "y": 195
+      }
+    }
+  },
+  "7": {
+    "evidenceData": {
+      "description": null,
+      "occurred": null,
+      "tags": null
+    },
+    "id": "7",
+    "isAutoSwitchedToQuietMode": false,
+    "isOverSize": false,
+    "nextTasks": null,
+    "note": false,
+    "quietMode": 0,
+    "reputationCalc": 0,
+    "restrictedCompletion": false,
+    "scriptArguments": {
+    },
+    "separateContext": false,
+    "task": {
+      "brand": "",
+      "conditions": null,
+      "id": "67e0a52e-562a-4ddb-8a3f-d1eb0acdd893",
+      "isCommand": false,
+      "isLocked": false,
+      "modified": "2021-10-25T14:23:07.680501001Z",
+      "name": "task 4\n",
+      "playbookName": "",
+      "sortValues": null,
+      "type": "regular",
+      "version": 1
+    },
+    "taskId": "67e0a52e-562a-4ddb-8a3f-d1eb0acdd893",
+    "type": "regular",
+    "view": {
+      "position": {
+        "x": 910,
+        "y": 370
+      }
+    }
+  },
+  "8": {
+    "evidenceData": {
+      "description": null,
+      "occurred": null,
+      "tags": null
+    },
+    "id": "8",
+    "isAutoSwitchedToQuietMode": false,
+    "isOverSize": false,
+    "nextTasks": null,
+    "note": false,
+    "quietMode": 0,
+    "reputationCalc": 0,
+    "restrictedCompletion": false,
+    "scriptArguments": {},
+    "separateContext": false,
+    "task": {
+      "brand": "",
+      "conditions": null,
+      "id": "c24414ce-95b1-4109-87fc-7d8967971a8e",
+      "isCommand": false,
+      "isLocked": false,
+      "modified": "2021-10-25T14:23:07.871029942Z",
+      "name": "task 6",
+      "playbookName": "",
+      "sortValues": null,
+      "type": "regular",
+      "version": 1
+    },
+    "taskId": "c24414ce-95b1-4109-87fc-7d8967971a8e",
+    "type": "regular",
+    "view": {
+      "position": {
+        "x": 695,
+        "y": 690
+      }
+    }
+  },
+  "9": {
+    "evidenceData": {
+      "description": null,
+      "occurred": null,
+      "tags": null
+    },
+    "id": "9",
+    "isAutoSwitchedToQuietMode": false,
+    "isOverSize": false,
+    "nextTasks": {
+      "#none#": [
+        "10"
+      ]
+    },
+    "note": false,
+    "quietMode": 0,
+    "reputationCalc": 0,
+    "restrictedCompletion": false,
+    "scriptArguments": null,
+    "separateContext": false,
+    "task": {
+      "brand": "",
+      "conditions": null,
+      "id": "052fd48e-0192-4189-8854-f3fedfa9260c",
+      "isCommand": false,
+      "isLocked": false,
+      "isTitleTask": true,
+      "modified": "2021-10-25T14:23:06.78373123Z",
+      "name": "Section 3",
+      "playbookName": "",
+      "sortValues": null,
+      "type": "title",
+      "version": 1
+    },
+    "taskId": "052fd48e-0192-4189-8854-f3fedfa9260c",
+    "type": "title",
+    "view": {
+      "position": {
+        "x": 265,
+        "y": 865
+      }
+    }
+  }
+}

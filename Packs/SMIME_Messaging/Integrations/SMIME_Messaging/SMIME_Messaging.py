@@ -8,7 +8,9 @@ from M2Crypto import BIO, SMIME, X509, m2
 from typing import Dict, Tuple
 from tempfile import NamedTemporaryFile
 
-import chardet
+from charset_normalizer import from_bytes
+import warnings
+warnings.simplefilter("default")
 
 ''' HELPER FUNCTIONS '''
 
@@ -140,22 +142,16 @@ def decode_str(decrypted_text: bytes, encoding: str) -> Tuple[str, str]:
     message indicates it. If encoding is given, will use it.
     """
     msg = ''
+    out = ''
     if not encoding:
-        chardet_detection = chardet.detect(decrypted_text)
-        encoding = chardet_detection.get('encoding', 'utf-8') or 'utf-8'
-        try:
-            # Trying to decode using the detected encoding
-            confidence = chardet_detection.get('confidence', 0)
-            demisto.debug(f"Going to decode decrypted text using {encoding} encoding, detected with confidence: "
-                          f"{confidence}")
-            if confidence < 0.9:
-                msg = 'Note: detected encoding confidence is low, characters may be missing. You can try running this' \
-                      ' command again and pass the encoding code as argument.\n'
-            out = decrypted_text.decode(encoding)
-        except UnicodeDecodeError:
-            # In case the detected encoding fails apply the default encoding
-            demisto.debug(f'Could not decode file using detected encoding:{encoding}, retrying using utf-8.\n')
-            out = decrypted_text.decode('utf-8')
+        with warnings.catch_warnings(record=True) as e:
+            charset_match = from_bytes(decrypted_text)
+            if len(charset_match):
+                out = str(charset_match[0])
+                demisto.debug(f"Decode decrypted text using {charset_match[0].encoding} encoding")
+            if e:
+                msg = f'Note: encoding detection ended with warning: {e[0].message} Characters may be missing.' \
+                      ' You can try running this command again and pass the encoding code as argument.\n'
     else:
         out = decrypted_text.decode(encoding)
 

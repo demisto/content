@@ -1,6 +1,17 @@
 <!-- HTML_DOC -->
 <p>Secure, store and tightly control access to tokens, passwords, certificates, encryption keys for protecting secrets and other sensitive data using HashiCorp Vault. This integration fetches credentials. For more information, see <a href="https://xsoar.pan.dev/docs/reference/articles/managing-credentials">Managing Credentials</a>.</p>
 <p>This integration was integrated and tested with version 0.11.5 of HashiCorp Vault.</p>
+<h2>Authentication</h2>
+The integration supports the following auth methods:
+<h3>Userpass Auth Method</h3>
+It is required to fill in only the <strong>Username / Role ID</strong> parameter with the username and <strong>Password / Secret ID</strong> parameter with the password.
+For more details, see the <a href="https://www.vaultproject.io/docs/auth/userpass">HashiCorp Vault documentation</a>.
+<h3>Token Auth Method</h3>
+It is required to fill in only the <strong>Authentication token</stronng> parameter.
+For more details, see the <a href="https://www.vaultproject.io/docs/auth/token">HashiCorp Vault documentation</a>.
+<h3>AppRole Auth Method</h3>
+It is required to fill in only the <strong>Username / Role ID</strong> parameter with the role ID and <strong>Password / Secret ID</strong> parameter with the secret ID, and tick the <strong>Use AppRole Auth Method</strong> checkbox.
+For more details, see the <a href="https://www.vaultproject.io/docs/auth/approle">HashiCorp Vault documentation</a>.
 <h2>Configure HashiCorp Vault on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
@@ -10,13 +21,16 @@
 <li>
 <strong>Name</strong>: a textual name for the integration instance.</li>
 <li><strong>HashiCorps server URL (e.g., <a href="https://192.168.0.1:8200/" rel="nofollow">https://192.168.0.1:8200</a>)</strong></li>
-<li><strong>Username</strong></li>
+<li><strong>Use AppRole Auth Method</strong></li>
+<li><strong>Username / Role ID</strong></li>
+<li><strong>Password / Role Secret</strong></li>
 <li><strong>Authentication token</strong></li>
 <li><strong>Trust any certificate (not secure)</strong></li>
 <li><strong>Use system proxy settings</strong></li>
 <li>
 <strong>Fetches credentials</strong> - If set, the integration will fetch credentials from Vault to Cortex XSOAR.</li>
 <li><strong>CSV list of secrets engine types to fetch secrets from</strong></li>
+<li><strong>Concat username to credential object name</strong></li>
 </ul>
 </li>
 <li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>
@@ -947,6 +961,11 @@
 <tr>
 <td style="width: 175px;">version</td>
 <td style="width: 532px;">The engine version (for KV engines); "1" or "2"</td>
+<td style="width: 33px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 175px;">folder</td>
+<td style="width: 532px;">Specific folder to fetch secrets from, e.g., "secret-folder/". (Supported only for engine type KV2)</td>
 <td style="width: 33px;">Optional</td>
 </tr>
 </tbody>

@@ -10,5 +10,7 @@ This pack provides Cortex XSOAR integrations created by ReversingLabs that allow
     - Enables the use of a wide range of A1000 services.
     - The included commands can be used separately in the War Room or as part of a playbook.
 
+This pack also includes 1 playbook:
+- **Detonate File - ReversingLabs A1000**: Upload sample to ReversingLabs A1000 appliance and automatically retrieve the analysis report.
 
 Note: Support for this pack moved to the partner on April 22nd 2021. Please contact the partner directly via the support link on the right.

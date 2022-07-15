@@ -168,6 +168,18 @@ class Client(BaseClient):
                                       json_data=data, headers=headers)
         return response
 
+    def vulnerabilities_add_annotation_request(self, id, text):
+        annotation = {
+            "text": text
+        }
+        data = {
+            "annotation": annotation
+        }
+        headers = self._headers
+        response = self._http_request('POST', 'api/v1/vulnerabilities/' + id + '/annotations.json',
+                                      json_data=data, headers=headers)
+        return response
+
 
 def host_get_hosts_command(client, args):
     response = client.host_get_hosts_request()['hosts']
@@ -675,6 +687,22 @@ def vulnerabilities_risk_accept_command(client, args):
     return command_results
 
 
+def vulnerabilities_add_annotation_command(client, args):
+    text = args.get('text')
+    id = args.get('id')
+    response = client.vulnerabilities_add_annotation_request(text=text, id=id)['annotation']
+    readable_output = tableToMarkdown('Annotation added:' + id, response)
+    command_results = CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Edgescan.AnnotationAdd',
+        outputs_key_field='',
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
+
+
 def main():
     params = demisto.params()
     args = demisto.args()
@@ -731,6 +759,7 @@ def main():
             'edgescan-vulnerabilities-get-query': vulnerabilities_get_query_command,
             'edgescan-vulnerabilities-retest': vulnerabilities_retest_command,
             'edgescan-vulnerabilities-risk-accept': vulnerabilities_risk_accept_command,
+            'edgescan-vulnerabilities-add-annotation': vulnerabilities_add_annotation_command,
         }
 
         if command == 'test-module':

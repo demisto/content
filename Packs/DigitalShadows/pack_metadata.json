@@ -1,16 +1,87 @@
 {
-  "name": "Digital Shadows",
-  "description": "Digital Shadows monitors and manages an organization's digital risk across the widest range of data sources within the open, deep, and dark web.",
-  "support": "xsoar",
-  "currentVersion": "1.0.1",
-  "author": "Cortex XSOAR",
-  "url": "https://www.paloaltonetworks.com/cortex",
-  "email": "",
-  "created": "2020-04-14T00:00:00Z",
-  "categories": [
-    "Data Enrichment & Threat Intelligence"
-  ],
-  "tags": [],
-  "useCases": [],
-  "keywords": []
+    "name": "Digital Shadows SearchLight",
+    "description": "Digital Shadows monitors and manages an organization's digital risk across the open, deep, and dark web.",
+    "support": "partner",
+    "currentVersion": "1.0.5",
+    "author": "Digital Shadows",
+    "url": "https://www.digitalshadows.com/",
+    "email": "info@digitalshadows.com",
+    "created": "2020-04-14T00:00:00Z",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Dark Web",
+        "Security",
+        "Security Analytics",
+        "Threat Intelligence",
+        "MITRE ATT&CK"
+    ],
+    "useCases": [
+        "Asset Management",
+        "Malware",
+        "Phishing",
+        "Ransomware",
+        "SANS",
+        "Threat Intelligence Management",
+        "Vulnerability Management",
+        "Network Security"
+    ],
+    "keywords": [
+        "DigitalShadows",
+        "Digital Shadows",
+        "DS",
+        "Threat Intelligence",
+        "xdr",
+        "Dark web",
+        "Deep web",
+        "enrichment",
+        "photon",
+        "exposed credentials",
+        "impersonating domains",
+        "vulnerable service",
+        "threat actors"
+    ],
+    "githubUser": [
+        "ds-jdcockrill",
+        "rossbowerman"
+    ],
+    "devEmail": [
+        "jamie.cockrill@digitalshadows.com",
+        "integrations@digitalshadows.com"
+    ],
+    "certification": "certified",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "dependencies": {
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "CoreAlertFields": {
+            "mandatory": true,
+            "display_name": "Core Alert Fields"
+        },
+        "Phishing": {
+            "mandatory": true,
+            "display_name": "Phishing"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        }
+    },
+    "displayedImages": [
+        "CommonScripts",
+        "CoreAlertFields",
+        "Phishing",
+        "CommonTypes"
+    ],
+    "itemPrefix": [
+        "DS",
+        "Digital Shadows",
+        "SearchLight"
+    ]
 }

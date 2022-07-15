@@ -128,7 +128,7 @@ tasks:
       version: -1
       name: Are there filtered results?
       description: Checks whether the specified item is in a list. The default list
-        is the Demisto Indicators Whitelist.
+        is the Demisto Indicators allow list.
       type: condition
       iscommand: false
       brand: ""

@@ -1,4 +1,4 @@
-Cortex XDR is a detection and response app that natively integrates network, endpoint, and cloud data to stop sophisticated attacks. Responding and managing these attacks requires security teams to reconcile data from multiple sources. Valuable time is lost shuttling between screens and executing repeatable tasks while an attack continues to manifest. 
+[Cortex XDR](https://www.paloaltonetworks.com/cortex/cortex-xdr) is a detection and response app that natively integrates network, endpoint, and cloud data to stop sophisticated attacks. Responding and managing these attacks requires security teams to reconcile data from multiple sources. Valuable time is lost shuttling between screens and executing repeatable tasks while an attack continues to manifest. 
 
 This Cortex XDR content pack contains the **Palo Alto Networks Cortex XDR - Investigation and Response** integration that enables direct execution of Cortex XDR actions within Cortex XSOAR. The **Cortex XDR Incident Handling v3** playbook enables bidirectional incident updates between Cortex XDR and Cortex XSOAR. 
 
@@ -15,6 +15,6 @@ The playbooks included in this pack help you save time and keep your incidents i
 
 As part of this pack, you will also get out-of-the-box Cortex XDR incident type views, with incident fields and a full layout to facilitate analyst investigation. All of these are easily customizable to suit the needs of your organization.
 
-_For more information, visit our [Cortex XSOAR Developer Docs](hhttps://xsoar.pan.dev/docs/reference/articles/palo-alto-networks-cortex-xdr---investigation-and-response)_
+_For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/packs/palo-alto-networks-cortex-xdr---investigation-and-response)_
 
 ![Cortex XDR incident handling v3](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexXDR/doc_files/Cortex_XDR_incident_handling_v3.png)

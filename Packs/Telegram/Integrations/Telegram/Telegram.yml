@@ -43,7 +43,7 @@ script:
     description: List users
     execution: false
     name: telegram-list-users
-  dockerimage: demisto/python3:3.7.3.221
+  dockerimage: demisto/python3:3.9.8.24399
   isfetch: false
   runonce: false
   script: '-'

@@ -4,6 +4,7 @@ import zipfile
 from io import StringIO
 import demisto_client
 
+from Tests.configure_and_test_integration_instances import XSOARBuild
 from Tests.private_build.configure_and_test_integration_instances_private import \
     find_needed_test_playbook_paths, install_private_testing_pack, write_test_pack_zip,\
     install_packs_private
@@ -35,7 +36,7 @@ class MockApiClient:
     def __init__(self):
         self.configuration = MockConfiguration()
 
-    def call_api(self, resource_path, method, header_params, files):
+    def call_api(self, resource_path, method, header_params, files, auth_settings):
 
         return 'MOCK_HELLOWORLD_SEARCH_RESULTS', 200, None
 
@@ -53,7 +54,7 @@ class BuildMock:
         self.ci_build_number = '100'
         self.is_nightly = False
         self.ami_env = 'Server Master'
-        self.servers, self.server_numeric_version = ('8.8.8.8', '6.1.0')
+        self.server_numeric_version = '6.1.0'
         self.secret_conf = {}
         self.username = 'TestUser'
         self.password = 'TestPassword'
@@ -96,7 +97,6 @@ def test_find_needed_test_playbook_paths():
     file_paths = find_needed_test_playbook_paths(test_playbooks=test_playbook_conf,
                                                  tests_to_run=tests_to_run,
                                                  path_to_content='.')
-    assert len(file_paths) == 52
     assert './Packs/HelloWorld/TestPlaybooks/playbook-HelloWorld_Scan-Test.yml' in file_paths
 
 
@@ -110,6 +110,9 @@ def test_create_install_private_testing_pack(mocker):
     Then: Return the success flag set to true indicating the request to install the pack was successful
 
     """
+    mocker.patch('Tests.configure_and_test_integration_instances.XSOARBuild.__init__',
+                 return_value=None)
+    mock_build = XSOARBuild({})
 
     def mocked_generic_request_func(self, path: str, method, body=None, accept=None,
                                     _request_timeout=None):
@@ -119,7 +122,22 @@ def test_create_install_private_testing_pack(mocker):
 
     mocker.patch.object(demisto_client, 'generic_request_func',
                         side_effect=mocked_generic_request_func)
-    mock_build = BuildMock()
+    mock_build.git_sha1 = 'sampleSHA1'
+    mock_build.branch_name = 'test-branch'
+    mock_build.ci_build_number = '100'
+    mock_build.is_nightly = False
+    mock_build.ami_env = 'Server Master'
+    mock_build.server_numeric_version = '6.1.0'
+    mock_build.secret_conf = {}
+    mock_build.username = 'TestUser'
+    mock_build.password = 'TestPassword'
+    mock_build.servers = [ServerMock()]
+    mock_build.is_private = True
+    mock_build.tests = {}
+    mock_build.skipped_integrations_conf = {}
+    mock_build.id_set = {}
+    mock_build.test_pack_path = ''
+    mock_build.pack_ids_to_install = []
     install_private_testing_pack(mock_build, 'testing/path/to/test_pack.zip')
     assert script.SUCCESS_FLAG
 

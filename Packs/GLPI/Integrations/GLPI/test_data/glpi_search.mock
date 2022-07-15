@@ -1,0 +1,1 @@
+{'data': [{'User.name': 'MyUser', 'User.realname': 'MyLastName', 'User.UserEmail.email': 'myuser@company.com', 'User.phone': None, 'User.Location.completename': None, 'User.is_active': 1}]}

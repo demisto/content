@@ -41,15 +41,17 @@ configuration:
   name: fetch_limit
   required: false
   type: 0
-description: Symantec Data Loss Prevention enables you to discover, monitor and protect your sensitive corporate information.
-display: Symantec Data Loss Prevention (Beta)
+description: Deprecated. Use the Symantec Data Loss Prevention V2 integration instead. Symantec Data Loss Prevention enables you to discover, monitor and protect
+  your sensitive corporate information.
+display: Symantec Data Loss Prevention (Deprecated)
 name: Symantec Data Loss Prevention
 script:
   commands:
   - arguments:
     - default: false
       defaultValue: 1 day
-      description: Returns incidents with a creation date later than specified. Given in free text. For example, 2 days.
+      description: Returns incidents with a creation date later than specified. Given
+        in free text. For example, 2 days.
       isArray: false
       name: creation_date
       required: false
@@ -89,7 +91,8 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A comma separated list of custom attributes names or group names. For example, item1,item2,item3.'
+      description: A comma separated list of custom attributes names or group names.
+        For example, item1,item2,item3.
       isArray: false
       name: custom_data
       required: false
@@ -118,13 +121,16 @@ script:
       description: The severity of the incident.
       type: String
     - contextPath: SymantecDLP.Incident.MessageSource
-      description: The localized label that corresponds to the Symantec DLP product that generated the incident.
+      description: The localized label that corresponds to the Symantec DLP product
+        that generated the incident.
       type: String
     - contextPath: SymantecDLP.Incident.MessageSourceType
-      description: 'Indicates the Symantec DLP product that generated the incident. Can be: "NETWORK", "DISCOVER", "ENDPOINT", "DIM", and "DAR".'
+      description: 'Indicates the Symantec DLP product that generated the incident.
+        Can be: "NETWORK", "DISCOVER", "ENDPOINT", "DIM", and "DAR".'
       type: String
     - contextPath: SymantecDLP.Incident.MessageType
-      description: Indicates the Symantec DLP product component that generated the incident.
+      description: Indicates the Symantec DLP product component that generated the
+        incident.
       type: String
     - contextPath: SymantecDLP.Incident.MessageTypeID
       description: The ID of the Message Type.
@@ -195,7 +201,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'Represents the severity level of the incident. Can be: "High", "Medium", "Low", and "Info".'
+      description: 'Represents the severity level of the incident. Can be: "High",
+        "Medium", "Low", and "Info".'
       isArray: false
       name: severity
       predefined:
@@ -311,7 +318,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'True'
-      description: Whether the Web Service includes the original message in the response document.
+      description: Whether the Web Service includes the original message in the response
+        document.
       isArray: false
       name: include_original_message
       predefined:
@@ -322,7 +330,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'True'
-      description: Whether the Web Service includes all message components (such as, headers and file attachments) in the response document.
+      description: Whether the Web Service includes all message components (such as,
+        headers and file attachments) in the response document.
       isArray: false
       name: include_all_components
       predefined:
@@ -386,7 +395,8 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'True'
-      description: Whether image violations should be included in the Incident Violations Response.
+      description: Whether image violations should be included in the Incident Violations
+        Response.
       isArray: false
       name: include_image_violations
       predefined:
@@ -441,7 +451,8 @@ script:
     - contextPath: SymantecDLP.Incident.ViolatingComponent.ViolatingSegment.Text.RuleName
       description: The rule name which triggered the violation.
       type: String
-  dockerimage: demisto/zeep:1.0.0.8900
+  dockerimage: demisto/zeep:1.0.0.23423
+  feed: false
   isfetch: true
   longRunning: false
   longRunningPort: false
@@ -450,4 +461,3 @@ script:
   subtype: python3
   type: python
 fromversion: 5.0.0
-beta: true

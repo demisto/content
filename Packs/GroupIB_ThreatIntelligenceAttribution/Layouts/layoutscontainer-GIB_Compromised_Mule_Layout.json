@@ -1,4 +1,5 @@
 {
+    "description": "Layout for GIB Compromised Mule",
     "group": "indicator",
     "id": "GIB Compromised Mule Layout",
     "indicatorsDetails": {
@@ -226,7 +227,7 @@
                         "minH": 1,
                         "minW": 1,
                         "moved": false,
-                        "name": "Information from GIB TI&A",
+                        "name": "Information from GIB TIA",
                         "static": false,
                         "w": 2,
                         "x": 0,
@@ -240,6 +241,5 @@
     "name": "GIB Compromised Mule Layout",
     "system": false,
     "version": -1,
-    "fromVersion": "6.0.0",
-    "description": ""
+    "fromVersion": "6.0.0"
 }

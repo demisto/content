@@ -1,0 +1,8 @@
+{
+    "files": {
+        "Packs/AbnormalSecurity/Integrations/AbnormalSecurity/AbnormalSecurity.py": 84.34,
+        "Packs/Akamai_SIEM/Integrations/Akamai_SIEM/Akamai_SIEM.py": 73.4
+    },
+    "last_updated": "2021-08-10T09:19:43Z",
+    "total_coverage": 59.31080185553346
+}

@@ -1,481 +1,401 @@
-<!-- HTML_DOC -->
-<p>Use the URLhaus integration to get information about URLs and domains, and to download malware samples.</p>
-<h2>
-<a id="Configure_URLhaus_on_Demisto_3"></a>Configure URLhaus on Cortex XSOAR</h2>
-<ol>
-<li>Navigate to<span> </span><strong>Settings</strong><span> </span>&gt;<span> </span><strong>Integrations</strong><span> </span>&gt;<span> </span><strong>Servers &amp; Services</strong>.</li>
-<li>Search for URLhaus.</li>
-<li>Click<span> </span><strong>Add instance</strong><span> </span>to create and configure a new integration instance.
-<ul>
-<li>
-<strong>Name</strong>: a textual name for the integration instance.</li>
-<li><strong>Server URL (e.g.<span> </span>https://192.168.0.1)</strong></li>
-<li><strong>Source Reliability.</strong> Reliability of the source providing the intelligence data. (The default value is C - Fairly reliable)</li>
-<li><strong>Trust any certificate (not secure)</strong></li>
-<li><strong>Use system proxy</strong></li>
-<li><strong>Blacklists appearances threshold</strong></li>
-<li><strong>Compromised (is malicious)</strong></li>
-</ul>
-</li>
-<li>Click<span> </span><strong>Test</strong><span> </span>to validate the URLs, token, and connection.</li>
-</ol>
-<h2>
-<a id="Commands_16"></a>Commands</h2>
-<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
-<ol>
-<li><a href="#h_d1d27e6a-8238-418c-bdb3-d4a9f01495d1" target="_self">Get information for a URL: url</a></li>
-<li><a href="#h_986aaa83-1a4c-410c-ad19-827ee0b3b282" target="_self">Get information for a domain: domain</a></li>
-<li><a href="#h_ef2f4237-410b-4ddb-9730-48b02fe64e33" target="_self">Get information for a file: file</a></li>
-<li><a href="#h_826fb182-fa39-469e-821e-ca38c292c534" target="_self">Download a malware sample: urlhaus-download-sample</a></li>
-</ol>
-<h3 id="h_d1d27e6a-8238-418c-bdb3-d4a9f01495d1">
-<a id="1_Get_information_for_a_URL_22"></a>1. Get information for a URL</h3>
-<hr>
-<p>Retrieves URL information from URLhaus.</p>
-<h5>
-<a id="Base_Command_25"></a>Base Command</h5>
-<p><code>url</code></p>
-<h5>
-<a id="Input_28"></a>Input</h5>
-<table class="table table-striped table-bordered" style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 332px;"><strong>Argument Name</strong></th>
-<th style="width: 229px;"><strong>Description</strong></th>
-<th style="width: 179px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 332px;">url</td>
-<td style="width: 229px;">URL to query.</td>
-<td style="width: 179px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>
-<a id="Context_Output_35"></a>Context Output</h5>
-<table class="table table-striped table-bordered" style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 226px;"><strong>Path</strong></th>
-<th style="width: 53px;"><strong>Type</strong></th>
-<th style="width: 461px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 226px;">URL.Data</td>
-<td style="width: 53px;">string</td>
-<td style="width: 461px;">The URL.</td>
-</tr>
-<tr>
-<td style="width: 226px;">URL.Malicious.Vendor</td>
-<td style="width: 53px;">string</td>
-<td style="width: 461px;">Vendor that reported the URL as malicious.</td>
-</tr>
-<tr>
-<td style="width: 226px;">URL.Malicious.Description</td>
-<td style="width: 53px;">string</td>
-<td style="width: 461px;">Description of the malicious URL.</td>
-</tr>
-<tr>
-<td style="width: 226px;">URLhaus.URL.ID</td>
-<td style="width: 53px;">string</td>
-<td style="width: 461px;">Unique identifier of the URLhaus database entry.</td>
-</tr>
-<tr>
-<td style="width: 226px;">URLhaus.URL.Status</td>
-<td style="width: 53px;">string</td>
-<td style="width: 461px;">The current status of the URL.</td>
-</tr>
-<tr>
-<td style="width: 226px;">URLhaus.URL.Host</td>
-<td style="width: 53px;">string</td>
-<td style="width: 461px;">The extracted host of the malware URL (IP address or domain name/FQDN).</td>
-</tr>
-<tr>
-<td style="width: 226px;">URLhaus.URL.DateAdded</td>
-<td style="width: 53px;">date</td>
-<td style="width: 461px;">Date the URL was added to URLhaus.</td>
-</tr>
-<tr>
-<td style="width: 226px;">URLhaus.URL.Threat</td>
-<td style="width: 53px;">string</td>
-<td style="width: 461px;">The threat corresponding to this malware URL.</td>
-</tr>
-<tr>
-<td style="width: 226px;">URLhaus.URL.Blacklist.Name</td>
-<td style="width: 53px;">String</td>
-<td style="width: 461px;">Name of the blacklist.</td>
-</tr>
-<tr>
-<td style="width: 226px;">URLhaus.URL.Tags</td>
-<td style="width: 53px;">string</td>
-<td style="width: 461px;">A list of tags associated with the queried malware URL.</td>
-</tr>
-<tr>
-<td style="width: 226px;">URLhaus.URL.Payload.Name</td>
-<td style="width: 53px;">String</td>
-<td style="width: 461px;">Payload file name.</td>
-</tr>
-<tr>
-<td style="width: 226px;">URLhaus.URL.Payload.Type</td>
-<td style="width: 53px;">String</td>
-<td style="width: 461px;">Payload file type.</td>
-</tr>
-<tr>
-<td style="width: 226px;">URLhaus.URL.Payload.MD5</td>
-<td style="width: 53px;">String</td>
-<td style="width: 461px;">MD5 hash of the HTTP response body (payload).</td>
-</tr>
-<tr>
-<td style="width: 226px;">URLhaus.URL.Payload.VT.Result</td>
-<td style="width: 53px;">Number</td>
-<td style="width: 461px;">VirusTotal results for the payload.</td>
-</tr>
-<tr>
-<td style="width: 226px;">DBotScore.Type</td>
-<td style="width: 53px;">string</td>
-<td style="width: 461px;">Indicator type.</td>
-</tr>
-<tr>
-<td style="width: 226px;">DBotScore.Vendor</td>
-<td style="width: 53px;">string</td>
-<td style="width: 461px;">Vendor used to calculate the score.</td>
-</tr>
-<tr>
-<td style="width: 226px;">DBotScore.Score</td>
-<td style="width: 53px;">number</td>
-<td style="width: 461px;">The actual score.</td>
-</tr>
-<tr>
-<td style="width: 226px;">DBotScore.Indicator</td>
-<td style="width: 53px;">string</td>
-<td style="width: 461px;">The indicator that was tested.</td>
-</tr>
-<tr>
-<td style="width: 226px;">URLhaus.URL.Blacklist.Status</td>
-<td style="width: 53px;">String</td>
-<td style="width: 461px;">Status of the URL in the blacklist.</td>
-</tr>
-<tr>
-<td style="width: 226px;">URLhaus.URL.Payload.VT.Link</td>
-<td style="width: 53px;">String</td>
-<td style="width: 461px;">Link to the VirusTotal report.</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>
-<a id="Command_Example_61"></a>Command Example</h5>
-<pre>!url url="http://sskymedia.com/VMYB-ht_JAQo-gi/INV/99401FORPO/20673114777/US/Outstanding-Invoices/"</pre>
-<h5>
-<a id="Human_Readable_Output_64"></a>Human Readable Output</h5>
-<h3 id="h_986aaa83-1a4c-410c-ad19-827ee0b3b282">
-<a id="2_Get_information_for_a_domain_67"></a>2. Get information for a domain</h3>
-<hr>
-<p>Retrieves domain information from URLhaus.</p>
-<h5>
-<a id="Base_Command_70"></a>Base Command</h5>
-<p><code>domain</code></p>
-<h5>
-<a id="Input_73"></a>Input</h5>
-<table class="table table-striped table-bordered" style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 302px;"><strong>Argument Name</strong></th>
-<th style="width: 273px;"><strong>Description</strong></th>
-<th style="width: 165px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 302px;">domain</td>
-<td style="width: 273px;">Domain to query.</td>
-<td style="width: 165px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>
-<a id="Context_Output_80"></a>Context Output</h5>
-<table class="table table-striped table-bordered" style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 265px;"><strong>Path</strong></th>
-<th style="width: 66px;"><strong>Type</strong></th>
-<th style="width: 409px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 265px;">Domain.Name</td>
-<td style="width: 66px;">String</td>
-<td style="width: 409px;">The domain name, for example,<span> </span>google.com.</td>
-</tr>
-<tr>
-<td style="width: 265px;">DBotScore.Type</td>
-<td style="width: 66px;">string</td>
-<td style="width: 409px;">Indicator type.</td>
-</tr>
-<tr>
-<td style="width: 265px;">DBotScore.Vendor</td>
-<td style="width: 66px;">string</td>
-<td style="width: 409px;">Vendor used to calculate the score.</td>
-</tr>
-<tr>
-<td style="width: 265px;">DBotScore.Score</td>
-<td style="width: 66px;">number</td>
-<td style="width: 409px;">The actual score.</td>
-</tr>
-<tr>
-<td style="width: 265px;">DBotScore.Indicator</td>
-<td style="width: 66px;">string</td>
-<td style="width: 409px;">The indicator that was tested.</td>
-</tr>
-<tr>
-<td style="width: 265px;">URLhaus.Domain.FirstSeen</td>
-<td style="width: 66px;">Date</td>
-<td style="width: 409px;">Date that the IP was seen for the first time (UTC).</td>
-</tr>
-<tr>
-<td style="width: 265px;">URLhaus.Domain.Blacklist.Name</td>
-<td style="width: 66px;">String</td>
-<td style="width: 409px;">The status of the domain in different blacklists.</td>
-</tr>
-<tr>
-<td style="width: 265px;">URLhaus.Domain.URL</td>
-<td style="width: 66px;">String</td>
-<td style="width: 409px;">URLs observed on this domain.</td>
-</tr>
-<tr>
-<td style="width: 265px;">Domain.Malicious.Vendor</td>
-<td style="width: 66px;">String</td>
-<td style="width: 409px;">Vendor that reported the domain as malicious.</td>
-</tr>
-<tr>
-<td style="width: 265px;">Domain.Malicious.Description</td>
-<td style="width: 66px;">String</td>
-<td style="width: 409px;">Description of the malicious domain.</td>
-</tr>
-<tr>
-<td style="width: 265px;">URLhaus.Domain.Blacklist.Status</td>
-<td style="width: 66px;">String</td>
-<td style="width: 409px;">Status of the URL in the blacklist.</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>
-<a id="Command_Example_97"></a>Command Example</h5>
-<pre>!domain domain="vektorex.com"</pre>
-<h5>
-<a id="Human_Readable_Output_100"></a>Human Readable Output</h5>
-<h3 id="h_ef2f4237-410b-4ddb-9730-48b02fe64e33">
-<a id="3_Get_information_for_a_file_103"></a>3. Get information for a file</h3>
-<hr>
-<p>Retrieves file information from URLhaus.</p>
-<h5>
-<a id="Base_Command_106"></a>Base Command</h5>
-<p><code>file</code></p>
-<h5>
-<a id="Input_109"></a>Input</h5>
-<table class="table table-striped table-bordered" style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 184px;"><strong>Argument Name</strong></th>
-<th style="width: 455px;"><strong>Description</strong></th>
-<th style="width: 101px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 184px;">file</td>
-<td style="width: 455px;">MD5 hash or SHA256 hash of the file to query.</td>
-<td style="width: 101px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>
-<a id="Context_Output_116"></a>Context Output</h5>
-<table class="table table-striped table-bordered" style="width: 748px;">
-<thead>
-<tr>
-<th style="width: 230px;"><strong>Path</strong></th>
-<th style="width: 58px;"><strong>Type</strong></th>
-<th style="width: 452px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 230px;">File.Size</td>
-<td style="width: 58px;">Number</td>
-<td style="width: 452px;">File size (in bytes).</td>
-</tr>
-<tr>
-<td style="width: 230px;">File.MD5</td>
-<td style="width: 58px;">String</td>
-<td style="width: 452px;">MD5 hash of the file.</td>
-</tr>
-<tr>
-<td style="width: 230px;">File.SHA256</td>
-<td style="width: 58px;">String</td>
-<td style="width: 452px;">SHA256 hash of the file.</td>
-</tr>
-<tr>
-<td style="width: 230px;">URLhaus.File.MD5</td>
-<td style="width: 58px;">String</td>
-<td style="width: 452px;">MD5 hash of the file.</td>
-</tr>
-<tr>
-<td style="width: 230px;">URLhaus.File.SHA256</td>
-<td style="width: 58px;">String</td>
-<td style="width: 452px;">SHA256 hash of the file.</td>
-</tr>
-<tr>
-<td style="width: 230px;">URLhaus.File.Type</td>
-<td style="width: 58px;">String</td>
-<td style="width: 452px;">File type guessed by URLhaus, for example: .exe, .doc.</td>
-</tr>
-<tr>
-<td style="width: 230px;">URLhaus.File.Size</td>
-<td style="width: 58px;">Number</td>
-<td style="width: 452px;">File size (in bytes).</td>
-</tr>
-<tr>
-<td style="width: 230px;">URLhaus.File.Signature</td>
-<td style="width: 58px;">String</td>
-<td style="width: 452px;">Malware family.</td>
-</tr>
-<tr>
-<td style="width: 230px;">URLhaus.File.FirstSeen</td>
-<td style="width: 58px;">Date</td>
-<td style="width: 452px;">Date and time (UTC) that URLhaus first saw this file (payload).</td>
-</tr>
-<tr>
-<td style="width: 230px;">URLhaus.File.LastSeen</td>
-<td style="width: 58px;">Date</td>
-<td style="width: 452px;">Date and time (UTC) that URLhaus last saw this file (payload).</td>
-</tr>
-<tr>
-<td style="width: 230px;">URLhaus.File.DownloadLink</td>
-<td style="width: 58px;">String</td>
-<td style="width: 452px;">Location (URL) where you can download a copy of this file.</td>
-</tr>
-<tr>
-<td style="width: 230px;">URLhaus.File.VirusTotal.Percent</td>
-<td style="width: 58px;">Number</td>
-<td style="width: 452px;">AV detection (percentage), for example: 24.14.</td>
-</tr>
-<tr>
-<td style="width: 230px;">URLhaus.File.VirusTotal.Link</td>
-<td style="width: 58px;">String</td>
-<td style="width: 452px;">Link to the VirusTotal report.</td>
-</tr>
-<tr>
-<td style="width: 230px;">URLhaus.File.URL</td>
-<td style="width: 58px;">Unknown</td>
-<td style="width: 452px;">A list of malware URLs associated with this payload (max. 100).</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>
-<a id="Command_Example_136"></a>Command Example</h5>
-<pre>!file hash="01fa56184fcaa42b6ee1882787a34098c79898c182814774fd81dc18a6af0b01" hash_type="SHA256"</pre>
-<h3 id="h_826fb182-fa39-469e-821e-ca38c292c534">
-<a id="4_Download_a_malware_sample_142"></a>4. Download a malware sample</h3>
-<hr>
-<p>Downloads a malware sample from URLhaus.</p>
-<h5>
-<a id="Base_Command_145"></a>Base Command</h5>
-<p><code>urlhaus-download-sample</code></p>
-<h5>
-<a id="Input_148"></a>Input</h5>
-<table class="table table-striped table-bordered" style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 202px;"><strong>Argument Name</strong></th>
-<th style="width: 423px;"><strong>Description</strong></th>
-<th style="width: 115px;"><strong>Required</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 202px;">file</td>
-<td style="width: 423px;">SHA256 hash of the file to download.</td>
-<td style="width: 115px;">Required</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>
-<a id="Context_Output_155"></a>Context Output</h5>
-<table class="table table-striped table-bordered" style="width: 749px;">
-<thead>
-<tr>
-<th style="width: 220px;"><strong>Path</strong></th>
-<th style="width: 130px;"><strong>Type</strong></th>
-<th style="width: 390px;"><strong>Description</strong></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="width: 220px;">File.Size</td>
-<td style="width: 130px;">number</td>
-<td style="width: 390px;">File size.</td>
-</tr>
-<tr>
-<td style="width: 220px;">File.SHA1</td>
-<td style="width: 130px;">string</td>
-<td style="width: 390px;">SHA1 hash of the file.</td>
-</tr>
-<tr>
-<td style="width: 220px;">File.SHA256</td>
-<td style="width: 130px;">string</td>
-<td style="width: 390px;">SHA256 hash of the file.</td>
-</tr>
-<tr>
-<td style="width: 220px;">File.Name</td>
-<td style="width: 130px;">string</td>
-<td style="width: 390px;">File name.</td>
-</tr>
-<tr>
-<td style="width: 220px;">File.SSDeep</td>
-<td style="width: 130px;">string</td>
-<td style="width: 390px;">SSDeep hash of the file.</td>
-</tr>
-<tr>
-<td style="width: 220px;">File.EntryID</td>
-<td style="width: 130px;">string</td>
-<td style="width: 390px;">File entry ID.</td>
-</tr>
-<tr>
-<td style="width: 220px;">File.Info</td>
-<td style="width: 130px;">string</td>
-<td style="width: 390px;">File information.</td>
-</tr>
-<tr>
-<td style="width: 220px;">File.Type</td>
-<td style="width: 130px;">string</td>
-<td style="width: 390px;">File type.</td>
-</tr>
-<tr>
-<td style="width: 220px;">File.MD5</td>
-<td style="width: 130px;">string</td>
-<td style="width: 390px;">MD5 hash of the file.</td>
-</tr>
-<tr>
-<td style="width: 220px;">File.Extension</td>
-<td style="width: 130px;">string</td>
-<td style="width: 390px;">File extension.</td>
-</tr>
-</tbody>
-</table>
-<p> </p>
-<h5>
-<a id="Command_Example_171"></a>Command Example</h5>
-<pre>!file hash="01fa56184fcaa42b6ee1882787a34098c79898c182814774fd81dc18a6af0b01" hash_type="SHA256"</pre>
+URLhaus shares malicious URLs that are being used for malware distribution.
+This integration was integrated and tested with version v1 of URLhaus.
+
+## Configure URLhaus on Cortex XSOAR
+
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for URLhaus.
+3. Click **Add instance** to create and configure a new integration instance.
+
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Server URL (e.g. https://192.168.0.1) |  | False |
+    | Source Reliability | Reliability of the source providing the intelligence data. | True |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
+    | Create relationships |  | False |
+    | Maximum number of relationships to fetch per indicator | Maximal value is 1000. | False |
+    | Blacklists appearances threshold |  | False |
+    | Compromised (is malicious) |  | False |
+    | Number of retries | Determines how many times a command should be retried before raising an error. | False |
+
+4. Click **Test** to validate the URLs, token, and connection.
+## Commands
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
+### url
+***
+Retrieves URL information from URLhaus.
+
+
+#### Base Command
+
+`url`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| url | A comma-separated list of URLs to query. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| URL.Data | string | The URL. | 
+| URL.Malicious.Vendor | string | Vendor that reported the URL as malicious. | 
+| URL.Malicious.Description | string | Description of the malicious URL. | 
+| URL.Tags | string | A list of tags associated with the queried malware URL. | 
+| URL.Relationships.EntityA | String | The source of the relationship. | 
+| URL.Relationships.EntityB | String | The destination of the relationship. | 
+| URL.Relationships.Relationship | String | The name of the relationship. | 
+| URL.Relationships.EntityAType | String | The type of the source of the relationship. | 
+| URL.Relationships.EntityBType | String | The type of the destination of the relationship. | 
+| URLhaus.URL.ID | String | Unique identifier of the URLhaus database entry. | 
+| URLhaus.URL.Status | String | The current status of the URL. | 
+| URLhaus.URL.Host | String | The extracted host of the malware URL \(IP address or domain name/FQDN\). | 
+| URLhaus.URL.DateAdded | date | Date the URL was added to URLhaus. | 
+| URLhaus.URL.Threat | String | The threat corresponding to this malware URL. | 
+| URLhaus.URL.Blacklist.Name | String | Name of the block list. | 
+| URLhaus.URL.Tags | String | A list of tags associated with the queried malware URL. | 
+| URLhaus.URL.Payload.Name | String | Payload file name. | 
+| URLhaus.URL.Payload.Type | String | Payload file type. | 
+| URLhaus.URL.Payload.MD5 | String | MD5 hash of the HTTP response body \(payload\). | 
+| URLhaus.URL.Payload.VT.Result | Number | VirusTotal results for the payload. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
+| URLhaus.URL.Blacklist.Status | String | Status of the URL in the block list. | 
+| URLhaus.URL.Payload.VT.Link | String | Link to the VirusTotal report. | 
+
+#### Command example
+```!url using-brand=URLhaus url=http://example.com/anklet/WQG1/?i=1```
+#### Context Example
+```json
+{
+    "DBotScore": {
+        "Indicator": "http://example.com/anklet/WQG1/?i=1",
+        "Reliability": "C - Fairly reliable",
+        "Score": 2,
+        "Type": "url",
+        "Vendor": "URLhaus"
+    },
+    "URL": {
+        "Data": "http://example.com/anklet/WQG1/?i=1",
+        "Relationships": [
+            {
+                "EntityA": "http://example.com/anklet/WQG1/?i=1",
+                "EntityAType": "URL",
+                "EntityB": "example.com",
+                "EntityBType": "Domain",
+                "Relationship": "hosted-on"
+            }
+        ],
+        "Tags": [
+            "doc",
+            "emotet",
+            "epoch5",
+            "heodo",
+            "malware_download"
+        ]
+    },
+    "URLhaus": {
+        "URL": {
+            "Blacklist": [
+                {
+                    "Name": "spamhaus_dbl",
+                    "Status": "not listed"
+                },
+                {
+                    "Name": "surbl",
+                    "Status": "not listed"
+                }
+            ],
+            "DateAdded": "2022-01-20T14:11:09",
+            "Host": "example.com",
+            "ID": "1992762",
+            "Payload": [
+                {
+                    "MD5": "716c3aa1e0da98b6e99cadd60363ae7e",
+                    "Name": "BC-77388.xlsm",
+                    "SHA256": "64c6ba33444e5db3cc9c99613d04fd163ec1971ee5eb90041a17068e37578fc0",
+                    "Type": "xls",
+                    "VT": null
+              }
+            ],
+            "Status": "offline",
+            "Tags": [
+                "doc",
+                "emotet",
+                "epoch5",
+                "heodo",
+                "malware_download"
+            ],
+            "Threat": "malware_download"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### URLhaus reputation for http:<span>//</span>example.com/anklet/WQG1/?i=1
+>|Date added|Description|Status|Threat|URLhaus ID|URLhaus link|
+>|---|---|---|---|---|---|
+>| 2022-01-20T14:11:09 | The URL is inactive (offline) and serving no payload | offline | malware_download | 1992762 | https:<span>//</span>urlhaus.abuse.ch/url/1992762/ |
+
+
+### domain
+***
+Retrieves domain information from URLhaus.
+
+
+#### Base Command
+
+`domain`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| domain | A comma-separated list of domains to query. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Domain.Name | String | The domain name, for example, google.com. | 
+| Domain.Tags | string | A list of tags associated with the queried malware Domain. | 
+| Domain.Relationships.EntityA | String | The source of the relationship. | 
+| Domain.Relationships.EntityB | String | The destination of the relationship. | 
+| Domain.Relationships.Relationship | String | The name of the relationship. | 
+| Domain.Relationships.EntityAType | String | The type of the source of the relationship. | 
+| Domain.Relationships.EntityBType | String | The type of the destination of the relationship. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
+| URLhaus.Domain.FirstSeen | Date | Date that the IP was seen for the first time \(UTC\). | 
+| URLhaus.Domain.Blacklist.Name | String | The status of the domain in different block lists. | 
+| URLhaus.Domain.URL | String | URLs observed on this domain. | 
+| Domain.Malicious.Vendor | String | Vendor that reported the domain as malicious. | 
+| Domain.Malicious.Description | String | Description of the malicious domain. | 
+| URLhaus.Domain.Blacklist.Status | String | Status of the URL in the block list. | 
+
+#### Command example
+```!domain using-brand=URLhaus domain=example.com```
+#### Context Example
+```json
+{
+    "DBotScore": {
+        "Indicator": "example.com",
+        "Reliability": "C - Fairly reliable",
+        "Score": 1,
+        "Type": "domain",
+        "Vendor": "URLhaus"
+    },
+    "Domain": {
+        "Name": "example.com",
+        "Relationships": [
+            {
+                "EntityA": "example.com",
+                "EntityAType": "Domain",
+                "EntityB": "http://example.com:443/wp-content/plugins/wp-roilbask/includes/",
+                "EntityBType": "URL",
+                "Relationship": "hosts"
+            }
+        ],
+        "Tags": [
+            "abused_legit_malware"
+        ]
+    },
+    "URLhaus": {
+        "Domain": {
+            "Blacklist": {
+                "spamhaus_dbl": "abused_legit_malware",
+                "surbl": "not listed"
+            },
+            "FirstSeen": "2022-01-27T12:51:03",
+            "URL": [
+                {
+                    "date_added": "2022-01-28 04:41:03 UTC",
+                    "id": "2010874",
+                    "larted": "false",
+                    "reporter": "Cryptolaemus1",
+                    "tags": [
+                        "IcedID"
+                    ],
+                    "takedown_time_seconds": null,
+                    "threat": "malware_download",
+                    "url": "http://example.com:443/wp-content/plugins/wp-roilbask/includes/",
+                    "url_status": "offline",
+                    "urlhaus_reference": "https://urlhaus.abuse.ch/url/2010874/"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### URLhaus reputation for example.com
+>|Description|First seen|URLhaus link|
+>|---|---|---|
+>| There is no information about Domain in the blacklist | 2022-01-27T12:51:03 | https:<span>//</span>urlhaus.abuse.ch/host/example.com/ |
+
+
+### file
+***
+Retrieves file information from URLhaus.
+
+
+#### Base Command
+
+`file`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file | A comma-separated list of MD5 or SHA256 hashes of the file to query. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| File.Size | Number | File size \(in bytes\). | 
+| File.MD5 | String | MD5 hash of the file. | 
+| File.SHA256 | String | SHA256 hash of the file. | 
+| File.SSDeep | String | SSDeep of the file. | 
+| File.Type | String | Type of the file. | 
+| File.Relationships.EntityA | String | The source of the relationship. | 
+| File.Relationships.EntityB | String | The destination of the relationship. | 
+| File.Relationships.Relationship | String | The name of the relationship. | 
+| File.Relationships.EntityAType | String | The type of the source of the relationship. | 
+| File.Relationships.EntityBType | String | The type of the destination of the relationship. | 
+| URLhaus.File.MD5 | String | MD5 hash of the file. | 
+| URLhaus.File.SHA256 | String | SHA256 hash of the file. | 
+| URLhaus.File.Type | String | File type guessed by URLhaus, for example: .exe, .doc. | 
+| URLhaus.File.Size | Number | File size \(in bytes\). | 
+| URLhaus.File.Signature | String | Malware family. | 
+| URLhaus.File.FirstSeen | Date | Date and time \(UTC\) that URLhaus first saw this file \(payload\). | 
+| URLhaus.File.LastSeen | Date | Date and time \(UTC\) that URLhaus last saw this file \(payload\). | 
+| URLhaus.File.DownloadLink | String | Location \(URL\) where you can download a copy of this file. | 
+| URLhaus.File.VirusTotal.Percent | Number | AV detection \(percentage\), for example: 24.14. | 
+| URLhaus.File.VirusTotal.Link | String | Link to the VirusTotal report. | 
+| URLhaus.File.URL | Unknown | A list of malware URLs associated with this payload \(max. 100\). | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
+
+#### Command example
+```!file using-brand=URLhaus file=7855068e0cfb093ab9be9ec172676e3c119e16511f3d631d715a4e77ddad9d89```
+#### Context Example
+```json
+{
+    "DBotScore": {
+        "Indicator": "7855068e0cfb093ab9be9ec172676e3c119e16511f3d631d715a4e77ddad9d89",
+        "Reliability": "C - Fairly reliable",
+        "Score": 3,
+        "Type": "file",
+        "Vendor": "URLhaus"
+    },
+    "File": {
+        "Malicious": {
+            "Description": "This file is malicious",
+            "Vendor": "URLhaus"
+        },
+        "Relationships": [
+            {
+                "EntityA": "7855068e0cfb093ab9be9ec172676e3c119e16511f3d631d715a4e77ddad9d89",
+                "EntityAType": "File",
+                "EntityB": "BazaLoader",
+                "EntityBType": "Malware",
+                "Relationship": "indicator-of"
+            }
+        ],
+        "SHA256": "7855068e0cfb093ab9be9ec172676e3c119e16511f3d631d715a4e77ddad9d89",
+        "SSDeep": "24576:la1QHwgJMrQqj/wAc6QORNx2nAjwkaMm0GV9igWwlnwXQBwfalj21X4GtZ+FdnZ8:vH5qloBMd8A",
+        "Type": "dll"
+    },
+    "URLhaus": {
+        "File": {
+            "DownloadLink": "https://urlhaus-api.abuse.ch/v1/download/7855068e0cfb093ab9be9ec172676e3c119e16511f3d631d715a4e77ddad9d89/",
+            "FirstSeen": "2022-01-18T11:18:31",
+            "LastSeen": "2022-01-28T09:36:21",
+            "MD5": "2ff9cce7a08215ded0945de5965d2a0a",
+            "SHA256": "7855068e0cfb093ab9be9ec172676e3c119e16511f3d631d715a4e77ddad9d89",
+            "Signature": "BazaLoader",
+            "Size": 1816064,
+            "Type": "dll",
+            "URL": [
+                {
+                    "filename": "DH-1643319814.xll",
+                    "firstseen": "2022-01-27",
+                    "lastseen": null,
+                    "url": "http://www.example.com/wp-content/plugins/wp-roilbask/includes/",
+                    "url_id": "2009726",
+                    "url_status": "online",
+                    "urlhaus_reference": "https://urlhaus.abuse.ch/url/2009726/"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### URLhaus reputation for SHA256 : 7855068e0cfb093ab9be9ec172676e3c119e16511f3d631d715a4e77ddad9d89
+>|First seen|Last seen|MD5|SHA256|Signature|URLhaus link|
+>|---|---|---|---|---|---|
+>| 2022-01-18T11:18:31 | 2022-01-28T09:36:21 | 2ff9cce7a08215ded0945de5965d2a0a | 7855068e0cfb093ab9be9ec172676e3c119e16511f3d631d715a4e77ddad9d89 | BazaLoader | https://urlhaus-api.abuse.ch/v1/download/7855068e0cfb093ab9be9ec172676e3c119e16511f3d631d715a4e77ddad9d89/ |
+
+
+### urlhaus-download-sample
+***
+Downloads a malware sample from URLhaus.
+
+
+#### Base Command
+
+`urlhaus-download-sample`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file | SHA256 hash of the file to download. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| File.Size | number | File size. | 
+| File.SHA1 | string | SHA1 hash of the file. | 
+| File.SHA256 | string | SHA256 hash of the file. | 
+| File.Name | string | File name. | 
+| File.SSDeep | string | SSDeep hash of the file. | 
+| File.EntryID | string | File entry ID. | 
+| File.Info | string | File information. | 
+| File.Type | string | File type. | 
+| File.MD5 | string | MD5 hash of the file. | 
+| File.Extension | string | File extension. | 
+
+#### Command example
+```!urlhaus-download-sample file=254ca6a7a7ef7f17d9884c4a86f88b5d5fd8fe5341c0996eaaf1d4bcb3b2337b```
+#### Human Readable Output
+
+>```
+>{
+>    "HumanReadable": "No results for SHA256: 254ca6a7a7ef7f17d9884c4a86f88b5d5fd8fe5341c0996eaaf1d4bcb3b2337b",
+>    "HumanReadableFormat": "markdown",
+>    "Type": 1
+>}
+>```

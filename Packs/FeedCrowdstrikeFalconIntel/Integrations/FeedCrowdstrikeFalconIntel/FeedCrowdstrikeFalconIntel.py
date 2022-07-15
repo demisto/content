@@ -10,6 +10,20 @@ from typing import List, Tuple, Optional
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()
 
+INDICATOR_FIELDS_MAPPER = {
+    'stixid': 'id',
+    'stixaliases': 'known_as',
+    'stixdescription': 'short_description',
+    'stixprimarymotivation': 'motivations',
+    'aliases': 'known_as',
+    'description': 'short_description',
+    'primarymotivation': 'motivations',
+    'creationdate': 'created_date',
+    'updateddate': 'last_modified_date',
+    'geocountry': 'origins',
+    'region': 'region'
+}
+
 
 class Client(BaseClient):
 
@@ -50,24 +64,22 @@ class Client(BaseClient):
         indicator = {}
         for actor in response['resources']:
             if actor:
+
+                fields = {field: actor.get(actor_key) for field, actor_key in INDICATOR_FIELDS_MAPPER.items()}
+                fields['tags'] = feed_tags
+                if tlp_color:
+                    fields['trafficlightprotocol'] = tlp_color
+
                 indicator = {
-                    "type": "STIX Threat Actor",
+                    "type": FeedIndicatorType.indicator_type_by_server_version('STIX Threat Actor'),
                     "value": actor.get('name'),
                     "rawJSON": {
                         'type': 'STIX Threat Actor',
                         'value': actor.get('name'),
                         'service': 'List Actors Feed'
                     },
-                    'fields': {'tags': feed_tags, 'stixid': actor.get('id'), 'stixaliases': actor.get('known_as'),
-                               'stixdescription': actor.get('short_description'),
-                               'stixprimarymotivation': actor.get('motivations'),
-                               'creationdate': actor.get('created_date'),
-                               'updateddate': actor.get('last_modified_date'),
-                               'geocountry': actor.get('origins'),
-                               'region': actor.get('region')}
+                    'fields': fields
                 }
-                if tlp_color:
-                    indicator['fields']['trafficlightprotocol'] = tlp_color
 
                 indicator['rawJSON'].update(actor)
             parsed_indicators.append(indicator)
@@ -139,7 +151,11 @@ class Client(BaseClient):
             params = self.get_last_modified_time()
 
         url_suffix_to_filter_by = self.build_url_suffix(params, actors_filter)
-        response = self.http_request('GET', url_suffix_to_filter_by)
+        if limit:
+            response = self.http_request('GET', url_suffix_to_filter_by, params={'limit': limit})
+        else:
+            response = self.http_request('GET', url_suffix_to_filter_by)
+
         parsed_indicators = self.create_indicators_from_response(response, feed_tags,
                                                                  tlp_color)  # list of dict of indicators
 
@@ -246,6 +262,7 @@ def main():
     target_countries = params.get('target_countries')
     target_industries = params.get('target_industries')
     custom_filter = params.get('custom_filter')
+    fetch_limit = params.get('limit', '200')
     client = Client(params)
 
     command = demisto.command()
@@ -258,7 +275,8 @@ def main():
     try:
         if demisto.command() == 'fetch-indicators':
             indicators = fetch_indicators(client, feed_tags, tlp_color, target_countries=target_countries,
-                                          target_industries=target_industries, custom_filter=custom_filter)
+                                          target_industries=target_industries, custom_filter=custom_filter,
+                                          limit=fetch_limit, offset='0')
             # we submit the indicators in batches
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
@@ -270,5 +288,5 @@ def main():
         raise Exception(f'Error in CrowdStrike falcon intel Integration [{e}]')
 
 
-if __name__ == '__builtin__' or __name__ == 'builtins':
+if __name__ in {'__builtin__', 'builtins', '__main__'}:
     main()

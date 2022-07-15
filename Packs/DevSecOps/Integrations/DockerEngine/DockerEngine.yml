@@ -11,12 +11,18 @@ configuration:
   hidden: false
   name: client_certificate
   required: true
-  type: 4
-- display: Docker Client Private Key
+  type: 12
+- displaypassword: Docker Client Private Key
   hidden: false
   name: client_key
   required: true
-  type: 4
+  type: 9
+  hiddenusername: true
+- display: CA Certificate
+  name: ca_certificate
+  required: false
+  type: 12
+  hidden: false
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -25,9 +31,20 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: The Engine API is an HTTP API served by Docker Engine. It is the API
-  the Docker client uses to communicate with the Engine, so everything the Docker
-  client can do can be done with the API.
+- display: Registry Identity Token
+  name: identitytoken
+  required: false
+  type: 4
+  hiddenusername: true
+- displaypassword: Registry Password
+  name: Registry Username
+  required: false
+  type: 9
+- display: Registry Server Address (e.g. docker.io)
+  name: registry_serveraddress
+  required: false
+  type: 0
+description: The Engine API is an HTTP API served by Docker Engine. It is the API the Docker client uses to communicate with the Engine, so everything the Docker client can do can be done with the API.
 display: Docker Engine API
 name: Docker Engine API
 script:
@@ -46,11 +63,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A JSON encoded value of the filters (a `map[string][]string`)
-        to process on the list of build cache objects.  Available filters:  - `until=
-        duration `: duration relative to daemon''s time, during which build cache
-        was not used, in Go''s duration format (e.g., ''24h'') - `id= id ` - `parent=
-        id ` - `type= string ` - `description= string ` - `inuse` - `shared` - `private` '
+      description: "A JSON encoded value of the filters (a `map[string][]string`) to process on the list of build cache objects.  Available filters:  - `until= duration `: duration relative to daemon's time, during which build cache was not used, in Go's duration format (e.g., '24h') - `id= id ` - `parent= id ` - `type= string ` - `description= string ` - `inuse` - `shared` - `private` "
       isArray: false
       name: filters
       required: false
@@ -77,8 +90,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Base64-url-safe-encoded ([RFC 4648](https://tools.ietf.org/html/rfc4648#section-5))
-        config data. '
+      description: 'Base64-url-safe-encoded ([RFC 4648](https://tools.ietf.org/html/rfc4648#section-5)) config data. '
       isArray: false
       name: configspec_data
       required: false
@@ -203,15 +215,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'An object mapping ports to an empty object in the form:  `{" port
-        / tcp|udp|sctp ": {}}` '
+      description: 'An object mapping ports to an empty object in the form:  `{" port / tcp|udp|sctp ": {}}` '
       isArray: false
       name: containerconfig_exposedports
       required: false
       secret: false
     - default: false
-      description: 'Attach standard streams to a TTY, including `stdin` if it is not
-        closed. '
+      description: 'Attach standard streams to a TTY, including `stdin` if it is not closed. '
       isArray: false
       name: containerconfig_tty
       required: false
@@ -229,9 +239,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A list of environment variables to set inside the container in
-        the form `["VAR=value", ...]`. A variable without `=` is removed from the
-        environment, rather than to have an empty value. '
+      description: 'A list of environment variables to set inside the container in the form `["VAR=value", ...]`. A variable without `=` is removed from the environment, rather than to have an empty value. '
       isArray: true
       name: containerconfig_env
       required: false
@@ -285,8 +293,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'An object mapping mount point paths inside the container to empty
-        objects. '
+      description: 'An object mapping mount point paths inside the container to empty objects. '
       isArray: false
       name: containerconfig_volumes
       required: false
@@ -298,10 +305,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The entry point for the container as a string or an array of strings.  If
-        the array consists of exactly one empty string (`[""]`) then the entry point
-        is reset to system default (i.e., the entry point used by docker when there
-        is no `ENTRYPOINT` instruction in the `Dockerfile`). '
+      description: 'The entry point for the container as a string or an array of strings.  If the array consists of exactly one empty string (`[""]`) then the entry point is reset to system default (i.e., the entry point used by docker when there is no `ENTRYPOINT` instruction in the `Dockerfile`). '
       isArray: true
       name: containerconfig_entrypoint
       required: false
@@ -319,7 +323,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: '`ONBUILD` metadata that were defined in the image''s `Dockerfile`. '
+      description: "`ONBUILD` metadata that were defined in the image's `Dockerfile`. "
       isArray: true
       name: containerconfig_onbuild
       required: false
@@ -397,8 +401,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Automatically remove the container when the container''s process
-        exits. This has no effect if `RestartPolicy` is set. '
+      description: "Automatically remove the container when the container's process exits. This has no effect if `RestartPolicy` is set. "
       isArray: false
       name: hostconfig_autoremove
       required: false
@@ -422,26 +425,20 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A list of kernel capabilities to add to the container. Conflicts
-        with option ''Capabilities''. '
+      description: "A list of kernel capabilities to add to the container. Conflicts with option 'Capabilities'. "
       isArray: true
       name: hostconfig_capadd
       required: false
       secret: false
     - default: false
-      description: 'A list of kernel capabilities to drop from the container. Conflicts
-        with option ''Capabilities''. '
+      description: "A list of kernel capabilities to drop from the container. Conflicts with option 'Capabilities'. "
       isArray: true
       name: hostconfig_capdrop
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: 'cgroup namespace mode for the container. Possible values are:  -
-        `"private"`: the container runs in its own private cgroup namespace - `"host"`:
-        use the host system''s cgroup namespace  If not specified, the daemon default
-        is used, which can either be `"private"` or `"host"`, depending on daemon
-        version, kernel support and configuration. '
+      description: "cgroup namespace mode for the container. Possible values are:  - `\"private\"`: the container runs in its own private cgroup namespace - `\"host\"`: use the host system's cgroup namespace  If not specified, the daemon default is used, which can either be `\"private\"` or `\"host\"`, depending on daemon version, kernel support and configuration. "
       isArray: false
       name: hostconfig_cgroupnsmode
       predefined:
@@ -468,27 +465,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A list of hostnames/IP mappings to add to the container''s `/etc/hosts`
-        file. Specified in the form `["hostname:IP"]`. '
+      description: "A list of hostnames/IP mappings to add to the container's `/etc/hosts` file. Specified in the form `[\"hostname:IP\"]`. "
       isArray: true
       name: hostconfig_extrahosts
       required: false
       secret: false
     - default: false
-      description: 'A list of additional groups that the container process will run
-        as. '
+      description: 'A list of additional groups that the container process will run as. '
       isArray: true
       name: hostconfig_groupadd
       required: false
       secret: false
     - default: false
-      description: 'IPC sharing mode for the container. Possible values are:  - `"none"`:
-        own private IPC namespace, with /dev/shm not mounted - `"private"`: own private
-        IPC namespace - `"shareable"`: own private IPC namespace, with a possibility
-        to share it with other containers - `"container: name|id "`: join another
-        (shareable) container''s IPC namespace - `"host"`: use the host system''s
-        IPC namespace  If not specified, daemon default is used, which can either
-        be `"private"` or `"shareable"`, depending on daemon version and configuration. '
+      description: "IPC sharing mode for the container. Possible values are:  - `\"none\"`: own private IPC namespace, with /dev/shm not mounted - `\"private\"`: own private IPC namespace - `\"shareable\"`: own private IPC namespace, with a possibility to share it with other containers - `\"container: name|id \"`: join another (shareable) container's IPC namespace - `\"host\"`: use the host system's IPC namespace  If not specified, daemon default is used, which can either be `\"private\"` or `\"shareable\"`, depending on daemon version and configuration. "
       isArray: false
       name: hostconfig_ipcmode
       required: false
@@ -506,16 +495,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'An integer value containing the score given to the container in
-        order to tune OOM killer preferences. '
+      description: 'An integer value containing the score given to the container in order to tune OOM killer preferences. '
       isArray: false
       name: hostconfig_oomscoreadj
       required: false
       secret: false
     - default: false
-      description: 'Set the PID (Process) Namespace mode for the container. It can
-        be either:  - `"container: name|id "`: joins another container''s PID namespace
-        - `"host"`: use the host''s PID namespace inside the container '
+      description: "Set the PID (Process) Namespace mode for the container. It can be either:  - `\"container: name|id \"`: joins another container's PID namespace - `\"host\"`: use the host's PID namespace inside the container "
       isArray: false
       name: hostconfig_pidmode
       required: false
@@ -527,11 +513,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Allocates an ephemeral host port for all of a container''s exposed
-        ports.  Ports are de-allocated when the container stops and allocated when
-        the container starts. The allocated port might be changed when restarting
-        the container.  The port is selected from the ephemeral port range that depends
-        on the kernel. For example, on Linux the range is defined by `/proc/sys/net/ipv4/ip_local_port_range`. '
+      description: "Allocates an ephemeral host port for all of a container's exposed ports.  Ports are de-allocated when the container stops and allocated when the container starts. The allocated port might be changed when restarting the container.  The port is selected from the ephemeral port range that depends on the kernel. For example, on Linux the range is defined by `/proc/sys/net/ipv4/ip_local_port_range`. "
       isArray: false
       name: hostconfig_publishallports
       required: false
@@ -543,23 +525,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: A list of string values to customize labels for MLS systems, such
-        as SELinux.
+      description: A list of string values to customize labels for MLS systems, such as SELinux.
       isArray: true
       name: hostconfig_securityopt
       required: false
       secret: false
     - default: false
-      description: 'Storage driver options for this container, in the form `{"size":
-        "120G"}`. '
+      description: 'Storage driver options for this container, in the form `{"size": "120G"}`. '
       isArray: false
       name: hostconfig_storageopt
       required: false
       secret: false
     - default: false
-      description: 'A map of container directories which should be replaced by tmpfs
-        mounts, and their corresponding mount options. For example:  ``` { "/run":
-        "rw,noexec,nosuid,size=65536k" } ``` '
+      description: 'A map of container directories which should be replaced by tmpfs mounts, and their corresponding mount options. For example:  ``` { "/run": "rw,noexec,nosuid,size=65536k" } ``` '
       isArray: false
       name: hostconfig_tmpfs
       required: false
@@ -571,8 +549,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Sets the usernamespace mode for the container when usernamespace
-        remapping option is enabled. '
+      description: 'Sets the usernamespace mode for the container when usernamespace remapping option is enabled. '
       isArray: false
       name: hostconfig_usernsmode
       required: false
@@ -584,8 +561,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A list of kernel  meters (sysctls) to set in the container. For
-        example:  ``` {"net.ipv4.ip_forward": "1"} ``` '
+      description: 'A list of kernel  meters (sysctls) to set in the container. For example:  ``` {"net.ipv4.ip_forward": "1"} ``` '
       isArray: false
       name: hostconfig_sysctls
       required: false
@@ -597,8 +573,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Initial console size, as an `[height, width]` array. (Windows
-        only) '
+      description: 'Initial console size, as an `[height, width]` array. (Windows only) '
       isArray: true
       name: hostconfig_consolesize
       required: false
@@ -615,15 +590,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The list of paths to be masked inside the container (this overrides
-        the default set of paths). '
+      description: 'The list of paths to be masked inside the container (this overrides the default set of paths). '
       isArray: true
       name: hostconfig_maskedpaths
       required: false
       secret: false
     - default: false
-      description: 'The list of paths to be set as read-only inside the container
-        (this overrides the default set of paths). '
+      description: 'The list of paths to be set as read-only inside the container (this overrides the default set of paths). '
       isArray: true
       name: hostconfig_readonlypaths
       required: false
@@ -733,15 +706,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'Return all containers. By default, only running containers are
-        shown. '
+      description: 'Return all containers. By default, only running containers are shown. '
       isArray: false
       name: list_all
       required: false
       secret: false
     - default: false
-      description: 'Return this number of most recently created containers, including
-        non-running ones. '
+      description: 'Return this number of most recently created containers, including non-running ones. '
       isArray: false
       name: limit
       required: false
@@ -753,18 +724,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Filters to process on the container list, encoded as JSON (a `map[string][]string`).
-        For example, `{"status": ["paused"]}` will only return paused containers.  Available
-        filters:  - `ancestor`=(` image-name [: tag ]`, ` image id `, or ` image@digest
-        `) - `before`=(` container id ` or ` container name `) - `expose`=(` port
-        [/ proto ]`|` startport-endport /[ proto ]`) - `exited= int ` containers with
-        exit code of ` int ` - `health`=(`starting`|`healthy`|`unhealthy`|`none`)
-        - `id= ID ` a container''s ID - `isolation=`(`default`|`process`|`hyperv`)
-        (Windows daemon only) - `is-task=`(`true`|`false`) - `label=key` or `label="key=value"`
-        of a container label - `name= name ` a container''s name - `network`=(` network
-        id ` or ` network name `) - `publish`=(` port [/ proto ]`|` startport-endport
-        /[ proto ]`) - `since`=(` container id ` or ` container name `) - `status=`(`created`|`restarting`|`running`|`removing`|`paused`|`exited`|`dead`)
-        - `volume`=(` volume name ` or ` mount point destination `) '
+      description: "Filters to process on the container list, encoded as JSON (a `map[string][]string`). For example, `{\"status\": [\"paused\"]}` will only return paused containers.  Available filters:  - `ancestor`=(` image-name [: tag ]`, ` image id `, or ` image@digest `) - `before`=(` container id ` or ` container name `) - `expose`=(` port [/ proto ]`|` startport-endport /[ proto ]`) - `exited= int ` containers with exit code of ` int ` - `health`=(`starting`|`healthy`|`unhealthy`|`none`) - `id= ID ` a container's ID - `isolation=`(`default`|`process`|`hyperv`) (Windows daemon only) - `is-task=`(`true`|`false`) - `label=key` or `label=\"key=value\"` of a container label - `name= name ` a container's name - `network`=(` network id ` or ` network name `) - `publish`=(` port [/ proto ]`|` startport-endport /[ proto ]`) - `since`=(` container id ` or ` container name `) - `status=`(`created`|`restarting`|`running`|`removing`|`paused`|`exited`|`dead`) - `volume`=(` volume name ` or ` mount point destination `) "
       isArray: false
       name: filters
       required: false
@@ -781,15 +741,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'Stream the output. If false, the stats will be output once and
-        then it will disconnect. '
+      description: 'Stream the output. If false, the stats will be output once and then it will disconnect. '
       isArray: false
       name: stream
       required: false
       secret: false
     - default: false
-      description: 'Only get a single stat instead of waiting for 2 cycles. Must be
-        used with `stream=false`. '
+      description: 'Only get a single stat instead of waiting for 2 cycles. Must be used with `stream=false`. '
       isArray: false
       name: one_shot
       required: false
@@ -896,8 +854,7 @@ script:
       type: Number
   - arguments:
     - default: false
-      description: Show all images. Only images from a final layer (no children) are
-        shown by default.
+      description: Show all images. Only images from a final layer (no children) are shown by default.
       isArray: false
       name: list_all
       required: false
@@ -975,10 +932,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A JSON encoded value of the filters (a `map[string][]string`)
-        to process on the images list. Available filters:  - `is-automated=(true|false)`
-        - `is-official=(true|false)` - `stars= number ` Matches images that has at
-        least ''number'' stars. '
+      description: "A JSON encoded value of the filters (a `map[string][]string`) to process on the images list. Available filters:  - `is-automated=(true|false)` - `is-official=(true|false)` - `stars= number ` Matches images that has at least 'number' stars. "
       isArray: false
       name: filters
       required: false
@@ -1011,12 +965,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'Check for networks with duplicate names. Since Network is primarily
-        keyed based on a random ID and not on the name, and network name is strictly
-        a user-friendly alias to the network which is uniquely identified using ID,
-        there is no guaranteed way to check for duplicates. CheckDuplicate is there
-        to provide a best effort checking of any networks which has the same name
-        but it is not guaranteed to catch all name collisions. '
+      description: 'Check for networks with duplicate names. Since Network is primarily keyed based on a random ID and not on the name, and network name is strictly a user-friendly alias to the network which is uniquely identified using ID, there is no guaranteed way to check for duplicates. CheckDuplicate is there to provide a best effort checking of any networks which has the same name but it is not guaranteed to catch all name collisions. '
       isArray: false
       name: networkconfig_checkduplicate
       required: false
@@ -1034,15 +983,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Globally scoped network is manually attachable by regular containers
-        from workers in swarm mode. '
+      description: 'Globally scoped network is manually attachable by regular containers from workers in swarm mode. '
       isArray: false
       name: networkconfig_attachable
       required: false
       secret: false
     - default: false
-      description: 'Ingress network is the network which provides the routing-mesh
-        in swarm mode. '
+      description: 'Ingress network is the network which provides the routing-mesh in swarm mode. '
       isArray: false
       name: networkconfig_ingress
       required: false
@@ -1168,18 +1115,14 @@ script:
       description: Docker Node ID
       type: String
     - contextPath: Docker.Node.CreatedAt
-      description: 'Date and time at which the node was added to the swarm in [RFC
-        3339](https://www.ietf.org/rfc/rfc3339.txt) format with nano-seconds. '
+      description: 'Date and time at which the node was added to the swarm in [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format with nano-seconds. '
       type: String
     - contextPath: Docker.Node.UpdatedAt
-      description: 'Date and time at which the node was last updated in [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)
-        format with nano-seconds. '
+      description: 'Date and time at which the node was last updated in [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format with nano-seconds. '
       type: String
   - arguments:
     - default: false
-      description: 'Filters to process on the nodes list, encoded as JSON (a `map[string][]string`).  Available
-        filters: - `id= node id ` - `label= engine label ` - `membership=`(`accepted`|`pending`)`
-        - `name= node name ` - `node.label= node label ` - `role=`(`manager`|`worker`)` '
+      description: 'Filters to process on the nodes list, encoded as JSON (a `map[string][]string`).  Available filters: - `id= node id ` - `label= engine label ` - `membership=`(`accepted`|`pending`)` - `name= node name ` - `node.label= node label ` - `role=`(`manager`|`worker`)` '
       isArray: false
       name: filters
       required: false
@@ -1193,12 +1136,10 @@ script:
       description: Docker Node ID
       type: String
     - contextPath: Docker.Node.CreatedAt
-      description: 'Date and time at which the node was added to the swarm in [RFC
-        3339](https://www.ietf.org/rfc/rfc3339.txt) format with nano-seconds. '
+      description: 'Date and time at which the node was added to the swarm in [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format with nano-seconds. '
       type: String
     - contextPath: Docker.Node.UpdatedAt
-      description: 'Date and time at which the node was last updated in [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)
-        format with nano-seconds. '
+      description: 'Date and time at which the node was last updated in [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format with nano-seconds. '
       type: String
   - arguments:
     - default: false
@@ -1214,9 +1155,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Base64-url-safe-encoded ([RFC 4648](https://tools.ietf.org/html/rfc4648#section-5))
-        data to store as secret.  This field is only used to _create_ a secret, and
-        is not returned by other endpoints. '
+      description: 'Base64-url-safe-encoded ([RFC 4648](https://tools.ietf.org/html/rfc4648#section-5)) data to store as secret.  This field is only used to _create_ a secret, and is not returned by other endpoints. '
       isArray: false
       name: secretspec_data
       required: false
@@ -1272,10 +1211,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'A JSON encoded value of the filters (a `map[string][]string`)
-        to process on the secrets list.  Available filters:  - `id= secret id ` -
-        `label= key  or label= key =value` - `name= secret name ` - `names= secret
-        name ` '
+      description: 'A JSON encoded value of the filters (a `map[string][]string`) to process on the secrets list.  Available filters:  - `id= secret id ` - `label= key  or label= key =value` - `name= secret name ` - `names= secret name ` '
       isArray: false
       name: filters
       required: false
@@ -1296,48 +1232,31 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'Listen address used for inter-manager communication, as well as
-        determining the networking interface used for the VXLAN Tunnel Endpoint (VTEP).
-        This can either be an address/port combination in the form `192.168.1.1:4567`,
-        or an interface followed by a port number, like `eth0:4567`. If the port number
-        is omitted, the default swarm listening port is used. '
+      description: 'Listen address used for inter-manager communication, as well as determining the networking interface used for the VXLAN Tunnel Endpoint (VTEP). This can either be an address/port combination in the form `192.168.1.1:4567`, or an interface followed by a port number, like `eth0:4567`. If the port number is omitted, the default swarm listening port is used. '
       isArray: false
       name: listenaddr
       required: false
       secret: false
     - default: false
-      description: 'Externally reachable address advertised to other nodes. This can
-        either be an address/port combination in the form `192.168.1.1:4567`, or an
-        interface followed by a port number, like `eth0:4567`. If the port number
-        is omitted, the port number from the listen address is used. If `AdvertiseAddr`
-        is not specified, it will be automatically detected when possible. '
+      description: 'Externally reachable address advertised to other nodes. This can either be an address/port combination in the form `192.168.1.1:4567`, or an interface followed by a port number, like `eth0:4567`. If the port number is omitted, the port number from the listen address is used. If `AdvertiseAddr` is not specified, it will be automatically detected when possible. '
       isArray: false
       name: advertiseaddr
       required: false
       secret: false
     - default: false
-      description: 'Address or interface to use for data path traffic (format: ` ip|interface
-        `), for example,  `192.168.1.1`, or an interface, like `eth0`. If `DataPathAddr`
-        is unspecified, the same address as `AdvertiseAddr` is used.  The `DataPathAddr`
-        specifies the address that global scope network drivers will publish towards
-        other  nodes in order to reach the containers running on this node. Using
-        this  meter it is possible to se te the container data traffic from the management
-        traffic of the cluster. '
+      description: 'Address or interface to use for data path traffic (format: ` ip|interface `), for example,  `192.168.1.1`, or an interface, like `eth0`. If `DataPathAddr` is unspecified, the same address as `AdvertiseAddr` is used.  The `DataPathAddr` specifies the address that global scope network drivers will publish towards other  nodes in order to reach the containers running on this node. Using this  meter it is possible to se te the container data traffic from the management traffic of the cluster. '
       isArray: false
       name: datapathaddr
       required: false
       secret: false
     - default: false
-      description: 'DataPathPort specifies the data path port number for data traffic.
-        Acceptable port range is 1024 to 49151. if no port is set or is set to 0,
-        default port 4789 will be used. '
+      description: 'DataPathPort specifies the data path port number for data traffic. Acceptable port range is 1024 to 49151. if no port is set or is set to 0, default port 4789 will be used. '
       isArray: false
       name: datapathport
       required: false
       secret: false
     - default: false
-      description: 'Default Address Pool specifies default subnet pools for global
-        scope networks. '
+      description: 'Default Address Pool specifies default subnet pools for global scope networks. '
       isArray: true
       name: defaultaddrpool
       required: false
@@ -1349,8 +1268,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'SubnetSize specifies the subnet size of the networks created from
-        the default subnet pool. '
+      description: 'SubnetSize specifies the subnet size of the networks created from the default subnet pool. '
       isArray: false
       name: subnetsize
       required: false
@@ -1413,31 +1331,19 @@ script:
     name: docker-swarm-inspect
   - arguments:
     - default: false
-      description: 'Listen address used for inter-manager communication if the node
-        gets promoted to manager, as well as determining the networking interface
-        used for the VXLAN Tunnel Endpoint (VTEP). '
+      description: 'Listen address used for inter-manager communication if the node gets promoted to manager, as well as determining the networking interface used for the VXLAN Tunnel Endpoint (VTEP). '
       isArray: false
       name: listenaddr
       required: false
       secret: false
     - default: false
-      description: 'Externally reachable address advertised to other nodes. This can
-        either be an address/port combination in the form `192.168.1.1:4567`, or an
-        interface followed by a port number, like `eth0:4567`. If the port number
-        is omitted, the port number from the listen address is used. If `AdvertiseAddr`
-        is not specified, it will be automatically detected when possible. '
+      description: 'Externally reachable address advertised to other nodes. This can either be an address/port combination in the form `192.168.1.1:4567`, or an interface followed by a port number, like `eth0:4567`. If the port number is omitted, the port number from the listen address is used. If `AdvertiseAddr` is not specified, it will be automatically detected when possible. '
       isArray: false
       name: advertiseaddr
       required: false
       secret: false
     - default: false
-      description: 'Address or interface to use for data path traffic (format: ` ip|interface
-        `), for example,  `192.168.1.1`, or an interface, like `eth0`. If `DataPathAddr`
-        is unspecified, the same address as `AdvertiseAddr` is used.  The `DataPathAddr`
-        specifies the address that global scope network drivers will publish towards
-        other nodes in order to reach the containers running on this node. Using this  meter
-        it is possible to se te the container data traffic from the management traffic
-        of the cluster. '
+      description: 'Address or interface to use for data path traffic (format: ` ip|interface `), for example,  `192.168.1.1`, or an interface, like `eth0`. If `DataPathAddr` is unspecified, the same address as `AdvertiseAddr` is used.  The `DataPathAddr` specifies the address that global scope network drivers will publish towards other nodes in order to reach the containers running on this node. Using this  meter it is possible to se te the container data traffic from the management traffic of the cluster. '
       isArray: false
       name: datapathaddr
       required: false
@@ -1460,8 +1366,7 @@ script:
     name: docker-swarm-join
   - arguments:
     - default: false
-      description: 'Force leave swarm, even if this is the last manager or that it
-        will  eak the cluster. '
+      description: 'Force leave swarm, even if this is the last manager or that it will  eak the cluster. '
       isArray: false
       name: force
       required: false
@@ -1531,8 +1436,7 @@ script:
       description: Date/Time the volume was created.
       type: String
     - contextPath: Docker.SystemDataUsageResponse.Volumes.Scope
-      description: 'The level at which the volume exists. Either `global` for cluster-wide,
-        or `local` for machine level. '
+      description: 'The level at which the volume exists. Either `global` for cluster-wide, or `local` for machine level. '
       type: String
     - contextPath: Docker.SystemDataUsageResponse.BuildCache.ID
       description: Docker SystemDataUsageResponse BuildCache ID
@@ -1556,12 +1460,10 @@ script:
       description: 'Amount of disk space used by the build cache (in bytes). '
       type: Number
     - contextPath: Docker.SystemDataUsageResponse.BuildCache.CreatedAt
-      description: 'Date and time at which the build cache was created in [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)
-        format with nano-seconds. '
+      description: 'Date and time at which the build cache was created in [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format with nano-seconds. '
       type: String
     - contextPath: Docker.SystemDataUsageResponse.BuildCache.LastUsedAt
-      description: 'Date and time at which the build cache was last used in [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)
-        format with nano-seconds. '
+      description: 'Date and time at which the build cache was last used in [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format with nano-seconds. '
       type: String
     - contextPath: Docker.SystemDataUsageResponse.BuildCache.UsageCount
       description: Docker SystemDataUsageResponse BuildCache UsageCount.
@@ -1572,9 +1474,7 @@ script:
     name: docker-system-info
     outputs:
     - contextPath: Docker.SystemInfo.ID
-      description: 'Unique identifier of the daemon.   p    /  /p       Note  : The
-        format of the ID itself is not part of the API, and   should not be considered
-        stable. '
+      description: 'Unique identifier of the daemon.   p    /  /p       Note  : The format of the ID itself is not part of the API, and   should not be considered stable. '
       type: String
     - contextPath: Docker.SystemInfo.Containers
       description: Total number of containers on the host.
@@ -1589,8 +1489,7 @@ script:
       description: 'Number of containers with status `"stopped"`. '
       type: Number
     - contextPath: Docker.SystemInfo.Images
-      description: 'Total number of images on the host.  Both _tagged_ and _untagged_
-        (dangling) images are counted. '
+      description: 'Total number of images on the host.  Both _tagged_ and _untagged_ (dangling) images are counted. '
       type: Number
     - contextPath: Docker.SystemInfo.Driver
       description: Name of the storage driver in use.
@@ -1599,8 +1498,7 @@ script:
       description: Status of the storage driver in use.
       type: String
     - contextPath: Docker.SystemInfo.DockerRootDir
-      description: 'Root directory of persistent Docker state.  Defaults to `/var/lib/docker`
-        on Linux, and `C:\ProgramData\docker` on Windows. '
+      description: 'Root directory of persistent Docker state.  Defaults to `/var/lib/docker` on Linux, and `C:\ProgramData\docker` on Windows. '
       type: String
     - contextPath: Docker.SystemInfo.MemoryLimit
       description: Indicates if the host has memory limit support enabled.
@@ -1609,23 +1507,19 @@ script:
       description: Indicates if the host has memory swap limit support enabled.
       type: Boolean
     - contextPath: Docker.SystemInfo.KernelMemory
-      description: 'Indicates if the host has kernel memory limit support enabled.   p    /  /p       Deprecated  :
-        This field is deprecated as the kernel 5.4 deprecated   `kmem.limit_in_bytes`. '
+      description: 'Indicates if the host has kernel memory limit support enabled.   p    /  /p       Deprecated  : This field is deprecated as the kernel 5.4 deprecated   `kmem.limit_in_bytes`. '
       type: Boolean
     - contextPath: Docker.SystemInfo.CpuCfsPeriod
-      description: 'Indicates if CPU CFS(Completely Fair Scheduler) period is supported
-        by the host. '
+      description: 'Indicates if CPU CFS(Completely Fair Scheduler) period is supported by the host. '
       type: Boolean
     - contextPath: Docker.SystemInfo.CpuCfsQuota
-      description: 'Indicates if CPU CFS(Completely Fair Scheduler) quota is supported
-        by the host. '
+      description: 'Indicates if CPU CFS(Completely Fair Scheduler) quota is supported by the host. '
       type: Boolean
     - contextPath: Docker.SystemInfo.CPUShares
       description: 'Indicates if CPU Shares limiting is supported by the host. '
       type: Boolean
     - contextPath: Docker.SystemInfo.CPUSet
-      description: 'Indicates if CPUsets (cpuset.cpus, cpuset.mems) are supported
-        by the host.  See [cpuset(7)](https://www.kernel.org/doc/Documentation/cgroup-v1/cpusets.txt) '
+      description: 'Indicates if CPUsets (cpuset.cpus, cpuset.mems) are supported by the host.  See [cpuset(7)](https://www.kernel.org/doc/Documentation/cgroup-v1/cpusets.txt) '
       type: Boolean
     - contextPath: Docker.SystemInfo.PidsLimit
       description: Indicates if the host kernel has PID limit support enabled.
@@ -1643,20 +1537,16 @@ script:
       description: Indicates if ` idge-nf-call-ip6tables` is available on the host.
       type: Boolean
     - contextPath: Docker.SystemInfo.Debug
-      description: 'Indicates if the daemon is running in debug-mode / with debug-level
-        logging enabled. '
+      description: 'Indicates if the daemon is running in debug-mode / with debug-level logging enabled. '
       type: Boolean
     - contextPath: Docker.SystemInfo.NFd
-      description: 'The total number of file Descriptors in use by the daemon process.  This
-        information is only returned if debug-mode is enabled. '
+      description: 'The total number of file Descriptors in use by the daemon process.  This information is only returned if debug-mode is enabled. '
       type: Number
     - contextPath: Docker.SystemInfo.NGoroutines
-      description: 'The  number of goroutines that currently exist.  This information
-        is only returned if debug-mode is enabled. '
+      description: 'The  number of goroutines that currently exist.  This information is only returned if debug-mode is enabled. '
       type: Number
     - contextPath: Docker.SystemInfo.SystemTime
-      description: 'Current system-time in [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt)
-        format with nano-seconds. '
+      description: 'Current system-time in [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format with nano-seconds. '
       type: String
     - contextPath: Docker.SystemInfo.LoggingDriver
       description: 'The logging driver to use as a default for new containers. '
@@ -1671,60 +1561,37 @@ script:
       description: Number of event listeners subscribed.
       type: Number
     - contextPath: Docker.SystemInfo.KernelVersion
-      description: 'Kernel version of the host.  On Linux, this information obtained
-        from `uname`. On Windows this information is queried from the  kbd HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows
-        NT\\CurrentVersion\\ /kbd  registry value, for example _"10.0 14393 (14393.1198.amd64fre.rs1_release_sec.170427-1353)"_. '
+      description: 'Kernel version of the host.  On Linux, this information obtained from `uname`. On Windows this information is queried from the  kbd HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\ /kbd  registry value, for example _"10.0 14393 (14393.1198.amd64fre.rs1_release_sec.170427-1353)"_. '
       type: String
     - contextPath: Docker.SystemInfo.OperatingSystem
-      description: 'Name of the host''s operating system, for example: "Ubuntu 16.04.2
-        LTS" or "Windows Server 2016 Datacenter" '
+      description: "Name of the host's operating system, for example: \"Ubuntu 16.04.2 LTS\" or \"Windows Server 2016 Datacenter\" "
       type: String
     - contextPath: Docker.SystemInfo.OSVersion
-      description: 'Version of the host''s operating system   p    /  /p       Note  :
-        The information returned in this field, including its   very existence, and
-        the formatting of values, should not be considered   stable, and may change
-        without notice. '
+      description: "Version of the host's operating system   p    /  /p       Note  : The information returned in this field, including its   very existence, and the formatting of values, should not be considered   stable, and may change without notice. "
       type: String
     - contextPath: Docker.SystemInfo.OSType
-      description: 'Generic type of the operating system of the host, as returned
-        by the Go runtime (`GOOS`).  Currently returned values are "linux" and "windows".
-        A full list of possible values can be found in the [Go documentation](https://golang.org/doc/install/source#environment). '
+      description: 'Generic type of the operating system of the host, as returned by the Go runtime (`GOOS`).  Currently returned values are "linux" and "windows". A full list of possible values can be found in the [Go documentation](https://golang.org/doc/install/source#environment). '
       type: String
     - contextPath: Docker.SystemInfo.Architecture
-      description: 'Hardware architecture of the host, as returned by the Go runtime
-        (`GOARCH`).  A full list of possible values can be found in the [Go documentation](https://golang.org/doc/install/source#environment). '
+      description: 'Hardware architecture of the host, as returned by the Go runtime (`GOARCH`).  A full list of possible values can be found in the [Go documentation](https://golang.org/doc/install/source#environment). '
       type: String
     - contextPath: Docker.SystemInfo.NCPU
-      description: 'The number of logical CPUs usable by the daemon.  The number of
-        available CPUs is checked by querying the operating system when the daemon
-        starts. Changes to operating system CPU allocation after the daemon is started
-        are not reflected. '
+      description: 'The number of logical CPUs usable by the daemon.  The number of available CPUs is checked by querying the operating system when the daemon starts. Changes to operating system CPU allocation after the daemon is started are not reflected. '
       type: Number
     - contextPath: Docker.SystemInfo.MemTotal
       description: 'Total amount of physical memory available on the host, in bytes. '
       type: Number
     - contextPath: Docker.SystemInfo.IndexServerAddress
-      description: 'Address / URL of the index server that is used for image search,
-        and as a default for user authentication for Docker Hub and Docker Cloud. '
+      description: 'Address / URL of the index server that is used for image search, and as a default for user authentication for Docker Hub and Docker Cloud. '
       type: String
     - contextPath: Docker.SystemInfo.HttpProxy
-      description: 'HTTP-proxy configured for the daemon. This value is obtained from
-        the [`HTTP_PROXY`](https://www.gnu.org/software/wget/manual/html_node/Proxies.html)
-        environment variable. Credentials ([user info component](https://tools.ietf.org/html/rfc3986#section-3.2.1))
-        in the proxy URL are masked in the API response.  Containers do not automatically
-        inherit this configuration. '
+      description: 'HTTP-proxy configured for the daemon. This value is obtained from the [`HTTP_PROXY`](https://www.gnu.org/software/wget/manual/html_node/Proxies.html) environment variable. Credentials ([user info component](https://tools.ietf.org/html/rfc3986#section-3.2.1)) in the proxy URL are masked in the API response.  Containers do not automatically inherit this configuration. '
       type: String
     - contextPath: Docker.SystemInfo.HttpsProxy
-      description: 'HTTPS-proxy configured for the daemon. This value is obtained
-        from the [`HTTPS_PROXY`](https://www.gnu.org/software/wget/manual/html_node/Proxies.html)
-        environment variable. Credentials ([user info component](https://tools.ietf.org/html/rfc3986#section-3.2.1))
-        in the proxy URL are masked in the API response.  Containers do not automatically
-        inherit this configuration. '
+      description: 'HTTPS-proxy configured for the daemon. This value is obtained from the [`HTTPS_PROXY`](https://www.gnu.org/software/wget/manual/html_node/Proxies.html) environment variable. Credentials ([user info component](https://tools.ietf.org/html/rfc3986#section-3.2.1)) in the proxy URL are masked in the API response.  Containers do not automatically inherit this configuration. '
       type: String
     - contextPath: Docker.SystemInfo.NoProxy
-      description: 'Comma-se ted list of domain extensions for which no proxy should
-        be used. This value is obtained from the [`NO_PROXY`](https://www.gnu.org/software/wget/manual/html_node/Proxies.html)
-        environment variable.  Containers do not automatically inherit this configuration. '
+      description: 'Comma-se ted list of domain extensions for which no proxy should be used. This value is obtained from the [`NO_PROXY`](https://www.gnu.org/software/wget/manual/html_node/Proxies.html) environment variable.  Containers do not automatically inherit this configuration. '
       type: String
     - contextPath: Docker.SystemInfo.Name
       description: Hostname of the host.
@@ -1733,56 +1600,31 @@ script:
       description: 'Indicates if experimental features are enabled on the daemon. '
       type: Boolean
     - contextPath: Docker.SystemInfo.ServerVersion
-      description: 'Version string of the daemon.      Note  : the [standalone Swarm
-        API](https://docs.docker.com/swarm/swarm-api/)   returns the Swarm version
-        instead of the daemon  version, for example   `swarm/1.2.8`. '
+      description: 'Version string of the daemon.      Note  : the [standalone Swarm API](https://docs.docker.com/swarm/swarm-api/)   returns the Swarm version instead of the daemon  version, for example   `swarm/1.2.8`. '
       type: String
     - contextPath: Docker.SystemInfo.ClusterStore
-      description: 'URL of the distributed storage backend.   The storage backend
-        is used for multihost networking (to store network and endpoint information)
-        and by the node discovery mechanism.   p    /  /p       Deprecated  : This
-        field is only propagated when using standalone Swarm   mode, and overlay networking
-        using an external k/v store. Overlay   networks with Swarm mode enabled use
-        the built-in raft store, and   this field will be empty. '
+      description: 'URL of the distributed storage backend.   The storage backend is used for multihost networking (to store network and endpoint information) and by the node discovery mechanism.   p    /  /p       Deprecated  : This field is only propagated when using standalone Swarm   mode, and overlay networking using an external k/v store. Overlay   networks with Swarm mode enabled use the built-in raft store, and   this field will be empty. '
       type: String
     - contextPath: Docker.SystemInfo.ClusterAdvertise
-      description: 'The network endpoint that the Engine advertises for the purpose
-        of node discovery. ClusterAdvertise is a `host:port` combination on which
-        the daemon is reachable by other hosts.   p    /  /p       Deprecated  : This
-        field is only propagated when using standalone Swarm   mode, and overlay networking
-        using an external k/v store. Overlay   networks with Swarm mode enabled use
-        the built-in raft store, and   this field will be empty. '
+      description: 'The network endpoint that the Engine advertises for the purpose of node discovery. ClusterAdvertise is a `host:port` combination on which the daemon is reachable by other hosts.   p    /  /p       Deprecated  : This field is only propagated when using standalone Swarm   mode, and overlay networking using an external k/v store. Overlay   networks with Swarm mode enabled use the built-in raft store, and   this field will be empty. '
       type: String
     - contextPath: Docker.SystemInfo.Runtimes.path
-      description: 'Name and, optional, path, of the OCI executable binary.  If the
-        path is omitted, the daemon searches the host''s `$PATH` for the binary and
-        uses the first result. '
+      description: "Name and, optional, path, of the OCI executable binary.  If the path is omitted, the daemon searches the host's `$PATH` for the binary and uses the first result. "
       type: String
     - contextPath: Docker.SystemInfo.DefaultRuntime
-      description: 'Name of the default OCI runtime that is used when starting containers.  The
-        default can be overridden per-container at create time. '
+      description: 'Name of the default OCI runtime that is used when starting containers.  The default can be overridden per-container at create time. '
       type: String
     - contextPath: Docker.SystemInfo.LiveRestoreEnabled
-      description: 'Indicates if live restore is enabled.  If enabled, containers
-        are kept running when the daemon is shutdown or upon daemon start if running
-        containers are detected. '
+      description: 'Indicates if live restore is enabled.  If enabled, containers are kept running when the daemon is shutdown or upon daemon start if running containers are detected. '
       type: Boolean
     - contextPath: Docker.SystemInfo.Isolation
-      description: 'Represents the isolation technology to use as a default for containers.
-        The supported values are platform-specific.  If no isolation value is specified
-        on daemon start, on Windows client, the default is `hyperv`, and on Windows
-        server, the default is `process`.  This option is currently not used on other
-        platforms. '
+      description: 'Represents the isolation technology to use as a default for containers. The supported values are platform-specific.  If no isolation value is specified on daemon start, on Windows client, the default is `hyperv`, and on Windows server, the default is `process`.  This option is currently not used on other platforms. '
       type: String
     - contextPath: Docker.SystemInfo.InitBinary
-      description: 'Name and, optional, path of the `docker-init` binary.  If the
-        path is omitted, the daemon searches the host''s `$PATH` for the binary and
-        uses the first result. '
+      description: "Name and, optional, path of the `docker-init` binary.  If the path is omitted, the daemon searches the host's `$PATH` for the binary and uses the first result. "
       type: String
     - contextPath: Docker.SystemInfo.ProductLicense
-      description: 'Reports a summary of the product license on the daemon.  If a
-        commercial license has been applied to the daemon, information such as number
-        of nodes, and expiration are included. '
+      description: 'Reports a summary of the product license on the daemon.  If a commercial license has been applied to the daemon, information such as number of nodes, and expiration are included. '
       type: String
     - contextPath: Docker.SystemInfo.DefaultAddressPools.Base
       description: The network address in CIDR format
@@ -1805,8 +1647,7 @@ script:
       description: The version of the daemon
       type: String
     - contextPath: Docker.SystemVersion.ApiVersion
-      description: 'The default (and highest) API version that is supported by the
-        daemon '
+      description: 'The default (and highest) API version that is supported by the daemon '
       type: String
     - contextPath: Docker.SystemVersion.MinAPIVersion
       description: 'The minimum API version that is supported by the daemon '
@@ -1815,33 +1656,26 @@ script:
       description: 'The Git commit of the source code that was used to build the daemon '
       type: String
     - contextPath: Docker.SystemVersion.GoVersion
-      description: 'The version Go used to compile the daemon, and the version of
-        the Go runtime in use. '
+      description: 'The version Go used to compile the daemon, and the version of the Go runtime in use. '
       type: String
     - contextPath: Docker.SystemVersion.Os
-      description: 'The operating system that the daemon is running on ("linux" or
-        "windows") '
+      description: 'The operating system that the daemon is running on ("linux" or "windows") '
       type: String
     - contextPath: Docker.SystemVersion.Arch
       description: 'The architecture that the daemon is running on '
       type: String
     - contextPath: Docker.SystemVersion.KernelVersion
-      description: 'The kernel version (`uname -r`) that the daemon is running on.  This
-        field is omitted when empty. '
+      description: 'The kernel version (`uname -r`) that the daemon is running on.  This field is omitted when empty. '
       type: String
     - contextPath: Docker.SystemVersion.Experimental
-      description: 'Indicates if the daemon is started with experimental features
-        enabled.  This field is omitted when empty / false. '
+      description: 'Indicates if the daemon is started with experimental features enabled.  This field is omitted when empty / false. '
       type: Boolean
     - contextPath: Docker.SystemVersion.BuildTime
       description: 'The date and time that the daemon was compiled. '
       type: String
   - arguments:
     - default: false
-      description: 'A JSON encoded value of the filters (a `map[string][]string`)
-        to process on the tasks list.  Available filters:  - `desired-state=(running
-        | shutdown | accepted)` - `id= task id ` - `label=key` or `label="key=value"`
-        - `name= task name ` - `node= node id or name ` - `service= service name ` '
+      description: 'A JSON encoded value of the filters (a `map[string][]string`) to process on the tasks list.  Available filters:  - `desired-state=(running | shutdown | accepted)` - `id= task id ` - `label=key` or `label="key=value"` - `name= task name ` - `node= node id or name ` - `service= service name ` '
       isArray: false
       name: filters
       required: false
@@ -1874,7 +1708,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: 'The new volume''s name. If not specified, Docker generates a name. '
+      description: "The new volume's name. If not specified, Docker generates a name. "
       isArray: false
       name: volumeconfig_name
       required: false
@@ -1886,8 +1720,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A mapping of driver options and values. These options are passed
-        directly to the driver and are driver specific. '
+      description: 'A mapping of driver options and values. These options are passed directly to the driver and are driver specific. '
       isArray: false
       name: volumeconfig_driveropts
       required: false
@@ -1927,19 +1760,11 @@ script:
       description: Date/Time the volume was created.
       type: String
     - contextPath: Docker.Volume.Scope
-      description: 'The level at which the volume exists. Either `global` for cluster-wide,
-        or `local` for machine level. '
+      description: 'The level at which the volume exists. Either `global` for cluster-wide, or `local` for machine level. '
       type: String
   - arguments:
     - default: false
-      description: 'JSON encoded value of the filters (a `map[string][]string`) to
-        process on the volumes list. Available filters:  - `dangling= boolean ` When
-        set to `true` (or `1`), returns all    volumes that are not in use by a container.
-        When set to `false`    (or `0`), only volumes that are in use by one or more    containers
-        are returned. - `driver= volume-driver-name ` Matches volumes based on their
-        driver. - `label= key ` or `label= key : value ` Matches volumes based on    the
-        presence of a `label` alone or a `label` and a value. - `name= volume-name
-        ` Matches all or part of a volume name. '
+      description: 'JSON encoded value of the filters (a `map[string][]string`) to process on the volumes list. Available filters:  - `dangling= boolean ` When set to `true` (or `1`), returns all    volumes that are not in use by a container. When set to `false`    (or `0`), only volumes that are in use by one or more    containers are returned. - `driver= volume-driver-name ` Matches volumes based on their driver. - `label= key ` or `label= key : value ` Matches volumes based on    the presence of a `label` alone or a `label` and a value. - `name= volume-name ` Matches all or part of a volume name. '
       isArray: false
       name: filters
       required: false
@@ -1962,15 +1787,11 @@ script:
       description: Date/Time the volume was created.
       type: String
     - contextPath: Docker.VolumeListResponse.Volumes.Scope
-      description: 'The level at which the volume exists. Either `global` for cluster-wide,
-        or `local` for machine level. '
+      description: 'The level at which the volume exists. Either `global` for cluster-wide, or `local` for machine level. '
       type: String
   - arguments:
     - default: false
-      description: 'Filters to process on the prune list, encoded as JSON (a `map[string][]string`).  Available
-        filters: - `label` (`label= key `, `label= key = value `, `label!= key `,
-        or `label!= key = value `) Prune volumes with (or without, in case `label!=...`
-        is used) the specified labels. '
+      description: 'Filters to process on the prune list, encoded as JSON (a `map[string][]string`).  Available filters: - `label` (`label= key `, `label= key = value `, `label!= key `, or `label!= key = value `) Prune volumes with (or without, in case `label!=...` is used) the specified labels. '
       isArray: false
       name: filters
       required: false
@@ -1983,7 +1804,186 @@ script:
     - contextPath: Docker.VolumePruneResponse.SpaceReclaimed
       description: Disk space reclaimed in bytes
       type: Number
-  dockerimage: demisto/python3:3.9.5.20070
+  - name: docker-container-delete
+    deprecated: false
+    description: Remove a container
+    execution: false
+    outputs:
+    - contextPath: Docker.ContainerDelete.Status Code
+      description: Image Tag Result
+      type: String
+    arguments:
+    - default: false
+      description: ID or name of the container
+      isArray: false
+      name: id
+      required: true
+      secret: false
+    - default: false
+      description: Remove anonymous volumes associated with the container.
+      isArray: false
+      name: v
+      required: false
+      secret: false
+      auto: PREDEFINED
+      defaultValue: 'false'
+      predefined:
+      - 'false'
+      - 'true'
+    - default: false
+      description: If the container is running, kill it before removing it.
+      isArray: false
+      name: force
+      required: false
+      secret: false
+      auto: PREDEFINED
+      defaultValue: 'false'
+      predefined:
+      - 'false'
+      - 'true'
+    - default: false
+      description: Remove the specified link associated with the container.
+      isArray: false
+      name: link
+      required: false
+      secret: false
+      auto: PREDEFINED
+      defaultValue: 'false'
+      predefined:
+      - 'false'
+      - 'true'
+  - name: docker-image-delete
+    deprecated: false
+    description: Remove an image, along with any untagged parent images that were referenced by that image. Images can't be removed if they have descendant images, are being used by a running container or are being used by a build.
+    execution: false
+    outputs:
+    - contextPath: Docker.ImageDeleteResponseItem
+      description: Deletion Response
+      type: string
+    arguments:
+    - default: false
+      description: Image name or ID
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: Remove the image even if it is being used by stopped containers or has other tags
+      isArray: false
+      name: force
+      required: false
+      secret: false
+      auto: PREDEFINED
+      defaultValue: 'false'
+      predefined:
+      - 'false'
+      - 'true'
+    - default: false
+      description: Do not delete untagged parent images
+      isArray: false
+      name: noprune
+      required: false
+      secret: false
+      auto: PREDEFINED
+      defaultValue: 'false'
+      predefined:
+      - 'false'
+      - 'true'
+  - name: docker-image-create
+    arguments:
+    - default: true
+      description: Name of the image to pull. The name may include a tag or digest. This parameter may only be used when pulling an image. The pull is cancelled if the HTTP connection is closed.
+      isArray: false
+      name: from_image
+      required: false
+      secret: false
+    - default: false
+      description: Source to import. The value may be a URL from which the image can be retrieved or - to read the image from the request body. This parameter may only be used when importing an image.
+      isArray: false
+      name: from_src
+      required: false
+      secret: false
+    - default: false
+      description: Repository name given to an image when it is imported. The repo may include a tag. This parameter may only be used when importing an image.
+      isArray: false
+      name: repo
+      required: false
+      secret: false
+    - default: false
+      description: Tag or digest. If empty when pulling an image, this causes all tags for the given image to be pulled.
+      isArray: false
+      name: tag
+      required: false
+      secret: false
+    - default: false
+      description: Set commit message for imported image.
+      isArray: false
+      name: message
+      required: false
+      secret: false
+    - default: false
+      description: Platform in the format os[/arch[/variant]]
+      isArray: false
+      name: platform
+      required: false
+      secret: false
+    deprecated: false
+    description: Create an image by either pulling it from a registry or importing it.
+    execution: false
+    outputs:
+    - contextPath: Docker.ImageCreate.Status
+      description: Image Create result
+      type: String
+  - name: docker-image-push
+    arguments:
+    - default: false
+      description: Image name or ID.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: The tag to associate with the image on the registry.
+      isArray: false
+      name: tag
+      required: false
+      secret: false
+    deprecated: false
+    description: Push an image to a registry. If you wish to push an image on to a private registry, that image must already have a tag which references the registry. For example, registry.example.com/myimage:latest. The push is cancelled if the HTTP connection is closed.
+    execution: false
+    outputs:
+    - contextPath: Docker.ImagePush
+      description: Image Push Result
+      type: String
+  - name: docker-image-tag
+    arguments:
+    - default: false
+      description: Image name or ID to tag.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: The repository to tag in. For example, someuser/someimage.
+      isArray: false
+      name: repo
+      required: false
+      secret: false
+    - default: false
+      description: The name of the new tag.
+      isArray: false
+      name: tag
+      required: false
+      secret: false
+    deprecated: false
+    description: Tag an image so that it becomes part of a repository.
+    execution: false
+    
+    outputs:
+    - contextPath: Docker.ImageTag.Status Code
+      description: Image Tag Result
+      type: String
+  dockerimage: demisto/python3:3.10.5.31928
   feed: false
   isfetch: false
   longRunning: false

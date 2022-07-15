@@ -1,0 +1,39 @@
+{
+  "Machine Action Id": "5b38733b-ed80-47be-b892-f2ffb52593fd",
+  "MachineId": "f70f9fe6b29cd9511652434919c6530618f06606",
+  "Hostname": "desktop-s2455r9",
+  "Status": "Succeeded",
+  "Creation time": "2022-02-17T08:20:02.6180466Z",
+  "Commands": [
+    {
+      "startTime": null,
+      "endTime": "2022-02-17T08:22:33.823Z",
+      "commandStatus": "Completed",
+      "errors": ["error1", "error2", "error3"],
+      "command": {
+        "type": "GetFile",
+        "params": [
+          {
+            "key": "Path",
+            "value": "test.txt"
+          }
+        ]
+      }
+    },
+    {
+      "startTime": null,
+      "endTime": "2022-02-17T08:22:33.823Z",
+      "commandStatus": "Completed",
+      "errors": [],
+      "command": {
+        "type": "GetFile",
+        "params": [
+          {
+            "key": "Path",
+            "value": "test222.txt"
+          }
+        ]
+      }
+    }
+  ]
+}

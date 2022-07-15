@@ -785,7 +785,7 @@ tasks:
       key:
         simple: valid_urls
       value:
-        simple: '"http:\\example.com", "http:example.com", "www.ru.wikipedia.org/wiki/Елизавета_I", "www.golang.org/pkg/regexp/syntax/", "www.mock.com?e=P6wGLG", "www.bücher.de", "www.mock.com?gbdfs", "https://very.non.malicious.link.com/?url=https://hs-493391.t.myspot.net/e2t/c/*W18tsYF1kx8GnW3gMqC22tNDpb0/*VyTf3G8Z5tzsW6ZtJVm16pm9y0/5/f18dQhb0Sjvg8YHtdnW4yW9Gg7wXdkxW1226P22BplFbW4X4JfH3tD-KTW2K4V9Y8–HBkW8-26zT54WmDkW8-y12S8HbRxPN8k1dMQpSBF3N8WhTQ1JVPWnW58jdzV55F8NJW1TxP_c3-zX8TW1h4tYc1ZJc7nW9dSlS635rgClW93-JnT6rY-3sW2KQ2YY1Gk5btW360lT36pzHWBW79p91d2tk5vHW2z_scn6x2RKSW5-lMJc5tl56XW4rg-x22m3yw6W4ygqRJ3bHG73W4XqJc33wXgzKW30W3q936dSQMW2B2Mrq5WdvG4W4rq3_c3Rjc3wW3HcVw66skpxGW4VJsm45Wh0RvW4rV7dB6mRlwJW6MqkD43Hzf02W3jvrZM4kZvVwW61S2h-82G-VBN8yRlRqrPpMvVrJh2D4kxR3rW69_fvX4rHWjtN7mNJrsch-NYW2XGkjn2GD9D7W49WgNP6ZGyNkN5mdMt3bhl36W9c2TH44VyT05W7-fpqd9kRtWfW2pglVT6vc-Z6VJtGSY2XT6Ms0&data=02\|01\|bark@demisto.com\|097990af37d940aab90608d65127c465\|8b86a65e3c3a44068ac319a6b5cc52bc\|1\|0\|636785628577804533&sdata=nSdMICDRUwP60OgXBo79s8rQUywrWxaYdr7BKPeXamo=&reserved=0"'
+        simple: '"http:\\example.com", "165.225.225.99/3.com","http:example.com", "www.ru.wikipedia.org/wiki/Елизавета_I", "www.golang.org/pkg/regexp/syntax/", "www.mock.com?e=P6wGLG", "www.bücher.de", "www.mock.com?gbdfs", "https://very.non.malicious.link.com/?url=https://hs-493391.t.myspot.net/e2t/c/*W18tsYF1kx8GnW3gMqC22tNDpb0/*VyTf3G8Z5tzsW6ZtJVm16pm9y0/5/f18dQhb0Sjvg8YHtdnW4yW9Gg7wXdkxW1226P22BplFbW4X4JfH3tD-KTW2K4V9Y8–HBkW8-26zT54WmDkW8-y12S8HbRxPN8k1dMQpSBF3N8WhTQ1JVPWnW58jdzV55F8NJW1TxP_c3-zX8TW1h4tYc1ZJc7nW9dSlS635rgClW93-JnT6rY-3sW2KQ2YY1Gk5btW360lT36pzHWBW79p91d2tk5vHW2z_scn6x2RKSW5-lMJc5tl56XW4rg-x22m3yw6W4ygqRJ3bHG73W4XqJc33wXgzKW30W3q936dSQMW2B2Mrq5WdvG4W4rq3_c3Rjc3wW3HcVw66skpxGW4VJsm45Wh0RvW4rV7dB6mRlwJW6MqkD43Hzf02W3jvrZM4kZvVwW61S2h-82G-VBN8yRlRqrPpMvVrJh2D4kxR3rW69_fvX4rHWjtN7mNJrsch-NYW2XGkjn2GD9D7W49WgNP6ZGyNkN5mdMt3bhl36W9c2TH44VyT05W7-fpqd9kRtWfW2pglVT6vc-Z6VJtGSY2XT6Ms0&data=02\|01\|bark@demisto.com\|097990af37d940aab90608d65127c465\|8b86a65e3c3a44068ac319a6b5cc52bc\|1\|0\|636785628577804533&sdata=nSdMICDRUwP60OgXBo79s8rQUywrWxaYdr7BKPeXamo=&reserved=0"'
     separatecontext: false
     view: |-
       {
@@ -875,6 +875,14 @@ tasks:
             iscontext: true
           right:
             value:
+              simple: http://165.225.225.99/3.com
+      - - operator: containsString
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
               simple: www.mock.com?gbdfs
       - - operator: containsString
           left:
@@ -930,7 +938,7 @@ tasks:
       key:
         simple: invalid_urls
       value:
-        simple: '"http://a.b--c.de/", "http://-a.b.co", "http://3628126748", "http://.www.foo.bar/", "http://10.1.1.254", "http:// shouldfail.com", "http://foo.bar/foo(bar)baz quux", "http://-error-.invalid/"'
+        simple: '"http://a.b--c.de/", "http://-a.b.co", "165.225.225.99","http://3628126748", "http://.www.foo.bar/", "http://10.1.1.254", "http:// shouldfail.com", "http://foo.bar/foo(bar)baz quux", "http://-error-.invalid/"'
     separatecontext: false
     view: |-
       {
@@ -997,6 +1005,14 @@ tasks:
           right:
             value:
               simple: http://a.b--c.de/
+      - - operator: notContainsString
+          left:
+            value:
+              simple: ${URL.Data}
+            iscontext: true
+          right:
+            value:
+              simple: http://165.225.225.99
       - - operator: notContainsString
           left:
             value:

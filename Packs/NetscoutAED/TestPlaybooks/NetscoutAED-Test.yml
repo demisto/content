@@ -157,8 +157,8 @@ tasks:
     task:
       id: 051ed9a0-dc2e-4987-8d62-810dfe204962
       version: -1
-      name: Remove country from outbound blacklisted list
-      description: Removes one or more countries from the outbound blacklist.
+      name: Remove country from outbound block listed list
+      description: Removes one or more countries from the outbound block list.
       script: '|||na-ed-outbound-blacklisted-countries-remove'
       type: regular
       iscommand: true
@@ -191,8 +191,8 @@ tasks:
     task:
       id: 03e5eab6-5d1f-4233-8ca0-8efc020363bc
       version: -1
-      name: Get list of outbound blacklisted countries
-      description: Gets the countries on the outbound blacklist. By default, 10 blacklisted
+      name: Get list of outbound block listed countries
+      description: Gets the countries on the outbound block list. By default, 10 block listed
         countries are returned.
       script: '|||na-ed-outbound-blacklisted-countries-list'
       type: regular
@@ -272,8 +272,8 @@ tasks:
     task:
       id: fb7037aa-1262-440b-89b3-581699e9a981
       version: -1
-      name: Add country to the outbound blacklisted list
-      description: Adds one or more countries to the outbound blacklist.
+      name: Add country to the outbound block listed list
+      description: Adds one or more countries to the outbound block list.
       script: '|||na-ed-outbound-blacklisted-countries-add'
       type: regular
       iscommand: true
@@ -417,8 +417,8 @@ tasks:
     task:
       id: 529e733f-955e-4e25-8f2c-489a93b31789
       version: -1
-      name: Add country to the inbound blacklisted list
-      description: Adds one or more countries to the inbound blacklist by pgid or
+      name: Add country to the inbound block listed list
+      description: Adds one or more countries to the inbound block list by pgid or
         cid.
       script: '|||na-ed-inbound-blacklisted-countries-add'
       type: regular
@@ -452,8 +452,8 @@ tasks:
     task:
       id: 48dc582c-a6ff-402b-8919-d7049dadbbe7
       version: -1
-      name: Remove country from inbound blacklisted list
-      description: Removes one or more countries from the blacklist for a specific
+      name: Remove country from inbound block listed list
+      description: Removes one or more countries from the block list for a specific
         protection group or for all protection groups.
       script: '|||na-ed-inbound-blacklisted-countries-remove'
       type: regular
@@ -487,11 +487,11 @@ tasks:
     task:
       id: 5a848897-9b3e-4d66-8e17-074df7701993
       version: -1
-      name: Get list of inbound blacklisted countries
-      description: Gets the inbound blacklisted countries. By default, 10 blacklisted
-        countries are returned. To return blacklisted countries for specific protection
+      name: Get list of inbound block listed countries
+      description: Gets the inbound block listed countries. By default, 10 block listed
+        countries are returned. To return block listed countries for specific protection
         groups, specify a list of protection group IDs or central configuration IDs.
-        An ID of -1 selects countries that are globally blacklisted.
+        An ID of -1 selects countries that are globally block listed.
       script: '|||na-ed-inbound-blacklisted-countries-list'
       type: regular
       iscommand: true
@@ -555,8 +555,8 @@ tasks:
     task:
       id: d0676571-41bf-487a-891b-f6f9038d9b11
       version: -1
-      name: Add host to the outbound blacklisted list
-      description: Adds one or more hosts to the outbound blacklist.
+      name: Add host to the outbound block listed list
+      description: Adds one or more hosts to the outbound block list.
       script: '|||na-ed-outbound-blacklisted-hosts-add'
       type: regular
       iscommand: true
@@ -589,8 +589,8 @@ tasks:
     task:
       id: 2bec560a-78e3-40a3-81d1-9a480a5637e5
       version: -1
-      name: Add host to the inbound blacklisted list
-      description: Adds one or more hosts to the inbound blacklisted list.
+      name: Add host to the inbound block listed list
+      description: Adds one or more hosts to the inbound block listed list.
       script: '|||na-ed-inbound-blacklisted-hosts-add'
       type: regular
       iscommand: true
@@ -623,8 +623,8 @@ tasks:
     task:
       id: 9ba5c820-9740-4e57-84c4-9f0bee82615f
       version: -1
-      name: Add host to the outbound whitelisted list
-      description: Adds one or more hosts to the outbound whitelisted list
+      name: Add host to the outbound allow listed list
+      description: Adds one or more hosts to the outbound allow listed list
       script: '|||na-ed-outbound-whitelisted-hosts-add'
       type: regular
       iscommand: true
@@ -658,7 +658,7 @@ tasks:
       id: 0f7760a2-e700-4229-8b9b-a56e58aeecea
       version: -1
       name: Add host to the inbound whitelisted list
-      description: Adds one or more hosts to the inbound whitelisted list.
+      description: Adds one or more hosts to the inbound allow listed list.
       script: '|||na-ed-inbound-whitelisted-hosts-add'
       type: regular
       iscommand: true
@@ -755,8 +755,8 @@ tasks:
     task:
       id: f00e83cf-52cf-48e8-8710-19100a51a1c5
       version: -1
-      name: Replace host in the outbound blacklisted list
-      description: Replaces all the hosts on the outbound blacklisted list.
+      name: Replace host in the outbound block listed list
+      description: Replaces all the hosts on the outbound block listed list.
       script: '|||na-ed-outbound-blacklisted-hosts-replace'
       type: regular
       iscommand: true
@@ -789,8 +789,8 @@ tasks:
     task:
       id: a6838b61-1b4a-44bd-870a-1be68dec5c37
       version: -1
-      name: Replace host in the inbound blacklisted list
-      description: Replaces all the hosts on the inbound blacklist.
+      name: Replace host in the inbound block listed list
+      description: Replaces all the hosts on the inbound block list.
       script: '|||na-ed-inbound-blacklisted-hosts-replace'
       type: regular
       iscommand: true
@@ -824,7 +824,7 @@ tasks:
       id: 70acb5ed-18cf-493b-8124-4e8dff7acb7a
       version: -1
       name: Replace host in the outbound whitelisted list
-      description: Replaces all the hosts on the outbound whitelisted list.
+      description: Replaces all the hosts on the outbound allow listed list.
       script: '|||na-ed-outbound-whitelisted-hosts-replace'
       type: regular
       iscommand: true
@@ -858,7 +858,7 @@ tasks:
       id: 9b59d235-078f-40ff-8674-aed0853c4f96
       version: -1
       name: Replace host in the inbound whitelisted list
-      description: Replaces all the hosts on the inbound whitelist.
+      description: Replaces all the hosts on the inbound allow list.
       script: '|||na-ed-inbound-whitelisted-hosts-replace'
       type: regular
       iscommand: true
@@ -1021,8 +1021,8 @@ tasks:
     task:
       id: ed832c31-2ed4-41ff-8e64-cd69b2d30a46
       version: -1
-      name: Get list of outbound blacklisted host
-      description: Gets the outbound blacklisted hosts. By default, 10 blacklisted
+      name: Get list of outbound block listed hosts
+      description: Gets the outbound block listed hosts. By default, 10 block listed
         hosts are returned.
       script: '|||na-ed-outbound-blacklisted-hosts-list'
       type: regular
@@ -1053,11 +1053,11 @@ tasks:
     task:
       id: 0c9a07fd-e63a-4ce9-87b7-0c1b204d4759
       version: -1
-      name: Get list of inbound blacklisted hosts
-      description: Gets the inbound blacklisted hosts. By default, 10 blacklisted
-        hosts are returned. To return blacklisted hosts for specific protection groups,
+      name: Get list of inbound block listed hosts
+      description: Gets the inbound block listed hosts. By default, 10 block listed
+        hosts are returned. To return block listed hosts for specific protection groups,
         specify a list of protection group IDs or central configuration IDs. An ID
-        of -1 selects hosts that are globally blacklisted.
+        of -1 selects hosts that are globally block listed.
       script: '|||na-ed-inbound-blacklisted-hosts-list'
       type: regular
       iscommand: true
@@ -1088,8 +1088,7 @@ tasks:
       id: 6b952c27-c285-45ac-8697-21da510c9e4c
       version: -1
       name: Get list of outbound whitelisted hosts
-      description: Gets the outbound whitelisted hosts. By default, 10 whitelisted
-        hosts are returned.
+      description: Gets the outbound hosts on allow list. By default, 10 hosts on allow list are returned.
       script: '|||na-ed-outbound-whitelisted-hosts-list'
       type: regular
       iscommand: true
@@ -1119,11 +1118,11 @@ tasks:
     task:
       id: 5825247b-9d4f-425f-854b-9d30eb425e93
       version: -1
-      name: Get list of inbound whitelisted hosts
-      description: Get the whitelisted hosts. By default, 10 whitelisted hosts are
-        returned. To return whitelisted hosts for specific protection groups, specify
+      name: Get list of inbound allow listed hosts
+      description: Get the hosts on allow list. By default, 10 hosts on allow list are
+        returned. To return hosts on allow list for specific protection groups, specify
         a list of protection group IDs or central configuration IDs. An ID of -1 selects
-        hosts that are globally whitelisted.
+        hosts that are globally allow listed.
       script: '|||na-ed-inbound-whitelisted-hosts-list'
       type: regular
       iscommand: true
@@ -1312,8 +1311,8 @@ tasks:
     task:
       id: 960ee207-8731-4f9e-8a71-7430cb3999e2
       version: -1
-      name: Remove host in the outbound blacklisted list
-      description: Removes one or more hosts or CIDRS from the outbound blacklist.
+      name: Remove host in the outbound block listed list
+      description: Removes one or more hosts or CIDRS from the outbound block list.
       script: '|||na-ed-outbound-blacklisted-hosts-remove'
       type: regular
       iscommand: true
@@ -1346,8 +1345,8 @@ tasks:
     task:
       id: fa6cbc1b-6020-4ffb-8930-7fe6f51f7b09
       version: -1
-      name: Remove host in the inbound blacklisted list
-      description: Removes one or more hosts or CIDRs from the blacklist for a specific
+      name: Remove host in the inbound block listed list
+      description: Removes one or more hosts or CIDRs from the block list for a specific
         protection group or for all protection groups.
       script: '|||na-ed-inbound-blacklisted-hosts-remove'
       type: regular
@@ -1381,8 +1380,8 @@ tasks:
     task:
       id: 4d0a5bfc-2198-42f9-80ca-48a6d032e117
       version: -1
-      name: Remove host in the outbound whitelisted list
-      description: Removes one or more hosts or CIDRs from the outbound whitelist.
+      name: Remove host in the outbound allow listed list
+      description: Removes one or more hosts or CIDRs from the outbound allow list.
       script: '|||na-ed-outbound-whitelisted-hosts-remove'
       type: regular
       iscommand: true
@@ -1415,8 +1414,8 @@ tasks:
     task:
       id: 7f0bc918-f2c7-4750-82a6-779d17d74096
       version: -1
-      name: Remove host in the inbound whitelisted list
-      description: Removes one or more hosts or CIDRs from the whitelist for a specific
+      name: Remove host in the inbound allow listed list
+      description: Removes one or more hosts or CIDRs from the allow list for a specific
         protection group or for all protection groups.
       script: '|||na-ed-inbound-whitelisted-hosts-remove'
       type: regular
@@ -1450,8 +1449,8 @@ tasks:
     task:
       id: 76bab339-b8d0-4899-88a1-baaeb398eb19
       version: -1
-      name: Get list of outbound blacklisted host
-      description: Gets the outbound blacklisted hosts. By default, 10 blacklisted
+      name: Get list of outbound block listed host
+      description: Gets the outbound block listed hosts. By default, 10 block listed
         hosts are returned.
       script: '|||na-ed-outbound-blacklisted-hosts-list'
       type: regular
@@ -1482,11 +1481,11 @@ tasks:
     task:
       id: 91b232b8-bef2-4b00-8557-9a6b32674340
       version: -1
-      name: Get list of inbound blacklisted hosts
-      description: Gets the inbound blacklisted hosts. By default, 10 blacklisted
-        hosts are returned. To return blacklisted hosts for specific protection groups,
+      name: Get list of inbound block listed hosts
+      description: Gets the inbound block listed hosts. By default, 10 block listed
+        hosts are returned. To return block listed hosts for specific protection groups,
         specify a list of protection group IDs or central configuration IDs. An ID
-        of -1 selects hosts that are globally blacklisted.
+        of -1 selects hosts that are globally block listed.
       script: '|||na-ed-inbound-blacklisted-hosts-list'
       type: regular
       iscommand: true
@@ -1516,9 +1515,8 @@ tasks:
     task:
       id: 05c697f2-cf49-47e9-8bd3-490da01fb277
       version: -1
-      name: Get list of outbound whitelisted hosts
-      description: Gets the outbound whitelisted hosts. By default, 10 whitelisted
-        hosts are returned.
+      name: Get list of outbound allow listed hosts
+      description: Gets the outbound hosts on allow list. By default, 10 hosts on allow list are returned.
       script: '|||na-ed-outbound-whitelisted-hosts-list'
       type: regular
       iscommand: true
@@ -1549,10 +1547,10 @@ tasks:
       id: 0fdbefd8-373a-4f91-8b0e-a2f88cfc2ad4
       version: -1
       name: Get list of inbound whitelisted hosts
-      description: Get the whitelisted hosts. By default, 10 whitelisted hosts are
-        returned. To return whitelisted hosts for specific protection groups, specify
+      description: Get the hosts on allow list. By default, 10 hosts on allow list are
+        returned. To return hosts on allow list for specific protection groups, specify
         a list of protection group IDs or central configuration IDs. An ID of -1 selects
-        hosts that are globally whitelisted.
+        hosts that are globally allow listed.
       script: '|||na-ed-inbound-whitelisted-hosts-list'
       type: regular
       iscommand: true
@@ -1728,8 +1726,8 @@ tasks:
     task:
       id: 145a4d66-f016-4ab4-8729-9fa47a895020
       version: -1
-      name: Add domains to the inbound blacklisted list
-      description: Adds one or more domains to the blacklist by pgid or cid.
+      name: Add domains to the inbound block listed list
+      description: Adds one or more domains to the block list by pgid or cid.
       script: '|||na-ed-inbound-blacklisted-domains-add'
       type: regular
       iscommand: true
@@ -1762,7 +1760,7 @@ tasks:
     task:
       id: 963e485c-2542-4a31-84bc-4c1bb23e40a9
       version: -1
-      name: Verify that domains were added to the inbound blacklisted list
+      name: Verify that domains were added to the inbound block listed list
       type: condition
       iscommand: false
       brand: ""
@@ -1844,11 +1842,11 @@ tasks:
     task:
       id: d2d4ccb7-3409-4908-8d1c-330df30dec8d
       version: -1
-      name: Get list of inbound blacklisted domains
-      description: Gets the blacklisted domains. By default, 10 blacklisted domains
-        are returned. To return blacklisted domains for specific protection groups,
+      name: Get list of inbound block listed domains
+      description: Gets the block listed domains. By default, 10 block listed domains
+        are returned. To return block listed domains for specific protection groups,
         specify a list of protection group IDs or central configuration IDs. An ID
-        of -1 selects domains that are globally blacklisted.
+        of -1 selects domains that are globally block listed.
       script: '|||na-ed-inbound-blacklisted-domains-list'
       type: regular
       iscommand: true
@@ -1926,8 +1924,8 @@ tasks:
     task:
       id: bada919a-6665-462c-8df0-510c3fcd8978
       version: -1
-      name: Remove one of the domains from the inbound blacklisted domains
-      description: Removes one or more domains from the blacklist for a specific protection
+      name: Remove one of the domains from the inbound block listed domains
+      description: Removes one or more domains from the block list for a specific protection
         group or for all protection groups.
       script: '|||na-ed-inbound-blacklisted-domains-remove'
       type: regular
@@ -1995,8 +1993,8 @@ tasks:
     task:
       id: 07cb8793-041b-4fe1-8a46-c31ef7edcc09
       version: -1
-      name: Add urls to the inbound blacklisted list
-      description: Adds one or more URLs to the blacklist by pgid or cid.
+      name: Add urls to the inbound block listed list
+      description: Adds one or more URLs to the block list by pgid or cid.
       script: '|||na-ed-inbound-blacklisted-urls-add'
       type: regular
       iscommand: true
@@ -2029,7 +2027,7 @@ tasks:
     task:
       id: 3456bd0a-f19c-4075-8d8a-2cf3918a0184
       version: -1
-      name: Verify that urls were added to the inbound blacklisted list
+      name: Verify that urls were added to the inbound block listed list
       type: condition
       iscommand: false
       brand: ""
@@ -2077,8 +2075,8 @@ tasks:
     task:
       id: 89b3e0e2-c16d-4ab2-8712-176f64a6de18
       version: -1
-      name: Remove one of the urls from the inbound blacklisted domains
-      description: Removes one or more URLs from the blacklist for a specific protection
+      name: Remove one of the urls from the inbound block listed domains
+      description: Removes one or more URLs from the block list for a specific protection
         group or for all protection groups.
       script: '|||na-ed-inbound-blacklisted-urls-remove'
       type: regular
@@ -2146,11 +2144,11 @@ tasks:
     task:
       id: af4a68a2-cabd-4647-82a7-cf9da6a44fc3
       version: -1
-      name: Get list of inbound blacklisted urls
-      description: Gets the blacklisted URLs. By default, 10 blacklisted URLs are
-        returned. To return blacklisted URLs for specific protection groups, specify
+      name: Get list of inbound block listed urls
+      description: Gets the block listed URLs. By default, 10 block listed URLs are
+        returned. To return block listed URLs for specific protection groups, specify
         a list of protection group IDs or central configuration IDs. An ID of -1 selects
-        URLs that are globally blacklisted.
+        URLs that are globally block listed.
       script: '|||na-ed-inbound-blacklisted-urls-list'
       type: regular
       iscommand: true

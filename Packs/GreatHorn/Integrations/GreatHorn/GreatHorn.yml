@@ -24,12 +24,10 @@ configuration:
   required: true
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ""
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
   type: 8
   required: false
 script:
@@ -491,6 +489,6 @@ script:
     - contextPath: GreatHorn.Policy.id
       description: The ID of the policy.
       type: Number
-  dockerimage: demisto/python3:3.9.5.21272
+  dockerimage: demisto/python3:3.9.8.24399
   runonce: false
   subtype: python3

@@ -16,6 +16,10 @@ comment: |-
   Deprecated. Use the "PhishingDedupPreprocessingRule" script instead.
   Find duplicate incidents candidates.
   Using machine learning techniques with pre-defined data (can also use data from the local environment), this script takes into consideration different features such as: labels comparison, email labels (relevant for phishing), incident time difference and shared indicators, which can be customized by the arguments.
+
+  This automation runs using the default Limited User role, unless you explicitly change the permissions.
+  For more information, see the section about permissions here:
+  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
 enabled: true
 args:
 - name: maxNumberOfIncidents
@@ -87,7 +91,6 @@ outputs:
   description: Similar incident name.
   type: string
 scripttarget: 0
-runas: DBotRole
 runonce: true
 dockerimage: demisto/machine-learning:1.0.0.22015
 tests:

@@ -1,8 +1,8 @@
-comment: "This script prints the events fetched from the offense in a table format."
+comment: This script prints the events fetched from the offense in a table format.
 commonfields:
   id: QRadarPrintEvents
   version: -1
-dockerimage: demisto/python3:3.9.5.20070
+dockerimage: demisto/python3:3.10.4.30607
 enabled: true
 name: QRadarPrintEvents
 runas: DBotWeakRole

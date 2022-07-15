@@ -1,0 +1,307 @@
+category: Forensics & Malware Analysis
+commonfields:
+  id: CadoResponse
+  version: -1
+configuration:
+- display: Cado Response Instance
+  additionalinfo: The URL for your Cado Response Instance
+  name: url
+  required: true
+  type: 0
+- display: API Key
+  additionalinfo: The API Key to use for connection
+  name: apikey
+  required: true
+  type: 4
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Default Cado Response Project
+  additionalinfo: Provides a fallback Project ID from Cado Response if you forget
+    to add an ID to a command. If you're not sure, don't change!
+  name: CadoResponse_DefaultProject
+  required: true
+  type: 0
+- display: Default AWS Region
+  additionalinfo: Provides a default AWS region to fallback to if you forget to add
+    it to a command.
+  name: CadoResponse_DefaultRegion
+  required: true
+  type: 0
+- display: Default S3 Bucket
+  additionalinfo: Provides a default S3 bucket to fallback to if you forget to add
+    it to a command.
+  name: CadoResponse_DefaultBucket
+  required: true
+  type: 0
+description: Automate data collection. Process data at cloud speed. Analyze with purpose.
+display: Cado Response
+name: CadoResponse
+script:
+  commands:
+  - name: cado-create-project
+    arguments:
+    - name: project_name
+      default: true
+      description: Name of the project
+      isArray: false
+      required: true
+      secret: false
+    - name: project_description
+      default: false
+      description: Description for the project
+      isArray: false
+      required: false
+      secret: false
+    deprecated: false
+    description: Create a project in Cado Response
+    execution: false
+    outputs:
+    - contextPath: CadoResponse.Project.id
+      description: The Project ID of the newly created project
+      type: Number
+  - name: cado-list-project
+    deprecated: false
+    description: Get a list of projects from Cado Response
+    execution: false
+    arguments:
+    - name: project_id
+      default: true
+      description: ID of the project to retrive
+      isArray: false
+      required: false
+      secret: false
+    - name: limit
+      default: false
+      description: Limit results to retrieve
+      isArray: false
+      required: false
+      secret: false
+    outputs:
+    - contextPath: CadoResponse.Projects.id
+      description: ID of the retrieved project
+      type: Number
+    - contextPath: CadoResponse.Projects.caseName
+      description: Name of the retrieved project
+      type: String
+    - contextPath: CadoResponse.Projects.description
+      description: Description of the retrieved project
+      type: String
+    - contextPath: CadoResponse.Projects.users
+      description: Array of users assigned to the retrieved project
+      type: Array
+    - contextPath: CadoResponse.Projects.created
+      description: Creation date of the project (format YYYY-MM-DDTHH:MM:SSZ)
+      type: Date
+  - name: cado-get-pipeline
+    arguments:
+    - name: pipeline_id
+      description: The id of the pipeline to retrieve
+      isArray: false
+      required: false
+      secret: false
+    - name: project_id
+      default: false
+      description: The id of the project the pipeline belongs to
+      isArray: false
+      required: false
+      secret: false
+    - name: limit
+      default: false
+      description: Limit results to retrieve
+      isArray: false
+      required: false
+      secret: false
+    deprecated: false
+    description: Get pipeline details from Cado Response
+    execution: false
+    outputs:
+    - contextPath: CadoResponse.Pipeline.pipeline_id
+      description: The ID of the retrieved pipeline
+      type: Number
+    - contextPath: CadoResponse.Pipeline.pipeline_type
+      description: The type of pipeline that was retrieved
+      type: String
+    - contextPath: CadoResponse.Pipeline.created
+      description: The date at which the retrieved pipeline was started (format YYYY-MM-DDTHH:MM:SSZ)
+      type: Date
+    - contextPath: CadoResponse.Pipeline.evidence_id
+      description: The evidence ID linked to the retrieved pipeline
+      type: Number
+    - contextPath: CadoResponse.Pipeline.project_id
+      description: The ID of the project the pipeline belongs to
+      type: Number
+    - contextPath: CadoResponse.Pipeline.is_terminated
+      description: A boolean which says if the retrieved pipeline has been finished/terminated
+      type: Boolean
+    - contextPath: CadoResponse.Pipeline.summary
+      description: An array of values containing the cancelled, failed, pending, running
+        and successful pipeline subtasks
+      type: Array
+    - contextPath: CadoResponse.Pipeline.subtask
+      description: An array of tasks in the retrieved pipeline
+      type: Array
+  - name: cado-list-ec2
+    arguments:
+    - name: region
+      description: The AWS region to list instances in
+      isArray: false
+      required: true
+      default: true
+      secret: false
+    - name: project_id
+      default: false
+      description: The ID of the project you wish to attach the acquisition to
+      isArray: false
+      required: false
+      secret: false
+    - name: limit
+      default: false
+      description: Limit results to retrieve
+      isArray: false
+      required: false
+      secret: false
+    deprecated: false
+    description: Get a list of EC2 instances in a region
+    execution: false
+    outputs:
+    - contextPath: CadoResponse.EC2Instances.id
+      description: AWS ID of the EC2 Instance
+      type: Number
+    - contextPath: CadoResponse.EC2Instances.instance_name
+      description: Name of the EC2 Instance
+      type: String
+    - contextPath: CadoResponse.EC2Instances.instance_type
+      description: AWS Type of the EC2 instance
+      type: String
+    - contextPath: CadoResponse.EC2Instances.region
+      description: AWS region of the EC2 instance
+      type: String
+  - name: cado-list-s3
+    arguments:
+    - name: project_id
+      default: true
+      description: The ID of the project you wish to attach the acquisition to
+      isArray: false
+      required: false
+      secret: false
+    - name: limit
+      default: false
+      description: Limit results to retrieve
+      isArray: false
+      required: false
+      secret: false
+    deprecated: false
+    description: Get a list of S3 buckets
+    execution: false
+    outputs:
+    - contextPath: CadoResponse.S3Buckets.buckets
+      description: An array of S3 buckets available to the project
+      type: Array
+  - name: cado-trigger-ec2
+    arguments:
+    - name: project_id
+      default: true
+      description: The ID of the project you wish to attach the acquisition to
+      isArray: false
+      required: false
+      secret: false
+    - name: instance_id
+      default: false
+      description: ID of the EC2 instance to acquire
+      isArray: false
+      required: true
+      secret: false
+    - name: region
+      default: false
+      description: AWS region in which the EC2 instance is located
+      isArray: false
+      required: false
+      secret: false
+    - name: bucket
+      default: false
+      description: S3 bucket where the uploaded disk image resides
+      isArray: false
+      required: false
+      secret: false
+    - name: compress
+      default: false
+      description: Flag indicating if disk compression is enabled
+      isArray: false
+      required: false
+      secret: false
+    - name: include_disks
+      default: false
+      description: Flag indicating if we include disk images in the acquisition
+      isArray: false
+      required: false
+      secret: false
+    - name: include_hash
+      default: false
+      description: Flag indicating if we calculate the hash of the disk
+      isArray: false
+      required: false
+      secret: false
+    - name: include_logs
+      default: false
+      description: Flag indicating if we include system logs in the acquisition
+      isArray: false
+      required: false
+      secret: false
+    - name: include_screenshot
+      default: false
+      description: Flag indicating if we include a screenshot of the system in the
+        acquisition
+      isArray: false
+      required: false
+      secret: false
+    deprecated: false
+    description: Trigger a disk acquisition and processing pipeline in Cado Response
+      for a given EC2 instance
+    execution: false
+    outputs:
+    - contextPath: CadoResponse.EC2Acquisition.pipeline_id
+      description: ID of the created pipeline
+      type: Number
+  - name: cado-trigger-s3
+    arguments:
+    - name: project_id
+      default: true
+      description: The ID of the project you wish to attach the acquisition to
+      isArray: false
+      required: false
+      secret: false
+    - name: bucket
+      default: false
+      description: The S3 bucket name containing the file
+      isArray: false
+      required: true
+      secret: false
+    - name: file_name
+      default: false
+      description: The name of the file to process
+      isArray: false
+      required: true
+      secret: false
+    deprecated: false
+    description: Trigger a disk acquisition and processing pipeline in Cado Response
+      for a given file in an S3 bucket
+    execution: false
+    outputs:
+    - contextPath: CadoResponse.S3Acquisition.pipeline_id
+      description: ID of the created pipeline
+      type: Number
+  isfetch: false
+  runonce: false
+  script: "-"
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.1.25933
+fromversion: "6.0.0"
+tests:
+- No tests (auto formatted)

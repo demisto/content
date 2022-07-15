@@ -242,7 +242,7 @@ script:
       description: Entity ID.
       type: String
     - contextPath: SumoLogicSec.Entity.IsWhitelisted
-      description: Whether or not the Entity is whitelisted.
+      description: Whether or not the Entity is on allow list.
       type: Boolean
     - contextPath: SumoLogicSec.Entity.LastSeen
       description: When the Entity was last seen.
@@ -463,7 +463,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: Whether or not the Entity is whitelisted.
+      description: Whether or not the Entity is on allow list.
     - name: tag
       description: Tag contains value.
     - name: offset
@@ -487,7 +487,7 @@ script:
       description: Hostname associated with IP Entity.
       type: String
     - contextPath: SumoLogicSec.EntityList.IsWhitelisted
-      description: Whether or not the Entity is whitelisted.
+      description: Whether or not the Entity is on allow list.
       type: Boolean
     - contextPath: SumoLogicSec.EntityList.LastSeen
       description: When the Entity was last seen.
@@ -811,7 +811,7 @@ script:
       description: Server response (True or False).
       type: Boolean
     description: Add a Threat Intel Indicator to an Threat Intel Source.
-  dockerimage: demisto/python3:3.9.6.22912
+  dockerimage: demisto/python3:3.9.8.24399
   isfetch: true
   runonce: false
   subtype: python3

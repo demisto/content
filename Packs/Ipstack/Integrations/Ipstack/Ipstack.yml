@@ -11,9 +11,21 @@ configuration:
   defaultvalue: ""
   type: 4
   required: true
+- name: integrationReliability
+  additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: C - Fairly reliable
+  display: Source Reliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  type: 15
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ''
   type: 8
   required: false
 script:
@@ -52,9 +64,24 @@ script:
     - contextPath: Ipstack.IP.longitude
       description: Longitude of the IP address.
       type: string
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: How reliable the score is (for example, "C - fairly reliable").
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
     description: Queries an IP address in ipstack.
   runonce: false
-  dockerimage: demisto/python:2.7.18.20958
+  dockerimage: demisto/python:2.7.18.27799
 tests:
 - Ipstack_Test
 fromversion: 5.0.0

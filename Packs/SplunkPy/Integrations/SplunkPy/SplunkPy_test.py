@@ -1,19 +1,34 @@
 from copy import deepcopy
 import pytest
+from splunklib.binding import AuthenticationError
+
 import SplunkPy as splunk
+import splunklib.client as client
 import demistomock as demisto
 from CommonServerPython import *
 from datetime import timedelta, datetime
+from collections import namedtuple
 
 RETURN_ERROR_TARGET = 'SplunkPy.return_error'
 
-DICT_RAW_RESPONSE = '"1528755951, search_name="NG_SIEM_UC25- High number of hits against ' \
+DICT_RAW_RESPONSE = '"1528755951, url="https://test.url.com", search_name="NG_SIEM_UC25- High number of hits against ' \
                     'unknown website from same subnet", action="allowed", dest="bb.bbb.bb.bbb , cc.ccc.ccc.cc , ' \
                     'xx.xx.xxx.xx , yyy.yy.yyy.yy , zz.zzz.zz.zzz , aa.aa.aaa.aaa", distinct_hosts="5", ' \
                     'first_3_octets="1.1.1", first_time="06/11/18 17:34:07 , 06/11/18 17:37:55 , 06/11/18 17:41:28 , ' \
                     '06/11/18 17:42:05 , 06/11/18 17:42:38", info_max_time="+Infinity", info_min_time="0.000", ' \
                     'src="xx.xx.xxx.xx , yyy.yy.yyy.yy , zz.zzz.zz.zzz , aa.aa.aaa.aaa", u_category="unknown", ' \
                     'user="xyz\\a1234 , xyz\\b5678 , xyz\\c91011 , xyz\\d121314 , unknown", website="2.2.2.2""'
+
+DICT_RAW_RESPONSE_WITH_MESSAGE_ID = '"1528755951, message-id="1", url="https://test.url.com", ' \
+                                    'search_name="NG_SIEM_UC25- High number of hits against ' \
+                                    'unknown website from same subnet", action="allowed", dest="bb.bbb.bb.bbb , ' \
+                                    'cc.ccc.ccc.cc , xx.xx.xxx.xx , yyy.yy.yyy.yy , zz.zzz.zz.zzz , aa.aa.aaa.aaa", ' \
+                                    'distinct_hosts="5", ' \
+                                    'first_3_octets="1.1.1", first_time="06/11/18 17:34:07 , ' \
+                                    '06/11/18 17:37:55 , 06/11/18 17:41:28 , ' \
+                                    '06/11/18 17:42:05 , 06/11/18 17:42:38", info_max_time="+Infinity", info_min_time="0.000", ' \
+                                    'src="xx.xx.xxx.xx , yyy.yy.yyy.yy , zz.zzz.zz.zzz , aa.aa.aaa.aaa", u_category="unknown", ' \
+                                    'user="xyz\\a1234 , xyz\\b5678 , xyz\\c91011 , xyz\\d121314 , unknown", website="2.2.2.2""'
 
 LIST_RAW = 'Feb 13 09:02:55 1,2020/02/13 09:02:55,001606001116,THREAT,url,' \
            '1,2020/02/13 09:02:55,10.1.1.1,1.2.3.4,0.0.0.0,0.0.0.0,rule1,jordy,,web-browsing,vsys1,trust,untrust,' \
@@ -125,7 +140,8 @@ SAMPLE_RESPONSE = [{
     'source': 'Endpoint - Recurring Malware Infection - Rule',
     'sourcetype': 'stash',
     'splunk_server': 'ip-172-31-44-193',
-    'urgency': 'low'
+    'urgency': 'low',
+    'owner': 'unassigned'
 }]
 
 EXPECTED = {
@@ -140,7 +156,25 @@ EXPECTED = {
     "src": "xx.xx.xxx.xx , yyy.yy.yyy.yy , zz.zzz.zz.zzz , aa.aa.aaa.aaa",
     "u_category": "unknown",
     "user": "xyz\\a1234 , xyz\\b5678 , xyz\\c91011 , xyz\\d121314 , unknown",
-    "website": "2.2.2.2"
+    "website": "2.2.2.2",
+    "url": "https://test.url.com"
+}
+
+EXPECTED_WITH_MESSAGE_ID = {
+    "message-id": "1",
+    "action": "allowed",
+    "dest": "bb.bbb.bb.bbb , cc.ccc.ccc.cc , xx.xx.xxx.xx , yyy.yy.yyy.yy , zz.zzz.zz.zzz , aa.aa.aaa.aaa",
+    "distinct_hosts": '5',
+    "first_3_octets": "1.1.1",
+    "first_time": "06/11/18 17:34:07 , 06/11/18 17:37:55 , 06/11/18 17:41:28 , 06/11/18 17:42:05 , 06/11/18 17:42:38",
+    "info_max_time": "+Infinity",
+    "info_min_time": '0.000',
+    "search_name": "NG_SIEM_UC25- High number of hits against unknown website from same subnet",
+    "src": "xx.xx.xxx.xx , yyy.yy.yyy.yy , zz.zzz.zz.zzz , aa.aa.aaa.aaa",
+    "u_category": "unknown",
+    "user": "xyz\\a1234 , xyz\\b5678 , xyz\\c91011 , xyz\\d121314 , unknown",
+    "website": "2.2.2.2",
+    "url": "https://test.url.com"
 }
 
 URL_TESTING_IN = '"url="https://test.com?key=val"'
@@ -164,9 +198,32 @@ RAW_STANDARD = '"Test="success"'
 RAW_JSON_AND_STANDARD_OUTPUT = {"Test": "success"}
 
 
+class Jobs:
+    def __init__(self, status):
+        self.oneshot = None
+        state = namedtuple('state', 'content')
+        self.state = state(content={'dispatchState': str(status)})
+
+    def __getitem__(self, arg):
+        return 0
+
+    def create(self, query, latest_time, app, earliest_time, exec_mode):
+        return {'sid': '123456', 'resultCount': 0}
+
+
+class Service:
+    def __init__(self, status):
+        self.jobs = Jobs(status)
+        self.status = status
+
+    def job(self, sid):
+        return Jobs(self.status)
+
+
 def test_raw_to_dict():
     actual_raw = DICT_RAW_RESPONSE
     response = splunk.rawToDict(actual_raw)
+    response_with_message = splunk.rawToDict(DICT_RAW_RESPONSE_WITH_MESSAGE_ID)
     list_response = splunk.rawToDict(LIST_RAW)
     raw_message = splunk.rawToDict(RAW_WITH_MESSAGE)
     empty = splunk.rawToDict('')
@@ -174,6 +231,7 @@ def test_raw_to_dict():
     character_check = splunk.rawToDict(RESPONSE)
 
     assert EXPECTED == response
+    assert EXPECTED_WITH_MESSAGE_ID == response_with_message
     assert {} == list_response
     assert raw_message.get('SCOPE[29]') == 'autopay\/events\/payroll\/v1\/earning-configuration.configuration-tags' \
                                            '.modify'
@@ -183,6 +241,56 @@ def test_raw_to_dict():
     assert POSITIVE == character_check
     assert splunk.rawToDict(RAW_JSON) == RAW_JSON_AND_STANDARD_OUTPUT
     assert splunk.rawToDict(RAW_STANDARD) == RAW_JSON_AND_STANDARD_OUTPUT
+
+    assert splunk.rawToDict('drilldown_search="key IN ("test1","test2")') == {
+        'drilldown_search': 'key IN (test1,test2)'}
+
+
+@pytest.mark.parametrize('text, output', [
+    ('', ['']),
+    ('"",', ['"",']),
+    #   a value shouldn't do anything special
+    ('woopwoop', ['woopwoop']),
+    #  a normal key value without quotes
+    ('abc=123', ['abc="123"']),
+    #  add a comma at the end
+    ('abc=123,', ['abc="123"']),
+    #  a normal key value with quotes
+    ('cbd="123"', ['cbd="123"']),
+    #  check all wrapped with quotes removed
+    ('"abc="123""', ['abc="123"']),
+    #   we need to remove 111 at the start.
+    ('111, cbd="123"', ['cbd="123"']),
+    # Testing with/without quotes and/or spaces:
+    ('abc=123,cbd=123', ['abc="123"', 'cbd="123"']),
+    ('abc=123,cbd="123"', ['abc="123"', 'cbd="123"']),
+    ('abc="123",cbd=123', ['abc="123"', 'cbd="123"']),
+    ('abc="123",cbd="123"', ['abc="123"', 'cbd="123"']),
+    ('abc=123, cbd=123', ['abc="123"', 'cbd="123"']),
+    ('abc=123, cbd="123"', ['abc="123"', 'cbd="123"']),
+    ('cbd="123", abc=123', ['abc="123"', 'cbd="123"']),
+    ('cbd="123",abc=123', ['abc="123"', 'cbd="123"']),
+    # Continue testing quotes with more values:
+    ('xyz=321,cbd=123,abc=123', ['xyz="321"', 'abc="123"', 'cbd="123"']),
+    ('xyz=321,cbd="123",abc=123', ['xyz="321"', 'abc="123"', 'cbd="123"']),
+    ('xyz="321",cbd="123",abc=123', ['xyz="321"', 'abc="123"', 'cbd="123"']),
+    ('xyz="321",cbd="123",abc="123"', ['xyz="321"', 'abc="123"', 'cbd="123"']),
+    # Testing nested quotes (the main reason for quote_group):
+    #   Try to remove the start 111.
+    ('111, cbd="a="123""', ['cbd="a="123""']),
+    ('cbd="a="123""', ['cbd="a="123""']),
+    ('cbd="a="123", b=321"', ['cbd="a="123", b="321""']),
+    ('cbd="a=123, b=321"', ['cbd="a="123", b="321""']),
+    ('cbd="a=123, b="321""', ['cbd="a="123", b="321""']),
+    ('cbd="a="123", b="321""', ['cbd="a="123", b="321""']),
+    ('cbd="a=123, b=321"', ['cbd="a="123", b="321""']),
+    ('xyz=123, cbd="a="123", b=321"', ['xyz="123"', 'cbd="a="123", b="321""']),
+    ('xyz="123", cbd="a="123", b="321""', ['xyz="123"', 'cbd="a="123", b="321""']),
+    ('xyz="123", cbd="a="123", b="321"", qqq=2', ['xyz="123"', 'cbd="a="123", b="321""', 'qqq="2"']),
+    ('xyz="123", cbd="a="123", b="321"", qqq="2"', ['xyz="123"', 'cbd="a="123", b="321""', 'qqq="2"']),
+])
+def test_quote_group(text, output):
+    assert sorted(splunk.quote_group(text)) == sorted(output)
 
 
 data_test_replace_keys = [
@@ -232,6 +340,12 @@ def test_parse_time_to_minutes_invalid_time_unit(mocker):
 
 SEARCH_RESULT = [
     {
+        "But": {
+            "This": "is"
+        },
+        "Very": "Unique"
+    },
+    {
         "Something": "regular",
         "But": {
             "This": "is"
@@ -259,6 +373,7 @@ REGEX_CHOSEN_FIELDS_SUBSET = [
     "Some*",
     "Very"
 ]
+
 NON_EXISTING_FIELDS = [
     "SDFAFSD",
     "ASBLFKDJK"
@@ -425,6 +540,19 @@ def test_get_kv_store_config(fields, expected_output, mocker):
 
 
 def test_fetch_incidents(mocker):
+    """
+    Given
+    - mocked incidents api response
+    - a mapper which should not map the user owner into the incident response
+
+    When
+    - executing the fetch incidents flow
+
+    Then
+    - make sure the incident response is valid.
+    - make sure that the owner is not part of the incident response
+    """
+    from SplunkPy import UserMappingObject
     mocker.patch.object(demisto, 'incidents')
     mocker.patch.object(demisto, 'setLastRun')
     mock_last_run = {'time': '2018-10-24T14:13:20'}
@@ -433,12 +561,14 @@ def test_fetch_incidents(mocker):
     mocker.patch('demistomock.params', return_value=mock_params)
     service = mocker.patch('splunklib.client.connect', return_value=None)
     mocker.patch('splunklib.results.ResultsReader', return_value=SAMPLE_RESPONSE)
-    splunk.fetch_incidents(service)
+    mapper = UserMappingObject(service, False)
+    splunk.fetch_incidents(service, mapper)
     incidents = demisto.incidents.call_args[0][0]
     assert demisto.incidents.call_count == 1
     assert len(incidents) == 1
     assert incidents[0]["name"] == "Endpoint - Recurring Malware Infection - Rule : Endpoint - " \
                                    "Recurring Malware Infection - Rule"
+    assert not incidents[0].get('owner')
 
 
 SPLUNK_RESULTS = [
@@ -471,6 +601,18 @@ def test_create_mapping_dict():
 
 
 def test_fetch_notables(mocker):
+    """
+    Given
+    - mocked incidents api response
+    - a mapper which should not map the user owner into the incident response
+
+    When
+    - executing the fetch notables flow
+
+    Then
+    - make sure the incident response is valid.
+    - make sure that the owner is not part of the incident response
+    """
     mocker.patch.object(demisto, 'incidents')
     mocker.patch.object(demisto, 'setLastRun')
     mock_last_run = {'time': '2018-10-24T14:13:20'}
@@ -479,12 +621,14 @@ def test_fetch_notables(mocker):
     mocker.patch('demistomock.params', return_value=mock_params)
     service = mocker.patch('splunklib.client.connect', return_value=None)
     mocker.patch('splunklib.results.ResultsReader', return_value=SAMPLE_RESPONSE)
-    splunk.fetch_notables(service, enrich_notables=False)
+    mapper = splunk.UserMappingObject(service, False)
+    splunk.fetch_notables(service, enrich_notables=False, mapper=mapper)
     incidents = demisto.incidents.call_args[0][0]
     assert demisto.incidents.call_count == 1
     assert len(incidents) == 1
     assert incidents[0]["name"] == "Endpoint - Recurring Malware Infection - Rule : Endpoint - " \
                                    "Recurring Malware Infection - Rule"
+    assert not incidents[0].get('owner')
 
 
 """ ========== Enriching Fetch Mechanism Tests ========== """
@@ -546,7 +690,8 @@ def test_reset_enriching_fetch_mechanism(mocker):
     (datetime.utcnow().isoformat(), datetime.utcnow().isoformat(), 5, False),
     ((datetime.utcnow() - timedelta(minutes=6)).isoformat(), datetime.utcnow().isoformat(), 5, True)
 ])
-def test_is_enrichment_exceeding_timeout(drilldown_creation_time, asset_creation_time, enrichment_timeout, output):
+def test_is_enrichment_exceeding_timeout(mocker, drilldown_creation_time, asset_creation_time, enrichment_timeout,
+                                         output):
     """
     Scenario: When one of the notable's enrichments is exceeding the timeout, we want to create an incident we all
      the data gathered so far.
@@ -561,7 +706,8 @@ def test_is_enrichment_exceeding_timeout(drilldown_creation_time, asset_creation
     Then:
     - Return the expected result
     """
-    splunk.ENABLED_ENRICHMENTS = [splunk.DRILLDOWN_ENRICHMENT, splunk.ASSET_ENRICHMENT]
+    mocker.patch.object(splunk, 'ENABLED_ENRICHMENTS',
+                        return_value=[splunk.DRILLDOWN_ENRICHMENT, splunk.ASSET_ENRICHMENT])
     notable = splunk.Notable({splunk.EVENT_ID: 'id'})
     notable.enrichments.append(splunk.Enrichment(splunk.DRILLDOWN_ENRICHMENT, creation_time=drilldown_creation_time))
     notable.enrichments.append(splunk.Enrichment(splunk.ASSET_ENRICHMENT, creation_time=asset_creation_time))
@@ -627,7 +773,7 @@ def test_get_drilldown_timeframe(notable_data, raw, status, earliest, latest, mo
 @pytest.mark.parametrize('raw_field, notable_data, expected_field, expected_value', [
     ('field|s', {'field': '1'}, 'field', '1'),
     ('field', {'field': '1'}, 'field', '1'),
-    ('field|s', {'_raw': 'field=1,value=2'}, 'field', '1'),
+    ('field|s', {'_raw': 'field=1, value=2'}, 'field', '1'),
     ('x', {'y': '2'}, '', '')
 ])
 def test_get_notable_field_and_value(raw_field, notable_data, expected_field, expected_value, mocker):
@@ -681,8 +827,8 @@ def test_build_drilldown_search(notable_data, search, raw, expected_search, mock
 
 @pytest.mark.parametrize('notable_data, prefix, fields, query_part', [
     ({'user': ['u1', 'u2']}, 'identity', ['user'], '(identity="u1" OR identity="u2")'),
-    ({'_raw': '1233,user=u1'}, 'user', ['user'], 'user="u1"'),
-    ({'user': ['u1', 'u2'], '_raw': '1321,src_user=u3'}, 'user', ['user', 'src_user'],
+    ({'_raw': '1233, user=u1'}, 'user', ['user'], 'user="u1"'),
+    ({'user': ['u1', 'u2'], '_raw': '1321, src_user=u3'}, 'user', ['user', 'src_user'],
      '(user="u1" OR user="u2" OR user="u3")'),
     ({}, 'prefix', ['field'], '')
 ])
@@ -755,10 +901,11 @@ def test_get_remote_data_command(mocker):
     mocker.patch.object(demisto, 'info')
     mocker.patch('SplunkPy.results.ResultsReader', return_value=[updated_notable])
     mocker.patch.object(demisto, 'results')
-    splunk.get_remote_data_command(Service(), args, close_incident=False)
+    service = Service()
+    splunk.get_remote_data_command(service, args, close_incident=False, mapper=splunk.UserMappingObject(service, False))
     results = demisto.results.call_args[0][0]
     assert demisto.results.call_count == 1
-    assert results == [{'status': '1'}]
+    assert results == [{'event_id': 'id', 'status': '1'}]
 
 
 def test_get_remote_data_command_close_incident(mocker):
@@ -778,11 +925,12 @@ def test_get_remote_data_command_close_incident(mocker):
     mocker.patch.object(demisto, 'info')
     mocker.patch('SplunkPy.results.ResultsReader', return_value=[updated_notable])
     mocker.patch.object(demisto, 'results')
-    splunk.get_remote_data_command(Service(), args, close_incident=True)
+    service = Service()
+    splunk.get_remote_data_command(service, args, close_incident=True, mapper=splunk.UserMappingObject(service, False))
     results = demisto.results.call_args[0][0]
     assert demisto.results.call_count == 1
     assert results == [
-        {'status': '5'},
+        {'event_id': 'id', 'status': '5'},
         {
             'Type': EntryType.NOTE,
             'Contents': {
@@ -859,7 +1007,6 @@ def test_edit_notable_event__failed_to_update(mocker, requests_mock):
      4, True)
 ])
 def test_update_remote_system(args, params, call_count, success, mocker, requests_mock):
-
     class Service:
         def __init__(self):
             self.token = 'fake_token'
@@ -871,7 +1018,9 @@ def test_update_remote_system(args, params, call_count, success, mocker, request
     requests_mock.post(base_url + 'services/notable_update', json={'success': success, 'message': 'wow'})
     if not success:
         mocker.patch.object(demisto, 'error')
-    assert splunk.update_remote_system_command(args, params, Service(), None) == args['remoteId']
+    service = Service()
+    mapper = splunk.UserMappingObject(service, False)
+    assert splunk.update_remote_system_command(args, params, service, None, mapper=mapper) == args['remoteId']
     assert demisto.debug.call_count == call_count
     if not success:
         assert demisto.error.call_count == 1
@@ -1051,20 +1200,400 @@ def test_build_search_human_readable(mocker):
         Test headers are calculated correctly:
             * comma-separated, space-separated
             * support commas and spaces inside header values (if surrounded with parenthesis)
-
+            * rename headers
     """
     func_patch = mocker.patch('SplunkPy.update_headers_from_field_names')
     results = [
-        {'ID': 1, 'Header with space': 'h1', 'header3': 1, 'header_without_space': '1234'},
-        {'ID': 2, 'Header with space': 'h2', 'header3': 2, 'header_without_space': '1234'},
+        {'ID': 1, 'Header with space': 'h1', 'header3': 1, 'header_without_space': '1234',
+         'old_header_1': '1', 'old_header_2': '2'},
+        {'ID': 2, 'Header with space': 'h2', 'header3': 2, 'header_without_space': '1234',
+         'old_header_1': '1', 'old_header_2': '2'},
     ]
     args = {
         'query': 'something | table ID "Header with space" header3 header_without_space '
-                 'comma,separated "Single,Header,with,Commas" | something else'
+                 'comma,separated "Single,Header,with,Commas" old_header_1 old_header_2 | something else'
+                 ' | rename old_header_1 AS new_header_1 old_header_2 AS new_header_2'
     }
     expected_headers = ['ID', 'Header with space', 'header3', 'header_without_space',
-                        'comma', 'separated', 'Single,Header,with,Commas']
+                        'comma', 'separated', 'Single,Header,with,Commas', 'new_header_1', 'new_header_2']
 
     splunk.build_search_human_readable(args, results)
     headers = func_patch.call_args[0][1]
     assert headers == expected_headers
+
+
+def test_build_search_human_readable_multi_table_in_query(mocker):
+    """
+    Given:
+        multiple table headers in query
+
+    When:
+        building a human readable table as part of splunk-search
+
+    Then:
+        Test headers are calculated correctly:
+            * all expected header exist without duplications
+    """
+    args = {
+        "query": " table header_1, header_2 | stats state_1, state_2 | table header_1, header_2, header_3, header_4"}
+    results = [
+        {'header_1': 'val_1', 'header_2': 'val_2', 'header_3': 'val_3', 'header_4': 'val_4'},
+    ]
+    expected_headers_hr = "|header_1|header_2|header_3|header_4|\n|---|---|---|---|"
+    hr = splunk.build_search_human_readable(args, results)
+    assert expected_headers_hr in hr
+
+
+@pytest.mark.parametrize('polling', [False, True])
+def test_build_search_kwargs(polling):
+    """
+    Given:
+        The splunk-search command args.
+
+    When:
+        Running the build_search_kwargs to build the search query kwargs.
+
+    Then:
+        Ensure the query kwargs as expected.
+
+    """
+    args = {'earliest_time': '2021-11-23T10:10:10', 'latest_time': '2021-11-23T10:10:20', 'app': 'test_app',
+            'polling': polling}
+    kwargs_normalsearch = splunk.build_search_kwargs(args, polling)
+    for field in args:
+        if field == 'polling':
+            assert 'exec_mode' in kwargs_normalsearch
+            if polling:
+                assert kwargs_normalsearch['exec_mode'] == 'normal'
+            else:
+                assert kwargs_normalsearch['exec_mode'] == 'blocking'
+        else:
+            assert field in kwargs_normalsearch
+
+
+@pytest.mark.parametrize('polling,status', [
+    (False, 'DONE'), (True, 'DONE'), (True, 'RUNNING')
+])
+def test_splunk_search_command(mocker, polling, status):
+    """
+    Given:
+        A search query with args.
+
+    When:
+        Running the splunk_search_command with and without polling.
+
+    Then:
+        Ensure the result as expected in polling and in regular search.
+
+    """
+
+    mocker.patch.object(demisto, 'args', return_value={'query': 'query', 'earliest_time': '2021-11-23T10:10:10',
+                                                       'latest_time': '2020-10-20T10:10:20', 'app': 'test_app',
+                                                       'polling': polling})
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported')
+
+    search_result = splunk.splunk_search_command(Service(status))
+
+    if search_result.scheduled_command:
+        assert search_result.outputs['Status'] == status
+        assert search_result.scheduled_command._args['sid'] == '123456'
+    else:
+        assert search_result.outputs['Splunk.Result'] == []
+        assert search_result.readable_output == '### Splunk Search results for query: query\n**No entries.**\n'
+
+
+@pytest.mark.parametrize(
+    argnames='credentials',
+    argvalues=[{'username': 'test', 'password': 'test'}, {'splunkToken': 'token', 'password': 'test'}]
+)
+def test_module_test(mocker, credentials):
+    """
+    Given:
+        - Credentials for connecting Splunk
+
+    When:
+        - Run test-module command
+
+    Then:
+        - Validate the info method was called
+    """
+
+    # prepare
+    mocker.patch.object(client.Service, 'info')
+    mocker.patch.object(client.Service, 'login')
+    service = client.Service(**credentials)
+    # run
+
+    splunk.test_module(service)
+
+    # validate
+    assert service.info.call_count == 1
+
+
+@pytest.mark.parametrize(
+    argnames='credentials',
+    argvalues=[{'username': 'test', 'password': 'test'}, {'splunkToken': 'token', 'password': 'test'}]
+)
+def test_module__exception_raised(mocker, credentials):
+    """
+    Given:
+        - AuthenticationError was occurred
+
+    When:
+        - Run test-module command
+
+    Then:
+        - Validate the expected message was returned
+    """
+
+    # prepare
+    def exception_raiser():
+        raise AuthenticationError()
+
+    mocker.patch.object(AuthenticationError, '__init__', return_value=None)
+    mocker.patch.object(client.Service, 'info', side_effect=exception_raiser)
+    mocker.patch.object(client.Service, 'login')
+
+    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
+    service = client.Service(**credentials)
+    # run
+
+    splunk.test_module(service)
+
+    # validate
+    assert return_error_mock.call_args[0][0] == 'Authentication error, please validate your credentials.'
+
+
+def test_module_hec_url(mocker):
+    """
+    Given:
+        - hec_url was is in params
+
+    When:
+        - Run test-module command
+
+    Then:
+        - Validate taht the request.get was called with the expected args
+    """
+
+    # prepare
+
+    mocker.patch.object(demisto, 'params', return_value={'hec_url': 'test_hec_url'})
+    mocker.patch.object(client.Service, 'info')
+    mocker.patch.object(client.Service, 'login')
+    mocker.patch.object(requests, 'get')
+
+    service = client.Service(username='test', password='test')
+    # run
+
+    splunk.test_module(service)
+
+    # validate
+    assert requests.get.call_args[0][0] == 'test_hec_url/services/collector/health'
+
+
+def test_labels_with_non_str_values(mocker):
+    """
+    Given:
+        - Raw response with values in _raw that stored as dict or list
+
+    When:
+        - Fetch incidents
+
+    Then:
+        - Validate the Labels created in the incident are well formatted to avoid server errors on json.Unmarshal
+    """
+
+    from SplunkPy import UserMappingObject
+    # prepare
+    raw = {
+        "message": "Authentication of user via Radius",
+        "actor_obj": {
+            "id": "test",
+            "type": "User",
+            "alternateId": "test",
+            "displayName": "test"
+        },
+        "actor_list": [{
+            "id": "test",
+            "type": "User",
+            "alternateId": "test",
+            "displayName": "test"
+        }],
+        "actor_tuple": ("id", "test"),
+        "num_val": 100,
+        "bool_val": False,
+        "float_val": 100.0
+    }
+    mocked_response = SAMPLE_RESPONSE[0].copy()
+    mocked_response['_raw'] = json.dumps(raw)
+    mock_last_run = {'time': '2018-10-24T14:13:20'}
+    mock_params = {'fetchQuery': "something", "parseNotableEventsRaw": True}
+    mocker.patch.object(demisto, 'incidents')
+    mocker.patch.object(demisto, 'setLastRun')
+    mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
+    mocker.patch('demistomock.params', return_value=mock_params)
+    mocker.patch('splunklib.results.ResultsReader', return_value=[mocked_response])
+
+    # run
+    service = mocker.patch('splunklib.client.connect', return_value=None)
+    mapper = UserMappingObject(service, False)
+    splunk.fetch_incidents(service, mapper)
+    incidents = demisto.incidents.call_args[0][0]
+
+    # validate
+    assert demisto.incidents.call_count == 1
+    assert len(incidents) == 1
+    labels = incidents[0]["labels"]
+    assert len(labels) >= 7
+    assert all(isinstance(label['value'], str) for label in labels)
+
+
+def test_empty_string_as_app_param_value(mocker):
+    """
+    Given:
+        - A mock to demisto.params that contains an 'app' key with an empty string as its value
+
+    When:
+        - Run splunk.get_connection_args() function
+
+    Then:
+        - Validate that the value of the 'app' key in connection_args is '-'
+    """
+
+    # prepare
+    mock_params = {'app': '', 'host': '111', 'port': '111'}
+    mocker.patch('demistomock.params', return_value=mock_params)
+
+    # run
+    connection_args = splunk.get_connection_args()
+
+    # validate
+    assert connection_args.get('app') == '-'
+
+
+OWNER_MAPPING = [{u'xsoar_user': u'test_xsoar', u'splunk_user': u'test_splunk', u'wait': True},
+                 {u'xsoar_user': u'test_not_full', u'splunk_user': u'', u'wait': True},
+                 {u'xsoar_user': u'', u'splunk_user': u'test_not_full', u'wait': True}, ]
+
+MAPPER_CASES_XSOAR_TO_SPLUNK = [
+    ('', 'unassigned',
+     'Could not find splunk user matching xsoar\'s . Consider adding it to the splunk_xsoar_users lookup.'),
+    ('not_in_table', 'unassigned',
+     'Could not find splunk user matching xsoar\'s not_in_table. Consider adding it to the splunk_xsoar_users lookup.')
+
+]
+
+
+@pytest.mark.parametrize('xsoar_name, expected_splunk, expected_msg', MAPPER_CASES_XSOAR_TO_SPLUNK)
+def test_owner_mapping_mechanism_xsoar_to_splunk(mocker, xsoar_name, expected_splunk, expected_msg):
+    """
+    Given:
+        - different xsoar values
+
+    When:
+        - fetching, or mirroring
+
+    Then:
+        - validates the splunk user is correct
+    """
+
+    def mocked_get_record(col, value_to_search):
+        return filter(lambda x: x[col] == value_to_search, OWNER_MAPPING[:-1])
+
+    service = mocker.patch('splunklib.client.connect', return_value=None)
+    mapper = splunk.UserMappingObject(service, True, table_name='splunk_xsoar_users',
+                                      xsoar_user_column_name='xsoar_user',
+                                      splunk_user_column_name='splunk_user')
+    mocker.patch.object(mapper, '_get_record', side_effect=mocked_get_record)
+    error_mock = mocker.patch.object(demisto, 'error')
+    s_user = mapper.get_splunk_user_by_xsoar(xsoar_name)
+    assert s_user == expected_splunk
+    if error_mock.called:
+        assert error_mock.call_args[0][0] == expected_msg
+
+
+MAPPER_CASES_SPLUNK_TO_XSOAR = [
+    ('test_splunk', 'test_xsoar', None),
+    ('test_not_full', '',
+     "Xsoar user matching splunk's test_not_full is empty. Fix the record in splunk_xsoar_users lookup."),
+    ('unassigned', '',
+     "Could not find xsoar user matching splunk's unassigned. Consider adding it to the splunk_xsoar_users lookup."),
+    ('not_in_table', '',
+     "Could not find xsoar user matching splunk's not_in_table. Consider adding it to the splunk_xsoar_users lookup.")
+
+]
+
+
+@pytest.mark.parametrize('splunk_name, expected_xsoar, expected_msg', MAPPER_CASES_SPLUNK_TO_XSOAR)
+def test_owner_mapping_mechanism_splunk_to_xsoar(mocker, splunk_name, expected_xsoar, expected_msg):
+    """
+    Given:
+        - different xsoar values
+
+    When:
+        - fetching, or mirroring
+
+    Then:
+        - validates the splunk user is correct
+    """
+
+    def mocked_get_record(col, value_to_search):
+        return filter(lambda x: x[col] == value_to_search, OWNER_MAPPING)
+
+    service = mocker.patch('splunklib.client.connect', return_value=None)
+    mapper = splunk.UserMappingObject(service, True, table_name='splunk_xsoar_users',
+                                      xsoar_user_column_name='xsoar_user',
+                                      splunk_user_column_name='splunk_user')
+    mocker.patch.object(mapper, '_get_record', side_effect=mocked_get_record)
+    error_mock = mocker.patch.object(demisto, 'error')
+    s_user = mapper.get_xsoar_user_by_splunk(splunk_name)
+    assert s_user == expected_xsoar
+    if error_mock.called:
+        assert error_mock.call_args[0][0] == expected_msg
+
+
+COMMAND_CASES = [
+    ({'xsoar_username': 'test_xsoar'},  # case normal single username was provided
+     [{'SplunkUser': u'test_splunk', 'XsoarUser': 'test_xsoar'}]),
+    ({'xsoar_username': 'test_xsoar, Non existing'},  # case normal multiple usernames were provided
+     [{'SplunkUser': u'test_splunk', 'XsoarUser': 'test_xsoar'},
+      {'SplunkUser': 'unassigned', 'XsoarUser': 'Non existing'}]),
+    ({'xsoar_username': 'Non Existing,'},  # case normal&empty multiple usernames were provided
+     [{'SplunkUser': 'unassigned', 'XsoarUser': 'Non Existing'},
+      {'SplunkUser': 'Could not map splunk user, Check logs for more info.', 'XsoarUser': ''}]),
+    ({'xsoar_username': ['test_xsoar', 'Non existing']},  # case normal&missing multiple usernames were provided
+     [{'SplunkUser': u'test_splunk', 'XsoarUser': 'test_xsoar'},
+      {'SplunkUser': 'unassigned', 'XsoarUser': 'Non existing'}]),
+    ({'xsoar_username': ['test_xsoar', 'Non existing'], 'map_missing': False},
+     # case normal & missing multiple usernames were provided without missing's mapping activated
+     [{'SplunkUser': u'test_splunk', 'XsoarUser': 'test_xsoar'},
+      {'SplunkUser': 'Could not map splunk user, Check logs for more info.', 'XsoarUser': 'Non existing'}]),
+    ({'xsoar_username': 'Non Existing,', 'map_missing': False},  # case missing&empty multiple usernames were provided
+     [{'SplunkUser': 'Could not map splunk user, Check logs for more info.', 'XsoarUser': 'Non Existing'},
+      {'SplunkUser': 'Could not map splunk user, Check logs for more info.', 'XsoarUser': ''}]
+     ),
+]
+
+
+@pytest.mark.parametrize('xsoar_names, expected_outputs', COMMAND_CASES)
+def test_get_splunk_user_by_xsoar_command(mocker, xsoar_names, expected_outputs):
+    """
+    Given: a list of xsoar users
+    When: trying to get splunk matching users
+    Then: validates correctness of list
+    """
+
+    def mocked_get_record(col, value_to_search):
+        return filter(lambda x: x[col] == value_to_search, OWNER_MAPPING[:-1])
+
+    service = mocker.patch('splunklib.client.connect', return_value=None)
+
+    mapper = splunk.UserMappingObject(service, True, table_name='splunk_xsoar_users',
+                                      xsoar_user_column_name='xsoar_user',
+                                      splunk_user_column_name='splunk_user')
+    # Ignoring logging pytest error
+    mocker.patch.object(demisto, 'error')
+    mocker.patch.object(mapper, '_get_record', side_effect=mocked_get_record)
+    res = mapper.get_splunk_user_by_xsoar_command(xsoar_names)
+    assert res.outputs == expected_outputs

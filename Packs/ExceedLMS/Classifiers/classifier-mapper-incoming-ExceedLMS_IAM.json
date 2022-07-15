@@ -1,0 +1,32 @@
+{
+	"defaultIncidentType": "",
+	"description": "Maps a user data to a User Profile data.",
+	"id": "User Profile - ExceedLMS (Incoming)",
+	"mapping": {
+		"User Profile": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Given Name": {
+					"complex": null,
+					"simple": "first_name"
+				},
+				"Surname": {
+					"complex": null,
+					"simple": "last_name"
+				},
+				"Username": {
+					"complex": null,
+					"simple": "login"
+				},
+				"Email": {
+					"complex": null,
+					"simple": "email"
+				}
+			}
+		}
+	},
+	"name": "User Profile - ExceedLMS (Incoming)",
+	"type": "mapping-incoming",
+	"version": -1,
+	"fromVersion": "6.0.0"
+}

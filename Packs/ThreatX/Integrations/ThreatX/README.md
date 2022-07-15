@@ -3,7 +3,7 @@
 <p> </p>
 <h2>Use Cases</h2>
 <ul>
-<li>Add and remove CIDR ranges and IP addresses to various block lists or the whitelist</li>
+<li>Add and remove CIDR ranges and IP addresses to various block lists or the allow list</li>
 <li>Gather Entity metadata for intel enrichment and DBot scoring</li>
 <li>Set Entity notes for SOC integration or further automation</li>
 </ul>
@@ -36,10 +36,10 @@
 <ol>
 <li><a href="#h_59c15eb9-7d02-4619-bf4c-928361850aed" target="_self">Temporarily block an IP address or CIDR: threatx-block-ip</a></li>
 <li><a href="#h_4a194e38-057c-458d-9a99-1be7321f3824" target="_self">Unblock an IP address or CIDR: threatx-unblock-ip</a></li>
-<li><a href="#h_b6f120d1-595a-46a0-b881-c768cb198c85" target="_self">Blacklist an IP address or CIDR: threatx-blacklist-ip</a></li>
-<li><a href="#h_1f19f572-dfb3-46b4-a19d-b3a883af1ddc" target="_self">Remove an IP address or CIDR from the blacklist: threatx-unblacklist-ip</a></li>
-<li><a href="#h_4c6d37d6-b0d3-4cb0-8b4f-1d27f8b0773f" target="_self">Whitelist an IP address or CIDR: threatx-whitelist-ip</a></li>
-<li><a href="#h_3de39027-25e1-47c2-94a1-3273d5a306ea" target="_self">Remove an IP address or CIDR from the whitelist: threatx-unwhitelist-ip</a></li>
+<li><a href="#h_b6f120d1-595a-46a0-b881-c768cb198c85" target="_self">Block list an IP address or CIDR: threatx-blacklist-ip</a></li>
+<li><a href="#h_1f19f572-dfb3-46b4-a19d-b3a883af1ddc" target="_self">Remove an IP address or CIDR from the block list: threatx-unblacklist-ip</a></li>
+<li><a href="#h_4c6d37d6-b0d3-4cb0-8b4f-1d27f8b0773f" target="_self">Add an IP address or CIDR to allow list: threatx-whitelist-ip</a></li>
+<li><a href="#h_3de39027-25e1-47c2-94a1-3273d5a306ea" target="_self">Remove an IP address or CIDR from the allow list: threatx-unwhitelist-ip</a></li>
 <li><a href="#h_2ef4b677-f78b-4551-9145-62cf54e475c0" target="_self">Get entity information: threatx-get-entities</a></li>
 <li><a href="#h_882e9901-cf9e-4022-925f-7fffe952f323" target="_self">Get entity notes: threatx-get-entity-notes</a></li>
 <li><a href="#h_5f86c9a3-44b4-40ab-b81d-8c5ce83a2efe" target="_self">Add a note to an entity: threatx-add-entity-note</a></li>
@@ -187,14 +187,14 @@
 </thead>
 <tbody>
 <tr>
-<td>Blocklist entry for ip 12.12.12.12 removed</td>
+<td>Block list entry for ip 12.12.12.12 removed</td>
 </tr>
 </tbody>
 </table>
 <p> </p>
-<h3 id="h_b6f120d1-595a-46a0-b881-c768cb198c85">3. Blacklist an IP address or CIDR </h3>
+<h3 id="h_b6f120d1-595a-46a0-b881-c768cb198c85">3. Block list an IP address or CIDR </h3>
 <hr>
-<p>Adds an IP address or CIDR to the blacklist. </p>
+<p>Adds an IP address or CIDR to the block list. </p>
 <h5>Base Command</h5>
 <p><code>threatx-blacklist-ip</code></p>
 <h5>Input</h5>
@@ -209,12 +209,12 @@
 <tbody>
 <tr>
 <td style="width: 138px;">ip</td>
-<td style="width: 430px;">IP address or CIDR, for example: "10.1.1.1" or "10.1.1.0/24".</td>
+<td style="width: 430px;">IP address or CIDR in CSV format, for example: "10.1.1.1,10.1.1.0/24".</td>
 <td style="width: 71px;">Required</td>
 </tr>
 <tr>
 <td style="width: 146px;">description</td>
-<td style="width: 511px;">The description of the IP record in the blacklist. The default value is: "Added by ThreatX Cortex XSOAR Integration".</td>
+<td style="width: 511px;">The description of the IP record in the block list. The default value is: "Added by ThreatX Cortex XSOAR Integration".</td>
 <td style="width: 83px;">Optional</td>
 </tr>
 </tbody>
@@ -261,14 +261,14 @@
 </thead>
 <tbody>
 <tr>
-<td>Blacklist entry for ip 12.12.12.12 added</td>
+<td>Block list entry for ip 12.12.12.12 added</td>
 </tr>
 </tbody>
 </table>
 <p> </p>
-<h3 id="h_1f19f572-dfb3-46b4-a19d-b3a883af1ddc">4. Remove an IP address or CIDR from the blacklist</h3>
+<h3 id="h_1f19f572-dfb3-46b4-a19d-b3a883af1ddc">4. Remove an IP address or CIDR from the block list</h3>
 <hr>
-<p>Removes an IP address or CIDR from the blacklist.</p>
+<p>Removes an IP address or CIDR from the block list.</p>
 <h5>Base Command</h5>
 <p><code>threatx-unblacklist-ip</code></p>
 <h5>Input</h5>
@@ -302,7 +302,7 @@
 <tr>
 <td style="width: 107px;">IP.Address</td>
 <td style="width: 68px;">string</td>
-<td style="width: 565px;">IP address or CIDR that was removed from the blacklist.</td>
+<td style="width: 565px;">IP address or CIDR that was removed from the block list.</td>
 </tr>
 </tbody>
 </table>
@@ -329,14 +329,14 @@
 </thead>
 <tbody>
 <tr>
-<td>Blacklist entry for ip 12.12.12.12 removed</td>
+<td>Block list entry for ip 12.12.12.12 removed</td>
 </tr>
 </tbody>
 </table>
 <p> </p>
-<h3 id="h_4c6d37d6-b0d3-4cb0-8b4f-1d27f8b0773f">5. Whitelist an IP address or CIDR </h3>
+<h3 id="h_4c6d37d6-b0d3-4cb0-8b4f-1d27f8b0773f">5. Add an IP address or CIDR to allow list</h3>
 <hr>
-<p> Adds an IP address or CIDR to the whitelist.</p>
+<p> Adds an IP address or CIDR to the allow list.</p>
 <h5>Base Command</h5>
 <p><code>threatx-whitelist-ip</code></p>
 <h5>Input</h5>
@@ -356,7 +356,7 @@
 </tr>
 <tr>
 <td style="width: 146px;">description</td>
-<td style="width: 511px;">The description of the IP record in the whitelist. The default value is: "Added by ThreatX Cortex XSOAR Integration".</td>
+<td style="width: 511px;">The description of the IP record in the allow list. The default value is: "Added by ThreatX Cortex XSOAR Integration".</td>
 <td style="width: 83px;">Optional</td>
 </tr>
 </tbody>
@@ -375,7 +375,7 @@
 <tr>
 <td>IP.Address</td>
 <td>string</td>
-<td>IP address or CIDR was added to the whitelist.</td>
+<td>IP address or CIDR was added to the allow list.</td>
 </tr>
 </tbody>
 </table>
@@ -408,9 +408,9 @@
 </tbody>
 </table>
 <p> </p>
-<h3 id="h_3de39027-25e1-47c2-94a1-3273d5a306ea">6. Remove an IP address or CIDR from the whitelist </h3>
+<h3 id="h_3de39027-25e1-47c2-94a1-3273d5a306ea">6. Remove an IP address or CIDR from the allow list</h3>
 <hr>
-<p>Removes an IP address or CIDR from the whitelist. </p>
+<p>Removes an IP address or CIDR from the allow list. </p>
 <h5>Base Command</h5>
 <p><code>threatx-unwhitelist-ip</code></p>
 <h5>Input</h5>
@@ -444,7 +444,7 @@
 <tr>
 <td style="width: 102px;">IP.Address</td>
 <td style="width: 63px;">string</td>
-<td style="width: 575px;">IP address or CIDR that was removed from the whitelist.</td>
+<td style="width: 575px;">IP address or CIDR that was removed from the allow list.</td>
 </tr>
 </tbody>
 </table>
@@ -472,7 +472,7 @@
 </thead>
 <tbody>
 <tr>
-<td>Whitelist entry for ip 12.12.12.12 removed</td>
+<td>Allow list entry for ip 12.12.12.12 removed</td>
 </tr>
 </tbody>
 </table>

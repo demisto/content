@@ -512,7 +512,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Set to "block" to blacklist the URL, "permit" to whitelist it
+      description: Set to "block" to block list the URL, "permit" to add to allow list.
       isArray: false
       name: action
       predefined:
@@ -1639,7 +1639,7 @@ script:
   script: '-'
   subtype: python2
   type: python
-  dockerimage: demisto/python:2.7.18.20958
+  dockerimage: demisto/python:2.7.18.27799
 tests:
 - Mimecast test
 fromversion: 5.0.0

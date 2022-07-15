@@ -2,6 +2,41 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
+def findTopUsedPLaybooks(accountName):
+    stats = demisto.executeCommand(
+        "demisto-api-post",
+        {
+            "uri": f"{accountName}statistics/widgets/query",
+            "body": {
+                "size": 3,
+                "dataType": "incidents",
+                "query": "",
+                "dateRange": {
+                    "period": {
+                        "byFrom": "days",
+                        "fromValue": 30
+                    }
+                },
+                "widgetType": "pie",
+                "params": {
+                    "groupBy": [
+                        "playbookId"
+                    ],
+                    "valuesFormat": "abbreviated"
+                },
+            },
+        })
+    res = stats[0]["Contents"]["response"]
+    topUsed = []
+    for playbook in res:
+        pb = {}
+        pb['playbookname'] = playbook['name']
+        topUsed.append(pb)
+
+    # print(topUsed)
+    demisto.executeCommand('setIncident', {"healthchecktopusedplaybooks": topUsed})
+
+
 args = demisto.args()
 
 DESCRIPTION = [
@@ -52,43 +87,69 @@ builtinPlaybooks = demisto.executeCommand(
                          "body": {"query": "system:T"}})[0]["Contents"]["response"]["playbooks"]
 
 builtinPlaybooksNames = []
+
+if customPlaybooks is not None:
+    copyDetected = []
+    sleepDetected = []
+    multiSetIncidentDetected = []
+    multiTasksDetected = []
+    emailAskUserDetected = []
+
+    for builtinPlaybook in builtinPlaybooks:
+        builtinPlaybooksNames.append(builtinPlaybook["name"])
+
+    for customPlaybook in customPlaybooks:
+
+        for builtinPlaybooksName in builtinPlaybooksNames:
+            if builtinPlaybooksName in customPlaybook["name"]:
+                copyDetected.append(customPlaybook["name"])
+
+        if "Sleep" in customPlaybook["scriptIds"]:
+            sleepDetected.append(customPlaybook["name"])
+
+        if str(customPlaybook).count("Builtin|||setIncident") >= thresholds['CustomPlaybookSetIncidentCount']:
+            multiSetIncidentDetected.append(customPlaybook["name"])
+
+        if "EmailAskUser" in customPlaybook["scriptIds"]:
+            emailAskUserDetected.append(customPlaybook["name"])
+
+        if len(customPlaybook["tasks"]) > thresholds['CustomPlaybookLength']:
+            multiTasksDetected.append(customPlaybook["name"])
+
+
 res = []
+if copyDetected:
+    res.append({"category": "Playbooks", "severity": "Low",
+                "description": f"{DESCRIPTION[0]}".format(", ".join(copyDetected)),
+                "resolution": f"{RESOLUTION[0]}"
+                })
 
-for builtinPlaybook in builtinPlaybooks:
-    builtinPlaybooksNames.append(builtinPlaybook["name"])
+if sleepDetected:
+    res.append({"category": "Playbooks", "severity": "Low",
+                "description": f"{DESCRIPTION[1]}".format(", ".join(sleepDetected)),
+                "resolution": f"{RESOLUTION[1]}"
+                })
 
-for customPlaybook in customPlaybooks:
+if multiSetIncidentDetected:
+    res.append({"category": "Playbooks", "severity": "Low",
+                "description": f"{DESCRIPTION[2]}".format(", ".join(multiSetIncidentDetected)),
+                "resolution": f"{RESOLUTION[2]}"
+                })
 
-    for builtinPlaybooksName in builtinPlaybooksNames:
-        if builtinPlaybooksName in customPlaybook["name"]:
-            res.append({"category": "Playbooks", "severity": "Low",
-                        "description": f"{DESCRIPTION[0]}".format(customPlaybook["name"]),
-                        "resolution": f"{RESOLUTION[0]}"
-                        })
+if emailAskUserDetected:
+    res.append({"category": "Playbooks", "severity": "Low",
+                "description": f"{DESCRIPTION[3]}".format(", ".join(emailAskUserDetected)),
+                "resolution": f"{RESOLUTION[3]}"
+                })
 
-    if "Sleep" in customPlaybook["scriptIds"]:
-        res.append({"category": "Playbooks", "severity": "Low",
-                    "description": f"{DESCRIPTION[1]}".format(customPlaybook["name"]),
-                    "resolution": f"{RESOLUTION[1]}"
-                    })
+if multiTasksDetected:
+    res.append({"category": "Playbooks", "severity": "Low",
+                "description": f"{DESCRIPTION[4]}".format(", ".join(multiTasksDetected)),
+                "resolution": f"{RESOLUTION[4]}"
+                })
 
-    if str(customPlaybook).count("Builtin|||setIncident") >= thresholds['CustomPlaybookSetIncidentCount']:
-        res.append({"category": "Playbooks", "severity": "Low",
-                    "description": f"{DESCRIPTION[2]}".format(customPlaybook["name"]),
-                    "resolution": f"{RESOLUTION[2]}"
-                    })
 
-    if "EmailAskUser" in customPlaybook["scriptIds"]:
-        res.append({"category": "Playbooks", "severity": "Low",
-                    "description": f"{DESCRIPTION[3]}".format(customPlaybook["name"]),
-                    "resolution": f"{RESOLUTION[3]}"
-                    })
-
-    if len(customPlaybook["tasks"]) > thresholds['CustomPlaybookLength']:
-        res.append({"category": "Playbooks", "severity": "Low",
-                    "description": f"{DESCRIPTION[4]}".format(customPlaybook["name"]),
-                    "resolution": f"{RESOLUTION[4]}"
-                    })
+findTopUsedPLaybooks(account_name)
 
 results = CommandResults(
     readable_output="HealthCheckPlaybookAnalysis Done",

@@ -1,0 +1,61 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Cohesity Helios Incoming mapper",
+    "mapping": {
+        "Cohesity Helios Ransomware Incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Alert Category": {
+                    "complex": null,
+                    "simple": "alertCategory"
+                },
+                "Alert Name": {
+                    "complex": null,
+                    "simple": "alertDocument.alertName"
+                },
+                "Cohesity Helios Alert Description": {
+                    "complex": null,
+                    "simple": "alertDocument.alertDescription"
+                },
+                "Cohesity Helios Alert Cause": {
+                    "complex": null,
+                    "simple": "alertDocument.alertCause"
+                },
+                "Cohesity Helios Anomalous Object Name": {
+                    "complex": null,
+                    "simple": "propertyList.[1].value"
+                },
+                "Cohesity Helios Anomaly Strength": {
+                    "complex": null,
+                    "simple": "propertyList.[12].value"
+                },
+                "Cohesity Helios Cluster Id": {
+                    "complex": null,
+                    "simple": "clusterId"
+                },
+                "Cohesity Helios Cluster Name": {
+                    "complex": null,
+                    "simple": "clusterName"
+                },
+                "Cohesity Helios Object Environment": {
+                    "complex": null,
+                    "simple": "propertyList.[9].value"
+                },
+                "State": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "alertState",
+                        "transformers": []
+                    },
+                    "simple": ""
+                }
+            }
+        }
+    },
+    "name": "Cohesity Helios Incoming mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

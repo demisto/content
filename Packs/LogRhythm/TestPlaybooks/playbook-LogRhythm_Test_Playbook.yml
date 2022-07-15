@@ -399,12 +399,7 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: LogRhythm.Alarm.Event.ClassificationName
-            iscontext: true
-      - - operator: isExists
-          left:
-            value:
-              simple: LogRhythm.Alarm.Event.ImpactedHostName
+              simple: LogRhythm.Alarm.Event
             iscontext: true
     view: |-
       {

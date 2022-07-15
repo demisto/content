@@ -187,7 +187,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: 'from:avishai@demistodev.onmicrosoft.com OR dbot@demisto.works
+                  simple: 'from:sr-test02@demistodev.onmicrosoft.com OR dbot@demisto.works
                     subject:special test via playbook after:'
               suffix: {}
       subject: {}
@@ -622,7 +622,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: 'from:avishai@demistodev.onmicrosoft.com OR dbot@demisto.works
+                  simple: 'from:sr-test02@demistodev.onmicrosoft.com OR dbot@demisto.works
                     OR mockpoc@demisto.works subject:special test via playbook after:'
               suffix: {}
       subject: {}
@@ -1349,7 +1349,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: 'from:avishai@demistodev.onmicrosoft.com OR dbot@demisto.works
+                  simple: 'from:sr-test02@demistodev.onmicrosoft.com OR dbot@demisto.works
                     OR mockpoc@demisto.works subject:special test via playbook after:'
               suffix: {}
       subject: {}
@@ -1451,7 +1451,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: 'from:avishai@demistodev.onmicrosoft.com OR dbot@demisto.works
+                  simple: 'from:sr-test02@demistodev.onmicrosoft.com OR dbot@demisto.works
                     OR mockpoc@demisto.works subject:special test via playbook after:'
               suffix: {}
       subject: {}
@@ -1514,7 +1514,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: 'from:avishai@demistodev.onmicrosoft.com OR dbot@demisto.works
+                  simple: 'from:sr-test02@demistodev.onmicrosoft.com OR dbot@demisto.works
                     subject:special test via playbook after:'
               suffix: {}
       subject: {}
@@ -1577,7 +1577,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: 'from:avishai@demistodev.onmicrosoft.com OR dbot@demisto.works
+                  simple: 'from:sr-test02@demistodev.onmicrosoft.com OR dbot@demisto.works
                     subject:special test via playbook after:'
               suffix: {}
       subject: {}

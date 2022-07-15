@@ -7,13 +7,13 @@ TWIST_EXE = '/dnstwist/dnstwist.py'
 
 if demisto.command() == 'dnstwist-domain-variations':
 
-    KEYS_TO_MD = ["whois-updated", "whois-created", "dns-a", "dns-mx", "dns-ns"]
+    KEYS_TO_MD = ["whois_updated", "whois_created", "dns_a", "dns_mx", "dns_ns"]
     DOMAIN = demisto.args()['domain']
     LIMIT = int(demisto.args()['limit'])
     WHOIS = demisto.args().get('whois')
 
     def get_dnstwist_result(domain, include_whois):
-        args = [TWIST_EXE, '-j']
+        args = [TWIST_EXE, '-f', 'json']
         if include_whois:
             args.append('-w')
         args.append(domain)
@@ -26,9 +26,9 @@ if demisto.command() == 'dnstwist-domain-variations':
             temp = {}  # type: dict
             for k, v in x.items():
                 if k in KEYS_TO_MD:
-                    if x["domain-name"] not in temp:
-                        temp["domain-name"] = x["domain-name"]
-                    if k == "dns-a":
+                    if x["domain"] not in temp:
+                        temp["domain-name"] = x["domain"]
+                    if k == "dns_a":
                         temp["IP Address"] = v
                     else:
                         temp[k] = v
@@ -39,7 +39,7 @@ if demisto.command() == 'dnstwist-domain-variations':
     dnstwist_result = get_dnstwist_result(DOMAIN, WHOIS == 'yes')
     new_result = get_domain_to_info_map(dnstwist_result)
     md = tableToMarkdown('dnstwist for domain - ' + DOMAIN, new_result,
-                         headers=["domain-name", "IP Address", "dns-mx", "dns-ns", "whois-updated", "whois-created"])
+                         headers=["domain-name", "IP Address", "dns_mx", "dns_ns", "whois_updated", "whois_created"])
 
     domain_context = new_result[0]  # The requested domain for variations
     domains_context_list = new_result[1:LIMIT + 1]  # The variations domains
@@ -49,14 +49,14 @@ if demisto.command() == 'dnstwist-domain-variations':
         temp = {"Name": item["domain-name"]}
         if "IP Address" in item:
             temp["IP"] = item["IP Address"]
-        if "dns-mx" in item:
-            temp["DNS-MX"] = item["dns-mx"]
-        if "dns-ns" in item:
-            temp["DNS-NS"] = item["dns-ns"]
-        if "whois-updated" in item:
-            temp["WhoisUpdated"] = item["whois-updated"]
-        if "whois-created" in item:
-            temp["WhoisCreated"] = item["whois-created"]
+        if "dns_mx" in item:
+            temp["DNS-MX"] = item["dns_mx"]
+        if "dns_ns" in item:
+            temp["DNS-NS"] = item["dns_ns"]
+        if "whois_updated" in item:
+            temp["WhoisUpdated"] = item["whois_updated"]
+        if "whois_created" in item:
+            temp["WhoisCreated"] = item["whois_created"]
         domains.append(temp)
 
     ec = {"Domains": domains}
@@ -64,14 +64,14 @@ if demisto.command() == 'dnstwist-domain-variations':
         ec["Name"] = domain_context["domain-name"]
     if "IP Address" in domain_context:
         ec["IP"] = domain_context["IP Address"]
-    if "dns-mx" in domain_context:
-        ec["DNS-MX"] = domain_context["dns-mx"]
-    if "dns-ns" in domain_context:
-        ec["DNS-NS"] = domain_context["dns-ns"]
-    if "whois-updated" in domain_context:
-        ec["WhoisUpdated"] = domain_context["whois-updated"]
-    if "whois-created" in domain_context:
-        ec["WhoisCreated"] = domain_context["whois-created"]
+    if "dns_mx" in domain_context:
+        ec["DNS-MX"] = domain_context["dns_mx"]
+    if "dns_ns" in domain_context:
+        ec["DNS-NS"] = domain_context["dns_ns"]
+    if "whois_updated" in domain_context:
+        ec["WhoisUpdated"] = domain_context["whois_updated"]
+    if "whois_created" in domain_context:
+        ec["WhoisCreated"] = domain_context["whois_created"]
 
     entry_result = {
         'Type': entryTypes['note'],

@@ -11,6 +11,11 @@ configuration:
   defaultvalue: https://apiv2-us.devo.com/search/query
   type: 0
   required: true
+- display: Port (e.g. 443)
+  name: port
+  defaultvalue: 443
+  type: 0
+  required: false
 - display: OAuth Token (Preferred method)
   name: reader_oauth_token
   defaultvalue: ""
@@ -56,12 +61,10 @@ configuration:
   required: false
 - display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: ""
   type: 8
   required: false
 - display: Use system proxy settings
   name: proxy
-  defaultvalue: ""
   type: 8
   required: false
 script:
@@ -184,7 +187,7 @@ script:
       type: unknown
     description: Writes lookup table entry records to a specified Devo table.
     execution: true
-  dockerimage: demisto/devo:1.0.0.21408
+  dockerimage: demisto/devo:1.0.0.23084
   isfetch: true
   runonce: false
   subtype: python3

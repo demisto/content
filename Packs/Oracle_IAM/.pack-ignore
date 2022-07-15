@@ -1,0 +1,6 @@
+
+[file:pack_metadata.json]
+ignore=PA129
+
+[file:OracleIAM_image.png]
+ignore=IM111

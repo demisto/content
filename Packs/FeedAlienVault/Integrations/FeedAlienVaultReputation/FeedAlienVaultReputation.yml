@@ -65,7 +65,6 @@ configuration:
   required: false
 - display: Bypass exclusion list
   name: feedBypassExclusionList
-  defaultvalue: ""
   type: 8
   required: false
   additionalinfo: When selected, the exclusion list is ignored for indicators from
@@ -109,7 +108,7 @@ script:
     description: Gets the feed indicators.
     execution: false
     name: alienvault-get-indicators
-  dockerimage: demisto/python3:3.9.6.22912
+  dockerimage: demisto/python3:3.10.5.31928
   feed: true
   isfetch: false
   longRunning: false

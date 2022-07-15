@@ -1,0 +1,270 @@
+id: Analyze URL - ReversingLabs TitaniumCloud
+version: -1
+name: Analyze URL - ReversingLabs TitaniumCloud
+description: |-
+  Get threat intelligence data for the submitted URL.
+  Required TitaniumCloud API rights:
+
+  TCA-0403
+  TCA-0402
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e06709dd-bfa4-4e24-8671-7892e266463e
+    type: start
+    task:
+      id: e06709dd-bfa4-4e24-8671-7892e266463e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: baef1e7d-fe85-468b-8393-ca3d5aa43d0a
+    type: condition
+    task:
+      id: baef1e7d-fe85-468b-8393-ca3d5aa43d0a
+      version: -1
+      name: Is ReversingLabs TitaniumCloud v2 enabled?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ReversingLabs TitaniumCloud v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: brand
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 272c05df-0bad-4770-865d-5e5c6af74838
+    type: title
+    task:
+      id: 272c05df-0bad-4770-865d-5e5c6af74838
+      version: -1
+      name: done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 20,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 2fe99680-5e24-4676-86ca-f3b96812f460
+    type: condition
+    task:
+      id: 2fe99680-5e24-4676-86ca-f3b96812f460
+      version: -1
+      name: Is there a URL?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "6"
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.URL
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: e0ca636e-c879-4a3e-8b02-12bdb1e1f7a2
+    type: regular
+    task:
+      id: e0ca636e-c879-4a3e-8b02-12bdb1e1f7a2
+      version: -1
+      name: reversinglabs-titaniumcloud-url-report
+      description: Return a URL analysis report.
+      script: ReversingLabs TitaniumCloud v2|||reversinglabs-titaniumcloud-url-report
+      type: regular
+      iscommand: true
+      brand: ReversingLabs TitaniumCloud v2
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      url:
+        simple: ${inputs.URL}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 9dae45b3-c460-43f5-8304-196b05b76920
+    type: regular
+    task:
+      id: 9dae45b3-c460-43f5-8304-196b05b76920
+      version: -1
+      name: reversinglabs-titaniumcloud-uri-statistics
+      description: Retrieve the number of MALICIOUS, SUSPICIOUS and KNOWN files associated
+        with a specific URI.
+      script: ReversingLabs TitaniumCloud v2|||reversinglabs-titaniumcloud-uri-statistics
+      type: regular
+      iscommand: true
+      brand: ReversingLabs TitaniumCloud v2
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      uri:
+        simple: ${inputs.URL}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1375,
+        "width": 1060,
+        "x": 20,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: URL
+  value:
+    complex:
+      root: URL.Data
+  required: false
+  description: URL to analyze
+  playbookInputQuery:
+outputs:
+- contextPath: URL.Data
+  description: The URL
+- contextPath: DBotScore.Score
+  description: The actual score.
+- contextPath: DBotScore.Type
+  description: The indicator type.
+- contextPath: DBotScore.Indicator
+  description: The indicator that was tested.
+- contextPath: DBotScore.Vendor
+  description: The vendor used to calculate the score.
+- contextPath: ReversingLabs.url_report
+  description: Report in JSON
+- contextPath: IP.Address
+  description: IP address
+- contextPath: Domain.Name
+  description: Domain name
+- contextPath: Email.To
+  description: Destination email address
+- contextPath: ReversingLabs.uri_statistics
+  description: Report in JSON
+tests:
+- No tests
+fromversion: 6.0.0

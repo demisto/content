@@ -1,0 +1,716 @@
+id: Microsoft Defender - ATP - Indicators SC Test
+version: -1
+name: Microsoft Defender - ATP - Indicators SC Test
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 06d234a6-8925-4e80-86c2-1df560ae66f6
+    type: start
+    task:
+      id: 06d234a6-8925-4e80-86c2-1df560ae66f6
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '20'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '2':
+    id: '2'
+    taskid: cdf5fd3c-e384-4351-8669-c057ab58e79b
+    type: regular
+    task:
+      id: cdf5fd3c-e384-4351-8669-c057ab58e79b
+      version: -1
+      name: Get indicators by ID
+      description: Gets an indicator by its ID.
+      script: '|||microsoft-atp-sc-indicator-get-by-id'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '13'
+    scriptarguments:
+      indicator_id:
+        complex:
+          root: MicrosoftATP.Indicators
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
+    taskid: edd37ec8-f32f-419d-8cd5-07fdf9475315
+    type: regular
+    task:
+      id: edd37ec8-f32f-419d-8cd5-07fdf9475315
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '8'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '8':
+    id: '8'
+    taskid: 8c61d36a-6caf-4023-896e-52e4da7c3577
+    type: regular
+    task:
+      id: 8c61d36a-6caf-4023-896e-52e4da7c3577
+      version: -1
+      name: List indicators
+      description: Lists all indicators by the ID that the system creates when the indicator is ingested.
+      script: '|||microsoft-atp-sc-indicator-list'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '9'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '9':
+    id: '9'
+    taskid: e57063ff-ab06-4bf4-899a-5d55a944499c
+    type: condition
+    task:
+      id: e57063ff-ab06-4bf4-899a-5d55a944499c
+      version: -1
+      name: Check number of indicators
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '19'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: MicrosoftATP
+                accessor: Indicators
+                transformers:
+                - operator: count
+            iscontext: true
+          right:
+            value:
+              simple: '0'
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '12':
+    id: '12'
+    taskid: 635c2b03-d3f1-46b1-8880-71e10bf5d7eb
+    type: title
+    task:
+      id: 635c2b03-d3f1-46b1-8880-71e10bf5d7eb
+      version: -1
+      name: Continue the test
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '26'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '13':
+    id: '13'
+    taskid: b470b2cf-c18d-4585-87c8-8aacac9011e1
+    type: regular
+    task:
+      id: b470b2cf-c18d-4585-87c8-8aacac9011e1
+      version: -1
+      name: Update indicators description and severity
+      description: Updates the specified indicator.
+      script: '|||microsoft-atp-sc-indicator-update'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '31'
+    scriptarguments:
+      action:
+        simple: Allowed
+      expiration_time:
+        simple: 1 day
+      indicator_description:
+        simple: newDescription
+      indicator_title:
+        simple: newTitle
+      indicator_type:
+        simple: IpAddress
+      indicator_value:
+        simple: 3.5.6.7
+      severity:
+        simple: Low
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1885
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '17':
+    id: '17'
+    taskid: 9e35dbaf-dd91-459e-8952-fc332b08c78c
+    type: title
+    task:
+      id: 9e35dbaf-dd91-459e-8952-fc332b08c78c
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '19':
+    id: '19'
+    taskid: 484528ff-01f6-4116-8c7a-c3924b2987c0
+    type: regular
+    task:
+      id: 484528ff-01f6-4116-8c7a-c3924b2987c0
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '12'
+    scriptarguments:
+      all:
+        simple: yes
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '20':
+    id: '20'
+    taskid: 3571585f-95e3-4fbf-858d-60d91f9ee263
+    type: title
+    task:
+      id: 3571585f-95e3-4fbf-858d-60d91f9ee263
+      version: -1
+      name: Setup
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '6'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '26':
+    id: '26'
+    taskid: 68bf7d89-aff8-441b-860e-fa998d4c67b5
+    type: regular
+    task:
+      id: 68bf7d89-aff8-441b-860e-fa998d4c67b5
+      version: -1
+      name: microsoft-atp-sc-indicator-create
+      description: Creates a new indicator.
+      script: '|||microsoft-atp-sc-indicator-create'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '27'
+    scriptarguments:
+      action:
+        simple: Allowed
+      expiration_time:
+        simple: 1 day
+      indicator_description:
+        simple: testPlaybook
+      indicator_title:
+        simple: test-title
+      indicator_type:
+        simple: IpAddress
+      indicator_value:
+        simple: 3.5.6.7
+      severity:
+        simple: Informational
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '27':
+    id: '27'
+    taskid: 3602d328-0d7e-476a-84dc-e27884ca5b57
+    type: condition
+    task:
+      id: 3602d328-0d7e-476a-84dc-e27884ca5b57
+      version: -1
+      name: Check the indicators returned with the High severity
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '32'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${MicrosoftATP.Indicators.severity}
+            iscontext: true
+          right:
+            value:
+              simple: Informational
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${MicrosoftATP.Indicators.id}
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${MicrosoftATP.Indicators.description}
+            iscontext: true
+          right:
+            value:
+              simple: testPlaybook
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${MicrosoftATP.Indicators.title}
+            iscontext: true
+          right:
+            value:
+              simple: test-title
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${MicrosoftATP.Indicators.action}
+            iscontext: true
+          right:
+            value:
+              simple: Allowed
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${MicrosoftATP.Indicators.indicatorType}
+            iscontext: true
+          right:
+            value:
+              simple: IpAddress
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${MicrosoftATP.Indicators.indicatorValue}
+            iscontext: true
+          right:
+            value:
+              simple: 3.5.6.7
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '28':
+    id: '28'
+    taskid: 65578675-2c1f-4a16-8478-eafda2abe4de
+    type: regular
+    task:
+      id: 65578675-2c1f-4a16-8478-eafda2abe4de
+      version: -1
+      name: Get indicators by ID
+      description: Gets an indicator by its ID.
+      script: '|||microsoft-atp-sc-indicator-get-by-id'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '29'
+    scriptarguments:
+      indicator_id:
+        complex:
+          root: MicrosoftATP.Indicators
+          accessor: id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '29':
+    id: '29'
+    taskid: b7772983-559c-4d30-84e1-43b777137c1a
+    type: condition
+    task:
+      id: b7772983-559c-4d30-84e1-43b777137c1a
+      version: -1
+      name: Check the indicators returned with the Low severity and updated fields
+      type: condition
+      iscommand: false
+      brand: ''
+    nexttasks:
+      yes:
+      - '30'
+    separatecontext: false
+    conditions:
+    - label: yes
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${MicrosoftATP.Indicators.severity}
+            iscontext: true
+          right:
+            value:
+              simple: Low
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${MicrosoftATP.Indicators.id}
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${MicrosoftATP.Indicators.description}
+            iscontext: true
+          right:
+            value:
+              simple: newDescription
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${MicrosoftATP.Indicators.title}
+            iscontext: true
+          right:
+            value:
+              simple: newTitle
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${MicrosoftATP.Indicators.action}
+            iscontext: true
+          right:
+            value:
+              simple: Allowed
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${MicrosoftATP.Indicators.indicatorType}
+            iscontext: true
+          right:
+            value:
+              simple: IpAddress
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${MicrosoftATP.Indicators.indicatorValue}
+            iscontext: true
+          right:
+            value:
+              simple: 3.5.6.7
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '30':
+    id: '30'
+    taskid: 566dbcba-e036-4f16-805a-1337df146a59
+    type: regular
+    task:
+      id: 566dbcba-e036-4f16-805a-1337df146a59
+      version: -1
+      name: Delete Indicator
+      description: Deletes the specified indicator.
+      script: '|||microsoft-atp-sc-indicator-delete'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '17'
+    scriptarguments:
+      indicator_id:
+        simple: ${MicrosoftATP.Indicators.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2585
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '31':
+    id: '31'
+    taskid: 9074f485-4c3a-4500-8694-fe61773d29e2
+    type: regular
+    task:
+      id: 9074f485-4c3a-4500-8694-fe61773d29e2
+      version: -1
+      name: sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '28'
+    scriptarguments:
+      seconds:
+        simple: '5'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '32':
+    id: '32'
+    taskid: bfc29cbe-72f9-417d-8a4e-b0cf51b94753
+    type: regular
+    task:
+      id: bfc29cbe-72f9-417d-8a4e-b0cf51b94753
+      version: -1
+      name: sleep
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '2'
+    scriptarguments:
+      seconds:
+        simple: '5'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2775,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: Test all the indicators command which use the security center api

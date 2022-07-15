@@ -1,0 +1,61 @@
+{
+    "id": "incident_phishercomments",
+    "version": -1,
+    "modified": "2021-08-16T18:17:14.240034463Z",
+    "name": "PhishER Comments",
+    "ownerOnly": false,
+    "cliName": "phishercomments",
+    "type": "grid",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "PhishER"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "columns": [
+        {
+            "key": "body",
+            "displayName": "Body",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 458,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "createdat",
+            "displayName": "createdAt",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        }
+    ],
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

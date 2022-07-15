@@ -1,0 +1,928 @@
+category: Endpoint
+commonfields:
+  id: Absolute
+  version: -1
+configuration:
+- defaultvalue: https://cc.absolute.com
+  display: Your Absolute server URL
+  name: url
+  required: true
+  type: 0
+- name: credentials
+  display: Token ID
+  required: true
+  defaultvalue:
+  type: 9
+  additionalinfo: Token ID and Secret Key.
+  displaypassword: "Secret Key"
+  hiddenusername: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: "Absolute is an adaptive endpoint security solution that delivers device security, data security, and asset management of endpoints."
+display: Absolute
+name: Absolute
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: The system unique identifier of the device.
+      isArray: false
+      name: device_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns a list of custom device fields associated with the given device_id, based on the authorization token.
+    execution: false
+    name: absolute-custom-device-field-list
+    outputs:
+    - contextPath: Absolute.CustomDeviceField.DeviceUID
+      description: The system-defined unique identifier of the device.
+      type: String
+    - contextPath: Absolute.CustomDeviceField.ESN
+      description: The unique ESN (identifier) assigned to the Absolute agent that is installed on a device.
+      type: String
+    - contextPath: Absolute.CustomDeviceField.CDFValues.CDFUID
+      description: The unique identifier of the custom device field.
+      type: String
+    - contextPath: Absolute.CustomDeviceField.CDFValues.FieldKey
+      description: The unique identifier of the custom device field in the classic version of Absolute.
+      type: String
+    - contextPath: Absolute.CustomDeviceField.CDFValues.FieldName
+      description: The name assigned to the custom device field.
+      type: String
+    - contextPath: Absolute.CustomDeviceField.CDFValues.CategoryCode
+      description: 'The type of custom device field. Possible values are: PREDEFINED, ESNCOLUMN, UDF.'
+      type: String
+    - contextPath: Absolute.CustomDeviceField.CDFValues.FieldValue
+      description: The current value of the custom device field.
+      type: String
+    - contextPath: Absolute.CustomDeviceField.CDFValues.Type
+      description: 'The data type of the field value. Possible values are: Text, Date, Dropdown.'
+      type: String
+  - arguments:
+    - default: false
+      description: The system unique identifier of the device.
+      isArray: false
+      name: device_id
+      required: true
+      secret: false
+    - default: false
+      description: 'The unique identifier of the custom device field. Note: In order to get this value, use the "absolute-custom-device-field-list" command.'
+      isArray: false
+      name: cdf_uid
+      required: true
+      secret: false
+    - default: false
+      description: The new value of the custom device field to be set.
+      isArray: false
+      name: value
+      required: true
+      secret: false
+    deprecated: false
+    description: Updates the value of the included custom device fields for the given device_id.
+    execution: false
+    name: absolute-custom-device-field-update
+  - arguments:
+    - default: false
+      description: A comma-separated list of the unique identifiers of devices included in the request. The recommendation is using up to 10,000 devices per request.
+      isArray: true
+      name: device_ids
+      required: true
+      secret: false
+    - default: false
+      description: The user-defined name for the Freeze request. The name should be a non-unique string and has 1-250 characters.
+      isArray: false
+      name: request_name
+      required: true
+      secret: false
+    - default: false
+      description: The user-defined HTML coded message shown on devices when the Freeze is applied. The message should be in a non-unique HTML format and has 1-4000 characters.
+      isArray: false
+      name: html_message
+      required: true
+      secret: false
+    - default: false
+      description: The user-defined name for the Freeze message.
+      isArray: false
+      name: message_name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The type of Freeze. You cannot freeze a device that has been reported stolen in the Absolute console.
+        - OnDemand: Freezes a device on its next connection to the Absolute Monitoring Center, which is typically within 15 minutes. This applies for all supported operating systems.
+        - Scheduled: Freezes a device on its next connection to the Absolute Monitoring Center on or after a specified date and time. This applies to Windows and Mac devices. The scheduled freeze date is specified in the scheduled_freeze_date argument. Scheduled Freeze requests are only supported on Windows and Mac devices with an active Absolute agent that is regularly connecting to the Absolute Monitoring Center.
+        - Offline: Freezes a device if it has been offline for a specified period of time. Applies to Windows and Mac devices. Offline period is specified in the offline_time_seconds argument. Offline freeze is not available if your Absolute account has been migrated to Offline Freeze Rules. For more information, see the console Help.'
+      isArray: false
+      name: device_freeze_type
+      predefined:
+      - 'OnDemand'
+      - 'Scheduled'
+      - 'Offline'
+      required: true
+      secret: false
+    - default: false
+      description: 'The date and time (in UTC) when the device should be frozen in ISO 8601 format: YYYY-MM-DDThh:mm:ss.SSSZ. Required if device_freeze_type is Scheduled. For example, 2022-01-01T00:00:00.000Z.'
+      isArray: false
+      name: scheduled_freeze_date
+      required: false
+      secret: false
+    - default: false
+      description: 'The length of time (in seconds) that a device can be offline before the device is frozen. Required if device_freeze_type is Offline. Must be between 1200 seconds (20 minutes) and 172800000 seconds (2000 days). Default value is 30 days.'
+      isArray: false
+      defaultValue: 22592000
+      name: offline_time_seconds
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The type of passcode to unfreeze a device. 
+      - UserDefined: Manually set the passcode in passcode. You must specify the passcode argument. 
+      - RandomForEach: A unique passcode is randomly generated for each device. You must specify the passcode_length argument. 
+      - RandomForAll: A passcode is randomly generated and is the same for all devices. You must specify the passcode_length argument.'
+      isArray: false
+      name: passcode_type
+      predefined:
+      - 'UserDefined'
+      - 'RandomForEach'
+      - 'RandomForAll'
+      required: true
+      secret: false
+    - default: false
+      description: 'The passcode used to unfreeze the devices. Required if passcode_type is UserDefined. A valid passcode is a number that has 4-8 characters. For example, 12345678.'
+      isArray: false
+      name: passcode
+      required: false
+      secret: false
+    - default: false
+      description: 'The length of the passcode when it is randomly generated. Required if passcode_type is RandomForEach or RandomForAll. A valid passcode is a number from 4 - 8. For example, 8.'
+      isArray: false
+      name: passcode_length
+      required: false
+      secret: false
+    - default: false
+      description: 'A comma-separated list of user-entered email addresses that will receive an email notification when the status of the Freeze request changes. The API supports up to 10 email addresses.'
+      isArray: true
+      name: notification_emails
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates a new Freeze request for the devices specified in the device_ids argument.
+    execution: false
+    name: absolute-device-freeze-request
+    outputs:
+    - contextPath: Absolute.FreezeRequest.RequestUID
+      description: The system-defined, unique identifier of the Freeze request.
+      type: String
+    - contextPath: Absolute.FreezeRequest.SucceededDeviceUIDs
+      description: An array of the unique devices identifiers that succeeded in creating a Freeze request.
+      type: Unknown
+    - contextPath: Absolute.FreezeRequest.Errors.detail.deviceUids
+      description: An array of the unique identifiers of devices for the Freeze request error.
+      type: Unknown
+    - contextPath: Absolute.FreezeRequest.Errors.message
+      description: The reason for the Freeze failure.
+      type: String
+    - contextPath: Absolute.FreezeRequest.Errors.messageKey
+      description: The reference key for the error message.
+      type: String
+  - arguments:
+    - default: false
+      description: A comma-separated list of the unique identifiers of devices included in the request. The recommendation is to use up to 10,000 devices per request.
+      isArray: true
+      name: device_ids
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Whether to remove only a Scheduled Freeze request. Note: When setting to true, if the Freeze request is a Scheduled Freeze request, the Freeze request is removed. Otherwise, when setting to false, if the Freeze request is not a Scheduled Freeze request, the Freeze request is not removed.'
+      isArray: false
+      name: remove_scheduled
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Whether to remove only an Offline Freeze request. Note: When setting to true, if the Freeze request is an Offline Freeze request, the Freeze request is removed. Otherwise, when setting to false, if the Freeze request is not a Offline Freeze request, the Freeze request is not removed.'
+      isArray: false
+      name: remove_offline
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: 'Creates a new Remove Freeze request for one or more devices, regardless of their Freeze status. You can submit Remove Freeze requests to perform the following actions: unfreeze frozen devices, remove newly submitted Freeze requests, or remove outstanding Scheduled and Offline Freeze requests.'
+    execution: false
+    name: absolute-device-remove-freeze-request
+  - arguments:
+    - default: false
+      description: The system-defined, unique identifier of the Freeze request.
+      isArray: false
+      name: request_uid
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets detailed information about the Freeze request specified by request_uid.
+    execution: false
+    name: absolute-device-freeze-request-get
+    outputs:
+    - contextPath: Absolute.FreezeRequestDetail.ID
+      description: The system-defined, unique identifier of the Freeze request.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.AccountUid
+      description: The system-defined, unique identifier associated with this Absolute account.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.ActionRequestUid
+      description: The system-defined, unique identifier of the Freeze request (the same as ID).
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.DeviceUid
+      description: The system-defined, unique identifier of the device.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.Statuses.actionUid
+      description: The system-defined, unique identifier of the Freeze action.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.Statuses.statusUid
+      description: The system-defined, unique identifier of the Freeze status.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.Statuses.messageKey
+      description: The reference key for the error message or the info message. Error messages start with 'dds'. Info messages start with 'ddsui'.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.Statuses.messageParams
+      description: A list of strings describing the error message when the status is LaunchFailed. If the status isn't LaunchFailed, messageParams is empty.
+      type: Unknown
+    - contextPath: Absolute.FreezeRequestDetail.Statuses.message
+      description: The message for the status change that occurred.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.Statuses.updatedBy
+      description: The last entity to update the Freeze request.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.Statuses.updatedUtc
+      description: The time (in Unix epoch) when the Freeze request was last updated.
+      type: Date
+    - contextPath: Absolute.FreezeRequestDetail.Statuses.triggerActionUid
+      description: The system-defined, unique identifier of a new Freeze request that replaces another Freeze request of the same type.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.Statuses.eventType
+      description: Device freeze type event.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.Statuses.ackClientTS
+      description: The acknowledgment timestamp (in UNIX epoch local time) when the request was downloaded on the device.
+      type: Number
+    - contextPath: Absolute.FreezeRequestDetail.Statuses.ackClientUtc
+      description: The acknowledgment timestamp (in UNIX epoch UTC) when the request was downloaded to the device.
+      type: Number
+    - contextPath: Absolute.FreezeRequestDetail.Statuses.instruction
+      description: All action instructions which are sent from the device DFZ agent component.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.Statuses.scheduledFreezeDateUTC
+      description: The date and time (in Unix epoch) when a Scheduled Freeze request was scheduled to be performed.
+      type: Number
+    - contextPath: Absolute.FreezeRequestDetail.Configuration.messageName
+      description: The user-defined name for the Freeze message.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.Configuration.htmlClear
+      description: The user-defined, HTML coded message shown on the device when the Freeze is applied (the same as Configuration.freezeMessage except it contains the HTML tags).
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.Configuration.passcodeClear
+      description: The passcode that can be used to unfreeze the device.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.Configuration.passcodeOption
+      description: The type of passcode to unfreeze a device.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.Configuration.freezeMessage
+      description: The content of the Freeze message without the HTML tags.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.Configuration.freezeId
+      description: The user-friendly identifier of the request that is displayed in the event history in the Absolute console (same as EventHistoryId).
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.Configuration.configurationUid
+      description: The system-defined unique identifier assigned to the Freeze configuration.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.Configuration.action
+      description: The type of action being performed on the device.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.Configuration.type
+      description: The type of Freeze.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.Configuration.passcodeLength
+      description: The length of the device unfreeze passcode when it is randomly generated.
+      type: Number
+    - contextPath: Absolute.FreezeRequestDetail.Configuration.passcodeSalt
+      description: The salt used for hashing the passcode before the passcode is sent to the device.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.Configuration.passcodeHashed
+      description: The hashed value of the passcode.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.Configuration.html
+      description: The encoded value of Configuration.htmlClear.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.Configuration.disableRemoteLogin
+      description: Whether remote login is disabled on the device.
+      type: Boolean
+    - contextPath: Absolute.FreezeRequestDetail.Configuration.disableFileSharing
+      description: Whether file sharing is disabled on the device.
+      type: Boolean
+    - contextPath: Absolute.FreezeRequestDetail.Configuration.Conditions.secondsUntilFreeze
+      description: The amount of time (in seconds) a device can be offline before the device is frozen.
+      type: Number
+    - contextPath: Absolute.FreezeRequestDetail.Configuration.Conditions.scheduledFreezeDate
+      description: The date and time (in UTC) when a Scheduled Freeze request is scheduled to be performed.
+      type: Date
+    - contextPath: Absolute.FreezeRequestDetail.Configuration.issuedUtc
+      description: The date and time (in UNIX epoch) when the Freeze request was created.
+      type: Date
+    - contextPath: Absolute.FreezeRequestDetail.Configuration.preLoginEnabled
+      description: Whether pre-login is enabled on the device.
+      type: Boolean
+    - contextPath: Absolute.FreezeRequestDetail.Configuration.serviceControlList
+      description: List of service controls that the server sends to the device.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.Name
+      description: The user-defined name for the Freeze request.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.Requester
+      description: The user ID of the entity that created the Freeze request.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.RequesterUid
+      description: The system-defined unique identifier of the user who created the Freeze request.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.CreatedUTC
+      description: The date and time (in UNIX epoch) when the Freeze request was created.
+      type: Date
+    - contextPath: Absolute.FreezeRequestDetail.ChangedUTC
+      description: The date and time (in UNIX epoch) when the Freeze request was last modified.
+      type: Date
+    - contextPath: Absolute.FreezeRequestDetail.NotificationEmails
+      description: An array of user-entered email addresses that will receive an email notification when the status of the Freeze request changes. Supports up to 10 email addresses.
+      type: Unknown
+    - contextPath: Absolute.FreezeRequestDetail.EventHistoryId
+      description: The user-friendly identifier of the request that is displayed in the event history in the Absolute console (same as freezeId).
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.PolicyGroupUid
+      description: The system-defined unique identifier of the policy group that the device belongs to.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.PolicyConfigurationVersion
+      description: The version of the configuration for the policy.
+      type: Number
+    - contextPath: Absolute.FreezeRequestDetail.FreezePolicyUid
+      description: The unique identifier of the Freeze policy.
+      type: String
+    - contextPath: Absolute.FreezeRequestDetail.Downloaded
+      description: Whether the Freeze request has been downloaded to the device.
+      type: Boolean
+    - contextPath: Absolute.FreezeRequestDetail.IsCurrent
+      description: Internal flag.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The system-defined, unique identifier of the Freeze message.
+      isArray: false
+      name: message_id
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets all the Freeze messages that are configured for the account by the given message_id. If message_id is not given all the messages will be returned.
+    execution: false
+    name: absolute-device-freeze-message-list
+    outputs:
+    - contextPath: Absolute.FreezeMessage.ID
+      description: The system-defined, unique identifier of the Freeze message.
+      type: String
+    - contextPath: Absolute.FreezeMessage.Name
+      description: The user-defined name for the Freeze message.
+      type: String
+    - contextPath: Absolute.FreezeMessage.Content
+      description: The user-defined, HTML coded message that shows on a device when a Freeze is applied.
+      type: String
+    - contextPath: Absolute.FreezeMessage.CreatedBy
+      description: The username of the entity that created the Freeze message.
+      type: String
+    - contextPath: Absolute.FreezeMessage.ChangedBy
+      description: The username of the entity that last updated the Freeze message.
+      type: String
+    - contextPath: Absolute.FreezeMessage.CreatedUTC
+      description: The date and time when the Freeze message was created.
+      type: String
+    - contextPath: Absolute.FreezeMessage.ChangedUTC
+      description: The date and time when the Freeze message was last modified.
+      type: String
+  - arguments:
+    - default: false
+      description: The user-defined, HTML coded message that shows on a device when a Device Freeze is applied. Should be in HTML format with 1-4000 characters.
+      isArray: false
+      name: html_message
+      required: true
+      secret: false
+    - default: false
+      description: The user-defined name for the Device Freeze message. The name should be a string with 1-255 characters.
+      isArray: false
+      name: message_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Creates a new Freeze message for the account.
+    execution: false
+    name: absolute-device-freeze-message-create
+    outputs:
+    - contextPath: Absolute.FreezeMessage.ID
+      description: The system-defined, unique identifier of the Freeze message.
+      type: String
+  - arguments:
+    - default: false
+      description: The user-defined, HTML coded message that shows on a device when a Device Freeze is applied. Should be in HTML format with 1-4000 characters.
+      isArray: false
+      name: html_message
+      required: true
+      secret: false
+    - default: false
+      description: The user-defined name for the Device Freeze message. The name should be a string with 1-255 characters.
+      isArray: false
+      name: message_name
+      required: true
+      secret: false
+    - default: false
+      description: The system-defined, unique identifier of the Freeze message.
+      isArray: false
+      name: message_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Updates the content of an existing Freeze message.
+    execution: false
+    name: absolute-device-freeze-message-update
+  - arguments:
+    - default: false
+      description: The system-defined, unique identifier of the Freeze message.
+      isArray: false
+      name: message_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Deletes an existing Freeze message for the account.
+    execution: false
+    name: absolute-device-freeze-message-delete
+  - arguments:
+    - default: false
+      description: A comma-separated list of device UIDs that should be unenrolled.
+      isArray: true
+      name: device_ids
+      required: true
+      secret: false
+    deprecated: false
+    description: Initiates an unenroll request on a list of eligible devices.
+    execution: false
+    name: absolute-device-unenroll
+    outputs:
+    - contextPath: Absolute.DeviceUnenroll.DeviceUid
+      description: The unique GUID identifier of the device.
+      type: String
+    - contextPath: Absolute.DeviceUnenroll.SystemName
+      description: The name assigned to the device.
+      type: String
+    - contextPath: Absolute.DeviceUnenroll.Username
+      description: The unique user name of the user who was logged into the device at the time of the agent call.
+      type: String
+    - contextPath: Absolute.DeviceUnenroll.EligibleStatus
+      description: 'The eligibility status of the device. Possible vales are: 0 for eligible, 1 for inactive or disabled, and 2 for stolen.'
+      type: Number
+    - contextPath: Absolute.DeviceUnenroll.Serial
+      description: The identification number that is assigned to the device by the device manufacturer.
+      type: String
+    - contextPath: Absolute.DeviceUnenroll.ESN
+      description: The unique Electronic SerialNumber (ESN) that is assigned to the agent installed on the device.
+      type: String
+  - arguments:
+    - default: false
+      description: The query by which to filter the device applications. If this argument is set, it overrides the others. For example, appName eq 'someName' or availableVirtualMemoryBytes lt 1073741824.
+      isArray: false
+      name: filter
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of all specific values to return. If not set, all possible values will be returned.
+      isArray: true
+      name: return_fields
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of the unique IDs associated with this Absolute account.
+      isArray: true
+      name: account_uids
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of the system-defined unique identifier of the devices.
+      isArray: true
+      name: device_ids
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of the devices names.
+      isArray: true
+      name: device_names
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of the application names.
+      isArray: true
+      name: app_names
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of the name of the software publishers of the application.
+      isArray: true
+      name: app_publishers
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of the user names of the users logged in to the device.
+      isArray: true
+      name: user_names
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of the operating systems that are installed on the device.
+      isArray: true
+      name: os
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of the system-defined unique Electronic Serial Numbers (ESN) assigned to the Absolute agent installed on the device.
+      isArray: true
+      name: esn
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Maximum number of results to return. 
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: The page number of the results to retrieve. Minimum value is 0.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets a list of device records and the corresponding software application data for each device on the account that you have access to or that meets the given filter.
+    execution: false
+    name: absolute-device-application-list
+    outputs:
+    - contextPath: Absolute.DeviceApplication.DeviceAppId
+      description: The unique ID of the application.
+      type: String
+    - contextPath: Absolute.DeviceApplication.DeviceUid
+      description: The system-defined unique identifier of the device.
+      type: String
+    - contextPath: Absolute.DeviceApplication.AccountUid
+      description: The unique ID associated with this Absolute account.
+      type: String
+    - contextPath: Absolute.DeviceApplication.AppId
+      description: The identifier of the application.
+      type: String
+    - contextPath: Absolute.DeviceApplication.AppName
+      description: The name of the application.
+      type: String
+    - contextPath: Absolute.DeviceApplication.AppPublisher
+      description: The name of the software publisher of the application.
+      type: String
+    - contextPath: Absolute.DeviceApplication.AppOriginalPublisher
+      description: The original name of the software publisher of the application.
+      type: String
+    - contextPath: Absolute.DeviceApplication.AppVersion
+      description: The version of the application.
+      type: String
+    - contextPath: Absolute.DeviceApplication.Ens
+      description: The system-defined unique Electronic Serial Number (ESN) assigned to the Absolute agent installed on the device.
+      type: String
+    - contextPath: Absolute.DeviceApplication.DeviceName
+      description: The name of the device.
+      type: String
+    - contextPath: Absolute.DeviceApplication.DeviceSerialNumber
+      description: The identification number that is assigned to the device by the device manufacturer.
+      type: String
+    - contextPath: Absolute.DeviceApplication.UserName
+      description: Includes the device name and the username of the user logged in to the device at the time of the agent call.
+      type: String
+    - contextPath: Absolute.DeviceApplication.InstallPath
+      description: The location where the application is installed.
+      type: String
+    - contextPath: Absolute.DeviceApplication.InstallDate
+      description: The date (in UNIX epoch time) when the application was installed.
+      type: Date
+    - contextPath: Absolute.DeviceApplication.FirstDetectUtc
+      description: The date and time (in Unix epoch time) when the indicated version of the application was first detected on the device.
+      type: Date
+    - contextPath: Absolute.DeviceApplication.OsName
+      description: The operating system that is installed on the device.
+      type: String
+    - contextPath: Absolute.DeviceApplication.LastScanTimeUtc
+      description: The date and time (in Unix epoch time) of the most recent installed software (SNG) scan.
+      type: Date
+  - arguments:
+    - default: false
+      description: The query by which to filter all the devices managed by the account. If this argument is set, it overrides the others. For example, agentStatus eq 'A' or lastConnectedUtc lt datetime'2021-01-01T00:00:00Z'.
+      isArray: false
+      name: filter
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The status of the Absolute agent on the device.
+      isArray: false
+      name: agent_status
+      predefined:
+      - 'Active'
+      - 'Disabled'
+      - 'Inactive'
+      required: false
+      secret: false
+    - default: false
+      description: Short description of the operating system expressed as a one-line string that includes the version of the operating system.
+      isArray: false
+      name: os_name
+      required: false
+      secret: false
+    - default: false
+      description: The version of the operating system.
+      isArray: false
+      name: os_version
+      required: false
+      secret: false
+    - default: false
+      description: The manufacturer of the device.
+      isArray: false
+      name: manufacturer
+      required: false
+      secret: false
+    - default: false
+      description: The product name from the manufacturer.
+      isArray: false
+      name: model
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of the usernames of the users who were logged in to the device at the time of the most recent agent call. If no user was logged in during the last agent call, the last detected username is used.
+      isArray: true
+      name: user_names
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: Maximum number of results to return. 
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: The page number of the results to retrieve. Minimum value is 0.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets a list of device records and their corresponding data that meets the required filter for all devices in your account, based on your authorization token.
+    execution: false
+    name: absolute-device-list
+    outputs:
+    - contextPath: Absolute.Device.Id
+      description: The unique identifier assigned to the device.
+      type: String
+    - contextPath: Absolute.Device.Esn
+      description: The unique ESN (Absolute Identifier) assigned to the agent installed on the device.
+      type: String
+    - contextPath: Absolute.Device.LastConnectedUtc
+      description: The date and time (in Unix epoch) when the device last connected to the Absolute Monitoring Center.
+      type: Number
+    - contextPath: Absolute.Device.SystemName
+      description: The name assigned to the device.
+      type: String
+    - contextPath: Absolute.Device.FullSystemName
+      description: The full name assigned to the device consisting of the system name and the domain name.
+      type: String
+    - contextPath: Absolute.Device.AgentStatus
+      description: The status of the Absolute agent on the device.
+      type: String
+    - contextPath: Absolute.Device.osName
+      description: Short description of the operating system expressed as a one-line string that includes the version of the operating system.
+      type: String
+    - contextPath: Absolute.Device.SystemManufacturer
+      description: The manufacturer of the device.
+      type: String
+    - contextPath: Absolute.Device.SystemModel
+      description: The product name from the manufacturer.
+      type: String
+    - contextPath: Absolute.Device.SystemType
+      description: The system running on the Windows-based computer.
+      type: String
+    - contextPath: Absolute.Device.Serial
+      description: The manufacturer-defined unique identifier assigned to the device. May correspond to the serial number of the BIOS, the motherboard, or the chassis, depending on the manufacturer.
+      type: String
+    - contextPath: Absolute.Device.LocalIp
+      description: Last known local IP address of this device.
+      type: String
+    - contextPath: Absolute.Device.PublicIp
+      description: Last known public IP address of this device.
+      type: String
+    - contextPath: Absolute.Device.EncryptionStatus
+      description: The summarized encryption status of the device.
+      type: String
+  - arguments:
+    - default: false
+      description: A comma-separated list of all specific values to return.
+      isArray: true
+      name: fields
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of the system-defined unique identifier of the devices.
+      isArray: true
+      name: device_ids
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of the devices names.
+      isArray: true
+      name: device_names
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of the last known local IP addresses of a device.
+      isArray: true
+      name: local_ips
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of the last known public IP addresses of a device.
+      isArray: true
+      name: public_ips
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets a list of device records and their corresponding data that meets the required fields for all devices in your account.
+    execution: false
+    name: absolute-device-get
+    outputs:
+    - contextPath: Absolute.Device.Id
+      description: The unique identifier assigned to the device.
+      type: String
+    - contextPath: Absolute.Device.Esn
+      description: The unique ESN (Absolute Identifier) assigned to the agent installed on the device.
+      type: String
+    - contextPath: Absolute.Device.Domain
+      description: The name of the Windows domain to which this device belongs.
+      type: String
+    - contextPath: Absolute.Device.LastConnectedUtc
+      description: The date and time (in Unix epoch) when the device last connected to the Absolute Monitoring Center.
+      type: Number
+    - contextPath: Absolute.Device.SystemName
+      description: The name assigned to the device.
+      type: String
+    - contextPath: Absolute.Device.FullSystemName
+      description: The full name assigned to the device consisting of the system name and the domain name.
+      type: String
+    - contextPath: Absolute.Device.AgentStatus
+      description: The status of the Absolute agent on the device.
+      type: String
+    - contextPath: Absolute.Device.Os.name
+      description: Short description of the operating system expressed as a one-line string that includes the version of the operating system.
+      type: String
+    - contextPath: Absolute.Device.Os.version
+      description: The version of the operating system.
+      type: String
+    - contextPath: Absolute.Device.Os.currentBuild
+      description: The current build number of the operating system.
+      type: String
+    - contextPath: Absolute.Device.Os.architecture
+      description: The architecture of the operating system.
+      type: String
+    - contextPath: Absolute.Device.Os.installDate
+      description: The date and time (in Unix epoch) when the operating system was installed.
+      type: Number
+    - contextPath: Absolute.Device.Os.productKey
+      description: The product key of the operating system.
+      type: String
+    - contextPath: Absolute.Device.Os.serialNumber
+      description: The serial identification number of the operating system.
+      type: String
+    - contextPath: Absolute.Device.Os.lastBootTime
+      description: The date and time (in Unix epoch) when the operating system was last restarted.
+      type: Number
+    - contextPath: Absolute.Device.Bios.id
+      description: The unique identifier of this BIOS given by the manufacturer.
+      type: String
+    - contextPath: Absolute.Device.Bios.serialNumber
+      description: The serial number assigned to the BIOS.
+      type: String
+    - contextPath: Absolute.Device.Bios.smBiosVersion
+      description: The major version number of the BIOS, as reported by SMBIOS.
+      type: String
+    - contextPath: Absolute.Device.Bios.version
+      description: The version of the BIOS, as reported by SMBIOS.
+      type: String
+    - contextPath: Absolute.Device.Bios.versionDate
+      description: A substring of the manufacturer of the BIOS + the version of the BIOS version, as reported by SMBIOS + the release date of the Window BIOS.
+      type: String
+    - contextPath: Absolute.Device.SystemManufacturer
+      description: The manufacturer of the device.
+      type: String
+    - contextPath: Absolute.Device.SystemModel
+      description: The product name from the manufacturer.
+      type: String
+    - contextPath: Absolute.Device.SystemType
+      description: The system running on the Windows-based computer.
+      type: String
+    - contextPath: Absolute.Device.Serial
+      description: The manufacturer-defined unique identifier assigned to the device. May correspond to the serial number of the BIOS, the motherboard, or the chassis, depending on the manufacturer.
+      type: String
+    - contextPath: Absolute.Device.LocalIp
+      description: Last known local IP address of this device.
+      type: String
+    - contextPath: Absolute.Device.PublicIp
+      description: Last known public IP address of this device.
+      type: String
+    - contextPath: Absolute.Device.EncryptionStatus
+      description: The summarized encryption status of the device.
+      type: String
+    - contextPath: Absolute.Device.Username
+      description: The unique username of the user that was logged in to the device at the time of the most recent agent call.
+      type: String
+    - contextPath: Absolute.Device.PolicyGroupUid
+      description: The unique identifier of the policy group that the device belongs to.
+      type: String
+    - contextPath: Absolute.Device.PolicyGroupName
+      description: The name of the policy group that the device belongs to.
+      type: String
+    - contextPath: Absolute.Device.IsStolen
+      description: Indicates whether this device was reported as stolen.
+      type: String
+    - contextPath: Absolute.Device.DeviceStatus.type
+      description: The status of the device. Possible values are STOLEN or MISSING.
+      type: String
+    - contextPath: Absolute.Device.DeviceStatus.reported
+      description: The data and time (in Unix epoch) when the device was reported missing or stolen.
+      type: Number
+    - contextPath: Absolute.Device.NetworkAdapters.networkSSID
+      description: The Service Set Identifier (SSID) of the connected Wi-Fi adapter.
+      type: String
+  - arguments:
+    - default: false
+      description: A comma-separated list of the system-defined unique identifier of the devices.
+      isArray: true
+      name: device_ids
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets a list of devices geo location records and their corresponding data that meets the required devices IDs.
+    execution: false
+    name: absolute-device-location-get
+    outputs:
+    - contextPath: Absolute.LocationReport.Coordinates
+      description: A comma-separated list where the first number is the estimated latitude and the second number is the estimated longitude (in degrees) where the device is located.
+      type: Unknown
+    - contextPath: Absolute.LocationReport.ID
+      description: The system-defined unique identifier of the device.
+      type: String
+    - contextPath: Absolute.LocationReport.City
+      description: The city where the device is located.
+      type: String
+    - contextPath: Absolute.LocationReport.State
+      description: The state or province where the device is located.
+      type: String
+    - contextPath: Absolute.LocationReport.CountryCode
+      description: The country code for the country where the device is located.
+      type: String
+    - contextPath: Absolute.LocationReport.Country
+      description: The country where the device is located.
+      type: String
+    - contextPath: Absolute.LocationReport.LocationTechnology
+      description: The technology used to get the location.
+      type: String
+    - contextPath: Absolute.LocationReport.Accuracy
+      description: The estimated accuracy (in meters) of the technology used to locate the device.
+      type: Number
+    - contextPath: Absolute.LocationReport.LastUpdate
+      description: The date and time (in Unix epoch) when the device last changed its location.
+      type: Number
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.4.31492
+fromversion: 6.0.0
+tests:
+- Absolute_TestPlaybook

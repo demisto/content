@@ -1,0 +1,8 @@
+{
+  "asset_id": "61099dd36b544e38fa3d22b9",
+  "asset_name": "ml_file.java",
+  "remediation_type": "system_quarantine",
+  "action_taker": "api",
+  "action_date": "2021-08-24T17:09:53.547+0000",
+  "status": "success"
+}

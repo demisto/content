@@ -1,0 +1,89 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "appid",
+    "closeForm": false,
+    "content": true,
+    "description": "Related App-ID for an alert. App-ID is a traffic classification system that determines what an application is irrespective of port, protocol, encryption (SSH or SSL) or any other evasive tactic used by the application. When known, you can also pivot to the Palo Alto Networks Applipedia entry that describes the detected application.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_appid",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "App-id",
+    "neverSetAsRequired": false,
+    "openEnded": true,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "multiSelect",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.5.0",
+    "x2_fields": "fw_app_id",
+    "Aliases": [
+        {
+            "cliName": "protocol",
+            "type": "shortText",
+            "name": "Protocol"
+        },
+        {
+            "cliName": "protocols",
+            "type": "shortText",
+            "name": "Protocols"
+        },
+        {
+            "cliName": "prismacloudcomputeappid",
+            "type": "shortText",
+            "name": "Prisma Cloud Compute AppID"
+        },
+        {
+            "cliName": "protocolevent",
+            "type": "multiSelect",
+            "name": "Protocol - Event"
+        },
+        {
+            "cliName": "app",
+            "type": "shortText",
+            "name": "App"
+        },
+        {
+            "cliName": "applicationid",
+            "type": "shortText",
+            "name": "Application Id"
+        },
+        {
+            "cliName": "applicationname",
+            "type": "shortText",
+            "name": "Application Name"
+        },
+        {
+            "cliName": "googlecloudsccfindingsourcepropertiesapp",
+            "type": "shortText",
+            "name": "GoogleCloudSCC Finding SourceProperties App"
+        },
+        {
+            "cliName": "expanseprotocol",
+            "type": "shortText",
+            "name": "Expanse Protocol"
+        },
+        {
+            "cliName": "expanseprotocol",
+            "type": "shortText",
+            "name": "Expanse Protocol"
+        },
+        {
+            "cliName": "irondefenseprimaryappprotocol",
+            "type": "shortText",
+            "name": "IronDefense Primary App Protocol"
+        }
+    ]
+}

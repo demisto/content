@@ -1,0 +1,30 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "DSAR"
+    ],
+    "caseInsensitive": true,
+    "cliName": "inventavehiclenumber",
+    "closeForm": false,
+    "content": true,
+    "description": "Vehicle Number for the PII. Used as a part of [given_name + vehicle_number] constraint",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_inventavehiclenumber",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Inventa Vehicle Number",
+    "neverSetAsRequired": false,
+    "ownerOnly": true,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

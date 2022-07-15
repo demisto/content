@@ -1,0 +1,18 @@
+!search query="country:HK org:RLL-HK -port:80 -port:443 -port:21 -port:25 has_ssl:false" using-brand=Shodan_v2
+!shodan-search-count query="country:HK product:Apache"
+
+!shodan-create-network-alert alertName="test_alert" ip="1.1.1.1"
+!shodan-network-alert-set-trigger alertID="0EKRH38BBQEHTQ3E" Trigger=any
+!shodan-network-alert-whitelist-service alertID="0EKRH38BBQEHTQ3E" trigger="any" service="1.1.1.1:80"
+
+!shodan-network-get-alerts
+!shodan-network-get-alert-by-id alertID="0EKRH38BBQEHTQ3E"
+
+!shodan-network-alert-remove-service-from-whitelist alertID="0EKRH38BBQEHTQ3E" trigger="any" service="1.1.1.1:80"
+!shodan-network-alert-remove-trigger alertID="0EKRH38BBQEHTQ3E" Trigger="any"
+!shodan-network-delete-alert alertID="0EKRH38BBQEHTQ3E"
+
+!ip ip="8.8.8.8" using-brand="Shodan_v2"
+
+!shodan-scan-ip ips=8.8.8.8
+!shodan-scan-status scanID=7rbp1CAtx91BMwcg

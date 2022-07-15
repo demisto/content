@@ -1,0 +1,21 @@
+{
+    "name": "IsArrayItemInList",
+    "description": "This automation is for comparing array(list) data of context to existing lists on XSOAR server. You can avoid using loop of sub-playbook.\ninputArray: the context array/list data\nlistName: the XSOAR system list",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Jie Liau",
+    "url": "",
+    "email": "",
+    "created": "2021-12-08T09:48:45Z",
+    "categories": ["Utilities"],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "githubUser": [
+        "jieliau"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

@@ -1,16 +1,16 @@
 args:
 - auto: PREDEFINED
-  defaultValue: "True"
+  defaultValue: 'True'
   description: Define if that in Widget Context or analyse data.
   name: isWidget
   predefined:
-  - "True"
-  - "False"
+  - 'True'
+  - 'False'
 comment: Present or parse Disk usage stats.
 commonfields:
   id: HealthCheckDiskUsage
   version: -1
-dockerimage: demisto/python3:3.9.5.21272
+dockerimage: demisto/python3:3.10.4.29342
 enabled: true
 name: HealthCheckDiskUsage
 runas: DBotWeakRole

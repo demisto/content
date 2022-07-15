@@ -110,7 +110,10 @@ def get_incident_data(incident: dict, tenant_name: str, rest_api_instance_to_use
     )
 
     if is_error(response):
-        raise Exception(get_error(response))
+        error = f'Failed retrieving tasks for incident ID {incident["id"]}.\n \
+           Make sure that the API key configured in the Demisto REST API integration \
+is one with sufficient permissions to access that incident.\n' + get_error(response)
+        raise Exception(error)
 
     tasks = response[0]["Contents"]["response"]
 
@@ -124,7 +127,7 @@ def get_incident_data(incident: dict, tenant_name: str, rest_api_instance_to_use
 def main():
     args = demisto.args()
     query = args.get("query")
-    max_incidents = arg_to_number(args.get("max_incidents", "300"))
+    max_incidents = arg_to_number(args.get("max_incidents")) or 300
     max_incidents = min(max_incidents, 1000)
     rest_api_instance = args.get("rest_api_instance")
     rest_api_instance_to_use = get_rest_api_instance_to_use() if not rest_api_instance else rest_api_instance

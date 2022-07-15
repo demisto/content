@@ -1,0 +1,28 @@
+{
+    "autorun": true,
+    "color": "#cc0000",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {},
+        "mode": "Specific"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "Trend Micro Vision One XDR Incident",
+    "layout": "Trend Micro Vision One XDR Incident",
+    "locked": false,
+    "name": "Trend Micro Vision One XDR Incident",
+    "onChangeRepAlg": 0,
+    "playbookId": "playbook0",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.2.0"
+}

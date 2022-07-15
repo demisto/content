@@ -1,0 +1,3261 @@
+category: Endpoint
+defaultEnabled: true
+commonfields:
+  id: Cortex Core - IR
+  version: -1
+configuration:
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Server URL (copy URL from Core - click ? to see more info.)
+  name: url
+  required: false
+  type: 0
+  hidden: true
+- display: API Key ID
+  name: apikey_id
+  required: false
+  type: 4
+  hidden: true
+- display: API Key
+  name: apikey
+  required: false
+  type: 4
+  hidden: true
+- additionalinfo: The timeout of the HTTP requests sent to Cortex API (in seconds).
+  defaultvalue: '120'
+  display: HTTP Timeout
+  name: timeout
+  required: false
+  type: 0
+description: The Cortex Core IR integration uses the Cortex API for detection and response, by natively integrating network, endpoint, and cloud data to stop sophisticated attacks.
+display: Investigation & Response
+name: Cortex Core - IR
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: Links the response action to the triggered incident.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: Polling timeout in seconds.
+      isArray: false
+      name: timeout_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: For polling use
+      isArray: true
+      name: action_id
+      required: false
+      secret: false
+      deprecated: true
+    - default: false
+      description: The endpoint ID (string) to isolate. Retrieve the string from the core-get-endpoints command.
+      isArray: false
+      name: endpoint_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Suppress an error when trying to isolate a disconnected endpoint. When set to false, an error is returned.
+      isArray: false
+      name: suppress_disconnected_endpoint_error
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Isolates the specified endpoint.
+    execution: true
+    name: core-isolate-endpoint
+    polling: true
+    outputs:
+    - contextPath: Core.Isolation.endpoint_id
+      description: The endpoint ID.
+      type: String
+  - arguments:
+    - default: false
+      description: Links the response action to the triggered incident.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
+      description: The endpoint ID (string) to reverse the isolation. Retrieve it from the core-get-endpoints command.
+      isArray: false
+      name: endpoint_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Suppress an error when trying to unisolate a disconnected endpoint. When set to false, an error is be returned.
+      isArray: false
+      name: suppress_disconnected_endpoint_error
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: For polling use
+      isArray: true
+      name: action_id
+      required: false
+      secret: false
+      deprecated: true
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: Polling timeout in seconds.
+      isArray: false
+      name: timeout_in_seconds
+      required: false
+      secret: false
+    deprecated: false
+    description: Reverses the isolation of an endpoint.
+    execution: true
+    name: core-unisolate-endpoint
+    polling: true
+    outputs:
+    - contextPath: Core.UnIsolation.endpoint_id
+      description: Isolates the specified endpoint.
+      type: String
+  - arguments:
+    - default: false
+      description: A comma-separated list of endpoint IDs.
+      isArray: true
+      name: endpoint_id_list
+      required: false
+      secret: false
+    - default: false
+      description: "A comma-separated list of distribution package names or installation package names. \nExample: dist_name1,dist_name2"
+      isArray: true
+      name: dist_name
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        A comma-separated list of IP addresses.
+        Example: 8.8.8.8,1.1.1.1
+      isArray: true
+      name: ip_list
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        The group name to which the agent belongs.
+        Example: group_name1,group_name2
+      isArray: true
+      name: group_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The endpoint platform. Valid values are\: "windows", "linux", "macos", or "android". '
+      isArray: true
+      name: platform
+      predefined:
+      - windows
+      - linux
+      - macos
+      - android
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        A comma-separated list of alias names.
+        Examples: alias_name1,alias_name2
+      isArray: true
+      name: alias_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Specifies whether the endpoint was isolated or unisolated.
+      isArray: false
+      name: isolate
+      predefined:
+      - isolated
+      - unisolated
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Hostname
+        Example: hostname1,hostname2
+      isArray: true
+      name: hostname
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        All the agents that were first seen after {first_seen_gte}.
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
+      isArray: false
+      name: first_seen_gte
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        All the agents that were first seen before {first_seen_lte}.
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
+      isArray: false
+      name: first_seen_lte
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        All the agents that were last seen before {last_seen_gte}.
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
+      isArray: false
+      name: last_seen_gte
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        All the agents that were last seen before {last_seen_lte}.
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
+      isArray: false
+      name: last_seen_lte
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Page number (for pagination). The default is 0 (the first page).
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '30'
+      description: Maximum number of endpoints to return per page. The default and maximum is 30.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Specifies whether to sort endpoints by the first time or last time they were seen. Can be "first_seen" or "last_seen".
+      isArray: false
+      name: sort_by
+      predefined:
+      - first_seen
+      - last_seen
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: asc
+      description: The order by which to sort results. Can be "asc" (ascending) or "desc" ( descending). Default set to asc.
+      isArray: false
+      name: sort_order
+      predefined:
+      - asc
+      - desc
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The status of the endpoint to filter.
+      isArray: false
+      name: status
+      predefined:
+      - connected
+      - disconnected
+      - lost
+      - uninstalled
+      required: false
+      secret: false
+    - name: username
+      description: The usernames to query for, accepts a single user, or comma-separated list of usernames.
+      isArray: true
+    deprecated: false
+    description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
+    execution: false
+    name: core-get-endpoints
+    outputs:
+    - contextPath: Core.Endpoint.endpoint_id
+      description: The endpoint ID.
+      type: String
+    - contextPath: Core.Endpoint.endpoint_name
+      description: The endpoint name.
+      type: String
+    - contextPath: Core.Endpoint.endpoint_type
+      description: The endpoint type.
+      type: String
+    - contextPath: Core.Endpoint.endpoint_status
+      description: The status of the endpoint.
+      type: String
+    - contextPath: Core.Endpoint.os_type
+      description: The endpoint OS type.
+      type: String
+    - contextPath: Core.Endpoint.ip
+      description: A list of IP addresses.
+      type: Unknown
+    - contextPath: Core.Endpoint.users
+      description: A list of users.
+      type: Unknown
+    - contextPath: Core.Endpoint.domain
+      description: The endpoint domain.
+      type: String
+    - contextPath: Core.Endpoint.alias
+      description: The endpoint's aliases.
+      type: String
+    - contextPath: Core.Endpoint.first_seen
+      description: First seen date/time in Epoch (milliseconds).
+      type: Unknown
+    - contextPath: Core.Endpoint.last_seen
+      description: Last seen date/time in Epoch (milliseconds).
+      type: Date
+    - contextPath: Core.Endpoint.content_version
+      description: Content version.
+      type: String
+    - contextPath: Core.Endpoint.installation_package
+      description: Installation package.
+      type: String
+    - contextPath: Core.Endpoint.active_directory
+      description: Active directory.
+      type: String
+    - contextPath: Core.Endpoint.install_date
+      description: Install date in Epoch (milliseconds).
+      type: Date
+    - contextPath: Core.Endpoint.endpoint_version
+      description: Endpoint version.
+      type: String
+    - contextPath: Core.Endpoint.is_isolated
+      description: Whether the endpoint is isolated.
+      type: String
+    - contextPath: Core.Endpoint.group_name
+      description: The name of the group to which the endpoint belongs.
+      type: String
+    - contextPath: Endpoint.Hostname
+      description: The hostname that is mapped to this endpoint.
+      type: String
+    - contextPath: Endpoint.ID
+      description: The unique ID within the tool retrieving the endpoint.
+      type: String
+    - contextPath: Endpoint.IPAddress
+      description: The IP address of the endpoint.
+      type: String
+    - contextPath: Endpoint.Domain
+      description: The domain of the endpoint.
+      type: String
+    - contextPath: Endpoint.OS
+      description: The endpoint's operation system.
+      type: String
+    - contextPath: Account.Username
+      description: The username in the relevant system.
+      type: String
+    - contextPath: Account.Domain
+      description: The domain of the account.
+      type: String
+    - contextPath: Endpoint.Status
+      description: The endpoint's status.
+      type: String
+    - contextPath: Endpoint.IsIsolated
+      description: The endpoint's isolation status.
+      type: String
+    - contextPath: Endpoint.MACAddress
+      description: The endpoint's MAC address.
+      type: String
+    - contextPath: Endpoint.Vendor
+      description: The integration name of the endpoint vendor.
+      type: String
+  - deprecated: false
+    description: Gets a list of all the agent versions to use for creating a distribution list.
+    execution: false
+    name: core-get-distribution-versions
+    outputs:
+    - contextPath: Core.DistributionVersions.windows
+      description: A list of Windows agent versions.
+      type: Unknown
+    - contextPath: Core.DistributionVersions.linux
+      description: A list of Linux agent versions.
+      type: Unknown
+    - contextPath: Core.DistributionVersions.macos
+      description: A list of Mac agent versions.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: A string representing the name of the installation package.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: "String, valid values are:\n• windows \n• linux\n• macos \n• android"
+      isArray: false
+      name: platform
+      predefined:
+      - windows
+      - linux
+      - macos
+      - android
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: |-
+        A string representing the type of package to create.
+        standalone - An installation for a new agent
+        upgrade - An upgrade of an agent from ESM
+      isArray: false
+      name: package_type
+      predefined:
+      - standalone
+      - upgrade
+      required: true
+      secret: false
+    - default: false
+      description: agent_version returned from core-get-distribution-versions. Not required for Android platfoms.
+      isArray: false
+      name: agent_version
+      required: true
+      secret: false
+    - default: false
+      description: Information about the package.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    deprecated: false
+    description: Creates an installation package. This is an asynchronous call that returns the distribution ID. This does not mean that the creation succeeded. To confirm that the package has been created, check the status of the distribution by running the Get Distribution Status API.
+    execution: false
+    name: core-create-distribution
+    outputs:
+    - contextPath: Core.Distribution.id
+      description: The installation package ID.
+      type: String
+    - contextPath: Core.Distribution.name
+      description: The name of the installation package.
+      type: String
+    - contextPath: Core.Distribution.platform
+      description: The installation OS.
+      type: String
+    - contextPath: Core.Distribution.agent_version
+      description: Agent version.
+      type: String
+    - contextPath: Core.Distribution.description
+      description: Information about the package.
+      type: String
+  - arguments:
+    - default: false
+      description: |-
+        The ID of the installation package.
+        Copy the distribution_id from the "id" field on Endpoints > Agent Installation page.
+      isArray: false
+      name: distribution_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: |-
+        The installation package type. Valid
+        values are:
+        • upgrade
+        • sh - For Linux
+        • rpm - For Linux
+        • deb - For Linux
+        • pkg - For Mac
+        • x86 - For Windows
+        • x64 - For Windows
+      isArray: false
+      name: package_type
+      predefined:
+      - upgrade
+      - sh
+      - rpm
+      - deb
+      - pkg
+      - x86
+      - x64
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets the distribution URL for downloading the installation package.
+    execution: false
+    name: core-get-distribution-url
+    outputs:
+    - contextPath: Core.Distribution.id
+      description: Distribution ID.
+      type: String
+    - contextPath: Core.Distribution.url
+      description: URL for downloading the installation package.
+      type: String
+  - arguments:
+    - default: false
+      description: Status of distribution IDs, in a comma-separated list.
+      isArray: true
+      name: distribution_ids
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets the status of the installation package.
+    execution: false
+    name: core-get-create-distribution-status
+    outputs:
+    - contextPath: Core.Distribution.id
+      description: Distribution ID.
+      type: String
+    - contextPath: Core.Distribution.status
+      description: Installation package status.
+      type: String
+  - arguments:
+    - default: false
+      description: User’s email address.
+      isArray: false
+      name: email
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The audit log type.
+      isArray: false
+      name: type
+      predefined:
+      - REMOTE_TERMINAL
+      - RULES
+      - AUTH
+      - RESPONSE
+      - INCIDENT_MANAGEMENT
+      - ENDPOINT_MANAGEMENT
+      - ALERT_WHITELIST
+      - PUBLIC_API
+      - DISTRIBUTIONS
+      - STARRED_INCIDENTS
+      - POLICY_PROFILES
+      - DEVICE_CONTROL_PROFILE
+      - HOST_FIREWALL_PROFILE
+      - POLICY_RULES
+      - PROTECTION_POLICY
+      - DEVICE_CONTROL_TEMP_EXCEPTIONS
+      - DEVICE_CONTROL_GLOBAL_EXCEPTIONS
+      - GLOBAL_EXCEPTIONS
+      - MSSP
+      - REPORTING
+      - DASHBOARD
+      - BROKER_VM
+      required: false
+      secret: false
+    - default: false
+      description: The audit log subtype.
+      isArray: false
+      name: sub_type
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Result type
+      isArray: false
+      name: result
+      predefined:
+      - SUCCESS
+      - FAIL
+      - PARTIAL
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Return logs when the timestamp is after 'log_time_after'.
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
+      isArray: false
+      name: timestamp_gte
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Return logs when the timestamp is before the 'log_time_after'.
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
+      isArray: false
+      name: timestamp_lte
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Page number (for pagination). The default is 0 (the first page).
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '30'
+      description: Maximum number of audit logs to return per page. The default and maximum is 30.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Specifies the field by which to sort the results. By default the sort is defined as creation-time and descending. Can be "type", "sub_type", "result", or "timestamp".
+      isArray: false
+      name: sort_by
+      predefined:
+      - type
+      - sub_type
+      - result
+      - timestamp
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: desc
+      description: The sort order. Can be "asc" (ascending) or "desc" (descending). Default set to "desc".
+      isArray: false
+      name: sort_order
+      predefined:
+      - asc
+      - desc
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets management logs. You can filter by multiple fields, which will be concatenated using the AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of management logs from the start of the result set (start by counting from 0).
+    execution: false
+    name: core-get-audit-management-logs
+    outputs:
+    - contextPath: Core.AuditManagementLogs.AUDIT_ID
+      description: Audit log ID.
+      type: Number
+    - contextPath: Core.AuditManagementLogs.AUDIT_OWNER_NAME
+      description: Audit owner name.
+      type: String
+    - contextPath: Core.AuditManagementLogs.AUDIT_OWNER_EMAIL
+      description: Audit owner email address.
+      type: String
+    - contextPath: Core.AuditManagementLogs.AUDIT_ASSET_JSON
+      description: Asset JSON.
+      type: String
+    - contextPath: Core.AuditManagementLogs.AUDIT_ASSET_NAMES
+      description: Audit asset names.
+      type: String
+    - contextPath: Core.AuditManagementLogs.AUDIT_HOSTNAME
+      description: Host name.
+      type: String
+    - contextPath: Core.AuditManagementLogs.AUDIT_RESULT
+      description: Audit result.
+      type: String
+    - contextPath: Core.AuditManagementLogs.AUDIT_REASON
+      description: Audit reason.
+      type: String
+    - contextPath: Core.AuditManagementLogs.AUDIT_DESCRIPTION
+      description: Description of the audit.
+      type: String
+    - contextPath: Core.AuditManagementLogs.AUDIT_ENTITY
+      description: Audit entity (e.g., AUTH, DISTRIBUTIONS).
+      type: String
+    - contextPath: Core.AuditManagementLogs.AUDIT_ENTITY_SUBTYPE
+      description: Entity subtype (e.g., Login, Create).
+      type: String
+    - contextPath: Core.AuditManagementLogs.AUDIT_CASE_ID
+      description: Audit case ID.
+      type: Number
+    - contextPath: Core.AuditManagementLogs.AUDIT_INSERT_TIME
+      description: Log's insert time.
+      type: Date
+  - arguments:
+    - default: false
+      description: A comma-separated list of endpoint IDs.
+      isArray: true
+      name: endpoint_ids
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of endpoint names.
+      isArray: true
+      name: endpoint_names
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The report type. Can be "Installation", "Policy", "Action", "Agent Service", "Agent Modules", or "Agent Status".
+      isArray: true
+      name: type
+      predefined:
+      - Installation
+      - Policy
+      - Action
+      - Agent Service
+      - Agent Modules
+      - Agent Status
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The report subtype.
+      isArray: true
+      name: sub_type
+      predefined:
+      - Install
+      - Uninstall
+      - Upgrade
+      - Local Configuration
+      - Content Update
+      - Policy Update
+      - Process Exception
+      - Hash Exception
+      - Scan
+      - File Retrieval
+      - File Scan
+      - Terminate Process
+      - Isolate
+      - Cancel Isolation
+      - Payload Execution
+      - Quarantine
+      - Restore
+      - Stop
+      - Start
+      - Module Initialization
+      - Local Analysis Model
+      - Local Analysis Feature Extraction
+      - Fully Protected
+      - OS Incompatible
+      - Software Incompatible
+      - Kernel Driver Initialization
+      - Kernel Extension Initialization
+      - Proxy Communication
+      - Quota Exceeded
+      - Minimal Content
+      - Reboot Eequired
+      - Missing Disc Access
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The result type. Can be "Success" or "Fail". If not passed, returns all event reports.
+      isArray: true
+      name: result
+      predefined:
+      - Success
+      - Fail
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Return logs that their timestamp is greater than 'log_time_after'.
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
+      isArray: false
+      name: timestamp_gte
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Return logs for which the timestamp is before the 'timestamp_lte'.
+
+        Supported values:
+        1579039377301 (time in milliseconds)
+        "3 days" (relative date)
+        "2019-10-21T23:45:00" (date)
+      isArray: false
+      name: timestamp_lte
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Page number (for pagination). The default is 0 (the first page).
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '30'
+      description: The maximum number of reports to return. Default and maximum is 30.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The field by which to sort results. Can be "type", "category", "trapsversion", "timestamp", or "domain").
+      isArray: false
+      name: sort_by
+      predefined:
+      - type
+      - category
+      - trapsversion
+      - timestamp
+      - domain
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: asc
+      description: The sort order. Can be "asc" (ascending) or "desc" (descending). Default is "asc".
+      isArray: false
+      name: sort_order
+      predefined:
+      - asc
+      - desc
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets agent event reports. You can filter by multiple fields, which will be concatenated using the AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of reports from the start of the result set (start by counting from 0).
+    execution: false
+    name: core-get-audit-agent-reports
+    outputs:
+    - contextPath: Core.AuditAgentReports.ENDPOINTID
+      description: Endpoint ID.
+      type: String
+    - contextPath: Core.AuditAgentReports.ENDPOINTNAME
+      description: Endpoint name.
+      type: String
+    - contextPath: Core.AuditAgentReports.DOMAIN
+      description: Agent domain.
+      type: String
+    - contextPath: Core.AuditAgentReports.TRAPSVERSION
+      description: Traps version.
+      type: String
+    - contextPath: Core.AuditAgentReports.RECEIVEDTIME
+      description: Received time in Epoch time.
+      type: Date
+    - contextPath: Core.AuditAgentReports.TIMESTAMP
+      description: Timestamp in Epoch time.
+      type: Date
+    - contextPath: Core.AuditAgentReports.CATEGORY
+      description: Report category (e.g., Audit).
+      type: String
+    - contextPath: Core.AuditAgentReports.TYPE
+      description: Report type (e.g., Action, Policy).
+      type: String
+    - contextPath: Core.AuditAgentReports.SUBTYPE
+      description: Report subtype (e.g., Fully Protected,Policy Update,Cancel Isolation).
+      type: String
+    - contextPath: Core.AuditAgentReports.RESULT
+      description: Report result.
+      type: String
+    - contextPath: Core.AuditAgentReports.REASON
+      description: Report reason.
+      type: String
+    - contextPath: Core.AuditAgentReports.DESCRIPTION
+      description: Agent report description.
+      type: String
+    - contextPath: Endpoint.ID
+      description: The unique ID within the tool retrieving the endpoint.
+      type: String
+    - contextPath: Endpoint.Hostname
+      description: The hostname that is mapped to this endpoint.
+      type: String
+    - contextPath: Endpoint.Domain
+      description: The domain of the endpoint.
+      type: String
+  - arguments:
+    - default: false
+      description: Links the response action to the triggered incident.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
+      description: String that represents a list of hashed files you want to block list. Must be a valid SHA256 hash.
+      isArray: true
+      name: hash_list
+      required: true
+      secret: false
+    - default: false
+      description: String that represents additional information regarding the action.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Choose either regular response or detailed response. Default value = false, regular response.
+      isArray: false
+      name: detailed_response
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Block lists requested files which have not already been block listed or added to allow lists.
+    execution: false
+    name: core-blocklist-files
+    outputs:
+    - contextPath: Core.blocklist.added_hashes
+      description: Added fileHash to blocklist
+      type: Number
+    - contextPath: Core.blocklist.excluded_hashes
+      description: Added fileHash to blocklist
+      type: Number
+  - arguments:
+    - default: false
+      description: Links the response action to the triggered incident.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
+      description: String that represents a list of hashed files you want to add to allow lists. Must be a valid SHA256 hash.
+      isArray: true
+      name: hash_list
+      required: true
+      secret: false
+    - default: false
+      description: String that represents additional information regarding the action.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Choose either regular response or detailed response. Default value = false, regular response.
+      isArray: false
+      name: detailed_response
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Adds requested files to allow list if they are not already on block list or allow list.
+    execution: false
+    name: core-allowlist-files
+    outputs:
+    - contextPath: Core.allowlist.added_hashes
+      description: Added fileHash to allowlist
+      type: Number
+    - contextPath: Core.allowlist.excluded_hashes
+      description: Added fileHash to allowlist
+      type: Number
+  - arguments:
+    - default: false
+      description: Links the response action to the triggered incident.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
+      description: List of endpoint IDs.
+      isArray: true
+      name: endpoint_id_list
+      required: true
+      secret: false
+    - default: false
+      description: String that represents the path of the file you want to quarantine.
+      isArray: false
+      name: file_path
+      required: true
+      secret: false
+    - default: false
+      description: String that represents the file’s hash. Must be a valid SHA256 hash.
+      isArray: false
+      name: file_hash
+      required: true
+      secret: false
+    - default: false
+      description: For polling use
+      isArray: true
+      name: action_id
+      required: false
+      secret: false
+      deprecated: true
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: Polling timeout in seconds.
+      isArray: false
+      name: timeout_in_seconds
+      required: false
+      secret: false
+    deprecated: false
+    description: Quarantines a file on selected endpoints. You can select up to 1000 endpoints.
+    execution: false
+    name: core-quarantine-files
+    polling: true
+  - arguments:
+    - default: false
+      description: String that represents the endpoint ID.
+      isArray: false
+      name: endpoint_id
+      required: true
+      secret: false
+    - default: false
+      description: String that represents the file hash. Must be a valid SHA256 hash.
+      isArray: false
+      name: file_hash
+      required: true
+      secret: false
+    - default: false
+      description: String that represents the file path.
+      isArray: false
+      name: file_path
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves the quarantine status for a selected file.
+    execution: false
+    name: core-get-quarantine-status
+  - arguments:
+    - default: false
+      description: Links the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
+      description: String that represents the file in hash. Must be a valid SHA256 hash.
+      isArray: false
+      name: file_hash
+      required: true
+      secret: false
+    - default: false
+      description: String that represents the endpoint ID. If you do not enter a specific endpoint ID, the request will run restore on all endpoints which relate to the quarantined file you defined.
+      isArray: false
+      name: endpoint_id
+      required: false
+      secret: false
+    - default: false
+      description: For polling use
+      isArray: true
+      name: action_id
+      required: false
+      secret: false
+      deprecated: true
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: Polling timeout in seconds.
+      isArray: false
+      name: timeout_in_seconds
+      required: false
+      secret: false
+    deprecated: false
+    description: Restores a quarantined file on requested endpoints.
+    execution: false
+    name: core-restore-file
+    polling: true
+  - arguments:
+    - default: false
+      description: Links the response action to the triggered incident.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
+      description: List of endpoint IDs.
+      isArray: true
+      name: endpoint_id_list
+      required: false
+      secret: false
+    - default: false
+      description: Name of the distribution list.
+      isArray: true
+      name: dist_name
+      required: false
+      secret: false
+    - default: false
+      description: Epoch timestamp in milliseconds.
+      isArray: false
+      name: gte_first_seen
+      required: false
+      secret: false
+    - default: false
+      description: Epoch timestamp in milliseconds.
+      isArray: false
+      name: gte_last_seen
+      required: false
+      secret: false
+    - default: false
+      description: Epoch timestamp in milliseconds.
+      isArray: false
+      name: lte_first_seen
+      required: false
+      secret: false
+    - default: false
+      description: Epoch timestamp in milliseconds.
+      isArray: false
+      name: lte_last_seen
+      required: false
+      secret: false
+    - default: false
+      description: List of IP addresses.
+      isArray: true
+      name: ip_list
+      required: false
+      secret: false
+    - default: false
+      description: Name of the endpoint group.
+      isArray: true
+      name: group_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Type of operating system.
+      isArray: true
+      name: platform
+      predefined:
+      - windows
+      - linux
+      - macos
+      - android
+      required: false
+      secret: false
+    - default: false
+      description: Endpoint alias name.
+      isArray: true
+      name: alias
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Choose if an endpoint has been isolated. Select "isolated" or "unisolated".
+      isArray: false
+      name: isolate
+      predefined:
+      - isolated
+      - unisolated
+      required: false
+      secret: false
+    - default: false
+      description: Name of the host.
+      isArray: true
+      name: hostname
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Choose whether to scan all of the endpoints or not. Default is false. Scanning all of the endpoints may cause performance issues and latency.
+      isArray: false
+      name: all
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - default: false
+      description: For polling use.
+      isArray: true
+      name: action_id
+      required: false
+      secret: false
+      deprecated: true
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: Polling timeout in seconds.
+      isArray: false
+      name: timeout_in_seconds
+      required: false
+      secret: false
+    deprecated: false
+    description: Runs a scan on a selected endpoint. To scan all endpoints, run this command with argument all=true. Note that scanning all the endpoints may cause performance issues and latency.
+    execution: true
+    name: core-endpoint-scan
+    polling: true
+    outputs:
+    - contextPath: Core.endpointScan.actionId
+      description: The action ID of the scan request.
+      type: Number
+    - contextPath: Core.endpointScan.aborted
+      description: Was the scan aborted.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: Links the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
+      description: List of endpoint IDs.
+      isArray: true
+      name: endpoint_id_list
+      required: false
+      secret: false
+    - default: false
+      description: Name of the distribution list.
+      isArray: true
+      name: dist_name
+      required: false
+      secret: false
+    - default: false
+      description: Epoch timestamp in milliseconds.
+      isArray: false
+      name: gte_first_seen
+      required: false
+      secret: false
+    - default: false
+      description: Epoch timestamp in milliseconds.
+      isArray: false
+      name: gte_last_seen
+      required: false
+      secret: false
+    - default: false
+      description: Epoch timestamp in milliseconds.
+      isArray: false
+      name: lte_first_seen
+      required: false
+      secret: false
+    - default: false
+      description: Epoch timestamp in milliseconds.
+      isArray: false
+      name: lte_last_seen
+      required: false
+      secret: false
+    - default: false
+      description: List of IP addresses.
+      isArray: true
+      name: ip_list
+      required: false
+      secret: false
+    - default: false
+      description: Name of the endpoint group.
+      isArray: true
+      name: group_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Type of operating system.
+      isArray: true
+      name: platform
+      predefined:
+      - windows
+      - linux
+      - macos
+      - android
+      required: false
+      secret: false
+    - default: false
+      description: Endpoint alias name.
+      isArray: true
+      name: alias
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Choose whether an endpoint has been isolated. Select "isolated" or "unisolated".
+      isArray: false
+      name: isolate
+      predefined:
+      - isolated
+      - unisolated
+      required: false
+      secret: false
+    - default: false
+      description: Name of the host.
+      isArray: true
+      name: hostname
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether to scan all of the endpoints or not. Default is false. Note that scanning all of the endpoints may cause performance issues and latency.
+      isArray: false
+      name: all
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Cancel the selected endpoints scan. A scan can only be cancelled if the selected endpoints are Pending or In Progress. To scan all endpoints, run the command with the argument all=true. Note that scanning all of the endpoints may cause performance issues and latency.
+    execution: true
+    name: core-endpoint-scan-abort
+    outputs:
+    - contextPath: Core.endpointScan.actionId
+      description: The action id of the abort scan request.
+      type: Unknown
+    - contextPath: Core.endpointScan.aborted
+      description: Was the scan cancelled.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The endpoint ID. Retrieve by running the core-get-endpoints command.
+      isArray: false
+      name: endpoint_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets the policy name for a specific endpoint.
+    execution: false
+    name: core-get-policy
+    outputs:
+    - contextPath: Core.Policy
+      description: The policy allocated with the endpoint.
+      type: string
+    - contextPath: Core.Policy.policy_name
+      description: Name of the policy allocated with the endpoint.
+      type: string
+    - contextPath: Core.Policy.endpoint_id
+      description: Endpoint ID.
+      type: string
+  - arguments:
+    - default: false
+      description: A comma-separated list of the script names.
+      isArray: true
+      name: script_name
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of the script descriptions.
+      isArray: true
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of the users who created the script.
+      isArray: true
+      name: created_by
+      required: false
+      secret: false
+    - default: false
+      description: The maximum number of scripts returned to the War Room. Default is 50.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: (Int) Offset in the data set. Default is 0.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Choose to run the script on a Windows operating system.
+      isArray: false
+      name: windows_supported
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Choose to run the script on a Linux operating system.
+      isArray: false
+      name: linux_supported
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Choose to run the script on a Mac operating system.
+      isArray: false
+      name: macos_supported
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Choose if the script has a high-risk outcome.
+      isArray: false
+      name: is_high_risk
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets a list of scripts available in the scripts library.
+    execution: false
+    name: core-get-scripts
+    outputs:
+    - contextPath: Core.Scripts
+      description: The scripts command results.
+      type: Unknown
+    - contextPath: Core.Scripts.script_id
+      description: Script ID.
+      type: Unknown
+    - contextPath: Core.Scripts.name
+      description: Name of the script.
+      type: string
+    - contextPath: Core.Scripts.description
+      description: Description of the script.
+      type: string
+    - contextPath: Core.Scripts.modification_date
+      description: Timestamp of when the script was last modified.
+      type: Unknown
+    - contextPath: Core.Scripts.created_by
+      description: Name of the user who created the script.
+      type: string
+    - contextPath: Core.Scripts.windows_supported
+      description: Choose to run the script on a Windows operating system.
+      type: boolean
+    - contextPath: Core.Scripts.linux_supported
+      description: Choose to run the script on a Linux operating system.
+      type: boolean
+    - contextPath: Core.Scripts.macos_supported
+      description: Choose to run the script on a Mac operating system.
+      type: boolean
+    - contextPath: Core.Scripts.is_high_risk
+      description: Choose if the script has a high-risk outcome.
+      type: boolean
+    - contextPath: Core.Scripts.script_uid
+      description: Globally Unique Identifier of the script, used to identify the script when executing.
+      type: string
+  - arguments:
+    - default: false
+      description: Comma-separated list of endpoint IDs. You can retrieve the endpoint IDs from the core-get-endpoints command.
+      isArray: false
+      name: endpoint_ids
+      required: true
+      secret: false
+    deprecated: false
+    description: Deletes selected endpoints in the Cortex app. You can delete up to 1000 endpoints.
+    execution: false
+    name: core-delete-endpoints
+  - arguments:
+    - default: false
+      description: Comma-separated list of endpoint IDs. You can retrieve the endpoint IDs from the core-get-endpoints command.
+      isArray: true
+      name: endpoint_ids
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'Type of violation. Possible values are: "cd-rom", "disk drive", "floppy disk", and "portable device".'
+      isArray: false
+      name: type
+      predefined:
+      - cd-rom
+      - disk drive
+      - floppy disk
+      - portable device
+      required: false
+      secret: false
+    - default: false
+      description: 'Timestamp of the violation. Violations that are greater than or equal to this timestamp will be returned. Values can be in either ISO date format, relative time, or epoch timestamp. For example:  "2019-10-21T23:45:00" (ISO date format), "3 days ago" (relative time) 1579039377301 (epoch time).'
+      isArray: false
+      name: timestamp_gte
+      required: false
+      secret: false
+    - default: false
+      description: 'Timestamp of the violation. Violations that are less than or equal to this timestamp will be returned. Values can be in either ISO date format, relative time, or epoch timestamp. For example:  "2019-10-21T23:45:00" (ISO date format), "3 days ago" (relative time) 1579039377301 (epoch time).'
+      isArray: false
+      name: timestamp_lte
+      required: false
+      secret: false
+    - default: false
+      description: Comma-separated list of IP addresses.
+      isArray: true
+      name: ip_list
+      required: false
+      secret: false
+    - default: false
+      description: Name of the vendor.
+      isArray: true
+      name: vendor
+      required: false
+      secret: false
+    - default: false
+      description: Vendor ID.
+      isArray: true
+      name: vendor_id
+      required: false
+      secret: false
+    - default: false
+      description: Name of the product.
+      isArray: true
+      name: product
+      required: false
+      secret: false
+    - default: false
+      description: Product ID.
+      isArray: true
+      name: product_id
+      required: false
+      secret: false
+    - default: false
+      description: Serial number.
+      isArray: true
+      name: serial
+      required: false
+      secret: false
+    - default: false
+      description: Hostname.
+      isArray: true
+      name: hostname
+      required: false
+      secret: false
+    - default: false
+      description: Comma-separated list of violation IDs.
+      isArray: true
+      name: violation_id_list
+      required: false
+      secret: false
+    - default: false
+      description: Username.
+      isArray: true
+      name: username
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets a list of device control violations filtered by selected fields. You can retrieve up to 100 violations.
+    execution: false
+    name: core-get-endpoint-device-control-violations
+    outputs:
+    - contextPath: Core.EndpointViolations
+      description: Endpoint violations command results.
+      type: Unknown
+    - contextPath: Core.EndpointViolations.violations
+      description: A list of violations.
+      type: Unknown
+    - contextPath: Core.EndpointViolations.violations.os_type
+      description: Type of the operating system.
+      type: string
+    - contextPath: Core.EndpointViolations.violations.hostname
+      description: Hostname of the violation.
+      type: string
+    - contextPath: Core.EndpointViolations.violations.username
+      description: Username of the violation.
+      type: string
+    - contextPath: Core.EndpointViolations.violations.ip
+      description: IP address of the violation.
+      type: string
+    - contextPath: Core.EndpointViolations.violations.timestamp
+      description: Timestamp of the violation.
+      type: number
+    - contextPath: Core.EndpointViolations.violations.violation_id
+      description: Violation ID.
+      type: number
+    - contextPath: Core.EndpointViolations.violations.type
+      description: Type of violation.
+      type: string
+    - contextPath: Core.EndpointViolations.violations.vendor_id
+      description: Vendor ID of the violation.
+      type: string
+    - contextPath: Core.EndpointViolations.violations.vendor
+      description: Name of the vendor of the violation.
+      type: string
+    - contextPath: Core.EndpointViolations.violations.product_id
+      description: Product ID of the violation.
+      type: string
+    - contextPath: Core.EndpointViolations.violations.product
+      description: Name of the product of the violation.
+      type: string
+    - contextPath: Core.EndpointViolations.violations.serial
+      description: Serial number of the violation.
+      type: string
+    - contextPath: Core.EndpointViolations.violations.endpoint_id
+      description: Endpoint ID of the violation.
+      type: string
+  - arguments:
+    - default: false
+      description: Links the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
+      description: Comma-separated list of endpoint IDs.
+      isArray: true
+      name: endpoint_ids
+      required: true
+      secret: false
+    - default: false
+      description: A comma-separated list of file paths on the Windows platform.
+      isArray: true
+      name: windows_file_paths
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of file paths on the Linux platform.
+      isArray: true
+      name: linux_file_paths
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of file paths on the Mac platform.
+      isArray: true
+      name: mac_file_paths
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of file paths in any platform. Can be used instead of the mac/windows/linux file paths. The order of the files path list must be parellel to the endpoints list order, therefore, the first file path in the list is related to the first endpoint and so on.
+      isArray: true
+      name: generic_file_path
+      required: false
+      secret: false
+    - default: false
+      description: For polling use
+      isArray: true
+      name: action_id
+      required: false
+      secret: false
+      deprecated: true
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: Polling timeout in seconds.
+      isArray: false
+      name: timeout_in_seconds
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints. At least one endpoint ID and one file path are necessary in order to run the command. After running this command, you can use the core-action-status-get command with returned action_id, to check the action status.
+    execution: false
+    name: core-retrieve-files
+    polling: true
+    outputs:
+    - contextPath: Core.RetrievedFiles.action_id
+      description: ID of the action to retrieve files from selected endpoints.
+      type: string
+  - arguments:
+    - default: false
+      description: Action ID retrieved from the core-retrieve-files command.
+      isArray: true
+      name: action_id
+      required: true
+      secret: false
+    deprecated: false
+    description: View the file retrieved by the core-retrieve-files command according to the action ID. Before running this command, you can use the core-action-status-get command to check if this action completed successfully.
+    execution: false
+    name: core-retrieve-file-details
+    outputs:
+    - contextPath: File
+      description: The file details command results.
+      type: Unknown
+    - contextPath: File.Name
+      description: The full file name (including the file extension).
+      type: String
+    - contextPath: File.EntryID
+      description: The ID for locating the file in the War Room.
+      type: String
+    - contextPath: File.Size
+      description: The size of the file in bytes.
+      type: Number
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.SHA512
+      description: The SHA512 hash of the file.
+      type: String
+    - contextPath: File.Extension
+      description: 'The file extension. For example: "xls".'
+      type: String
+    - contextPath: File.Type
+      description: The file type, as determined by libmagic (same as displayed in file entries).
+      type: String
+  - arguments:
+    - default: false
+      description: Unique identifier of the script, returned by the core-get-scripts command.
+      isArray: false
+      name: script_uid
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets the full definition of a specific script in the scripts library.
+    execution: false
+    name: core-get-script-metadata
+    outputs:
+    - contextPath: Core.ScriptMetadata
+      description: The script metadata command results.
+      type: Unknown
+    - contextPath: Core.ScriptMetadata.script_id
+      description: Script ID.
+      type: number
+    - contextPath: Core.ScriptMetadata.name
+      description: Script name.
+      type: string
+    - contextPath: Core.ScriptMetadata.description
+      description: Script description.
+      type: string
+    - contextPath: Core.ScriptMetadata.modification_date
+      description: Timestamp of when the script was last modified.
+      type: unknown
+    - contextPath: Core.ScriptMetadata.created_by
+      description: Name of the user who created the script.
+      type: string
+    - contextPath: Core.ScriptMetadata.is_high_risk
+      description: Whether the script has a high-risk outcome.
+      type: boolean
+    - contextPath: Core.ScriptMetadata.windows_supported
+      description: Choose to run the script on a Windows operating system.
+      type: boolean
+    - contextPath: Core.ScriptMetadata.linux_supported
+      description: Choose to run the script on a Linux operating system.
+      type: boolean
+    - contextPath: Core.ScriptMetadata.macos_supported
+      description: Choose to run the script on a Mac operating system.
+      type: boolean
+    - contextPath: Core.ScriptMetadata.entry_point
+      description: Name of the entry point selected for the script. An empty string indicates  the script defined as just run.
+      type: string
+    - contextPath: Core.ScriptMetadata.script_input
+      description: Name and type for the specified entry point.
+      type: string
+    - contextPath: Core.ScriptMetadata.script_output_type
+      description: Type of the output.
+      type: string
+    - contextPath: Core.ScriptMetadata.script_output_dictionary_definitions
+      description: If the script_output_type is a dictionary, an array with friendly name, name, and type for each output.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Unique identifier of the script, returned by the core-get-scripts command.
+      isArray: false
+      name: script_uid
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets the code of a specific script in the script library.
+    execution: false
+    name: core-get-script-code
+    outputs:
+    - contextPath: Core.ScriptCode
+      description: The script code command results.
+      type: Unknown
+    - contextPath: Core.ScriptCode.code
+      description: The code of a specific script in the script library.
+      type: string
+    - contextPath: Core.ScriptCode.script_uid
+      description: Unique identifier of the script.
+      type: string
+  - arguments:
+    - default: false
+      description: The action ID of the selected request. After performing an action, you will receive an action ID.
+      isArray: true
+      name: action_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves the status of the requested actions according to the action ID.
+    execution: false
+    name: core-action-status-get
+    outputs:
+    - contextPath: Core.GetActionStatus
+      description: The action status command results.
+      type: Unknown
+    - contextPath: Core.GetActionStatus.endpoint_id
+      description: Endpoint ID.
+      type: string
+    - contextPath: Core.GetActionStatus.status
+      description: The status of the specific endpoint ID.
+      type: string
+    - contextPath: Core.GetActionStatus.action_id
+      description: The specified action ID.
+      type: number
+  - arguments:
+    - default: false
+      description: Links the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
+      description: Comma-separated list of endpoint IDs. Can be retrieved by running the core-get-endpoints command.
+      isArray: false
+      name: endpoint_ids
+      required: true
+      secret: false
+    - default: false
+      description: Unique identifier of the script. Can be retrieved by running the core-get-scripts command.
+      isArray: false
+      name: script_uid
+      required: true
+      secret: false
+    - default: false
+      description: Dictionary contains the parameter name as key and its value for this execution as the value. For example, {"param1":"param1_value","param2":"param2_value"}
+      isArray: false
+      name: parameters
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '600'
+      description: The timeout in seconds for this execution.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    deprecated: false
+    description: Initiates a new endpoint script execution action using a script from the script library.
+    execution: false
+    name: core-run-script
+    outputs:
+    - contextPath: Core.ScriptRun.action_id
+      description: ID of the action initiated.
+      type: Number
+    - contextPath: Core.ScriptRun.endpoints_count
+      description: Number of endpoints the action was initiated on.
+      type: Number
+  - arguments:
+    - default: false
+      description: Links the response action to the incident that triggered it. it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
+      description: Comma-separated list of endpoint IDs. Can be retrieved by running the core-get-endpoints command.
+      isArray: false
+      name: endpoint_ids
+      required: true
+      secret: false
+    - default: false
+      description: Section of a script you want to initiate on an endpoint, for example, print("7").
+      isArray: false
+      name: snippet_code
+      required: true
+      secret: false
+    - default: false
+      description: For polling use
+      isArray: true
+      name: action_id
+      required: false
+      secret: false
+      deprecated: true
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: Polling timeout in seconds.
+      isArray: false
+      name: timeout_in_seconds
+      required: false
+      secret: false
+    deprecated: false
+    description: Initiates a new endpoint script execution action using the provided snippet code.
+    execution: false
+    name: core-run-snippet-code-script
+    polling: true
+    outputs:
+    - contextPath: Core.ScriptRun.action_id
+      description: ID of the action initiated.
+      type: Number
+    - contextPath: Core.ScriptRun.endpoints_count
+      description: Number of endpoints the action was initiated on.
+      type: Number
+  - arguments:
+    - default: false
+      description: Action IDs retrieved from the core-run-script command.
+      isArray: true
+      name: action_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves the status of a script execution action.
+    execution: false
+    name: core-get-script-execution-status
+    outputs:
+    - contextPath: Core.ScriptStatus.general_status
+      description: General status of the action, considering the status of all the endpoints.
+      type: String
+    - contextPath: Core.ScriptStatus.error_message
+      description: Error message regarding permissions for running APIs or the action doesn’t exist.
+      type: String
+    - contextPath: Core.ScriptStatus.endpoints_timeout
+      description: Number of endpoints in "timeout" status.
+      type: Number
+    - contextPath: Core.ScriptStatus.action_id
+      description: ID of the action initiated.
+      type: Number
+    - contextPath: Core.ScriptStatus.endpoints_pending_abort
+      description: Number of endpoints in "pending abort" status.
+      type: Number
+    - contextPath: Core.ScriptStatus.endpoints_pending
+      description: Number of endpoints in "pending" status.
+      type: Number
+    - contextPath: Core.ScriptStatus.endpoints_in_progress
+      description: Number of endpoints in "in progress" status.
+      type: Number
+    - contextPath: Core.ScriptStatus.endpoints_failed
+      description: Number of endpoints in "failed" status.
+      type: Number
+    - contextPath: Core.ScriptStatus.endpoints_expired
+      description: Number of endpoints in "expired" status.
+      type: Number
+    - contextPath: Core.ScriptStatus.endpoints_completed_successfully
+      description: Number of endpoints in "completed successfully" status.
+      type: Number
+    - contextPath: Core.ScriptStatus.endpoints_canceled
+      description: Number of endpoints in "canceled" status.
+      type: Number
+    - contextPath: Core.ScriptStatus.endpoints_aborted
+      description: Number of endpoints in "aborted" status.
+      type: Number
+  - arguments:
+    - default: false
+      description: Action IDs retrieved from the core-run-script command.
+      isArray: true
+      name: action_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieve the results of a script execution action.
+    execution: false
+    name: core-get-script-execution-results
+    outputs:
+    - contextPath: Core.ScriptResult.action_id
+      description: ID of the action initiated.
+      type: Number
+    - contextPath: Core.ScriptResult.results.retrieved_files
+      description: Number of successfully retrieved files.
+      type: Number
+    - contextPath: Core.ScriptResult.results.endpoint_ip_address
+      description: Endpoint IP address.
+      type: String
+    - contextPath: Core.ScriptResult.results.endpoint_name
+      description: Number of successfully retrieved files.
+      type: String
+    - contextPath: Core.ScriptResult.results.failed_files
+      description: Number of files failed to retrieve.
+      type: Number
+    - contextPath: Core.ScriptResult.results.endpoint_status
+      description: Endpoint status.
+      type: String
+    - contextPath: Core.ScriptResult.results.domain
+      description: Domain to which the endpoint belongs.
+      type: String
+    - contextPath: Core.ScriptResult.results.endpoint_id
+      description: Endpoint ID.
+      type: String
+    - contextPath: Core.ScriptResult.results.execution_status
+      description: Execution status of this endpoint.
+      type: String
+    - contextPath: Core.ScriptResult.results.return_value
+      description: Value returned by the script in case the type is not a dictionary.
+      type: String
+    - contextPath: Core.ScriptResult.results.standard_output
+      description: The STDOUT and the STDERR logged by the script during the execution.
+      type: String
+    - contextPath: Core.ScriptResult.results.retention_date
+      description: Timestamp in which the retrieved files will be deleted from the server.
+      type: Date
+    - contextPath: Core.ScriptResult.results.command
+      description: The command that was executed by the script.
+      type: String
+    - contextPath: Core.ScriptResult.results.command_output
+      description: The output of the command executed by the script.
+      type: array
+  - arguments:
+    - default: false
+      description: Action ID retrieved from the core-run-script command.
+      isArray: true
+      name: action_id
+      required: true
+      secret: false
+    - default: false
+      description: Endpoint ID. Can be retrieved by running the core-get-endpoints command.
+      isArray: true
+      name: endpoint_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets the files retrieved from a specific endpoint during a script execution.
+    execution: false
+    name: core-get-script-execution-result-files
+    outputs:
+    - contextPath: File.Size
+      description: The size of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.SHA512
+      description: The SHA512 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the file.
+      type: String
+    - contextPath: File.EntryID
+      description: EntryID of the file
+      type: String
+    - contextPath: File.Info
+      description: Information about the file.
+      type: String
+    - contextPath: File.Type
+      description: The file type.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.Extension
+      description: The extension of the file.
+      type: String
+  - arguments:
+    - default: false
+      description: Link the response action to triggered incident.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
+      description: Comma-separated list of endpoint IDs. Can be retrieved by running the core-get-endpoints command.
+      isArray: false
+      name: endpoint_ids
+      required: true
+      secret: false
+    - default: false
+      description: Comma-separated list of shell commands to execute.
+      isArray: false
+      name: commands
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '600'
+      description: The timeout in seconds for this execution.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    - default: false
+      description: For polling use
+      isArray: true
+      name: action_id
+      required: false
+      secret: false
+      deprecated: true
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: Polling timeout in seconds.
+      isArray: false
+      name: timeout_in_seconds
+      required: false
+      secret: false
+    deprecated: false
+    description: Initiate a new endpoint script execution of shell commands.
+    execution: false
+    name: core-run-script-execute-commands
+    polling: true
+    outputs:
+    - contextPath: Core.ScriptRun.action_id
+      description: ID of the action initiated.
+      type: Number
+    - contextPath: Core.ScriptRun.endpoints_count
+      description: Number of endpoints the action was initiated on.
+      type: Number
+  - arguments:
+    - default: false
+      description: Links the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
+      description: Comma-separated list of endpoint IDs. Can be retrieved by running the core-get-endpoints command.
+      isArray: true
+      name: endpoint_ids
+      required: true
+      secret: false
+    - default: false
+      description: Paths of the files to delete, in a comma-separated list. Paths of the files to check for existence. All of the given file paths will run on all of the endpoints.
+      isArray: true
+      name: file_path
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '600'
+      description: The timeout in seconds for this execution.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    - default: false
+      description: For polling use
+      isArray: true
+      name: action_id
+      required: false
+      secret: false
+      deprecated: true
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: Polling timeout in seconds.
+      isArray: false
+      name: timeout_in_seconds
+      required: false
+      secret: false
+    deprecated: false
+    description: Initiates a new endpoint script execution to delete the specified file.
+    execution: false
+    name: core-run-script-delete-file
+    polling: true
+    outputs:
+    - contextPath: Core.ScriptRun.action_id
+      description: ID of the action initiated.
+      type: Number
+    - contextPath: Core.ScriptRun.endpoints_count
+      description: Number of endpoints the action was initiated on.
+      type: Number
+  - arguments:
+    - default: false
+      description: Links the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
+      description: Comma-separated list of endpoint IDs. Can be retrieved by running the core-get-endpoints command.
+      isArray: true
+      name: endpoint_ids
+      required: true
+      secret: false
+    - default: false
+      description: Paths of the files to check for existence, in a comma-separated list. All of the given file paths will run on all of the endpoints.
+      isArray: true
+      name: file_path
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '600'
+      description: The timeout in seconds for this execution.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    - default: false
+      description: For polling use
+      isArray: true
+      name: action_id
+      required: false
+      secret: false
+      deprecated: true
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: Polling timeout in seconds.
+      isArray: false
+      name: timeout_in_seconds
+      required: false
+      secret: false
+    deprecated: false
+    description: Initiates a new endpoint script execution to check if file exists.
+    execution: false
+    name: core-run-script-file-exists
+    polling: true
+    outputs:
+    - contextPath: Core.ScriptRun.action_id
+      description: ID of the action initiated.
+      type: Number
+    - contextPath: Core.ScriptRun.endpoints_count
+      description: Number of endpoints the action was initiated on.
+      type: Number
+  - arguments:
+    - default: false
+      description: Links the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
+      description: Comma-separated list of endpoint IDs. Can be retrieved by running the core-get-endpoints command.
+      isArray: true
+      name: endpoint_ids
+      required: true
+      secret: false
+    - default: false
+      description: Names of processes to kill. Will kill all of the given processes on all of the endpoints.
+      isArray: true
+      name: process_name
+      required: true
+      secret: false
+    - default: false
+      defaultValue: '600'
+      description: The timeout in seconds for this execution.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    - default: false
+      description: For polling use
+      isArray: true
+      name: action_id
+      required: false
+      secret: false
+      deprecated: true
+    - default: false
+      description: Interval in seconds between each poll.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: Polling timeout in seconds.
+      isArray: false
+      name: timeout_in_seconds
+      required: false
+      secret: false
+    deprecated: false
+    description: Initiates a new endpoint script execution kill process.
+    execution: false
+    name: core-run-script-kill-process
+    polling: true
+    outputs:
+    - contextPath: Core.ScriptRun.action_id
+      description: ID of the action initiated.
+      type: Number
+    - contextPath: Core.ScriptRun.endpoints_count
+      description: Number of endpoints the action was initiated on.
+      type: Number
+  - arguments:
+    - default: false
+      description: The endpoint ID.
+      isArray: true
+      name: id
+      required: false
+      secret: false
+    - default: true
+      description: The endpoint IP address.
+      isArray: true
+      name: ip
+      required: false
+      secret: false
+    - default: false
+      description: The endpoint hostname.
+      isArray: true
+      name: hostname
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns information about an endpoint.
+    execution: false
+    name: endpoint
+    outputs:
+    - contextPath: Endpoint.Hostname
+      description: The endpoint's hostname.
+      type: String
+    - contextPath: Endpoint.OS
+      description: The endpoint's operation system.
+      type: String
+    - contextPath: Endpoint.IPAddress
+      description: The endpoint's IP address.
+      type: String
+    - contextPath: Endpoint.ID
+      description: The endpoint's ID.
+      type: String
+    - contextPath: Endpoint.Status
+      description: The endpoint's status.
+      type: String
+    - contextPath: Endpoint.IsIsolated
+      description: The endpoint's isolation status.
+      type: String
+    - contextPath: Endpoint.MACAddress
+      description: The endpoint's MAC address.
+      type: String
+    - contextPath: Endpoint.Vendor
+      description: The integration name of the endpoint vendor.
+      type: String
+  - arguments:
+    - default: false
+      description: String that represents the file’s hash. Must be a valid SHA256 hash.
+      isArray: false
+      name: file_hash
+      required: true
+      secret: false
+    - default: false
+      description: The new verdict of the file. 0 - benign, 1 - malware.
+      predefined:
+      - '0'
+      - '1'
+      isArray: false
+      name: new_verdict
+      required: true
+      secret: false
+    - default: false
+      description: String that represents the reason of the report
+      isArray: false
+      name: reason
+      required: true
+      secret: false
+    - default: false
+      description: User’s email address.
+      isArray: false
+      name: email
+      required: false
+      secret: false
+    deprecated: false
+    description: Reports to WildFire about incorrect hash verdict through Cortex.
+    execution: true
+    name: core-report-incorrect-wildfire
+    outputs:
+    - contextPath: Core.WildFire.file_hash
+      description: String that represents the file’s hash.
+      type: Number
+    - contextPath: Core.WildFire.new_verdict
+      description: The new verdict of the file.
+      type: Number
+  - arguments:
+    - default: false
+      description: Links the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
+      description: String that represents a list of hashed files you want to add to allow list. Must be a valid SHA256 hash.
+      isArray: true
+      name: hash_list
+      required: true
+      secret: false
+    - default: false
+      description: String that represents additional information regarding the action.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    deprecated: false
+    description: Removes requested files from allow list.
+    execution: false
+    name: core-remove-allowlist-files
+    outputs:
+    - contextPath: Core.allowlist.removed_hashes
+      description: Removed file hash
+      type: Number
+  - arguments:
+    - default: false
+      description: Links the response action to the incident that triggered it.
+      isArray: false
+      name: incident_id
+      required: false
+      secret: false
+    - default: false
+      description: String that represents a list of hashed files you want to add to allow list. Must be a valid SHA256 hash.
+      isArray: true
+      name: hash_list
+      required: true
+      secret: false
+    - default: false
+      description: String that represents additional information regarding the action.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    deprecated: false
+    description: Removes requested files from block list.
+    execution: false
+    name: core-remove-blocklist-files
+    outputs:
+    - contextPath: Core.blocklist.removed_hashes
+      description: Removed fileHash from blocklist
+      type: Number
+  - arguments:
+    - default: false
+      description: Name of the exclusion.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: 'Filter object for the exclusion. example: {"filter":{"AND":[{"SEARCH_FIELD":"alert_category","SEARCH_TYPE":"NEQ","SEARCH_VALUE":"Phishing"}]}}'
+      isArray: false
+      name: filterObject
+      required: true
+      secret: false
+    - default: false
+      description: String that represents additional information regarding the action.
+      isArray: false
+      name: comment
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: ENABLED
+      description: Status of exclusion. default value = ENABLED
+      isArray: false
+      name: status
+      predefined:
+      - ENABLED
+      - DISABLED
+      required: false
+      secret: false
+    deprecated: false
+    description: Adds alert exclusion rule based on filterObject.
+    execution: false
+    name: core-add-exclusion
+    outputs:
+    - contextPath: Core.exclusion.rule_id
+      description: Added exclusion rule id
+      type: Number
+  - arguments:
+    - default: false
+      description: The desired alert_exclusion_id to be removed
+      isArray: false
+      name: alert_exclusion_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Delete an alert exclusion rule based on rule ID.
+    execution: false
+    name: core-delete-exclusion
+    outputs:
+    - contextPath: Core.deletedExclusion.rule_id
+      description: Deleted exclusion rule id
+      type: Number
+  - arguments:
+    - default: false
+      description: Links the response action to the tenant that triggered it.
+      isArray: false
+      name: tenant_ID
+      required: false
+      secret: false
+    - default: false
+      description: 'Filter object for the exclusion. Example: {"filter":{"AND":[{"SEARCH_FIELD":"alert_category","SEARCH_TYPE":"NEQ","SEARCH_VALUE":"Phishing"}]}}'
+      isArray: false
+      name: filterObject
+      required: false
+      secret: false
+    - default: false
+      description: Limit for the response. You will get the first "limit" exclusions. Default value is 20.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+      defaultValue: '20'
+    deprecated: false
+    description: Get a list of the alerts exclusion.
+    execution: false
+    name: core-get-exclusion
+    outputs:
+    - contextPath: Core.exclusion.ALERT_WHITELIST_ID
+      description: ''
+      type: Number
+    - contextPath: Core.exclusion.ALERT_WHITELIST_MODIFY_TIME
+      description: ''
+      type: Date
+    - contextPath: Core.exclusion.ALERT_WHITELIST_NAME
+      description: ''
+      type: String
+    - contextPath: Core.exclusion.ALERT_WHITELIST_INDICATOR_TEXT.pretty_name
+      description: ''
+      type: String
+    - contextPath: Core.exclusion.ALERT_WHITELIST_INDICATOR_TEXT.data_type
+      description: ''
+      type: Unknown
+    - contextPath: Core.exclusion.ALERT_WHITELIST_INDICATOR_TEXT.render_type
+      description: ''
+      type: String
+    - contextPath: Core.exclusion.ALERT_WHITELIST_INDICATOR_TEXT.entity_map
+      description: ''
+      type: Unknown
+    - contextPath: Core.exclusion.ALERT_WHITELIST_INDICATOR_TEXT.dml_type
+      description: ''
+      type: Unknown
+    - contextPath: Core.exclusion.ALERT_WHITELIST_INDICATOR.filter.AND.SEARCH_FIELD
+      description: ''
+      type: String
+    - contextPath: Core.exclusion.ALERT_WHITELIST_INDICATOR.filter.AND.SEARCH_TYPE
+      description: ''
+      type: String
+    - contextPath: Core.exclusion.ALERT_WHITELIST_INDICATOR.filter.AND.SEARCH_VALUE
+      description: ''
+      type: String
+    - contextPath: Core.exclusion.ALERT_WHITELIST_HITS
+      description: ''
+      type: Number
+    - contextPath: Core.exclusion.ALERT_WHITELIST_COMMENT
+      description: ''
+      type: String
+    - contextPath: Core.exclusion.ALERT_WHITELIST_USER
+      description: ''
+      type: String
+    - contextPath: Core.exclusion.ALERT_WHITELIST_PRETTY_USER
+      description: ''
+      type: String
+    - contextPath: Core.exclusion.ALERT_WHITELIST_STATUS
+      description: ''
+      type: String
+    - contextPath: Core.exclusion.ALERT_WHITELIST_BACKWARDS_SCAN_STATUS
+      description: ''
+      type: String
+    - contextPath: Core.exclusion.ALERT_WHITELIST_BACKWARDS_SCAN_TIMESTAMP
+      description: ''
+      type: Unknown
+    - contextPath: Core.exclusion.ALERT_WHITELIST_MIGRATED_FROM_ANALYTICS
+      description: ''
+      type: Number
+
+  - arguments:
+    - default: false
+      description: A comma-separated list of alert IDs.
+      isArray: true
+      name: alert_ids
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns information about each alert ID.
+    execution: false
+    name: core-get-cloud-original-alerts
+    outputs:
+    - contextPath: Core.OriginalAlert.event._time
+      description: The timestamp of the occurence of the event.
+      type: String
+    - contextPath: Core.OriginalAlert.event.vendor
+      description: Vendor name.
+      type: String
+    - contextPath: Core.OriginalAlert.event.event_timestamp
+      description: Event timestamp.
+      type: Number
+    - contextPath: Core.OriginalAlert.event.event_type
+      description: Event type (static 500).
+      type: Number
+    - contextPath: Core.OriginalAlert.event.cloud_provider
+      description: The cloud provider - GCP, AZURE, or AWS.
+      type: String
+    - contextPath: Core.OriginalAlert.event.project
+      description: The project in which the event occurred.
+      type: String
+    - contextPath: Core.OriginalAlert.event.cloud_provider_event_id
+      description: The ID given to the event by the cloud provider, if the ID exists.
+      type: String
+    - contextPath: Core.OriginalAlert.event.cloud_correlation_id
+      description: The ID the cloud provider is using to aggregate events that are part of the same general event.
+      type: String
+    - contextPath: Core.OriginalAlert.event.operation_name_orig
+      description: The name of the operation that occurred, as supplied by the cloud provider.
+      type: String
+    - contextPath: Core.OriginalAlert.event.operation_name
+      description: The normalized name of the operation performed by the event.
+      type: String
+    - contextPath: Core.OriginalAlert.event.identity_orig
+      description: Contains the original identity related fields as provided by the cloud provider.
+      type: String
+    - contextPath: Core.OriginalAlert.event.identity_name
+      description: The name of the identity that initiated the action.
+      type: String
+    - contextPath: Core.OriginalAlert.event.identity_uuid
+      description: Same as identity_name but also contains the UUID of the identity if it exists.
+      type: String
+    - contextPath: Core.OriginalAlert.event.identity_type
+      description: An enum representing the type of the identity.
+      type: String
+    - contextPath: Core.OriginalAlert.event.identity_sub_type
+      description: An enum representing the sub-type of the identity, respective to its identity_type.
+      type: String
+    - contextPath: Core.OriginalAlert.event.identity_invoked_by_name
+      description: The name of the identity that invoked the action as it appears in the log.
+      type: String
+    - contextPath: Core.OriginalAlert.event.identity_invoked_by_uuid
+      description: The UUID of the identity that invoked the action as it appears in the log.
+      type: String
+    - contextPath: Core.OriginalAlert.event.identity_invoked_by_type
+      description: An enum that represents the type of identity event that invoked the action.
+      type: String
+    - contextPath: Core.OriginalAlert.event.identity_invoked_by_sub_type
+      description: An enum that represents the respective sub_type of the type of identity (identity_type) that has invoked the action.
+      type: String
+    - contextPath: Core.OriginalAlert.event.operation_status
+      description: Status of whether the operation has succeed or failed, if provided.
+      type: String
+    - contextPath: Core.OriginalAlert.event.operation_status_orig
+      description: The operation status code as it appears in the log, including lookup from code number to code name.
+      type: String
+    - contextPath: Core.OriginalAlert.event.operation_status_orig_code
+      description: The operation status code as it appears in the log.
+      type: String
+    - contextPath: Core.OriginalAlert.event.operation_status_reason_provided
+      description: Description of the error, if the log record indicates an error and the cloud provider supplied the reason.
+      type: String
+    - contextPath: Core.OriginalAlert.event.resource_type
+      description: The normalized type of the service that emitted the log row.
+      type: String
+    - contextPath: Core.OriginalAlert.event.resource_type_orig
+      description: The type of the service that omitted the log as provided by the cloud provider.
+      type: String
+    - contextPath: Core.OriginalAlert.event.resource_sub_type
+      description: The sub-type respective to the resource_type field, normalized across all cloud providers.
+      type: String
+    - contextPath: Core.OriginalAlert.event.resource_sub_type_orig
+      description: The sub-type of the service that emitted this log row as provided by the cloud provider.
+      type: String
+    - contextPath: Core.OriginalAlert.event.region
+      description: The cloud region of the resource that emitted the log.
+      type: String
+    - contextPath: Core.OriginalAlert.event.zone
+      description: The availability zone of the resource that emitted the log.
+      type: String
+    - contextPath: Core.OriginalAlert.event.referenced_resource
+      description: The cloud resource referenced in the audit log.
+      type: String
+    - contextPath: Core.OriginalAlert.event.referenced_resource_name
+      description: Same as referenced_resource but provides only the substring that represents the resource name instead of the full asset ID.
+      type: String
+    - contextPath: Core.OriginalAlert.event.referenced_resources_count
+      description: The number of extracted resources referenced in this audit log.
+      type: Number
+    - contextPath: Core.OriginalAlert.event.user_agent
+      description: The user agent provided in the call to the API of the cloud provider.
+      type: String
+    - contextPath: Core.OriginalAlert.event.caller_ip
+      description: The IP of the caller that performed the action in the log.
+      type: String
+    - contextPath: Core.OriginalAlert.event.caller_ip_geolocation
+      description: The geolocation associated with the caller_ip's value.
+      type: String
+    - contextPath: Core.OriginalAlert.event.caller_ip_asn
+      description: The ASN of the caller_ip's value.
+      type: Number
+    - contextPath: Core.OriginalAlert.event.caller_project
+      description: The project of the caller entity.
+      type: String
+    - contextPath: Core.OriginalAlert.event.raw_log
+      description: The raw log that is being normalized.
+      type: Unknown
+    - contextPath: Core.OriginalAlert.event.log_name
+      description: The name of the log that contains the log row.
+      type: String
+    - contextPath: Core.OriginalAlert.event.caller_ip_asn_org
+      description: The organization associated with the ASN of the caller_ip's value.
+      type: String
+    - contextPath: Core.OriginalAlert.event.event_base_id
+      description: Event base ID.
+      type: String
+    - contextPath: Core.OriginalAlert.event.ingestion_time
+      description: Ingestion time.
+      type: String
+  - arguments:
+    - default: false
+      description: A comma-separated list of alert IDs.
+      isArray: true
+      name: alert_ids
+      required: true
+      secret: false
+    deprecated: false
+    description: Returns dynamic analysis of each alert ID.
+    execution: false
+    name: core-get-dynamic-analysis
+    outputs:
+    - contextPath: Core.DynamicAnalysis.causalityId
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.name
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.factName
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.timestamp
+      description: ''
+      type: Date
+    - contextPath: Core.DynamicAnalysis.internals.eventId
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.user_presence
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.shellcode_address
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.tid
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.parent_pid
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.is_sign
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.sync_action
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.is_remote_session
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.peb
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.process_image_path
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.command_line
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.scanned_buffer_crc32_stacktrace_allocation_base_buffer
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.page_base_shellcode_buffer
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.os_sig_status
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.file_info_legal_copyright
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.user_name
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.is_heavens_gate
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.is_impersonated
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.os_parent_instance_id
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.file_info_internal_name
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.stack_trace
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.is_injected
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.pid
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.thread_context_eip_image_path
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.image_path_sha256
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.montepi_err
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.file_info_company_name
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.file_info_original_name
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.instance_id
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.yara_file_scan_result
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.file_obj_flags
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.should_obfuscate
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.file_size
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.file_info_is_dot_net
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.call_region_shellcode_buffer
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.allocation_base_shellcode_buffer
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.signer_name
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.original_command_line
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.yara_rules_results_stacktrace_page_base_buffer
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.rpc_interface_uuid
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.rpc_interface_minor_version
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.telem
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.is_trusted_signer
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.thread_context_eip
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.requested_parent_instance_id
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.is_cgo
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.parent_cid
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.enabled_privileges
+      description: ''
+      type: Date
+    - contextPath: Core.DynamicAnalysis.internals.attributes.peb32
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.is_embedded_sign
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.rpc_function_opnum
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.parent_thread_instance_id
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.remote_causality_actor_ip
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.canonized_process_image_path
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.scanned_buffer_crc32_stacktrace_call_region_buffer
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.yara_rules_results_stacktrace_allocation_base_buffer
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.entry_point_rva
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.is_stack_pivot
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.os_parent_pid
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.image_path_md5
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.causality_actor_type
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.timestamp
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.is_in_transaction
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.cid
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.integrity_level
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.actor_type
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.file_info_description
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.chisq_prob
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.parent_tid
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.rpc_interface_major_version
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.dse_internal
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.telem_bit_mask
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.process_image_name
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.parent_instance_id
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.entropy
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.call_region_base_address
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.yara_rules_results_stacktrace_call_region_buffer
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.scanned_buffer_crc32_stacktrace_page_base_buffer
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.image_base
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.sync_id
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.effective_user_sid
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.requested_parent_pid
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.event_id
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.rpc_protocol
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.processIdx
+      description: ''
+      type: Number
+    - contextPath: Core.DynamicAnalysis.internals.instanceId
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.scriptblock_text
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.script_path
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.actor_pid
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.actor_instance_id
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.actor_thread_instance_id
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.etw_event_id
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.actor_tid
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.suspicious_strings
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.suspicious_strings_context
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.content_version
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.script_hash
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.dotnet_callstack
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.hook_type
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.appdomain_id
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.ps_assembly_version
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.original_length
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.invoke_expression_count
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.file_path
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.content
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.edr_assembly_version
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.expression_tree_scan_result
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.content_length
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.local_analysis_verdict
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.clr_version
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.powershell_version
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.script_source
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.prio
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.internals.attributes.build_timestamp
+      description: ''
+      type: Date
+    - contextPath: Core.DynamicAnalysis.potentialPreventionActionOverride
+      description: ''
+      type: Boolean
+    - contextPath: Core.DynamicAnalysis.isBiocRule
+      description: ''
+      type: Boolean
+    - contextPath: Core.DynamicAnalysis.biocId
+      description: ''
+      type: Number
+    - contextPath: Core.DynamicAnalysis.additionalData
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.biocRuleName
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.reachedMaxActivationsPerRule
+      description: ''
+      type: Boolean
+    - contextPath: Core.DynamicAnalysis.syncActionStatus
+      description: ''
+      type: Number
+    - contextPath: Core.DynamicAnalysis.spawnerImagePath
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.spawnerCmdline
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.spawnerSigner
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.osSpawnerImagePath
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.osSpawnerCmdline
+      description: ''
+      type: String
+    - contextPath: Core.DynamicAnalysis.osSpawnerSigner
+      description: ''
+      type: String
+  - arguments:
+    - default: false
+      description: The sha256 of a file.
+      isArray: true
+      name: sha256
+      required: true
+      secret: false
+    deprecated: false
+    description: Get the prevalence of a file, identified by sha256.
+    execution: false
+    hidden: false
+    name: core-get-hash-analytics-prevalence
+    outputs:
+    - contextPath: Core.AnalyticsPrevalence.Hash.value
+      description: Whether the hash is prevalent or not.
+      type: Boolean
+    - contextPath: Core.AnalyticsPrevalence.Hash.data.global_prevalence.value
+      description: The global prevalence of the hash.
+      type: Number
+    - contextPath: Core.AnalyticsPrevalence.Hash.data.local_prevalence.value
+      description: The local prevalence of the hash.
+      type: Number
+    - contextPath: Core.AnalyticsPrevalence.Hash.data.prevalence.value
+      description: The prevalence of the hash.
+      type: Number
+  - arguments:
+    - default: false
+      description: The IP address.
+      isArray: true
+      name: ip_address
+      required: true
+      secret: false
+    deprecated: false
+    description: Get the prevalence of an ip, identified by ip_address.
+    execution: false
+    hidden: false
+    name: core-get-IP-analytics-prevalence
+    outputs:
+    - contextPath: Core.AnalyticsPrevalence.Ip.value
+      description: Whether the IP address is prevalent or not.
+      type: Boolean
+    - contextPath: Core.AnalyticsPrevalence.Ip.data.global_prevalence.value
+      description: The global prevalence of the IP.
+      type: Number
+    - contextPath: Core.AnalyticsPrevalence.Ip.data.local_prevalence.value
+      description: The local prevalence of the IP.
+      type: Number
+    - contextPath: Core.AnalyticsPrevalence.Ip.data.prevalence.value
+      description: The prevalence of the IP.
+      type: Number
+  - arguments:
+    - default: false
+      description: The domain name.
+      isArray: true
+      name: domain_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Get the prevalence of a domain, identified by domain_name.
+    execution: false
+    hidden: false
+    name: core-get-domain-analytics-prevalence
+    outputs:
+    - contextPath: Core.AnalyticsPrevalence.Domain.value
+      description: Whether the domain is prevalent or not.
+      type: Boolean
+    - contextPath: Core.AnalyticsPrevalence.Domain.data.global_prevalence.value
+      description: The global prevalence of the domain.
+      type: Number
+    - contextPath: Core.AnalyticsPrevalence.Domain.data.local_prevalence.value
+      description: The local prevalence of the domain.
+      type: Number
+    - contextPath: Core.AnalyticsPrevalence.Domain.data.prevalence.value
+      description: The prevalence of the domain.
+      type: Number
+  - arguments:
+    - default: false
+      description: The process name.
+      isArray: true
+      name: process_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Get the prevalence of a process, identified by process_name.
+    execution: false
+    hidden: false
+    name: core-get-process-analytics-prevalence
+    outputs:
+    - contextPath: Core.AnalyticsPrevalence.Process.value
+      description: Whether the process is prevalent or not.
+      type: Boolean
+    - contextPath: Core.AnalyticsPrevalence.Process.data.global_prevalence.value
+      description: The global prevalence of the process.
+      type: Number
+    - contextPath: Core.AnalyticsPrevalence.Process.data.local_prevalence.value
+      description: The local prevalence of the process.
+      type: Number
+    - contextPath: Core.AnalyticsPrevalence.Process.data.prevalence.value
+      description: The prevalence of the process.
+      type: Number
+  - arguments:
+    - default: false
+      description: The key name of a registry path.
+      isArray: true
+      name: key_name
+      required: true
+      secret: false
+    - default: false
+      description: The value name of a registry path.
+      isArray: true
+      name: value_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Get the prevalence of a registry_path, identified by key_name, value_name.
+    execution: false
+    hidden: false
+    name: core-get-registry-analytics-prevalence
+    outputs:
+    - contextPath: Core.AnalyticsPrevalence.Registry.value
+      description: Whether the registry is prevalent or not.
+      type: Boolean
+    - contextPath: Core.AnalyticsPrevalence.Registry.data.global_prevalence.value
+      description: The global prevalence of the registry.
+      type: Number
+    - contextPath: Core.AnalyticsPrevalence.Registry.data.local_prevalence.value
+      description: The local prevalence of the registry.
+      type: Number
+    - contextPath: Core.AnalyticsPrevalence.Registry.data.prevalence.value
+      description: The prevalence of the registry.
+      type: Number
+  - arguments:
+    - default: false
+      description: The process command line.
+      isArray: true
+      name: process_command_line
+      required: true
+      secret: false
+    deprecated: false
+    description: Get the prevalence of a process_command_line, identified by process_command_line.
+    execution: false
+    hidden: false
+    name: core-get-cmd-analytics-prevalence
+    outputs:
+    - contextPath: Core.AnalyticsPrevalence.Cmd.value
+      description: Whether the CMD is prevalent or not.
+      type: Boolean
+    - contextPath: Core.AnalyticsPrevalence.Cmd.data.global_prevalence.value
+      description: The global prevalence of the CMD.
+      type: Number
+    - contextPath: Core.AnalyticsPrevalence.Cmd.data.local_prevalence.value
+      description: The local prevalence of the CDM.
+      type: Number
+    - contextPath: Core.AnalyticsPrevalence.Cmd.data.prevalence.value
+      description: The prevalence of the Cmd.
+      type: Number
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+  dockerimage: demisto/python3:3.10.5.31797
+tests:
+- No tests
+fromversion: 6.2.0

@@ -1,0 +1,30 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "SafeNet Trusted Access Push Reject Alert"
+    ],
+    "caseInsensitive": true,
+    "cliName": "safenettrustedaccessuserinunusualactivitygrouphours",
+    "closeForm": false,
+    "content": true,
+    "description": "The amount of time in hours for which the user remains in the Unusual Activity Group.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_safenettrustedaccessuserinunusualactivitygrouphours",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "SafeNet Trusted Access - User in Unusual Activity Group (Hours)",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

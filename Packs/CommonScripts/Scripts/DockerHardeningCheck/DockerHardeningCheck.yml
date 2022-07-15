@@ -6,40 +6,35 @@ script: ''
 type: python
 tags:
 - Utility
-comment: 'Checks if the Docker container running this script has been hardened according
-  to the recommended settings at: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/docker/docker-hardening-guide.html'
+comment: 'Checks if the Docker container running this script has been hardened according to the recommended settings at: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/docker/docker-hardening-guide.html'
 enabled: true
 args:
 - name: memory
-  description: The amount of memory to check. Can specify in bytes or append MB/GB
-    for Mega/Giga bytes. Default is 1 GB.
+  description: The amount of memory to check. Can specify in bytes or append MB/GB for Mega/Giga bytes. Default is 1 GB.
   defaultValue: 1GB
 - name: memory_check
   auto: PREDEFINED
   predefined:
   - cgroup
   - allocate
-  description: 'The memory check type to perform: cgroup - check memory cgroup configuration,
-    allocate - try allocating actual memory and verify that the allocation fails.
-    Note the allocate test  on some configurations may cause the container to be killed
-    by the linux memory manager and the whole test will then time out.'
+  description: 'The memory check type to perform: cgroup - check memory cgroup configuration, allocate - try allocating actual memory and verify that the allocation fails. Note the allocate test  on some configurations may cause the container to be killed by the linux memory manager and the whole test will then time out.'
   defaultValue: cgroup
 - name: pids
   description: The maximum number of PIDs to check.
-  defaultValue: "256"
+  defaultValue: '256'
 - name: fds_soft
   description: The soft file descriptor limit to check.
-  defaultValue: "1024"
+  defaultValue: '1024'
 - name: fds_hard
   description: The hard file descriptor limit to check.
-  defaultValue: "8192"
+  defaultValue: '8192'
 - name: cpus
   description: The number of CPUs limit to check.
-  defaultValue: "1"
+  defaultValue: '1'
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.8.6.13358
+dockerimage: demisto/python3:3.10.4.30607
 runas: DBotWeakRole
 fromversion: 5.0.0
 tests:

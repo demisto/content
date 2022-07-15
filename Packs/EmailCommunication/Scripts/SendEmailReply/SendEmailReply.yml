@@ -1,38 +1,51 @@
 args:
-- default: false
-  defaultValue: ${File}
+- defaultValue: ${File}
   description: Files
   isArray: true
   name: files
-  required: false
-  secret: false
-- default: false
-  defaultValue: ${incident.attachment}
+- defaultValue: ${incident.attachment}
   description: Attachment
   isArray: true
   name: attachment
-  required: false
-  secret: false
-- default: false
-  defaultValue:
+- defaultValue:
   description: The mailbox from which emails are sent from the 3rd party integration.
-  isArray: false
   name: service_mail
   required: false
-  secret: false
-comment: Send email reply
+- name: mail_sender_instance
+  required: false
+  description: Name of the mail sender instance name for transmitting emails
+  defaultValue:
+- name: new_thread
+  required: false
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+  - n/a
+  description: Specify whether to reply to an existing thread or start a new one.  Default value of 'n/a' is for 'Email Communication' type incidents only
+  defaultValue: n/a
+comment: |-
+  Send email reply
+  This automation runs using the default Limited User role, unless you explicitly change the permissions.
+  For more information, see the section about permissions here:
+  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
 commonfields:
   id: SendEmailReply
   version: -1
-enabled: false
+enabled: true
 name: SendEmailReply
-script: '-'
+script: ''
 subtype: python3
-system: false
-timeout: '0'
+system: true
 type: python
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.9.5.21272
-runas: DBotRole
+dockerimage: demisto/python3:3.10.5.31928
 tests:
 - No tests (auto formatted)
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+tags: []
+scripttarget: 0
+runonce: false
+runas: DBotWeakRole

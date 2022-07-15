@@ -29,7 +29,8 @@ args:
   name: group_size
   required: false
   secret: false
-comment: Use this Script to re-run failed tasks. Run in the same incident after running `GetFailedTasks` for restarting all of the failed tasks or some of them.
+comment: Use this Script to re-run failed tasks. Run in the same incident after running
+  `GetFailedTasks` for restarting all of the failed tasks or some of them.
 commonfields:
   id: RestartFailedTasks
   version: -1
@@ -56,7 +57,7 @@ subtype: python3
 system: false
 timeout: 1.2µs
 type: python
-dockerimage: demisto/python3:3.9.5.21272
+dockerimage: demisto/python3:3.9.7.24076
 tests:
 - No tests (auto formatted)
 dependson:

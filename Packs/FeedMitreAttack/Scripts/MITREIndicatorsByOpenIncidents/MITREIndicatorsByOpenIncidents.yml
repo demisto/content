@@ -11,8 +11,7 @@ args:
   name: from
   required: false
   secret: false
-comment: This is a widget script returning MITRE indicators information for top indicators
-  shown in incidents.
+comment: Deprecated. Use FeedMitreAttackv2 instead.
 commonfields:
   id: MITREIndicatorsByOpenIncidents
   version: -1
@@ -25,9 +24,10 @@ tags:
 - widget
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.9.4.18682
+dockerimage: demisto/python3:3.9.7.24076
 runas: DBotWeakRole
 runonce: false
+deprecated: true
 tests:
 - No test.
 fromversion: 5.5.0

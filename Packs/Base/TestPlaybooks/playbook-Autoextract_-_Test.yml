@@ -248,24 +248,6 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: http://www.thisoneshouldnotexisteither4444.com
-                    ignorecase: true
-                accessor: Data
-            iscontext: true
-          ignorecase: true
-      - - operator: isExists
-          left:
-            value:
-              complex:
-                root: URL
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: URL.Data
-                      iscontext: true
-                    right:
-                      value:
                         simple: http://www.letsseeifyoucanfindthisone4444.co.il
                 accessor: Data
             iscontext: true
@@ -510,7 +492,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: thisurlwillneverexist4444.co.il
+                        simple: www.thisurlwillneverexist4444.co.il
                     ignorecase: true
                 accessor: Name
             iscontext: true
@@ -527,7 +509,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: thisoneshouldnotexisteither4444.com
+                        simple: www.thisoneshouldnotexisteither4444.com
                     ignorecase: true
                 accessor: Name
             iscontext: true
@@ -545,7 +527,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: letsseeifyoucanfindthisone4444.co.il
+                        simple: www.letsseeifyoucanfindthisone4444.co.il
                 accessor: Name
             iscontext: true
       - - operator: isExists

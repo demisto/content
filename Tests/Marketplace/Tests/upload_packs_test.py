@@ -1,3 +1,5 @@
+# type: ignore[attr-defined]
+# pylint: disable=no-member
 import copy
 import json
 import os
@@ -8,6 +10,7 @@ from Tests.Marketplace.upload_packs import get_packs_names, get_updated_private_
 
 
 # disable-secrets-detection-start
+
 class TestModifiedPacks:
     @pytest.mark.parametrize("packs_names_input, expected_result", [
         ("pack1,pack2,pack1", {"pack1", "pack2"}),
@@ -43,7 +46,7 @@ class FakeDirEntry:
 
     @staticmethod
     def isdir(path):
-        return True if path == 'mock_path' else False
+        return path == 'mock_path'
 
 
 def scan_dir(dirs=None):
@@ -421,7 +424,8 @@ class TestCleanPacks:
         dummy_storage_bucket.name = GCPConfig.PRODUCTION_BUCKET
 
         skipped_cleanup = clean_non_existing_packs(index_folder_path="dummy_index_path", private_packs=[],
-                                                   storage_bucket=dummy_storage_bucket)
+                                                   storage_bucket=dummy_storage_bucket,
+                                                   storage_base_path=GCPConfig.PRODUCTION_STORAGE_BASE_PATH, id_set={})
 
         assert skipped_cleanup
 
@@ -443,12 +447,14 @@ class TestCleanPacks:
         - Ensure that task is skipped and blob form master bucket are not deleted
         """
         from Tests.Marketplace.upload_packs import clean_non_existing_packs
+        from Tests.Marketplace.marketplace_constants import GCPConfig
 
         dummy_storage_bucket = mocker.MagicMock()
         dummy_storage_bucket.name = "dummy_bucket"
 
         skipped_cleanup = clean_non_existing_packs(index_folder_path="dummy_index_path", private_packs=[],
-                                                   storage_bucket=dummy_storage_bucket)
+                                                   storage_bucket=dummy_storage_bucket,
+                                                   storage_base_path=GCPConfig.PRODUCTION_STORAGE_BASE_PATH, id_set={})
 
         assert skipped_cleanup
 
@@ -495,7 +501,8 @@ class TestCleanPacks:
         private_packs = [{'id': private_pack, 'price': 120}]
 
         skipped_cleanup = clean_non_existing_packs(index_folder_path=index_folder_path, private_packs=private_packs,
-                                                   storage_bucket=dummy_storage_bucket)
+                                                   storage_bucket=dummy_storage_bucket,
+                                                   storage_base_path=GCPConfig.PRODUCTION_STORAGE_BASE_PATH, id_set={})
 
         assert not skipped_cleanup
         shutil.rmtree.assert_called_once_with(os.path.join(index_folder_path, invalid_pack))
@@ -587,7 +594,7 @@ class TestUpdatedPrivatePacks:
         assert not is_private_packs_updated(public_index_json, index_file_path)
 
         # private pack was deleted
-        del (private_index_json.get("packs")[0])
+        del private_index_json.get("packs")[0]
         mocker.patch('Tests.Marketplace.upload_packs.load_json', return_value=private_index_json)
         assert is_private_packs_updated(public_index_json, index_file_path)
 

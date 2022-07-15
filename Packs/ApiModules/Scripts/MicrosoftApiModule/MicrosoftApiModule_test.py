@@ -4,7 +4,6 @@ import demistomock as demisto
 import pytest
 import datetime
 
-
 TOKEN = 'dummy_token'
 TENANT = 'dummy_tenant'
 REFRESH_TOKEN = 'dummy_refresh'
@@ -20,6 +19,7 @@ CLIENT_SECRET = 'dummy_secret'
 APP_URL = 'https://login.microsoftonline.com/dummy_tenant/oauth2/v2.0/token'
 SCOPE = 'https://graph.microsoft.com/.default'
 RESOURCE = 'https://defender.windows.com/shtak'
+RESOURCES = ['https://resource1.com', 'https://resource2.com']
 
 
 def oproxy_client_tenant():
@@ -32,6 +32,20 @@ def oproxy_client_tenant():
 
     return MicrosoftClient(self_deployed=False, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
                            tenant_id=tenant_id, base_url=base_url, verify=True, proxy=False, ok_codes=ok_codes)
+
+
+def oproxy_client_multi_resource():
+    tenant_id = TENANT
+    auth_id = f'{AUTH_ID}@{TOKEN_URL}'
+    enc_key = ENC_KEY
+    app_name = APP_NAME
+    base_url = BASE_URL
+    ok_codes = OK_CODES
+
+    return MicrosoftClient(self_deployed=False, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
+                           tenant_id=tenant_id, base_url=base_url, verify=True, proxy=False,
+                           ok_codes=ok_codes, multi_resource=True,
+                           resources=['https://resource1.com', 'https://resource2.com'])
 
 
 def oproxy_client_refresh():
@@ -56,6 +70,19 @@ def self_deployed_client():
 
     return MicrosoftClient(self_deployed=True, tenant_id=tenant_id, auth_id=client_id, enc_key=client_secret,
                            resource=resource, base_url=base_url, verify=True, proxy=False, ok_codes=ok_codes)
+
+
+def self_deployed_client_multi_resource():
+    tenant_id = TENANT
+    client_id = CLIENT_ID
+    client_secret = CLIENT_SECRET
+    base_url = BASE_URL
+    resources = RESOURCES
+    ok_codes = OK_CODES
+
+    return MicrosoftClient(self_deployed=True, tenant_id=tenant_id, auth_id=client_id, enc_key=client_secret,
+                           resources=resources, multi_resource=True, base_url=base_url, verify=True, proxy=False,
+                           ok_codes=ok_codes)
 
 
 def test_error_parser(mocker):
@@ -225,7 +252,8 @@ def test_oproxy_request(mocker, requests_mock, client, enc_content, tokens, res)
         'app_name': APP_NAME,
         'registration_id': AUTH_ID,
         'encrypted_token': enc_content + ENC_KEY,
-        'scope': None
+        'scope': None,
+        'resource': ''
     }
     mocker.patch.object(client, '_add_info_headers')
     mocker.patch.object(client, 'get_encrypted', side_effect=get_encrypted)
@@ -262,3 +290,67 @@ def test_self_deployed_request(requests_mock):
     req_body = requests_mock._adapter.last_request._request.body
     assert req_body == urllib.parse.urlencode(body)
     assert req_res == (TOKEN, 3600, '')
+
+
+def test_oproxy_use_resource(mocker):
+    """
+    Given:
+        multi_resource client
+    When
+        When configuration is oproxy authentication type and multi resource
+    Then
+        Verify post request is using resource value
+    """
+    resource = 'https://resource2.com'
+    client = oproxy_client_multi_resource()
+    context = {"access_token": TOKEN}
+
+    mocked_post = mocker.patch('requests.post', json=context, status_code=200, ok=True)
+    mocker.patch.object(client, 'get_encrypted', return_value='encrypt')
+
+    client._oproxy_authorize(resource)
+    assert resource == mocked_post.call_args_list[0][1]['json']['resource']
+
+
+@pytest.mark.parametrize('resource', ['https://resource1.com', 'https://resource2.com'])
+def test_self_deployed_multi_resource(requests_mock, resource):
+    """
+    Given:
+        multi_resource client.
+    When
+        When configuration is client credentials authentication type and multi resource.
+    Then
+        Verify access token for each resource.
+    """
+    client = self_deployed_client_multi_resource()
+    requests_mock.post(
+        APP_URL,
+        json={'access_token': TOKEN, 'expires_in': '3600'})
+
+    req_res = client._get_self_deployed_token()
+    assert req_res == ('', 3600, '')
+    assert client.resource_to_access_token[resource] == TOKEN
+
+
+@pytest.mark.parametrize('endpoint', ['com', 'gcc-high', 'dod', 'de', 'cn'])
+def test_national_endpoints(mocker, endpoint):
+    """
+    Given:
+        self-deployed client
+    When:
+        Configuring the client with different national endpoints
+    Then:
+        Verify that the token_retrieval_url and the scope are set correctly
+    """
+    tenant_id = TENANT
+    auth_id = f'{AUTH_ID}@{TOKEN_URL}'
+    enc_key = ENC_KEY
+    app_name = APP_NAME
+    base_url = BASE_URL
+    ok_codes = OK_CODES
+    client = MicrosoftClient(self_deployed=True, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
+                             tenant_id=tenant_id, base_url=base_url, verify=True, proxy=False, ok_codes=ok_codes,
+                             endpoint=endpoint)
+
+    assert client.azure_ad_endpoint == TOKEN_RETRIEVAL_ENDPOINTS[endpoint]
+    assert client.scope == f'{GRAPH_ENDPOINTS[endpoint]}/.default'
