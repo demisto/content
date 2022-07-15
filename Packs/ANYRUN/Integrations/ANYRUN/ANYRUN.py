@@ -233,6 +233,10 @@ def generate_dbotscore(response):
     submission_type = main_object.get('type')
     submission_type = 'hash' if submission_type in {'file', 'download'} else submission_type
     threat_text = analysis.get('scores', {}).get('verdict', {}).get('threatLevelText', '').casefold()
+    reputation_map = {
+        "malicious": 3,
+        "suspicious": 2
+    }
     if submission_type == 'hash':
         hashes = main_object.get('hashes', {})
         indicator = hashes.get('sha256', hashes.get('sha1', hashes.get('md5')))
@@ -258,36 +262,39 @@ def generate_dbotscore(response):
         if 'connections' in network_data:
             connections: list = network_data.get('connections')
             for current_connection in connections:
-                if current_connection.get('Reputation') == 'malicious':
+                reputation = current_connection.get('Reputation')
+                if reputation in reputation_map.keys():
                     current_indicator = {
                         "Indicator": current_connection['IP'],
-                        "Type": 'ip',
+                        "Type": 'IP',
                         "Vendor": "ANYRUN",
-                        "Score": 3
+                        "Score": reputation_map[reputation]
                     }
                     dbot_score['DBotScore'].append(current_indicator)
 
         # Then add all the network-related indicators - 'dnsRequests'
         if 'dnsRequests' in network_data:
             for current_dnsRequests in network_data.get('dnsRequests'):
-                if current_dnsRequests.get('Reputation') == 'malicious':
+                reputation = current_dnsRequests.get('Reputation')
+                if reputation in reputation_map.keys():
                     current_indicator = {
                         "Indicator": current_dnsRequests['Domain'],
-                        "Type": 'domain',
+                        "Type": 'DOMAIN',
                         "Vendor": "ANYRUN",
-                        "Score": 3
+                        "Score": reputation_map[reputation]
                     }
                     dbot_score['DBotScore'].append(current_indicator)
 
         # Then add all the network-related indicators - 'httpRequests'
         if 'httpRequests' in network_data:
             for current_httpRequests in network_data.get('httpRequests'):
-                if current_httpRequests['Reputation'] == 'malicious':
+                reputation = current_httpRequests['Reputation']
+                if reputation in reputation_map.keys():
                     current_indicator = {
                         "Indicator": current_httpRequests['URL'],
-                        "Type": 'url',
+                        "Type": 'URL',
                         "Vendor": "ANYRUN",
-                        "Score": 3
+                        "Score": reputation_map[reputation]
                     }
                     dbot_score['DBotScore'].append(current_indicator)
 
@@ -936,12 +943,71 @@ def run_analysis_command():
     """Submit file or URL to ANYRUN for analysis and return task ID to Demisto"""
 
     args = demisto.args()
-    response = run_analysis(args)
-    task_id = response.get('data', {}).get('taskid')
-    title = 'Submission Successful'
-    human_readable = tableToMarkdown(title, {'Task': task_id}, removeNull=True)
-    entry_context = {'ANYRUN.Task(val.ID && val.ID === obj.ID)': {'ID': task_id}}
-    return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=response)
+    task_id = args.get('task_id')
+    polling = argToBoolean(args.get('polling', 'false'))
+    command_args = {k: v for k,v in args.items() if k not in ['polling', 'task_id']}
+    if polling:
+        command = demisto.command()
+        if not task_id:
+            response = run_analysis(command_args)
+            task_id = response.get('data', {}).get('taskid')
+            args['task_id'] = task_id
+            scheduled_command = ScheduledCommand(
+                command=command,
+                next_run_in_seconds=10,
+                timeout_in_seconds=1300,
+                args=args
+            )
+            command_results = CommandResults(
+                readable_output=f'Submission Successful with Task ID {task_id}',
+                scheduled_command=scheduled_command
+            )
+            return_results(command_results)
+        else:
+            response = get_report(task_id)
+            status = response.get('data', {}).get('status')
+            if status == "done":
+                images = images_from_report(response)
+                contents = contents_from_report(response)
+                formatting_funcs = [underscore_to_camel_case, make_capital, make_singular, make_upper]
+                formatted_contents = travel_object(contents, key_functions=formatting_funcs)
+
+                dbot_score = generate_dbotscore(response)
+                entity = ec_entity(response)
+
+                entry_context = {
+                    'ANYRUN.Task(val.ID && val.ID === obj.ID)': {
+                        'ID': task_id,
+                        **formatted_contents
+                    },
+                    **dbot_score,
+                    **entity
+                }
+                title = 'Report for Task {}'.format(task_id)
+                human_readable_content = humanreadable_from_report_contents(formatted_contents)
+                human_readable = tableToMarkdown(title, human_readable_content, removeNull=True)
+                return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=response)
+                if images:
+                    demisto.results(images)
+            else:
+                scheduled_command = ScheduledCommand(
+                    command=command,
+                    next_run_in_seconds=10,
+                    timeout_in_seconds=1300,
+                    args=args
+                )
+                command_results = CommandResults(
+                    scheduled_command=scheduled_command
+                )
+                return_results(command_results)
+
+    else:
+        response = run_analysis(command_args)
+        task_id = response.get('data', {}).get('taskid')
+        title = 'Submission Successful'
+        human_readable = tableToMarkdown(title, {'Task': task_id}, removeNull=True)
+        entry_context = {'ANYRUN.Task(val.ID && val.ID === obj.ID)': {'ID': task_id}}
+        return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=response)
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
