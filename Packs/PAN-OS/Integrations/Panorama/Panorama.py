@@ -656,32 +656,84 @@ def panorama_commit(args):
     return result
 
 
-def panorama_commit_command(args: dict):
+@polling_function(
+    name=demisto.command(),  # should fit to both pan-os-commit and panorama-commit (deprecated)
+    interval=arg_to_number(demisto.args().get('interval_in_seconds', 60)),
+    timeout=arg_to_number(demisto.args().get('timeout', 600)),
+    poll_message="Fetching Commit Results:",
+)
+def panorama_commit_command(client, args: dict):
     """
     Commit and show message in the war room
     """
-    result = panorama_commit(args)
+    if argToBoolean(args.get('polling', 'false')):
+        job_id = args.pop('job_id', None)
 
-    if 'result' in result['response']:
-        # commit has been given a jobid
-        commit_output = {
-            'JobID': result['response']['result']['job'],
-            'Status': 'Pending',
-            'Description': args.get('description')
-        }
-        return_results({
-            'Type': entryTypes['note'],
-            'ContentsFormat': formats['json'],
-            'Contents': result,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Commit:', commit_output, ['JobID', 'Status'], removeNull=True),
-            'EntryContext': {
-                "Panorama.Commit(val.JobID == obj.JobID)": commit_output
-            }
-        })
+        # that means polling was triggered
+        if job_id:  # job_id of an existing job from previous polling.
+            commit_status = panorama_commit_status({'job_id': job_id}).get('response', {}).get('result', {})
+            if commit_status.get('job', {}).get('status') != 'FIN':  # if the commit job didn't finish continue polling
+                return PollResult(
+                    response='',
+                    continue_to_poll=True,
+                    args_for_next_run={'job_id': job_id, 'description': args.get('description')},
+                    partial_result=CommandResults(readable_output=f'querying for job ID {job_id}')
+                )
+            else:  # handle the status of a completed job (success or failure)
+                job_result = commit_status.get('job', {}).get('result')
+                outputs = {'JobID': job_id}
+                if job_result == 'OK':
+                    outputs['Status'] = 'Success'
+                else:  # job result is not ok (failure)
+                    outputs['Status'] = 'Failure'
+                outputs['Description'] = args.get('description')
+
+                return PollResult(
+                    response=CommandResults(
+                        outputs_prefix='Panorama.Commit',
+                        outputs_key_field='JobID',
+                        outputs=outputs,
+                        readable_output=tableToMarkdown(
+                            'Commit Status', outputs, headers=['JobID', 'Status', 'Description'], removeNull=True
+                        )
+                    )
+                )
+
+        else:  # triggered the pan-os commit in the first time.
+            commit_result = panorama_commit(args).get('response', {})
+            if commit_job_id := commit_result.get('result', {}).get('job', {}):
+                # commit has been given a job_id and there are pending changes
+                return PollResult(
+                    response='',
+                    continue_to_poll=True,
+                    args_for_next_run={'job_id': commit_job_id, 'description': args.get('description')},
+                    partial_result=CommandResults(readable_output=f'querying for job ID {commit_job_id}'),
+                )
+            # no pending changes to a commit, hence do not poll.
+            return PollResult(response=commit_result.get('msg') or 'There are no changes to commit.')
+
+    # no polling required
     else:
+        result = panorama_commit(args)
+        if 'result' in result.get('response', {}):
+            # commit has been given a job_id
+            commit_output = {
+                'JobID': result['response']['result']['job'],
+                'Status': 'Pending',
+                'Description': args.get('description')
+            }
+            return PollResult(
+                response=CommandResults(
+                    outputs_prefix='Panorama.Commit',
+                    outputs_key_field='JobID',
+                    outputs=commit_output,
+                    readable_output=tableToMarkdown(
+                        'Commit:', commit_output, ['JobID', 'Status, Description'], removeNull=True
+                    )
+                )
+            )
         # no changes to commit
-        return_results(result['response']['msg'])
+        return PollResult(response=result.get('response', {}).get('msg') or 'There are no changes to commit.')
 
 
 @logger
@@ -11026,7 +11078,7 @@ def main():
             panorama_command(args)
 
         elif command == 'panorama-commit' or command == 'pan-os-commit':
-            panorama_commit_command(args)
+            return_results(panorama_commit_command('', args))
 
         elif command == 'panorama-commit-status' or command == 'pan-os-commit-status':
             panorama_commit_status_command(args)
