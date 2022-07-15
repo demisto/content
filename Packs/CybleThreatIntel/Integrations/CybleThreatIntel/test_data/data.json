@@ -11,7 +11,7 @@
         "object": {
           "id": "example:URI-9ee1j5ff-87dd-4cda-a897-9b6s4hy0a818",
           "properties": {
-            "value": "http://testobj.com/",
+            "value": "This is Test Value",
             "type": "URL",
             "xsi:type": "URIObjectType"
           }

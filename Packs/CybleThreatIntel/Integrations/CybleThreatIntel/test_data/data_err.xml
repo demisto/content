@@ -6,7 +6,7 @@
             <indicator:Observable id="example:Observable-c76sd4ac-abe8-4b61-bb56-2db325a2ch09">
                 <cybox:Object id="example:URI-9ee1j5ff-87dd-4cda-a897-9b6s4hy0a818">
                     <cybox:Properties xsi:type="URIObj:URIObjectType" type="URL">
-                        <URIObj:Value>http://testobj.com/</URIObj:Value>
+                        <URIObj:Value>This is Test Value</URIObj:Value>
                     </cybox:Properties>
                 </cybox:Object>
             </indicator:Observable>
