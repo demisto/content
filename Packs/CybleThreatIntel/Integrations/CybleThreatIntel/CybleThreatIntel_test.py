@@ -86,7 +86,7 @@ def test_get_taxii_failure(mocker):
     mocker.patch.object(client, 'fetch', return_value=[])
     val, time = Client.get_taxii(client, args)
     assert isinstance(val, list)
-    assert time == None
+    assert time is None
     assert [] == val
 
 
@@ -203,7 +203,7 @@ def test_cyble_fetch_taxii_error(mocker, begin):
     mocker.patch.object(client, 'build_indicators', return_value=mock_response_2)
     error_val = None
     try:
-        response = cyble_fetch_taxii(client, args).outputs
+        cyble_fetch_taxii(client, args).outputs
     except Exception as e:
         error_val = e.args[0]
 
