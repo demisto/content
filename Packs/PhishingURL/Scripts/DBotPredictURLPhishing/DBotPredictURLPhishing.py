@@ -328,7 +328,7 @@ def return_entry_summary(pred_json: Dict, url: str, whitelist: bool, output_rast
     }
     context_DBot_score = {
         'Indicator': url,
-        'Type': 'URL',
+        'Type': 'url',
         'Vendor': 'DBotPhishingURL',
         'Score': verdict_to_int(verdict)
     }
