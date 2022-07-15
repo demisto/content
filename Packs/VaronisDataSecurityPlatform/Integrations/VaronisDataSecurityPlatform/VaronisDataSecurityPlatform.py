@@ -262,11 +262,12 @@ class Client(BaseClient):
         request_params['searchString'] = search_string
         request_params['limit'] = 1000
 
-        return self._http_request(
+        response = self._http_request(
             'GET',
             'api/userdata/users',
             params=request_params
-        )['ResultSet']
+        )
+        return response['ResultSet']
 
     def varonis_get_enum(self, enum_id: int) -> List[Any]:
         """Gets an enum by enum_id. Usually needs for retrieving object required for a search
