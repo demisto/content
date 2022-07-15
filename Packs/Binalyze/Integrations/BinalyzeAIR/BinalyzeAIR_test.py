@@ -1,4 +1,5 @@
 from CommonServerPython import *
+from typing import Dict, Any, List
 
 MOCK_URL = 'https://nonexistent-domain.com/'
 

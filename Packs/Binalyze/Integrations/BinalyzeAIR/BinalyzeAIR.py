@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 import requests
 from CommonServerPython import *  # noqa: F401
-
+from typing import Dict, Any
 requests.packages.urllib3.disable_warnings()
 
 
