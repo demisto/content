@@ -229,4 +229,4 @@ def test_case_insensitive():
     assert strEqual(None, '')
     assert strEqual('None', 'None')
     assert strEqual('None', 'none')
-    assert strEqual('none', 'None') 
+    assert strEqual('none', 'None')
