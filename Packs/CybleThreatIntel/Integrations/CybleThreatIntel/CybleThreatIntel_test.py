@@ -65,6 +65,20 @@ def test_get_taxii(mocker):
     assert mock_response_3 == val[0]
 
 
+def test_get_taxii_invalid(mocker):
+    from CybleThreatIntel import Client
+    client = Client(params)
+
+    mock_response_1 = str(open("test_data/data_err.xml", "r").read())
+    mocker.patch.object(client, 'fetch', return_value=[mock_response_1])
+    try:
+        val, time = Client.get_taxii(client, args)
+    except Exception as e:
+        error_val = e.args[0]
+
+    assert "Last fetch time retrieval failed." in error_val
+
+
 def test_get_taxii_failure(mocker):
     from CybleThreatIntel import Client
     client = Client(params)
@@ -167,9 +181,9 @@ def test_cyble_fetch_taxii(mocker):
     "begin", [
         "2022-06-73 00:00:00",
         "2022-46-13 00:00:00",
-        "2022-06-73 88:00:00",
-        "2022-06-73 00:67:00",
-        "2022-06-73 00:00:67"
+        "2022-06-13 88:00:00",
+        "2022-06-13 00:67:00",
+        "2022-06-13 00:00:67"
     ]
 )
 def test_cyble_fetch_taxii_error(mocker, begin):
