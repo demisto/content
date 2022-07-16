@@ -3586,8 +3586,8 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: Job ID to use in polling commands.
-      name: job_id
+    - description: commit job ID to use in polling commands.
+      name: commit_job_id
     - description: The timeout (in seconds) when polling.
       name: timeout
       defaultValue: '120'
