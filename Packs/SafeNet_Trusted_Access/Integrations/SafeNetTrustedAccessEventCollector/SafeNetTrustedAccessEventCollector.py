@@ -83,7 +83,7 @@ def get_events_command(client: Client, args: Dict[str, Any]) -> Tuple[list, dict
     return CommandResults(
         raw_response=events,
         readable_output=tableToMarkdown(
-            'Slack Audit Logs',
+            'Event Logs',
             events,
         )
     )
