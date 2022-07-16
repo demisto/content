@@ -1,23 +1,31 @@
-id: PAN-OS URL Filtering enrichment - Test
-version: -1
-name: PAN-OS URL Filtering enrichment - Test
 description: testing the !url filtering of the integration
+id: PAN-OS URL Filtering enrichment - Test
+inputs: []
+name: PAN-OS URL Filtering enrichment - Test
+outputs: []
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 61c17b34-324d-4a8d-86f3-234a9d6f5b54
-    type: start
-    task:
-      id: 61c17b34-324d-4a8d-86f3-234a9d6f5b54
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "1"
+    note: false
+    quietmode: 0
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: d6e23048-133b-4245-8c32-cad31f040bfa
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: d6e23048-133b-4245-8c32-cad31f040bfa
+    timertriggers: []
+    type: start
     view: |-
       {
         "position": {
@@ -25,29 +33,34 @@ tasks:
           "y": 50
         }
       }
-    note: false
-    timertriggers: []
   "1":
     id: "1"
-    taskid: f4015a04-9597-4dfb-8761-b0d2ccfde53e
-    type: regular
-    task:
-      id: f4015a04-9597-4dfb-8761-b0d2ccfde53e
-      version: -1
-      name: print a url to enrich
-      description: Prints text to war room (Markdown supported)
-      scriptName: Print
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "2"
+    note: false
+    quietmode: 0
+    reputationcalc: 2
     scriptarguments:
       value:
         simple: my url to enrich is http://www.amazon.com
-    reputationcalc: 2
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints text to war room (Markdown supported)
+      id: 07e35a25-8ff3-4219-855f-e352f64a1b42
+      iscommand: false
+      name: print a url to enrich
+      script: Print
+      type: regular
+      version: -1
+    taskid: 07e35a25-8ff3-4219-855f-e352f64a1b42
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -55,32 +68,33 @@ tasks:
           "y": 195
         }
       }
-    note: false
-    timertriggers: []
   "2":
     id: "2"
-    taskid: 42a2f30d-fb69-44a0-801f-54150ade580e
-    type: regular
-    task:
-      id: 42a2f30d-fb69-44a0-801f-54150ade580e
-      version: -1
-      name: DeleteContext
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "8"
+    note: false
+    quietmode: 0
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Delete field from context
+      id: 6a39dd01-58b7-4a50-8297-483254e0899f
+      iscommand: false
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 6a39dd01-58b7-4a50-8297-483254e0899f
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -88,28 +102,33 @@ tasks:
           "y": 370
         }
       }
-    note: false
-    timertriggers: []
   "4":
     id: "4"
-    taskid: cf819707-ae55-4aa9-8c9f-01a68decb78b
-    type: regular
-    task:
-      id: cf819707-ae55-4aa9-8c9f-01a68decb78b
-      version: -1
-      name: GetIndicatorDBotScore
-      description: Add into the incident's context the system internal DBot score for the input indicator
-      scriptName: GetIndicatorDBotScore
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "5"
+    note: false
+    quietmode: 0
     scriptarguments:
       indicator:
         simple: http://www.amazon.com
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Add into the incident's context the system internal DBot score for the input indicator
+      id: fbe58c7e-9877-4c1b-8b76-59f2858c45db
+      iscommand: false
+      name: GetIndicatorDBotScore
+      script: GetIndicatorDBotScore
+      type: regular
+      version: -1
+    taskid: fbe58c7e-9877-4c1b-8b76-59f2858c45db
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -117,38 +136,48 @@ tasks:
           "y": 720
         }
       }
-    note: false
-    timertriggers: []
   "5":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: Score
+                root: DBotScore
+          operator: isNotEmpty
+      - - left:
+            iscontext: true
+            value:
+              simple: DBotScore.Vendor
+          operator: isEqualString
+          right:
+            value:
+              simple: Panorama
+      label: "yes"
     id: "5"
-    taskid: 831976f0-615d-44c5-8e28-0e311bb397f2
-    type: condition
-    task:
-      id: 831976f0-615d-44c5-8e28-0e311bb397f2
-      version: -1
-      name: Check reputation is 1
-      type: condition
-      iscommand: false
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#default#':
       - "7"
       "yes":
       - "6"
+    note: false
+    quietmode: 0
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: DBotScore
-                accessor: Score
-            iscontext: true
-          right:
-            value:
-              simple: "1"
+    skipunavailable: false
+    task:
+      brand: ""
+      id: da141fc1-1294-4390-8f9f-e9453cad8d89
+      iscommand: false
+      name: Check reputation exist when the vendor is panorama
+      type: condition
+      version: -1
+    taskid: da141fc1-1294-4390-8f9f-e9453cad8d89
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -156,20 +185,25 @@ tasks:
           "y": 895
         }
       }
-    note: false
-    timertriggers: []
   "6":
     id: "6"
-    taskid: 518c6bc5-4529-4cf5-8985-30235ac57250
-    type: title
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
     task:
-      id: 518c6bc5-4529-4cf5-8985-30235ac57250
-      version: -1
+      brand: ""
+      id: bfca4cd6-1ac3-4dca-8e01-d6e3b89eab60
+      iscommand: false
       name: Done
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
+      version: -1
+    taskid: bfca4cd6-1ac3-4dca-8e01-d6e3b89eab60
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
@@ -177,25 +211,30 @@ tasks:
           "y": 1085
         }
       }
-    note: false
-    timertriggers: []
   "7":
     id: "7"
-    taskid: a856396f-7984-4015-8f97-975b5e630c2c
-    type: regular
-    task:
-      id: a856396f-7984-4015-8f97-975b5e630c2c
-      version: -1
-      name: print error
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
     scriptarguments:
       message:
         simple: reputation of http://www.amazon.com is not 1
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Prints an error entry with a given message
+      id: a7f6c05e-4030-4067-85b1-504c228509b7
+      iscommand: false
+      name: print error
+      script: PrintErrorEntry
+      type: regular
+      version: -1
+    taskid: a7f6c05e-4030-4067-85b1-504c228509b7
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -203,27 +242,32 @@ tasks:
           "y": 1070
         }
       }
-    note: false
-    timertriggers: []
   "8":
     id: "8"
-    taskid: 48259692-2804-478e-874d-4a252711beba
-    type: regular
-    task:
-      id: 48259692-2804-478e-874d-4a252711beba
-      version: -1
-      name: Sleep 30 seconds
-      scriptName: Sleep
-      type: regular
-      iscommand: false
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "4"
+    note: false
+    quietmode: 0
     scriptarguments:
       seconds:
         simple: "30"
     separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0d793c13-e7aa-42b2-8263-fea94f7f784f
+      iscommand: false
+      name: Sleep 30 seconds
+      script: Sleep
+      type: regular
+      version: -1
+    taskid: 0d793c13-e7aa-42b2-8263-fea94f7f784f
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -231,8 +275,7 @@ tasks:
           "y": 545
         }
       }
-    note: false
-    timertriggers: []
+version: -1
 view: |-
   {
     "linkLabelsPosition": {},
@@ -245,6 +288,4 @@ view: |-
       }
     }
   }
-inputs: []
-outputs: []
 fromversion: "6.1.0"
