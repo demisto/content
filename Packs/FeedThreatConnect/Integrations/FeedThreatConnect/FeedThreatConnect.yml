@@ -8,18 +8,17 @@ configuration:
   name: tc_api_path
   required: true
   type: 1
-- additionalinfo: API - Access ID
-  display: Access ID
+- display: Access ID
   name: api_access_id
   required: true
-  type: 4
-- additionalinfo: API - Secret key
-  display: Secret key
+  type: 0
+- displaypassword:  Secret key
   name: api_secret_key
+  hiddenusername: true
+  type: 9
   required: true
-  type: 4
 - additionalinfo: A comma-seperated list of tags to filter by
-  display: Tags
+  display: Tags to filter results by
   name: tags
   required: false
   type: 0
@@ -142,8 +141,8 @@ configuration:
   name: feedBypassExclusionList
   required: false
   type: 8
-- additionalinfo: Supports CSV values.
-  display: Tags
+- additionalinfo: The tags for the returned indicators.
+  display: Feed indicators tags
   name: feedTags
   required: false
   type: 0

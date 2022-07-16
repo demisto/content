@@ -289,7 +289,7 @@ def get_owners_command(client: Client) -> COMMAND_OUTPUT:
 
 def main():
     insecure = not demisto.getParam('insecure')
-    client = Client(demisto.getParam('api_access_id'), demisto.getParam('api_secret_key'),
+    client = Client(demisto.getParam('api_access_id'), demisto.getParam('api_secret_key').get('password'),
                     demisto.getParam('tc_api_path'), insecure)
     command = demisto.command()
     demisto.info(f'Command being called is {command}')

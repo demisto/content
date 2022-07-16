@@ -142,7 +142,7 @@ script:
   - arguments:
     - default: true
       description: A comma-separated list of URLs for which to search. For example, "www.demisto.com".
-      name: url
+      name: urls
       required: true
       isArray: false
     - description: A comma-separated list of a client's organizations, sources, or
@@ -1817,11 +1817,17 @@ script:
       - reports
       - signatures
       - threats
-      required: true
-    - description: The name of the security label to add to the group. For example,
-        "TLP:GREEN".
+    - auto: PREDEFINED
+      description: The security label applied to the document. Can be "TLP:RED", "TLP:GREEN",
+        "TLP:AMBER", or "TLP:WHITE".
       name: security_label_name
+      predefined:
+      - TLP:RED
+      - TLP:GREEN
+      - TLP:AMBER
+      - TLP:WHITE
       required: true
+      deprecated: true
     description: Adds a security label to a group.
     name: tc-add-group-security-label
   - arguments:
