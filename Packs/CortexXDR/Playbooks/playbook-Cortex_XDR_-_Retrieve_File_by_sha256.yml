@@ -4,8 +4,8 @@ contentitemexportablefields:
   contentitemfields: {}
 name: Cortex XDR - Retrieve File by sha256
 description: |-
-  This playbook is part of the 'Malware Investigation And Response' pack. For more information, please refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
-  This playbook is a sub-playbook for the Cortex XDR malware investigation flow. In this playbook, we are retrieving multiple files from the investigated device (using the Device ID incident Filed), based on their SHA256.
+  This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+  This playbook is a sub-playbook for the Cortex XDR malware investigation flow. In this playbook, we retrieve multiple files from the investigated device (using the Device ID incident field), based on their SHA256 hash.
 starttaskid: '0'
 tasks:
   '0':
@@ -49,7 +49,7 @@ tasks:
         Delete field from context.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
+        For more information, see the permissions section here:
         https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       type: title
       iscommand: false
@@ -199,7 +199,7 @@ tasks:
       id: e1c29b25-5585-4a27-8972-98fb0bfdbee6
       version: -1
       name: Is there a path for the provided sha256?
-      description: Is there a path for the provided sha256?
+      description: Is there a path for the provided SHA256?
       type: condition
       iscommand: false
       brand: ''
@@ -239,7 +239,7 @@ tasks:
       id: 74c258db-b362-4651-8074-34f33b2c6b4d
       version: -1
       name: 'Print Error - No path was found '
-      description: Prints text to war room (Markdown supported)
+      description: Prints text to War Room (Markdown supported).
       scriptName: Print
       type: regular
       iscommand: false
@@ -249,7 +249,7 @@ tasks:
       - '4'
     scriptarguments:
       value:
-        simple: No Path was provided for $(inputs.Sha256). Can not retrieve file without a proper path.
+        simple: No Path was provided for $(inputs.Sha256). Cannot retrieve the file without a proper path.
     separatecontext: false
     view: |-
       {
@@ -273,7 +273,7 @@ tasks:
       id: 9a36707a-0505-4f36-8b46-7fdf291efee9
       version: -1
       name: Were any errors?
-      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If array is provided, will return yes if one of the entries returned an error.
+      description: Check whether given entry/entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If an array is provided, will return yes if one of the entries returned an error.
       scriptName: isError
       type: condition
       iscommand: false
@@ -308,8 +308,8 @@ tasks:
     task:
       id: 5fd33cc0-7b06-4e45-866b-a939c66e8a6e
       version: -1
-      name: Is the file retrieval failed?
-      description: Is the file retrieval failed?
+      name: Did the file retrieval fail?
+      description: Did the file retrieval fail?
       type: condition
       iscommand: false
       brand: ''
@@ -365,7 +365,7 @@ inputs:
 - key: Sha256
   value: {}
   required: false
-  description: Sha256 for the file to be retrieved.
+  description: SHA256 for the file to be retrieved.
   playbookInputQuery:
 outputs:
 - contextPath: File
