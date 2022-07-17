@@ -2,7 +2,6 @@ import demistomock as demisto  # noqa
 from CommonServerPython import *  # noqa
 
 import json
-import traceback
 from typing import Dict, Any, Tuple, List, Optional
 
 
@@ -107,7 +106,6 @@ def main():
         result = evidence_dynamic_section(demisto.args())
         return_results(result)
     except Exception as ex:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute ExpanseEvidenceDynamicSection. Error: {str(ex)}')
 
 

@@ -1,7 +1,7 @@
 {
     "description": "Classifies Cortex XDR incidents.",
     "feed": false,
-    "id": "780f776e-4d18-427f-8b18-cb0fd22e4799",
+    "id": "Cortex XDR Incident Handler - Classifier",
     "keyTypeMap": {
         "Malware": "Malware Investigation and Response",
         "PortScan": "Cortex XDR Port Scan",

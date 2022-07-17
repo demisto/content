@@ -5,6 +5,7 @@ from typing import Union, Optional
 
 ''' IMPORTS '''
 import base64
+from bs4 import BeautifulSoup
 import binascii
 import urllib3
 from urllib.parse import quote
@@ -65,7 +66,8 @@ class MsGraphClient:
 
     def __init__(self, self_deployed, tenant_id, auth_and_token_url, enc_key,
                  app_name, base_url, use_ssl, proxy, ok_codes, mailbox_to_fetch, folder_to_fetch, first_fetch_interval,
-                 emails_fetch_limit, timeout=10, endpoint='com', certificate_thumbprint=None, private_key=None):
+                 emails_fetch_limit, timeout=10, endpoint='com', certificate_thumbprint=None, private_key=None,
+                 display_full_email_body=False):
 
         self.ms_client = MicrosoftClient(self_deployed=self_deployed, tenant_id=tenant_id, auth_id=auth_and_token_url,
                                          enc_key=enc_key, app_name=app_name, base_url=base_url, verify=use_ssl,
@@ -76,6 +78,8 @@ class MsGraphClient:
         self._folder_to_fetch = folder_to_fetch
         self._first_fetch_interval = first_fetch_interval
         self._emails_fetch_limit = emails_fetch_limit
+        # whether to display the full email body for the fetch-incidents
+        self.display_full_email_body = display_full_email_body
 
     def pages_puller(self, response: dict, page_count: int) -> list:
         """ Gets first response from API and returns all pages
@@ -695,11 +699,14 @@ class MsGraphClient:
             'GET', suffix_endpoint, params=params
         ).get('value', [])
 
-        exclude_ids_size = len(exclude_ids)
-        if not fetched_emails or exclude_ids_size >= len(fetched_emails):
+        fetched_emails_ids = {email.get('id') for email in fetched_emails}
+        exclude_ids_set = set(exclude_ids)
+        if not fetched_emails or not (filtered_new_email_ids := fetched_emails_ids - exclude_ids_set):
             # no new emails
+            demisto.debug(f'No new emails: {fetched_emails_ids=}. {exclude_ids_set=}')
             return [], exclude_ids, last_fetch
-        new_emails = fetched_emails[exclude_ids_size:exclude_ids_size + self._emails_fetch_limit]
+        new_emails = [mail for mail in fetched_emails
+                      if mail.get('id') in filtered_new_email_ids][:self._emails_fetch_limit]
         last_email_time = new_emails[-1].get('receivedDateTime')
         if last_email_time == last_fetch:
             # next fetch will need to skip existing exclude_ids
@@ -836,9 +843,14 @@ class MsGraphClient:
 
         parsed_email['Mailbox'] = self._mailbox_to_fetch
 
+        body = email.get('bodyPreview', '')
+        if not body or self.display_full_email_body:
+            # parse HTML into plain-text
+            body = get_text_from_html(parsed_email.get('Body') or '')
+
         incident = {
             'name': parsed_email['Subject'],
-            'details': email.get('bodyPreview', '') or parsed_email['Body'],
+            'details': body,
             'labels': MsGraphClient._parse_email_as_labels(parsed_email),
             'occurred': parsed_email['ModifiedTime'],
             'attachment': parsed_email.get('Attachments', []),
@@ -890,6 +902,7 @@ class MsGraphClient:
             'LAST_RUN_ACCOUNT': self._mailbox_to_fetch,
         }
         demisto.info(f"MS-Graph-Listener: fetched {len(incidents)} incidents")
+        demisto.debug(next_run)
 
         return next_run, incidents
 
@@ -1114,6 +1127,23 @@ def parse_folders_list(folders_list):
         folders_list = [folders_list]
 
     return [{FOLDER_MAPPING[k]: v for (k, v) in f.items() if k in FOLDER_MAPPING} for f in folders_list]
+
+
+def get_text_from_html(html):
+    # parse HTML into plain-text
+    soup = BeautifulSoup(html, features="html.parser")
+
+    # kill all script and style elements
+    for script in soup(["script", "style"]):
+        script.extract()  # rip it out
+    # get text
+    text = soup.get_text()
+    # break into lines and remove leading and trailing space on each line
+    lines = (line.strip() for line in text.splitlines())
+    # break multi-headlines into a line each
+    chunks = (phrase.strip() for line in lines for phrase in line.split("  "))
+    # drop blank lines
+    return '\n'.join(chunk for chunk in chunks if chunk)
 
 
 ''' COMMANDS '''
@@ -1593,12 +1623,13 @@ def main():
     first_fetch_interval = params.get('first_fetch', '15 minutes')
     emails_fetch_limit = int(params.get('fetch_limit', '50'))
     timeout = arg_to_number(params.get('timeout', '10') or '10')
+    display_full_email_body = argToBoolean(params.get("display_full_email_body", False))
 
     client: MsGraphClient = MsGraphClient(self_deployed, tenant_id, auth_and_token_url, enc_key, app_name, base_url,
                                           use_ssl, proxy, ok_codes, mailbox_to_fetch, folder_to_fetch,
                                           first_fetch_interval, emails_fetch_limit, timeout, endpoint,
                                           certificate_thumbprint=certificate_thumbprint,
-                                          private_key=private_key,
+                                          private_key=private_key, display_full_email_body=display_full_email_body
                                           )
 
     command = demisto.command()
