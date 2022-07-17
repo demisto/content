@@ -4,7 +4,7 @@ contentitemexportablefields:
   contentitemfields: {}
 name: Cortex XDR - Retrieve File by sha256
 description: |-
-  This playbook is part of the 'Malware Investigation And Response' flow. For more information, please refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+  This playbook is part of the 'Malware Investigation And Response' pack. For more information, please refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
   This playbook is a sub-playbook for the Cortex XDR malware investigation flow. In this playbook, we are retrieving multiple files from the investigated device (using the Device ID incident Filed), based on their SHA256.
 starttaskid: '0'
 tasks:
@@ -308,8 +308,8 @@ tasks:
     task:
       id: 5fd33cc0-7b06-4e45-866b-a939c66e8a6e
       version: -1
-      name: Was the file retrieved?
-      description: Was the file retrieved?
+      name: Is the file retrieval failed?
+      description: Is the file retrieval failed?
       type: condition
       iscommand: false
       brand: ''

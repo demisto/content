@@ -558,5 +558,5 @@ tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
 description: |-
-  This playbook is part of the 'Malware Investigation And Response' flow. For more information, please refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+  This playbook is part of the 'Malware Investigation And Response' pack. For more information, please refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
   This Playbook handles false-positive incident closure for Cortex XDR - Malware investigation.

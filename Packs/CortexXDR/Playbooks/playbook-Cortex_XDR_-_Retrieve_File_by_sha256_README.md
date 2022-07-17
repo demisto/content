@@ -1,4 +1,4 @@
-This playbook is part of the 'Malware Investigation And Response' flow. For more information, please refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+This playbook is part of the 'Malware Investigation And Response' pack. For more information, please refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
 This playbook is a sub-playbook for the Cortex XDR malware investigation flow. In this playbook, we are retrieving multiple files from the investigated device (using the Device ID incident Filed), based on their SHA256.
 
 ## Dependencies
