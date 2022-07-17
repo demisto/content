@@ -298,3 +298,39 @@ def test_failed_authentication(mocker):
     mocker.patch.object(demisto, 'error')
     main()
     assert RemoteAccessv2.return_error.called
+
+
+investigation_data = {'id': 46510, 'systems': [
+    {'ciphers': None, 'credentials': 'ssh - test', 'engineId': '',
+     'host': '11.234.1.17', 'integrationinstanceid': '',
+     'issharedagent': False, 'name': 'i-0fb7ben3de5e85283', 'os': 'linux',
+     'servicesID': '',
+     'terminalOptions': {'Echo': 0, 'Terminal': False, 'TerminalHeight': 0,
+                         'TerminalType': '', 'TerminalWidth': 0, 'TyISpeed': 0,
+                         'TyOSpeed': 0}, 'user': 'ubuntu'}]}
+
+
+@pytest.mark.parametrize('system, expected_log',
+                         [('i-0fb7ben3de5e85283', ''),
+                          ('11.234.1.17', ''),
+                          ('11.234.1.1',
+                           "System 11.234.1.1 not found on investigation 46510. "
+                           "Available systems by name are ['i-0fb7ben3de5e85283'], and by host are ['11.234.1.17'].")])
+def test_find_system(mocker, system, expected_log):
+    """
+    Given:
+        A system argument is provided.
+
+    When:
+        Running a command.
+
+    Then:
+        The system argument is returned and relevant log is written.
+    """
+    from RemoteAccessv2 import find_system
+    mocker.patch.object(demisto, 'investigation', return_value=investigation_data)
+    info_mocker = mocker.patch.object(demisto, 'info')
+
+    assert system == find_system({'system': system})
+    if info_mocker.call_args:
+        assert info_mocker.call_args.args[0] == expected_log
