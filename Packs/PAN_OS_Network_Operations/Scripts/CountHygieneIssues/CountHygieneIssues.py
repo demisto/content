@@ -1,6 +1,9 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+"""
+Counts the number of OPEN Visibility Hygiene issues, as a total across all devices and incidents.
+"""
 
 incident = demisto.incidents()
 issues = (incident[0].get('CustomFields', {}).get('panosnetworkoperationsconfigurationhygieneissues'))

@@ -2,6 +2,8 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
+"""Count all running network operations use casesfrom the given target, based on the incident this script is rendered in."""
+
 incident = demisto.incidents()[0]
 target = incident.get('CustomFields', {}).get('panosnetworkoperationstarget')
 res = demisto.executeCommand("GetIncidentsByQuery", {

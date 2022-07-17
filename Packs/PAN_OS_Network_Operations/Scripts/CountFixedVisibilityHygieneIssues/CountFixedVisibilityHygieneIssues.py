@@ -1,7 +1,8 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
 """
-Counts the number of open FW Change requests for the platform, if the change management pack is in use.
+Counts the number of FIXED/closed Visibility Hygiene issues, as a total across all devices and incidents.
 """
 res = demisto.executeCommand("GetIncidentsByQuery", {
     "query": f"-category:job type:\"PAN-OS Network Operations - Visibility Hygiene\""
