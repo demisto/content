@@ -1,0 +1,62 @@
+name: Mcafee Epo Modeling Rule
+id: mcafee_epo_modeling_rule
+fromversion: 6.8.0
+tags: McafeeEpoModelingRules
+rules: ''
+schema: |-
+  {
+    "mcafee_epo_raw": {
+      "_raw_log": {
+        "type": "timestamp",
+        "is_array": false
+      },
+      "ThreatEventID": {
+        "type": "string",
+        "is_array": false
+      },
+      "ThreatCategory": {
+        "type": "string",
+        "is_array": false
+      },
+      "ThreatSeverity": {
+        "type": "number",
+        "is_array": false
+      },
+      "ThreatName": {
+        "type": "string",
+        "is_array": false
+      },
+      "NodeName": {
+        "type": "string",
+        "is_array": false
+      },
+      "ServerID": {
+        "type": "string",
+        "is_array": false
+      },
+      "AnalyzerVersion": {
+        "type": "string",
+        "is_array": false
+      },
+      "ThreatName": {
+        "type": "string",
+        "is_array": false
+      },
+      "NodeName": {
+        "type": "string",
+        "is_array": false
+      },
+      "ServerID": {
+        "type": "string",
+        "is_array": false
+      },
+      "AnalyzerVersion": {
+        "type": "string",
+        "is_array": false
+      },
+      "AnalyzerName": {
+        "type": "string",
+        "is_array": false
+      }
+    }
+  }
