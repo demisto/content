@@ -995,8 +995,8 @@ class TestPanoramaCommitCommand:
 
     EXPECTED_COMMIT_REQUEST_URL_PARAMS = {
         'action': 'partial',
-        'cmd': '<commit><device-group><entry ' 
-               'name="some_device"/></device-group><partial><admin>' 
+        'cmd': '<commit><device-group><entry '
+               'name="some_device"/></device-group><partial><admin>'
                '<member>some_admin_name</member></admin></partial></commit>',
         'key': 'APIKEY',
         'type': 'commit'
@@ -1102,7 +1102,7 @@ class TestPanoramaCommitCommand:
                                            {'Description': '', 'JobID': '19420', 'Status': 'Pending'}, id="no args")
                               ])
     def test_panorama_commit_command_without_polling(
-       self, mocker, args, expected_request_params, request_result, expected_demisto_result
+        self, mocker, args, expected_request_params, request_result, expected_demisto_result
     ):
         """
         Given:
