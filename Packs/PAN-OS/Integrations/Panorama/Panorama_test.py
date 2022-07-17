@@ -1409,11 +1409,9 @@ def test_get_url_category__multiple_categories_for_url(mocker):
 
     # validate
     assert return_results_mock.call_args[0][0][0].outputs[0].get('Category') in ['shareware-and-freeware',
-                                                                                 'online-storage-and-backup',
-                                                                                 'not-resolved']
+                                                                                 'online-storage-and-backup']
     assert return_results_mock.call_args[0][0][0].outputs[1].get('Category') in ['shareware-and-freeware',
-                                                                                 'online-storage-and-backup',
-                                                                                 'not-resolved']
+                                                                                 'online-storage-and-backup']
 
 
 class TestDevices:
