@@ -24,8 +24,8 @@ QUOTA_OUTPUTS_PREFIX = 'SandBlast.Quota'
 UPLOAD_OUTPUTS_PREFIX = 'SandBlast.Upload'
 DOWNLOAD_OUTPUTS_PREFIX = 'SandBlast.Download'
 FILE_ENTRY = {
-    'name': 'upload_file.pdf',
-    'path': 'test_data/upload_file.pdf'
+    'name': 'upload_file.txt',
+    'path': 'test_data/upload_file.txt'
 }
 
 
@@ -177,7 +177,7 @@ def test_download_command(requests_mock, mock_client):
     -   Ensure FileID is correct.
     -   Ensure file name is correct.
     """
-    mock_response = load_mock_response('upload_file.pdf')
+    mock_response = load_mock_response('upload_file.txt')
     requests_mock.get(
         f'{BASE_URL}{DOWNLOAD_PATH}',
         body=mock_response
