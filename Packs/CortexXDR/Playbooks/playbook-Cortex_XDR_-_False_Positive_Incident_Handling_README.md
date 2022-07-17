@@ -1,5 +1,5 @@
-This playbook is part of the 'Malware Investigation And Response' pack. For more information, please refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
-This Playbook handles false-positive incident closure for Cortex XDR - Malware investigation.
+This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+This Playbook handles false-positive incident closures for Cortex XDR - Malware investigation.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
