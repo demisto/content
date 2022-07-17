@@ -17,6 +17,7 @@ def add_changed_pack(func):
         print("Done\n")
 
         return res
+
     return wrapper
 
 
@@ -49,7 +50,8 @@ def add_dependency(base_pack: Path, new_depndency_pack: Path):
     with metadata_json.open('w') as f:
         json.dump(base_metadata, f)
     subprocess.call(['demisto-sdk', 'update-release-notes', '-i',
-                    f'{base_pack}', "--force", '--text', 'Adding release notes to check the upload flow'], stdout=subprocess.DEVNULL)
+                     f'{base_pack}', "--force", '--text', 'Adding release notes to check the upload flow'],
+                    stdout=subprocess.DEVNULL)
 
     return base_pack
 
@@ -57,13 +59,15 @@ def add_dependency(base_pack: Path, new_depndency_pack: Path):
 @add_changed_pack
 def enhance_release_notes(pack: Path):
     subprocess.call(['demisto-sdk', 'update-release-notes', '-i',
-                    f'{pack}', "--force", '--text', 'Adding release notes to check the upload flow'], stdout=subprocess.DEVNULL)
+                     f'{pack}', "--force", '--text', 'Adding release notes to check the upload flow'],
+                    stdout=subprocess.DEVNULL)
     return pack
 
 
 @add_changed_pack
 def change_image(pack: Path):
-    new_image = Path(__file__).parent / 'TestUploadFlow' / 'Integrations' / 'TestUploadFlow' / 'TestUploadFlow_image.png'
+    new_image = Path(
+        __file__).parent / 'TestUploadFlow' / 'Integrations' / 'TestUploadFlow' / 'TestUploadFlow_image.png'
     for p in Path(pack).glob('**/*.png'):
         # shutil.rmtree(p)
         shutil.copy(new_image, p)
@@ -141,7 +145,8 @@ def create_new_branch(repo: Repo, new_branch_name: str) -> Head:
 
 def parse_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
-    parser.add_argument("-p", "--path", nargs="?", help="Content directory path, default is current directory.", default='.')
+    parser.add_argument("-p", "--path", nargs="?", help="Content directory path, default is current directory.",
+                        default='.')
     parser.add_argument("-cb", "--content-branch", nargs="?",
                         help="The content branch name, if empty will run on current branch.")
     return parser.parse_args()
