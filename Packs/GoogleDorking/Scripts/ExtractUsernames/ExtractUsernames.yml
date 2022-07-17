@@ -1,7 +1,6 @@
 commonfields:
   id: ExtractUsernames
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: ExtractUsernames
 script: ''
 type: python
@@ -21,8 +20,9 @@ outputs:
   type: string
 scripttarget: 0
 subtype: python3
-pswd: ""
 runonce: false
-dockerimage: demisto/python3:3.9.8.24399
+dockerimage: demisto/python3:3.10.5.31928
 runas: DBotWeakRole
-engineinfo: {}
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)

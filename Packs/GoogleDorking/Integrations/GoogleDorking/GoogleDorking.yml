@@ -1,12 +1,10 @@
 commonfields:
   id: Google Dorking
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Google Dorking
 display: Google Dorking
 category: Data Enrichment & Threat Intelligence
-description: Automate the process of google dorking searches in order to detect leaked
-  data.
+description: Automate the process of google dorking searches in order to detect leaked data.
 configuration:
 - display: Search engine ID
   displaypassword: API Key
@@ -67,8 +65,7 @@ configuration:
   name: urls
   type: 12
   required: true
-  additionalinfo: Provide a single or comma separated list of sites from which to
-    perform the search on.
+  additionalinfo: Provide a single or comma separated list of sites from which to perform the search on.
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -154,10 +151,12 @@ script:
     - name: keywords
       description: Comma separated keywords to look for in the files.
     - name: urls
-      description: Provide a single or comma separated list of sites from which to
-        perform the search on.
+      description: Provide a single or comma separated list of sites from which to perform the search on.
     description: Use the google search engine to search a query.
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.5.31928
   isfetch: true
   runonce: false
   subtype: python3
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)

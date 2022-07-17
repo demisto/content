@@ -16,6 +16,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "47"
@@ -45,6 +46,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "No":
       - "5"
@@ -76,6 +78,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "3"
@@ -141,6 +144,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "31"
@@ -178,6 +182,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "7"
@@ -207,6 +212,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "46"
@@ -236,6 +242,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "31"
@@ -377,6 +384,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "NO":
       - "24"
@@ -424,13 +432,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
-      body: null
+      to:
+      subject:
+      body:
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -485,6 +493,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "33"
@@ -514,6 +523,7 @@ tasks:
       type: collection
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "34"
@@ -529,13 +539,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
-      body: null
+      to:
+      subject:
+      body:
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -658,6 +668,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       Non sensitive:
       - "4"
@@ -721,6 +732,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "28"
@@ -750,6 +762,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -776,6 +789,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "29"
@@ -805,6 +819,7 @@ tasks:
       type: collection
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "45"
@@ -824,12 +839,12 @@ tasks:
         simple: ${Data owner details.Answers.1}
       subject:
         simple: The file ${incident.file} has been found on google
-      body: null
+      body:
       methods:
       - email
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -874,6 +889,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "25"
@@ -987,6 +1003,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "35"
@@ -1059,6 +1076,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "22"
@@ -1118,6 +1136,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "31"
@@ -1255,6 +1274,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "49"
@@ -1284,6 +1304,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "36"
@@ -1323,6 +1344,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "29"
@@ -1352,6 +1374,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "31"
@@ -1383,6 +1406,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "31"
@@ -1411,8 +1435,7 @@ tasks:
       id: b14e4f6e-b3e0-4035-81b3-da5769198f35
       version: -1
       name: Run filter by list
-      description: Checks whether the specified item is in a list. The default list
-        is the Demisto Indicators Whitelist.
+      description: Checks whether the specified item is in a list. The default list is the Demisto Indicators Whitelist.
       scriptName: FilterByList
       type: regular
       iscommand: false
@@ -1451,6 +1474,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "36"
@@ -1491,6 +1515,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "43"
@@ -1521,6 +1546,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "43"
@@ -1532,13 +1558,7 @@ tasks:
       ContactName:
         simple: ${incident.dataowner}
       ResidentNotification_WhatCanTheyDo:
-        simple: "First, change your online login information, passwords, and security
-          questions-and-answers. \nSecond, if you used similar login information and
-          passwords for different sites - change the login information, passwords,
-          and security Q&A to them, too.\nThird, pay attention if you start receiving
-          notices of password changes to your current accounts or find yourself locked
-          out of your accounts.\nFourth, Consider implementing two-factor-authentication
-          to your account to reduce the risk of unauthorized access in your account."
+        simple: "First, change your online login information, passwords, and security questions-and-answers. \nSecond, if you used similar login information and passwords for different sites - change the login information, passwords, and security Q&A to them, too.\nThird, pay attention if you start receiving notices of password changes to your current accounts or find yourself locked out of your accounts.\nFourth, Consider implementing two-factor-authentication to your account to reduce the risk of unauthorized access in your account."
     separatecontext: true
     loop:
       iscommand: false
@@ -1571,6 +1591,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "43"
@@ -1656,22 +1677,24 @@ inputs:
   value: {}
   required: false
   description: An XSOAR list to exclude files by hash
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: SeverityMapping
   value:
     simple: 1,2,3,4
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ComplianceMailAddress
   value: {}
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: ITMailAddress
   value: {}
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
-sourceplaybookid: 5f0226fa-b836-4235-8561-a1d7bd539a12
+tests:
+- No tests (auto formatted)
+fromversion: 6.2.0

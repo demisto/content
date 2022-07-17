@@ -1,42 +1,34 @@
 {
-	"autorun": true,
-	"closureScript": "",
-	"color": "#54CEC7",
-	"days": 0,
-	"daysR": 0,
-	"default": false,
-	"detached": false,
-	"disabled": false,
-	"extractSettings": {
-		"fieldCliNameToExtractSettings": {
-			"details": {
-				"extractAsIsIndicatorTypeId": "",
-				"extractIndicatorTypesIDs": [],
-				"isExtractingAllIndicatorTypes": true
-			}
-		},
-		"mode": "Specific"
-	},
-	"fromServerVersion": "",
-	"hours": 0,
-	"hoursR": 0,
-	"id": "Google Dorking",
-	"itemVersion": "",
-	"layout": "83142a0c-b2da-46de-8c1f-5fd269a26631",
-	"locked": false,
-	"name": "Google Dorking",
-	"onChangeRepAlg": 0,
-	"packID": "117e67ac-9d83-403d-8b3d-a5f9d5cc3f36",
-	"playbookId": "5f0226fa-b836-4235-8561-a1d7bd539a12",
-	"preProcessingScript": "",
-	"propagationLabels": [
-		"all"
-	],
-	"readonly": false,
-	"reputationCalc": 0,
-	"system": false,
-	"toServerVersion": "",
-	"version": -1,
-	"weeks": 0,
-	"weeksR": 0
+    "autorun": true,
+    "color": "#54CEC7",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {
+            "details": {
+                "extractAsIsIndicatorTypeId": "",
+                "extractIndicatorTypesIDs": [],
+                "isExtractingAllIndicatorTypes": true
+            }
+        },
+        "mode": "Specific"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "Google Dorking",
+    "layout": "Google Dorking",
+    "locked": false,
+    "name": "Google Dorking",
+    "onChangeRepAlg": 0,
+    "playbookId": "Google Dorking File Processing",
+    "readonly": false,
+    "reputationCalc": 0,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.2.0"
 }
