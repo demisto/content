@@ -1,0 +1,31 @@
+[MODEL: dataset=cyberark_identity_raw, model=Auth]
+filter EventType in ("Cloud.Core.Logout", "Cloud.Core.MfaSummary", "Cloud.Core.StartImpersonate")
+| alter XDM.Auth.Target.user.identifier=ImpersonateTargetUuid,
+        XDM.Auth.Target.user.username=ImpersonateTargetName,
+        XDM.Auth.session_context_id=Session,
+        XDM.Auth.outcome=MfaResult,
+        XDM.Auth.reason=MfaReason,
+        XDM.Auth.Target.application.name=ProfileName;
+
+
+[MODEL: dataset=cyberark_identity_raw, model=Audit]
+filter EventType IN ("Cloud.ADUserProfileUpdate", "Cloud.Core.Access.CheckRightsFailure.Directory", "Cloud.Core.Access.CheckRightsFailure.File", "Cloud.Core.Access.CheckRightsFailure.Table", "Cloud.Core.Access.CheckRightsFailure.Table.Row", "Cloud.Core.Access.Rights.Change", "Cloud.Core.Access.Rights.Remove", "Cloud.Core.Access.Role.Create", "Cloud.Core.Access.Role.Delete", "Cloud.Core.Access.Role.Edit", "Cloud.Core.Access.Role.Update", "Cloud.Core.AdaptiveMfa.RiskAnalysis", "Cloud.Core.ADUserPasswordChange", "Cloud.Core.ADUserPasswordChangeFailed", "Cloud.Core.Alias.Add", "Cloud.Core.Alias.Change", "Cloud.Core.Alias.Delete", "Cloud.Core.AuthProfile.AuthProfileChanged", "Cloud.Core.AuthProfile.AuthProfileCreated", "Cloud.Core.AuthProfile.AuthProfileDeleted", "Cloud.Core.Certificate.IssuedUserCertificate", "Cloud.Core.Certificate.RemovedUserCertificate", "Cloud.Core.Collection.Create", "Cloud.Core.Collection.Delete", "Cloud.Core.Collection.ModifyCollectionMembers", "Cloud.Core.Collection.Update", "Cloud.Core.Config.Delete", "Cloud.Core.Config.Set", "Cloud.Core.Config.Update", "Cloud.Core.Cus.CusEntity.CusCreateUser", "Cloud.Core.Cus.CusEntity.CusDeleteUser", "Cloud.Core.Cus.CusEntity.CusModifyUser", "Cloud.Core.Cus.CusEntity.CusSetUserState", "Cloud.Core.Cus.CusEntity.PasswordChange", "Cloud.Core.Cus.CusEntity.PasswordChangeFailed", "Cloud.Core.DS.AddDirectoryService", "Cloud.Core.DS.RemoveDirectoryService", "Cloud.Core.DSEntityChange", "Cloud.Core.DSEntityLog.DSEntityCreateLog", "Cloud.Core.DSEntityLog.DSEntityDeleteLog", "Cloud.Core.DSEntityLog.DSEntityModifyLog", "Cloud.Core.FinishImpersonate", "Cloud.Core.ForgotUserName", "Cloud.Core.Policy.AddSet", "Cloud.Core.Policy.DeleteSet", "Cloud.Core.Policy.ModifySet", "Cloud.Core.Policy.PlinkChange", "Cloud.Core.Policy.PlinkOrder", "Cloud.Core.StoreUserSetting", "Cloud.Core.TenantCname.Add", "Cloud.Core.TenantCname.Delete", "Cloud.Core.TenantStateChange", "Cloud.Core.UserSecurityQuestionSet", "Cloud.Mobile.GpChangeDetected", "Cloud.Mobile.ProvisionEnrollProfileDownload", "Cloud.Mobile.Device.Enroll", "Cloud.Mobile.Device.EnrollFail", "Cloud.Mobile.Device.StateChange", "Cloud.Mobile.Device.AppInstallFailed", "Cloud.Mobile.Device.DeviceAppAction", "Cloud.Mobile.Device.DeviceAction", "Cloud.AfwEnterprise.Unenroll", "Cloud.Saas.Application.AppLaunch", "Cloud.Saas.Application.GatewayAppLaunch", "Cloud.Saas.Application.SelfServiceAppLaunch", "Cloud.Saas.Application.SelfServiceAppAdd", "Cloud.Saas.Application.AppModify", "loud.Saas.Application.SelfServiceAppDelete", "Cloud.Saas.Application.AppAdd", "Cloud.Saas.Application.AppImport", "Cloud.Saas.Application.AppProvModify", "Cloud.Saas.Application.AppDelete", "Cloud.Saas.Application.AppDenied")
+| alter XDM.Audit.audited_resource.name=coalesce(ObjectName, Role, Alias, ProfileName, TargetUser, DSName, ImpersonateTargetName, Cname, AffectedTenant, OU, DeviceName, ApplicationName, AppName, EntityName),
+        XDM.Audit.audited_resource.type=coalesce(ObjectType, Type, DSType, LicenseType, NewLicenseType, ApplicationType, EntityType),
+        XDM.Audit.audited_resource.id=coalesce( if(EventType NOT IN ("Cloud.AfwEnterprise.Enroll", "Cloud.AfwEnterprise.Unenroll", "Cloud.Core.EmmTenantMigrated", "Cloud.Saas.Application.AppPublish", "Cloud.Saas.Application.AppUnpublish"), RoleId), Id, TargetUserID, Uuid, Key, DSUuid, ImpersonateTargetUuid, ProxyId, ConnectorUuid, DeviceID, ApplicationID, AppId, EntityUuid),
+        XDM.Audit.TriggeredBy.identity.name=coalesce(Changer, EmailAddress),
+        XDM.Audit.TriggeredBy.identity.uuid=coalesce(ChangerUuid, UserGuid),
+        XDM.Audit.TriggeredBy.ipv4=FromIPAddress,
+        XDM.Audit.outcome=coalesce(Result, SyncResult),
+        XDM.Audit.reason=coalesce(Exception, FailedMessage, FailureReason, DeleteReason, SyncActionReason),
+        XDM.Audit.audited_resource.value=coalesce(ReplaceDomain, Thumbprint, Value, UserState, SetPath, NewState, To, NewEntity),
+        XDM.Audit.audited_resource_before.value=coalesce(PreviousUserState, OldState, From, OldEntity),
+        XDM.Audit.original_event_description=coalesce(Exception, Description),
+        XDM.Audit.identity.name=coalesce(ProfileName, MachineName, ClientAddress, HostAddress, UserName, `Target`, EnrollProfileUser, NormalizedUser),
+        XDM.Audit.identity.uuid=LocalAccountUuid,
+        XDM.Audit.audited_resource_before.type=OldLicenseType,
+        XDM.Audit.audited_resource.sub_type=MobileAppType,
+        XDM.Audit.session_context_id=coalesce(JobUniqueId, SessionId),
+        XDM.Audit.operation_sub_type=SyncAction,
+        XDM.Audit.observation_timestamp=to_timestamp(to_integer(arrayindex(regextract(WhenLogged, "[0-9]+"), 0)), "MILLIS"),
+        XDM.Audit.event_timestamp=to_timestamp(to_integer(arrayindex(regextract(WhenOccurred, "[0-9]+"), 0)), "MILLIS");

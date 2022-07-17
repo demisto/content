@@ -877,7 +877,7 @@ script:
     description: Closes the specified request.
     execution: false
     name: service-desk-plus-request-close
-  dockerimage: demisto/python3:3.10.1.26972
+  dockerimage: demisto/python3:3.10.4.30607
   feed: false
   isfetch: true
   longRunning: false

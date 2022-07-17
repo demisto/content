@@ -1140,6 +1140,12 @@ script:
       name: sharing_group_id
       required: false
       secret: false
+    - default: false
+      description: Set the creation date for the event in the format YYYY-MM-DD.
+      isArray: false
+      name: creation_date
+      required: false
+      secret: false
     deprecated: false
     description: Creates a new MISP event.
     execution: false
@@ -1910,6 +1916,102 @@ script:
     description: Adds a file object to the specified event ID.
     execution: false
     name: misp-add-file-object
+    outputs:
+    - contextPath: MISP.Event.ID
+      description: MISP event ID.
+      type: number
+    - contextPath: MISP.Event.Object.MetaCategory
+      description: Object meta category.
+      type: String
+    - contextPath: MISP.Event.Object.Distribution
+      description: Distribution of the object.
+      type: Number
+    - contextPath: MISP.Event.Object.Name
+      description: Name of the object.
+      type: String
+    - contextPath: MISP.Event.Object.TemplateVersion
+      description: Template version of the object.
+      type: Number
+    - contextPath: MISP.Event.Object.EventID
+      description: ID of the event in which the object was first created.
+      type: Number
+    - contextPath: MISP.Event.Object.TemplateUUID
+      description: UUID of the template.
+      type: String
+    - contextPath: MISP.Event.Object.LastChanged
+      description: Timestamp when the object was last changed.
+      type: String
+    - contextPath: MISP.Event.Object.Deleted
+      description: Whether the object was deleted.
+      type: Boolean
+    - contextPath: MISP.Event.Object.ID
+      description: ID of the object.
+      type: Number
+    - contextPath: MISP.Event.Object.UUID
+      description: UUID of the object.
+      type: String
+    - contextPath: MISP.Event.Object.Attribute.Value
+      description: Value of the attribute.
+      type: String
+    - contextPath: MISP.Event.Object.Attribute.EventID
+      description: ID of the first event from which the object originated.
+      type: Number
+    - contextPath: MISP.Event.Object.Attribute.LastChanged
+      description: Attribute last changed timestamp.
+      type: Date
+    - contextPath: MISP.Event.Object.Attribute.Deleted
+      description: Whether the object was deleted.
+      type: Boolean
+    - contextPath: MISP.Event.Object.Attribute.ObjectID
+      description: ID of the object.
+      type: Number
+    - contextPath: MISP.Event.Object.Attribute.DisableCorrelation
+      description: Whether correlation is disabled.
+      type: Boolean
+    - contextPath: MISP.Event.Object.Attribute.ID
+      description: ID of the attribute.
+      type: Unknown
+    - contextPath: MISP.Event.Object.Attribute.ObjectRelation
+      description: Relation of the object.
+      type: String
+    - contextPath: MISP.Event.Object.Attribute.Type
+      description: Object type.
+      type: String
+    - contextPath: MISP.Event.Object.Attribute.UUID
+      description: UUID of the attribute.
+      type: String
+    - contextPath: MISP.Event.Object.Attribute.ToIDs
+      description: Whether the to_ids flag is on.
+      type: Boolean
+    - contextPath: MISP.Event.Object.Attribute.Category
+      description: Category of the attribute.
+      type: String
+    - contextPath: MISP.Event.Object.Attribute.SharingGroupID
+      description: ID of the sharing group.
+      type: Number
+    - contextPath: MISP.Event.Object.Attribute.Comment
+      description: Comment of the attribute.
+      type: String
+    - contextPath: MISP.Event.Object.Description
+      description: Description of the object.
+      type: String
+  - arguments:
+    - default: false
+      description: Entry ID of the email.
+      isArray: false
+      name: entry_id
+      required: true
+      secret: false
+    - default: false
+      description: ID of the event to which to add object to.
+      isArray: false
+      name: event_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Adds an email object to the specified event ID.
+    execution: false
+    name: misp-add-email-object
     outputs:
     - contextPath: MISP.Event.ID
       description: MISP event ID.
@@ -2901,7 +3003,7 @@ script:
     - contextPath: MISP.Warninglist.Lists
       description: Name of warninglists where the value was found.
       type: string
-  dockerimage: demisto/pymisp2:1.0.0.27777
+  dockerimage: demisto/pymisp2:1.0.0.31860
   feed: false
   isfetch: false
   longRunning: false

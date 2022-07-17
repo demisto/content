@@ -59,7 +59,7 @@ class TestBoxCollectEvents:
         send_events_to_xsiam = mocker.patch(
             'BoxEventsCollector.send_events_to_xsiam'
         )
-        main('collect-events', params)
+        main('fetch-events', params)
         assert last_run.call_args_list[0].args[0] == {'stream_position': '601'}
         assert len(send_events_to_xsiam.call_args_list[0].args[0]) == 1
 
@@ -67,3 +67,12 @@ class TestBoxCollectEvents:
     def remove_authentication(self, mocker):
         """We don't need to authenticate in the test functions"""
         mocker.patch.object(BoxEventsClient, 'authenticate', return_value=None)
+
+    def test_not_gate(self):
+        """Well, I've been forced to raise the coverage"""
+        from BoxEventsCollector import not_gate
+        assert not_gate(None)
+        assert not_gate(False)
+        assert not_gate('No')
+        assert not not_gate(True)
+        assert not not_gate('yes')

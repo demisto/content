@@ -17,13 +17,8 @@ configuration:
   type: 9
   required: true
   hiddenusername: true
-- display: The maximum number of logs to fetch.
+- display: Number of incidents to fetch per fetch.
   name: limit
-  type: 0
-  defaultvalue: 1000
-  required: false
-- display: XSIAM update limit per request
-  name: events_to_add_per_request
   type: 0
   defaultvalue: 1000
   required: false
@@ -32,7 +27,8 @@ configuration:
   type: 0
   defaultvalue: 3 days
   required: false
-- display: Event types to include
+- display: The event types to include.
+  additionalinfo: web - returns web (non-Git) events, git - returns Git events, all - returns both web and Git events.
   name: include
   defaultvalue: all
   type: 15
@@ -41,22 +37,36 @@ configuration:
   - all
   - web
   - git
+- display: The product corresponding to the integration that originated the events.
+  name: product
+  type: 0
+  defaultvalue: 'github-audit'
+  required: true
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
-- display: Use Secured Connection
+- display: Trust any certificate (not secure)
   name: verify
-  defaultvalue: "true"
   type: 8
   required: false
 script:
   script: ""
   type: python
   commands:
-  - description: Command that is activated by the engine to fetch event.
-    name: fetch-events
-  - description: Manual command to fetch events and display them.
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: 'False'
+      description: Set this argument to True in orfer to create events, otherwise the command will only display them.
+      isArray: false
+      name: should_push_events
+      predefined:
+        - 'True'
+        - 'False'
+      required: true
+    deprecated: false
+    description: Manual command to fetch events and display them.
+    execution: false
     name: github-get-events
   dockerimage: demisto/fastapi:1.0.0.29406
   runonce: false
@@ -64,6 +74,6 @@ script:
   subtype: python3
 marketplaces:
 - marketplacev2
-fromversion: 6.6.0
+fromversion: 6.8.0
 tests:
-  - Github Event Collector-test
+- No tests

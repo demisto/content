@@ -33,6 +33,7 @@ configuration:
   type: 14
 - display: Fetch incidents
   name: isFetch
+  defaultvalue: 'true'
   required: false
   type: 8
 - display: Incident type
@@ -5678,7 +5679,55 @@ script:
     - contextPath: MicrosoftATP.MachineAlerts.MachineID
       description: The alerts machine ID.
       type: String
-  dockerimage: demisto/crypto:1.0.0.28507
+  - arguments:
+    - default: false
+      description: The machine ID. Can be retrieved by running the 'microsoft-atp-get-machines' command.
+      isArray: false
+      name: machine_id
+      required: true
+      secret: false
+    - default: false
+      description: Comment to associate with the action.
+      isArray: false
+      name: comment
+      required: true
+      secret: false
+    - default: false
+      description: Timeout for polling. Default is 600 seconds.
+      isArray: false
+      name: timeout_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: Action ID to retrieve status and data for. Retrieved from the 'get-machine-investigation-package' command.
+      isArray: false
+      name: machine_action_id
+      required: false
+      secret: false
+      deprecated: true
+    - default: false
+      description: Interval between polling. Default is 10 seconds. Must be 10 or higher.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+      deprecated: false
+    deprecated: false
+    description: Collect and download an investigation package from a machine.
+    execution: false
+    polling: true
+    name: microsoft-atp-request-and-download-investigation-package
+    outputs:
+    - contextPath: MicrosoftATP.MachineAction.ID
+      description: The machine action ID.
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.Status
+      description: The current status of the machine action.
+      type: String
+    - contextPath: MicrosoftATP.MachineAction.MachineID
+      description: The machine ID on which the action was executed.
+      type: String
+  dockerimage: demisto/crypto:1.0.0.31577
   feed: false
   isfetch: true
   longRunning: false
@@ -5687,6 +5736,7 @@ script:
   script: '-'
   subtype: python3
   type: python
+defaultmapperin: Microsoft Defender For Endpoint Mapper
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)

@@ -136,133 +136,6 @@ class CoreClient(BaseClient):
         super().__init__(base_url=base_url, headers=headers, proxy=proxy, verify=verify)
         self.timeout = timeout
 
-    def get_incidents(self, incident_id_list=None, lte_modification_time=None, gte_modification_time=None,
-                      lte_creation_time=None, gte_creation_time=None, status=None, sort_by_modification_time=None,
-                      sort_by_creation_time=None, page_number=0, limit=100, gte_creation_time_milliseconds=0):
-        """
-        Filters and returns incidents
-
-        :param incident_id_list: List of incident ids - must be list
-        :param lte_modification_time: string of time format "2019-12-31T23:59:00"
-        :param gte_modification_time: string of time format "2019-12-31T23:59:00"
-        :param lte_creation_time: string of time format "2019-12-31T23:59:00"
-        :param gte_creation_time: string of time format "2019-12-31T23:59:00"
-        :param status: string of status
-        :param sort_by_modification_time: optional - enum (asc,desc)
-        :param sort_by_creation_time: optional - enum (asc,desc)
-        :param page_number: page number
-        :param limit: maximum number of incidents to return per page
-        :param gte_creation_time_milliseconds: greater than time in milliseconds
-        :return:
-        """
-        search_from = page_number * limit
-        search_to = search_from + limit
-
-        request_data = {
-            'search_from': search_from,
-            'search_to': search_to,
-        }
-
-        if sort_by_creation_time and sort_by_modification_time:
-            raise ValueError('Should be provide either sort_by_creation_time or '
-                             'sort_by_modification_time. Can\'t provide both')
-        if sort_by_creation_time:
-            request_data['sort'] = {
-                'field': 'creation_time',
-                'keyword': sort_by_creation_time
-            }
-        elif sort_by_modification_time:
-            request_data['sort'] = {
-                'field': 'modification_time',
-                'keyword': sort_by_modification_time
-            }
-
-        filters = []
-        if incident_id_list is not None and len(incident_id_list) > 0:
-            filters.append({
-                'field': 'incident_id_list',
-                'operator': 'in',
-                'value': incident_id_list
-            })
-
-        if lte_creation_time:
-            filters.append({
-                'field': 'creation_time',
-                'operator': 'lte',
-                'value': date_to_timestamp(lte_creation_time, TIME_FORMAT)
-            })
-
-        if gte_creation_time:
-            filters.append({
-                'field': 'creation_time',
-                'operator': 'gte',
-                'value': date_to_timestamp(gte_creation_time, TIME_FORMAT)
-            })
-
-        if lte_modification_time:
-            filters.append({
-                'field': 'modification_time',
-                'operator': 'lte',
-                'value': date_to_timestamp(lte_modification_time, TIME_FORMAT)
-            })
-
-        if gte_modification_time:
-            filters.append({
-                'field': 'modification_time',
-                'operator': 'gte',
-                'value': date_to_timestamp(gte_modification_time, TIME_FORMAT)
-            })
-
-        if gte_creation_time_milliseconds > 0:
-            filters.append({
-                'field': 'creation_time',
-                'operator': 'gte',
-                'value': gte_creation_time_milliseconds
-            })
-
-        if status:
-            filters.append({
-                'field': 'status',
-                'operator': 'eq',
-                'value': status
-            })
-
-        if len(filters) > 0:
-            request_data['filters'] = filters
-        res = self._http_request(
-            method='POST',
-            url_suffix='/incidents/get_incidents/',
-            json_data={'request_data': request_data},
-            timeout=self.timeout
-        )
-        incidents = res.get('reply').get('incidents', [])
-
-        return incidents
-
-    def get_incident_extra_data(self, incident_id, alerts_limit=1000):
-        """
-        Returns incident by id
-
-        :param incident_id: The id of incident
-        :param alerts_limit: Maximum number alerts to get
-        :return:
-        """
-        request_data = {
-            'incident_id': incident_id,
-            'alerts_limit': alerts_limit,
-        }
-
-        reply = self._http_request(
-            method='POST',
-            url_suffix='/incidents/get_incident_extra_data/',
-            json_data={'request_data': request_data},
-            timeout=self.timeout
-        )
-
-        incident = reply.get('reply')
-
-        return incident
-
     def update_incident(self, incident_id, status=None, assigned_user_mail=None, assigned_user_pretty_name=None, severity=None,
                         resolve_comment=None, unassign_user=None):
         update_data = {}
@@ -317,6 +190,7 @@ class CoreClient(BaseClient):
                       sort_by_first_seen=None,
                       sort_by_last_seen=None,
                       status=None,
+                      username=None,
                       no_filter=False
                       ):
 
@@ -348,6 +222,13 @@ class CoreClient(BaseClient):
                     'field': 'endpoint_status',
                     'operator': 'IN',
                     'value': [status]
+                })
+
+            if username:
+                filters.append({
+                    'field': 'username',
+                    'operator': 'IN',
+                    'value': username
                 })
 
             if endpoint_id_list:
@@ -1016,6 +897,16 @@ class CoreClient(BaseClient):
         )
         return res.get('reply', {})
 
+    def get_alerts_by_filter_data(self, request_data: dict):
+        res = self._http_request(
+            method='POST',
+            url_suffix='/alerts/get_alerts_by_filter_data/',
+            json_data={
+                'request_data': request_data
+            },
+        )
+        return res.get('reply', {})
+
     def get_endpoint_device_control_violations(self, endpoint_ids: list, type_of_violation, timestamp_gte: int,
                                                timestamp_lte: int,
                                                ip_list: list, vendor: list, vendor_id: list, product: list,
@@ -1336,15 +1227,6 @@ class CoreClient(BaseClient):
         )
         return reply
 
-    def save_modified_incidents_to_integration_context(self):
-        last_modified_incidents = self.get_incidents(limit=100, sort_by_modification_time='desc')
-        modified_incidents_context = {}
-        for incident in last_modified_incidents:
-            incident_id = incident.get('incident_id')
-            modified_incidents_context[incident_id] = incident.get('modification_time')
-
-        set_integration_context({'modified_incidents': modified_incidents_context})
-
     def get_endpoints_by_status(self, status, last_seen_gte=None, last_seen_lte=None):
         filters = []
 
@@ -1422,6 +1304,60 @@ class CoreClient(BaseClient):
         return reply[:limit]
 
 
+class AlertFilterArg:
+    def __init__(self, search_field: str, search_type: Optional[str], arg_type: str, option_mapper: dict = None):
+        self.search_field = search_field
+        self.search_type = search_type
+        self.arg_type = arg_type
+        self.option_mapper = option_mapper
+
+
+def init_filter_args_options():
+    array = 'array'
+    dropdown = 'dropdown'
+    time_frame = 'time_frame'
+
+    return {
+        'alert_id': AlertFilterArg('internal_id', 'EQ', array),
+        'severity': AlertFilterArg('severity', 'EQ', dropdown, {
+            'low': 'SEV_020_LOW',
+            'medium': 'SEV_030_MEDIUM',
+            'high': 'SEV_040_HIGH'
+        }),
+        'starred': AlertFilterArg('starred', 'EQ', dropdown, {
+            'true': True,
+            'False': False,
+        }),
+        'Identity_type': AlertFilterArg('Identity_type', 'EQ', dropdown),
+        'agent_id': AlertFilterArg('agent_id', 'EQ', array),
+        'action_external_hostname': AlertFilterArg('action_external_hostname', 'CONTAINS', array),
+        'rule_id': AlertFilterArg('matching_service_rule_id', 'EQ', array),
+        'rule_name': AlertFilterArg('fw_rule', 'EQ', array),
+        'alert_name': AlertFilterArg('alert_name', 'CONTAINS', array),
+        'alert_source': AlertFilterArg('alert_source', 'CONTAINS', array),
+        'time_frame': AlertFilterArg('source_insert_ts', None, time_frame),
+        'user_name': AlertFilterArg('actor_effective_username', 'CONTAINS', array),
+        'actor_process_image_name': AlertFilterArg('actor_process_image_name', 'CONTAINS', array),
+        'causality_actor_process_image_command_line': AlertFilterArg('causality_actor_process_command_line', 'EQ',
+                                                                     array),
+        'actor_process_image_command_line': AlertFilterArg('actor_process_command_line', 'EQ', array),
+        'action_process_image_command_line': AlertFilterArg('action_process_image_command_line', 'EQ', array),
+        'actor_process_image_sha256': AlertFilterArg('actor_process_image_sha256', 'EQ', array),
+        'causality_actor_process_image_sha256': AlertFilterArg('causality_actor_process_image_sha256', 'EQ', array),
+        'action_process_image_sha256': AlertFilterArg('action_process_image_sha256', 'EQ', array),
+        'action_file_image_sha256': AlertFilterArg('action_file_sha256', 'EQ', array),
+        'action_registry_name': AlertFilterArg('action_registry_key_name', 'EQ', array),
+        'action_registry_key_data': AlertFilterArg('action_registry_data', 'CONTAINS', array),
+        'host_ip': AlertFilterArg('agent_ip_addresses', 'IPLIST_MATCH', array),
+        'action_local_ip': AlertFilterArg('action_local_ip', 'IP_MATCH', array),
+        'action_remote_ip': AlertFilterArg('action_remote_ip', 'IP_MATCH', array),
+        'action_local_port': AlertFilterArg('action_local_port', 'EQ', array),
+        'action_remote_port': AlertFilterArg('action_remote_port', 'EQ', array),
+        'dst_action_external_hostname': AlertFilterArg('dst_action_external_hostname', 'CONTAINS', array),
+        'mitre_technique_id_and_name': AlertFilterArg('mitre_technique_id_and_name', 'CONTAINS', array),
+    }
+
+
 def run_polling_command(client: CoreClient,
                         args: dict,
                         cmd: str,
@@ -1477,6 +1413,8 @@ def run_polling_command(client: CoreClient,
     # get polling result
     command_results = results_function(client, args)
     outputs_result_func = command_results.raw_response
+    if not outputs_result_func:
+        return_error(f"Command {cmd} didn't succeeded, received empty response.")
     result = outputs_result_func.get(polling_field) if isinstance(outputs_result_func, dict) else \
         outputs_result_func[0].get(polling_field)
     cond = result not in polling_value if stop_polling else result in polling_value
@@ -1493,8 +1431,96 @@ def run_polling_command(client: CoreClient,
             timeout_in_seconds=timeout_in_seconds)
 
         # result with scheduled_command only - no update to the war room
-        command_results = CommandResults(scheduled_command=scheduled_command)
+        command_results = CommandResults(scheduled_command=scheduled_command, raw_response=outputs_result_func)
     return command_results
+
+
+def convert_time_to_epoch(time_to_convert: str) -> int:
+    """
+    Converts time in epoch UNIX timestamp format or date in '%Y-%m-%dT%H:%M:%S' format to timestamp format.
+    :param time_to_convert:
+    :return: converted_timestamp
+    """
+    try:
+        timestamp = int(time_to_convert)
+        return timestamp
+    except Exception:
+        try:
+            return date_to_timestamp(time_to_convert)
+        except Exception:
+            raise DemistoException('the time_frame format is invalid. Valid formats: %Y-%m-%dT%H:%M:%S or '
+                                   'epoch UNIX timestamp (example: 1651505482)')
+
+
+def create_filter_from_args(args: dict) -> dict:
+    """
+    Builds an XDR format filter dict for the xdr-get-alert command.
+    :param args: The arguments provided by the user
+    :return: The filter format built from args
+    """
+    valid_args = init_filter_args_options()
+    and_operator_list = []
+    start_time = args.pop('start_time', None)
+    end_time = args.pop('end_time', None)
+
+    if (start_time or end_time) and ('time_frame' not in args):
+        raise DemistoException('Please choose "custom" under time_frame argument when using start_time and end_time '
+                               'arguments')
+
+    for arg_name, arg_value in args.items():
+        if arg_name not in valid_args:
+            raise DemistoException(f'Argument {arg_name} is not valid.')
+        arg_properties = valid_args.get(arg_name)
+
+        # handle time frame
+        if arg_name == 'time_frame':
+            # custom time frame
+            if arg_value == 'custom':
+                if not start_time or not end_time:
+                    raise DemistoException(
+                        'Please provide start_time and end_time arguments when using time_frame as custom.')
+                start_time = convert_time_to_epoch(start_time)
+                end_time = convert_time_to_epoch(end_time)
+                search_type = 'RANGE'
+                search_value: Union[dict, Optional[str]] = {
+                    'from': start_time,
+                    'to': end_time
+                }
+
+            # relative time frame
+            else:
+                search_value = None
+                search_type = 'RELATIVE_TIMESTAMP'
+                relative_date = dateparser.parse(arg_value)
+                if relative_date:
+                    delta_in_milliseconds = int((datetime.now() - relative_date).total_seconds() * 1000)
+                    search_value = str(delta_in_milliseconds)
+
+            and_operator_list.append({
+                'SEARCH_FIELD': arg_properties.search_field,
+                'SEARCH_TYPE': search_type,
+                'SEARCH_VALUE': search_value
+            })
+
+        # handle array args, array elements should be seperated with 'or' op
+        elif arg_properties.arg_type == 'array':
+            or_operator_list = []
+            arg_list = argToList(arg_value)
+            for arg_item in arg_list:
+                or_operator_list.append({
+                    'SEARCH_FIELD': arg_properties.search_field,
+                    'SEARCH_TYPE': arg_properties.search_type,
+                    'SEARCH_VALUE': arg_item
+                })
+            and_operator_list.append({'OR': or_operator_list})
+        else:
+            and_operator_list.append({
+                'SEARCH_FIELD': arg_properties.search_field,
+                'SEARCH_TYPE': arg_properties.search_type,
+                'SEARCH_VALUE': arg_properties.option_mapper.get(arg_value) if arg_properties.option_mapper else arg_value
+            })
+
+    return {'AND': and_operator_list}
 
 
 def arg_to_int(arg, arg_name: str, required: bool = False):
@@ -1605,8 +1631,9 @@ def action_status_get_command(client: CoreClient, args) -> CommandResults:
 
     return CommandResults(
         readable_output=tableToMarkdown(name='Get Action Status', t=result, removeNull=True),
-        outputs={
-            f'{args.get("integration_context_brand", "CoreApiModule")}.GetActionStatus(val.action_id == obj.action_id)': result},
+        outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.'
+                       f'GetActionStatus(val.action_id == obj.action_id)',
+        outputs=result,
         raw_response=result
     )
 
@@ -1788,6 +1815,8 @@ def get_endpoints_command(client, args):
         sort_by_first_seen = args.get('sort_by_first_seen')
         sort_by_last_seen = args.get('sort_by_last_seen')
 
+        username = argToList(args.get('username'))
+
         endpoints = client.get_endpoints(
             endpoint_id_list=endpoint_id_list,
             dist_name=dist_name,
@@ -1805,7 +1834,8 @@ def get_endpoints_command(client, args):
             last_seen_lte=last_seen_lte,
             sort_by_first_seen=sort_by_first_seen,
             sort_by_last_seen=sort_by_last_seen,
-            status=status
+            status=status,
+            username=username
         )
 
     integration_name = args.get("integration_name", "CoreApiModule")
@@ -1895,13 +1925,13 @@ def retrieve_files_command(client: CoreClient, args: Dict[str, str]) -> CommandR
         file_path_list=file_path_list,
         incident_id=incident_id
     )
-
     result = {'action_id': reply.get('action_id')}
 
     return CommandResults(
         readable_output=tableToMarkdown(name='Retrieve files', t=result, headerTransform=string_to_table_header),
-        outputs={f'{args.get("integration_context_brand", "CoreApiModule")}'
-                 f'.RetrievedFiles(val.action_id == obj.action_id)': result},
+        outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}'
+                       f'.RetrievedFiles(val.action_id == obj.action_id)',
+        outputs=result,
         raw_response=reply
     )
 
@@ -2794,7 +2824,7 @@ def get_endpoint_device_control_violations_command(client: CoreClient, args: Dic
     )
 
 
-def retrieve_file_details_command(client: CoreClient, args):
+def retrieve_file_details_command(client: CoreClient, args, add_to_context):
     action_id_list = argToList(args.get('action_id', ''))
     action_id_list = [arg_to_int(arg=item, arg_name=str(item)) for item in action_id_list]
 
@@ -2824,13 +2854,14 @@ def retrieve_file_details_command(client: CoreClient, args):
 
     hr = f'### Action id : {args.get("action_id", "")} \n Retrieved {retrived_files_count} files from ' \
          f'{endpoints_count} endpoints. \n To get the exact action status run the core-action-status-get command'
-
+    context = {f'{args.get("integration_context_brand", "CoreApiModule")}'
+               f'.RetrievedFiles(val.action_id == obj.action_id)': result}
     return_entry = {'Type': entryTypes['note'],
                     'ContentsFormat': formats['json'],
                     'Contents': raw_result,
                     'HumanReadable': hr,
                     'ReadableContentsFormat': formats['markdown'],
-                    'EntryContext': {}
+                    'EntryContext': context if add_to_context else {}
                     }
     return return_entry, file_results
 
@@ -3157,6 +3188,76 @@ def get_original_alerts_command(client: CoreClient, args: Dict) -> CommandResult
         outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.OriginalAlert',
         outputs_key_field='internal_id',
         outputs=filtered_alerts,
+        raw_response=raw_response,
+    )
+
+
+def get_alerts_by_filter_command(client: CoreClient, args: Dict) -> CommandResults:
+    # get arguments
+    request_data: dict = {'filter_data': {}}
+    filter_data = request_data['filter_data']
+    sort_field = args.pop('sort_field', 'source_insert_ts')
+    sort_order = args.pop('sort_order', 'DESC')
+    prefix = args.pop("integration_context_brand", "CoreApiModule")
+    args.pop("integration_name", None)
+    custom_filter = {}
+    filter_data['sort'] = [{
+        'FIELD': sort_field,
+        'ORDER': sort_order
+    }]
+    offset = args.pop('offset', 0)
+    limit = args.pop('limit', 50)
+    filter_data['paging'] = {
+        'from': int(offset),
+        'to': int(limit)
+    }
+    if not args:
+        raise DemistoException('Please provide at least one filter argument.')
+
+    # handle custom filter
+    custom_filter_str = args.pop('custom_filter', None)
+
+    if custom_filter_str:
+        for arg in args:
+            if arg not in ['time_frame', 'start_time', 'end_time']:
+                raise DemistoException(
+                    'Please provide either "custom_filter" argument or other filter arguments but not both.')
+        try:
+            custom_filter = json.loads(custom_filter_str)
+        except Exception as e:
+            raise DemistoException('custom_filter format is not valid.') from e
+
+    filter_res = create_filter_from_args(args)
+    if custom_filter:  # if exists, add custom filter to the built filter
+        if 'AND' in custom_filter:
+            filter_obj = custom_filter['AND']
+            filter_res['AND'].extend(filter_obj)
+        else:
+            filter_res['AND'].append(custom_filter)
+
+    filter_data['filter'] = filter_res
+    demisto.debug(f'sending the following request data: {request_data}')
+    raw_response = client.get_alerts_by_filter_data(request_data)
+
+    context = [alert.get('alert_fields') for alert in raw_response.get('alerts', [])]
+
+    human_readable = [{
+        'Alert ID': alert.get('internal_id'),
+        'Detection Timestamp': timestamp_to_datestring(alert.get('source_insert_ts')),
+        'Name': alert.get('alert_name'),
+        'Severity': alert.get('severity'),
+        'Category': alert.get('alert_category'),
+        'Action': alert.get('alert_action_status'),
+        'Description': alert.get('alert_description'),
+        'Host IP': alert.get('agent_ip_addresses'),
+        'Host Name': alert.get('agent_hostname'),
+    } for alert in context]
+
+    return CommandResults(
+        outputs_prefix=f'{prefix}.Alert',
+        outputs_key_field='internal_id',
+        outputs=context,
+        readable_output=tableToMarkdown('Alerts', human_readable),
         raw_response=raw_response,
     )
 

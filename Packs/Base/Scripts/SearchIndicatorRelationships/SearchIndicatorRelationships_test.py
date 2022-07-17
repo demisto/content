@@ -83,14 +83,12 @@ def test_search_relationship_command_args_by_demisto_version(mocker, demisto_ver
 
     def searchRelationships(args):
         assert demisto_version >= '6.6.0'
-        assert 'filter' in args
-        assert isinstance(args['filter'].get('entities'), list)
+        assert isinstance(args.get('entities'), list)
         return {'data': expected_result}
 
     def executeCommand(command_name, args):
         assert command_name == 'searchRelationships'
         assert demisto_version < '6.6.0'
-        assert 'filter' not in args
         assert isinstance(args.get('entities'), str)
         return [{'Contents': {'data': expected_result}, 'Type': 'not_error'}]
 

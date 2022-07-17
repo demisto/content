@@ -44,7 +44,9 @@ To send alerts from Prisma Cloud Compute to Cortex XSOAR, you need to create an 
 * See 'Requires Role' section (each command requires a different type of role).
 
 1) Go to `Manage` -> `Authentication`.
+
 2) Choose the user that you want to edit roles -> `Actions` -> Press `...`.
+
 3) Press on `Edit` -> Choose a Role in the `Role` section.
 
 ![User Roles Configuration](doc_images/user-roles-configuration.png)

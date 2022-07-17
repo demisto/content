@@ -4,7 +4,7 @@ import logging
 import os
 from typing import Tuple, Optional
 import gitlab
-from slack import WebClient as SlackClient
+from slack_sdk import WebClient
 
 from Tests.Marketplace.marketplace_services import get_upload_data
 from Tests.Marketplace.marketplace_constants import BucketUploadFlow
@@ -70,7 +70,7 @@ def get_artifact_data(artifact_folder, artifact_relative_path: str) -> Optional[
     return artifact_data
 
 
-def test_playbooks_results(artifact_folder):
+def test_playbooks_results(artifact_folder, title):
     failed_tests_data = get_artifact_data(artifact_folder, 'failed_tests.txt')
     failed_tests = failed_tests_data.split('\n') if failed_tests_data else []
 
@@ -83,7 +83,7 @@ def test_playbooks_results(artifact_folder):
     content_team_fields = []
     if failed_tests:
         field_failed_tests = {
-            "title": "Failed tests - ({})".format(len(failed_tests)),
+            "title": f"{title} - Failed Tests - ({len(failed_tests)})",
             "value": '\n'.join(failed_tests),
             "short": False
         }
@@ -91,7 +91,7 @@ def test_playbooks_results(artifact_folder):
 
     if skipped_tests:
         field_skipped_tests = {
-            "title": "Skipped tests - ({})".format(len(skipped_tests)),
+            "title": f"{title} - Skipped Tests - ({len(skipped_tests)})",
             "value": '',
             "short": True
         }
@@ -99,7 +99,7 @@ def test_playbooks_results(artifact_folder):
 
     if skipped_integrations:
         field_skipped_integrations = {
-            "title": "Skipped integrations - ({})".format(len(skipped_integrations)),
+            "title": f"{title} - Skipped Integrations - ({len(skipped_integrations)})",
             "value": '',
             "short": True
         }
@@ -193,7 +193,8 @@ def construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs)
 
     # report failing test-playbooks
     if 'content nightly' in triggering_workflow_lower:
-        content_fields += test_playbooks_results(ARTIFACTS_FOLDER_XSOAR)
+        content_fields += test_playbooks_results(ARTIFACTS_FOLDER_XSOAR, title="XSOAR")
+        content_fields += test_playbooks_results(ARTIFACTS_FOLDER_MPV2, title="XSIAM")
         coverage_slack_msg = construct_coverage_slack_msg()
 
     slack_msg = [{
@@ -237,21 +238,6 @@ def construct_coverage_slack_msg():
     }
 
 
-def notify_failures_to_build_channel(slack_client, slack_msg_data):
-    """
-    Return all failures for investigation to channel dmst-build.
-    """
-    slack_client.api_call(
-        "chat.postMessage",
-        json={
-            'channel': BUILD_NOTIFICATIONS_CHANNEL,
-            'username': SLACK_USERNAME,
-            'as_user': 'False',
-            'attachments': slack_msg_data,
-        },
-    )
-
-
 def main():
     install_logging('Slack_Notifier.log')
     options = options_handler()
@@ -265,18 +251,16 @@ def main():
     gitlab_client = gitlab.Gitlab(server_url, private_token=ci_token)
     pipeline_url, pipeline_failed_jobs = collect_pipeline_data(gitlab_client, project_id, pipeline_id)
     slack_msg_data = construct_slack_msg(triggering_workflow, pipeline_url, pipeline_failed_jobs)
-    slack_client = SlackClient(slack_token)
-    slack_client.api_call(
-        "chat.postMessage",
-        json={
-            'channel': slack_channel,
-            'username': SLACK_USERNAME,
-            'as_user': 'False',
-            'attachments': slack_msg_data
-        }
+    slack_client = WebClient(token=slack_token)
+    slack_client.chat_postMessage(
+        channel=slack_channel, as_user=False, attachments=slack_msg_data, username=SLACK_USERNAME
     )
+
     if pipeline_failed_jobs and slack_channel == CONTENT_CHANNEL:
-        notify_failures_to_build_channel(slack_client, slack_msg_data)
+        # Return all failures for investigation to channel dmst-build.
+        slack_client.chat_postMessage(
+            channel=BUILD_NOTIFICATIONS_CHANNEL, as_user=False, attachments=slack_msg_data, username=SLACK_USERNAME
+        )
 
 
 if __name__ == '__main__':

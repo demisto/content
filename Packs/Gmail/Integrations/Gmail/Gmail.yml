@@ -3,8 +3,8 @@ commonfields:
   id: Gmail
   version: -1
 configuration:
-- display: Email of user with admin privileges (the Password refers to the content
-    of the Service Account file)
+- display: Email of user with admin privileges
+  displaypassword: The content of the Service Account file
   name: adminEmail
   required: true
   type: 9
@@ -641,6 +641,16 @@ script:
       predefined:
       - 'False'
       - 'True'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether to return only mailboxes which contain the email. Default
+        is "False".
+      name: show-only-mailboxes
+      predefined:
+      - "false"
+      - "true"
       required: false
       secret: false
     deprecated: false

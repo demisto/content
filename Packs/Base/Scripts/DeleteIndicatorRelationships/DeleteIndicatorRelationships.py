@@ -2,8 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-import traceback
-
 ''' MAIN FUNCTION '''
 
 
@@ -16,7 +14,6 @@ def main():
         hr = f"The relationships {str(ids)} were deleted successfully."
         return_results(CommandResults(readable_output=hr))
     except Exception as ex:
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute DeleteIndicatorRelationships. Error: {str(ex)}')
 
 

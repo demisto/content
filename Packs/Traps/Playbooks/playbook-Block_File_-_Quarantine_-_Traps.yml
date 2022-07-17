@@ -2,7 +2,9 @@ id: Traps Quarantine Event
 version: -1
 fromversion: 5.0.0
 name: Traps Quarantine Event
-description: This playbook accepts a file hash and quarantines this file using Traps.
+hidden: true
+deprecated: true
+description: Deprecated. Use CortexXDR instead.
 starttaskid: "0"
 tasks:
   "0":

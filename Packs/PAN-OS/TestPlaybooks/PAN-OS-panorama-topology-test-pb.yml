@@ -633,7 +633,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 8970
+          "y": 8650
         }
       }
   '15':
@@ -1743,7 +1743,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - '44'
+      - '45'
     note: false
     quietmode: 0
     separatecontext: false
@@ -1764,59 +1764,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 6980
-        }
-      }
-  '44':
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: PANOS.PanosObject.hostid
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: PANOS.PanosObject.container_name
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: PANOS.PanosObject.name
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: PANOS.PanosObject.object_type
-          operator: isNotEmpty
-      label: yes
-    id: '44'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      yes:
-      - '45'
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      id: 706961a8-3aab-4883-80e0-56462c3b58c2
-      iscommand: false
-      name: Verify Outputs
-      type: condition
-      version: -1
-    taskid: 706961a8-3aab-4883-80e0-56462c3b58c2
-    timertriggers: []
-    type: condition
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 7210
+          "y": 6910
         }
       }
   '45':
@@ -1826,7 +1774,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - '46'
+      - '47'
     note: false
     quietmode: 0
     separatecontext: false
@@ -1847,59 +1795,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 7420
-        }
-      }
-  '46':
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: PANOS.PanosObject.hostid
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: PANOS.PanosObject.container_name
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: PANOS.PanosObject.name
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: PANOS.PanosObject.object_type
-          operator: isNotEmpty
-      label: yes
-    id: '46'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      yes:
-      - '47'
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      id: a7c927e0-afb2-40f6-8554-338f2cb01ea0
-      iscommand: false
-      name: Verify Outputs
-      type: condition
-      version: -1
-    taskid: a7c927e0-afb2-40f6-8554-338f2cb01ea0
-    timertriggers: []
-    type: condition
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 7610
+          "y": 7080
         }
       }
   '47':
@@ -1909,7 +1805,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - '48'
+      - '49'
     note: false
     quietmode: 0
     separatecontext: false
@@ -1930,59 +1826,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 7800
-        }
-      }
-  '48':
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              simple: PANOS.PanosObject.hostid
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: PANOS.PanosObject.container_name
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: PANOS.PanosObject.name
-          operator: isNotEmpty
-      - - left:
-            iscontext: true
-            value:
-              simple: PANOS.PanosObject.object_type
-          operator: isNotEmpty
-      label: yes
-    id: '48'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      yes:
-      - '49'
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      id: 417b6894-abbc-43d6-8963-bcdef8049c07
-      iscommand: false
-      name: Verify Outputs
-      type: condition
-      version: -1
-    taskid: 417b6894-abbc-43d6-8963-bcdef8049c07
-    timertriggers: []
-    type: condition
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 7970
+          "y": 7280
         }
       }
   '49':
@@ -2013,7 +1857,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 8180
+          "y": 7470
         }
       }
   '50':
@@ -2090,7 +1934,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 8380
+          "y": 7680
         }
       }
   '51':
@@ -2121,7 +1965,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 8580
+          "y": 7880
         }
       }
   '52':
@@ -2179,7 +2023,7 @@ tasks:
     isoversize: false
     nexttasks:
       yes:
-      - '14'
+      - '53'
     note: false
     quietmode: 0
     separatecontext: false
@@ -2198,7 +2042,93 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 8760
+          "y": 8080
+        }
+      }
+  '53':
+    id: '53'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '54'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      object_type:
+        simple: SecurityProfileGroup
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Searches and returns a reference for the given object type and name. If no name is provided, all objects of the given type will be returned. Note this ONLY returns the object name and it's location in the configuration hierachy, not the entire object.
+      id: c7869770-3ddf-4d5c-8927-c5f0732f2711
+      iscommand: true
+      name: pan-os-config-get-object
+      script: '|||pan-os-config-get-object'
+      type: regular
+      version: -1
+    taskid: c7869770-3ddf-4d5c-8927-c5f0732f2711
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 8260
+        }
+      }
+  '54':
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.PanosObject.hostid
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.PanosObject.container_name
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.PanosObject.name
+          operator: isExists
+      - - left:
+            iscontext: true
+            value:
+              simple: PANOS.PanosObject.object_type
+          operator: isExists
+      label: yes
+    id: '54'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      yes:
+      - '14'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 2cb5c004-5348-4702-8738-880011d433a2
+      iscommand: false
+      name: Verify Outputs
+      type: condition
+      version: -1
+    taskid: 2cb5c004-5348-4702-8738-880011d433a2
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 8440
         }
       }
 version: -1
@@ -2207,7 +2137,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 8985,
+        "height": 8665,
         "width": 380,
         "x": 450,
         "y": 50

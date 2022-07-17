@@ -1,8 +1,8 @@
 {
-    "name": "Unit42 v2 Feed",
+    "name": "Unit 42 ATOMs Feed",
     "description": "Unit 42 feed of published IOCs which contains malicious indicators.",
     "support": "xsoar",
-    "currentVersion": "1.0.11",
+    "currentVersion": "1.0.13",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
