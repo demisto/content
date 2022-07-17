@@ -614,6 +614,21 @@ pycodestyle = ">=2.8.0,<2.9.0"
 pyflakes = ">=2.4.0,<2.5.0"
 
 [[package]]
+name = "flake8-pyproject"
+version = "0.9.0"
+description = "Runs Flake8 with configuration from pyproject.toml."
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+Flake8 = "*"
+TOMLi = "*"
+
+[package.extras]
+test = ["pytest", "pytest-cov"]
+
+[[package]]
 name = "flatten-dict"
 version = "0.4.2"
 description = "A flexible utility for flattening and unflattening dict-like objects in Python."
@@ -1468,18 +1483,6 @@ optional = false
 python-versions = ">=2.7"
 
 [[package]]
-name = "pyproject-flake8"
-version = "0.0.1a4"
-description = "pyproject-flake8 (`pflake8`), a monkey patching wrapper to connect flake8 with pyproject.toml configuration"
-category = "main"
-optional = false
-python-versions = "*"
-
-[package.dependencies]
-flake8 = "*"
-tomli = {version = "*", markers = "python_version < \"3.11\""}
-
-[[package]]
 name = "pyreadline3"
 version = "3.4.1"
 description = "A python implementation of GNU readline."
@@ -2216,7 +2219,7 @@ build = ["google-cloud-bigquery"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8,<3.11"
-content-hash = "2b22238ffd63243dd16dd1511b7762c1aef2cba7db402524c43a29cd3a3e66b5"
+content-hash = "bcf61c1664cef46849e05ba676c4d1c35789ce4a46052c46ba65dd32b79e9810"
 
 [metadata.files]
 aiohttp = [
@@ -2600,6 +2603,9 @@ filelock = [
 flake8 = [
     {file = "flake8-4.0.1-py2.py3-none-any.whl", hash = "sha256:479b1304f72536a55948cb40a32dce8bb0ffe3501e26eaf292c7e60eb5e0428d"},
     {file = "flake8-4.0.1.tar.gz", hash = "sha256:806e034dda44114815e23c16ef92f95c91e4c71100ff52813adf7132a6ad870d"},
+]
+flake8-pyproject = [
+    {file = "Flake8_pyproject-0.9.0-py3-none-any.whl", hash = "sha256:9974c11c9f39b26e15eb6d79d9ffe840637648f5b6f0f844f0bb70f0b691917a"},
 ]
 flatten-dict = [
     {file = "flatten-dict-0.4.2.tar.gz", hash = "sha256:506a96b6e6f805b81ae46a0f9f31290beb5fa79ded9d80dbe1b7fa236ab43076"},
@@ -3288,10 +3294,6 @@ pyparsing = [
 pypdf2 = [
     {file = "PyPDF2-1.28.4-py3-none-any.whl", hash = "sha256:7d80914ebb4cf93348d270f27a7a5eb741b912be63927da65c4c6b292c2f6b10"},
     {file = "PyPDF2-1.28.4.tar.gz", hash = "sha256:04ce42cd05707881fedbca3164744511805fe8c30618ae4cfb2b940e3368d5ad"},
-]
-pyproject-flake8 = [
-    {file = "pyproject-flake8-0.0.1a4.tar.gz", hash = "sha256:8ed9453f1d984cfe94c998f9840275359e29e7f435b8ddd188ae084e2dc1270c"},
-    {file = "pyproject_flake8-0.0.1a4-py2.py3-none-any.whl", hash = "sha256:1a8f94e18d08677ee780625049d9d00a9ee823661c6606caab8a383351037a75"},
 ]
 pyreadline3 = [
     {file = "pyreadline3-3.4.1-py3-none-any.whl", hash = "sha256:b0efb6516fd4fb07b45949053826a62fa4cb353db5be2bbb4a7aa1fdd1e345fb"},

@@ -37,39 +37,33 @@ flake8 = "^4.0.1"
 mypy = "^0.942"
 jsonschema = "^4.6.0"
 google-cloud-bigquery = {version = "^3.2.0", optional = true}
-pyproject-flake8 = "^0.0.1-alpha.4"
 
 [tool.poetry.dev-dependencies]
 
 [tool.poetry.extras]
 build = ["google-cloud-bigquery"]
 
-[tool.flake8]
-ignore = W605, F403, F405, W503
-max-line-length = 130
-exclude = _script_template_docker.py,./CommonServerPython.py,./demistomock.py
-per-file-ignores = nudge_external_prs.py:E231,E251,E999
-
 [tool.mypy]
-ignore-missing-imports = True
-follow-imports = silent
-show-column-numbers = True
-allow-redefinition = True
-no-site-packages = True
-namespace-packages = True
+ignore-missing-imports = true
+follow-imports = "silent"
+show-column-numbers = true
+allow-redefinition = true
+no-site-packages = true
+namespace-packages = true
+exclude = ["CommonServerPython.py", "demistomock.py", ".venv"]
 
 [tool.pylint]
-disable = [bad-option-value, duplicate-string-formatting-argument
-generated-members = [requests.packages.urllib3, requests.codes.ok]
-extension-pkg-whitelist=ujson
+disable = ["bad-option-value", "duplicate-string-formatting-argument"]
+generated-members = ["requests.packages.urllib3", "requests.codes.ok"]
+extension-pkg-whitelist = "ujson"
 
 
 [tool.vulture]
-exclude = [.venv]
+exclude = [".venv"]
 min-confidence = 100
 
 [tool.bandit]
-exclude = [.venv]
+exclude = [".venv"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
