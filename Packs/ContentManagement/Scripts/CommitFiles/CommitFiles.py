@@ -30,13 +30,15 @@ def get_file_sha(branch_name, content_file):
         return sha
 
     # try to get the file from branch
-    status, list_files_res = execute_command('Github-list-files', {'branch': branch_name, 'path': content_file.path_to_file}, fail_on_error=False)
+    status, list_files_res = execute_command('Github-list-files', {'branch': branch_name,
+                                                                   'path': content_file.path_to_file},
+                                             fail_on_error=False)
 
     if status:
         for file in list_files_res:
             file_path_to_sha[file['path']] = file['sha']
 
-    return file_path_to_sha[full_path]
+    return file_path_to_sha.get(full_path)
 
 
 def commit_content_item(branch_name, content_file):
@@ -81,12 +83,9 @@ def split_yml_file(content_file):
     yml_splitter = YmlSplitter(content_file.file_name, base_name=base_name, output=base_name, file_type=content_file.content_type,
                                no_pipenv=True, no_basic_fmt=True, no_logging=True, no_readme=True)
 
-
     script_type = yml_splitter.yml_data.get('type')
     if not script_type:
-        script_type = yml_splitter.yml_data.get('script',{}).get('type')
-
-
+        script_type = yml_splitter.yml_data.get('script', {}).get('type')
 
     if script_type == 'python':
         script_extention = 'py'
@@ -102,7 +101,6 @@ def split_yml_file(content_file):
     yml_file_path = f'{base_name}/{base_name}.yml'
     script_file_path = f'{base_name}/{base_name}.{script_extention}'
     path_to_file = os.path.join(content_file.path_to_file, base_name)
-
 
     # read the py and yml files content
     with open(yml_file_path, 'r') as f:
