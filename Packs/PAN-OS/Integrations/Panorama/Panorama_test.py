@@ -987,17 +987,20 @@ class MockedResponse:
 class TestPanoramaCommitCommand:
 
     COMMIT_POLLING_ARGS = {
-                    'device-group': 'some_device', 'admin_name': 'some_admin_name', 'description': 'a simple commit',
-                    'polling': 'true'
-                }
+        'device-group': 'some_device',
+        'admin_name': 'some_admin_name',
+        'description': 'a simple commit',
+        'polling': 'true'
+    }
+
     EXPECTED_COMMIT_REQUEST_URL_PARAMS = {
-                    'action': 'partial',
-                    'cmd': '<commit><device-group><entry ' 
-                           'name="some_device"/></device-group><partial><admin>' 
-                           '<member>some_admin_name</member></admin></partial></commit>',
-                    'key': 'APIKEY',
-                    'type': 'commit'
-                }
+        'action': 'partial',
+        'cmd': '<commit><device-group><entry ' 
+               'name="some_device"/></device-group><partial><admin>' 
+               '<member>some_admin_name</member></admin></partial></commit>',
+        'key': 'APIKEY',
+        'type': 'commit'
+    }
 
     @staticmethod
     def create_mock_responses(job_commit_status_count):

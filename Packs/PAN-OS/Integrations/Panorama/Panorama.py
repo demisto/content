@@ -700,14 +700,14 @@ def panorama_commit_command(args: dict):
                 'Status': 'Pending'
             }
             continue_to_poll = argToBoolean(args.get('polling', 'false'))
-            commit_output = CommandResults(
+            commit_output = CommandResults(  # type: ignore[assignment]
                 outputs_prefix='Panorama.Commit',
                 outputs_key_field='JobID',
                 outputs=context_output,
                 readable_output=tableToMarkdown('Commit Status:', context_output, removeNull=True)
             )
         else:  # nothing to commit in pan-os, hence even if polling=true, no reason to poll anymore.
-            commit_output = result.get('response', {}).get('msg') or 'There are no changes to commit.'
+            commit_output = result.get('response', {}).get('msg') or 'There are no changes to commit.'  # type: ignore[assignment]
             continue_to_poll = False
 
         return PollResult(
