@@ -1,14 +1,14 @@
-This playbook is part of the 'Malware Investigation And Response' pack. For more information, please refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
-This playbook is a sub-playbook for the Cortex XDR malware investigation flow. In this playbook, we are retrieving multiple files from the investigated device (using the Device ID incident Filed), based on their SHA256.
+This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+This playbook is a sub-playbook for the Cortex XDR malware investigation flow. In this playbook, we are retrieving multiple files from the investigated device (using the Device ID incident field), based on their SHA256.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Cortex XDR - Get File Path from alerts by hash
+Cortex XDR - Get File Path from alerts by hash
 
 ### Integrations
-* CortexXDRIR
+CortexXDRIR
 
 ### Scripts
 * UnzipFile
@@ -16,14 +16,14 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Print
 
 ### Commands
-* xdr-file-retrieve
+xdr-file-retrieve
 
 ## Playbook Inputs
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Sha256 | Sha256 for the file to be retrieved. |  | Optional |
+| Sha256 | SHA256 for the file to be retrieved. |  | Optional |
 
 ## Playbook Outputs
 ---
