@@ -1,5 +1,5 @@
 Upload files using polling, the service supports Microsoft Office files, as well as PDF, SWF, archives and executables. Active content will be cleaned from any documents that you upload (Microsoft Office and PDF files only). Query on existing IOCs, file status, analysis, reports. Download files from the database. Supports both appliance and cloud. Supported Threat Emulation versions are any R80x.
-This integration was integrated and tested with version xx of check_point_threat_emulation_(sand_blast)
+This integration was integrated and tested with version v1 of check_point_threat_emulation_(sand_blast)
 
 ## Configure Check Point Threat Emulation (SandBlast) on Cortex XSOAR
 
