@@ -1,3 +1,4 @@
+import email.message
 import json
 
 
@@ -27,7 +28,6 @@ pop3_server_conn = None  # type: ignore
 
 TIME_REGEX = re.compile(r'^([\w,\d: ]*) (([+-]{1})(\d{2}):?(\d{2}))?[\s\w\(\)]*$')
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-
 
 def connect_pop3_server():
     global pop3_server_conn
@@ -234,11 +234,16 @@ def parse_mail_parts(parts):
             else:
                 body += text
 
-        else:
+        if is_attachment:
+            payload = part._payload
+            if isinstance(payload, list):
+                # indicating that the attachment is eml file.
+                message_object = payload[0]
+                payload = message_object.as_string()
             attachments.append({
                 'ID': headers.get('x-attachment-id', 'None'),
                 'Name': get_attachment_name(headers),
-                'Data': part._payload
+                'Data': payload
             })
 
     return body, html, attachments
@@ -275,7 +280,9 @@ def mail_to_incident(msg):
 
     file_names = []
     for attachment in parsed_msg.get('Attachments', []):
-        file_data = base64.urlsafe_b64decode(attachment['Data'].encode('ascii'))
+        file_data = attachment['Data']
+        if not attachment.get('Name', '').endswith('.eml'):
+            file_data = base64.urlsafe_b64decode(file_data.encode('ascii'))
 
         # save the attachment
         file_result = fileResult(attachment['Name'], file_data)
@@ -366,5 +373,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins" or True:
+if __name__ == "__builtin__" or __name__ == "builtins":
     main()
