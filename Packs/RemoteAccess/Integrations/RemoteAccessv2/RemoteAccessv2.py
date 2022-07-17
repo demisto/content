@@ -331,7 +331,6 @@ def main() -> None:
     except Exception as e:
         if clients:
             close_clients(clients)
-        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
 
 
