@@ -1,15 +1,15 @@
 id: CheckPointSandBlast
 name: CheckPointSandBlast
 version: -1
-fromversion: 4.5.0
+fromversion: 6.2.0
 starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: '0'
+    taskid: '40bcd34d-9cf4-4fd1-8e5b-7f667e3937bc'
     type: start
     task:
-      id: '0'
+      id: '40bcd34d-9cf4-4fd1-8e5b-7f667e3937bc'
       version: -1
       name: ''
       iscommand: false
@@ -25,10 +25,10 @@ tasks:
     ignoreworker: false
   '1':
     id: 1
-    taskid: '1'
+    taskid: '4f182d61-0dbb-481e-87bb-d2bfacbe2909'
     type: regular
     task:
-      id: '1'
+      id: '4f182d61-0dbb-481e-87bb-d2bfacbe2909'
       version: -1
       name: DeleteContext
       description: ''
@@ -50,10 +50,10 @@ tasks:
     skipunavailable: false
   '2':
     id: 2
-    taskid: '2'
+    taskid: '49fdf1b9-b1fb-4090-bce4-928219f02b96'
     type: regular
     task:
-      id: '2'
+      id: '49fdf1b9-b1fb-4090-bce4-928219f02b96'
       version: -1
       name: sandblast-query
       description: ''
@@ -73,10 +73,10 @@ tasks:
     skipunavailable: false
   '3':
     id: '3'
-    taskid: '3'
+    taskid: 'fc228390-ebaa-4b52-afbd-b1811e75334a'
     type: condition
     task:
-      id: '3'
+      id: 'fc228390-ebaa-4b52-afbd-b1811e75334a'
       version: -1
       name: Verify Outputs
       type: condition
@@ -297,10 +297,10 @@ tasks:
     skipunavailable: false
   '4':
     id: 4
-    taskid: '4'
+    taskid: 'cc8811c4-ff4f-49a4-ab00-405abaf54f99'
     type: regular
     task:
-      id: '4'
+      id: 'cc8811c4-ff4f-49a4-ab00-405abaf54f99'
       version: -1
       name: sandblast-upload
       description: ''
@@ -320,10 +320,10 @@ tasks:
     skipunavailable: false
   '5':
     id: '5'
-    taskid: '5'
+    taskid: 'd1fc477f-60e1-4c2b-af08-64853c73735b'
     type: condition
     task:
-      id: '5'
+      id: 'd1fc477f-60e1-4c2b-af08-64853c73735b'
       version: -1
       name: Verify Outputs
       type: condition
@@ -544,10 +544,10 @@ tasks:
     skipunavailable: false
   '6':
     id: 6
-    taskid: '6'
+    taskid: 'd9de3a34-d0e7-4010-871a-2d5c36f0dca2'
     type: regular
     task:
-      id: '6'
+      id: 'd9de3a34-d0e7-4010-871a-2d5c36f0dca2'
       version: -1
       name: sandblast-download
       description: ''
@@ -567,10 +567,10 @@ tasks:
     skipunavailable: false
   '7':
     id: '7'
-    taskid: '7'
+    taskid: 'a909cb7b-d0b7-42a9-bf64-d40b81fd3793'
     type: condition
     task:
-      id: '7'
+      id: 'a909cb7b-d0b7-42a9-bf64-d40b81fd3793'
       version: -1
       name: Verify Outputs
       type: condition
@@ -641,10 +641,10 @@ tasks:
     skipunavailable: false
   '8':
     id: 8
-    taskid: '8'
+    taskid: 'c623bbce-6f8d-469c-a5a4-e0384d4eedb6'
     type: regular
     task:
-      id: '8'
+      id: 'c623bbce-6f8d-469c-a5a4-e0384d4eedb6'
       version: -1
       name: sandblast-quota
       description: ''
@@ -664,10 +664,10 @@ tasks:
     skipunavailable: false
   '9':
     id: '9'
-    taskid: '9'
+    taskid: 'c3495201-153e-4546-bab1-ffd508e2f373'
     type: condition
     task:
-      id: '9'
+      id: 'c3495201-153e-4546-bab1-ffd508e2f373'
       version: -1
       name: Verify Outputs
       type: condition
@@ -778,10 +778,10 @@ tasks:
     skipunavailable: false
   '10':
     id: '10'
-    taskid: '10'
+    taskid: 'ffc8838c-815f-41b4-859a-b6738739cf8c'
     type: title
     task:
-      id: '10'
+      id: 'ffc8838c-815f-41b4-859a-b6738739cf8c'
       version: -1
       name: Test Done
       type: title
@@ -797,3 +797,4 @@ tasks:
 view: '{"linkLabelsPosition":{},"paper":{"dimensions":{"height":200,"width":380,"x":50,"y":50}}}'
 inputs: []
 outputs: []
+description: Check Point SandBlast playbook

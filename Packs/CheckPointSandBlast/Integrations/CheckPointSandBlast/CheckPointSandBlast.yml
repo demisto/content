@@ -1,6 +1,6 @@
 category: Forensics & Malware Analysis
 commonfields:
-  id: check_point_threat_emulation_(sand_blast)
+  id: CheckPointSandBlast
   version: -1
 configuration:
 - display: Server URL
@@ -23,7 +23,7 @@ configuration:
   type: 8
 description: Upload files using polling, the service supports Microsoft Office files, as well as PDF, SWF, archives and executables. Active content will be cleaned from any documents that you upload (Microsoft Office and PDF files only). Query on existing IOCs, file status, analysis, reports. Download files from the database. Supports both appliance and cloud. Supported Threat Emulation versions are any R80x.
 display: Check Point Threat Emulation (SandBlast)
-name: check_point_threat_emulation_(sand_blast)
+name: CheckPointSandBlast
 script:
   commands:
   - arguments:
@@ -529,7 +529,7 @@ script:
     - contextPath: SandBlast.Quota.Action
       description: Quota action.
       type: String
-  dockerimage: demisto/python3:3.10.4.31492
+  dockerimage: demisto/python3:3.10.5.31928
   feed: false
   isfetch: false
   longRunning: false
