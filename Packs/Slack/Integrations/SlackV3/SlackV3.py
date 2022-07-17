@@ -2213,22 +2213,21 @@ def close_channel():
     channel = demisto.args().get('channel')
     channel_id = demisto.args().get('channel_id', '')
 
-    if not channel:
-        mirror = find_mirror_by_investigation()
-        if mirror:
-            channel_id = mirror.get('channel_id', '')
-            # We need to update the topic in the mirror
-            integration_context = get_integration_context(SYNC_CONTEXT)
-            mirrors = json.loads(integration_context['mirrors'])
-            channel_id = mirror['channel_id']
-            # Check for mirrors on the archived channel
-            channel_mirrors = list(filter(lambda m: channel_id == m['channel_id'], mirrors))
-            for mirror in channel_mirrors:
-                mirror['remove'] = True
-                demisto.mirrorInvestigation(mirror['investigation_id'], f'none:{mirror["mirror_direction"]}',
-                                            mirror['auto_close'])
+    mirror = find_mirror_by_investigation()
+    integration_context = get_integration_context(SYNC_CONTEXT)
+    if mirror:
+        channel_id = mirror.get('channel_id', '')
+        # We need to update the topic in the mirror
+        mirrors = json.loads(integration_context['mirrors'])
+        channel_id = mirror['channel_id']
+        # Check for mirrors on the archived channel
+        channel_mirrors = list(filter(lambda m: channel_id == m['channel_id'], mirrors))
+        for mirror in channel_mirrors:
+            mirror['remove'] = True
+            demisto.mirrorInvestigation(mirror['investigation_id'], f'none:{mirror["mirror_direction"]}',
+                                        mirror['auto_close'])
 
-            set_to_integration_context_with_retries({'mirrors': mirrors}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+        set_to_integration_context_with_retries({'mirrors': mirrors}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
     if channel and not channel_id:
         channel = get_conversation_by_name(channel)
         channel_id = channel.get('id') if not channel_id else channel_id
@@ -2239,8 +2238,20 @@ def close_channel():
         'channel': channel_id
     }
     send_slack_request_sync(CLIENT, 'conversations.archive', body=body)
-
+    remove_channel_from_context(channel_id=channel_id, integration_context=integration_context)
     demisto.results('Channel successfully archived.')
+
+
+def remove_channel_from_context(channel_id: str, integration_context: dict):
+    """
+    :param channel_id: The channel_id to remove.
+    :param integration_context: The integration_context object.
+    Removes a channel from the integration context
+    """
+    conversations = json.loads(integration_context['conversations'])
+    updated_conversations = [conversation for conversation in conversations if conversation.get('id') != channel_id]
+    set_to_integration_context_with_retries({'conversations': updated_conversations}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+    demisto.results('Channel successfully removed from context.')
 
 
 def create_channel():
