@@ -4720,16 +4720,20 @@ def test_handle_tags_in_message_sync_url(mocker):
 
 
 def test_remove_channel_from_context(mocker):
+    """
+    Given:
+        An integration context dict containing a known channel ID to remove
+    When:
+        Removing a deleted channel from the context
+    Then:
+        Assert that the channel ID of the channel to remove is no longer found in the context
+    """
     from SlackV3 import remove_channel_from_context
     testing_context = {'conversations': "["
                                         "{\"name\": \"1657185964826\", \"id\": \"C03NF1QTK38\"},"
                                         "{\"name\": \"1657186151481\", \"id\": \"C03NF23NFRU\"},"
                                         "{\"name\": \"1657186333246\", \"id\": \"C03NMJJTJ75\"}"
                                         "]"}
-    expected_context = {
-        'bot_user_id': '"B029G5TD1CH"',
-        'conversations': '[{"name": "1657186151481", "id": "C03NF23NFRU"}, '
-                         '{"name": "1657186333246", "id": "C03NMJJTJ75"}]'}
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     remove_channel_from_context(channel_id="C03NF1QTK38", integration_context=testing_context)
 
@@ -4737,5 +4741,3 @@ def test_remove_channel_from_context(mocker):
     new_conversations = json.loads(updated_context.get('conversations', {}))
     for new_conversation in new_conversations:
         assert new_conversation.get('id') != 'C03NF1QTK38'
-
-
