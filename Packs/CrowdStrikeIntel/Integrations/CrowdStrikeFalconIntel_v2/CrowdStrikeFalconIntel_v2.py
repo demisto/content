@@ -29,8 +29,9 @@ class Client:
     The integration's client
     """
 
-    def __init__(self, params: Dict[str, str]):
+    def __init__(self, params: Dict[str, str], reliability: DBotScoreReliability):
         self.cs_client: CrowdStrikeClient = CrowdStrikeClient(params=params)
+        self.reliability = reliability
         self.query_params: Dict[str, str] = {'offset': 'offset', 'limit': 'limit', 'sort': 'sort', 'free_search': 'q'}
         self.date_params: Dict[str, Dict[str, str]] = {
             'created_date': {'operator': '', 'api_key': 'created_date'},
@@ -247,7 +248,8 @@ def build_indicator(indicator_value: str, indicator_type: str, title: str, clien
                 indicator_type=get_dbot_score_type(indicator_type),
                 integration_name='CrowdStrike Falcon Intel v2',
                 malicious_description='High confidence',
-                score=score
+                score=score,
+                reliability=client.reliability
             )
             indicator = get_indicator_object(indicator_value, indicator_type, dbot_score)
             results.append(CommandResults(
@@ -474,7 +476,8 @@ def cs_indicators_command(client: Client, args: Dict[str, str]) -> List[CommandR
                     indicator_type=get_dbot_score_type(indicator_type),
                     integration_name='CrowdStrike Falcon Intel v2',
                     malicious_description='High confidence',
-                    score=score
+                    score=score,
+                    reliability=client.reliability
                 )
                 indicator = get_indicator_object(indicator_value, indicator_type, dbot_score)
             results.append(CommandResults(
@@ -561,12 +564,15 @@ def cs_reports_command(client: Client, args: Dict[str, str]) -> CommandResults:
 
 def main():
     params: Dict[str, str] = demisto.params()
+    reliability = params.get('integrationReliability', 'C - Fairly reliable')
+    if DBotScoreReliability.is_valid_type(reliability):
+        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
     args: Dict[str, str] = demisto.args()
     results: Union[CommandResults, List[CommandResults]]
     try:
         command: str = demisto.command()
         LOG(f'Command being called in CrowdStrike Falcon Intel v2 is: {command}')
-        client: Client = Client(params=params)
+        client: Client = Client(params=params, reliability=reliability)
         if command == 'test-module':
             result: Union[str, Exception] = run_test_module(client)
             return_results(result)
