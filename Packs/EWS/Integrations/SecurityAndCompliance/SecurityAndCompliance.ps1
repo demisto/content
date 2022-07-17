@@ -101,6 +101,10 @@ function CreateNewSession {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPlainTextForPassword', '', Scope='Function')]
     param([string]$url, [string]$upn, [string]$password, [string]$bearer_token, [bool]$insecure, [bool]$proxy)
 
+    $endpoint = $url.split('.')[-1]
+    if ($endpoint.length > 3) {
+        $endpoint = $endpoint.split('/')[0]
+    }
     $url = GetRedirectUri -url $url -upn $upn -password $password -bearer_token $bearer_token -insecure $insecure -proxy $proxy
 
     if ($password){
@@ -114,15 +118,12 @@ function CreateNewSession {
         "SkipCNCheck" = $insecure
     }
     $session_options =  New-PSSessionOption @session_option_params
-    $sessions_params = @{
-        "ConfigurationName" = "Microsoft.Exchange"
-        "ConnectionUri" = $url
-        "Credential" = $credential
-        "Authentication" = "Basic"
-        "AllowRedirection" = $true
-        "SessionOption" = $session_options
+
+    if ($endpoint -eq "us") {
+        $session = ConnectIPPSSession -url $url -upn $upn -credential $credential -session_options $session_options
+    } else {
+        $session = NewPSSession -url $url -credential $credential -session_options $session_options
     }
-    $session = New-PSSession @sessions_params -WarningAction:SilentlyContinue
 
     if (!$session) {
         throw "Fail - establishing session to $url"
@@ -160,6 +161,74 @@ function CreateNewSession {
 
         .LINK
         https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/new-pssession?view=powershell-7
+    #>
+}
+
+function NewPSSession([string]$url, [PSCredential]$credential, $session_options) {
+    $sessions_params = @{
+        "ConfigurationName" = "Microsoft.Exchange"
+        "ConnectionUri" = $url
+        "Credential" = $credential
+        "Authentication" = "Basic"
+        "AllowRedirection" = $true
+        "SessionOption" = $session_options
+    }
+    $session = New-PSSession @sessions_params -WarningAction:SilentlyContinue
+
+    return $session
+    <#
+        .DESCRIPTION
+        Creates new pssession using Oauth2.0 method.
+
+        .PARAMETER uri
+        Security & Compliance Center uri.
+
+        .PARAMETER credential
+        The user credential.
+
+        .PARAMETER session_options
+        Advance PSSession options.
+
+        .OUTPUTS
+        PSSession - PSSession object.
+
+        .LINK
+        https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.core/new-pssession?view=powershell-7.2
+    #>
+}
+
+function ConnectIPPSSession([string]$url, [string]$upn, [PSCredential]$credential, $session_options) {
+    $sessions_params = @{
+        "ConnectionUri" = $url
+        "Credential" = $credential
+        "UserPrincipalName" = $upn
+        "AzureADAuthorizationEndpointUri" = "https://login.microsoftonline.us/common"
+        "PSSessionOption" = $session_options
+    }
+    $session = Connect-IPPSSession @sessions_params -WarningAction:SilentlyContinue
+
+    return $session
+    <#
+        .DESCRIPTION
+        Creates new ip pssession. This is for supporting gcc-high endpoint.
+
+        .PARAMETER uri
+        Security & Compliance Center uri.
+
+        .PARAMETER upn
+        User Principal Name (UPN) is the name of a system user in an email address format.
+
+        .PARAMETER credential
+        The user credential.
+
+        .PARAMETER session_options
+        Advance IPPSSession options.
+
+        .OUTPUTS
+        IPPSSession - IPPSSession object.
+
+        .LINK
+        https://docs.microsoft.com/en-us/powershell/module/exchange/connect-ippssession?view=exchange-ps
     #>
 }
 
