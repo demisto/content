@@ -2,7 +2,7 @@ id: Cortex XDR - Get File Path from alerts by hash
 version: -1
 name: Cortex XDR - Get File Path from alerts by hash
 description: |-
-  This playbook is part of the 'Malware Investigation And Response' pack. For more information, please refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+  This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
   This playbook assists in retrieving file paths from the Cortex XDR incident by hash.
 starttaskid: '0'
 tasks:
@@ -47,7 +47,7 @@ tasks:
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
+        For more information, see the permissions section here:
         https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
@@ -111,7 +111,7 @@ tasks:
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
+        For more information, see the permissions section here:
         https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
@@ -175,7 +175,7 @@ tasks:
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
+        For more information, see the  permissions section here:
         https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
       scriptName: SetAndHandleEmpty
       type: regular
@@ -270,11 +270,11 @@ inputs:
 - key: NonFoundHashes
   value: {}
   required: false
-  description: List of hashes that you would like to run against.
+  description: List of hashes to run against.
   playbookInputQuery:
 outputs:
 - contextPath: fileRetrieval
-  description: The path for the requested file
+  description: The path for the requested file.
   type: unknown
 tests:
 - No tests (auto formatted)
