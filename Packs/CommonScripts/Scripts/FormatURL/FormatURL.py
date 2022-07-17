@@ -104,7 +104,7 @@ def replace_protocol(url_: str) -> str:
     return url_
 
 
-def remove_brackets_from_end_of_url(url_: str) -> str:
+def remove_brackets_from_start_and_end_of_url(url_: str) -> str:
     """
     Removes square brackets from the end of URL if there are any.
     Args:
@@ -113,7 +113,12 @@ def remove_brackets_from_end_of_url(url_: str) -> str:
     Returns:
         (str): URL with removed brackets, if needed to remove, else the URL itself.
     """
-    return url_[:-1] if url_[-1] in ['[', ']'] else url_
+    brackets = {
+        '[': ']',
+        '(': ')',
+        '{': '}'
+    }
+    return url_[1:-1] if url_[0] in brackets and url_[-1] == brackets[url_[0]] else url_
 
 
 def search_for_redirect_url_in_first_query_parameter(parse_results: ParseResult) -> Optional[str]:
@@ -196,6 +201,10 @@ def format_single_url(non_formatted_url: str) -> List[str]:
     formatted_url = remove_brackets_from_end_of_url(formatted_url)
     if remove_single_letter_tld_url(formatted_url):
         return []
+    formatted_url
+    if len(non_formatted_url) >= 2 and non_formatted_url[0] in ['[', '(', '{']:
+        if non_formatted_url[-1] == non_formatted_url[0]:  # for example [https://someURL]
+            non_formatted_url.strip(non_formatted_url[0][-1])
 
     return [formatted_url, additional_redirect_url] if additional_redirect_url else [formatted_url]
 
