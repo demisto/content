@@ -43,8 +43,8 @@ class Client(BaseClient):
             }
             add_sensitive_log_strs(self._token)
         except DemistoException as e:
-            demisto.log(str(e))
-            demisto.log("Couldn't create token will proceed using basic auth")
+            demisto.error(str(e))
+            demisto.error("Couldn't create token will proceed using basic auth")
 
     def _get_token(self) -> str:
         """
