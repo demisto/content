@@ -119,7 +119,7 @@ script:
   - arguments:
     - default: false
       description: User ID from which to pull mails (can be principal ID (email address)).
-      isArray: true
+      isArray: false
       name: user_id
       required: true
       secret: false
