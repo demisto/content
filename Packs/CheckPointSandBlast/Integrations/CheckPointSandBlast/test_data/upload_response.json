@@ -1,0 +1,62 @@
+{
+  "response": {
+      "status": {
+          "code": 1002,
+          "label": "UPLOAD_SUCCESS",
+          "message": "The file was uploaded successfully."
+      },
+      "sha1": "a4436b403327a736f4fa8415ebe0f0f276d7bcc1",
+      "md5": "dd16b4a9a76e8cd640777c08fbfdf582",
+      "sha256": "2ae67c5fb0eefe07e5f2b867373a630614cc8fe423b309bd2134664adbfe7960",
+      "file_type": "pdf",
+      "file_name": "upload_file.pdf",
+      "features": [
+          "te",
+          "av",
+          "extraction"
+      ],
+      "te": {
+          "trust": 0,
+          "images": [
+              {
+                  "report": {
+                      "verdict": "unknown"
+                  },
+                  "status": "not_found",
+                  "id": "3ff3ddae-e7fd-4969-818c-d5f1a2be336d",
+                  "revision": 1
+              },
+              {
+                  "report": {
+                      "verdict": "unknown"
+                  },
+                  "status": "not_found",
+                  "id": "e50e99f3-5963-4573-af9e-e3f4750b55e2",
+                  "revision": 1
+              }
+          ],
+          "score": -2147483648,
+          "status": {
+              "code": 1002,
+              "label": "UPLOAD_SUCCESS",
+              "message": "The file was uploaded successfully."
+          }
+      },
+      "extraction": {
+          "method": "pdf",
+          "tex_product": false,
+          "status": {
+              "code": 1002,
+              "label": "UPLOAD_SUCCESS",
+              "message": "The file was uploaded successfully."
+          }
+      },
+      "av": {
+          "status": {
+              "code": 1002,
+              "label": "UPLOAD_SUCCESS",
+              "message": "The file was uploaded successfully."
+          }
+      }
+  }
+}

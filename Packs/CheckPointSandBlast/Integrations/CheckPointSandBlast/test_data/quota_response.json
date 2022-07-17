@@ -1,0 +1,24 @@
+{
+    "response": [
+        {
+            "remain_quota_hour": 500,
+            "remain_quota_month": 9966,
+            "assigned_quota_hour": 500,
+            "assigned_quota_month": 10000,
+            "hourly_quota_next_reset": "1656403200",
+            "monthly_quota_next_reset": "1656633600",
+            "quota_id": "ID",
+            "cloud_monthly_quota_period_start": "1654041600",
+            "cloud_monthly_quota_usage_for_this_gw": 34,
+            "cloud_hourly_quota_usage_for_this_gw": 0,
+            "cloud_monthly_quota_usage_for_quota_id": 34,
+            "cloud_hourly_quota_usage_for_quota_id": 0,
+            "monthly_exceeded_quota": 0,
+            "hourly_exceeded_quota": 0,
+            "cloud_quota_max_allow_to_exceed_percentage": 1000,
+            "pod_time_gmt": "1656403028",
+            "quota_expiration": "1657238400",
+            "action": "ALLOW"
+        }
+    ]
+}
