@@ -203,6 +203,39 @@ def v1_get_events_command(client: Client, args: Dict[str, Any]) -> CommandResult
     result = client.v1_get_events_request(timeperiod, limit)
     outputs = result.get('data', [])
 
+    return CommandResults(
+        outputs_prefix='Netskope.Event',
+        outputs_key_field='_id',
+        readable_output=f'Events List: {outputs}',
+        outputs=outputs,
+        raw_response=result
+    )
+
+
+def v2_get_events_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    limit = arg_to_number(args.get('limit', 50))
+    timeperiod = arg_to_seconds_timestamp(args.get('timeperiod', 259200))
+    event_type = args.get('event_type')
+    response = {}
+    if event_type == 'alert':
+        response = client.v2_get_alert_events_request(timeperiod, limit)
+    elif event_type == 'network':
+        response = client.v2_get_network_events_request(timeperiod, limit)
+    elif event_type == 'audit':
+        response = client.v2_get_audit_events_request(timeperiod, limit)
+    elif event_type == 'application':
+        response = client.v2_get_application_events_request(timeperiod, limit)
+
+    result = response.get('result', [])
+
+    return CommandResults(
+        outputs_prefix='Netskope.Event',
+        outputs_key_field='_id',
+        readable_output=f'Events List: {result}',
+        outputs=result,
+        raw_response=response
+    )
+
 
 ''' MAIN FUNCTION '''
 
@@ -231,7 +264,10 @@ def main() -> None:
         elif demisto.command() == 'netskope-get-alerts':
             return_results(v1_get_alerts_command(client, demisto.args()))
         elif demisto.command() == 'netskope-get-events':
-            return_results(v1_get_events_command(client, demisto.args()))
+            if api_version == 'v1':
+                return_results(v1_get_events_command(client, demisto.args()))
+            else:
+                return_results(v2_get_events_command(client, demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:

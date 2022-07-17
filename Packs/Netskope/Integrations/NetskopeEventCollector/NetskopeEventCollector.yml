@@ -67,6 +67,23 @@ script:
     - contextPath: BaseIntegration.Output
       description: '[Enter a description of the data returned in this output.]'
       type: String
+  - arguments:
+    - default: false
+      description: Get alerts for certain time period.
+      isArray: false
+      name: timeperiod
+      required: false
+      secret: false
+    - default: false
+      description: The maxismun number of alerts to return (maximum value - 10000).
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Returns events extracted from SaaS traffic and or logs.
+    execution: false
+    name: netskope-get-events
   dockerimage: demisto/python3:3.9.8.24399
   feed: false
   isfetch: false
