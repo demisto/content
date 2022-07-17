@@ -38,6 +38,8 @@ def connect_pop3_server():
         else:
             pop3_server_conn = poplib.POP3(SERVER, PORT)  # type: ignore
 
+        pop3_server_conn.stls()
+
         pop3_server_conn.getwelcome()  # type: ignore
         pop3_server_conn.user(EMAIL)  # type: ignore
         pop3_server_conn.pass_(PASSWORD)  # type: ignore
@@ -188,7 +190,7 @@ def get_email_context(email_data):
 
     raw = dict(email_data)
     raw['Body'] = context['Body']
-    context['RawData'] = json.dumps(raw)
+    context['RawData'] = raw
     return context, headers
 
 
@@ -297,13 +299,16 @@ def mail_to_incident(msg):
             'name': attachment['Name'],
         })
 
+    raw_data = parsed_msg['RawData']
+    raw_data.update({'attachments': file_names})
+
     return {
         'name': parsed_msg['Subject'],
         'details': parsed_msg['Body'],
         'labels': create_incident_labels(parsed_msg, headers),
         'occurred': parse_time(parsed_msg['Date']),
         'attachment': file_names,
-        'rawJSON': parsed_msg['RawData']
+        'rawJSON': json.dumps(raw_data)
     }
 
 
