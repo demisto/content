@@ -30,7 +30,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Skyhigh CASB is a cloud-based, multi-tenant service that enables Cloud Discovery and Risk Monitoring, Cloud Usage Analytics, Cloud Access and Control.
+description: MVision CASB is a cloud-based, multi-tenant service that enables Cloud Discovery and Risk Monitoring, Cloud Usage Analytics, Cloud Access and Control.
 display: McAfee MVision CASB
 name: McAfee MVision CASB
 script:
