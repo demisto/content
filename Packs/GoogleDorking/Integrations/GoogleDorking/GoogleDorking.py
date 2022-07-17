@@ -71,7 +71,7 @@ class Client(BaseClient):
     def keywords(self, value):
         self._keywords = value
 
-    def search(self, q, start=0, num=10) -> Union[dict, list]:
+    def search(self, q, start=0, num=10) -> dict:
         params = assign_params(
             cx=self._cx,
             key=self._api_key,
@@ -102,7 +102,7 @@ def calculate_pages(max_results: int) -> int:
     return max_pages
 
 
-def calculate_page_size(current_page: int, max_results: int) -> Union[int, str]:
+def calculate_page_size(current_page: int, max_results: int) -> int:
     results_so_far = current_page * MAX_RESULTS_PER_PAGE
     if (results_diff := max_results - results_so_far) < MAX_RESULTS_PER_PAGE:
         return results_diff
@@ -184,7 +184,7 @@ def google_search_command(
         file_types: str = None,
         keywords: str = None,
         urls: str = None,
-) -> list:
+) -> Union[list, str]:
     if after:
         client.after = after
     if file_types:
@@ -203,6 +203,9 @@ def fetch_incidents(client: Client, last_run: Optional[dict]) -> list:
         if (now - dateparser.parse(last_run_date)).days > 0:
             client.after = last_run_date
     incidents = get_search_results(client, item_to_incident)
+    if not isinstance(incidents, list):
+        demisto.debug(f'Skipping incident creation. Received: {incidents}, expected list.')
+        incidents = []
 
     demisto.setLastRun({
         LAST_RUN_TIME_KEY: (now - timedelta(days=1)).strftime(GOOGLE_TIME_FORMAT)

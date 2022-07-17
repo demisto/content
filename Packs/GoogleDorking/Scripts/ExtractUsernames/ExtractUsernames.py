@@ -6,7 +6,7 @@ import re
 ''' STANDALONE FUNCTION '''
 
 
-def extract_users_from_file(entry_id: str, pattern: str) -> list:
+def extract_users_from_file(entry_id: str, pattern: Optional[str]) -> list:
     users = []
     res = demisto.getFilePath(entry_id)
     if not res:
@@ -24,7 +24,7 @@ def extract_users_from_file(entry_id: str, pattern: str) -> list:
     return users
 
 
-def extract_users_from_text(text: str, pattern: str) -> list:
+def extract_users_from_text(text: str, pattern: Optional[str]) -> list:
     users = []
     regex = re.compile(pattern) if pattern else None
     for line in text.split('\n'):
