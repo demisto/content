@@ -1121,7 +1121,7 @@ class TestPanoramaCommitCommand:
 
         Panorama.API_KEY = 'thisisabogusAPIKEY!'
         request_mock = mocker.patch.object(requests, 'request', return_value=request_result)
-        command_result = panorama_commit_command('', args)
+        command_result = panorama_commit_command(args)
 
         called_request_params = request_mock.call_args.kwargs['data']  # The body part of the request
         assert called_request_params == expected_request_params  # check that the URL is sent as expected.
