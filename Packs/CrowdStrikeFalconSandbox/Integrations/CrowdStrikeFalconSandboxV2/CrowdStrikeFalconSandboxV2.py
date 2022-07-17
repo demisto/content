@@ -494,7 +494,7 @@ def main() -> None:
         elif demisto_command in ['cs-falcon-sandbox-get-screenshots', 'crowdstrike-get-screenshots']:
             command_func = crowdstrike_get_screenshots_command
         elif demisto_command in ['cs-falcon-sandbox-result', 'crowdstrike-result']:
-            crowdstrike_result_command(args, client)
+            return_results(crowdstrike_result_command(args, client))
             return
         elif demisto_command in ['cs-falcon-sandbox-analysis-overview']:
             command_func = crowdstrike_analysis_overview_command
