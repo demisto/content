@@ -50,6 +50,8 @@ run-validations:
 
 # runs in gitlab for the on-push flow, on every new commit pushed to the branch.
 validate-content-conf:
+  tags:
+    - gke
   stage: unittests-and-validations
   needs: []
   extends:

@@ -563,13 +563,13 @@ def get_issue_fields(issue_creating=False, mirroring=False, **issue_args):
     issue = {}  # type: dict
     if 'issue_json' in issue_args:
         try:
-            issue = json.loads(issue_args['issue_json'])
+            issue = json.loads(issue_args['issue_json'], strict=False)
         except TypeError as te:
             demisto.debug(str(te))
             return_error("issueJson must be in a valid json format")
     elif 'issueJson' in issue_args:
         try:
-            issue = json.loads(issue_args['issueJson'])
+            issue = json.loads(issue_args['issueJson'], strict=False)
         except TypeError as te:
             demisto.debug(str(te))
             return_error("issueJson must be in a valid json format")
@@ -728,29 +728,31 @@ def create_issue_command():
 
 
 def edit_issue_command(issue_id, mirroring=False, headers=None, status=None, transition=None, **kwargs):
-    url = f'rest/api/latest/issue/{issue_id}/'
     issue = get_issue_fields(mirroring=mirroring, **kwargs)
-    jira_req('PUT', url, json.dumps(issue))
     if status and transition:
         return_error("Please provide only status or transition, but not both.")
     elif status:
-        edit_status(issue_id, status)
+        edit_status(issue_id, status, issue)
     elif transition:
-        edit_transition(issue_id, transition)
-
+        edit_transition(issue_id, transition, issue)
+    else:
+        url = f'rest/api/latest/issue/{issue_id}/'
+        jira_req('PUT', url, json.dumps(issue))
     return get_issue(issue_id, headers, is_update=True)
 
 
-def edit_status(issue_id, status):
+def edit_status(issue_id, status, issue):
     # check for all authorized transitions available for this user
     # if the requested transition is available, execute it.
+    if not issue:
+        issue = {}
     j_res = list_transitions_data_for_issue(issue_id)
     transitions = [transition.get('name') for transition in j_res.get('transitions')]
     for i, transition in enumerate(transitions):
         if transition.lower() == status.lower():
             url = f'rest/api/latest/issue/{issue_id}/transitions?expand=transitions.fields'
-            json_body = {"transition": {"id": str(j_res.get('transitions')[i].get('id'))}}
-            return jira_req('POST', url, json.dumps(json_body))
+            issue['transition'] = {"id": str(j_res.get('transitions')[i].get('id'))}
+            return jira_req('POST', url, json.dumps(issue))
 
     return_error(f'Status "{status}" not found. \nValid transitions are: {transitions} \n')
 
@@ -765,20 +767,22 @@ def list_transitions_data_for_issue(issue_id):
     return jira_req('GET', url, resp_type='json')
 
 
-def edit_transition(issue_id, transition_name):
+def edit_transition(issue_id, transition_name, issue):
     """
     This function changes a transition for a given issue.
     :param issue_id: The ID of the issue.
     :param transition_name: The name of the new transition.
     :return: None
     """
+    if issue is None:
+        issue = {}
     j_res = list_transitions_data_for_issue(issue_id)
     transitions_data = j_res.get('transitions')
     for transition in transitions_data:
         if transition.get('name') == transition_name:
             url = f'rest/api/latest/issue/{issue_id}/transitions?expand=transitions.fields'
-            json_body = {"transition": {"id": transition.get("id")}}
-            return jira_req('POST', url, json.dumps(json_body))
+            issue['transition'] = {"id": transition.get("id")}
+            return jira_req('POST', url, json.dumps(issue))
 
     return_error(f'Transitions "{transition_name}" not found. \nValid transitions are: {transitions_data} \n')
 
@@ -905,7 +909,7 @@ def add_link_command(issue_id, title, url, summary=None, global_id=None, relatio
         link['application'] = {}
     if application_type:
         link['application']['type'] = application_type
-    if application_type:
+    if application_name:
         link['application']['name'] = application_name
 
     data = jira_req('POST', req_url, json.dumps(link), resp_type='json')
@@ -1000,7 +1004,7 @@ def fetch_incidents(query, id_offset, should_get_attachments, should_get_comment
         query = f'{query} AND created>=\"{formatted_minute_to_fetch}\"'
     else:
         if id_offset:
-            query = f'{query} AND id >= {id_offset}'
+            query = f'{query} AND id >= {id_offset} ORDER BY id ASC'
         if fetch_by_created:
             query = f'{query} AND created>-1m'
 
