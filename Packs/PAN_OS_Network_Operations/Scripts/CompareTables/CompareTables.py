@@ -32,6 +32,7 @@ class ScriptResult:
 
 
 def compare_two_dicts(left: dict, right: dict):
+    """Compares two dictionaries and returns the differences in values."""
     differences: list[tuple] = []
     for left_k, left_v in left.items():
         right_v = right.get(left_k)
@@ -42,6 +43,7 @@ def compare_two_dicts(left: dict, right: dict):
 
 
 def remove_dict_keys(l: list[dict], ignore_keys: list[str]):
+    """Removes given keys from the dictionaries within the list."""
     if not ignore_keys:
         return l
 
@@ -114,6 +116,7 @@ def main():
     return_results(command_result)
 
     return command_result
+
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
