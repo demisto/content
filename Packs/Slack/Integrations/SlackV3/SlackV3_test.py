@@ -3216,6 +3216,7 @@ def test_close_channel_with_name(mocker):
     mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
     mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
     mocker.patch.object(SlackV3, 'get_conversation_by_name', return_value={'id': 'C012AB3CD'})
+    mocker.patch.object(SlackV3, 'find_mirror_by_investigation', return_value={})
     mocker.patch.object(slack_sdk.WebClient, 'api_call')
     mocker.patch.object(demisto, 'results')
 
@@ -4733,7 +4734,8 @@ def test_remove_channel_from_context(mocker):
     remove_channel_from_context(channel_id="C03NF1QTK38", integration_context=testing_context)
 
     updated_context = demisto.setIntegrationContext.call_args[0][0]
-
-    assert updated_context == expected_context
+    new_conversations = json.loads(updated_context.get('conversations', {}))
+    for new_conversation in new_conversations:
+        assert new_conversation.get('id') != 'C03NF1QTK38'
 
 
