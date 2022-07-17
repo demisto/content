@@ -1194,14 +1194,13 @@ class TestPanoramaCommitCommand:
         assert called_request_params == expected_commit_request_url_params  # check that the URL is sent as expected.
         assert command_result.readable_output == f'Waiting for commit "{description}" with job ID 123 to finish...'
 
-        command_result = panorama_commit_command(
-            '', args={'commit_job_id': '123', 'description': description, 'polling': 'true'}
-        )
+        polling_args = {
+            'commit_job_id': '123', 'description': description, 'hide_polling_output': True, 'polling': True
+        }
+
+        command_result = panorama_commit_command('', args=polling_args)
         while command_result.scheduled_command:  # if scheduled_command is set, it means that command should still poll
-            assert f'Waiting for commit "{description}" with job ID 123 to finish...'
-            command_result = panorama_commit_command(
-                '', args={'commit_job_id': '123', 'description': description, 'polling': 'true'}
-            )
+            command_result = panorama_commit_command('', args=polling_args)
 
         # last response of the command should be job status and the commit description
         assert command_result.outputs == {'JobID': '123', 'Description': description, 'Status': 'Success'}

@@ -385,8 +385,7 @@ Commits a configuration to the Palo Alto firewall or Panorama, validates if a co
 | force_commit | Forces a commit. Possible values are: true, false. | Optional | 
 | exclude_device_network_configuration | Performs a partial commit while excluding device and network configuration. Possible values are: true, false. | Optional | 
 | exclude_shared_objects | Performs a partial commit while excluding shared objects. Possible values are: true, false. | Optional | 
-| polling | Whether to use polling. Possible values are: true, false. Default is false. | Optional | 
-| commit_job_id | commit job ID to use in polling commands. (automatically filled by polling). | Optional | 
+| polling | Whether to use polling. Possible values are: true, false. Default is false. | Optional |
 | timeout | The timeout (in seconds) when polling. Default is 120. | Optional | 
 | interval_in_seconds | The interval (in seconds) when polling. Default is 10. | Optional | 
 
@@ -403,8 +402,6 @@ Commits a configuration to the Palo Alto firewall or Panorama, validates if a co
 ```!pan-os-commit description=test polling=true interval_in_seconds=5 timeout=60```
 #### Human Readable Output
 
->Waiting for commit "test" with job ID 12345 to finish...
->
 >Waiting for commit "test" with job ID 12345 to finish...
 >### Commit Status:
 >|JobID|Status| Description
