@@ -140,7 +140,6 @@ PAN_DB_URL_FILTERING_CATEGORIES = {
     'music',
     'newly-registered-domain',
     'news',
-    'not-resolved',
     'nudity',
     'online-storage-and-backup',
     'parked',
