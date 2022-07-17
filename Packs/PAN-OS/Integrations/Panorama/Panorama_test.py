@@ -1187,7 +1187,7 @@ class TestPanoramaCommitCommand:
         request_mock = mocker.patch.object(requests, 'request', side_effect=api_response_queue)
         mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
 
-        command_result = panorama_commit_command('', args)
+        command_result = panorama_commit_command(args)
         description = args.get('description')
 
         called_request_params = request_mock.call_args.kwargs['data']  # The body part of the request
@@ -1198,9 +1198,9 @@ class TestPanoramaCommitCommand:
             'commit_job_id': '123', 'description': description, 'hide_polling_output': True, 'polling': True
         }
 
-        command_result = panorama_commit_command('', args=polling_args)
+        command_result = panorama_commit_command(polling_args)
         while command_result.scheduled_command:  # if scheduled_command is set, it means that command should still poll
-            command_result = panorama_commit_command('', args=polling_args)
+            command_result = panorama_commit_command(polling_args)
 
         # last response of the command should be job status and the commit description
         assert command_result.outputs == {'JobID': '123', 'Description': description, 'Status': 'Success'}

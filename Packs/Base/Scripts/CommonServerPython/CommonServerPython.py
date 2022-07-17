@@ -9966,10 +9966,16 @@ def polling_function(name, interval=30, timeout=600, poll_message='Fetching Resu
     """
 
     def dec(func):
-        def inner(client, args):
+        def inner(args, *arguments, **kwargs):
+            """
+            Args:
+                args (dict): command arguments.
+                *arguments: additional command arguments.
+                **kwargs: additional keyword arguments.
+            """
             if not requires_polling_arg or args.get(polling_arg_name):
                 ScheduledCommand.raise_error_if_not_supported()
-                poll_result = func(client, args)
+                poll_result = func(args, *arguments, **kwargs)
 
                 should_poll = poll_result.continue_to_poll if isinstance(poll_result.continue_to_poll, bool) \
                     else poll_result.continue_to_poll()
@@ -9985,7 +9991,7 @@ def polling_function(name, interval=30, timeout=600, poll_message='Fetching Resu
                                                                    args=poll_args, timeout_in_seconds=timeout)
                 return poll_response
             else:
-                return func(client, args).response
+                return func(args, *arguments, **kwargs).response
 
         return inner
 

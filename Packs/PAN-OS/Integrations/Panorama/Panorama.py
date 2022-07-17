@@ -661,7 +661,7 @@ def panorama_commit(args):
     interval=arg_to_number(demisto.args().get('interval_in_seconds', 10)),
     timeout=arg_to_number(demisto.args().get('timeout', 120))
 )
-def panorama_commit_command(client, args: dict):
+def panorama_commit_command(args: dict):
     """
     Commit any configuration in PAN-OS. This function implements the 'pan-os-commit' command. Supports polling as well.
     """
@@ -11063,7 +11063,7 @@ def main():
             panorama_command(args)
 
         elif command == 'panorama-commit' or command == 'pan-os-commit':
-            return_results(panorama_commit_command('', args))
+            return_results(panorama_commit_command(args))
 
         elif command == 'panorama-commit-status' or command == 'pan-os-commit-status':
             panorama_commit_status_command(args)
