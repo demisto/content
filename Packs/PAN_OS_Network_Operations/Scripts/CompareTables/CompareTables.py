@@ -1,20 +1,10 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-
 """
-Compares two sets of tabular data to find the differences in keys
+Compares two sets of tabular data to find the differences in keys and values.
 """
 from dataclasses import dataclass
-from typing import List
-
-# -- This is a way to get around trimming commonserverpython on import
-try:
-    demisto.args()
-    pass
-except:
-
-    pass
 
 
 @dataclass
@@ -60,8 +50,8 @@ def remove_dict_keys(l: list[dict], ignore_keys: list[str]):
     return new_list
 
 
-def main(left: list, right: list, index_key: str = "id", ignore_keys: list = None, table_id="compare",
-         **kwargs) -> ScriptResult:
+def compare_tables(left: list, right: list, index_key: str = "id", ignore_keys: list = None, table_id="compare",
+                   **kwargs) -> ScriptResult:
     """
     Given two tables, compare by keys to look for difference and return the result.
     :param left: Left table
@@ -108,8 +98,8 @@ def main(left: list, right: list, index_key: str = "id", ignore_keys: list = Non
     )
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
-    result = main(**demisto.args())
+def main():
+    result = compare_tables(**demisto.args())
     dict_result = [vars(x) for x in result.differences]
     readable_output = tableToMarkdown(result._title, dict_result)
     outputs = {
@@ -122,3 +112,8 @@ if __name__ in ('__main__', '__builtin__', 'builtins'):
         readable_output=readable_output
     )
     return_results(command_result)
+
+    return command_result
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()
