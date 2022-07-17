@@ -370,7 +370,7 @@ Gets the pre-defined threats list from a Firewall or Panorama and stores as a JS
 
 ### pan-os-commit
 ***
-Commits a configuration to Palo Alto Firewall or Panorama, but does not validate if the commit was successful. Committing to Panorama does not push the configuration to the Firewalls. To push the configuration, run the panorama-push-to-device-group command.
+Commits a configuration to the Palo Alto firewall or Panorama, validates if a commit was successful if using polling="true" otherwise does not validate if the commit was successful. Committing to Panorama does not push the configuration to the firewalls. To push the configuration, run the panorama-push-to-device-group command.
 
 
 #### Base Command
@@ -380,41 +380,72 @@ Commits a configuration to Palo Alto Firewall or Panorama, but does not validate
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| description | Commit description. | Optional |
-| admin_name | To commit admin-level changes on a firewall, include the administrator name in the request. | Optional |
-| force_commit | Force Commit. | Optional |
-| exclude_device_network_configuration | Partial commit while excluding device and network configuration. | Optional | 
-| exclude_shared_objects | Partial commit while excluding shared objects.| Optional |
+| description | The commit description. | Optional | 
+| admin_name | The administrator name. To commit admin-level changes on a firewall, include the administrator name in the request. | Optional | 
+| force_commit | Forces a commit. Possible values are: true, false. | Optional | 
+| exclude_device_network_configuration | Performs a partial commit while excluding device and network configuration. Possible values are: true, false. | Optional | 
+| exclude_shared_objects | Performs a partial commit while excluding shared objects. Possible values are: true, false. | Optional | 
+| polling | Whether to use polling. Possible values are: true, false. Default is false. | Optional | 
+| commit_job_id | commit job ID to use in polling commands. (automatically filled by polling). | Optional | 
+| timeout | The timeout (in seconds) when polling. Default is 120. | Optional | 
+| interval_in_seconds | The interval (in seconds) when polling. Default is 10. | Optional | 
+
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.Commit.JobID | number | Job ID to commit. | 
-| Panorama.Commit.Status | string | Commit status | 
+| Panorama.Commit.JobID | Number | The job ID to commit. | 
+| Panorama.Commit.Status | String | The commit status. | 
+| Panorama.Commit.Description | String | The commit description from the the command input. | 
 
+#### Command example with polling
+```!pan-os-commit description=test polling=true interval_in_seconds=5 timeout=60```
+#### Human Readable Output
 
-#### Command Example
-```!pan-os-commit```
+>Waiting for commit "test" with job ID 12345 to finish...
+>
+>Waiting for commit "test" with job ID 12345 to finish...
+>### Commit Status:
+>|JobID|Status| Description
+>|---|---|---|
+>| 12345 | Success | test
 
 #### Context Example
 ```json
 {
     "Panorama": {
         "Commit": {
-            "JobID": "113198",
-            "Status": "Pending"
+            "JobID": "12345",
+            "Status": "Success",
+            "Description": "test"
         }
     }
 }
 ```
 
+#### Command example without polling
+
 #### Human Readable Output
 
->### Commit:
->|JobID|Status|
->|---|---|
->| 113198 | Pending |
+>### Commit Status:
+>|JobID|Status| Description
+>|---|---|---|
+>| 12345 | Pending | test
+
+
+#### Context Example
+```json
+{
+    "Panorama": {
+        "Commit": {
+            "JobID": "12345",
+            "Status": "Pending",
+            "Description": "test"
+        }
+    }
+}
+```
 
 
 ### pan-os-push-to-device-group
@@ -2465,40 +2496,42 @@ Returns a list of applications.
 >|  | demisto_fw_app3 | 1 |  | ip-protocol | peer-to-peer | lala |
 
 
-### pan-os-commit-status
+### pan-os-commit
 ***
-Returns commit status for a configuration.
+Commits a configuration to the Palo Alto firewall or Panorama, validates if a commit was successful if using polling="true" otherwiese does not validate if the commit was successful. Committing to Panorama does not push the configuration to the firewalls. To push the configuration, run the panorama-push-to-device-group command.
 
 
 #### Base Command
 
-`pan-os-commit-status`
+`pan-os-commit`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| job_id | Job ID to check. | Required | 
+| description | The commit description. | Optional | 
+| admin_name | The administrator name. To commit admin-level changes on a firewall, include the administrator name in the request. | Optional | 
+| force_commit | Forces a commit. Possible values are: true, false. | Optional | 
+| exclude_device_network_configuration | Performs a partial commit while excluding device and network configuration. Possible values are: true, false. | Optional | 
+| exclude_shared_objects | Performs a partial commit while excluding shared objects. Possible values are: true, false. | Optional | 
+| polling | Whether to use polling. Possible values are: true, false. Default is false. | Optional | 
+| commit_job_id | commit job ID to use in polling commands. (automatically filled by polling). | Optional | 
+| timeout | The timeout (in seconds) when polling. Default is 120. | Optional | 
+| interval_in_seconds | The interval (in seconds) when polling. Default is 10. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.Commit.JobID | number | Job ID of the configuration to be committed. | 
-| Panorama.Commit.Status | string | Commit status. | 
-| Panorama.Commit.Details | string | Job ID details. | 
-| Panorama.Commit.Warnings | String | Job ID warnings | 
+| Panorama.Commit.JobID | Number | The job ID to commit. | 
+| Panorama.Commit.Status | String | The commit status. | 
+| Panorama.Commit.Description | String | The commit description from the the command input. | 
 
-
-#### Command Example
-```!pan-os-commit-status job_id=948 ```
-
+#### Command example
+```!pan-os-commit description=test polling=true interval_in_seconds=5 timeout=60```
 #### Human Readable Output
 
->### Commit Status:
->|JobID|Status|
->|---|---|
->| 948 | Pending |
+>Waiting for commit "test" with job ID 7304 to finish...
 
 ### pan-os-push-status
 ***

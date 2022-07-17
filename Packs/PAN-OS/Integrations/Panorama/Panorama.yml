@@ -3586,7 +3586,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: commit job ID to use in polling commands.
+    - description: commit job ID to use in polling commands. (automatically filled by polling).
       name: commit_job_id
     - description: The timeout (in seconds) when polling.
       name: timeout
@@ -3594,7 +3594,7 @@ script:
     - description: The interval (in seconds) when polling.
       name: interval_in_seconds
       defaultValue: '10'
-    description: Commits a configuration to the Palo Alto firewall or Panorama, but does not validate if the commit was successful. Committing to Panorama does not push the configuration to the firewalls. To push the configuration, run the panorama-push-to-device-group command.
+    description: Commits a configuration to the Palo Alto firewall or Panorama, validates if a commit was successful if using polling="true" otherwise does not validate if the commit was successful. Committing to Panorama does not push the configuration to the firewalls. To push the configuration, run the panorama-push-to-device-group command.
     name: pan-os-commit
     polling: true
     outputs:
