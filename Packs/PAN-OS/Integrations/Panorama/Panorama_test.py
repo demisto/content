@@ -1201,9 +1201,9 @@ class TestPanoramaCommitCommand:
             'commit_job_id': '123', 'description': description, 'hide_polling_output': True, 'polling': True
         }
 
-        command_result = panorama_commit_command(polling_args)
         while command_result.scheduled_command:  # if scheduled_command is set, it means that command should still poll
             command_result = panorama_commit_command(polling_args)
+            assert command_result
 
         # last response of the command should be job status and the commit description
         assert command_result.outputs == {'JobID': '123', 'Description': description, 'Status': 'Success'}

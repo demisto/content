@@ -422,6 +422,7 @@ Commits a configuration to the Palo Alto firewall or Panorama, validates if a co
 ```
 
 #### Command example without polling
+```!pan-os-commit description=test```
 
 #### Human Readable Output
 
