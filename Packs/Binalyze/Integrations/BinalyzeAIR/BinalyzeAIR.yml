@@ -49,24 +49,15 @@ script:
       - disable
       description: To isolate use enable
     outputs:
-    - contextPath: BinalyzeAIRIsolate.success
-      description: API call success confirmation
-      type: boolean
-    - contextPath: BinalyzeAIRIsolate.result._id
+    - contextPath: BinalyzeAIR.Isolate.result._id
       description: Isolation unique task ID
       type: string
-    - contextPath: BinalyzeAIRIsolate.result.name
+    - contextPath: BinalyzeAIR.Isolate.result.name
       description: Isolation task name
       type: string
-    - contextPath: BinalyzeAIRIsolate.result.organizationId
+    - contextPath: BinalyzeAIR.Isolate.result.organizationId
       description: Organization Id of endpoint
       type: number
-    - contextPath: BinalyzeAIRIsolate.statusCode
-      description: HTTP Status Code of response
-      type: number
-    - contextPath: BinalyzeAIRIsolate.errors
-      description: Error message
-      type: string
     description: Isolate an endpoint
   - name: binalyze-air-acquire
     arguments:
@@ -96,24 +87,15 @@ script:
       - '2'
       description: Organization ID of the endpoint
     outputs:
-    - contextPath: BinalyzeAIRAcquire.success
-      description: API call success confirmation
-      type: boolean
-    - contextPath: BinalyzeAIRAcquire.result._id
+    - contextPath: BinalyzeAIR.Acquire.result._id
       description: Acquisition unique task ID
       type: string
-    - contextPath: BinalyzeAIRAcquire.result.name
+    - contextPath: BinalyzeAIR.Acquire.result.name
       description: Acquisiton task name
       type: string
-    - contextPath: BinalyzeAIRAcquire.result.organizationId
+    - contextPath: BinalyzeAIR.Acquire.result.organizationId
       description: Organization Id of endpoint
       type: number
-    - contextPath: BinalyzeAIRAcquire.statusCode
-      description: HTTP Status Code of response
-      type: number
-    - contextPath: BinalyzeAIRAcquire.errors
-      description: Error message
-      type: string
     description: Acquire evidence from an endpoint
   dockerimage: demisto/python3:3.10.5.31928
   runonce: false

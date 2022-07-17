@@ -1,23 +1,51 @@
 from CommonServerPython import *
 from typing import Dict, Any, List
 
-MOCK_URL = 'https://nonexistent-domain.com/'
+MOCK_URL = 'https://nonexistent-domain.com'
 
 
 def test_connection_success(requests_mock: Any) -> None:
     '''Command for test-connection'''
+    from BinalyzeAIR import Client, test_connection
+
+    mock_get_response: Dict[str, bool] = {
+        'initialized': True
+    }
 
     expected_mocked_command_result: str = 'ok'
-    requests_mock.get(f'{MOCK_URL}/api/app/info')
-    assert expected_mocked_command_result
+
+    requests_mock.get('https://nonexistent-domain.com/api/app/info', json=mock_get_response)
+
+    client: Client = Client(
+        base_url='https://nonexistent-domain.com',
+        verify=False
+    )
+
+    mocked_command_result: str = test_connection(client)
+
+    assert mocked_command_result == expected_mocked_command_result
 
 
 def test_connection_fail(requests_mock: Any) -> None:
-    '''Command for test-connection'''
+    '''Fail test for the test-module command.'''
+
+    from BinalyzeAIR import Client, test_connection
+
+    mock_get_response: Dict[str, bool] = {
+        'initialized': False
+    }
 
     expected_mocked_command_result: str = 'test connection failed'
-    requests_mock.get(f'{MOCK_URL}/api/app/info')
-    assert expected_mocked_command_result
+
+    requests_mock.get('https://nonexistent-domain.com/api/app/info', json=mock_get_response)
+
+    client: Client = Client(
+        base_url='https://nonexistent-domain.com',
+        verify=False
+    )
+    mocked_command_result: str = test_connection(client)
+
+    assert mocked_command_result == expected_mocked_command_result
 
 
 def test_air_acquire_command(requests_mock: Any) -> None:
@@ -54,6 +82,7 @@ def test_air_acquire_command(requests_mock: Any) -> None:
         headers=headers
     )
     expected_mocked_command_result: List[Dict[str, Any]] = mock_response
+
     requests_mock.post('https://nonexistent-domain.com/api/public/acquisitions/acquire', json=mock_response)
 
     mocked_command_result: CommandResults = air_acquire_command(client, args)

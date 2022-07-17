@@ -1,14 +1,19 @@
 import demistomock as demisto  # noqa: F401
-import requests
 from CommonServerPython import *  # noqa: F401
-from typing import Dict, Any
+from typing import Dict, Any, Optional
+
+import requests
+
 requests.packages.urllib3.disable_warnings()
 
 
 class Client(BaseClient):
 
-    def test(self, base_url):
-        return requests.get(f'{base_url}/api/app/info').status_code
+    def test_connectivity(self):
+        return self._http_request(
+            method='GET',
+            url_suffix='/api/app/info'
+        )
 
     def air_acquire(self, hostname: str, profile: str, case_id: str, organization_id: int) -> Dict[str, str]:
         ''' Makes a POST request /api/public/acquisitions/acquire endpoint to verify acquire evidence
@@ -76,10 +81,11 @@ class Client(BaseClient):
 
 def test_connection(client: Client) -> str:
     '''Command for test-connection'''
-    base_url: str = demisto.params()['server']
 
-    result: str = client.test(base_url=base_url)
-    if result == 200:
+    result: Dict[str, Any] = client.test_connectivity()
+    status: Optional[bool] = result['initialized']
+
+    if status is not None and status:
         return demisto.results('ok')
     else:
         return demisto.results('test connection failed')
