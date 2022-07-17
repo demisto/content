@@ -60,7 +60,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ''
-dockerimage: demisto/pcap-miner:1.0.0.31925
+dockerimage: demisto/pcap-miner:1.0.0.32154
 enabled: true
 name: PcapExtractStreams
 runas: DBotWeakRole
