@@ -16,7 +16,7 @@ def options_handler():
     # disable-secrets-detection-start
     parser = argparse.ArgumentParser(description='Utility for instantiating integration instances')
     parser.add_argument('--ami_env', help='The AMI environment for the current run. Options are '
-                                          '"Server 6.2, "Server 6.5, "Server 6.6", "Server Master", "XSIAM Master"'
+                                          '"Server 6.5, "Server 6.6", "Server 6.8", "Server Master", "XSIAM Master"'
                                           'The server url is determined by the AMI environment.',
                         default="Server Master")
     parser.add_argument('-s', '--secret', help='Path to secret conf file')
