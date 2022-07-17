@@ -168,9 +168,6 @@ def add_private_packs_from_dummy_index(private_packs, dummy_index_blob):
     downloaded_dummy_index_path = 'current_dummy_index.zip'
     extracted_dummy_index_path = 'dummy_index'
     dummy_index_json_path = os.path.join(extracted_dummy_index_path, 'index', 'index.json')
-
-    logging.info(f'downloading the index from {downloaded_dummy_index_path}')
-
     dummy_index_blob.download_to_filename(downloaded_dummy_index_path)
     os.mkdir(extracted_dummy_index_path)
     if os.path.exists(downloaded_dummy_index_path):
@@ -225,7 +222,7 @@ def main():
         private_packs, private_index_path, private_index_blob = update_index_with_priced_packs(private_storage_bucket,
                                                                                                extract_destination_path,
                                                                                                public_index_folder_path,
-                                                                                               set([changed_pack]), True,
+                                                                                               changed_pack, True,
                                                                                                storage_base_path)
         private_packs = add_private_packs_from_dummy_index(private_packs, dummy_index_blob)
         upload_modified_index(public_index_folder_path, extract_public_index_path, dummy_index_blob, build_number,
