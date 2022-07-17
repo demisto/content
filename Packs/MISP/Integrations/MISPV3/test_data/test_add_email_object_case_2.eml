@@ -1,0 +1,195 @@
+User-Agent: Microsoft-MacOutlook/10.19.0.190512
+Date: Tue, 28 May 2019 09:29:56 +0300
+Subject: Outer mail
+From: Or Fakename <foo@test.com>
+Message-ID: <5c530c1b.1c69fb81.bd826.0eff@mx.google.com>
+Thread-Topic: Outer mail
+Thread-Index: AQHVFR7PZBFS5SreFEmFtfWQ9/8B+Q==
+Mime-version: 1.0
+Content-type: multipart/mixed;
+	boundary="B_3642484764_577385688"
+
+> This message is in MIME format. Since your mail reader does not understand
+this format, some or all of this message may not be legible.
+
+--B_3642484764_577385688
+Content-type: multipart/alternative;
+	boundary="B_3642484764_1016732631"
+
+
+--B_3642484764_1016732631
+Content-type: text/plain;
+	charset="UTF-8"
+Content-transfer-encoding: 7bit
+
+ 
+
+
+--B_3642484764_1016732631
+Content-type: text/html;
+	charset="UTF-8"
+Content-transfer-encoding: quoted-printable
+
+
+
+--B_3642484764_1016732631--
+
+
+--B_3642484764_577385688
+Content-type: message/rfc822
+Content-disposition: attachment
+
+Received: from BN6PR05MB3329.namprd05.prod.outlook.com (2001:db8::2) by
+ DM5PR05MB3340.namprd05.prod.outlook.com with HTTPS via
+ DM5PR03CA0053.NAMPRD03.PROD.OUTLOOK.COM; Fri, 17 May 2019 22:49:59 +0000
+Received: from BYAPR05CA0032.namprd05.prod.outlook.com (2001:db8::2)
+ by BN6PR05MB3329.namprd05.prod.outlook.com () with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.1922.7; Fri, 17 May
+ 2019 22:49:58 +0000
+Received: from SN1NAM02FT024.eop-nam02.prod.protection.outlook.com
+ (2001:db8::2) by BYAPR05CA0032.outlook.office365.com
+ (22001:db8::2) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.1922.9 via Frontend
+ Transport; Fri, 17 May 2019 22:49:58 +0000
+Authentication-Results: spf=fail (sender IP is 1.1.1.1)
+ smtp.mailfrom=paloaltonetworks.nw027.com; paloaltonetworks.com; dkim=fail
+ (body hash did not verify) header.d=nw027.com;paloaltonetworks.com;
+ dmarc=fail action=none header.from=paloaltonetworks.com;compauth=pass
+ reason=704
+Received-SPF: Fail (protection.outlook.com: domain of
+ paloaltonetworks.nw027.com does not designate 1.1.1.1 as permitted
+ sender) receiver=protection.outlook.com; client-ip=1.1.1.1;
+ helo=mx0b-00169c01.pphosted.com;
+Received: from mx0b-00169c01.pphosted.com (1.1.1.1) by
+ SN1NAM02FT024.mail.protection.outlook.com (1.1.1.1) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1900.16 via Frontend Transport; Fri, 17 May 2019 22:49:57 +0000
+Received: from pps.filterd (m0048188.ppops.net [127.0.0.1])
+	by mx0b-00169c01.pphosted.com (5.6.7.8/5.6.7.8) with SMTP id x4HMi6JJ032265
+	for <foo@test.com>; Fri, 17 May 2019 15:49:57 -0700
+Authentication-Results-Original: paloaltonetworks.com;	spf=pass
+ smtp.mailfrom=example1@example.com;	dkim=pass
+ header.d=nw027.com header.s=nw2048;	dmarc=none
+ header.from=paloaltonetworks.com
+Received: from 28.mta.nw027.com (28.mta.nw027.com [1.1.1.1])
+	by mx0b-00169c01.pphosted.com with ESMTP id 2sg05tpp8h-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+	for <foo@test.com>; Fri, 17 May 2019 15:49:57 -0700
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple; t=1558132666;
+	s=nw2048; d=nw027.com;
+	h=Date:Message-ID:MIME-Version:Content-Type:Feedback-ID:List-Unsubscribe:To:From:Reply-To:Subject;
+	bh=xu6zNROMfsF6q7fwshSVZGN4Sval7XPDgiQNYOsDYSk=;
+	b=jjBSMLNOROQJZ5lYxdDBDN7BTsJfIn3frW82THHAqXlv5lFhb4jaPR6GfifpcFGC
+	zLkFnygeb9bnfV6k1Prq3Cl3EgXc49oq81EM/irX/rzpiXGzFVmew1JxatzMZGDd6Vz
+	1sruC/h6AyOlIFQ+Pe5bj82Jtm37w/DOuH3TU2GdgLDRxD72oPG1JpELdIGEoayJE0/
+	1hyKnNrzot05yXHXccK5QkJTfePknLEkl9cDQ9JNopOWqquQ+R8w2g7Ue8bigywWN+3
+	mO3KlfkWh1Lk07vynmh8dhqklxjLulsazRoOVVvp8KQa0rMO/+0kzXxPnYm/pUWsd3o
+	Y1fh8beR1A==
+Date: Fri, 17 May 2019 22:37:45 +0000 (UTC)
+Message-ID: <graph@demistodev.onmicrosoft.com>
+Feedback-ID: acct_paloaltonetworks:Newsweaver
+List-Unsubscribe: <palo/exec/subscriber/unsubscribe.html?list=true&nw_int_pfc=true&subscriberId=anzkf063yd8&mailingRecordId=201125rpdymc56mvumi09q>,<mailto:george?subject=unsubscribe&body=unsubscribe%20NewsWeaver.201125rpdymc56mvumi09q.anzkf063yd8.15581326644482821348>
+To: foo@test.com
+From: John Fakename <foo@test.com>
+Reply-To: John Fakename <foo@test.com>
+X-NW-Ref: <graph@demistodev.onmicrosoft.com>
+X-NW-Mailer: domain=nw027.com;tls=no;speed=2;relay=paloaltonetworks.com;bulk=true;size=8207;shard=201;
+Subject: Here we go! Gmail and Google Calendar will be here on Monday
+X-CLX-Shades: MLX
+X-CLX-Response: 1TFkXGB4dEQpMehcaEQpZRBdsRXpOWkNkRRodQhEKWFgXaFx5SE9hXU5MWXg RCnhOF2ROc0FkRGNLUGhwEQp4SxdoXHlIT2FdTkxZeBEKeEwXYQVeBVhGbh9Jf1MRCnlMF2EFXg VYRm4fSX9TEQp5QxdubGB+cHtdfFkcQhEKWU0XZ2ZyEQpZSRcacRoQGncGGBgdcRkSHBwQGBp3B
+ hgaBhoRClleF2hueREKSUYXWktGRUtGXkVET15dRVhBWXVCRVleT04RCkNOF0F9G25cYAd1G2JS dRhBXxwbSXpCXENTf2l4ThJTExsTEQpYXBcfBBoEGx0YBxJISBMeGUgfBRsaBBsbGgQeEgQSHxA bHhofGhEKXlkXf2xkEl0RCk1cFxkbGREKTFoXb21dTV0RCkxGF2NraxEKQk8XZENFbloYE1xZf0
+ cRCkNaFx8EHBsEGxsdBBsaGhEKQl4XGxEKQkYXZH15AVsbWgVjAUwRCkJHF2RGc29/QmlwGx5rE QpCXBcaEQpCRRdlXG5YbUFZfV8YYhEKQk4XZE5zQWREY0tQaHARCkJMF2VrblJZZ0hZXUlhEQpC bBdnfkBwXkgabQEdGxEKQkAXZFpiXF5cZ1pkb3kRCkJYF2hkXGlyBR5DZBJzEQpaWBcYEQpwZxd
+ 6QElbQXpuWnAccBAcGhEKcGgXZmNzXUNaHnodYRwQHhIRCnBoF2ZkX0NSbmttGmNbEBkaEQpwaB diG00cc18BX2RLbhAeEhEKcGgXZGt+eGZyUF0aXQUQHhIRCnBoF21IeH9PQWRnZk0BEBkaEQpwf xdkRk0bRB1EUxtbThAbGxIRCnBfF2BHZ20Tb0cbb3tCEBkaEQpwfRduYRsaHB0ZHnAYfxAaEQpw
+ XxdrG3hofVhFf3AFbxAZGhEKcH0Xa0BtQlNhXmBfYGsQGhEKcH0XaGt4T1hETl1NaEQQGhEKcF8 XZkFwQh5MAW1pBU0QGRoRCnB9F21pcx5lSRx6cH58EBoRCnBfF2tiTFNYaU9eWwF6EBkaEQpwfR drHngTZxp7RURmGxAaEQpwXxdgU2wTRl0FWlxefhAZGhEKcH0XaxxuAUZhWWJeZG0QGhEKcF8XY
+ 2tvE0dhcGNneRkQGRoRCnB9F2BtQ2xGTWkSTmRyEBoRCnBfF21yT2drBR1rGRtwEBkaEQpwfRdh G016ZERkYRxcHRAZGhEKcH0XYkxLflNJRG15EngQGRoRCnBfF2ZNfHkBRnBAcF4fEBoRCnB9F2w BWhxTHk0FSXh8EBoRCnB9F2R5H0x7Y21eWFtBEBoRCnB9F2RyfHtocnwSfEB4EBoRCnB9F3p4aX
+ pof11YH1t5EBoRCnB9F2BtBWtzYnt+fHkZEBoRCnBsF3pMQVx7Em5JGU9zEBkaEQptfhcaEQpYT RdLESA=
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-17_15:,,
+ signatures=0
+X-Proofpoint-Spam-Reason: safe
+Return-Path: foo@test.com
+X-MS-Exchange-Organization-ExpirationStartTime: 17 May 2019 22:49:57.8732
+ (UTC)
+X-MS-Exchange-Organization-ExpirationStartTimeReason: OriginalSubmit
+X-MS-Exchange-Organization-ExpirationInterval: 2:00:00:00.0000000
+X-MS-Exchange-Organization-ExpirationIntervalReason: OriginalSubmit
+X-MS-Exchange-Organization-Network-Message-Id:
+ 6fc300b5-56e7-47f2-58a8-08d6db19fca3
+X-EOPAttributedMessage: 0
+X-EOPTenantAttributedMessage: 66b66353-3b76-4e41-9dc3-fee328bd400e:0
+X-MS-Exchange-Organization-MessageDirectionality: Incoming
+X-Forefront-Antispam-Report:
+ CIP:1.1.1.1;IPV:CAL;SCL:-1;CTRY:US;EFV:NLI;SFV:SKN;SFS:;DIR:INB;SFP:;SCL:-1;SRVR:BN6PR05MB3329;H:mx0b-00169c01.pphosted.com;FPR:;SPF:None;LANG:en;
+X-MS-Exchange-Organization-SCL: -1
+X-MS-Exchange-Organization-AuthSource:
+ SN1NAM02FT024.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-Organization-AuthAs: Anonymous
+X-MS-PublicTrafficType: Email
+X-MS-Exchange-Organization-ExpirationInterval: 1:00:00:00.0000000
+X-MS-Exchange-Organization-ExpirationIntervalReason: FlexTransport
+X-MS-Office365-Filtering-Correlation-Id: 6fc300b5-56e7-47f2-58a8-08d6db19fca3
+X-Microsoft-Antispam:
+ BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(5600141)(711020)(4605104)(1401320)(1421009)(71702078);SRVR:BN6PR05MB3329;
+X-MS-TrafficTypeDiagnostic: BN6PR05MB3329:
+X-MS-Exchange-PUrlCount: 16
+X-MS-Oob-TLC-OOBClassifiers: OLM:3968;
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 May 2019 22:49:57.7251
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6fc300b5-56e7-47f2-58a8-08d6db19fca3
+X-MS-Exchange-CrossTenant-Id: 66b66353-3b76-4e41-9dc3-fee328bd400e
+X-MS-Exchange-CrossTenant-FromEntityHeader: Internet
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR05MB3329
+X-MS-Exchange-Transport-EndToEndLatency: 00:00:01.5086858
+X-MS-Exchange-Processed-By-BccFoldering: 15.20.1922.000
+X-Microsoft-Antispam-Mailbox-Delivery:
+ ucf:0;jmr:0;ex:0;auth:0;dest:I;ENG:(750119)(520011016)(944506303)(944626516);
+X-Microsoft-Antispam-Message-Info:
+ y0tR2UJ4ILlktFep2dbKmepynxfFzAJGHOE0NFo2+9EiE+uPVmnYxJgBnfCZ3xVnGAq2ThuZCBRubI5IZ9Nlpcaw2tjUnIAriBH/Ae8ncb8LsvbbLrU+g3bunG3X0ol/bcls5tsYrxw0VxMnc9ZWgKOi6r4XJLq4wlaSoPaa2pRFPsEzISO5U68iL14TL1jaz8/V0VSY6lwU2C5cPf8fB0J60kHPhjZe63viyx8bXphxuQXxCXsyebfn19pwKylsO7eX4ASTTtpo+BoSmInb/FidqDWCETXI1MA/Dqhaxp/79xLOo0z3GqM2U6f611o5WAfUkHL0I54om9naL7u+ycPAhY0KW5g7h7ituc/607t6m2MFeEbnj5lsq0kzbmf1jsPRacsY73KwsroYdI3+UzGdnpg06bIhKQE/MjJ9B4Mt8A9FxxPiPdo6jfooQvIGRBAbXJFqciIroV51mufiZWvb/0r5EwwpAKTO4nts+U/PYakq2dNIJPNnNkut0FPNpXDTj52456MK+2o4HuC/ShEoQ5TGPBGY3PO9M76Dwi0QkSEqKr/5h/6pKjC2OnrDMC3Psr7uFGA9TVw9EEOT/45UuKR+RAWq2Sbjr8IzjR/9AF/qddXL6M2x72ze379AwNyI3iF8EktGG4JJ5ne0B3xr9z4d9E+V5JM4mb1pLZefug8Xeziyhb4XGuhaCQq/7G3HEnvfpVn2GTa6+wtf+A==
+Content-type: multipart/alternative;
+	boundary="B_3641827187_1860034332"
+MIME-Version: 1.0
+
+--B_3641827187_1860034332
+Content-type: text/plain;
+	charset="UTF-8"
+Content-transfer-encoding: quoted-printable
+
+ =E2=80=8C =E2=80=8C =E2=80=8C =E2=80=8C =E2=80=8C=20
+The long wait is almost over!
+
+That=E2=80=99s right, you will get access to your new Google mail and calendar in=
+ just a few days. Your big day is this coming Monday, May 20.
+
+Benefits of this migration We are very excited to introduce some very excit=
+ing new benefits with this deployment. Here are just a few new features you =
+will experience with Gmail and Google Calendar:=20
+Collaborate from any device
+Auto saving for everything you touch
+Snoozing and nudging email
+Drive and Slack integration
+Smart replies and canned responses
+How to get support
+We have a robust plan for supporting you and leading you through this chang=
+e. In addition to multiple levels of training, online resources, videos, mob=
+ile setup guides, and our existing support staff, we will have 340+ members =
+of the Suite Squad serving as influencers and guides in all major locations =
+to assist you throughout the next week.=20
+Get all the help you need by taking advantage of the different support chan=
+nels around you: The Suite Squad, Suite Life Loop space, #suite-life Slack c=
+hannel, Tech Oasis, and the Service Desk.=20
+Thanks,
+
+-John Fakename
+=20
+
+
+--B_3641827187_1860034332
+Content-type: text/html;
+	charset="UTF-8"
+Content-transfer-encoding: quoted-printable
+
+
+--B_3641827187_1860034332--
+
+--B_3642484764_577385688--
+
