@@ -133,7 +133,7 @@ class Client(BaseClient):
         file_type: str,
         features: List[str],
         image_ids: List[str],
-        image_revisions: List[int],
+        image_revisions: List[Optional[int]],
         reports: List[str],
         method: str,
         extracted_parts_codes: List[int] = None,
@@ -224,6 +224,7 @@ class Client(BaseClient):
 
 ''' COMMAND FUNCTIONS '''
 
+
 @pytest.mark.skip(reason="No reason to test this.")
 def test_module(client: Client) -> str:
     """
@@ -245,7 +246,7 @@ def test_module(client: Client) -> str:
             features=['te', 'av', 'extraction'],
             reports=['xml', 'summary'],
             method='pdf',
-            **{'md5': '80f284ccdf2afae0f5347f4532584a61'}
+            **{'md5': '80f284ccdf2afae0f5347f4532584a61'}  # type:ignore
         )
     except DemistoException as e:
         e_string = str(e)
@@ -281,9 +282,9 @@ def query_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
     file_name = args.get('file_name')
     file_hash = args['file_hash']
-    features = argToList(args.get('features'))
+    features = argToList(args.get('features', ''))
     reports = argToList(args.get('reports'))
-    method = args.get('method')
+    method = args.get('method', '')
     extracted_parts = argToList(args.get('extracted_parts'))
 
     features = [FEATURE_BY_NAME[feature] for feature in features]
@@ -302,7 +303,7 @@ def query_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         extracted_parts_codes = [
             EXTRACTED_PARTS_CODE_BY_DESCRIPTION[extracted_part]
             for extracted_part in extracted_parts
-    ]
+        ]
 
     file_hash_size = len(file_hash)
     digest = DIGEST_BY_LENGTH.get(file_hash_size)
@@ -319,7 +320,7 @@ def query_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         **{digest: file_hash}
     )
 
-    output = raw_output.get('response')
+    output = raw_output.get('response', {'': ''})
     readable_output = get_analysis_readable_output(features, output, 'Query')
     output = get_analysis_context_output(output)
 
@@ -358,7 +359,7 @@ def upload_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     image_revisions = [arg_to_number(image_revision)
                        for image_revision in argToList(args.get('image_revisions'))]
     reports = argToList(args.get('reports'))
-    method = args.get('method')
+    method = args.get('method', '')
     extracted_parts = argToList(args.get('extracted_parts'))
 
     file_entry = demisto.getFilePath(file_id)
@@ -404,7 +405,7 @@ def upload_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         extracted_parts_codes=extracted_parts_codes,
     )
 
-    output = raw_output.get('response')
+    output = raw_output.get('response', {'': ''})
     readable_output = get_analysis_readable_output(features, output, 'Upload')
     output = get_analysis_context_output(output)
 
@@ -451,7 +452,7 @@ def quota_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         CommandResults: Quota information about the API key.
     """
     raw_outputs = client.quota_request()
-    outputs = raw_outputs.get('response')[0]
+    outputs = raw_outputs.get('response')[0]  # type:ignore
 
     output = get_quota_context_output(outputs)
     headers = get_quota_headers()
@@ -666,7 +667,7 @@ def get_analysis_context_output(output: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def get_analysis_readable_output(
-    features: Dict[str, Any],
+    features: List[str],
     output: Dict[str, Any],
     command: str
 ) -> Any:
