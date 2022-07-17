@@ -20,4 +20,4 @@ ignore=RM102,RM104
 ignore=BA108,BA109
 
 [known_words]
-cb-edr-process-event-list
+cb
