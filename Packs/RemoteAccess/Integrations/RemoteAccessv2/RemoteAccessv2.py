@@ -137,17 +137,13 @@ def find_system(args: Dict[str, Any]):
     investigation = demisto.investigation()
     systems = investigation.get('systems')
     demisto.debug(f'Available systems are {systems}.')
-    if not systems or system not in systems:
-        demisto.debug(f'System {system} not found on investigation {investigation.get("id")}. '
-                      f'Available systems are {systems}.')
-        return system
+    systems_names = [system_properties.get('name') for system_properties in systems]
+    systems_hosts = [system_properties.get('host') for system_properties in systems]
 
-    demisto.debug(f'investigation.get("systems") is of type {type(systems)}')
-    if isinstance(systems, list):
-        return system
-    if isinstance(systems, dict):
-        demisto.debug(f'system given is {system}, corresponding value in investigation.get("systems") is {systems[system]}.')
-        return systems[system]
+    if not systems or (system not in systems_names and system not in systems_hosts):
+        demisto.info(f'System {system} not found on investigation {investigation.get("id")}. '
+                     f'Available systems by name are {systems_names}, and by host are {systems_hosts}.')
+
     return system
 
 
