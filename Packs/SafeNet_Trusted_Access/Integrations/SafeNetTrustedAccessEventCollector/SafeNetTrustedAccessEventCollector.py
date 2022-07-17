@@ -32,14 +32,22 @@ class Client(BaseClient):
             full_url=full_url
         )
 
-    def get_logs(self, last_run=None):
-        query_params = {}
+    def test(self) -> dict:
+        return self.get_logs()[0]
 
-        return self.http_request(
+    def get_logs(self, marker=None, since=None, until=None):
+        query_params = assign_params(marker=marker, since=since, until=until)
+
+        raw_response = self.http_request(
             method='GET',
             url_suffix='logs',
             params=query_params,
-        ).json()['page']['items']
+        ).json()
+
+        events = raw_response.get('page', {}).get('items')
+        marker = raw_response.get('page', {}).get('pageMarker')
+
+        return raw_response, events, marker
 
 
 ''' COMMAND FUNCTIONS '''
@@ -59,15 +67,8 @@ def test_module(client: Client) -> str:
     :rtype: ``str``
     """
 
-    message: str = ''
-    try:
-        message = 'ok'
-    except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):
-            message = 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
-    return message
+    client.test()
+    return 'ok'
 
 
 def fetch_events_command(client: Client, last_run: dict) -> CommandResults:
@@ -76,17 +77,22 @@ def fetch_events_command(client: Client, last_run: dict) -> CommandResults:
     return result
 
 
-def get_events_command(client: Client, args: Dict[str, Any]) -> Tuple[list, dict]:
+def get_events_command(client: Client, args: Dict[str, Any]) -> Tuple[list, CommandResults]:
+    marker = args.get('marker')
+    since = arg_to_datetime(args.get('since'))
+    until = arg_to_datetime(args.get('until'))
 
-    events = client.get_logs()
+    raw_response, events, new_marker = client.get_logs(marker, since, until)
 
-    return CommandResults(
-        raw_response=events,
+    results = CommandResults(
+        raw_response=raw_response,
         readable_output=tableToMarkdown(
-            'Event Logs',
-            events,
+            name='Event Logs',
+            t=events,
+            metadata=f'Marker: {new_marker}' if new_marker else None,
         )
     )
+    return events, results
 
 
 ''' MAIN FUNCTION '''

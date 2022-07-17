@@ -69,8 +69,18 @@ script:
       isArray: false
       name: since
       required: false
+    - default: false
+      description: 'Until date'
+      isArray: false
+      name: until
+      required: false
+    - default: false
+      description: A string pointing at the next page of results. The marker can be found within the previous response.
+      isArray: false
+      name: marker
+      required: false
     deprecated: false
-    description: 'Get events.'
+    description: 'Get access, authentication, and audit logs from SafeNet Trusted Access.'
     execution: false
     name: sta-get-events
     outputs:
