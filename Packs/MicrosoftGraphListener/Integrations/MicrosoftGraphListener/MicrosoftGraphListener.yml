@@ -458,48 +458,6 @@ script:
       description: A token to pass to the next list command to retrieve additional results.
       type: String
     description: Gets the properties of returned emails. Typically shows partial results, use the "page_size" and "pages_to_pull" arguments to get all results.
-  - name: msgraph-mail-get-attachment
-    arguments:
-    - name: message_id
-      description: The email message id
-      required: true
-    - name: attachment_id
-      description: The id of the attachment
-      required: true
-    - name: folder_id
-      description: The id of the folder
-    outputs:
-    - contextPath: File.Size
-      description: The size of the file.
-      type: Number
-    - contextPath: File.SHA1
-      description: The SHA1 hash of the file.
-      type: String
-    - contextPath: File.SHA256
-      description: The SHA256 hash of the file.
-      type: String
-    - contextPath: File.Name
-      description: The name of the file.
-      type: String
-    - contextPath: File.SSDeep
-      description: The SSDeep hash of the file.
-      type: String
-    - contextPath: File.EntryID
-      description: The entry ID of the file.
-      type: String
-    - contextPath: File.Info
-      description: File information.
-      type: String
-    - contextPath: File.Type
-      description: The file type.
-      type: String
-    - contextPath: File.MD5
-      description: The MD5 hash of the file.
-      type: String
-    - contextPath: File.Extension
-      description: The file extension.
-      type: String
-    description: Get email attachment
   - name: msgraph-mail-list-attachments
     arguments:
     - name: message_id

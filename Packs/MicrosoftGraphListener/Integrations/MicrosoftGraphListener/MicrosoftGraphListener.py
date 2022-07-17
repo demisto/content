@@ -1046,19 +1046,6 @@ def item_result_creator(raw_response, user_id) -> CommandResults:
         return CommandResults(readable_output=human_readable, raw_response=raw_response)
 
 
-def create_attachment(raw_response, user_id) -> Union[CommandResults, dict]:
-    attachment_type = raw_response.get('@odata.type', '')
-    # Documentation about the different attachment types
-    # https://docs.microsoft.com/en-us/graph/api/attachment-get?view=graph-rest-1.0&tabs=http
-    if 'itemAttachment' in attachment_type:
-        return item_result_creator(raw_response, user_id)
-    elif 'fileAttachment' in attachment_type:
-        return file_result_creator(raw_response)
-    else:
-        demisto.debug(f"Unsupported attachment type: {attachment_type}. Attachment was not added to incident")
-        return {}
-
-
 def list_attachments_command(client: MsGraphClient, args):
     message_id = args.get('message_id')
     folder_id = args.get('folder_id')
@@ -1099,16 +1086,6 @@ def list_attachments_command(client: MsGraphClient, args):
             raw_response=raw_response
         )
         return_results(command_results)
-
-
-def get_attachment_command(client: MsGraphClient, args):
-    message_id = args.get('message_id')
-    user_id = client.get_mailbox_to_fetch()
-    folder_id = args.get('folder_id')
-    attachment_id = args.get('attachment_id')
-    raw_response = client.get_attachment(message_id, folder_id=folder_id, attachment_id=attachment_id)
-    attachment = create_attachment(raw_response, user_id)
-    return_results(attachment)
 
 
 def list_mails_command(client: MsGraphClient, args):
@@ -1361,8 +1338,6 @@ def main():
             return_results(list_mails_command(client, args))
         elif command == 'msgraph-mail-list-attachments':
             list_attachments_command(client, args)
-        elif command == 'msgraph-mail-get-attachment':
-            get_attachment_command(client, args)
         elif command == 'msgraph-mail-get-email-as-eml':
             get_email_as_eml_command(client, args)
     except Exception as e:
