@@ -29,7 +29,7 @@ class Client:
     The integration's client
     """
 
-    def __init__(self, params: Dict[str, str], reliability: DBotScoreReliability):
+    def __init__(self, params: Dict[str, str], reliability: Optional[DBotScoreReliability] = None):
         self.cs_client: CrowdStrikeClient = CrowdStrikeClient(params=params)
         self.reliability = reliability
         self.query_params: Dict[str, str] = {'offset': 'offset', 'limit': 'limit', 'sort': 'sort', 'free_search': 'q'}
@@ -564,9 +564,11 @@ def cs_reports_command(client: Client, args: Dict[str, str]) -> CommandResults:
 
 def main():
     params: Dict[str, str] = demisto.params()
+
     reliability = params.get('integrationReliability', 'C - Fairly reliable')
-    if DBotScoreReliability.is_valid_type(reliability):
-        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
+    reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability) if \
+        DBotScoreReliability.is_valid_type(reliability) else None
+
     args: Dict[str, str] = demisto.args()
     results: Union[CommandResults, List[CommandResults]]
     try:
