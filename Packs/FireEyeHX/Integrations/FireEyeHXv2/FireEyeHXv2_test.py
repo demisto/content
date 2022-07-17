@@ -1713,27 +1713,6 @@ def test_create_static_host_set_command(mocker):
     assert command_result.readable_output == 'Static Host Set host_set_name with id host_set_id was created successfully.'
 
 
-@pytest.mark.parametrize('args, expected_results', [({'host_set_name': 'host_set_name'}, 'Please provide at least one Host ID.')])
-def test_create_static_host_set_command_failed(args, expected_results):
-    """
-    Given:
-        - Host set name or hosts ids
-
-    When:
-        - Calling the create_static_host_set command
-
-    Then:
-        - failing when missing required data
-    """
-    from FireEyeHXv2 import create_static_host_set_command
-
-    client = ""
-
-    with pytest.raises(Exception) as e:
-        create_static_host_set_command(client, args)
-    assert str(e.value) == expected_results
-
-
 def test_create_dynamic_host_set_command(mocker):
     """
     Given:

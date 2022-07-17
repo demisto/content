@@ -2151,7 +2151,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Deletes a host set.
+    description: Deletes a host set. To use this command you must have an admin permissions.
     execution: true
     name: fireeye-hx-delete-host-set
     outputs:
@@ -2175,7 +2175,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Creates static host set.
+    description: Creates static host set. To use this command you must have an admin permissions.
     execution: false
     name: fireeye-hx-create-host-set-static
     outputs:
@@ -2252,7 +2252,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Creates dynamic host set.
+    description: Creates dynamic host set. To use this command you must have an admin permissions.
     execution: false
     name: fireeye-hx-create-host-set-dynamic
     outputs:
@@ -2297,7 +2297,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Updates a static host set.
+    description: Updates a static host set. To use this command you must have an admin permissions.
     execution: false
     name: fireeye-hx-update-host-set-static
     outputs:
@@ -2330,7 +2330,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: free text query. Cannot be used with the other query arguments. For information about the query, please refer to https://fireeye.dev/apis/lighthouse/
+      description: free text query. Cannot be used with the other query arguments. The query is limited to 2 operands. For information about the query, please refer to https://fireeye.dev/apis/lighthouse/ .
       isArray: false
       name: query
       required: false
@@ -2380,7 +2380,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Updates dynamic host set.
+    description: Updates dynamic host set. To use this command you must have an admin permissions.
     execution: false
     name: fireeye-hx-update-host-set-dynamic
     outputs:

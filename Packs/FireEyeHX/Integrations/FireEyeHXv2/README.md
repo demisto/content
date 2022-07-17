@@ -2484,6 +2484,7 @@ Creates dynamic host set.
 
 #### Command example
 ```!fireeye-hx-create-host-set-dynamic host_set_name=demisto_test query_key=Bitlevel query_operator=eq query_value=64-bit```
+```!fireeye-hx-update-host-set-dynamic host_set_name=MoreTestyay query=`{"key": "AgentVersion","value": "31.28.17","operator": "gte"}` ```
 #### Human Readable Output
 
 >Dynamic Host Set demisto_test with id 1068 was created successfully.
@@ -2518,7 +2519,8 @@ Updates dynamic host set.
 | FireEyeHX.HostSets.deleted | Boolean | Was the host set deleted. | 
 
 #### Command example
-```!fireeye-hx-update-host-set-dynamic host_set_name=demisto_test query_key=Bitlevel query_operator=eq query_value=64-bit```
+```!fireeye-hx-update-host-set-dynamic host_set_name=demisto_test query_key=Bitlevel query_operator=eq query_value=64-bit host_set_id=1061```
+```!fireeye-hx-update-host-set-dynamic host_set_name=MoreTestyay query=`{"key": "AgentVersion","value": "31.28.17","operator": "gte"}` host_set_id=1061```
 #### Human Readable Output
 
 >Dynamic Host Set Demisto_test was updated successfully.

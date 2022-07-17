@@ -31,4 +31,6 @@
 !fireeye-hx-create-host-set-static host_set_name=demisto_test_static hosts_ids=Hqb2ns3oui1fpzg0BxI1Ch
 !fireeye-hx-update-host-set-static host_set_name=demisto_test_static host_set_id=1068 add_host_ids=GfLI00Q4zpidezw9I11rV6 remove_host_ids=Hqb2ns3oui1fpzg0BxI1Ch
 !fireeye-hx-create-host-set-dynamic host_set_name=demisto_test_dynamic query_key=Bitlevel query_operator=eq query_value=64-bit
+!fireeye-hx-create-host-set-dynamic host_set_name=MoreTestyay query=`{"key": "AgentVersion","value": "31.28.17","operator": "gte"}`
 !fireeye-hx-update-host-set-dynamic host_set_name=demisto_test_dynamic query_key=Bitlevel query_operator=eq query_value=64-bit host_set_id=1069
+!fireeye-hx-create-host-set-dynamic host_set_name=MoreTestyay query=`{"key": "AgentVersion","value": "31.28.17","operator": "gte"}` host_set_id=1069
