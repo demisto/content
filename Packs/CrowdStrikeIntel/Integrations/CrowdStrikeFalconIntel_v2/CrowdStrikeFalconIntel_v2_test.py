@@ -38,6 +38,30 @@ class TestClientHelperFunctions:
         client = Client({})
         assert client.build_request_params(args) == output
 
+    @pytest.mark.parametrize('resource, expected_output', [
+        ({'id': 'url_https://someURL',
+                         'indicator': 'https://someURL',
+                         'type': 'url',
+                         'deleted': False,
+                         'published_date': 1655219581}, False),
+        ({'id': 'url_https://someURL',
+                         'indicator': 'https://someURL',
+                         'type': 'domain',
+                         'deleted': False,
+                         'published_date': 1655219581}, True)
+    ])
+    def test_filter_resources_by_type(self, resource, expected_output):
+        """Unit test
+        Given
+        - A resource
+        When
+        - Calling should_filter_resource_by_type function
+        Then
+        - Checks that the resource is being filtered if his type don't match the indicator type.
+        """
+        assert should_filter_resource_by_type(resource, 'url', 'https://someURL') == expected_output
+
+
     def test_build_filter_query(self, mocker):
         """Unit test
         Given

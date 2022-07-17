@@ -63,8 +63,9 @@ class Client:
             if key not in self.query_params:
                 if key not in self.date_params:
                     values: List[str] = argToList(args[key], ',')
+                    tokenized_string = '~' if args.get('type') == 'url' and key == 'indicator' else ''
                     for value in values:
-                        filter_query += f"{key}:'{value}'+"
+                        filter_query += f"{key}:{tokenized_string}'{value}'+"
                 else:
                     operator: Optional[str] = self.date_params.get(key, {}).get('operator')
                     api_key: Optional[str] = self.date_params.get(key, {}).get('api_key')
@@ -80,7 +81,7 @@ class Client:
 
         return filter_query
 
-    def get_indicator(self, indicator_value: str, indicator_type: str) -> Dict[str, Any]:
+    def get_indicator(self, indicator_value: str) -> Dict[str, Any]:
         # crowdstrike do not allow passing single quotes - so we encode them
         # we are not encoding the entire indicator value, as the other reserved chars (such as + and &) are allowed
         indicator_value = indicator_value.replace("'", "%27")
@@ -88,13 +89,6 @@ class Client:
             'indicator': indicator_value,
             'limit': 1
         }
-        if indicator_type == 'hash':
-            args['type'] = get_indicator_hash_type(indicator_value)
-        elif indicator_type == 'ip':
-            args['type'] = 'ip_address'
-        else:
-            args['type'] = indicator_type
-
         params: Dict[str, Any] = self.build_request_params(args)
         return self.cs_client.http_request(method='GET', url_suffix='intel/combined/indicators/v1', params=params)
 
@@ -211,6 +205,25 @@ def get_indicator_object(indicator_value: Any, indicator_type: str, dbot_score: 
         return None
 
 
+def should_filter_resource_by_type(resource, indicator_type, indicator_value):
+    """
+    checks if a resource should be filtered by his type.
+    :param resource: The resource object
+    :param indicator_type: The indicator type
+    :param indicator_value: The indicator value
+    :return: True if the resource should be filtered (don't match the indicator type) or False otherwise.
+    """
+    # indicator type was not filtered using the query due to a bug in the CrowdStrike API.
+    if indicator_type == 'hash':
+        filter_type = get_indicator_hash_type(indicator_value)
+    elif indicator_type == 'ip':
+        filter_type = 'ip_address'
+    else:
+        filter_type = indicator_type
+
+    return resource.get('type') != filter_type
+
+
 def build_indicator(indicator_value: str, indicator_type: str, title: str, client: Client) -> List[CommandResults]:
     """
     Builds an indicator entry
@@ -220,12 +233,14 @@ def build_indicator(indicator_value: str, indicator_type: str, title: str, clien
     :param client: The integration's client
     :return: The indicator entry
     """
-    res: Dict[str, Any] = client.get_indicator(indicator_value, indicator_type)
+    res: Dict[str, Any] = client.get_indicator(indicator_value)
     resources: List[Any] = res.get('resources', [])
     results: List[CommandResults] = []
 
     if resources:
         for r in resources:
+            if should_filter_resource_by_type(r, indicator_type, indicator_value):
+                continue
             output = get_indicator_outputs(r)
             score = get_score_from_resource(r)
             dbot_score = Common.DBotScore(
