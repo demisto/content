@@ -26,7 +26,7 @@ class ExchangeOnlinePowershellV2Client
             [string]$url,
             [string]$app_id,
             [string]$organization,
-            [SecureString]$certificate,
+            [string]$certificate,
             [SecureString]$password
     )
     {
@@ -702,7 +702,7 @@ function Main
     }
     elseif ($integration_params.certificate_encrypted.password)
     {
-        $certificate = ConvertTo-SecureString $integration_params.certificate_encrypted.password -AsPlainText -Force
+        $certificate = $integration_params.certificate_encrypted.password
     }
     else
     {
