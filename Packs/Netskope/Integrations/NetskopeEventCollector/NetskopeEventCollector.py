@@ -13,6 +13,15 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+# Relevant for api version v1
+TIME_PERIOD_MAPPING = {
+    'Last 60 Minutes': 3600,
+    'Last 24 Hours': 86400,
+    'Last 7 Days': 604800,
+    'Last 30 Days': 2592000,
+    'Last 60 Days': 5184000,
+    'Last 90 Days': 7776000
+}
 
 ''' CLIENT CLASS '''
 
@@ -28,13 +37,17 @@ class Client(BaseClient):
         proxy (bool): Specifies if to use XSOAR proxy settings.
     """
 
-    def __init__(self, base_url: str, token: str, validate_certificate: bool, proxy: bool):
+    def __init__(self, base_url: str, token: str, api_version: str, validate_certificate: bool, proxy: bool):
         super().__init__(base_url, verify=validate_certificate, proxy=proxy)
-        self._session.params['token'] = token
+        if api_version == 'v1':
+            self._session.params['token'] = token
+        else:
+            self.headers = {'Netskope-Api-Token': token}
 
-    def v1_get_events_request(self, timeperiod: Optional[int] = None, limit: Optional[int] = None) -> Dict[str, Any]:
+    def v1_get_application_events_request(self, timeperiod: Optional[int] = None,
+                                          limit: Optional[int] = None) -> Dict[str, Any]:
         """
-        Get events extracted from SaaS traffic and or logs.
+        Get application events extracted from SaaS traffic and or logs.
 
         Args:
             timeperiod (Optional[int]): Get all events from a certain time period.
@@ -44,7 +57,41 @@ class Client(BaseClient):
             Dict[str, Any]: Netskope events.
         """
         url_suffix = 'events'
-        body = {'timeperiod': timeperiod, 'limit': limit}
+        body = {'timeperiod': timeperiod, 'limit': limit, 'type': 'application'}
+
+        return self._http_request(method='GET', url_suffix=url_suffix, json_data=body)
+
+    def v1_get_audit_events_request(self, timeperiod: Optional[int] = None,
+                                          limit: Optional[int] = None) -> Dict[str, Any]:
+        """
+        Get audit events extracted from SaaS traffic and or logs.
+
+        Args:
+            timeperiod (Optional[int]): Get all events from a certain time period.
+            limit (Optional[int]): The maximum amount of events to retrieve (up to 10000 events).
+
+        Returns:
+            Dict[str, Any]: Netskope events.
+        """
+        url_suffix = 'events'
+        body = {'timeperiod': timeperiod, 'limit': limit, 'type': 'audit'}
+
+        return self._http_request(method='GET', url_suffix=url_suffix, json_data=body)
+
+    def v1_get_network_events_request(self, timeperiod: Optional[int] = None,
+                                      limit: Optional[int] = None) -> Dict[str, Any]:
+        """
+        Get network events extracted from SaaS traffic and or logs.
+
+        Args:
+            timeperiod (Optional[int]): Get all events from a certain time period.
+            limit (Optional[int]): The maximum amount of events to retrieve (up to 10000 events).
+
+        Returns:
+            Dict[str, Any]: Netskope events.
+        """
+        url_suffix = 'events'
+        body = {'timeperiod': timeperiod, 'limit': limit, 'type': 'network'}
 
         return self._http_request(method='GET', url_suffix=url_suffix, json_data=body)
 
@@ -180,36 +227,36 @@ def test_module(client: Client, api_version: str) -> str:
         return f'Test failed - {response.get("errorCode")}, {response.get("errors")}'
 
 
-def v1_get_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-
-    limit = arg_to_number(args.get('limit', 50))
-    timeperiod = arg_to_seconds_timestamp(args.get('timeperiod', 259200))
-
-    result = client.v1_get_alerts_request(timeperiod, limit)
-    outputs = result.get('data', [])
-
-    return CommandResults(
-        outputs_prefix='Netskope.Alert',
-        outputs_key_field='_id',
-        readable_output=f'Alerts List: {outputs}',
-        outputs=outputs,
-        raw_response=result
-    )
-
-
 def v1_get_events_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    limit = arg_to_number(args.get('limit', 50))
-    timeperiod = arg_to_seconds_timestamp(args.get('timeperiod', 259200))
-    result = client.v1_get_events_request(timeperiod, limit)
-    outputs = result.get('data', [])
+    limit = arg_to_number(args.get('limit', 20))
+    timeperiod = TIME_PERIOD_MAPPING.get(args.get('timeperiod'))
+    application_result = client.v1_get_application_events_request(timeperiod, limit)
+    outputs = application_result.get('data', [])
+    alert_results = client.v1_get_alerts_request(timeperiod, limit)
+    alert_output = alert_results.get('data', [])
+    outputs.extend(alert_output)
+    audit_results = client.v1_get_audit_events_request(timeperiod, limit)
+    audit_output = audit_results.get('data', [])
+    outputs.extend(audit_output)
+    network_results = client.v1_get_network_events_request(timeperiod, limit)
+    network_output = network_results.get('data', [])
+    outputs.extend(network_output)
 
-    return CommandResults(
-        outputs_prefix='Netskope.Event',
-        outputs_key_field='_id',
-        readable_output=f'Events List: {outputs}',
-        outputs=outputs,
-        raw_response=result
-    )
+    for event in outputs:
+        event['timestamp'] = timestamp_to_datestring(event['timestamp'] * 1000)
+
+    readable_output = tableToMarkdown('Events List:', outputs,
+                                      removeNull=True,
+                                      headers=['_id', 'timestamp', 'type', 'access_method', 'app', 'traffic_type'],
+                                      headerTransform=string_to_table_header)
+
+    return CommandResults(outputs_prefix='Netskope.Event',
+                          outputs_key_field='_id',
+                          outputs=outputs,
+                          readable_output=readable_output,
+                          raw_response=outputs)
+
+def fetch_events_v1():
 
 
 def v2_get_events_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -246,7 +293,7 @@ def main() -> None:
     url = params.get('url')
     api_version = params.get('api_version')
     token = demisto.params().get('credentials', {}).get('password')
-    base_url = urljoin(url, f'/api/{api_version}')
+    base_url = urljoin(url, f'/api/{api_version}/')
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
     first_fetch = params.get('first_fetch')
@@ -254,20 +301,21 @@ def main() -> None:
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
-        client = Client(base_url, token, verify_certificate, proxy)
+        client = Client(base_url, token, api_version, verify_certificate, proxy)
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             result = test_module(client, api_version)
             return_results(result)
 
-        elif demisto.command() == 'netskope-get-alerts':
-            return_results(v1_get_alerts_command(client, demisto.args()))
         elif demisto.command() == 'netskope-get-events':
             if api_version == 'v1':
                 return_results(v1_get_events_command(client, demisto.args()))
             else:
                 return_results(v2_get_events_command(client, demisto.args()))
+        elif demisto.command() == 'fetch-events':
+            if api_version == 'v1':
+                send_events_to_xsiam()
 
     # Log exceptions and return errors
     except Exception as e:

@@ -7,10 +7,19 @@ configuration:
   name: url
   required: true
   type: 0
-- display: API Token
+- displaypassword: API token
+  hidden: false
+  hiddenusername: true
   name: credentials
   required: true
   type: 9
+- additionalinfo: The API version to use (v1 or v2).
+  defaultvalue: v2
+  display: API Version
+  hidden: false
+  name: api_version
+  required: false
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -52,10 +61,19 @@ script:
       name: limit
       required: false
       secret: false
-    - default: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Last 24 Hours
       description: Get alerts for certain time period.
       isArray: false
       name: timeperiod
+      predefined:
+      - Last 60 Minutes
+      - Last 24 Hours
+      - Last 7 Days
+      - Last 30 Days
+      - Last 60 Days
+      - Last 90 Days
       required: false
       secret: false
     deprecated: false
@@ -63,15 +81,20 @@ script:
       watch list alerts. (This command is working only with the api v1).
     execution: false
     name: netskope-get-alerts
-    outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
-      type: String
   - arguments:
-    - default: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Last 24 Hours
       description: Get alerts for certain time period.
       isArray: false
       name: timeperiod
+      predefined:
+      - Last 60 Minutes
+      - Last 24 Hours
+      - Last 7 Days
+      - Last 30 Days
+      - Last 60 Days
+      - Last 90 Days
       required: false
       secret: false
     - default: false
@@ -95,4 +118,4 @@ script:
   type: python
 tests:
 - No tests (auto formatted)
-fromversion: 6.8.0
+fromversion: 6.5.0
