@@ -1,4 +1,4 @@
-This playbook is part of the 'Malware Investigation And Response' pack. For more information, please refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
 This playbook assists in retrieving file paths from the Cortex XDR incident by hash.
 
 ## Dependencies
@@ -11,7 +11,7 @@ This playbook does not use any sub-playbooks.
 This playbook does not use any integrations.
 
 ### Scripts
-* SetAndHandleEmpty
+SetAndHandleEmpty
 
 ### Commands
 This playbook does not use any commands.
@@ -21,14 +21,14 @@ This playbook does not use any commands.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| NonFoundHashes | List of hashes that you would like to run against. |  | Optional |
+| NonFoundHashes | List of hashes to run against. |  | Optional |
 
 ## Playbook Outputs
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| fileRetrieval | The path for the requested file | unknown |
+| fileRetrieval | The path for the requested file. | unknown |
 
 ## Playbook Image
 ---
