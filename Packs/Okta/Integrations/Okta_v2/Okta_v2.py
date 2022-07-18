@@ -525,13 +525,33 @@ class Client(BaseClient):
             if key == 'query':
                 key = 'q'
             query_params[key] = encode_string_results(value)
-        if args.get('limit'):
-            return self._http_request(
-                method='GET',
-                url_suffix=uri,
-                params=query_params
+        limit = args.get('limit')
+        collected_results = self.collect_paged_results(uri, query_params, limit)
+        if not limit:
+            return collected_results
+        else:
+
+
+    def collect_paged_results(self, uri, query_param=None, limit=None):
+        response = self._http_request(
+            method="GET",
+            url_suffix=uri,
+            resp_type='response',
+            params=query_param
+        )
+        paged_results = response.json()
+        while ("next" in response.links and len(response.json()) > 0) and ((not limit) or (limit and len(paged_results) < limit)):
+            next_page = response.links.get("next").get("url")
+            response = self._http_request(
+                method="GET",
+                full_url=next_page,
+                url_suffix='',
+                resp_type='response',
+                params=query_param
+
             )
-        return self.get_paged_results(uri, query_params)
+            paged_results += response.json()
+        return paged_results
 
     def list_groups(self, args):
         # Base url - if none of the the above specified - returns all the groups (default 200 items)
