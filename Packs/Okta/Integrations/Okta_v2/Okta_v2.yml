@@ -398,9 +398,10 @@ script:
     deprecated: false
     execution: false
   - arguments:
-    - description: The maximum number of results to return.
+    - description: The maximum number of results to return, the default is 200.
       name: limit
-      default: false
+      default: true
+      - defaultValue: '200'
       isArray: false
       required: false
       secret: false

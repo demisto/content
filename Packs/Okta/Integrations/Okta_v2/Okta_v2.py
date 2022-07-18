@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
+import urlparse
 
 # IMPORTS
 # Disable insecure warnings
@@ -526,13 +526,48 @@ class Client(BaseClient):
                 key = 'q'
             query_params[key] = encode_string_results(value)
         limit = args.get('limit')
-        collected_results = self.collect_paged_results(uri, query_params, limit)
-        if not limit:
-            return collected_results
-        else:
+        response = self._http_request(
+            method="GET",
+            url_suffix=uri,
+            resp_type='response',
+            params=query_params
+        )
+        paged_results = response.json()
+        if limit > 200:
+            query_params.pop('limit')
+            if 'after' in query_params:
+                query_params.pop('after')
+            limit -= 200
+            while (limit - 200) > 0 and "next" in response.links and len(response.json()) > 0:
+                limit -= 200
+                next_page = response.links.get("next").get("url")
+                response = self._http_request(
+                    method="GET",
+                    full_url=next_page,
+                    url_suffix='',
+                    resp_type='response',
+                    params=query_params
+                )
+                paged_results += response.json()
+            if limit != 0 and "next" in response.links and len(response.json()) > 0:
+                query_params['after'] = self.get_after_tag(response.links.get("next").get("url"))
+                query_params['limit'] = limit
+                response = self._http_request(
+                    method="GET",
+                    url_suffix=uri,
+                    resp_type='response',
+                    params=query_params
+                )
+                paged_results += response.json()
+        after = None
+        if limit != 0 and "next" in response.links and len(response.json()) > 0:
+            after = self.get_after_tag(response.links.get("next").get("url"))
 
+    def get_after_tag(self, url):
+        parsed_url = urlparse.urlparse(url)
+        captured_value = urlparse.parse_qs(parsed_url.query)['after'][0]
 
-    def collect_paged_results(self, uri, query_param=None, limit=None):
+    def get_limited_results(self, uri, query_param=None, limit=None):
         response = self._http_request(
             method="GET",
             url_suffix=uri,
@@ -540,7 +575,7 @@ class Client(BaseClient):
             params=query_param
         )
         paged_results = response.json()
-        while ("next" in response.links and len(response.json()) > 0) and ((not limit) or (limit and len(paged_results) < limit)):
+        while limit and limit > len(paged_results) and "next" in response.links and len(response.json()) > 0:
             next_page = response.links.get("next").get("url")
             response = self._http_request(
                 method="GET",
@@ -548,10 +583,10 @@ class Client(BaseClient):
                 url_suffix='',
                 resp_type='response',
                 params=query_param
-
             )
             paged_results += response.json()
         return paged_results
+    
 
     def list_groups(self, args):
         # Base url - if none of the the above specified - returns all the groups (default 200 items)
