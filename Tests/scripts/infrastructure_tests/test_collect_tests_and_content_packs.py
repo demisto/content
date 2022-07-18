@@ -280,7 +280,7 @@ class TestChangedTestPlaybook:
         with open("./artifacts/filter_envs.json", "r") as filter_envs_file:
             filter_envs = json.load(filter_envs_file)
         assert filter_envs.get('Server Master') is True
-        assert filter_envs.get('Server 6.2') is True
+        assert filter_envs.get('Server 6.6') is True
 
     def test_get_from_version_and_to_version_from_modified_files(self):
         """
@@ -308,7 +308,7 @@ class TestChangedTestPlaybook:
         with open("./artifacts/filter_envs.json", "r") as filter_envs_file:
             filter_envs = json.load(filter_envs_file)
         assert filter_envs.get('Server Master') is True
-        assert filter_envs.get('Server 6.2') is True
+        assert filter_envs.get('Server 6.6') is True
 
     def test_get_from_and_to_version_from_modified_files(self):
         """
