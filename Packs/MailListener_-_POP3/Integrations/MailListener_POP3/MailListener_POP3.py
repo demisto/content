@@ -38,8 +38,6 @@ def connect_pop3_server():
         else:
             pop3_server_conn = poplib.POP3(SERVER, PORT)  # type: ignore
 
-        pop3_server_conn.stls()
-
         pop3_server_conn.getwelcome()  # type: ignore
         pop3_server_conn.user(EMAIL)  # type: ignore
         pop3_server_conn.pass_(PASSWORD)  # type: ignore
