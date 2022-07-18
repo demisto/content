@@ -26,14 +26,14 @@ Automate the process of google dorking searches in order to detect leaked data.
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### google-search
+### google-dorking-search
 ***
 Use the google search engine to search a query.
 
 
 #### Base Command
 
-`google-search`
+`google-dorking-search`
 #### Input
 
 | **Argument Name** | **Description** | **Required** |

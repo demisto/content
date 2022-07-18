@@ -4,6 +4,7 @@ import urllib3
 import dateparser
 import traceback
 import json
+import math
 from os import path
 from typing import Optional, Union, Callable
 
@@ -34,10 +35,6 @@ class Client(BaseClient):
     @property
     def max_results(self):
         return self._max_results
-
-    @max_results.setter
-    def max_results(self, value):
-        self._max_results = value
 
     @property
     def after(self):
@@ -95,13 +92,6 @@ class Client(BaseClient):
         return query
 
 
-def calculate_pages(max_results: int) -> int:
-    max_pages = max_results // MAX_RESULTS_PER_PAGE
-    if max_results % MAX_RESULTS_PER_PAGE:
-        max_pages += 1
-    return max_pages
-
-
 def calculate_page_size(current_page: int, max_results: int) -> int:
     results_so_far = current_page * MAX_RESULTS_PER_PAGE
     if (results_diff := max_results - results_so_far) < MAX_RESULTS_PER_PAGE:
@@ -114,7 +104,7 @@ def get_search_results(client: Client, parser: Callable) -> Union[list, str]:
     results = []
     query = client.build_query()
     all_pages_found = False
-    pages = calculate_pages(client.max_results)
+    pages = math.ceil(client.max_results / MAX_RESULTS_PER_PAGE)
     current_page = 0
     start = 0
     while not all_pages_found and current_page < pages:
@@ -132,7 +122,7 @@ def get_search_results(client: Client, parser: Callable) -> Union[list, str]:
         start += results_in_page
         total = int(demisto.get(page, 'searchInformation.totalResults',
                                 demisto.get(page, 'queries.request.totalResults', 0)))
-        all_pages_found = total < start
+        all_pages_found = total <= start
     if not results:
         return "No results found"
     return results
@@ -140,8 +130,7 @@ def get_search_results(client: Client, parser: Callable) -> Union[list, str]:
 
 def item_to_incident(client: Client, item: dict) -> list:
     files = []
-    if 'link' in item:
-        link = item['link']
+    if link := item.get('link'):
         try:
             file_result = fileResult(path.basename(link),
                                      client._http_request('GET', full_url=link, resp_type='content'))
@@ -160,8 +149,7 @@ def item_to_incident(client: Client, item: dict) -> list:
 
 def item_to_result(client: Client, item: dict) -> list:
     results = []
-    if 'link' in item:
-        link = item['link']
+    if link := item.get('link'):
         file_result = fileResult(path.basename(link), client._http_request('GET', full_url=link, resp_type='content'))
         results.append(file_result)
     results.append(
@@ -232,7 +220,7 @@ def main() -> None:
         arg_name='First fetch time',
         required=False
     )
-    max_fetch = max(arg_to_number(params.get('max_fetch'), 'Max Fetch') or MAX_INCIDENTS_TO_FETCH,
+    max_fetch = max(arg_to_number(params.get('max_fetch')) or MAX_INCIDENTS_TO_FETCH,
                     MAX_INCIDENTS_TO_FETCH)
     command = demisto.command()
     args = demisto.args()
@@ -257,7 +245,7 @@ def main() -> None:
             result = test_module(client)
             return_results(result)
 
-        elif command == 'google-search':
+        elif command == 'google-dorking-search':
             return_results(google_search_command(client, **args))
 
         elif command == 'fetch-incidents':

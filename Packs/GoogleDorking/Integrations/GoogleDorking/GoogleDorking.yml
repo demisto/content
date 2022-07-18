@@ -100,7 +100,7 @@ script:
   script: ''
   type: python
   commands:
-  - name: google-search
+  - name: google-dorking-search
     arguments:
     - name: after
       description: 'Search after this date. Expected format: YYYY-MM-DD.'
