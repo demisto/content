@@ -2569,7 +2569,6 @@ def init_globals(command_name: str = ''):
             demisto.info(f'setting _default_executor on loop: {loop} id: {id(loop)}')
             loop.set_default_executor(concurrent.futures.ThreadPoolExecutor(max_workers=4))
 
-
     # Handle Long-Running Specific Globals
     if command_name == 'long-running-execution':
         # Bot identification
