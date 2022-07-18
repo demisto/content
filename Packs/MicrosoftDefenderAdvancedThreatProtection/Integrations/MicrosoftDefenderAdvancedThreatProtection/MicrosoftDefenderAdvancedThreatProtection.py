@@ -5013,7 +5013,7 @@ def main():  # pragma: no cover
         elif command == 'microsoft-atp-advanced-hunting-cover-up':
             return_results(cover_up_command(client, args))
         elif command == 'microsoft-atp-offboard-machine':
-            return_outputs(offboard_machine_command(client, args))
+            return_results(offboard_machine_command(client, args))
         elif command == 'microsoft-atp-get-machine-users':
             return_results(get_machine_users_command(client, args))
         elif command == 'microsoft-atp-get-machine-alerts':
