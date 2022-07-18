@@ -1,9 +1,9 @@
 {
     "name": "Google Dorking",
     "description": "Automate the process of google dorking searches in order to detect leaked data.",
-    "support": "xsoar",
+    "support": "community",
     "currentVersion": "1.0.0",
-    "author": "Cortex XSOAR",
+    "author": "David Baumstien",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [

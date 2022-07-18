@@ -1172,9 +1172,9 @@ tasks:
       '#none#':
       - "32"
     scriptarguments:
-      dataowner:
+      googledorkingdataowner:
         simple: ${Data owner details.Answers.0}
-      dataownermail:
+      googledorkingdataownermail:
         simple: ${Data owner details.Answers.1}
     separatecontext: false
     view: |-
@@ -1208,7 +1208,7 @@ tasks:
       '#none#':
       - "26"
     scriptarguments:
-      dataclassification:
+      googledorkingdataclassification:
         simple: ${Provide the data classification.Answers.0}
     separatecontext: false
     view: |-
@@ -1554,9 +1554,9 @@ tasks:
       AutoNotification:
         simple: "False"
       ContactEmailAddress:
-        simple: ${incident.dataownermail}
+        simple: ${incident.googledorkingdataownermail}
       ContactName:
-        simple: ${incident.dataowner}
+        simple: ${incident.googledorkingdataowner}
       ResidentNotification_WhatCanTheyDo:
         simple: "First, change your online login information, passwords, and security questions-and-answers. \nSecond, if you used similar login information and passwords for different sites - change the login information, passwords, and security Q&A to them, too.\nThird, pay attention if you start receiving notices of password changes to your current accounts or find yourself locked out of your accounts.\nFourth, Consider implementing two-factor-authentication to your account to reduce the risk of unauthorized access in your account."
     separatecontext: true
@@ -1599,9 +1599,9 @@ tasks:
       AutoNotification:
         simple: "False"
       ContactEmailAddress:
-        simple: ${incident.dataownermail}
+        simple: ${incident.googledorkingdataownermail}
       ContactName:
-        simple: ${incident.dataowner}
+        simple: ${incident.googledorkingdataowner}
     separatecontext: true
     loop:
       iscommand: false
