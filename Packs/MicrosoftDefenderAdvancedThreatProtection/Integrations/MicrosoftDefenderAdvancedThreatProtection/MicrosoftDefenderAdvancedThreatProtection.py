@@ -2026,8 +2026,8 @@ def offboard_machine_command(client: MsClient, args: dict):
     human_readable += add_error_message(failed_machines, machine_ids)
 
     return CommandResults(
-        outputs = machines_action_data,
-        outputs_prefix = 'OffboardMachine',
+        outputs=machines_action_data,
+        outputs_prefix="MicrosoftATP.OffboardMachine",
         outputs_key_field=["ID", "MachineID"],
         readable_output=human_readable,
         raw_response=raw_response
