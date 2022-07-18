@@ -994,15 +994,20 @@ This is visible
         modified_data = {
             "Integrations": [
                 {
-                    "file_path": "some/path",
-                    "display_name": "Integration Display Name"
+                    'integration_id':
+                        {
+                            "file_path": "some/path",
+                            "display_name": "Integration Display Name"
+                        }
                 }
             ]
+
         }
         dummy_pack._is_modified = True
         version_changelog, _ = dummy_pack._create_changelog_entry(release_notes=release_notes,
                                                                   version_display_name=version_display_name,
-                                                                  build_number=build_number, modified_files_data=modified_data,
+                                                                  build_number=build_number,
+                                                                  modified_files_data=modified_data,
                                                                   new_version=False)
 
         assert version_changelog['releaseNotes'] == "#### Integrations\n##### Integration Display Name\n- Fixed an issue"
@@ -1028,18 +1033,23 @@ This is visible
         modified_data = {
             "Integrations": [
                 {
-                    "file_path": "some/path",
-                    "display_name": "Integration 2 Display Name"
+                    'id':
+                        {
+                            "file_path": "some/path",
+                            "display_name": "Integration 2 Display Name"
+                        }
                 }
             ]
         }
         dummy_pack._is_modified = True
         version_changelog, _ = dummy_pack._create_changelog_entry(release_notes=release_notes,
                                                                   version_display_name=version_display_name,
-                                                                  build_number=build_number, modified_files_data=modified_data,
+                                                                  build_number=build_number,
+                                                                  modified_files_data=modified_data,
                                                                   new_version=False)
 
-        assert version_changelog['releaseNotes'] == "#### Integrations\n##### Integration 2 Display Name\n- Fixed another issue"
+        assert version_changelog['releaseNotes'] == \
+               "#### Integrations\n##### Integration 2 Display Name\n- Fixed another issue"
 
     def test_create_filtered_changelog_entry_no_related_modifications(self, dummy_pack: Pack):
         """
@@ -1060,15 +1070,19 @@ This is visible
         modified_data = {
             "Integrations": [
                 {
-                    "file_path": "some/path",
-                    "display_name": "Other Integration Display Name"
+                    'id':
+                        {
+                            "file_path": "some/path",
+                            "display_name": "Other Integration Display Name"
+                        }
                 }
             ]
         }
         dummy_pack._is_modified = True
         version_changelog, _ = dummy_pack._create_changelog_entry(release_notes=release_notes,
                                                                   version_display_name=version_display_name,
-                                                                  build_number=build_number, modified_files_data=modified_data,
+                                                                  build_number=build_number,
+                                                                  modified_files_data=modified_data,
                                                                   new_version=False)
 
         assert not version_changelog
@@ -1180,7 +1194,8 @@ This is visible
 #### Scripts
 ##### New: Script Name
 - Fixed script''', 'xsoar',
-            "#### Integrations\n##### New: Integration Display Name\n- Fixed an issue\n\n#### Scripts\n##### New: Script Name\n\
+            "#### Integrations\n##### New: Integration Display Name\n- Fixed an issue\n\n#### Scripts\n##### New: "
+            "Script Name\n\
 - Fixed script")
     ])
     def test_create_filtered_changelog_entry_by_mp_tags(self, dummy_pack: Pack, release_notes, upload_marketplace,
@@ -1208,25 +1223,37 @@ This is visible
         modified_data = {
             "Integrations": [
                 {
-                    "file_path": "some/path",
-                    "display_name": "Integration Display Name"
+                    'id':
+                        {
+                            "file_path": "some/path",
+                            "display_name": "Integration Display Name"
+                        }
                 }
             ],
             "Scripts": [
                 {
-                    "file_path": "some/path",
-                    "display_name": "Script Name"
+                    'id':
+                        {
+                            "file_path": "some/path",
+                            "display_name": "Script Name"
+                        }
                 }
             ],
             "IncidentFields": [
-                {"display_name": "Field Name 1"}
+                {
+                    'id':
+                        {
+                            "display_name": "Field Name 1"
+                        }
+                }
             ]
         }
-        # dummy_pack._marketplaces = [upload_marketplace]
+        dummy_pack._marketplaces = [upload_marketplace]
         dummy_pack._is_modified = True
         version_changelog, _ = dummy_pack._create_changelog_entry(release_notes=release_notes,
                                                                   version_display_name=version_display_name,
-                                                                  build_number=build_number, modified_files_data=modified_data,
+                                                                  build_number=build_number,
+                                                                  modified_files_data=modified_data,
                                                                   new_version=False, marketplace=upload_marketplace)
 
         if not expected_result:
@@ -1413,17 +1440,18 @@ class TestFilterChangelog:
             Then:
                 - Ensure the filtered entries resulte is as expected.
         """
-        release_notes = self.RN_ENTRY_WITH_TAGS.format(mp=self.TAG_BY_MP[marketplace], mp2=self.TAG_BY_MP[upload_marketplace])
+        release_notes = self.RN_ENTRY_WITH_TAGS.format(mp=self.TAG_BY_MP[marketplace],
+                                                       mp2=self.TAG_BY_MP[upload_marketplace])
         result = dummy_pack.filter_release_notes_by_tags(release_notes, upload_marketplace)
 
         assert result == expected_result
 
     @pytest.mark.parametrize('files_data, expected_result', [
-        ({"Integrations": [{"display_name": "Display Name 2"}],
-          "IncidentFields": [{"display_name": "Field name 1"}, {"display_name": "Field name 3"}]},
+        ({"Integrations": [{'id': {"display_name": "Display Name 2"}}],
+          "IncidentFields": [{'id': {"display_name": "Field name 1"}}, {'id': {"display_name": "Field name 3"}}]},
          {"Integrations": {"Display Name 2": "- Some entry1."},
           "Incident Fields": {"[special_msg]": "- **Field name 1**\n\n- **Field name 3**"}}),
-        ({"IncidentFields": [{"display_name": "Field name 1"}, {"display_name": "Field name 2"}]},
+        ({"IncidentFields": [{'id': {"display_name": "Field name 1"}}, {'id': {"display_name": "Field name 2"}}]},
          {"Incident Fields": {"[special_msg]": "- **Field name 1**\n- **Field name 2**\n"}})
     ])
     def test_filter_by_display_name(self, dummy_pack: Pack, files_data, expected_result):
@@ -1435,7 +1463,8 @@ class TestFilterChangelog:
             Then:
                 - Ensure the filtered entries resulte is as expected.
         """
-        assert dummy_pack.filter_release_notes_by_entities_display_name(self.RN_ENTRIES_DICTIONARY, files_data) == expected_result
+        assert dummy_pack.filter_release_notes_by_entities_display_name(self.RN_ENTRIES_DICTIONARY, files_data) == \
+               expected_result
 
 
 class TestImagesUpload:
@@ -2867,7 +2896,8 @@ class TestDetectModified:
         # open_mocker[os.path.join(dummy_pack.path, Pack.RELEASE_NOTES, '2_0_2.md')].read_data = 'wow'
         status, _ = dummy_pack.detect_modified(content_repo, dummy_path, 'current_hash', 'previous_hash')
 
-        assert dummy_pack._modified_files['Integrations'][0] == 'Packs/TestPack/Integrations/integration/integration.yml'
+        assert dummy_pack._modified_files['Integrations'][0] == \
+               'Packs/TestPack/Integrations/integration/integration.yml'
         assert dummy_pack._is_modified
         assert status is True
 
@@ -2881,14 +2911,14 @@ class TestCheckChangesRelevanceForMarketplace:
                 "int_id_1": {
                     "name": "Dummy name 1",
                     "display_name": "Dummy display name 1",
-                    "file_path": "path/to/integration1"
+                    "file_path": "Packs/pack_name/Integrations/integration_name/file"
                 }
             },
             {
                 "int_id_2": {
                     "name": "Dummy name 2",
                     "display_name": "Dummy display name 2",
-                    "file_path": "path/to/integration2"
+                    "file_path": "Packs/pack_name/Integrations/integration_name2/file"
                 }
             }
         ],
@@ -2897,7 +2927,7 @@ class TestCheckChangesRelevanceForMarketplace:
                 "xsiam_dash_id_1": {
                     "name": "Dummy xdash name",
                     "display_name": "Dummy xdash display name",
-                    "file_path": "path/to/xsiamdashboard"
+                    "file_path": "Packs/pack_name/Dashboards/dash_name/file"
                 }
             }
         ],
@@ -2915,14 +2945,14 @@ class TestCheckChangesRelevanceForMarketplace:
         sample_pack._marketplaces = ['marketplacev2']
         sample_pack._modified_files = {
             'Integrations': [
-                'path/to/integration1',
-                'path/to/integration3'
+                'Packs/pack_name/Integrations/integration_name/file',
+                'Packs/pack_name/Integrations/integration_name3/file'
             ],
             'Dashboards': [
-                'path/to/dashboard'
+                "Packs/pack_name/Dashboards/dash_name2/file"
             ],
             'XSIAMDashboards': [
-                'path/to/xsiamdashboard'
+                "Packs/pack_name/Dashboards/dash_name/file"
             ]
         }
         return sample_pack
@@ -2939,20 +2969,28 @@ class TestCheckChangesRelevanceForMarketplace:
         """
         id_set_copy = self.ID_SET_MP_V2.copy()
         expected_modified_files_data = {
-            "Integrations": [
-                {
-                    "name": "Dummy name 1",
-                    "display_name": "Dummy display name 1",
-                    "file_path": "path/to/integration1"
-                }
-            ],
-            "XSIAMDashboards": [
-                {
-                    "name": "Dummy xdash name",
-                    "display_name": "Dummy xdash display name",
-                    "file_path": "path/to/xsiamdashboard"
-                }
-            ]
+            "Integrations":
+                [
+                    {
+                        'int_id_1':
+                            {
+                                "name": "Dummy name 1",
+                                "display_name": "Dummy display name 1",
+                                "file_path": "Packs/pack_name/Integrations/integration_name/file"
+                            }
+                    }
+                ],
+            "XSIAMDashboards":
+                [
+                    {
+                        'xsiam_dash_id_1':
+                            {
+                                "name": "Dummy xdash name",
+                                "display_name": "Dummy xdash display name",
+                                "file_path": "Packs/pack_name/Dashboards/dash_name/file"
+                            }
+                    }
+                ]
         }
 
         status, modified_files_data = dummy_pack.filter_modified_files_by_id_set(id_set_copy)
@@ -2973,7 +3011,7 @@ class TestCheckChangesRelevanceForMarketplace:
         id_set_copy = self.ID_SET_MP_V2.copy()
         dummy_pack._modified_files = {
             'Dashboards': [
-                'path/to/dashboard'
+                'Packs/pack_name/Dashboards/dash_name2/file'
             ]
         }
 
@@ -2993,16 +3031,30 @@ class TestCheckChangesRelevanceForMarketplace:
                - Ensure the mapper exist in the modified files data under Classifiers.
         """
         id_set_copy = self.ID_SET_MP_V2.copy()
-        dummy_pack._modified_files["Classifiers"] = ["path/to/mapper"]
-        id_set_copy["Mappers"] = [{"mapper_id": {"name": "mapper name", "file_path": "path/to/mapper"}}]
+        dummy_pack._modified_files = {
+            "Classifiers": ["Packs/pack_name/Classifiers/file"]
+        }
+        id_set_copy["Mappers"] = [
+            {
+                "mapper_id":
+                    {
+                        "name": "mapper name",
+                        "file_path": "Packs/pack_name/Classifiers/file"
+                    }
+            }
+        ]
         id_set_copy["Classifiers"] = []
         expected_modified_files_data = {
-            "Classifiers": [
-                {
-                    "name": "mapper name",
-                    "file_path": "path/to/mapper"
-                }
-            ]
+            "Classifiers":
+                [
+                    {
+                        "mapper_id":
+                            {
+                                "name": "mapper name",
+                                "file_path": "Packs/pack_name/Classifiers/file"
+                            }
+                    }
+                ]
         }
 
         status, modified_files_data = dummy_pack.filter_modified_files_by_id_set(id_set_copy)

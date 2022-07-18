@@ -1081,18 +1081,17 @@ class Pack(object):
             dict: data from id set for the modified files.
         """
 
+        logging.debug(f"Starting to filter modified files of pack {self._pack_name} by the id set")
+
         task_status = False
         modified_files_data = {}
 
         for pack_folder, modified_file_paths in self._modified_files.items():
-
-            modified_entities = [list(entity.values())[0] for entity in id_set[PACK_FOLDERS_TO_ID_SET_KEYS[pack_folder]]
-                                 if list(entity.values())[0]['file_path'] in modified_file_paths]
-
-            # Check for Mappers since they are in the same folder as Classifiers
-            if pack_folder == PackFolders.CLASSIFIERS.value:
-                modified_entities.extend([list(entity.values())[0] for entity in id_set['Mappers']
-                                          if list(entity.values())[0]['file_path'] in modified_file_paths])
+            modified_entities = []
+            for path in modified_file_paths:
+                if id_set_entity := get_id_set_entity_by_path(Path(path), pack_folder, id_set):
+                    logging.debug(f"The entity with the path {path} is present in the id set")
+                    modified_entities.append(id_set_entity)
 
             if modified_entities:
                 modified_files_data[pack_folder] = modified_entities
@@ -1105,7 +1104,7 @@ class Pack(object):
     def upload_to_storage(self, zip_pack_path, latest_version, storage_bucket, override_pack, storage_base_path,
                           private_content=False, pack_artifacts_path=None, overridden_upload_path=None):
         """ Manages the upload of pack zip artifact to correct path in cloud storage.
-        The zip pack will be uploaded by defaualt to following path: /content/packs/pack_name/pack_latest_version.
+        The zip pack will be uploaded by default to following path: /content/packs/pack_name/pack_latest_version.
         In case that zip pack artifact already exist at constructed path, the upload will be skipped.
         If flag override_pack is set to True, pack will forced for upload.
         If item_upload_path is provided it will override said path, and will save the item to that destination.
@@ -1174,7 +1173,7 @@ class Pack(object):
                 with open(secondary_encryption_key_artifacts_path, "rb") as pack_zip:
                     blob.upload_from_file(pack_zip)
 
-                print(
+                logging.info(
                     f"Copying {secondary_encryption_key_artifacts_path} to {_pack_artifacts_path}/"
                     f"packs/{self._pack_name}.zip")
                 shutil.copy(secondary_encryption_key_artifacts_path,
@@ -1666,7 +1665,7 @@ class Pack(object):
         1. Filter the entry by marketplace intended tags.
         2. Filter by the entity display name if it doesn't exist in id-set.
 
-        If there are not entries after filtering then the pack will be skipped and not be uploaded.
+        If there are no entries after filtering then the pack will be skipped and not be uploaded.
 
         Args:
             changelog_entry: The version changelog object.
@@ -1679,13 +1678,18 @@ class Pack(object):
             (bool) Whether the pack is not updated because the entries are not relevant to the current marketplace.
         """
 
+        logging.debug(f"Starting to filter changelog entries by the entities that are given from id-set for pack "
+                      f"{self._pack_name}")
+
         release_notes = self.filter_release_notes_by_tags(changelog_entry.get(Changelog.RELEASE_NOTES), marketplace)
 
         # Convert the RN entries to a Dict
         release_notes_dict = self.get_release_notes_dict(version, release_notes)
+        logging.debug(f"Release notes entries in dict - {release_notes_dict}")
 
         if self.release_notes_dont_contain_entities_sections(release_notes_str=release_notes,
                                                              release_notes_dict=release_notes_dict):
+            logging.debug(f"The pack {self._pack_name} release notes does not contain any entities")
             return changelog_entry, False
 
         filtered_release_notes_from_tags = self.filter_headers_without_entries(release_notes_dict)  # type: ignore[arg-type]
@@ -1693,25 +1697,28 @@ class Pack(object):
                                                                                     modified_files_data)
 
         if modified_files_data and not filtered_release_notes:
+            logging.debug(f"The pack {self._pack_name} does not have any release notes that are relevant to this "
+                          f"marketplace")
             return {}, True
 
         # Convert the RN dict to string
         changelog_entry[Changelog.RELEASE_NOTES] = construct_entities_block(filtered_release_notes).strip()
+        logging.debug(f"Finall release notes - \n{changelog_entry[Changelog.RELEASE_NOTES]}")
         return changelog_entry, False
 
-    def filter_release_notes_by_entities_display_name(self, release_notes, modified_files):
+    def filter_release_notes_by_entities_display_name(self, release_notes, modified_files_data):
         """
         Filters the RN entries by the modified files display names given from id-set.
 
         Args:
             release_notes (dict): The release notes in a dict object.
-            modified_files (dict): The modified files data that are given from id-set.
+            modified_files_data (dict): The modified files data that are given from id-set.
 
         Return:
             (dict) The filtered release notes.
         """
         filtered_release_notes: dict = {}
-        for pack_folder, entities_data in modified_files.items():
+        for pack_folder, entities_data in modified_files_data.items():
 
             rn_header = RN_HEADER_BY_PACK_FOLDER[pack_folder]
 
@@ -1720,7 +1727,7 @@ class Pack(object):
                 continue
 
             # Filters the RN entries by the entity display name
-            display_names = [entity['display_name'] for entity in entities_data]
+            display_names = [list(entity.values())[0]['display_name'] for entity in entities_data]
             filtered_release_notes_entries = self.filter_entries_by_display_name(release_notes, display_names, rn_header)
 
             if filtered_release_notes_entries:
@@ -1744,6 +1751,7 @@ class Pack(object):
         filtered_entries: dict = {}
         for display_name, rn_entry in release_notes[rn_header].items():
 
+            logging.debug(f"Searching display name '{display_name}' in '{display_names}'.")
             if display_name != '[special_msg]' and display_name.replace("New: ", "") not in display_names:
                 continue
 
@@ -1813,12 +1821,13 @@ class Pack(object):
 
             start_tag, end_tag = TAGS_BY_MP[marketplace]
             if start_tag in release_notes and end_tag in release_notes and marketplace != upload_marketplace:
-                logging.info(f"Filtering irrelevant release notes by tags {start_tag}-{end_tag} of marketplace {marketplace} "
-                             f"for pack {self._pack_name} when uploading to marketplace {upload_marketplace}.")
+                logging.debug(f"Filtering irrelevant release notes by tags of marketplace "
+                              f"{marketplace} for pack {self._pack_name} when uploading to marketplace "
+                              f"{upload_marketplace}.")
                 return re.sub(fr'{start_tag}{TAGS_SECTION_PATTERN}{end_tag}[\n]*', '', release_notes)
             else:
-                logging.info(f"Removing only the tags {start_tag}-{end_tag} since the RN entry is relevant to "
-                             f"marketplace {upload_marketplace}")
+                logging.debug(f"Removing only the tags since the RN entry is relevant "
+                              f"to marketplace {upload_marketplace}")
                 return release_notes.replace(f"{start_tag}", '').replace(f"{end_tag}", '')
 
         # Filters out for XSIAM tags
@@ -1826,8 +1835,8 @@ class Pack(object):
 
         # Filters out for XSOAR tags
         release_notes = remove_tags_section_from_rn(release_notes, XSOAR_MP, upload_marketplace)
-        logging.info(f"RN result after filteing for pack {self._pack_name} in marketplace {upload_marketplace}\n"
-                     f"- {release_notes}")
+        logging.debug(f"RN result after filteing for pack {self._pack_name} in marketplace "
+                      f"{upload_marketplace}\n - {release_notes}")
 
         return release_notes
 
@@ -3693,3 +3702,36 @@ def get_last_commit_from_index(service_account):
     index_string = index_blob.download_as_string()
     index_json = json.loads(index_string)
     return index_json.get('commit')
+
+
+def get_id_set_entity_by_path(entity_path: Path, pack_folder: str, id_set: dict):
+    """
+    Get the full entity dict from the id set of the entity given as a path, if it does not exist in the id set
+    return None. The item's path in the id set is of the yml/json file, so for integrations, scripts and playbooks this
+    function checks if there is an item in the id set that the containing folder of it's yml file is the same as the
+    containing folder of the entity path given. For all other content items, we check if the path's are identical.
+    Args:
+        entity_path: path to entity (content item)
+        pack_folder: containing folder of that item
+        id_set: id set dict
+
+    Returns:
+        id set dict entity if exists, otherwise {}
+    """
+    logging.debug(f"Checking if the entity with the path {entity_path} is present in the id set")
+
+    for id_set_entity in id_set[PACK_FOLDERS_TO_ID_SET_KEYS[pack_folder]]:
+
+        if len(entity_path.parts) == 5:  # Content items that have a sub folder (integrations, scripts, etc)
+            if Path(list(id_set_entity.values())[0]['file_path']).parent == entity_path.parent:
+                return id_set_entity
+
+        else:  # Other content items
+            if list(id_set_entity.values())[0]['file_path'] == str(entity_path):
+                return id_set_entity
+
+    if pack_folder == PackFolders.CLASSIFIERS.value:  # For Classifiers, check also in Mappers
+        for id_set_entity in id_set['Mappers']:
+            if list(id_set_entity.values())[0]['file_path'] == str(entity_path):
+                return id_set_entity
+    return {}

@@ -1,9 +1,9 @@
 {
-    "name": "Unit42 Feed (Deprecated)",
-    "description": "Unit42 feed of published IOCs which contains malicious indicators.",
+    "name": "Unit 42 Feed (Deprecated)",
+    "description": "Deprecated. Use Unit 42 ATOMs Feed instead.",
     "support": "xsoar",
     "serverMinVersion": "5.5.0",
-    "currentVersion": "1.2.0",
+    "currentVersion": "1.2.1",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

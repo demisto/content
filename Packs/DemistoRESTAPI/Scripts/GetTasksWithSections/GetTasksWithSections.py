@@ -105,20 +105,15 @@ def add_url_to_tasks(tasks: List[Dict[str, str]], workplan_url: str):
 
 def get_tasks(incident_id: str):
     urls = demisto.demistoUrls()  # works in multi tenant env as well
-    workplan_url = urls.get('workPlan')
-    res = demisto.executeCommand('demisto-api-get', {'uri': f'/investigation/{incident_id}/workplan'})
-    if isError(res[0]):
-        raise DemistoException(
-            'Encountered an error while getting workplan.'
-            ' Please make sure your Demisto REST API is configured properly.')
-    workplan = demisto.get(res[0], 'Contents.response.invPlaybook')
-    tasks = workplan.get('tasks')
-    if not workplan or not tasks:
+    res = demisto.internalHttpRequest('GET', f'/investigation/{incident_id}/workplan')
+    demisto.debug(f'sent GET /investigation/{incident_id}/workplan, got response={res}')
+    if not (tasks := json.loads(res.get('body', '{}')).get('invPlaybook', {}).get('tasks', {})):
         raise DemistoException(f'Workplan for incident {incident_id}, has no tasks.')
+    demisto.debug(f'got {len(tasks)} tasks')
     start_task = find_start_task(tasks)
     tasks_nested_results: Dict = {}
     traverse_tasks(tasks, start_task, tasks_nested_results)
-    task_results, md = get_tasks_and_readable(tasks_nested_results, workplan_url)
+    task_results, md = get_tasks_and_readable(tasks_nested_results, urls.get('workPlan'))
     return CommandResults(outputs_prefix='Tasks',
                           outputs_key_field='id',
                           entry_type=EntryType.NOTE,
@@ -159,7 +154,8 @@ def main():
             incident_id = demisto.incident().get('id')
         return_results(get_tasks(incident_id))
     except Exception as e:
-        return_error(f'Failed to execute  GetTasksWithSections.\nError:\n{str(e)}')
+        demisto.error(traceback.format_exc())  # print the traceback
+        return_error(f'Failed to execute GetTasksWithSections.\nError:\n{type(e)}, {str(e)}')
 
 
 if __name__ in ('__main__', 'builtin', 'builtins'):

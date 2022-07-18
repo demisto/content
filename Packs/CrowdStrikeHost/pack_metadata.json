@@ -1,6 +1,6 @@
 {
     "name": "FalconHost (Deprecated)",
-    "description": "Crowdstrike IOCs and detections API",
+    "description": "Deprecated. Use CrowdStrike Falcon instead.",
     "support": "xsoar",
     "currentVersion": "1.1.7",
     "author": "Cortex XSOAR",

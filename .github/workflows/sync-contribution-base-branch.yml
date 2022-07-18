@@ -4,6 +4,9 @@ on:
     # runs at minute 0 of the 0th hour every day.
     - cron:  '0 0 * * *'
 
+permissions:
+  contents: read
+
 jobs:
   sync_contributor_base_branch:
     runs-on: ubuntu-latest

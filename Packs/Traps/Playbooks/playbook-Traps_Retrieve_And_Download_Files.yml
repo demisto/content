@@ -2,7 +2,8 @@ id: Traps Retrieve And Download Files
 version: -1
 name: Traps Retrieve And Download Files
 hidden: true
-description: Use this playbook to retrieve and download files.
+deprecated: true
+description: Deprecated. Use CortexXDR instead.
 fromversion: "5.0.0"
 starttaskid: "0"
 tasks:

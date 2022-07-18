@@ -1,6 +1,6 @@
 {
     "name": "Jask (Deprecated)",
-    "description": "Freeing the analyst with autonomous decisions",
+    "description": "Deprecated. Use Sumo Logic Cloud SIEM instead.",
     "support": "xsoar",
     "currentVersion": "1.1.1",
     "author": "Cortex XSOAR",
