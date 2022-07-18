@@ -245,7 +245,7 @@ def test_copy_from_command_valid(mocker, file_name, expected_file_name):
     mocker.patch.object(demisto, 'command', return_value='copy-from')
     mocker.patch.object(RemoteAccessv2, 'create_paramiko_ssh_client', return_value=mock_client)
     mocker.patch.object(RemoteAccessv2, 'return_results')
-    args = {'file_path': 'mock_path.txt'}
+    args = {'file_path': 'mock_path.txt', 'host': 'host'}
     if file_name:
         args['file_name'] = file_name
     mocker.patch.object(demisto, 'args', return_value=args)
@@ -310,13 +310,14 @@ investigation_data = {'id': 46510, 'systems': [
                          'TyOSpeed': 0}, 'user': 'ubuntu'}]}
 
 
-@pytest.mark.parametrize('system, expected_log',
-                         [('i-0fb7ben3de5e85283', ''),
-                          ('11.234.1.17', ''),
-                          ('11.234.1.1',
+@pytest.mark.parametrize('given_system, expected_system, expected_log',
+                         [('i-0fb7ben3de5e85283', ['i-0fb7ben3de5e85283'], ''),
+                          ('11.234.1.17', ['11.234.1.17'], ''),
+                          ('i-0fb7ben3de5e85283,11.234.1.17', ['i-0fb7ben3de5e85283', '11.234.1.17'], ''),
+                          ('11.234.1.1', ['11.234.1.1'],
                            "System 11.234.1.1 not found on investigation 46510. "
                            "Available systems by name are ['i-0fb7ben3de5e85283'], and by host are ['11.234.1.17'].")])
-def test_find_systems(mocker, system, expected_log):
+def test_find_systems(mocker, given_system, expected_system, expected_log):
     """
     Given:
         A system argument is provided.
@@ -331,6 +332,6 @@ def test_find_systems(mocker, system, expected_log):
     mocker.patch.object(demisto, 'investigation', return_value=investigation_data)
     info_mocker = mocker.patch.object(demisto, 'info')
 
-    assert system == find_systems({'system': system})
+    assert find_systems({'system': given_system}) == expected_system
     if info_mocker.call_args:
         assert info_mocker.call_args.args[0] == expected_log
