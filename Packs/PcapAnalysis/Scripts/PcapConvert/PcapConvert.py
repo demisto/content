@@ -172,20 +172,16 @@ def main():
     pcap_type = args.get('pcap_type') or 'auto'
     error_action = args.get('error_action') or 'abort'
 
-    try:
-        proc = MainProcess(pcap_type=pcap_type,
-                           error_action=error_action)
+    proc = MainProcess(pcap_type=pcap_type,
+                       error_action=error_action)
 
-        if path:
-            key_tree, repl_name = split_context_path(path)
-            proc.convert_and_replace(value, key_tree, repl_name)
-        else:
-            value = proc.convert_pcap(value)
+    if path:
+        key_tree, repl_name = split_context_path(path)
+        proc.convert_and_replace(value, key_tree, repl_name)
+    else:
+        value = proc.convert_pcap(value)
 
-        return_results(value)
-
-    except Exception as e:
-        return_error(f'Failed to execute PcapConvert. Error: {str(e)}')
+    return_results(value)
 
 
 if __name__ in ('__main__', 'builtin', 'builtins'):
