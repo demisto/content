@@ -185,12 +185,13 @@ def test_riot_command(mocker, test_scenario, status_code, input_data, expected):
         use_cache=False,
         integration_name="dummy_integration",
     )
-    dummy_response = DummyResponse({"Content-Type": "application/json"}, json.dumps(expected["raw_data"]), status_code)
+    dummy_response = DummyResponse({"Content-Type": "application/json"}, json.dumps(expected["output"]), status_code)
     mocker.patch("requests.Session.get", return_value=dummy_response)
     reliability = "B - Usually reliable"
     if test_scenario == "positive":
         response = GreyNoise.riot_command(client, input_data, reliability)
-        assert response.outputs == expected["raw_data"]
+        assert response.outputs == expected["output"]
+        assert response.readable_output == expected["readable"]
     else:
         with pytest.raises(Exception) as err:
             _ = GreyNoise.riot_command(client, input_data, reliability)
