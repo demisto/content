@@ -2,6 +2,7 @@ import asyncio
 import concurrent
 import json
 import ssl
+import sys
 import threading
 from distutils.util import strtobool
 from typing import Tuple
@@ -9,6 +10,7 @@ import gc
 
 import aiohttp
 import slack_sdk
+import psutil
 from slack_sdk.errors import SlackApiError
 from slack_sdk.socket_mode.aiohttp import SocketModeClient
 from slack_sdk.socket_mode.request import SocketModeRequest
@@ -2248,10 +2250,12 @@ def remove_channel_from_context(channel_id: str, integration_context: dict):
     :param integration_context: The integration_context object.
     Removes a channel from the integration context
     """
-    conversations = json.loads(integration_context['conversations'])
-    updated_conversations = [conversation for conversation in conversations if conversation.get('id') != channel_id]
-    set_to_integration_context_with_retries({'conversations': updated_conversations}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
-    demisto.results('Channel successfully removed from context.')
+    if 'conversations' in integration_context:
+        conversations = json.loads(integration_context['conversations'])
+        updated_conversations = [conversation for conversation in conversations if conversation.get('id') != channel_id]
+        set_to_integration_context_with_retries({'conversations': updated_conversations}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
+        demisto.debug('Channel successfully removed from context.')
+    demisto.debug('Channel was not stored in the context. No need to delete.')
 
 
 def create_channel():
@@ -2608,7 +2612,34 @@ def loop_info(loop: asyncio.AbstractEventLoop):
 
 
 def slack_get_integration_context():
+    context_statistics = {}
     integration_context = get_integration_context()
+    # Mirrors Data
+    if integration_context.get('mirrors'):
+        mirrors = json.loads(integration_context.get('mirrors'))
+        context_statistics['Mirrors Count'] = len(mirrors)
+        context_statistics['Mirror Size In Bytes'] = sys.getsizeof(integration_context.get('mirrors', []))
+    # Conversations Data
+    if integration_context.get('conversations'):
+        conversations = json.loads(integration_context.get('conversations'))
+        context_statistics['Conversations Count'] = len(conversations)
+        context_statistics['Conversations Size In Bytes'] = sys.getsizeof(integration_context.get('conversations', []))
+    # Users Data
+    if integration_context.get('users'):
+        users = json.loads(integration_context.get('users'))
+        context_statistics['Users Count'] = len(users)
+        context_statistics['Users Size In Bytes'] = sys.getsizeof(integration_context.get('users', []))
+    # Questions Data
+    if integration_context.get('questions'):
+        questions = json.loads(integration_context.get('questions'))
+        context_statistics['Questions Count'] = len(questions)
+        context_statistics['Questions Size In Bytes'] = sys.getsizeof(integration_context.get('questions', []))
+    readable_stats = tableToMarkdown(name='Long Running Context Statistics', t=context_statistics)
+    demisto.results({
+        'Type': entryTypes['note'],
+        'HumanReadable': readable_stats,
+        'ContentsFormat': EntryFormat.MARKDOWN
+    })
     return_results(fileResult('slack_integration_context.json', json.dumps(integration_context), EntryType.ENTRY_INFO_FILE))
 
 
