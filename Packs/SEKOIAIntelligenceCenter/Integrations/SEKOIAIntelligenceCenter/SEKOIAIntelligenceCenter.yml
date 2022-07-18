@@ -1,6 +1,6 @@
 commonfields:
   id: SEKOIAIntelligenceCenter
-  version: 2022
+  version: -1
 name: SEKOIAIntelligenceCenter
 display: SEKOIAIntelligenceCenter
 category: Data Enrichment & Threat Intelligence

@@ -1,7 +1,7 @@
 Fetch Indicator and Observables from SEKOIA.IO Intelligence Center.
 To use this integration, please create an API Key with the right permissions.
 
-This integration was integrated and tested with version 2022 of SEKOIAIntelligenceCenter
+This integration was integrated and tested with version 2.20220712 of SEKOIAIntelligenceCenter
 
 ## Configure SEKOIAIntelligenceCenter on Cortex XSOAR
 
@@ -91,7 +91,7 @@ Query SEKOIA.IO Intelligence Center for information about this observable.
 >| 2020-11-04T00:27:15.9801Z | 2020-11-04T00:27:15.9801Z |
 >### Associated tags
 >**No entries.**
->Please consult the [dedicated page](https:<span>//</span>app.sekoia.io/intelligence/objects/email-addr--cd6440d1-725c-5eb9-bff0-5e62c65ee263) for more information.
+>Please consult the [dedicated page](https://app.sekoia.io/intelligence/objects/email-addr--cd6440d1-725c-5eb9-bff0-5e62c65ee263) for more information.
 
 
 ### GetIndicator
@@ -203,7 +203,7 @@ Query SEKOIA.IO Intelligence Center for information about this indicator. No inf
 >| lockheed-martin-cyber-kill-chain | delivery |
 >
 >
->Please consult the [dedicated page](https:<span>//</span>app.sekoia.io/intelligence/objects/indicator--d394449b-6bc7-4d48-b392-6f898190bd2a) for more information.
+>Please consult the [dedicated page](https://app.sekoia.io/intelligence/objects/indicator--d394449b-6bc7-4d48-b392-6f898190bd2a) for more information.
 
 
 ### GetIndicatorContext
@@ -298,7 +298,7 @@ Query SEKOIA.IO Intelligence Center for context around this indicator
             },
             "items": [
                 {
-                    "id": "bundle--317bc378-8c48-40df-a3f5-4346a4d3c90e",
+                    "id": "bundle--31cfcb98-e910-44b2-8c7b-f87b581490c0",
                     "objects": [
                         {
                             "created": "2020-05-25T07:18:29.384153Z",
@@ -471,5 +471,5 @@ Query SEKOIA.IO Intelligence Center for context around this indicator
 >### Indicator eicar@sekoia.io is linked to the following:
 >|name|description|type|aliases|goals|revoked|created|modified|more_info|
 >|---|---|---|---|---|---|---|---|---|
->| EICAR Unit of SEKOIA | This Intrusion Set is known to be operated by SEKOIA by its EICAR unit. This unit aims at creating fictitious environment mimicking real attackers to present how threat intelligence can help real organizations to protect themselves.<br/> | intrusion-set | EICAR,<br/>TEST EICAR SEKOIA.IO,<br/>EICAR Unit of SEKOIA | Simulation of real Threat Actor for Test purpose | false | 2020-05-26T13:18:26.429787Z | 2020-06-02T13:28:51.131904Z | [More info about EICAR Unit of SEKOIA on SEKOIA.IO](https:<span>//</span>app.sekoia.io/intelligence/objects/intrusion-set--4d1fd514-d9a4-45f3-988a-d811df72df2f) |
+>| EICAR Unit of SEKOIA | This Intrusion Set is known to be operated by SEKOIA by its EICAR unit. This unit aims at creating fictitious environment mimicking real attackers to present how threat intelligence can help real organizations to protect themselves.<br/> | intrusion-set | EICAR,<br/>TEST EICAR SEKOIA.IO,<br/>EICAR Unit of SEKOIA | Simulation of real Threat Actor for Test purpose | false | 2020-05-26T13:18:26.429787Z | 2020-06-02T13:28:51.131904Z | [More info about EICAR Unit of SEKOIA on SEKOIA.IO](https://app.sekoia.io/intelligence/objects/intrusion-set--4d1fd514-d9a4-45f3-988a-d811df72df2f) |
 
