@@ -2051,9 +2051,11 @@ HOST SETS
 def delete_host_set_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     host_set_id: str = args.get('host_set_id', '')
 
+    outputs = {}
     try:
         client.delete_host_set_request(host_set_id)
         message = f'Host set {host_set_id} was deleted successfully'
+        outputs = {'deleted': True, '_id': host_set_id}
     except Exception as e:
         if '404' in str(e):
             message = f'Host set id - {host_set_id} Not Found'
@@ -2062,9 +2064,7 @@ def delete_host_set_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
     return CommandResults(outputs_prefix='FireEyeHX.HostSets',
                           outputs_key_field="_id",
-                          outputs={'deleted': True,
-                                   '_id': host_set_id
-                                   },
+                          outputs=outputs,
                           readable_output=message)
 
 
@@ -2077,7 +2077,6 @@ def create_static_host_set_command(client: Client, args: Dict[str, Any]) -> Comm
         response = client.create_static_host_set_request(host_set_name, hosts_ids)
         if data := response.get('data'):
             data['deleted'] = False
-            data['_revision'] = FormatADTimestamp(data['_revision'])
             host_set_id = data.get('_id')
             message = f'Static Host Set {host_set_name} with id {host_set_id} was created successfully.'
     except Exception as e:
@@ -2086,6 +2085,7 @@ def create_static_host_set_command(client: Client, args: Dict[str, Any]) -> Comm
         elif 'Referenced entity not found' in str(e):
             message = "Referenced entity not found, Check if one of the host ids that were given does not exists."
         else:
+            demisto.debug(str(e))
             message = 'Creating Host Set failed, check if you have the necessary permissions.'
 
     return CommandResults(
@@ -2112,7 +2112,6 @@ def update_static_host_set_command(client: Client, args: Dict[str, Any]) -> Comm
         response = client.update_static_host_set_request(host_set_id, host_set_name, add_host_ids, remove_host_ids)
         if data := response.get('data'):
             data['deleted'] = False
-            data['_revision'] = FormatADTimestamp(data['_revision'])
             message = f'Static Host Set {host_set_name} was updated successfully.'
     except Exception as e:
         if '409' in str(e):
@@ -2122,6 +2121,7 @@ def update_static_host_set_command(client: Client, args: Dict[str, Any]) -> Comm
         elif '404' in str(e):
             message = 'Host set was not found.'
         else:
+            demisto.debug(str(e))
             message = 'Updating Host Set failed, check if you have the necessary permissions.'
 
     return CommandResults(
@@ -2150,20 +2150,20 @@ def create_dynamic_host_set_command(client: Client, args: Dict[str, Any]) -> Com
         response = client.create_dynamic_host_set_request(host_set_name, query, query_key, query_value, query_operator)
         if data := response.get('data'):
             data['deleted'] = False
-            data['_revision'] = FormatADTimestamp(data['_revision'])
             host_set_id = data.get('_id')
             message = f'Dynamic Host Set {host_set_name} with id {host_set_id} was created successfully.'
     except Exception as e:
         if '409' in str(e):
             message = 'Another host set with the same name was found, please use a different one.'
         else:
+            demisto.debug(str(e))
             message = "Creating Host Set failed, check if you have the necessary permissions."
 
     return CommandResults(
         outputs_prefix='FireEyeHX.HostSets',
         outputs_key_field="_id",
         outputs=data,
-        readable_output=message,    
+        readable_output=message,
         raw_response=response
     )
 
@@ -2187,7 +2187,6 @@ def update_dynamic_host_set_command(client: Client, args: Dict[str, Any]) -> Com
                                                           query_operator)
         if data := response.get('data'):
             data['deleted'] = False
-            data['_revision'] = FormatADTimestamp(data['_revision'])
             message = f'Dynamic Host Set {host_set_name} was updated successfully.'
     except Exception as e:
         if '409' in str(e):
@@ -2195,6 +2194,7 @@ def update_dynamic_host_set_command(client: Client, args: Dict[str, Any]) -> Com
         elif '404' in str(e):
             message = 'Host set was not found.'
         else:
+            demisto.debug(str(e))
             message = "Updating Host Set failed, check if you have the necessary permissions"
 
     return CommandResults(

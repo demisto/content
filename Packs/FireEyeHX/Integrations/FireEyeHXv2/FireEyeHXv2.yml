@@ -1111,6 +1111,7 @@ script:
       secret: false
     description: Searches endpoints to check all hosts or a subset of hosts for a specific file or indicator.
     name: fireeye-hx-search
+    polling: true
     outputs:
     - contextPath: FireEyeHX.Search.results.Timestamp - Modified
       description: The time when the entry was last modified.
