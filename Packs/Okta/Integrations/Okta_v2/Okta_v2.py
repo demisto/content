@@ -587,12 +587,16 @@ class Client(BaseClient):
             url_suffix=uri
         )
 
-    def list_zones(self):
+    def list_zones(self, limit):
         uri = 'zones'
-        return self._http_request(
-            method='GET',
-            url_suffix=uri
-        )
+        if limit:
+            query_params = {'limit': encode_string_results(limit)}
+            return self._http_request(
+                method='GET',
+                url_suffix=uri,
+                params=query_params
+            )
+        return self.get_paged_results(uri)
 
     def create_zone(self, zoneObject):
         uri = 'zones'
@@ -1114,7 +1118,7 @@ def get_zone_command(client, args):
 
 
 def list_zones_command(client, args):
-    raw_response = client.list_zones()
+    raw_response = client.list_zones(args.get('limit'))
     if not raw_response:
         return 'No zones found.', {}, raw_response
     readable_output = tableToMarkdown('Okta Zones', raw_response, headers=[
