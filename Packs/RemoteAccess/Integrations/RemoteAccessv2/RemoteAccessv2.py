@@ -129,9 +129,9 @@ def create_paramiko_ssh_client(
     return client
 
 
-def find_system(args: Dict[str, Any]):
-    system = args.get('system')
-    if not system:
+def find_systems(args: Dict[str, Any]):
+    given_systems = argToList(args.get('system'))
+    if not given_systems:
         return ''
 
     investigation = demisto.investigation()
@@ -140,28 +140,32 @@ def find_system(args: Dict[str, Any]):
     systems_names = [system_properties.get('name') for system_properties in systems]
     systems_hosts = [system_properties.get('host') for system_properties in systems]
 
-    if not systems or (system not in systems_names and system not in systems_hosts):
-        demisto.info(f'System {system} not found on investigation {investigation.get("id")}. '
-                     f'Available systems by name are {systems_names}, and by host are {systems_hosts}.')
+    for given_system in given_systems:
+        if not systems or (given_system not in systems_names and given_system not in systems_hosts):
+            demisto.info(f'System {given_system} not found on investigation {investigation.get("id")}. '
+                         f'Available systems by name are {systems_names}, and by host are {systems_hosts}.')
 
-    return system
+    return given_systems
 
 
 def create_clients(host_name: str, user: str, password: str, ciphers: Set[str], key_algorithms: Set[str], certificate: str,
                    args: Dict[str, Any]) -> List[SSHClient]:
     clients = []
 
-    if system := find_system(args):
-        client = create_paramiko_ssh_client(system, user, password, ciphers, key_algorithms, certificate)
-        clients.append(client)
+    if systems := find_systems(args):
+        for system in systems:
+            client = create_paramiko_ssh_client(system, user, password, ciphers, key_algorithms, certificate)
+            clients.append(client)
 
-    host = args.get('host')
+    hosts = argToList(args.get('host'))
     port = args.get('port')
-    if port and not host:
+    if port and not hosts:
         raise DemistoException('Argument "port" is supported only when providing "host" argument.')
-    if host:
-        client = create_paramiko_ssh_client(host, user, password, ciphers, key_algorithms, certificate, port=port or DEFAULT_PORT)
-        clients.append(client)
+    if hosts:
+        for host in hosts:
+            client = create_paramiko_ssh_client(host, user, password, ciphers, key_algorithms, certificate,
+                                                port=port or DEFAULT_PORT)
+            clients.append(client)
 
     if not clients and host_name:
         client = create_paramiko_ssh_client(host_name, user, password, ciphers, key_algorithms, certificate)

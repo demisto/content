@@ -316,7 +316,7 @@ investigation_data = {'id': 46510, 'systems': [
                           ('11.234.1.1',
                            "System 11.234.1.1 not found on investigation 46510. "
                            "Available systems by name are ['i-0fb7ben3de5e85283'], and by host are ['11.234.1.17'].")])
-def test_find_system(mocker, system, expected_log):
+def test_find_systems(mocker, system, expected_log):
     """
     Given:
         A system argument is provided.
@@ -327,10 +327,10 @@ def test_find_system(mocker, system, expected_log):
     Then:
         The system argument is returned and relevant log is written.
     """
-    from RemoteAccessv2 import find_system
+    from RemoteAccessv2 import find_systems
     mocker.patch.object(demisto, 'investigation', return_value=investigation_data)
     info_mocker = mocker.patch.object(demisto, 'info')
 
-    assert system == find_system({'system': system})
+    assert system == find_systems({'system': system})
     if info_mocker.call_args:
         assert info_mocker.call_args.args[0] == expected_log
