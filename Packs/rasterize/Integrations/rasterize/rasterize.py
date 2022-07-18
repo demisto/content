@@ -521,11 +521,9 @@ def rasterize_email_command():
     w, h = check_width_and_height(w, h)  # Check that the width and height meet the safeguard limit
 
     file_name = f'{file_name}.{"pdf" if r_type == RasterizeType.PDF else "jpeg"}'  # type: ignore
-   
     # force setting the charset in order to ovveride any posible wrong charsets
     charsets = re.findall(CHARSET_PATTERN, html_body)
     html_body = html_body.replace(charsets[0], 'UTF-8') if charsets else html_body
-    
     with open('htmlBody.html', 'w') as f:
         f.write(f'<html style="background:white";>{html_body}</html>')
     path = f'file://{os.path.realpath(f.name)}'
