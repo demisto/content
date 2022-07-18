@@ -140,7 +140,6 @@ PAN_DB_URL_FILTERING_CATEGORIES = {
     'music',
     'newly-registered-domain',
     'news',
-    'not-resolved',
     'nudity',
     'online-storage-and-backup',
     'parked',
@@ -173,6 +172,9 @@ PAN_DB_URL_FILTERING_CATEGORIES = {
     'web-advertisements',
     'web-hosting',
     'web-based-email',
+    'high-risk',
+    'medium-risk',
+    'low-risk'
 }
 
 class PAN_OS_Not_Found(Exception):
