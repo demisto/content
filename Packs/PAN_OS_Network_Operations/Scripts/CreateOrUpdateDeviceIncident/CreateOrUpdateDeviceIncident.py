@@ -2,13 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-"""Given a device host id, creates or updates an existing device incident."""
-# -- This is a way to get around trimming commonserverpython on import
-try:
-    demisto.args()
-except:
-
-    pass
+"""Given a device host id from the PAN-OS integration creates or updates an existing device incident."""
 
 current_incident_id = demisto.incidents()[0].get("id")
 res = demisto.executeCommand("GetIncidentsByQuery", {

@@ -2,16 +2,9 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-"""Given a device host id, creates or updates an existing device incident."""
+"""Displays a timestamp of the last time a Configuration Hygiene check was performed."""
 # -- This is a way to get around trimming commonserverpython on import
 import datetime
-
-try:
-    demisto.args()
-    pass
-except:
-
-    pass
 
 
 current_incident_id = demisto.incidents()[0].get("id")

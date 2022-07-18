@@ -6,14 +6,6 @@ from CommonServerPython import *  # noqa: F401
 # -- This is a way to get around trimming commonserverpython on import
 import datetime
 
-try:
-    demisto.args()
-    pass
-except:
-
-    pass
-
-
 incident = demisto.incidents()[0]
 
 occurred_time = datetime.datetime.strptime(incident.get("occurred").split(".")[0], "%Y-%m-%dT%H:%M:%S")

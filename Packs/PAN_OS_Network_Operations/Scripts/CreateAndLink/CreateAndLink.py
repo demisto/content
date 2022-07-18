@@ -2,6 +2,10 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 incident = demisto.args()
 
+"""
+Creates and links a single new incident with all the given arg params.
+"""
+
 res = demisto.executeCommand("createNewIncident", incident)
 if isError(res[0]):
     raise DemistoException(f"Could not create new incident: {res}")

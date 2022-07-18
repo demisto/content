@@ -1,22 +1,12 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+"""
+Filters a list of software images to the ones that can be upgraded or downgraded to.
+"""
 
-"""
-Compares two sets of tabular data to find the differences in keys
-"""
 from dataclasses import dataclass
 from typing import Union
-
-import pkg_resources
-
-# -- This is a way to get around trimming commonserverpython on import
-try:
-    demisto.args()
-    pass
-except:
-
-    pass
 
 
 @dataclass
