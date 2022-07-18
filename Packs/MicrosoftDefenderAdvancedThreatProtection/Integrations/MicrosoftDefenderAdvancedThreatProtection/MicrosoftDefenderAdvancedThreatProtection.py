@@ -2027,6 +2027,7 @@ def offboard_machine_command(client: MsClient, args: dict):
 
     return CommandResults(
         outputs = machines_action_data,
+        outputs_prefix = 'OffboardMachine',
         outputs_key_field=["ID", "MachineID"],
         readable_output=human_readable,
         raw_response=raw_response
