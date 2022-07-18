@@ -400,11 +400,11 @@ def scores_to_severity(threat: Optional[int], certainty: Optional[int]) -> str:
     if isinstance(threat, int) and isinstance(certainty, int):
         if threat < 50 and certainty < 50:
             severity = 'Low'
-        elif threat < 50 and certainty >= 50:
+        elif threat < 50:  # and certainty >= 50
             severity = 'Medium'
-        elif threat >= 50 and certainty < 50:
+        elif certainty < 50:  # and threat >= 50
             severity = 'High'
-        elif threat >= 50 and certainty >= 50:
+        else:  # threat >= 50 and certainty >= 50
             severity = 'Critical'
 
     return unify_severity(severity)
@@ -1107,7 +1107,6 @@ def vectra_search_detections_command(client: Client, **kwargs) -> CommandResults
     if not count:
         raise VectraException('Cannot find any detection')
 
-    detection_data = dict()
     detections_data = list()
 
     # Define which fields we want to exclude from the context output
@@ -1261,7 +1260,6 @@ def vectra_get_detection_by_id_command(client: Client, id: str) -> CommandResult
     if not count:
         raise VectraException('Cannot find this Detection')
 
-    detection_data = dict()
     detections_data = list()
 
     if api_response.get('results') is None:
