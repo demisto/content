@@ -144,6 +144,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 47. microsoft-atp-indicator-batch-update
 48. microsoft-atp-get-alert-by-id
 49. microsoft-atp-request-and-download-investigation-package
+50. microsoft-atp-offboard-machine
 
 ### 1. microsoft-atp-isolate-machine
 ---
@@ -5843,6 +5844,77 @@ Alert.ReadWrite.All
 >|---|---|---|---|---|---|---|---|---|---|
 >| da637472900382838869_1364969609 | Low-reputation arbitrary code executed by signed executable | Binaries signed by Microsoft can be used to run low-reputation arbitrary code. This technique hides the execution of malicious code within a trusted process. As a result, the trusted process might exhibit suspicious behaviors, such as opening a listening port or connecting to a command-and-control (C&C) server. | 1126093 | Low | New |  | Execution |  | 111e6dd8c833c8a052ea231ec1b19adaf497b625 |
 
+### microsoft-atp-offboard-machine
+---
+Offboard a machine from microsoft ATP.
+
+##### Required Permissions
+Machine.Offboard	
+
+##### Base Command
+
+`microsoft-atp-offboard-machine`
+##### Input
+
+| **Argument Name** | **Description**                                                                                                                                            | **Required** |
+| --- |------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| machine_id | A comma-separated list of machine IDs to be used for offboarding. e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424. | Required | 
+| comment | A comment to associate with the action.                                                                                                                    | Required |
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description**                                            |
+| --- | --- |------------------------------------------------------------|
+| MicrosoftATP.OffboardMachine.ID | String | The machine action ID.                                     | 
+| MicrosoftATP.OffboardMachine.Type | String | Type of the machine action.                                | 
+| MicrosoftATP.OffboardMachine.Scope | Unknown | Scope of the action.                                       | 
+| MicrosoftATP.OffboardMachine.Requestor | String | The ID of the user that executed the action.               | 
+| MicrosoftATP.OffboardMachine.RequestorComment | String | Comment that was written when issuing the action.          | 
+| MicrosoftATP.OffboardMachine.Status | String | The current status of the command.                         | 
+| MicrosoftATP.OffboardMachine.MachineID | String | The machine ID on which the action was executed.           | 
+| MicrosoftATP.OffboardMachine.ComputerDNSName | String | The machine DNS name on which the action was executed.     | 
+| MicrosoftATP.OffboardMachine.CreationDateTimeUtc | Date | The date and time when the action was created.             | 
+| MicrosoftATP.OffboardMachine.LastUpdateTimeUtc | Date | The last date and time when the action status was updated. | 
+| MicrosoftATP.OffboardMachine.cancellationDateTimeUtc | Date | The date and time when the action was canceled.      |
+| MicrosoftATP.OffboardMachine.RelatedFileInfo | String | The file info.                                             | 
+| MicrosoftATP.OffboardMachine.troubleshootInfo | String | Troubleshooting information.                               |
+
+##### Command example
+```!microsoft-atp-offboard-machine comment="Testing Offboarding" machine_id="12342c13fef"```
+##### Context Example
+```json
+{
+    "MicrosoftATP": {
+        "MachineAction": [
+            {
+              "cancellationDateTimeUtc": null,
+              "computerDnsName": "desktop-s2455r8",
+              "creationDateTimeUtc": "2022-07-12T14:19:55.4872498Z",
+              "id": "947a677a-a11a-4240-ab6q-91277e2386b9",
+              "lastUpdateDateTimeUtc": "2022-07-12T14:19:55.4872521Z",
+              "machineId": null,
+              "relatedFileInfo": null,
+              "requestor": "2f48b784-5da5-4e61-9957-012d2630f1e4",
+              "requestorComment": "Testing Offboarding",
+              "scope": null,
+              "status": "Pending",
+              "troubleshootInfo": null,
+              "type": "Offboard"
+          }
+        ]
+    }
+}
+```
+
+##### Human Readable Output
+
+>##### The offboarding request has been submitted successfully:
+>|ID|Type|Requestor|RequestorComment|Status|MachineID|ComputerDNSName|
+>|---|---|---|---|---|---|---|
+>| 947a677a-a11a-4240-ab6q-91277e2386b9 | Offboard | 2f48b784-5da5-4e61-9957-012d2630f1e4| offboard test | Pending | 12342c13fef | desktop-s2455r8 |
+
+=======
 ### microsoft-atp-request-and-download-investigation-package
 ***
 Collect and download an investigation package as a gz file.
@@ -5868,3 +5940,74 @@ Collect and download an investigation package as a gz file.
 | MicrosoftATP.MachineAction.ID | String | The machine action ID. | 
 | MicrosoftATP.MachineAction.Status | String | The current status of the machine action. | 
 | MicrosoftATP.MachineAction.MachineID | String |  The machine ID on which the action was executed. |
+
+
+##### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.MachineAction.ID | String | The machine action ID. | 
+| MicrosoftATP.MachineAction.Type | String | Type of the machine action. | 
+| MicrosoftATP.MachineAction.Scope | Unknown | Scope of the action. | 
+| MicrosoftATP.MachineAction.Requestor | String | The ID of the user that executed the action. | 
+| MicrosoftATP.MachineAction.RequestorComment | String | Comment that was written when issuing the action. | 
+| MicrosoftATP.MachineAction.Status | String | The current status of the command. | 
+| MicrosoftATP.MachineAction.MachineID | String | The machine ID on which the action was executed. | 
+| MicrosoftATP.MachineAction.ComputerDNSName | String | The machine DNS name on which the action was executed. | 
+| MicrosoftATP.MachineAction.CreationDateTimeUtc | Date | The date and time when the action was created. | 
+| MicrosoftATP.MachineAction.LastUpdateTimeUtc | Date | The last date and time when the action status was updated. | 
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifier | String | The file identifier. | 
+| MicrosoftATP.MachineAction.RelatedFileInfo.FileIdentifierType | String | The type of the file identifier. Possible values: "SHA1" ,"SHA256", and "MD5". | 
+
+##### Command example
+```!microsoft-atp-isolate-machine comment=isolate_test_3 isolation_type=Full machine_id="12342c13fef,12342c13fef8f06606"```
+##### Context Example
+```json
+{
+    "MicrosoftATP": {
+        "MachineAction": [
+            {
+                "ComputerDNSName": "desktop-s2455r8",
+                "CreationDateTimeUtc": "2022-01-25T14:25:52.6227941Z",
+                "ID": "1f3098e20464",
+                "LastUpdateTimeUtc": null,
+                "MachineID": "12342c13fef",
+                "RelatedFileInfo": {
+                    "FileIdentifier": null,
+                    "FileIdentifierType": null
+                },
+                "Requestor": "2f48b784-5da5-4e61-9957-012d2630f1e4",
+                "RequestorComment": "isolate_test_3",
+                "Scope": "Full",
+                "Status": "Pending",
+                "Type": "Isolate"
+            },
+            {
+                "ComputerDNSName": "desktop-s2455r9",
+                "CreationDateTimeUtc": "2022-01-25T14:25:53.2395007Z",
+                "ID": "6d39a3da0744",
+                "LastUpdateTimeUtc": null,
+                "MachineID": "12342c13fef8f06606",
+                "RelatedFileInfo": {
+                    "FileIdentifier": null,
+                    "FileIdentifierType": null
+                },
+                "Requestor": "2f48b784-5da5-4e61-9957-012d2630f1e4",
+                "RequestorComment": "isolate_test_3",
+                "Scope": "Full",
+                "Status": "Pending",
+                "Type": "Isolate"
+            }
+        ]
+    }
+}
+```
+
+##### Human Readable Output
+
+>##### The isolation request has been submitted successfully:
+>|ID|Type|Requestor|RequestorComment|Status|MachineID|ComputerDNSName|
+>|---|---|---|---|---|---|---|
+>| 1f3098e20464 | Isolate | 2f48b784-5da5-4e61-9957-012d2630f1e4 | isolate_test_3 | Pending | 12342c13fef | desktop-s2455r8 |
+>| 6d39a3da0744 | Isolate | 2f48b784-5da5-4e61-9957-012d2630f1e4 | isolate_test_3 | Pending | 12342c13fef8f06606 | desktop-s2455r9 |
+
