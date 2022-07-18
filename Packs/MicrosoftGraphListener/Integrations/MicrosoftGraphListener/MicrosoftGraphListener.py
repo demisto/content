@@ -1104,7 +1104,6 @@ def list_mails_command(client: MsGraphClient, args):
     if mail_context:
         entry_context = mail_context
         if next_page:
-            # .NextPage.indexOf(\'http\')>=0 : will make sure the NextPage token will always be updated because it's a url
             entry_context['MSGraphMail(val.NextPage.indexOf(\'http\')>=0)'] = {'NextPage': next_page}  # type: ignore
 
         # human_readable builder
@@ -1131,7 +1130,7 @@ def list_mails_command(client: MsGraphClient, args):
 
 
 def get_email_as_eml_command(client: MsGraphClient, args):
-    user_id = args.get('user_id')
+    user_id = client.get_mailbox_to_fetch()
     message_id = args.get('message_id')
 
     eml_content = client.get_email_as_eml(user_id, message_id)
