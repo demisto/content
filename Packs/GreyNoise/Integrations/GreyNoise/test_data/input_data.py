@@ -400,7 +400,7 @@ valid_ip_context_data_response = [
         "VPN": True,
         "VPN Service": "dummy vpn",
         "Tor": False,
-        "IP": "[71.6.135.131](https://www.greynoise.io/viz/ip/71.6.135.131)",  # NOSONAR
+        "IP": "[71.6.135.131](https://viz.greynoise.io/ip/71.6.135.131)",  # NOSONAR
         "Seen": True,
         "Classification": "malicious",
         "First Seen": "2019-04-04",
