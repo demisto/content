@@ -1,8 +1,6 @@
 import asyncio
 import concurrent
-import json
 import ssl
-import sys
 import threading
 from distutils.util import strtobool
 from typing import Tuple
@@ -10,7 +8,6 @@ import gc
 
 import aiohttp
 import slack_sdk
-import psutil
 from slack_sdk.errors import SlackApiError
 from slack_sdk.socket_mode.aiohttp import SocketModeClient
 from slack_sdk.socket_mode.request import SocketModeRequest
