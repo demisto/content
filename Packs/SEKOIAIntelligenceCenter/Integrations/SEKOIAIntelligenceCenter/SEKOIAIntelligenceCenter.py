@@ -70,7 +70,6 @@ class Client(BaseClient):
             params={"match[value]": value, "match[type]": indicator_type},
         )
 
-    """Client class to interact with the SEKOIA.IO API"""
 
     def get_indicator(self, value: str, indicator_type: str) -> dict:
         """Find indicators matching the given value
@@ -152,7 +151,7 @@ def extract_file_indicator_hashes(pattern_str: str) -> dict:
     hashes = {"sha256": "", "sha1": "", "md5": ""}
 
     # Remove enclosing brackets
-    pattern_str = pattern_str.replace("[", "").replace("]", "")
+    pattern_str = pattern_str.strip("[]")
     stix_object_hashes = pattern_str.split("OR")
     for object_hash in stix_object_hashes:
         if "SHA-256" in object_hash:
@@ -368,7 +367,7 @@ def indicator_context_to_markdown(indicator_context: dict) -> str:
     ]
     indicator_id = ""
     markdown = ""
-    # Read every items of the reponse
+    # Read every items of the response
     for stix_bundle in indicator_context["items"]:
         new_list_of_objects = []
         # Read every objects of the bundle
@@ -637,14 +636,10 @@ def main() -> None:
         demisto.error("API Key is missing")
 
     # get the service API url
-    BASE_URL = urljoin(demisto.params()["url"], "/")
+    BASE_URL = urljoin(demisto.params().get("url", "https://app.sekoia.io"), "/")
     verify_certificate = not demisto.params().get("insecure", False)
     proxy = demisto.params().get("proxy", False)
 
-    # TODO
-    # Integration that implements reputation commands (e.g. url, ip, domain,..., etc) must have
-    # a reliability score of the source providing the intelligence data.
-    # reliability = demisto.params().get("integrationReliability", DBotScoreReliability.C)
 
     demisto.debug(f"Command being called is {demisto.command()}")
     try:

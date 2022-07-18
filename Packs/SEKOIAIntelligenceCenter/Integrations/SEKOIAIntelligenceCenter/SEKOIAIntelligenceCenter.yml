@@ -7,8 +7,6 @@ category: Data Enrichment & Threat Intelligence
 description: |
   Fetch Indicator and Observables from SEKOIA.IO Intelligence Center.
   To use this integration, please create an API Key with the right permissions.
-
-
 configuration:
 - defaultvalue: https://api.sekoia.io/
   display: Your server URL
@@ -366,7 +364,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/stix2:1.0.0.30255
+  dockerimage: demisto/py3-tools:1.0.0.31193
 fromversion: 6.2.0
 tests:
 - No tests (auto formatted)
