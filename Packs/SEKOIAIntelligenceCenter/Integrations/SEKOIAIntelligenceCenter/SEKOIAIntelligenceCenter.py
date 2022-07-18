@@ -70,7 +70,6 @@ class Client(BaseClient):
             params={"match[value]": value, "match[type]": indicator_type},
         )
 
-
     def get_indicator(self, value: str, indicator_type: str) -> dict:
         """Find indicators matching the given value
 
@@ -155,11 +154,11 @@ def extract_file_indicator_hashes(pattern_str: str) -> dict:
     stix_object_hashes = pattern_str.split("OR")
     for object_hash in stix_object_hashes:
         if "SHA-256" in object_hash:
-            hashes["sha256"] = object_hash.split("=")[1].strip(" ").strip("'")
+            hashes["sha256"] = object_hash.split("=")[1].strip(" '")
         if "SHA-1" in object_hash:
-            hashes["sha1"] = object_hash.split("=")[1].strip(" ").strip("'")
+            hashes["sha1"] = object_hash.split("=")[1].strip(" '")
         if "MD5" in object_hash:
-            hashes["md5"] = object_hash.split("=")[1].strip(" ").strip("'")
+            hashes["md5"] = object_hash.split("=")[1].strip(" '")
 
     return hashes
 
@@ -639,7 +638,6 @@ def main() -> None:
     BASE_URL = urljoin(demisto.params().get("url", "https://app.sekoia.io"), "/")
     verify_certificate = not demisto.params().get("insecure", False)
     proxy = demisto.params().get("proxy", False)
-
 
     demisto.debug(f"Command being called is {demisto.command()}")
     try:

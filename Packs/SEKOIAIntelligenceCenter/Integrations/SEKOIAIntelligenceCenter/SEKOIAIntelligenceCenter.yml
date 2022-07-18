@@ -1,6 +1,6 @@
 commonfields:
   id: SEKOIAIntelligenceCenter
-  version: -1
+  version: 2022
 name: SEKOIAIntelligenceCenter
 display: SEKOIAIntelligenceCenter
 category: Data Enrichment & Threat Intelligence
@@ -189,10 +189,10 @@ script:
       description: Observable type
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.id
-      description: ''
+      description: Unique identifier of the item
       type: String
     - contextPath: SEKOIAIntelligenceCenter.items.objects.valid_from
-      description: Unique identifier of the item
+      description: Beginning of the item validity date
       type: Date
     - contextPath: SEKOIAIntelligenceCenter.items.objects.x_inthreat_sources_refs
       description: Unique identifier of the observable source
