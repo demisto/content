@@ -2563,14 +2563,15 @@ def init_globals(command_name: str = ''):
                      ' to find the channel.'
     CHANNEL_NOT_FOUND_ERROR_MSG = error_str
 
-    # Handle Long-Running Specific Globals
-    if command_name == 'long-running-execution':
-        # Start event loop for long running
+    if command_name != 'long-running-execution':
         loop = asyncio.get_event_loop()
         if not loop._default_executor:  # type: ignore[attr-defined]
             demisto.info(f'setting _default_executor on loop: {loop} id: {id(loop)}')
             loop.set_default_executor(concurrent.futures.ThreadPoolExecutor(max_workers=4))
 
+
+    # Handle Long-Running Specific Globals
+    if command_name == 'long-running-execution':
         # Bot identification
         integration_context = get_integration_context(SYNC_CONTEXT)
         if integration_context.get('bot_user_id'):
@@ -2595,9 +2596,8 @@ def print_thread_dump():
         demisto.info(f'{threadId} stack: {stack_str}')
 
 
-def loop_info(loop: asyncio.AbstractEventLoop):
-    if not loop:
-        return "loop is None"
+def loop_info():
+    loop = asyncio.get_event_loop()
     info = f'loop: {loop}. id: {id(loop)}.'
     info += f'executor: {loop._default_executor} id: {id(loop._default_executor)}'  # type: ignore[attr-defined]
     if loop._default_executor:  # type: ignore[attr-defined]
@@ -2633,7 +2633,8 @@ def slack_get_integration_context():
     demisto.results({
         'Type': entryTypes['note'],
         'HumanReadable': readable_stats,
-        'ContentsFormat': EntryFormat.MARKDOWN
+        'ContentsFormat': EntryFormat.MARKDOWN,
+        'Contents': readable_stats,
     })
     return_results(fileResult('slack_integration_context.json', json.dumps(integration_context), EntryType.ENTRY_INFO_FILE))
 
@@ -2676,8 +2677,7 @@ def main() -> None:
         LOG(e)
         return_error(str(e))
     finally:
-        demisto.info(
-            f'{command_name} completed.')
+        demisto.info(f'{command_name} completed. loop: {loop_info()}')  # type: ignore
         if is_debug_mode():
             print_thread_dump()
 
