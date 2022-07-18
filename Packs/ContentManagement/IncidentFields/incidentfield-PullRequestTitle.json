@@ -18,10 +18,11 @@
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,
+    "placeholder": "Set your pull request title here",
     "propagationLabels": [
         "all"
     ],
-    "required": true,
+    "required": false,
     "sla": 0,
     "system": false,
     "threshold": 72,
