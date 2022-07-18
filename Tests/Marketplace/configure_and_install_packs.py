@@ -4,7 +4,7 @@ import traceback
 
 from demisto_sdk.commands.common.tools import get_json, str2bool
 from Tests.configure_and_test_integration_instances import MARKET_PLACE_CONFIGURATION, \
-    XSOARBuild, XSOARServer, XSIAMBuild, get_json_file, XSIAMServer, Build
+    XSOARBuild, XSOARServer, XSIAMBuild, get_json_file, XSIAMServer, Build, get_packs_with_higher_min_version
 from Tests.Marketplace.search_and_install_packs import install_all_content_packs_from_build_bucket, \
     search_and_install_packs_and_their_dependencies
 from Tests.scripts.utils.log_util import install_logging
@@ -36,15 +36,15 @@ def options_handler():
     return options
 
 
-def install_packs_from_content_packs_to_install_path(servers, pack_ids_to_install_path, hostname=''):
+def install_packs_from_content_packs_to_install_path(servers, pack_ids, hostname=''):
     """
     Install pack_ids from "$ARTIFACTS_FOLDER/content_packs_to_install.txt" file, and packs dependencies.
+
     Args:
         hostname:
-        pack_ids_to_install_path: "$ARTIFACTS_FOLDER/content_packs_to_install.txt" path
+        pack_ids: the pack IDs to install.
         servers: XSIAM or XSOAR Servers to install packs on it.
     """
-    pack_ids = Build.fetch_pack_ids_to_install(pack_ids_to_install_path)
     for server in servers:
         logging.info(f'Starting to install all content packs in {hostname if hostname else server.internal_ip}')
         _, success = search_and_install_packs_and_their_dependencies(pack_ids, server.client, hostname)
@@ -117,8 +117,31 @@ def xsoar_configure_and_install_flow(options, branch_name: str, build_number: st
         XSOARBuild.set_marketplace_url(servers=[server], branch_name=branch_name, ci_build_number=build_number)
         servers.append(server)
 
-    install_packs_from_content_packs_to_install_path(servers, options.pack_ids_to_install)
-    logging.success(f'Finished installing all content packs in {[server.internal_ip for server in servers]}')
+    content_path = Build.content_path or ''
+    if not content_path:
+        raise Exception('Could not find content path')
+
+    # all packs that should be installed
+    packs_to_install = set(Build.fetch_pack_ids_to_install(options.pack_ids_to_install))
+    logging.info(f'packs to install before filtering by minServerVersion {packs_to_install}')
+
+    # get packs that their minServerVersion is higher than the server version
+    packs_with_higher_server_version = get_packs_with_higher_min_version(
+        packs_names=packs_to_install,
+        content_path=content_path,
+        server_numeric_version=server_version
+    )
+    logging.info(f'packs with minServerVersion that is higher than server version {packs_with_higher_server_version}')
+
+    # remove all the packs that that their minServerVersion is higher than the server version.
+    pack_ids_with_valid_min_server_version = packs_to_install - packs_with_higher_server_version
+    logging.info(f'starting to install content packs {pack_ids_with_valid_min_server_version}')
+
+    install_packs_from_content_packs_to_install_path(servers, list(pack_ids_with_valid_min_server_version))
+    logging.success(
+        f'Finished installing all content packs {pack_ids_with_valid_min_server_version} '
+        f'in {[server.internal_ip for server in servers]}'
+    )
 
 
 def xsiam_configure_and_install_flow(options, branch_name: str, build_number: str):
@@ -137,8 +160,10 @@ def xsiam_configure_and_install_flow(options, branch_name: str, build_number: st
     server = XSIAMServer(api_key, server_numeric_version, base_url, xdr_auth_id, xsiam_machine)
     XSIAMBuild.set_marketplace_url(servers=[server], branch_name=branch_name, ci_build_number=build_number)
 
+    # extract pack_ids from the content_packs_to_install.txt
+    pack_ids = Build.fetch_pack_ids_to_install(options.pack_ids_to_install)
     # Acquire the server's host and install new uploaded content packs
-    install_packs_from_content_packs_to_install_path([server], options.pack_ids_to_install, server.name)
+    install_packs_from_content_packs_to_install_path([server], pack_ids, server.name)
     logging.success(f'Finished installing all content packs in {xsiam_machine}')
 
 
@@ -154,9 +179,7 @@ def main():
         elif options.override_all_packs:
             xsoar_configure_and_install_all_packs(options, branch_name, build_number)
         else:
-            # Hot Fix: Upload flow failed when trying to install packs that has fromversion above 6.2
-            # CIAC-2626 issue in jira
-            xsoar_configure_and_install_all_packs(options, branch_name, build_number)
+            xsoar_configure_and_install_flow(options, branch_name, build_number)
 
     except Exception as e:
         logging.error(f'Failed to configure and install packs: {e}')
