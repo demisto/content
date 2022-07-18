@@ -60,13 +60,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Additional system to run the command on.
+      description: System to run the command on.
       isArray: true
       name: system
       required: false
       secret: false
     - default: false
-      description: Additional hostname to run the command on.
+      description: Host name to run the command on.
       isArray: true
       name: host
       required: false
@@ -137,13 +137,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Additional system to run the command on.
+      description: System to run the command on.
       isArray: true
       name: system
       required: false
       secret: false
     - default: false
-      description: Additional hostname to run the command on.
+      description: Host name to run the command on.
       isArray: true
       name: host
       required: false
@@ -194,13 +194,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Additional system to run the command on.
+      description: System to run the command on.
       isArray: true
       name: system
       required: false
       secret: false
     - default: false
-      description: Additional hostname to run the command on.
+      description: Host name to run the command on.
       isArray: true
       name: host
       required: false
