@@ -2001,7 +2001,7 @@ def offboard_machine_command(client: MsClient, args: dict):
     """Offboard machine from defender.
 
     Returns:
-        (str, dict, dict). Human readable, context, raw response
+       CommandResults. Human readable, context, raw response
     """
     headers = ['ID', 'Type', 'Requestor', 'RequestorComment', 'Status', 'MachineID', 'ComputerDNSName']
     machine_ids = remove_duplicates_from_list_arg(args, 'machine_id')
