@@ -133,7 +133,7 @@ tasks:
       id: ed308b41-115c-44f2-831b-51b5d848fe12
       version: -1
       name: should we mine PCAP for flows?
-      description: ''
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -340,7 +340,7 @@ tasks:
       id: d6347fd2-b7bf-4e8a-85d8-48f93ddb57c3
       version: -1
       name: Connect Via Panorama or Firewall Direct for PCAP
-      description: ''
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -565,7 +565,7 @@ tasks:
       id: 70b16d5a-ce25-4953-8a0a-2fb930fe67d3
       version: -1
       name: Validate important inputs for either Panorama or NGFW PCAP retrieval
-      description: ''
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -688,24 +688,24 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: d9772c29-e560-4683-8158-f0b38bce1f9e
+    taskid: 31529188-4856-4297-8633-aab00a8129fc
     type: condition
     task:
-      id: d9772c29-e560-4683-8158-f0b38bce1f9e
+      id: 31529188-4856-4297-8633-aab00a8129fc
       version: -1
       name: used_as_sub-playbook?
-      description: ''
+      description: ""
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
       - "42"
-      "yes":
+      Sub-Playbook-False:
       - "10"
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: Sub-Playbook-False
       condition:
       - - operator: isEqualString
           left:
@@ -714,7 +714,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "true"
+              simple: "false"
     view: |-
       {
         "position": {
@@ -737,7 +737,7 @@ tasks:
       id: f8a0ec65-c55b-490a-86fe-bf1c62b38c1c
       version: -1
       name: change incident severity to match threat log
-      description: ''
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -1094,7 +1094,7 @@ tasks:
       id: c14f27e1-3b2b-4461-805d-9200aeb5cbac
       version: -1
       name: REPLACE ME WITH STORAGE INTEGRATION
-      description: ''
+      description: ""
       type: regular
       iscommand: false
       brand: ""
@@ -1236,7 +1236,9 @@ tasks:
     isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "29_10_Sub-Playbook-False": 0.74
+    },
     "paper": {
       "dimensions": {
         "height": 4205,
@@ -1292,7 +1294,7 @@ inputs:
   playbookInputQuery:
 - key: used_as_sub-playbook
   value:
-    simple: "true"
+    simple: "false"
   required: true
   description: |-
     Is this used as a sub-playbook or not
@@ -1321,7 +1323,7 @@ inputs:
   playbookInputQuery:
 outputs:
 - contextPath: PCAPResults
-  description: ''
+  description: "1"
   type: unknown
 - contextPath: PCAPResults.Bytes
   description: The number of bytes transmitted in the PCAP file.
@@ -1363,7 +1365,7 @@ outputs:
   description: List of protocols found in the PCAP.
   type: String
 - contextPath: PCAPResultsFlow
-  description: ''
+  description: "1"
   type: unknown
 - contextPath: PCAPResultsFlow.Bytes
   description: The number of bytes transmitted in the flow.
@@ -1393,7 +1395,7 @@ outputs:
   description: The date/time the flow started.
   type: Date
 - contextPath: PCAPResultsHTTP
-  description: ''
+  description: "1"
   type: unknown
 - contextPath: PCAPResultsHTTP.ResponseStatusCode
   description: The response code.
@@ -1441,7 +1443,7 @@ outputs:
   description: The code description of the response.
   type: String
 - contextPath: PCAPResultsDNS
-  description: ''
+  description: "1"
   type: unknown
 - contextPath: PCAPResultsDNS.ID
   description: The ID of the DNS request.
@@ -1459,7 +1461,7 @@ outputs:
   description: The PCAP entry ID.
   type: String
 - contextPath: PCAPResultsSMTP
-  description: ''
+  description: "1"
   type: unknown
 - contextPath: PCAPResultsSMTP.From
   description: The mail sender.
@@ -1480,7 +1482,7 @@ outputs:
   description: The PCAP entry ID.
   type: String
 - contextPath: PCAPResultsKERBEROS
-  description: ''
+  description: "1"
   type: unknown
 - contextPath: PCAPResultsKERBEROS.EntryID
   description: The PCAP entry ID.
@@ -1495,7 +1497,7 @@ outputs:
   description: The KERBEROS CName.
   type: String
 - contextPath: PCAPResultsTelnet
-  description: ''
+  description: "1"
   type: unknown
 - contextPath: PCAPResultsTelnet.Data
   description: The telnet data.
@@ -1507,7 +1509,7 @@ outputs:
   description: The PCAP entry ID.
   type: String
 - contextPath: PCAPResultsLLMNR
-  description: ''
+  description: "1"
   type: unknown
 - contextPath: PCAPResultsLLMNR.EntryID
   description: The PCAP entry ID.
@@ -1528,7 +1530,7 @@ outputs:
   description: The LLMNR query type.
   type: String
 - contextPath: PCAPResultsSYSLOG
-  description: ''
+  description: "1"
   type: unknown
 - contextPath: PCAPResultsSYSLOG.EntryID
   description: The PCAP entry ID.
@@ -1546,7 +1548,7 @@ outputs:
   description: The SYSLOGS time stamp.
   type: String
 - contextPath: PCAPResultsSMB2
-  description: ''
+  description: "1"
   type: unknown
 - contextPath: PCAPResultsSMB2.EntryID
   description: The PCAP entry ID.
@@ -1573,7 +1575,7 @@ outputs:
   description: The SMB2 tree.
   type: String
 - contextPath: PCAPResultsNETBIOS
-  description: ''
+  description: "1"
   type: unknown
 - contextPath: PCAPResultsNETBIOS.EntryID
   description: The PCAP entry ID.
@@ -1591,7 +1593,7 @@ outputs:
   description: The NETIOS class.
   type: String
 - contextPath: PCAPResultsIRC
-  description: ''
+  description: "1"
   type: unknown
 - contextPath: PCAPResultsIRC.EntryID
   description: The PCAP entry ID.
@@ -1624,7 +1626,7 @@ outputs:
   description: The IRC response parameters.
   type: String
 - contextPath: PCAPResultsFTP
-  description: ''
+  description: "1"
   type: unknown
 - contextPath: PCAPResultsFTP.EntryID
   description: The PCAP entry ID.
@@ -1645,7 +1647,7 @@ outputs:
   description: ICMP data.
   type: String
 - contextPath: PCAPResultsSSH
-  description: ''
+  description: "1"
   type: unknown
 - contextPath: PCAPResultsSSH.EntryID
   description: The PCAP's entry ID.
