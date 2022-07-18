@@ -1,8 +1,11 @@
-[file:BMCHelixRemedyforce.yml]
+[file:BmcHelixRemedyForce.yml]
 ignore=IN135,IN145
 
 [file:README.md]
 ignore=RM104
 
 [file:classifier-mapper-incoming-BMCHelixRemedyforce.json]
+ignore=BA101
+
+[file:classifier-BMCHelixRemedyforce.json]
 ignore=BA101

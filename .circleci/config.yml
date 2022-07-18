@@ -123,6 +123,12 @@ references:
       name: Prepare Environment
       when: always
       command: |
+        # Check if CircleCI's config file and poetry files files are up to date
+        # if poetry isn't up-to-date, checkout from origin/master.
+        ./Tests/scripts/is_file_up_to_date.sh .circleci/config.yml $CIRCLE_BRANCH
+        ./Tests/scripts/is_file_up_to_date.sh poetry.lock $CIRCLE_BRANCH true
+        ./Tests/scripts/is_file_up_to_date.sh pyproject.toml $CIRCLE_BRANCH true
+
         echo 'export CIRCLE_ARTIFACTS="/home/circleci/project/artifacts"' >> $BASH_ENV
         echo 'export PATH="/home/circleci/.local/bin:${PWD}/node_modules/.bin:${PATH}"' >> $BASH_ENV # disable-secrets-detection
         echo 'export PYTHONPATH="/home/circleci/project:${PYTHONPATH}"' >> $BASH_ENV
@@ -162,10 +168,8 @@ references:
 
         echo "========== Build Parameters =========="
         set | grep -E "^NIGHTLY=|^CONTRIB_BRANCH=|^SDK_REF"
-        python --version | tee -a $CIRCLE_ARTIFACTS/python2_list.txt
-        python3 --version | tee -a $CIRCLE_ARTIFACTS/python3_list.txt
-        python -m pip list | tee -a $CIRCLE_ARTIFACTS/python2_list.txt
-        python3 -m pip list | tee -a $CIRCLE_ARTIFACTS/python3_list.txt
+        python3 --version | tee -a $CIRCLE_ARTIFACTS/installed_python_libraries.txt
+        python3 -m pip list | tee -a $CIRCLE_ARTIFACTS/installed_python_libraries.txt
         node --version
         npm --version
         demisto-sdk --version
@@ -357,13 +361,6 @@ jobs:
     <<: *environment
     steps:
       - *attach_workspace
-      - run:
-          name: Check if CircleCI's config file and requirements.txt files are up to date
-          when: always
-          command: |
-            ./Tests/scripts/is_file_up_to_date.sh .circleci/config.yml $CIRCLE_BRANCH
-            ./Tests/scripts/is_file_up_to_date.sh dev-requirements-py2.txt $CIRCLE_BRANCH
-            ./Tests/scripts/is_file_up_to_date.sh dev-requirements-py3.txt $CIRCLE_BRANCH
       - *restore_cache
       - *add_ssh_keys
       - *prepare_environment

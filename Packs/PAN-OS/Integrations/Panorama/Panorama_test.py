@@ -1202,7 +1202,7 @@ def test_panorama_push_to_device_group_command(mocker, args, expected_request_pa
                                        id='with device'),
                           ])
 def test_panorama_push_to_template_command(
-    mocker, args, expected_request_params, request_result, expected_demisto_result
+        mocker, args, expected_request_params, request_result, expected_demisto_result
 ):
     """
     Given:
@@ -1306,7 +1306,7 @@ def test_panorama_push_to_template_command(
                                  id='with device'),
                          ])
 def test_panorama_push_to_template_stack_command(
-    mocker, args, expected_request_params, request_result, expected_demisto_result
+        mocker, args, expected_request_params, request_result, expected_demisto_result
 ):
     """
     Given:
@@ -1370,6 +1370,48 @@ def test_get_url_category__url_length_gt_1278(mocker):
 
     # validate
     assert 'URL Node can be at most 1278 characters.' == return_results_mock.call_args[0][0][1].readable_output
+
+
+def test_get_url_category__multiple_categories_for_url(mocker):
+    """
+    Given:
+        - response indicating the url has multiple categories.
+
+    When:
+        - Run get_url_category command
+
+    Then:
+        - Validate a commandResult is returned with detailed readable output
+    """
+
+    # prepare
+    import Panorama
+    import requests
+    from Panorama import panorama_get_url_category_command
+    Panorama.DEVICE_GROUP = ''
+    mocked_res_dict = {
+        'response': {
+            '@cmd': 'status',
+            '@status': 'success',
+            'result': 'https://someURL.com not-resolved (Base db) expires in 5 seconds\n'
+                      'https://someURL.com shareware-and-freeware online-storage-and-backup low-risk (Cloud db)'
+        }
+    }
+    mocked_res_obj = requests.Response()
+    mocked_res_obj.status_code = 200
+    mocked_res_obj._content = json.dumps(mocked_res_dict).encode('utf-8')
+    mocker.patch.object(requests, 'request', return_value=mocked_res_obj)
+    mocker.patch.object(Panorama, 'xml2json', return_value=mocked_res_obj._content)
+    return_results_mock = mocker.patch.object(Panorama, 'return_results')
+
+    # run
+    panorama_get_url_category_command(url_cmd='url', url='test_url', additional_suspicious=[], additional_malicious=[])
+
+    # validate
+    for i in range(3):
+        assert return_results_mock.call_args[0][0][0].outputs[i].get('Category') in ['shareware-and-freeware',
+                                                                                     'online-storage-and-backup',
+                                                                                     'low-risk']
 
 
 class TestDevices:
@@ -1929,7 +1971,8 @@ class TestUtilityFunctions:
         assert "### PAN-OS Object" in results.readable_output
 
         results = dataclasses_to_command_results(
-            test_dataclass, override_table_name="Test Table", override_table_headers=["hostid", "name", "container_name"])
+            test_dataclass, override_table_name="Test Table",
+            override_table_headers=["hostid", "name", "container_name"])
         # When we provide overrides, check they are rendered correctly in the readable output
         assert "hostid|name|container_name" in results.readable_output
         assert "### Test Table" in results.readable_output
@@ -2052,16 +2095,16 @@ class TestUniversalCommand:
 
         # We also want to check that if an empty string is passed, an error is returned
         with pytest.raises(
-            DemistoException,
-            match="filter_str  is not the exact ID of a host in this topology; use a more specific filter string."
+                DemistoException,
+                match="filter_str  is not the exact ID of a host in this topology; use a more specific filter string."
         ):
             UniversalCommand.reboot(mock_topology, "")
 
         # Lets also check that if an invalid hostid is given, we also raise.
         with pytest.raises(
-            DemistoException,
-            match="filter_str badserialnumber is not the exact ID of "
-                  "a host in this topology; use a more specific filter string."
+                DemistoException,
+                match="filter_str badserialnumber is not the exact ID of "
+                      "a host in this topology; use a more specific filter string."
         ):
             UniversalCommand.reboot(mock_topology, "badserialnumber")
 
@@ -2549,3 +2592,175 @@ class TestObjectFunctions:
                 mock_single_device_topology, "AddressObject", object_name="test-address-(\d+", use_regex="true"
             )
             assert not result
+
+
+@pytest.mark.parametrize('expected_request_params, target',
+                         [pytest.param(
+                             {
+                                 'type': 'op',
+                                 'cmd': '<show><system><info/></system></show>',
+                                 'key': 'fakeAPIKEY!',
+                                 'target': 'fake-target'
+                             },
+                             'fake-target',
+                         ),
+                             pytest.param(
+                                 {
+                                     'type': 'op',
+                                     'cmd': '<show><system><info/></system></show>',
+                                     'key': 'fakeAPIKEY!',
+                                 },
+                                 None,),
+                         ])
+def test_add_target_arg(mocker, expected_request_params, target):
+    """
+    Given:
+        - a call to the function with or without the target args
+    When:
+        - panorama_show_device_version_command - (or any other function with the target arg)
+    Then:
+        - Assert that the target param was added or not to the https request
+    """
+    import Panorama
+    from Panorama import panorama_show_device_version
+
+    Panorama.API_KEY = 'fakeAPIKEY!'
+    Panorama.DEVICE_GROUP = 'fakeDeviceGroup'
+    request_mock = mocker.patch.object(Panorama, 'http_request',
+                                       return_value={'response': {'result': {'system': 'fake_data'}}})
+
+    panorama_show_device_version(target)
+    called_request_params = request_mock.call_args.kwargs['params']
+    assert called_request_params == expected_request_params
+
+
+@pytest.mark.parametrize('rule , expected_result',
+                         [pytest.param({
+                             'target': {
+                                 'devices': {
+                                     'entry': [
+                                         {
+                                             '@name': 'fw1'
+                                         },
+                                         {
+                                             '@name': 'fw2'
+                                         }
+                                     ]
+                                 }
+                             }
+                         },
+                             True
+                         ),
+                             pytest.param(
+                                 {
+                                     'target': {
+                                         'devices': {
+                                             'entry': {
+                                                 '@name': 'fw1'
+                                             }
+                                         }
+                                     }
+                                 },
+                                 True),
+                             pytest.param(
+                                 {
+                                     'target': {
+                                         'devices': {
+                                             'entry': {
+                                                 '@name': 'fw2'
+                                             }
+                                         }
+                                     }
+                                 },
+                                 False),
+                             pytest.param(
+                                 {
+                                     'target':
+                                         {
+                                             'devices':
+                                                 {
+                                                     'entry': [
+                                                         {
+                                                             '@name': 'fw1'
+                                                         }
+                                                     ]
+                                                 }
+                                         }
+                                 },
+                                 True),
+                         ])
+def test_target_filter(rule, expected_result):
+    """
+    Given:
+        - a rule (dict) and a target (str) - 'fw1'
+    When:
+        - filtering rules by target
+    Then:
+        - return True if the rule contains the target and False otherwise
+    """
+    from Panorama import target_filter
+    assert target_filter(rule, 'fw1') == expected_result
+
+
+def test_check_latest_version_hr(mocker):
+    """
+    Given:
+        - a response from panorma of latest version
+    When:
+        - calling the command - pan-os-check-latest-panos-software
+    Then:
+        - filter the 5 latest results and present in a markdown
+    """
+    from Panorama import panorama_check_latest_panos_software_command
+    import requests
+    with open('test_data/latest_versions.xml') as xml_file:
+        text = xml_file.read()
+    with open('test_data/5_latest_version.md') as md_file:
+        markdown_assert = md_file.read()
+    mr = MockedResponse(text=text,
+                        status_code=200,
+                        reason='')
+    mocker.patch.object(requests, 'request', return_value=mr)
+    command_res: CommandResults = panorama_check_latest_panos_software_command()
+
+    assert markdown_assert == command_res.readable_output
+
+
+def test_pan_os_get_running_config(mocker):
+    """
+    Given -
+        A target serial number
+    When -
+        Returning the running config
+    Then -
+        File returned should be called 'running_config'
+        The contents should be XML and not JSON
+    """
+    from Panorama import pan_os_get_running_config
+
+    return_mock = """
+    <response status='error' code='13'><msg><line>SOME_SERIAL_NUMBER not connected</line></msg></response>
+    """
+    mocker.patch("Panorama.http_request", return_value=return_mock)
+    created_file = pan_os_get_running_config({"target": "SOME_SERIAL_NUMBER"})
+    assert created_file['File'] == 'running_config'
+
+
+def test_pan_os_get_merged_config(mocker):
+    """
+    Given -
+        A target serial number
+    When -
+        Returning the merged config
+    Then -
+        File returned should be called 'merged_config'
+        The contents should be XML and not JSON
+    """
+    from Panorama import pan_os_get_merged_config
+
+    return_mock = """
+    <response status='error' code='13'><msg><line>SOME_SERIAL_NUMBER not connected</line></msg></response>
+    """
+    mocker.patch("Panorama.http_request", return_value=return_mock)
+    created_file = pan_os_get_merged_config({"target": "SOME_SERIAL_NUMBER"})
+    assert created_file['File'] == 'merged_config'
