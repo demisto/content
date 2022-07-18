@@ -38,9 +38,9 @@ ALWAYS_UPPER_CASE = {
     'url', 'id', 'pid', 'ppid', 'uuid', 'asn', 'mime'
 }
 THREAT_TEXT_TO_DBOTSCORE = {
-    'no threats detected': 1,
-    'suspicious activity': 2,
-    'malicious activity': 3
+    'no threats detected': Common.DBotScore.GOOD,
+    'suspicious activity': Common.DBotScore.SUSPICIOUS,
+    'malicious activity': Common.DBotScore.BAD
 }
 
 ''' SETUP '''
@@ -214,7 +214,7 @@ def travel_object(obj, key_functions=[], val_functions=[]):
         raise TypeError(err_msg)
 
 
-def generate_dbotscore(response):
+def generate_dbotscore(response: Dict) -> List:
     """Creates DBotScore object based on the contents of 'response' argument
 
     Parameters
@@ -224,8 +224,8 @@ def generate_dbotscore(response):
 
     Returns
     -------
-    dict
-        A DBotScore object.
+    List
+        A list of CommandResults objects.
     """
     data: dict = response.get('data', {})
     analysis = data.get('analysis', {})
@@ -234,26 +234,39 @@ def generate_dbotscore(response):
     submission_type = 'hash' if submission_type in {'file', 'download'} else submission_type
     threat_text = analysis.get('scores', {}).get('verdict', {}).get('threatLevelText', '').casefold()
     reputation_map = {
-        "malicious": 3,
-        "suspicious": 2
+        "malicious": Common.DBotScore.BAD,
+        "suspicious": Common.DBotScore.SUSPICIOUS
     }
+    returned_data = []
+
+    # Add the hash or URL first
     if submission_type == 'hash':
         hashes = main_object.get('hashes', {})
-        indicator = hashes.get('sha256', hashes.get('sha1', hashes.get('md5')))
+        dbot_score = Common.DBotScore(
+            indicator=hashes.get('sha256') or hashes.get('sha1') or hashes.get('md5'),
+            indicator_type=DBotScoreType.FILE,
+            integration_name='ANYRUN',
+            score=THREAT_TEXT_TO_DBOTSCORE.get(threat_text) or Common.DBotScore.NONE
+        )
+        indicator = Common.File(
+            dbot_score=dbot_score,
+            md5=hashes.get('md5'),
+            sha1=hashes.get('sha1'),
+            sha256=hashes.get('sha256')
+        )
     else:
-        indicator = main_object.get('url')
-
-
-    # Add the hash first
-    dbot_score = {
-        "DBotScore": [ {
-            "Indicator": indicator,
-            "Type": submission_type,
-            "Vendor": "ANYRUN",
-            "Score": THREAT_TEXT_TO_DBOTSCORE.get(threat_text, 0)
-            } ]
-    }
-
+        dbot_score = Common.DBotScore(
+            indicator=main_object.get('url'),
+            indicator_type=DBotScoreType.URL,
+            integration_name='ANYRUN',
+            score=THREAT_TEXT_TO_DBOTSCORE.get(threat_text) or Common.DBotScore.NONE
+        )
+        indicator = Common.URL(
+            url=main_object.get('url'),
+            dbot_score=dbot_score
+        )
+    returned_data.append(indicator)
+    
     # Check if network information is available in the report
     if 'network' in data:
         network_data: dict = data.get('network')
@@ -264,41 +277,57 @@ def generate_dbotscore(response):
             for current_connection in connections:
                 reputation = current_connection.get('Reputation')
                 if reputation in reputation_map.keys():
-                    current_indicator = {
-                        "Indicator": current_connection['IP'],
-                        "Type": 'IP',
-                        "Vendor": "ANYRUN",
-                        "Score": reputation_map[reputation]
-                    }
-                    dbot_score['DBotScore'].append(current_indicator)
+                    current_dbot_score = Common.DBotScore(
+                        indicator=current_connection.get('IP'),
+                        indicator_type=DBotScoreType.IP,
+                        integration_name='ANYRUN',
+                        score=reputation_map[reputation]
+                    )
+                    current_indicator = Common.IP(
+                        ip=current_connection.get('IP'),
+                        dbot_score=current_dbot_score
+                    )
+                    returned_data.append(current_indicator)
+                    
 
         # Then add all the network-related indicators - 'dnsRequests'
         if 'dnsRequests' in network_data:
             for current_dnsRequests in network_data.get('dnsRequests'):
                 reputation = current_dnsRequests.get('Reputation')
                 if reputation in reputation_map.keys():
-                    current_indicator = {
-                        "Indicator": current_dnsRequests['Domain'],
-                        "Type": 'DOMAIN',
-                        "Vendor": "ANYRUN",
-                        "Score": reputation_map[reputation]
-                    }
-                    dbot_score['DBotScore'].append(current_indicator)
+                    current_dbot_score = Common.DBotScore(
+                        indicator=current_dnsRequests.get('Domain'),
+                        indicator_type=DBotScoreType.DOMAIN,
+                        integration_name='ANYRUN',
+                        score=reputation_map[reputation]
+                    )
+                    current_indicator = Common.Domain(
+                        domain=current_dnsRequests.get('domain'),
+                        dbot_score=current_dbot_score
+                    )
+                    returned_data.append(current_indicator)
+                    
 
         # Then add all the network-related indicators - 'httpRequests'
         if 'httpRequests' in network_data:
             for current_httpRequests in network_data.get('httpRequests'):
                 reputation = current_httpRequests['Reputation']
                 if reputation in reputation_map.keys():
-                    current_indicator = {
-                        "Indicator": current_httpRequests['URL'],
-                        "Type": 'URL',
-                        "Vendor": "ANYRUN",
-                        "Score": reputation_map[reputation]
-                    }
-                    dbot_score['DBotScore'].append(current_indicator)
+                    current_dbot_score=Common.DBotScore(
+                        indicator=current_httpRequests.get('URL'),
+                        indicator_type=DBotScoreType.URL,
+                        integration_name='ANYRUN',
+                        score=reputation_map[reputation]
 
-    return dbot_score
+                    )
+                    current_indicator = Common.URL(
+                        url=current_httpRequests.get('URL'),
+                        geo_country=current_httpRequests.get('Country'),
+                        dbot_score=current_dbot_score
+                    )
+                    returned_data.append(current_indicator)
+
+    return returned_data
 
 
 def add_malicious_key(entity, verdict):
@@ -462,15 +491,16 @@ def images_from_report(response):
     for idx, shot in enumerate(screenshots):
         screen_cap_url = shot.get('permanentUrl')
         img_response = requests.request('GET', screen_cap_url, verify=USE_SSL, headers=HEADERS)
-        stored_img = fileResult('screenshot{}.png'.format(idx), img_response.content)
-        img_entry = {
-            'Type': entryTypes['image'],
-            'ContentsFormat': formats['text'],
-            'File': stored_img['File'],
-            'FileID': stored_img['FileID'],
-            'Contents': ''
-        }
-        screen_captures.append(img_entry)
+        if img_response.content:
+            stored_img = fileResult('screenshot{}.png'.format(idx), img_response.content)
+            img_entry = {
+                'Type': entryTypes['image'],
+                'ContentsFormat': formats['text'],
+                'File': stored_img['File'],
+                'FileID': stored_img['FileID'],
+                'Contents': ''
+            }
+            screen_captures.append(img_entry)
     return screen_captures
 
 
@@ -801,24 +831,32 @@ def get_history_command(client, args):
     filter = args.pop('filter', None)
     response = get_history(args)
     contents = contents_from_history(filter, response)
-
-    formatting_funcs = [underscore_to_camel_case, make_capital, make_singular, make_upper]
+    
+    formatting_funcs = [ underscoreToCamelCase, make_capital, make_singular, make_upper]
     formatted_contents = travel_object(contents, key_functions=formatting_funcs)
     if contents:
-        entry_context: Optional[dict] = {
-            'ANYRUN.Task(val.ID && val.ID === obj.ID)': formatted_contents
-        }
-        title = 'Task History - Filtered By "{}"'.format(filter) if filter else 'Task History'
-        # Make Related Clickable
+        reformatted_contents =[]
         for task in formatted_contents:
+            new_task = {k: v for k,v in task.items()}
             related = task.get('Related', '')
-            task['Related'] = '[{}]({})'.format(related, related)
-        human_readable = tableToMarkdown(title, formatted_contents, removeNull=True)
+            new_task['Related'] = f'[{related}]({related})'
+            reformatted_contents.append(new_task)
+        command_results = CommandResults(
+            outputs_prefix='ANYRUN.Task',
+            outputs_key_field='ID',
+            outputs=formatted_contents,
+            readable_output=tableToMarkdown(
+                f'Task History - Filtered By "{filter}"' if filter else 'Task History',
+                reformatted_contents
+                )
+        )
     else:
-        human_readable = 'No results found.'
-        entry_context = None
+        command_results(CommandResults(
+            outputs=None,
+            readable_output='No results found'
+        ))
 
-    return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=response)
+    return_results(command_results)
 
 
 def get_report(task_id):
@@ -861,27 +899,29 @@ def get_report_command(client, args):
 
     images = images_from_report(response)
     contents = contents_from_report(response)
-    formatting_funcs = [underscore_to_camel_case, make_capital, make_singular, make_upper]
+    formatting_funcs = [underscoreToCamelCase, make_capital, make_singular, make_upper]
     formatted_contents = travel_object(contents, key_functions=formatting_funcs)
 
-    dbot_score = generate_dbotscore(response)
-    entity = ec_entity(response)
+    dbot_scores = generate_dbotscore(response)
 
-    entry_context = {
-        'ANYRUN.Task(val.ID && val.ID === obj.ID)': {
+    command_results = (CommandResults(
+        outputs_prefix='ANYRUN.Task',
+        outputs_key_field='ID',
+        outputs={
             'ID': task_id,
             **formatted_contents
         },
-        **dbot_score,
-        **entity
-    }
-
-    title = 'Report for Task {}'.format(task_id)
-    human_readable_content = humanreadable_from_report_contents(formatted_contents)
-    human_readable = tableToMarkdown(title, human_readable_content, removeNull=True)
-    return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=response)
+        indicators=dbot_scores,
+        readable_output=tableToMarkdown(
+            f'Report for Task {task_id}',
+            humanreadable_from_report_contents(formatted_contents),
+            removeNull=True
+        ),
+        raw_response=response
+    ))
+    return_results(command_results)
     if images:
-        demisto.results(images)
+        return_results(images)
 
 
 def run_analysis(args):
@@ -952,11 +992,12 @@ def run_analysis_command(client, args):
             'polling',
             'task_id',
             'interval_in_seconds',
-            'timeout'
+            'timeout',
+            'hide_polling_output'
         ]
         }
 
-
+    # Create a new file / URL submission
     if not task_id:
         response = run_analysis(command_args)
         task_id = response.get('data', {}).get('taskid')
@@ -994,36 +1035,28 @@ def run_analysis_command(client, args):
             'ID': task_id,
             'Status': status
         }
-        if continue_to_poll:
-            submit_output=CommandResults()
-        else:
-            images = images_from_report(response)
-            submit_output=[
-                CommandResults(
-                    outputs_prefix='ANYRUN.Task',
-                    outputs_key_field='ID',
-                    outputs=outputs,
-                    readable_output=tableToMarkdown(
-                        f"Report for Task {task_id}:",
-                        humanreadable_from_report_contents(
-                            travel_object(
-                                contents_from_report(response),
-                                key_functions=[underscore_to_camel_case, make_capital, make_singular, make_upper]
-                            )
-                        ),
-                        removeNull=True
-                    )
+        images = images_from_report(response)
+        submit_output=[]
+        submit_output.append(
+            CommandResults(
+                outputs_prefix='ANYRUN.Task',
+                outputs_key_field='ID',
+                outputs=outputs,
+                readable_output=tableToMarkdown(
+                    f"Report for Task {task_id}:",
+                    humanreadable_from_report_contents(
+                        travel_object(
+                            contents_from_report(response),
+                            key_functions=[underscoreToCamelCase, make_capital, make_singular, make_upper]
+                        )
+                    ),
+                    removeNull=True
                 ),
-                CommandResults(
-                    readable_output=images_from_report(response)
-                )
-            ]
-            if images:
-                submit_output.append(
-                    CommandResults(
-                        readable_output=images
-                    )
-                )
+                indicators=generate_dbotscore(response)
+            )
+        )
+        if images:
+            submit_output.append(images)
         return PollResult(
             response=submit_output,
             continue_to_poll=continue_to_poll,
@@ -1035,71 +1068,6 @@ def run_analysis_command(client, args):
 
         )
 
-
-'''
-    if polling:
-        command = demisto.command()
-        if not task_id:
-            response = run_analysis(command_args)
-            task_id = response.get('data', {}).get('taskid')
-            args['task_id'] = task_id
-            scheduled_command = ScheduledCommand(
-                command=command,
-                next_run_in_seconds=10,
-                timeout_in_seconds=1300,
-                args=args
-            )
-            command_results = CommandResults(
-                readable_output=f'Submission Successful with Task ID {task_id}',
-                scheduled_command=scheduled_command
-            )
-            return_results(command_results)
-        else:
-            response = get_report(task_id)
-            status = response.get('data', {}).get('status')
-            if status == "done":
-                images = images_from_report(response)
-                contents = contents_from_report(response)
-                formatting_funcs = [underscore_to_camel_case, make_capital, make_singular, make_upper]
-                formatted_contents = travel_object(contents, key_functions=formatting_funcs)
-
-                dbot_score = generate_dbotscore(response)
-                entity = ec_entity(response)
-
-                entry_context = {
-                    'ANYRUN.Task(val.ID && val.ID === obj.ID)': {
-                        'ID': task_id,
-                        **formatted_contents
-                    },
-                    **dbot_score,
-                    **entity
-                }
-                title = 'Report for Task {}'.format(task_id)
-                human_readable_content = humanreadable_from_report_contents(formatted_contents)
-                human_readable = tableToMarkdown(title, human_readable_content, removeNull=True)
-                return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=response)
-                if images:
-                    demisto.results(images)
-            else:
-                scheduled_command = ScheduledCommand(
-                    command=command,
-                    next_run_in_seconds=10,
-                    timeout_in_seconds=1300,
-                    args=args
-                )
-                command_results = CommandResults(
-                    scheduled_command=scheduled_command
-                )
-                return_results(command_results)
-
-    else:
-        response = run_analysis(command_args)
-        task_id = response.get('data', {}).get('taskid')
-        title = 'Submission Successful'
-        human_readable = tableToMarkdown(title, {'Task': task_id}, removeNull=True)
-        entry_context = {'ANYRUN.Task(val.ID && val.ID === obj.ID)': {'ID': task_id}}
-        return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=response)
-'''
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
@@ -1116,17 +1084,17 @@ COMMANDS = {
 def main():
     """Main Execution block"""
 
-    try:
-        args = demisto.args()
-        cmd_name = demisto.command()
-        LOG('Command being called is {}'.format(cmd_name))
-        handle_proxy()
+    #try:
+    args = demisto.args()
+    cmd_name = demisto.command()
+    LOG('Command being called is {}'.format(cmd_name))
+    handle_proxy()
 
-        if cmd_name in COMMANDS.keys():
-            return_results(COMMANDS[cmd_name](None, args))
+    if cmd_name in COMMANDS.keys():
+        return_results(COMMANDS[cmd_name](None, args))
 
-    except Exception as e:
-        return_error(str(e), error=traceback.format_exc())
+    #except Exception as e:
+    #    return_error(str(e), error=traceback.format_exc())
 
 
 # python2 uses __builtin__ python3 uses builtins
