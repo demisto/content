@@ -1,3 +1,7 @@
+import os.path
+
+import requests
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -63,6 +67,7 @@ WELL_KNOWN_FOLDERS = {
 class MsGraphClient:
     ITEM_ATTACHMENT = '#microsoft.graph.itemAttachment'
     FILE_ATTACHMENT = '#microsoft.graph.fileAttachment'
+    MAX_ATTACHMENT_SIZE = 3145728  # 3mb = 3145728 bytes
 
     def __init__(self, self_deployed, tenant_id, auth_and_token_url, enc_key,
                  app_name, base_url, use_ssl, proxy, ok_codes, mailbox_to_fetch, folder_to_fetch, first_fetch_interval,
@@ -386,15 +391,28 @@ class MsGraphClient:
         attachments = zip(ids, attach_names) if provided_names else zip(ids, ids)
 
         for attach_id, attach_name in attachments:
-            b64_encoded_data, file_size, uploaded_file_name = read_file_and_encode64(attach_id)
-            attachment = {
-                '@odata.type': cls.FILE_ATTACHMENT,
-                'contentBytes': b64_encoded_data.decode('utf-8'),
-                'isInline': is_inline,
-                'name': attach_name if provided_names or not uploaded_file_name else uploaded_file_name,
-                'size': file_size
-            }
-            file_attachments_result.append(attachment)
+            file_data, file_size, uploaded_file_name = read_file(attach_id)
+            file_name = attach_name if provided_names or not uploaded_file_name else uploaded_file_name
+            if file_size < cls.MAX_ATTACHMENT_SIZE:  # if file is less than 3MB
+                file_attachments_result.append(
+                    {
+                        '@odata.type': cls.FILE_ATTACHMENT,
+                        'contentBytes': base64.b64encode(file_data).decode('utf-8'),
+                        'isInline': is_inline,
+                        'name': file_name,
+                        'size': file_size
+                    }
+                )
+            else:
+                file_attachments_result.append(
+                    {
+                        'size': file_size,
+                        'data': file_data,
+                        'name': file_name,
+                        'isInline': is_inline,
+                        'requires_upload': True
+                    }
+                )
 
         return file_attachments_result
 
@@ -906,6 +924,72 @@ class MsGraphClient:
 
         return next_run, incidents
 
+    def add_attachments_via_upload_session(self, email, draft_id, attachments):
+        for attachment in attachments:
+            self.add_attachment_with_upload_session(
+                email=email,
+                draft_id=draft_id,
+                attachment_data=attachment.get('data'),
+                attachment_name=attachment.get('name'),
+                is_inline=attachment.get('isInline')
+            )
+
+    def add_attachment_with_upload_session(self, email, draft_id, attachment_data, attachment_name, is_inline=False):
+        create_upload_suffix_endpoint = f'/users/{email}/messages/{draft_id}/attachments/createUploadSession'
+
+        attachment_size = len(attachment_data)
+        try:
+            upload_session = self.ms_client.http_request(
+                'POST',
+                create_upload_suffix_endpoint,
+                json_data={
+                    'attachmentItem': {
+                        'attachmentType': 'file',
+                        'name': attachment_name,
+                        'size': attachment_size,
+                        'isInline': is_inline
+                    }
+                }
+            )
+            upload_url = upload_session.get('uploadUrl')
+            if not upload_url:
+                raise Exception(f'Cannot get upload URL for attachment {attachment_name}')
+
+            start_chunk_index = 0
+            end_chunk_index = self.MAX_ATTACHMENT_SIZE
+
+            chunk_data = attachment_data[start_chunk_index: end_chunk_index]
+            chunk_size = len(chunk_data)
+
+            headers = {
+                "Content-Length": f'{chunk_size}',
+                "Content-Range": f"bytes {start_chunk_index}-{end_chunk_index - 1}/{attachment_size}",
+                "Content-Type": "application/octet-stream"
+            }
+            print(headers)
+            response = requests.put(upload_url, headers=headers, data=chunk_data)
+            while response.status_code != 201:  # the api returns 201 when the file is created at the draft message
+                start_chunk_index = end_chunk_index
+                next_chunk = end_chunk_index + self.MAX_ATTACHMENT_SIZE
+                end_chunk_index = next_chunk if next_chunk < attachment_size else attachment_size
+
+                chunk_data = attachment_data[start_chunk_index: end_chunk_index]
+                chunk_size = len(chunk_data)
+                headers = {
+                    "Content-Length": f'{chunk_size}',
+                    "Content-Range": f"bytes {start_chunk_index}-{end_chunk_index - 1}/{attachment_size}",
+                    "Content-Type": "application/octet-stream"
+                }
+                print(headers)
+                response = requests.put(upload_url, headers=headers, data=chunk_data)
+                if response.status_code not in (201, 200):
+                    raise Exception(f'{response.json()}')
+
+            print()
+        except Exception as e:
+            demisto.error(f'{e}')
+            raise e
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -945,22 +1029,22 @@ def get_now_utc():
     return datetime.utcnow().strftime(DATE_FORMAT)
 
 
-def read_file_and_encode64(attach_id):
+def read_file(attach_id):
     """
-    Reads file that was uploaded to War Room and encodes it's content to base 64.
+    Reads file that was uploaded to War Room.
 
     :type attach_id: ``str``
     :param attach_id: The id of uploaded file to War Room
 
-    :return: Base 64 encoded data, size of the encoded data in bytes and uploaded file name.
+    :return: file data, size of the file in bytes and uploaded file name.
     :rtype: ``bytes``, ``int``, ``str``
     """
     try:
         file_info = demisto.getFilePath(attach_id)
         with open(file_info['path'], 'rb') as file_data:
-            b64_encoded_data = base64.b64encode(file_data.read())
+            file_data = file_data.read()
             file_size = os.path.getsize(file_info['path'])
-            return b64_encoded_data, file_size, file_info['name']
+            return file_data, file_size, file_info['name']
     except Exception as e:
         raise Exception(f'Unable to read and decode in base 64 file with id {attach_id}', e)
 
@@ -1443,16 +1527,45 @@ def prepare_args(command, args):
     return args
 
 
-def create_draft_command(client: MsGraphClient, args):
-    """
-    Creates draft message in user's mailbox, in draft folder.
-    """
+def divide_attachments_according_to_size(attachments):
+
+    less_than_3mb_attachments = []
+    more_than_3mb_attachments = []
+
+    for attachment in attachments:
+        if attachment.get('requires_upload'):  # if the attachment is bigger than 3mb, it requires upload session.
+            more_than_3mb_attachments.append(attachment)
+        else:
+            less_than_3mb_attachments.append(attachment)
+    return less_than_3mb_attachments, more_than_3mb_attachments
+
+
+def create_draft_email(client: MsGraphClient, args):
     prepared_args = prepare_args('create-draft', args)
     email = args.get('from')
     suffix_endpoint = f'/users/{email}/messages'
     draft = client.build_message(**prepared_args)
 
+    less_than_3mb_attachments, more_than_3mb_attachments = divide_attachments_according_to_size(
+        draft.get('attachments')
+    )
+
+    draft['attachments'] = less_than_3mb_attachments
     created_draft = client.ms_client.http_request('POST', suffix_endpoint, json_data=draft)
+
+    if more_than_3mb_attachments:  # we have at least one attachment that should be uploaded using upload session
+        client.add_attachments_via_upload_session(
+            email=email, draft_id=created_draft.get('id'), attachments=more_than_3mb_attachments
+        )
+
+    return created_draft
+
+
+def create_draft_command(client: MsGraphClient, args):
+    """
+    Creates draft message in user's mailbox, in draft folder.
+    """
+    created_draft = create_draft_email(client, args)
 
     parsed_draft = client.parse_item_as_dict(created_draft)
     headers = ['ID', 'From', 'Sender', 'To', 'Subject', 'Body', 'BodyType', 'Cc', 'Bcc', 'Headers', 'Importance',
