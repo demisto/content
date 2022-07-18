@@ -1,4 +1,5 @@
 import tempfile
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from io import StringIO
 import paramiko
 from paramiko import SSHClient, AutoAddPolicy, transport, Transport
@@ -325,9 +326,15 @@ def main() -> None:
         if command == 'test-module':
             return_results('ok')
         elif command in commands:
+            if not clients:
+                raise DemistoException('Command can\'t be executed because no hostname, system, or host was provided.')
+
             results = []
-            for client in clients:
-                results.append(commands[command](client, args))
+            with ThreadPoolExecutor(max_workers=len(clients)) as executor:
+                future_results = [executor.submit(commands[command], ssh_client=client, args=args) for client in clients]
+                for future in as_completed(future_results):
+                    results.append(future.result())
+
             return_results(results)
 
         else:
