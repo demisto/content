@@ -149,8 +149,7 @@ def find_system(args: Dict[str, Any]):
 
 def create_clients(host_name: str, user: str, password: str, ciphers: Set[str], key_algorithms: Set[str], certificate: str,
                    args: Dict[str, Any]) -> List[SSHClient]:
-    client = create_paramiko_ssh_client(host_name, user, password, ciphers, key_algorithms, certificate)
-    clients = [client]
+    clients = []
 
     if system := find_system(args):
         client = create_paramiko_ssh_client(system, user, password, ciphers, key_algorithms, certificate)
@@ -162,6 +161,10 @@ def create_clients(host_name: str, user: str, password: str, ciphers: Set[str], 
         raise DemistoException('Argument "port" is supported only when providing "host" argument.')
     if host:
         client = create_paramiko_ssh_client(host, user, password, ciphers, key_algorithms, certificate, port=port or DEFAULT_PORT)
+        clients.append(client)
+
+    if not clients and host_name:
+        client = create_paramiko_ssh_client(host_name, user, password, ciphers, key_algorithms, certificate)
         clients.append(client)
 
     return clients

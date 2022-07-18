@@ -3,9 +3,10 @@ commonfields:
   id: RemoteAccess v2
   version: -1
 configuration:
-- display: Default Hostname or IP Address
+- additionalinfo: If not provided, "host" or "system" should be provided as commands arguments.
+  display: Default Hostname or IP Address
   name: hostname
-  required: true
+  required: false
   type: 0
 - additionalinfo: For example, "root".
   display: User
