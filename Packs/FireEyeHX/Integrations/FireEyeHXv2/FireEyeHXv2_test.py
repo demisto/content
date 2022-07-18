@@ -1841,3 +1841,40 @@ def test_update_dynamic_host_set_command_failed(args, expected_results):
     with pytest.raises(Exception) as e:
         update_dynamic_host_set_command(client, args)
     assert str(e.value) == expected_results
+
+
+def test_create_dynamic_host_request_body(mocker):
+
+    from FireEyeHXv2 import Client
+    host_set_name = 'host_set_name'
+    query = {'query': 'query'}
+    query_key = 'query_key'
+    query_value = 'query_value'
+    query_operator = 'query_operator'
+    base_url = 'https://example.com'
+
+    mocker.patch.object(Client, 'get_token_request', return_value='')
+    client = Client(base_url)
+    result = client.create_dynamic_host_request_body(host_set_name, query, '', '', '')
+    assert result == {'name': 'host_set_name', 'query': {'query': 'query'}}
+
+    result = client.create_dynamic_host_request_body(host_set_name, '', query_key, query_value, query_operator)
+    assert result == {'name': 'host_set_name', 'query': {'key': 'query_key',
+                                                         'operator': 'query_operator',
+                                                         'value': 'query_value'}}
+
+
+def test_create_static_host_request_body(mocker):
+
+    from FireEyeHXv2 import Client
+    host_set_name = 'host_set_name'
+    host_ids_to_add = 'host_ids_to_add'
+    host_ids_to_remove = 'host_ids_to_remove'
+
+    base_url = 'https://example.com'
+
+    mocker.patch.object(Client, 'get_token_request', return_value='')
+    client = Client(base_url)
+    result = client.create_static_host_request_body(host_set_name, host_ids_to_add, host_ids_to_remove)
+    assert result == {'changes': [{'add': 'host_ids_to_add', 'command': 'change', 'remove': 'host_ids_to_remove'}],
+                      'name': 'host_set_name'}

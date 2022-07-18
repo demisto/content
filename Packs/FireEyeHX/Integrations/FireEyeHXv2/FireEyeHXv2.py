@@ -2092,8 +2092,7 @@ def create_static_host_set_command(client: Client, args: Dict[str, Any]) -> Comm
         outputs_prefix='FireEyeHX.HostSets',
         outputs_key_field='_id',
         outputs=data,
-        readable_output=message,
-        raw_response=response
+        readable_output=message
     )
 
 
@@ -2107,7 +2106,7 @@ def update_static_host_set_command(client: Client, args: Dict[str, Any]) -> Comm
         message = 'Nothing to update, no host ids to add or to remove were given.'
         return CommandResults(readable_output=message)
 
-    data = {}
+    data: Dict[str, Any] = {}
     try:
         response = client.update_static_host_set_request(host_set_id, host_set_name, add_host_ids, remove_host_ids)
         if data := response.get('data'):
@@ -2128,8 +2127,7 @@ def update_static_host_set_command(client: Client, args: Dict[str, Any]) -> Comm
         outputs_prefix='FireEyeHX.HostSets',
         outputs_key_field="_id",
         outputs=data,
-        readable_output=message,
-        raw_response=response
+        readable_output=message
     )
 
 
@@ -2163,8 +2161,7 @@ def create_dynamic_host_set_command(client: Client, args: Dict[str, Any]) -> Com
         outputs_prefix='FireEyeHX.HostSets',
         outputs_key_field="_id",
         outputs=data,
-        readable_output=message,
-        raw_response=response
+        readable_output=message
     )
 
 
@@ -2201,8 +2198,7 @@ def update_dynamic_host_set_command(client: Client, args: Dict[str, Any]) -> Com
         outputs_prefix='FireEyeHX.HostSets',
         outputs_key_field="_id",
         outputs=data,
-        readable_output=message,
-        raw_response=response
+        readable_output=message
     )
 
 
