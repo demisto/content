@@ -761,7 +761,7 @@ def http_request(method, url_suffix, params=None, data=None, files=None):
 ''' COMMANDS + REQUESTS FUNCTIONS '''
 
 
-def test_module():
+def test_module(client, args):
     """Performs get_history API call to verify integration is operational
 
     Returns
@@ -771,7 +771,7 @@ def test_module():
     """
 
     get_history(args={'limit': 1})
-    demisto.results('ok')
+    return 'ok'
 
 
 def get_history(args={}):
@@ -795,10 +795,9 @@ def get_history(args={}):
     return response
 
 
-def get_history_command():
-    """Return ANYRUN task analysis history to Demisto"""
+def get_history_command(client, args):
+    """Return ANYRUN task analysis history to XSOAR"""
 
-    args = demisto.args()
     filter = args.pop('filter', None)
     response = get_history(args)
     contents = contents_from_history(filter, response)
@@ -855,9 +854,8 @@ def get_report(task_id):
     return response
 
 
-def get_report_command():
-    """Return ANYRUN analysis report to Demisto"""
-    args = demisto.args()
+def get_report_command(client, args):
+    """Return ANYRUN analysis report to XSOAR"""
     task_id = args.get('task')
     response = get_report(task_id)
 
@@ -939,13 +937,106 @@ def run_analysis(args):
         return_error(err_msg)
 
 
-def run_analysis_command():
-    """Submit file or URL to ANYRUN for analysis and return task ID to Demisto"""
+@polling_function(
+    name=demisto.command(),
+    interval=arg_to_number(demisto.args().get('interval_in_seconds', 30)),
+    timeout=arg_to_number(demisto.args().get('timeout', 1300))
+)
+def run_analysis_command(client, args):
+    """Submit file or URL to ANYRUN for analysis and return task ID to XSOAR"""
 
-    args = demisto.args()
     task_id = args.get('task_id')
     polling = argToBoolean(args.get('polling', 'false'))
-    command_args = {k: v for k,v in args.items() if k not in ['polling', 'task_id']}
+    command_args = {
+        k: v for k,v in args.items() if k not in [
+            'polling',
+            'task_id',
+            'interval_in_seconds',
+            'timeout'
+        ]
+        }
+
+
+    if not task_id:
+        response = run_analysis(command_args)
+        task_id = response.get('data', {}).get('taskid')
+        status = response.get('data', {}).get('status')
+        outputs = {
+            'ID': task_id,
+            'Status': status
+        }
+        continue_to_poll = polling
+        submit_output=CommandResults(
+            outputs_prefix='ANYRUN.Task',
+            outputs_key_field='ID',
+            outputs=outputs,
+            readable_output=tableToMarkdown('Task:', outputs),
+            raw_response=response
+        )
+
+        return PollResult(
+            response=submit_output,
+            continue_to_poll=continue_to_poll,
+            args_for_next_run={
+                'task_id': task_id,
+                'polling': True
+            },
+            partial_result=CommandResults(
+                readable_output=f"Waiting for submission {task_id} to complete..."
+            )
+        )
+
+    else:
+        response = get_report(task_id)
+        status = response.get('data', {}).get('status')
+        continue_to_poll = True if status != 'done' else False
+        outputs = {
+            'ID': task_id,
+            'Status': status
+        }
+        if continue_to_poll:
+            submit_output=CommandResults()
+        else:
+            images = images_from_report(response)
+            submit_output=[
+                CommandResults(
+                    outputs_prefix='ANYRUN.Task',
+                    outputs_key_field='ID',
+                    outputs=outputs,
+                    readable_output=tableToMarkdown(
+                        f"Report for Task {task_id}:",
+                        humanreadable_from_report_contents(
+                            travel_object(
+                                contents_from_report(response),
+                                key_functions=[underscore_to_camel_case, make_capital, make_singular, make_upper]
+                            )
+                        ),
+                        removeNull=True
+                    )
+                ),
+                CommandResults(
+                    readable_output=images_from_report(response)
+                )
+            ]
+            if images:
+                submit_output.append(
+                    CommandResults(
+                        readable_output=images
+                    )
+                )
+        return PollResult(
+            response=submit_output,
+            continue_to_poll=continue_to_poll,
+            args_for_next_run={
+                'task_id': task_id,
+                'polling': True,
+                'hide_polling_output': True
+            },
+
+        )
+
+
+'''
     if polling:
         command = demisto.command()
         if not task_id:
@@ -1008,7 +1099,7 @@ def run_analysis_command():
         human_readable = tableToMarkdown(title, {'Task': task_id}, removeNull=True)
         entry_context = {'ANYRUN.Task(val.ID && val.ID === obj.ID)': {'ID': task_id}}
         return_outputs(readable_output=human_readable, outputs=entry_context, raw_response=response)
-
+'''
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
@@ -1026,12 +1117,13 @@ def main():
     """Main Execution block"""
 
     try:
+        args = demisto.args()
         cmd_name = demisto.command()
         LOG('Command being called is {}'.format(cmd_name))
         handle_proxy()
 
         if cmd_name in COMMANDS.keys():
-            COMMANDS[cmd_name]()
+            return_results(COMMANDS[cmd_name](None, args))
 
     except Exception as e:
         return_error(str(e), error=traceback.format_exc())

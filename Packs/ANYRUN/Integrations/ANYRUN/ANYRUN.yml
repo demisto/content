@@ -353,9 +353,28 @@ script:
       required: false
       secret: false
     - default: false
+      description: The interval (in seconds) of when to next poll for results.
+      isArray: false
+      name: interval_in_seconds
+      required: false
+      secret: false
+    - default: false
+      description: The timeout (in seconds) of the polling.
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    - default: false
       description: Task ID of the task to poll.
       isArray: false
       name: task_id
+      required: false
+      deprecated: true
+      secret: false
+    - default: false
+      description: Whether to hide polling output.
+      isArray: false
+      name: hide_polling_output
       required: false
       deprecated: true
       secret: false
