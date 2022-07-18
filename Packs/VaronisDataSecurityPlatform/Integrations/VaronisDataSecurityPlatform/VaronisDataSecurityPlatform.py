@@ -22,16 +22,16 @@ MAX_INCIDENTS_TO_FETCH = 100
 SEARCH_RESULT_RETRIES = 10
 BACKOFF_FACTOR = 5
 THREAT_MODEL_ENUM_ID = 5821
-ALERT_STATUSES = {'Open': 1, 'Under Investigation': 2, 'Closed': 3}
-ALERT_SEVERITIES = {'High': 0, 'Medium': 1, 'Low': 2}
+ALERT_STATUSES = {'open': 1, 'under investigation': 2, 'closed': 3}
+ALERT_SEVERITIES = {'high': 0, 'medium': 1, 'low': 2}
 CLOSE_REASONS = {
-    'None': 0,
-    'Resolved': 1,
-    'Misconfiguration': 2,
-    'Threat model disabled or deleted': 3,
-    'Account misclassification': 4,
-    'Legitimate activity': 5,
-    'Other': 6
+    'none': 0,
+    'resolved': 1,
+    'misconfiguration': 2,
+    'threat model disabled or deleted': 3,
+    'account misclassification': 4,
+    'legitimate activity': 5,
+    'other': 6
 }
 STATUSES_TO_RETRY = [304, 405, 206]
 ALERT_COLUMNS = [
@@ -262,11 +262,12 @@ class Client(BaseClient):
         request_params['searchString'] = search_string
         request_params['limit'] = 1000
 
-        return self._http_request(
+        response = self._http_request(
             'GET',
             'api/userdata/users',
             params=request_params
-        )['ResultSet']
+        )
+        return response['ResultSet']
 
     def varonis_get_enum(self, enum_id: int) -> List[Any]:
         """Gets an enum by enum_id. Usually needs for retrieving object required for a search
@@ -373,7 +374,6 @@ class Client(BaseClient):
         :rtype: ``List[Dict[str, Any]]``
 
         """
-
         request_params: Dict[str, Any] = {}
 
         if threat_models and len(threat_models) > 0:
@@ -383,7 +383,7 @@ class Client(BaseClient):
             request_params['severity'] = severity
 
         if alert_status:
-            request_params['status'] = ALERT_STATUSES[alert_status]
+            request_params['status'] = ALERT_STATUSES[alert_status.lower()]
 
         if from_alert_id:
             request_params['fromAlertId'] = from_alert_id
@@ -439,7 +439,7 @@ def validate_threat_models(client: Client, threat_models: List[str]):
 
     rules_enum = client.varonis_get_enum(THREAT_MODEL_ENUM_ID)
     for threat_model in threat_models:
-        rule = next((r for r in rules_enum if r['ruleName'] == threat_model), None)
+        rule = next((r for r in rules_enum if strEqual(r['ruleName'], threat_model)), None)
 
         if not rule:
             raise ValueError(f'There is no threat model with name {threat_model}.')
@@ -547,7 +547,7 @@ class SearchAlertsQueryBuilder(SearchQueryBuilder):
         }
 
         for threat in threats:
-            rule = next((x for x in rule_enum if x['ruleName'] == threat), None)
+            rule = next((x for x in rule_enum if strEqual(x['ruleName'], threat)), None)
 
             if not rule:
                 raise ValueError(f'There is no threat model with name {threat}.')
@@ -622,7 +622,7 @@ class SearchAlertsQueryBuilder(SearchQueryBuilder):
         }
 
         for severity_name in severities:
-            severity_id = severity_enum.get(severity_name, None)
+            severity_id = severity_enum.get(severity_name.lower(), None)
             if severity_id is None:
                 raise ValueError(f'There is no alert severity with name {severity_name}.')
 
@@ -669,7 +669,8 @@ class SearchAlertsQueryBuilder(SearchQueryBuilder):
             users = self._client.varonis_get_users_by_user_name(user_name)
 
             for user in users:
-                if user['DisplayName'] == user_name and (not user_domain_name or user['DomainName'] == user_domain_name):
+                if (strEqual(user['DisplayName'], user_name)
+                        and (not user_domain_name or strEqual(user['DomainName'], user_domain_name))):
                     sidIds.append(user['Id'])
 
         self.create_alert_sid_id_filter(sidIds)
@@ -686,7 +687,7 @@ class SearchAlertsQueryBuilder(SearchQueryBuilder):
             users = self._client.varonis_get_users_by_sam_account_name(sam_account_name)
 
             for user in users:
-                if user['SAMAccountName'] == sam_account_name:
+                if strEqual(user['SAMAccountName'], sam_account_name):
                     sidIds.append(user['Id'])
 
         self.create_alert_sid_id_filter(sidIds)
@@ -703,7 +704,7 @@ class SearchAlertsQueryBuilder(SearchQueryBuilder):
             users = self._client.varonis_get_users_by_email(email)
 
             for user in users:
-                if user['Email'] == email:
+                if strEqual(user['Email'], email):
                     sidIds.append(user['Id'])
 
         self.create_alert_sid_id_filter(sidIds)
@@ -745,7 +746,7 @@ class SearchAlertsQueryBuilder(SearchQueryBuilder):
         }
 
         for status_name in statuses:
-            status_id = status_enum.get(status_name, None)
+            status_id = status_enum.get(status_name.lower(), None)
             if not status_id:
                 raise ValueError(f'There is no alert status with name {status_name}.')
 
@@ -798,7 +799,7 @@ def get_search_result_path(search_response: List[Any]) -> str:
     :return: A path to the search results
     :rtype: ``str``
     """
-    return next(x['location'] for x in search_response if x['dataType'] == 'rows')
+    return next(x['location'] for x in search_response if strEqual(x['dataType'], 'rows'))
 
 
 def create_output(columns: List[str], rows: List[List[Any]]) -> Dict[str, Any]:
@@ -860,6 +861,15 @@ def try_convert(item, converter, error=None):
                 raise error
             raise
     return None
+
+
+def strEqual(text1: str, text2: str) -> bool:
+    if not text1 and not text2:
+        return True
+    if not text1 or not text2:
+        return False
+
+    return text1.casefold() == text2.casefold()
 
 
 def execute_search_query(client: Client, query: Any, data_range: str) -> Dict[str, Any]:
@@ -1305,13 +1315,13 @@ def varonis_update_alert_status_command(client: Client, args: Dict[str, Any]) ->
 
     """
     status = args.get('status', None)
-    statuses = list(filter(lambda name: name != 'Closed', ALERT_STATUSES.keys()))
-    if status not in statuses:
+    statuses = list(filter(lambda name: name != 'closed', ALERT_STATUSES.keys()))
+    if status.lower() not in statuses:
         raise ValueError(f'status must be one of {statuses}.')
 
-    status_id = ALERT_STATUSES[status]
+    status_id = ALERT_STATUSES[status.lower()]
 
-    return varonis_update_alert(client, CLOSE_REASONS['None'], status_id, argToList(args.get('alert_id')))
+    return varonis_update_alert(client, CLOSE_REASONS['none'], status_id, argToList(args.get('alert_id')))
 
 
 def varonis_close_alert_command(client: Client, args: Dict[str, Any]) -> bool:
@@ -1331,13 +1341,13 @@ def varonis_close_alert_command(client: Client, args: Dict[str, Any]) -> bool:
 
     """
     close_reason = args.get('close_reason', None)
-    close_reasons = list(filter(lambda name: name != 'None', CLOSE_REASONS.keys()))
-    if close_reason not in close_reasons:
+    close_reasons = list(filter(lambda name: not strEqual(name, 'none'), CLOSE_REASONS.keys()))
+    if close_reason.lower() not in close_reasons:
         raise ValueError(f'close reason must be one of {close_reasons}')
 
-    close_reason_id = CLOSE_REASONS[close_reason]
+    close_reason_id = CLOSE_REASONS[close_reason.lower()]
 
-    return varonis_update_alert(client, close_reason_id, ALERT_STATUSES['Closed'], argToList(args.get('alert_id')))
+    return varonis_update_alert(client, close_reason_id, ALERT_STATUSES['closed'], argToList(args.get('alert_id')))
 
 
 def varonis_get_alerted_events_command(client: Client, args: Dict[str, Any]) -> CommandResults:

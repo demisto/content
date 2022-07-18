@@ -56,6 +56,11 @@ def test_varonis_get_alerts_command(mocker: MockerFixture):
         'varonis_get_enum',
         return_value=util_load_json('test_data/varonis_get_enum_response.json')
     )
+    mocker.patch.object(
+        client,
+        'varonis_get_users',
+        return_value=util_load_json('test_data/varonis_get_users_api_response.json')
+    )
 
     args = util_load_json("test_data/demisto_search_alerts_args.json")
     expected_outputs = util_load_json('test_data/varonis_get_alerts_command_output.json')
@@ -216,3 +221,17 @@ def test_enrich_with_url():
     baseUrl = 'http://test.com/'
     enrich_with_url(obj, baseUrl, id)
     assert obj['Url'] == expectedUrl
+
+
+def test_case_insensitive():
+    from VaronisDataSecurityPlatform import strEqual
+
+    assert strEqual(None, None)
+    assert not strEqual(None, 'None')
+    assert not strEqual('None', None)
+    assert not strEqual('None', 'None1')
+    assert strEqual('', None)
+    assert strEqual(None, '')
+    assert strEqual('None', 'None')
+    assert strEqual('None', 'none')
+    assert strEqual('none', 'None')
