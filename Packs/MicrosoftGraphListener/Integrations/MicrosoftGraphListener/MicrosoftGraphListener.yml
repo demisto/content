@@ -522,7 +522,7 @@ script:
       description: The extension of the file.
       type: String
     description: Retrieves an email message by message ID and uploads the content as an EML file.
-  dockerimage: demisto/crypto:1.0.0.30286
+  dockerimage: demisto/crypto:1.0.0.31715
   isfetch: true
   runonce: false
   script: ''

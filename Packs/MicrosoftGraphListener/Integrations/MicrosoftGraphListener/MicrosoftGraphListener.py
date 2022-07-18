@@ -1063,7 +1063,7 @@ def list_attachments_command(client: MsGraphClient, args):
         file_names = [attachment.get('Name') for attachment in attachment_list if isinstance(
             attachment, dict) and attachment.get('Name')]
         human_readable = tableToMarkdown(
-            f'Total of {len(attachment_list)} attachments found in message {message_id} from user {user_id}',
+            f'Total of {len(attachment_list)} attachments found in message {message_id}',
             {'File names': file_names}
         )
         command_results = CommandResults(
@@ -1101,12 +1101,11 @@ def list_mails_command(client: MsGraphClient, args):
                    'increase "pages_to_pull" argument'
 
     mail_context = build_mail_object(raw_response)
-    entry_context = {}
     if mail_context:
         entry_context = mail_context
         if next_page:
             # .NextPage.indexOf(\'http\')>=0 : will make sure the NextPage token will always be updated because it's a url
-            entry_context['MSGraphMail(val.NextPage.indexOf(\'http\')>=0)'] = {'NextPage': next_page}
+            entry_context['MSGraphMail(val.NextPage.indexOf(\'http\')>=0)'] = {'NextPage': next_page}  # type: ignore
 
         # human_readable builder
         human_readable_header = f'{len(mail_context)} mails received {metadata}' if metadata \
@@ -1118,6 +1117,7 @@ def list_mails_command(client: MsGraphClient, args):
         )
     else:
         human_readable = '### No mails were found'
+        entry_context = {}
 
     command_results = CommandResults(
         outputs_prefix='MSGraphMail',
