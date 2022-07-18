@@ -2003,6 +2003,8 @@ def offboard_machine_command(client: MsClient, args: dict):
     Returns:
        CommandResults. Human readable, context, raw response
     """
+    if not args.get('machine_id') or not args.get('comment'):
+        raise ValueError("Not all mandatory arguments are provided. Provide both machine_id and comment.")
     headers = ['ID', 'Type', 'Requestor', 'RequestorComment', 'Status', 'MachineID', 'ComputerDNSName']
     machine_ids = remove_duplicates_from_list_arg(args, 'machine_id')
     comment = args.get('comment')
@@ -2018,17 +2020,14 @@ def offboard_machine_command(client: MsClient, args: dict):
             # if we got an error for a machine, we want to get result for the other ones
             failed_machines[machine_id] = e
             continue
-    entry_context = {
-        'MicrosoftATP.MachineAction(val.ID === obj.ID)': machines_action_data
-    }
+
     human_readable = tableToMarkdown("The offboard request has been submitted successfully:", machines_action_data,
                                      headers=headers, removeNull=True)
     human_readable += add_error_message(failed_machines, machine_ids)
 
     return CommandResults(
-        outputs=entry_context,
+        outputs = machines_action_data,
         outputs_key_field=["ID", "MachineID"],
-        outputs_prefix="MicrosoftATP.OffboardMachine",
         readable_output=human_readable,
         raw_response=raw_response
     )

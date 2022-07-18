@@ -5866,19 +5866,19 @@ Machine.Offboard
 
 | **Path** | **Type** | **Description**                                            |
 | --- | --- |------------------------------------------------------------|
-| MicrosoftATP.MachineAction.ID | String | The machine action ID.                                     | 
-| MicrosoftATP.MachineAction.Type | String | Type of the machine action.                                | 
-| MicrosoftATP.MachineAction.Scope | Unknown | Scope of the action.                                       | 
-| MicrosoftATP.MachineAction.Requestor | String | The ID of the user that executed the action.               | 
-| MicrosoftATP.MachineAction.RequestorComment | String | Comment that was written when issuing the action.          | 
-| MicrosoftATP.MachineAction.Status | String | The current status of the command.                         | 
-| MicrosoftATP.MachineAction.MachineID | String | The machine ID on which the action was executed.           | 
-| MicrosoftATP.MachineAction.ComputerDNSName | String | The machine DNS name on which the action was executed.     | 
-| MicrosoftATP.MachineAction.CreationDateTimeUtc | Date | The date and time when the action was created.             | 
-| MicrosoftATP.MachineAction.LastUpdateTimeUtc | Date | The last date and time when the action status was updated. | 
-| MicrosoftATP.MachineAction.cancellationDateTimeUtc | Date | The date and time when the action was canceled.      |
-| MicrosoftATP.MachineAction.RelatedFileInfo | String | The file info.                                             | 
-| MicrosoftATP.MachineAction.troubleshootInfo | String | Troubleshooting information.                               |
+| MicrosoftATP.OffboardMachine.ID | String | The machine action ID.                                     | 
+| MicrosoftATP.OffboardMachine.Type | String | Type of the machine action.                                | 
+| MicrosoftATP.OffboardMachine.Scope | Unknown | Scope of the action.                                       | 
+| MicrosoftATP.OffboardMachine.Requestor | String | The ID of the user that executed the action.               | 
+| MicrosoftATP.OffboardMachine.RequestorComment | String | Comment that was written when issuing the action.          | 
+| MicrosoftATP.OffboardMachine.Status | String | The current status of the command.                         | 
+| MicrosoftATP.OffboardMachine.MachineID | String | The machine ID on which the action was executed.           | 
+| MicrosoftATP.OffboardMachine.ComputerDNSName | String | The machine DNS name on which the action was executed.     | 
+| MicrosoftATP.OffboardMachine.CreationDateTimeUtc | Date | The date and time when the action was created.             | 
+| MicrosoftATP.OffboardMachine.LastUpdateTimeUtc | Date | The last date and time when the action status was updated. | 
+| MicrosoftATP.OffboardMachine.cancellationDateTimeUtc | Date | The date and time when the action was canceled.      |
+| MicrosoftATP.OffboardMachine.RelatedFileInfo | String | The file info.                                             | 
+| MicrosoftATP.OffboardMachine.troubleshootInfo | String | Troubleshooting information.                               |
 
 ##### Command example
 ```!microsoft-atp-offboard-machine comment="Testing Offboarding" machine_id="12342c13fef"```
