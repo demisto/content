@@ -12,7 +12,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ''
-dockerimage: demisto/python3:3.10.4.31492
+dockerimage: demisto/python3:3.10.5.31928
 enabled: true
 name: SuggestBranchName
 outputs:

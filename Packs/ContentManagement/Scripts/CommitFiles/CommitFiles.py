@@ -4,6 +4,7 @@ from CommonServerPython import *  # noqa: F401
 import os
 import io
 from os.path import exists
+from typing import Dict
 from contextlib import redirect_stderr, redirect_stdout
 from demisto_sdk.commands.split.ymlsplitter import YmlSplitter
 from demisto_sdk.commands.common.constants import ENTITY_TYPE_TO_DIR
@@ -17,7 +18,8 @@ PR_TEMPLATE = '### Pull Request created in Cortex XSOAR\n' \
               '{}\n\n' \
               '---'
 
-file_path_to_sha = {}
+file_path_to_sha: Dict[str, str] = {}
+
 new_files = []
 modified_files = []
 
