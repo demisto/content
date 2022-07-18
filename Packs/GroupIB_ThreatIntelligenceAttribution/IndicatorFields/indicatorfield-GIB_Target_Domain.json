@@ -1,4 +1,7 @@
 {
+    "associatedTypes": [
+        "Domain"
+    ],
     "associatedToAll": false,
     "caseInsensitive": true,
     "cliName": "gibtargetdomain",
@@ -20,11 +23,8 @@
     "threshold": 72,
     "type": "shortText",
     "unmapped": false,
-    "unsearchable": true,
+    "unsearchable": false,
     "useAsKpi": false,
     "version": -1,
-    "fromVersion": "6.0.0",
-    "associatedTypes": [
-        "Domain"
-    ]
+    "fromVersion": "6.0.0"
 }
