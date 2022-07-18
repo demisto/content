@@ -7766,13 +7766,14 @@ def parse_raw_whois(raw_data, normalized=None, never_query_handles=True, handle_
         if match is not None:
             chunk = match.group(1)
             for match in re.findall("\s+?(.+)\n", chunk):
-                match = match.split()[0]  # type: ignore
-                # Prevent nameserver aliases from being picked up.
-                if not match.startswith("[") and not match.endswith("]"):  # type: ignore
-                    try:
-                        data["nameservers"].append(match.strip())  # type: ignore
-                    except KeyError as e:
-                        data["nameservers"] = [match.strip()]  # type: ignore
+                if match.strip():  # type: ignore
+                    match = match.split()[0]  # type: ignore
+                    # Prevent nameserver aliases from being picked up.
+                    if not match.startswith("[") and not match.endswith("]"):  # type: ignore
+                        try:
+                            data["nameservers"].append(match.strip())  # type: ignore
+                        except KeyError as e:
+                            data["nameservers"] = [match.strip()]  # type: ignore
         # The .ie WHOIS server puts ambiguous status information in an unhelpful order
         match = re.search('ren-status:\s*(.+)', segment)
         if match is not None:
@@ -8566,5 +8567,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins":
+if __name__ in ('__builtin__', 'builtins', '__main__'):
     main()
