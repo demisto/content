@@ -260,6 +260,13 @@ def test_parse_raw_whois():
     assert result['registrar'] == ['IONOS SE']
 
 
+def test_parse_raw_whois2():
+    with open('test_data/EU domains2.text', 'r') as f:
+        raw_data = f.read()
+    result = Whois.parse_raw_whois([raw_data], [], never_query_handles=False, handle_server='whois.eu')
+    assert result['nameservers'] == ['ns1060.ui-dns.biz']
+
+
 def test_get_raw_response_with_a_refer_server_that_fails(mocker):
     """
     Background:
