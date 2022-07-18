@@ -4741,3 +4741,26 @@ def test_remove_channel_from_context(mocker):
     new_conversations = json.loads(updated_context.get('conversations', {}))
     for new_conversation in new_conversations:
         assert new_conversation.get('id') != 'C03NF1QTK38'
+
+
+def test_slack_get_integration_context(mocker):
+    """
+    Given:
+        An integration context dict
+    When:
+        Fetching statistics about the context
+    Then:
+        Assert that the human-readable of the result is correct
+    """
+    mocker.patch.object(demisto, 'getIntegrationContext', side_effect=get_integration_context)
+    mocker.patch.object(demisto, 'results')
+    from SlackV3 import slack_get_integration_context
+
+    expected_results = ('### Long Running Context Statistics\n'
+                        '|Conversations Count|Conversations Size In Bytes|Mirror Size In '
+                        'Bytes|Mirrors Count|Users Count|Users Size In Bytes|\n'
+                        '|---|---|---|---|---|---|\n'
+                        '| 2 | 1706 | 1397 | 5 | 2 | 1843 |\n')
+    slack_get_integration_context()
+
+    assert demisto.results.mock_calls[0][1][0]['HumanReadable'] == expected_results
