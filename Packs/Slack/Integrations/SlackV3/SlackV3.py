@@ -4,7 +4,6 @@ import ssl
 import threading
 from distutils.util import strtobool
 from typing import Tuple
-import gc
 
 import aiohttp
 import slack_sdk
@@ -783,7 +782,6 @@ def long_running_loop():
             if MIRRORING_ENABLED:
                 check_for_mirrors()
             check_for_unanswered_questions()
-            gc.collect()
             time.sleep(15)
         except requests.exceptions.ConnectionError as e:
             error = f'Could not connect to the Slack endpoint: {str(e)}'
