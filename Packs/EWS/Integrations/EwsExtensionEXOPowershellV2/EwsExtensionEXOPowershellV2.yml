@@ -8,14 +8,15 @@ configuration:
   name: url
   required: true
   type: 0
-- display: Certificate
+- displaypassword: Certificate
   name: certificate
   type: 9
-  required: false
+  required: true
   additionalinfo: A pfx certificate encoded in Base64.
-- displaypassword: Certificate Encrypted
-  name: certificate_encrypted
-  required: false
+  hiddenusername: true
+- displaypassword: password
+  name: password
+  required: true
   type: 9
   hiddenusername: true
 - display: The organization used in app-only authentication.
