@@ -102,7 +102,7 @@ function CreateNewSession {
     param([string]$url, [string]$upn, [string]$password, [string]$bearer_token, [bool]$insecure, [bool]$proxy)
 
     $endpoint = $url.split('.')[-1]
-    if ($endpoint.length > 3) {
+    if ($endpoint.length -gt 3) {
         $endpoint = $endpoint.split('/')[0]
     }
     $url = GetRedirectUri -url $url -upn $upn -password $password -bearer_token $bearer_token -insecure $insecure -proxy $proxy
