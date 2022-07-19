@@ -9,7 +9,8 @@ from collect_tests import (BranchTestCollector, Machine,
                            XSOARNightlyTestCollector)
 from demisto_sdk.commands.common.constants import MarketplaceVersions
 
-from Tests.scripts.collect_tests.constants import XSOAR_SANITY_TEST_NAMES, ONLY_INSTALL_PACK
+from Tests.scripts.collect_tests.constants import (ONLY_INSTALL_PACK,
+                                                   XSOAR_SANITY_TEST_NAMES)
 from Tests.scripts.collect_tests.path_manager import PathManager
 from Tests.scripts.collect_tests.utils import PackManager
 

@@ -22,12 +22,10 @@ from id_set import IdSet
 from logger import logger
 from test_conf import TestConf
 
+from Tests.Marketplace.marketplace_services import get_last_commit_from_index
 from Tests.scripts.collect_tests.path_manager import PathManager
 from utils import (ContentItem, Machine, PackManager, VersionRange,
                    find_pack_folder)
-
-from Tests.Marketplace.marketplace_services import get_last_commit_from_index
-
 
 PATHS = PathManager(Path(__file__).absolute().parents[3])
 PACK_MANAGER = PackManager(PATHS)
@@ -181,7 +179,7 @@ class TestCollector(ABC):
 
     def _validate_tests_in_id_set(self, tests: Iterable[str]):
         if not_found := ((set(tests) - self.sanity_tests.tests).difference(self.id_set.id_to_test_playbook.keys())):
-            not_found_string = ', '.join(sorted(item.id_ for item in not_found))
+            not_found_string = ', '.join(sorted(not_found))
             logger.warning(f'{len(not_found)} tests were not found in id-set: \n{not_found_string}')
 
     # def _add_packs_used(self, tests: set[str]) -> list[CollectedTests]:  # todo is used?

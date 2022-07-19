@@ -1,11 +1,5 @@
-from logging import Formatter, StreamHandler, getLogger
+import logging as logger
 
-logger = getLogger('collect_tests')
+from Tests.scripts.utils.log_util import install_logging
 
-formatter = Formatter('%(levelname)s [%(filename)s:%(lineno)s %(funcName)s() ] %(message)s')
-
-sh = StreamHandler()
-sh.setFormatter(formatter)
-
-logger.addHandler(sh)
-logger.propagate = False
+install_logging('collect_tests.log', logger=logger)
