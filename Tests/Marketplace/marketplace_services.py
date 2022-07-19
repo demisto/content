@@ -1685,6 +1685,7 @@ class Pack(object):
 
         # Convert the RN entries to a Dict
         release_notes_dict = self.get_release_notes_dict(version, release_notes)
+        logging.debug(f"Release notes entries in dict - {release_notes_dict}")
 
         if self.release_notes_dont_contain_entities_sections(release_notes_str=release_notes,
                                                              release_notes_dict=release_notes_dict):
@@ -1702,6 +1703,7 @@ class Pack(object):
 
         # Convert the RN dict to string
         changelog_entry[Changelog.RELEASE_NOTES] = construct_entities_block(filtered_release_notes).strip()
+        logging.debug(f"Finall release notes - \n{changelog_entry[Changelog.RELEASE_NOTES]}")
         return changelog_entry, False
 
     def filter_release_notes_by_entities_display_name(self, release_notes, modified_files_data):
@@ -1749,6 +1751,7 @@ class Pack(object):
         filtered_entries: dict = {}
         for display_name, rn_entry in release_notes[rn_header].items():
 
+            logging.debug(f"Searching display name '{display_name}' in '{display_names}'.")
             if display_name != '[special_msg]' and display_name.replace("New: ", "") not in display_names:
                 continue
 
@@ -1818,12 +1821,12 @@ class Pack(object):
 
             start_tag, end_tag = TAGS_BY_MP[marketplace]
             if start_tag in release_notes and end_tag in release_notes and marketplace != upload_marketplace:
-                logging.debug(f"Filtering irrelevant release notes by tags {start_tag}-{end_tag} of marketplace "
+                logging.debug(f"Filtering irrelevant release notes by tags of marketplace "
                               f"{marketplace} for pack {self._pack_name} when uploading to marketplace "
                               f"{upload_marketplace}.")
                 return re.sub(fr'{start_tag}{TAGS_SECTION_PATTERN}{end_tag}[\n]*', '', release_notes)
             else:
-                logging.debug(f"Removing only the tags {start_tag}-{end_tag} since the RN entry is relevant "
+                logging.debug(f"Removing only the tags since the RN entry is relevant "
                               f"to marketplace {upload_marketplace}")
                 return release_notes.replace(f"{start_tag}", '').replace(f"{end_tag}", '')
 
