@@ -13,8 +13,10 @@ class TestConf(DictFileBased):
         self.tests = tuple(TestConfItem(value) for value in self['tests'])
         self.test_ids = {test.playbook_id for test in self.tests}
 
-        self.tests_to_integrations = {test.playbook_id: test.integrations for test in self.tests if test.integrations}
-        self.integrations_to_tests = self._calculate_integration_to_tests()
+        self.tests_to_integrations: dict[str, tuple[str]] = {
+            test.playbook_id: test.integrations for test in self.tests if test.integrations
+        }
+        self.integrations_to_tests: dict[str, list[str]] = self._calculate_integration_to_tests()
 
         # Attributes
         self.skipped_tests_dict: dict = self['skipped_tests']  # todo use

@@ -55,7 +55,7 @@ def _calculate_excluded_files(content_path: Path) -> set[Path]:
     """
 
     def glob(paths: Iterable[str]):
-        result = []
+        result: list[Path] = []
         for partial_path in paths:
             path = content_path / partial_path
 

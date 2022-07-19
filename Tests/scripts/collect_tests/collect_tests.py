@@ -5,7 +5,7 @@ from argparse import ArgumentParser
 from enum import Enum
 from functools import reduce
 from pathlib import Path
-from typing import Iterable, Optional
+from typing import Iterable, Optional, Sequence
 
 from constants import (DEFAULT_MARKETPLACE_WHEN_MISSING,
                        DEFAULT_REPUTATION_TESTS, ONLY_INSTALL_PACK,
@@ -55,11 +55,11 @@ class CollectionReason(Enum):
 class CollectedTests:
     def __init__(
             self,
-            tests: Optional[tuple[Optional[str]] | list[Optional[str]]],
-            packs: Optional[tuple[Optional[str]] | list[Optional[str]]],
+            tests: Optional[tuple[Optional[str], ...]],
+            packs: tuple[Optional[str], ...],
             reason: CollectionReason,
             version_range: Optional[VersionRange],
-            reason_description: Optional[str] = None,
+            reason_description: str,
     ):
 
         self.tests: set[str] = set()  # only updated on init
@@ -67,8 +67,13 @@ class CollectedTests:
         self.version_range = None if version_range and version_range.is_default else version_range
         self.machines: Optional[Iterable[Machine]] = None
 
-        if tests and packs and len(tests) != len(packs):
-            raise ValueError(f'when both are not empty, {len(tests)=} must be equal to {len(packs)=}')
+        if tests and packs:
+            if len(tests) != len(packs):
+                raise ValueError(f'when both are not empty, {len(tests)=} must be equal to {len(packs)=}')
+
+            tests = tuple(tests)
+            packs = tuple(packs)
+
         elif tests and not packs:
             packs = (None,) * len(tests)  # so accessors get a None
         elif packs and not tests:
@@ -80,11 +85,11 @@ class CollectedTests:
     def __or__(self, other: 'CollectedTests') -> 'CollectedTests':
         self.tests.update(other.tests)
         self.packs.update(other.packs)
-        self.version_range = self.version_range | other.version_range if self.version_range else other.version_range
+        self.version_range = (self.version_range | other.version_range) if self.version_range else other.version_range
         return self
 
     @classmethod
-    def union(cls, collected_tests: Iterable['CollectedTests']) -> Optional['CollectedTests']:
+    def union(cls, collected_tests: Optional[tuple[Optional['CollectedTests'], ...]]) -> Optional['CollectedTests']:
         collected_tests = tuple(filter(None, collected_tests))
 
         if not collected_tests:
@@ -145,7 +150,7 @@ class TestCollector(ABC):
 
         return CollectedTests(
             tests=test_names,
-            packs=None,
+            packs=(),
             reason=CollectionReason.SANITY_TESTS,
             version_range=None,
             reason_description=str(self.marketplace.value),
@@ -243,7 +248,7 @@ class BranchTestCollector(TestCollector):
             except NothingToCollectException as e:
                 logger.warning(e.message)
 
-        return CollectedTests.union(collected)
+        return CollectedTests.union(tuple(collected))
 
     @classmethod
     def _find_yml_content_type(cls, yml_path: Path):
@@ -257,7 +262,7 @@ class BranchTestCollector(TestCollector):
                        }.get(yml_path.parents[1].name)):
             return result
 
-    def _collect_yml(self, content_item_path: Path) -> Optional[CollectedTests]:
+    def _collect_yml(self, content_item_path: Path) -> CollectedTests:
         yml_path = content_item_path.with_suffix('.yml')
         try:
             yml = ContentItem(yml_path)
@@ -278,12 +283,12 @@ class BranchTestCollector(TestCollector):
                     raise ValueError(f'{test_id} missing from conf.test_ids')
 
             case FileType.INTEGRATION:
-                tests = self.conf.integrations_to_tests[yml.id_]
+                tests = tuple(self.conf.integrations_to_tests[yml.id_])
                 reason = CollectionReason.INTEGRATION_CHANGED
 
             case FileType.SCRIPT | FileType.PLAYBOOK:
                 try:
-                    tests = yml.tests  # raises NoTestsConfiguredException if 'no tests' in the tests field
+                    tests = tuple(yml.tests)  # raises NoTestsConfiguredException if 'no tests' in the tests field
                     reason = CollectionReason.SCRIPT_PLAYBOOK_CHANGED
                 except NoTestsConfiguredException:
                     # collecting all tests that implement this script/playbook
@@ -294,7 +299,10 @@ class BranchTestCollector(TestCollector):
                             tests = tuple(test.name for test in self.id_set.implemented_scripts_to_tests.get(yml.id_))
 
                         case FileType.PLAYBOOK:
-                            tests = tuple(test.name for test in self.id_set.implemented_playbooks_to_tests.get(yml.id_))
+
+                            tests = tuple(
+                                test.name for test in self.id_set.implemented_playbooks_to_tests.get(yml.id_)
+                            )
                         case _:
                             raise RuntimeError(f'unexpected content type folder {actual_content_type}')
                     if not tests:
@@ -308,9 +316,12 @@ class BranchTestCollector(TestCollector):
         # creating an object for each, as CollectedTests require #packs==#tests
         if tests:
             return CollectedTests.union(
-                (CollectedTests(tests=(test,), packs=yml.pack_folder_name_tuple, reason=reason,
-                                version_range=yml.version_range, reason_description=f'{yml.id_=} ({relative_path})')
-                 for test in tests))
+                tuple(CollectedTests(tests=(test,), packs=yml.pack_folder_name_tuple, reason=reason,
+                                     version_range=yml.version_range,
+                                     reason_description=f'{yml.id_=} ({relative_path})')
+                      for test in tests))
+        else:
+            raise NothingToCollectException(yml.path, 'no tests were found')
 
     def _collect_single(self, path: Path) -> CollectedTests:
         if not path.exists():
@@ -354,7 +365,7 @@ class BranchTestCollector(TestCollector):
                 FileType.CLASSIFIER: (self.conf.classifier_to_test, CollectionReason.CLASSIFIER_CHANGED),
             }[file_type]
 
-            if not (tests := source.get(content_item.id_)):
+            if not (tests := source.get(content_item.id_) if content_item else ''):
                 reason = CollectionReason.NON_CODE_FILE_CHANGED
                 reason_description = f'no specific tests for {relative_path} were found'
         elif path.suffix == '.yml':
@@ -362,16 +373,18 @@ class BranchTestCollector(TestCollector):
 
         else:
             raise ValueError(f'Unexpected filetype {file_type}, {relative_path}')
+        if content_item:
+            return CollectedTests(
+                tests=tests,
+                packs=content_item.pack_folder_name_tuple,
+                reason=reason,
+                version_range=content_item.version_range,
+                reason_description=reason_description,
+            )
+        else:
+            raise NotImplementedError('todo')  # todo when is this reached?
 
-        return CollectedTests(
-            tests=tests,
-            packs=content_item.pack_folder_name_tuple,
-            reason=reason,
-            version_range=content_item.version_range,
-            reason_description=reason_description,
-        )
-
-    def _get_changed_files(self) -> tuple[str]:
+    def _get_changed_files(self) -> tuple[str, ...]:
         contrib_diff = None  # overridden on contribution branches, added to the git diff.
 
         current_commit = self.branch_name
@@ -391,7 +404,7 @@ class BranchTestCollector(TestCollector):
             contrib_diff = run_command('git status -uall --porcelain -- Packs').replace('??', 'A')
             logger.info(f'contribution branch, {contrib_diff=}')
 
-        diff = run_command(f'git diff --name-status {current_commit}...{previous_commit}')
+        diff: str = run_command(f'git diff --name-status {current_commit}...{previous_commit}')
         logger.debug(f'Changed files: {diff}')
 
         if contrib_diff:
@@ -432,7 +445,7 @@ class NightlyTestCollector(TestCollector, ABC):
             logger.warning(f'no tests matching marketplace {self.marketplace.value} ({only_value=}) were found')
             return None
 
-        return CollectedTests.union(collected)
+        return CollectedTests.union(tuple(collected))
 
     def _packs_matching_marketplace_value(self, only_value: bool) -> Optional[CollectedTests]:
         """
@@ -457,7 +470,7 @@ class NightlyTestCollector(TestCollector, ABC):
             logger.warning(f'no packs matching marketplace {self.marketplace.value} ({only_value=}) were found')
             return None
 
-        return CollectedTests(tests=None, packs=packs, reason=CollectionReason.PACK_MARKETPLACE_VERSION_VALUE,
+        return CollectedTests(tests=None, packs=tuple(packs), reason=CollectionReason.PACK_MARKETPLACE_VERSION_VALUE,
                               version_range=None, reason_description=f'({self.marketplace.value})')
 
     def _packs_of_content_matching_marketplace_value(self, only_value: bool) -> Optional[CollectedTests]:
@@ -503,7 +516,7 @@ class NightlyTestCollector(TestCollector, ABC):
                 #     logger.error('can not collect pack for items without a pack value')  # todo fix in id_set
                 #     continue  # todo remove, fix in id_set
                 # packs.append(item.pack)
-        return CollectedTests.union(collected)
+        return CollectedTests.union(tuple(collected))
 
 
 class XSIAMNightlyTestCollector(NightlyTestCollector):
@@ -534,7 +547,8 @@ class UploadCollector(BranchTestCollector):
     def _collect(self) -> Optional[CollectedTests]:
         # same as BranchTestCollector, but without tests.
         collected = super()._collect()
-        collected.tests = set()
+        if collected:
+            collected.tests = set()
         return collected
 
 
@@ -549,7 +563,7 @@ if __name__ == '__main__':
     parser.add_argument('-mp', '--marketplace', type=MarketplaceVersions, help='marketplace version', default='xsoar')
     parser.add_argument('--service_account', help="Path to gcloud service account")
     options = parser.parse_args()
-
+    collector: TestCollector
     match (options.nightly, marketplace := MarketplaceVersions(options.marketplace)):
         case False, _:  # not nightly
             collector = BranchTestCollector('master', marketplace, options.service_account)
@@ -561,8 +575,12 @@ if __name__ == '__main__':
             raise ValueError(f"unexpected values of (either) {marketplace=}, {options.nightly=}")
 
     collected = collector.collect(run_nightly=options.nightly, run_master=True)  # todo what to put in master?
-    logger.info(f'done collecting, got ({len(collected.tests)} tests and {len(collected.packs)} packs')
+    if not collected:
+        logger.error('done collecting, no tests or packs were collected.')
 
-    logger.info(f'writing output to {str(PATHS.output_tests_file)}, {str(PATHS.output_packs_file)}')
-    PATHS.output_tests_file.write_text('\n'.join(collected.tests))
-    PATHS.output_packs_file.write_text('\n'.join(collected.packs))
+    else:
+        logger.info(f'done collecting, got ({len(collected.tests)} tests and {len(collected.packs)} packs')
+
+        logger.info(f'writing output to {str(PATHS.output_tests_file)}, {str(PATHS.output_packs_file)}')
+        PATHS.output_tests_file.write_text('\n'.join(collected.tests))
+        PATHS.output_packs_file.write_text('\n'.join(collected.packs))

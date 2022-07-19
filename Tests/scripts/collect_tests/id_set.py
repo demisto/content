@@ -32,15 +32,15 @@ class IdSetItem(DictBased):
         return self.get('tests', ())
 
     @property
-    def implementing_scripts(self):
-        return self.get('implementing_scripts', (), warn_if_missing=False)
+    def implementing_scripts(self) -> tuple[str, ...]:
+        return tuple(self.get('implementing_scripts', (), warn_if_missing=False))
 
     @property
-    def implementing_playbooks(self):
-        return self.get('implementing_playbooks', (), warn_if_missing=False)
+    def implementing_playbooks(self) -> tuple[str, ...]:
+        return tuple(self.get('implementing_playbooks', (), warn_if_missing=False))
 
     @property
-    def pack_name_tuple(self) -> tuple[str]:
+    def pack_name_tuple(self) -> tuple[Optional[str]]:
         return self.pack_id,
 
 
@@ -55,8 +55,8 @@ class IdSet(DictFileBased):
         self.id_to_test_playbook = self._parse_items('TestPlaybooks')
         self.name_to_pack = {name: IdSetItem(None, value) for name, value in self['Packs'].items()}
 
-        self.implemented_scripts_to_tests = defaultdict(list)
-        self.implemented_playbooks_to_tests = defaultdict(list)
+        self.implemented_scripts_to_tests: dict[str, list] = defaultdict(list)
+        self.implemented_playbooks_to_tests: dict[str, list] = defaultdict(list)
 
         for test in self.test_playbooks:
             for script in test.implementing_scripts:
@@ -65,12 +65,18 @@ class IdSet(DictFileBased):
                 self.implemented_playbooks_to_tests[playbook].append(test)
 
         # the folder under where a pack is saved serves as its id
-        self.integration_to_pack_id: dict[str, str] = {integration.name: integration.pack_id
-                                                       for integration in self.integrations}
-        self.scripts_to_pack_id: dict[str, str] = {script.name: script.pack_id
-                                                   for script in self.scripts}
-        self.test_playbooks_to_pack_id: dict[str, str] = {test.name: test.pack_id
-                                                          for test in self.test_playbooks}
+        self.integration_to_pack_id: dict[str, Optional[str]] = {
+            integration.name: integration.pack_id
+            for integration in self.integrations
+        }
+        self.scripts_to_pack_id: dict[str, Optional[str]] = {
+            script.name: script.pack_id
+            for script in self.scripts
+        }
+        self.test_playbooks_to_pack_id: dict[str, Optional[str]] = {
+            test.name: test.pack_id
+            for test in self.test_playbooks
+        }
 
     @property
     def artifact_iterator(self) -> Iterable[IdSetItem]:
@@ -98,7 +104,7 @@ class IdSet(DictFileBased):
         yield from self.id_to_script.values()
 
     def _parse_items(self, key: str) -> dict[str, IdSetItem]:
-        result = {}
+        result: dict[str, IdSetItem] = {}
         for dict_ in self[key]:
             for id_, values in dict_.items():
                 if isinstance(values, dict):

@@ -68,12 +68,13 @@ class Machine(Enum):
     NIGHTLY = 'nightly'
 
     @staticmethod
-    def numeric_machines() -> tuple['Machine']:
+    def numeric_machines() -> tuple['Machine', ...]:
         return tuple(machine for machine in Machine if isinstance(machine.value, Version))
 
     @staticmethod
-    def get_suitable_machines(version_range: VersionRange, run_nightly: bool, run_master: bool) -> tuple['Machine']:
-        result = []
+    def get_suitable_machines(version_range: Optional[VersionRange], run_nightly: bool, run_master: bool) -> tuple[
+        'Machine', ...]:
+        result: list[Machine] = []
 
         if version_range:
             result.extend(filter(None,
@@ -100,7 +101,7 @@ class DictBased:
         self.from_version = self._calculate_from_version()
         self.to_version = self._calculate_to_version()
         self.version_range = VersionRange(self.from_version, self.to_version)
-        self.marketplaces: Optional[tuple[MarketplaceVersions]] = \
+        self.marketplaces: Optional[tuple[MarketplaceVersions, ...]] = \
             tuple(MarketplaceVersions(v) for v in self.get('marketplaces', (), warn_if_missing=False)) or None
 
     def get(self, key: str, default: Any = None, warn_if_missing: bool = True, warning_comment: str = ''):
@@ -163,7 +164,7 @@ class ContentItem(DictFileBased):
         self.deprecated = self.get('deprecated', warn_if_missing=False)
 
     @property
-    def id_(self):  # property as pack_metadata (for example) doesn't have this field
+    def id_(self) -> Optional[str]:  # property as pack_metadata (for example) doesn't have this field
         return self['commonfields']['id'] if 'commonfields' in self.content else self['id']
 
     @property
