@@ -34,7 +34,7 @@ CURSOR_SORTS = {
     'updated_at_desc': '-updated_at'
 }
 TICKET_TYPE = ['problem', 'incident', 'question', 'task']
-TICKET_STATUS = ['open', 'pending', 'hold', 'solved' 'closed']
+TICKET_STATUS = ['open', 'pending', 'hold', 'solved', 'closed']
 TICKET_PRIORITY = ['urgent', 'high', 'normal', 'low']
 PRIORITY_MAP = {
     'urgent': IncidentSeverity.CRITICAL,
@@ -88,6 +88,7 @@ class CacheManager:
     def organization(self, organization_id: int) -> str:
         return self._generic_get_by_id('organizations', organization_id, self._zendesk_client._get_organization_by_id, 'name')
 
+    @lru_cache
     def organization_name(self, organization_name: str) -> Union[int, None]:
         organizations = self._zendesk_client._get_organizations_by_name(organization_name)
 
@@ -174,18 +175,23 @@ class Validators:
     def validate_role_type(role_type: str):
         Validators._validate(role_type, 'role type', ROLE_TYPES.keys())
 
+    @staticmethod
     def validate_ticket_filter(ticket_filter: str):
         Validators._validate(ticket_filter, 'filter', TICKET_FILTERS)
 
+    @staticmethod
     def validate_ticket_sort(ticket_sort: str):
         Validators._validate(ticket_sort, 'sort', CURSOR_SORTS.keys())
 
+    @staticmethod
     def validate_ticket_type(ticket_type: str):
         Validators._validate(ticket_type, 'type', TICKET_TYPE)
 
+    @staticmethod
     def validate_ticket_status(ticket_status: str):
         Validators._validate(ticket_status, 'status', TICKET_STATUS)
 
+    @staticmethod
     def validate_ticket_priority(ticket_priority: str):
         Validators._validate(ticket_priority, 'priority', TICKET_PRIORITY)
 
@@ -250,18 +256,16 @@ class ZendeskClient(BaseClient):
         paged_params = copy(params) if params is not None else {}
         paged_params['per_page'] = page_size
         paged_params['page'] = page_number
-        demisto.error(f'{url_suffix=}')
-        demisto.error(f"{self._http_request('GET', url_suffix=url_suffix, params=paged_params)=}")
         for res in self._http_request('GET', url_suffix=url_suffix, params=paged_params)[data_field_name]:
             yield res
 
     def _paged_request(self, url_suffix: str, data_field_name: str, params: Optional[Dict] = None,
-                       limit: int = 50, page_size: Optional[int] = None, page_number: Optional[int] = None, **_kwargs) -> Iterator[Dict]:
+                       limit: int = 50, page_size: Optional[int] = None, page_number: Optional[int] = None) -> Iterator[Dict]:
         # validate parameters
         if page_size is not None and page_number is not None:
             return self.__get_spesific_page(url_suffix=url_suffix, data_field_name=data_field_name,
                                             params=params, page_size=int(page_size), page_number=int(page_number))
-        elif page_size is not None and page_number is not None:
+        elif page_size is not None or page_number is not None:
             raise AssertionError("you need to specify both 'page_size' and 'page_number'.")
         else:
             return self.__cursor_pagination(url_suffix=url_suffix, data_field_name=data_field_name, params=params, limit=int(limit))
@@ -286,7 +290,6 @@ class ZendeskClient(BaseClient):
                        readable_output=readable_outputs, raw_response=raw_results))
 
     def _get_user_by_id(self, user_id: str):
-        demisto.error(self._http_request('GET', f'users/{user_id}')['user'])
         return self._http_request('GET', f'users/{user_id}')['user']
 
     def zendesk_user_list(self, user_id: Optional[Union[str, List[str]]] = None,
@@ -435,7 +438,7 @@ class ZendeskClient(BaseClient):
             tickets = []
             for single_ticket in argToList(ticket_id):
                 try:
-                    tickets.add(self._get_ticket_by_id(single_ticket))
+                    tickets.append(self._get_ticket_by_id(single_ticket))
                 except Exception as e:
                     demisto.error(f'could not retrieve ticket: {single_ticket}\n{traceback.format_exc()}')
                     error_msgs.append(f'could not retrieve ticket: {single_ticket}\n{e}')
@@ -447,7 +450,7 @@ class ZendeskClient(BaseClient):
                 case 'recent':
                     url_suffix = 'tickets/recent'
                 case _:
-                    assert user_id is not None, f"user_id is required when using '{filter}' as filter."
+                    assert user_id, f"user_id is required when using '{filter}' as filter."
                     Validators.validate_ticket_filter(filter)
                     url_suffix = f'/users/{user_id}/tickets/{filter}'
 
@@ -700,10 +703,10 @@ class ZendeskClient(BaseClient):
             return self._client._http_request('GET', url_suffix='incremental/tickets/cursor', params=kwargs)
 
         @staticmethod
-        def _get_first_time_last_run_template():
+        def _get_first_time_last_run_template(params):
             return {
                 'start_time': int(
-                    dateparser.parse(demisto.params().get('first_fetch', '3d')).timestamp())
+                    dateparser.parse(params.get('first_fetch', '3d')).timestamp())
             }
 
         @property
@@ -720,7 +723,7 @@ class ZendeskClient(BaseClient):
         def query_params(self):
             if self._after_cursor:
                 return {'cursor': self._after_cursor}
-            return self._get_first_time_last_run_template()
+            return self._get_first_time_last_run_template(self._demisto_params)
 
         def _tickets(self, limit=1000, params: Optional[Dict] = {}):
             yielded = 0
@@ -781,7 +784,7 @@ class ZendeskClient(BaseClient):
             self._ticket_to_incident,
             map(
                 self.__ticket_context,
-                ticket_events.new_tickets(demisto.params().get('ticket_types')))
+                ticket_events.new_tickets(ticket_events._demisto_params.get('ticket_types')))
         )
         ))
         demisto.setLastRun(ticket_events.next_run)
@@ -861,7 +864,6 @@ def main():
     )
     global CACHE
     CACHE = CacheManager(client)
-    demisto.error(f'\n\n\n\n\n\n{demisto.command()=}\n{INTEGRATION_INSTANCE=}\n\n\n\n\n\n')
     commands = {
         # demisto commands
         'test-module': client.test_module,
