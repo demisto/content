@@ -4,11 +4,11 @@
 	"description": "Classifier for Sumo Logic Insight",
 	"feed": false,
 	"fromVersion": "6.2.0",
-	"id": "SumoLogicInsight",
+	"id": "Sumo Logic Insight Classifier",
 	"keyTypeMap": {
 		"INSIGHT": "Sumo Logic Insight"
 	},
-	"name": "Sumo Logic Insight - Classifier",
+	"name": "Sumo Logic Insight Classifier",
 	"transformer": {
 		"complex": {
 			"filters": [
