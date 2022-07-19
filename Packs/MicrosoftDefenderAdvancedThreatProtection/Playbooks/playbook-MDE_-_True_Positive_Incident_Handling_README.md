@@ -1,4 +1,4 @@
-This playbook is part of the 'Malware Investigation And Response' flow. For more information, please refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
 This Playbook handles closing a true positive incident for Microsoft Defender for Endpoint.
 
 ## Dependencies

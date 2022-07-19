@@ -1,7 +1,7 @@
 contentitemexportablefields:
   contentitemfields: {}
 description: |-
-  This playbook is part of the 'Malware Investigation And Response' flow. For more information, please refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+  This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
   This playbook uses the Microsoft Defender For Endpoint Advanced Hunting feature to hunt for host persistence evidence.
 id: MDE - Host Advanced Hunting For Persistence
 inputs:
@@ -1176,7 +1176,7 @@ tasks:
     task:
       id: 8f574f0b-2536-4e7f-8774-d47638a31a18
       version: -1
-      name: Are DeviceID and FileName provided?
+      name: Are DeviceID and FileSha256 provided?
       description: Are DeviceID and FileName provided?
       type: condition
       iscommand: false
@@ -1296,7 +1296,7 @@ tasks:
     task:
       id: a961402d-d334-4d17-8051-01b0d961b593
       version: -1
-      name: Are DeviceID and FileName provided?
+      name: Are DeviceID,FileName and FileSha256 provided?
       description: Are DeviceID and FileName provided?
       type: condition
       iscommand: false
