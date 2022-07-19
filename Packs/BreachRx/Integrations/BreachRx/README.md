@@ -1,5 +1,5 @@
 Automate your privacy Incident Response workflow through the BreachRx platform.
-This integration was integrated and tested with version xx of BreachRx
+This integration was integrated and tested with version 1.20 of BreachRx
 
 ## Configure BreachRx on Cortex XSOAR
 

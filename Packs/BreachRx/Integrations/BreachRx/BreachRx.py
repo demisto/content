@@ -279,7 +279,7 @@ COMMANDS = {
 }
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     try:
         base_url = demisto.params()["api_url"]
         org_name = demisto.params()["url"].split(".")[0].replace("https://", "")
