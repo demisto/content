@@ -1,4 +1,4 @@
-This playbook is part of the 'Malware Investigation And Response' flow. For more information, please refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
 This playbook handles a CrowdStrike incident that was determined to be a true positive by the analyst.  
 Actions include isolating the host, blocking the indicator by the EDR, and tagging it.
   

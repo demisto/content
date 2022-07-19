@@ -1,4 +1,4 @@
-This playbook is part of the 'Malware Investigation And Response' flow. For more information, please refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
 This playbook extracts data from the host using RTR commands. For example, commands for getting a list of running processes and network connections.
 
 ## Dependencies

@@ -3,7 +3,7 @@ version: -1
 fromversion: 6.5.0
 name: CrowdStrike Falcon - Get Detections by Incident
 description: |-
-  This playbook is part of the 'Malware Investigation And Response' flow. For more information, please refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
+  This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
   This playbook enables getting CrowdStrike Falcon detection details based on the CrowdStrike incident ID.
 starttaskid: '0'
 tasks:
