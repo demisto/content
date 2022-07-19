@@ -2674,7 +2674,7 @@
         {
             "integrations": "MITRE ATT&CK v2",
             "playbookID": "FeedMitreAttackv2_test",
-            "memory_threshold": 150
+            "memory_threshold": 170
         },
         {
             "integrations": "MITRE ATT&CK v2",
