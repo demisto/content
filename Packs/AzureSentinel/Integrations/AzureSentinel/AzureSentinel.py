@@ -997,7 +997,7 @@ def threat_indicators_data_to_xsoar_format(ind_data):
     """
 
     properties = ind_data.get('properties', {})
-    pattern = properties.get('parsedPattern', [])[0]
+    pattern = properties.get('parsedPattern', [])[0] if properties.get('parsedPattern', []) else {}
 
     formatted_data = {
         'ID': ind_data.get('id'),
@@ -1021,20 +1021,19 @@ def threat_indicators_data_to_xsoar_format(ind_data):
             'KillChainName': phase.get('killChainName'),
             'PhaseName': phase.get('phaseName')
         } for phase in properties.get('KillChainPhases', [])],
-
         'ParsedPattern': {
             'PatternTypeKey': pattern.get('patternTypeKey'),
             'PatternTypeValues': {
                 'Value': pattern.get('patternTypeValues')[0].get('value'),
                 'ValueType': pattern.get('patternTypeValues')[0].get('valueType')
             }
-        },
+        } if pattern else None,
 
         'Pattern': properties.get('pattern', ''),
         'PatternType': properties.get('patternType', ''),
         'ValidFrom': format_date(properties.get('validFrom', '')),
         'ValidUntil': format_date(properties.get('validUntil', '')),
-        'Values': pattern.get('patternTypeValues')[0].get('value'),
+        'Values': pattern.get('patternTypeValues')[0].get('value') if pattern else None,
         'Deleted': False
     }
     remove_nulls_from_dictionary(formatted_data)
@@ -1204,11 +1203,11 @@ def query_threat_indicators_command(client, args):
     else:
 
         result = client.http_request('POST', url_suffix, params={'$top': limit}, data=data)
-
     num_of_threat_indicators = 0
     threat_indicators = []
 
     if result.get('value') is not None:
+        print("girue")
         threat_indicators = [threat_indicators_data_to_xsoar_format(ind) for ind in result.get('value')]
         num_of_threat_indicators = len(threat_indicators)
 
