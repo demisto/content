@@ -7,7 +7,7 @@
 	"detached": false,
 	"disabled": false,
 	"extractSettings": {
-		"mode": "Specific",
+		"mode": "All",
 		"fieldCliNameToExtractSettings": {}
 	},
 	"hours": 0,
