@@ -310,7 +310,7 @@ script:
       type: Unknown
     deprecated: true
   - arguments:
-    - description: The alert id. The alert id is listed in the output of 'get-alerts' command.
+    - description: The alert ID. The alert ID is listed in the output of 'get-alerts' command.
       name: alertId
     description: Suppress alert by ID
     name: fireeye-hx-suppress-alert
@@ -563,7 +563,7 @@ script:
       name: filePath
       required: true
     - auto: PREDEFINED
-      description: Whether to aqcuire the file using the API or RAW. By default, raw file will be acquired. Use API option when file is encrypted.
+      description: Whether to aqcuire the file using the API or RAW. By default, a raw file will be acquired. Use the API option when the file is encrypted.
       name: acquireUsing
       predefined:
       - API
@@ -695,7 +695,7 @@ script:
       - contains
       - not contains
     - auto: PREDEFINED
-      description: Method in which search should be stopped after finding <limit> number of results
+      description: Method by which search should be stopped after finding <limit> number of results
       name: stopSearch
       predefined:
       - stopAndDelete
