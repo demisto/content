@@ -482,7 +482,7 @@ class MsGraphClient:
 
     @staticmethod
     def build_message_to_reply(to_recipients, cc_recipients, bcc_recipients, subject, email_body, attach_ids,
-                               attach_names, attach_cids):
+                               attach_names, attach_cids, reply_to):
         """
         Builds a valid reply message dict.
         For more information https://docs.microsoft.com/en-us/graph/api/resources/message?view=graph-rest-1.0
@@ -491,6 +491,7 @@ class MsGraphClient:
             'toRecipients': MsGraphClient._build_recipient_input(to_recipients),
             'ccRecipients': MsGraphClient._build_recipient_input(cc_recipients),
             'bccRecipients': MsGraphClient._build_recipient_input(bcc_recipients),
+            'replyTo': MsGraphClient._build_recipient_input(reply_to),
             'subject': subject,
             'bodyPreview': email_body[:255],
             'attachments': MsGraphClient._build_file_attachments_input(attach_ids, attach_names, attach_cids, [])
@@ -1539,6 +1540,7 @@ def reply_email_command(client: MsGraphClient, args):
     email_to = argToList(args.get('to'))
     email_from = args.get('from', client._mailbox_to_fetch)
     message_id = args.get('inReplyTo')
+    reply_to = argToList(args.get('replyTo')),
     email_body = args.get('body', "")
     email_subject = args.get('subject', "")
     email_subject = f'Re: {email_subject}'
@@ -1552,7 +1554,7 @@ def reply_email_command(client: MsGraphClient, args):
 
     suffix_endpoint = f'/users/{email_from}/messages/{message_id}/reply'
     reply = client.build_message_to_reply(email_to, email_cc, email_bcc, email_subject, message_body, attach_ids,
-                                          attach_names, attach_cids)
+                                          attach_names, attach_cids, reply_to)
     client.ms_client.http_request('POST', suffix_endpoint, json_data={'message': reply, 'comment': message_body},
                                   resp_type="text")
 
