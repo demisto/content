@@ -1024,8 +1024,8 @@ def threat_indicators_data_to_xsoar_format(ind_data):
         'ParsedPattern': {
             'PatternTypeKey': pattern.get('patternTypeKey'),
             'PatternTypeValues': {
-                'Value': pattern.get('patternTypeValues')[0].get('value'),
-                'ValueType': pattern.get('patternTypeValues')[0].get('valueType')
+                'Value': dict_safe_get(pattern, ['patternTypeValues', 0, 'value']),
+                'ValueType': dict_safe_get(pattern, ['patternTypeValues', 0, 'valueType']),
             }
         } if pattern else None,
 
@@ -1033,7 +1033,7 @@ def threat_indicators_data_to_xsoar_format(ind_data):
         'PatternType': properties.get('patternType', ''),
         'ValidFrom': format_date(properties.get('validFrom', '')),
         'ValidUntil': format_date(properties.get('validUntil', '')),
-        'Values': pattern.get('patternTypeValues')[0].get('value') if pattern else None,
+        'Values': dict_safe_get(pattern, ['patternTypeValues', 0, 'value']),
         'Deleted': False
     }
     remove_nulls_from_dictionary(formatted_data)
@@ -1083,7 +1083,6 @@ def build_threat_indicator_data(args):
         'confidence': arg_to_number(args.get('confidence')),
         'threatTypes': argToList(args.get('threat_types')),
         'includeDisabled': args.get('include_disabled', ''),
-        'source': DEFAULT_SOURCE,
         'threatIntelligenceTags': argToList(args.get('tags')),
         'validFrom': format_date(args.get('valid_from', '')),
         'validUntil': format_date(args.get('valid_until', '')),
@@ -1144,7 +1143,7 @@ def extract_original_data_from_indicator(original_data):
         'created': original_data.get('created', ''),
         'externalId': original_data.get('externalId'),
         'displayName': original_data.get('displayName'),
-        'source': original_data.get('source')
+        'source': original_data.get('source', DEFAULT_SOURCE)
     }
 
     remove_nulls_from_dictionary(extracted_data)
