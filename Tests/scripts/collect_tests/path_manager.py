@@ -12,6 +12,7 @@ class PathManager:
     ARTIFACTS_PATH = Path(getenv('ARTIFACTS_FOLDER', './artifacts'))
 
     def __init__(self, content_path: Path):
+        logging.info(f'Using content path: {content_path}, full path: {content_path.resolve()}')
         self.content_path = content_path
         self.excluded_files = _calculate_excluded_files(self.content_path)
 
@@ -62,7 +63,7 @@ def _calculate_excluded_files(content_path: Path) -> set[Path]:
             if path.is_dir():
                 result.extend(path.glob('*'))
             elif '*' in path.name:
-                result.extend(path.parent.glob(path.name))
+                result.extend(path.parent.rglob(path.name))
             elif not path.exists():
                 logging.warning(
                     f'could not find {path} for calculating excluded paths'
@@ -74,22 +75,23 @@ def _calculate_excluded_files(content_path: Path) -> set[Path]:
 
     excluded = glob(
         (
-            'content/Tests',
-            'content/.gitlab',
-            'content/Documentation',
-            'content/dev-requirements*',
+            'Tests',
+            '.gitlab',
+            'Documentation',
         )
     )
     not_excluded = glob(
         (
-            'content/Tests/scripts/infrastructure_tests',
-            'content/Tests/Marketplace/Tests',
-            'content/Tests/tests',
-            'content/Tests/setup',
-            'content/Tests/sdknightly',
-            'content/Tests/known_words.txt',
-            'content/Tests/secrets_white_list.json',
+            'Tests/scripts/infrastructure_tests',
+            'Tests/Marketplace/Tests',
+            'Tests/tests',
+            'Tests/setup',
+            'Tests/sdknightly',
+            'Tests/known_words.txt',
+            'Tests/secrets_white_list.json',
         )
     )
 
+    logging.debug(f'not excluded: {not_excluded}')
+    logging.debug(f'excluded paths: {excluded - not_excluded}')
     return excluded - not_excluded
