@@ -47,6 +47,10 @@
             "playbookID": "LogRhythmRestV2-test"
         },
         {
+            "integrations": "Zendesk v2",
+            "playbookID": "Zendesk V2 TEST"
+        },
+        {
             "playbookID": "Base64Decode - Test"
         },
         {
