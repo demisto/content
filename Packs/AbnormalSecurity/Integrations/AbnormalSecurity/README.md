@@ -1016,7 +1016,7 @@ Provides the analysis and timeline details of a case
 >| 2021-07-14T22:41:54Z | Sign In | Suspicious Failed Sign In Attempt | ip_address: rare,<br/>proxy<br/>operating_system: legacy | 127.0.0.1 | Suspicious Failed Sign In Attempt for test@lamronba.com | country: Ireland |  |  | Suspicious Failed Sign In Attempt |  |
 
 
-### abnormal-security-submit-inquiry-to-request-a-report-on-misjudgement
+### [Deprecated] abnormal-security-submit-inquiry-to-request-a-report-on-misjudgement
 ***
 Submit an Inquiry to request a report on misjudgement by Abnormal Security
 
