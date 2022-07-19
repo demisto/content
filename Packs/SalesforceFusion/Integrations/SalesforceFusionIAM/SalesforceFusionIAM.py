@@ -375,8 +375,7 @@ def main():
 
     except Exception as exc:
         # For any other integration command exception, return an error
-        return_error(f'Failed to execute the {command} command.\nError: {exc}',
-                     error=f'Traceback: {traceback.format_exc()}')
+        return_error(f'Failed to execute the {command} command.\nError: {exc}')
 
 
 from IAMApiModule import *  # noqa E402

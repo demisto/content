@@ -36,7 +36,7 @@ def get_token():
                     {", ".join(available_customer_names)})
             raise Exception(message)
     except ValueError as exception:
-        demisto.log(exception)
+        demisto.debug(exception)
         raise Exception('Could not parse API response.')
     HEADERS['x-redlock-auth'] = TOKEN
 
@@ -822,6 +822,8 @@ def fetch_incidents():
     response = req('POST', 'alert', payload, {'detailed': 'true'})
     incidents = []
     for alert in response:
+        if alert.get('firstSeen') < last_run:
+            continue
         incidents.append({
             'name': alert.get('policy.name', 'No policy') + ' - ' + alert.get('id'),
             'occurred': convert_unix_to_demisto(alert.get('alertTime')),

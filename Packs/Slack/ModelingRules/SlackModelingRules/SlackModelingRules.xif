@@ -1,0 +1,32 @@
+[MODEL: dataset=slack_slack_raw, model=Audit]
+filter action not in ("user_login","user_logout")
+| alter
+    XDM.Audit.original_event_id = id,
+    XDM.Audit.event_timestamp = to_timestamp(to_integer(to_string(date_create)), "SECONDS"),
+    XDM.Audit.original_event_type = action,
+    XDM.Audit.TriggeredBy.identity.type = json_extract_scalar(actor, "$.type"),
+    XDM.Audit.TriggeredBy.identity.uuid = json_extract_scalar(actor, "$.user.id"),
+    XDM.Audit.TriggeredBy.identity.name = json_extract_scalar(actor, "$.user.name"),
+    XDM.Audit.audited_resource.type = json_extract_scalar(entity, "$.type"),
+    XDM.Audit.TriggeredBy.agent.version = json_extract_scalar(context, "$.ua"),
+    XDM.Audit.session_context_id = json_extract_scalar(context, "$.session_id"),
+    XDM.Audit.TriggeredBy.ipv4 = json_extract_scalar(context, "$.ip_address")
+| alter
+    XDM.Audit.audited_resource.id = if(XDM.Audit.audited_resource.type = "channel", json_extract_scalar(entity, "$.channel.id"), XDM.Audit.audited_resource.type = "user", json_extract_scalar(entity, "$.user.id"), XDM.Audit.audited_resource.type = "file", json_extract_scalar(entity, "$.file.id"), XDM.Audit.audited_resource.type = "workspace", json_extract_scalar(entity, "$.workspace.id"), XDM.Audit.audited_resource.type = "enterprise", json_extract_scalar(entity, "$.enterprise.id"), XDM.Audit.audited_resource.type = "workflow", json_extract_scalar(entity, "$.workflow.id"), XDM.Audit.audited_resource.type = "message", json_extract_scalar(entity, "$.message.id"),XDM.Audit.audited_resource.type = "app", json_extract_scalar(entity, "$.app.id"),XDM.Audit.audited_resource.type = "usergroups", json_extract_scalar(entity, "$.usergroups.id"),XDM.Audit.audited_resource.type = "huddles", json_extract_scalar(entity, "$.huddles.id"), ""),
+    XDM.Audit.audited_resource.name = if(XDM.Audit.audited_resource.type = "channel", json_extract_scalar(entity, "$.channel.name"), XDM.Audit.audited_resource.type = "user", json_extract_scalar(entity, "$.user.name"), XDM.Audit.audited_resource.type = "file", json_extract_scalar(entity, "$.file.name"), XDM.Audit.audited_resource.type = "workspace", json_extract_scalar(entity, "$.workspace.name"), XDM.Audit.audited_resource.type = "enterprise", json_extract_scalar(entity, "$.enterprise.name"), XDM.Audit.audited_resource.type = "workflow", json_extract_scalar(entity, "$.workflow.name"), XDM.Audit.audited_resource.type = "message", json_extract_scalar(entity, "$.message.name"),XDM.Audit.audited_resource.type = "app", json_extract_scalar(entity, "$.app.name"),XDM.Audit.audited_resource.type = "usergroups", json_extract_scalar(entity, "$.usergroups.name"),XDM.Audit.audited_resource.type = "huddles", json_extract_scalar(entity, "$.huddles.name"), "");
+
+[MODEL: dataset=slack_slack_raw, model=Auth]
+filter action in ("user_login","user_logout")
+| alter
+    XDM.Auth.original_event_id = id,
+    XDM.Auth.event_timestamp = to_timestamp(to_integer(to_string(date_create)), "SECONDS"),
+    XDM.Auth.original_event_type = action,
+    XDM.Auth.Client.user.user_type = json_extract_scalar(actor, "$.type"),
+    XDM.Auth.Client.user.identifier = json_extract_scalar(actor, "$.user.id"),
+    XDM.Auth.Client.user.username = json_extract_scalar(actor, "$.user.name"),
+    XDM.Auth.Target.user.identifier = json_extract_scalar(entity, "$.user.id"),
+    XDM.Auth.Target.user.username = json_extract_scalar(entity, "$.user.name"),
+    XDM.Auth.Target.application.name = json_extract_scalar(context, "$.app.name"),
+    XDM.Auth.session_context_id = json_extract_scalar(context, "$.session_id"),
+    XDM.Auth.Client.ipv4 = json_extract_scalar(context, "$.ip_address");
+

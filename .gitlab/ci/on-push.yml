@@ -50,6 +50,8 @@ run-validations:
 
 # runs in gitlab for the on-push flow, on every new commit pushed to the branch.
 validate-content-conf:
+  tags:
+    - gke
   stage: unittests-and-validations
   needs: []
   extends:
@@ -246,15 +248,6 @@ prepare-testing-bucket-mpv2:
     - exit $EXIT_CODE
 
 
-xsoar_server_6_2:
-  extends: .test_content_on_xsoar_server_instances_base
-  #  No need to trigger in case of release branch
-  rules:
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
-  variables:
-    INSTANCE_ROLE: "Server 6.2"
-
-
 xsoar_server_6_5:
   extends: .test_content_on_xsoar_server_instances_base
   #  No need to trigger in case of release branch
@@ -272,6 +265,13 @@ xsoar_server_6_6:
   variables:
     INSTANCE_ROLE: "Server 6.6"
 
+xsoar_server_6_8:
+  extends: .test_content_on_xsoar_server_instances_base
+  #  No need to trigger in case of release branch
+  rules:
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
+  variables:
+    INSTANCE_ROLE: "Server 6.8"
 
 xsoar_server_master:
   extends:
