@@ -32,3 +32,6 @@ you will need to add to your application the *Mail.Send application* permission 
 and re-authorize your integration's instance.
 
 If you do not wish to use these commands, you may keep your integration credentials the same.
+
+---
+[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph-mail)
