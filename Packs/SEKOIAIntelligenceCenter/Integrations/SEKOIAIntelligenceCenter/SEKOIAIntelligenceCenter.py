@@ -395,7 +395,7 @@ def indicator_context_to_markdown(indicator_context: dict) -> str:
             for linked_object in linked_stix_objects:
                 linked_object["more_info"] = (
                     f'[More info about {linked_object["name"]}'
-                    f'on SEKOIA.IO]({BASE_URL}/intelligence/objects/{linked_object["id"]})'
+                    f' on SEKOIA.IO]({BASE_URL}/intelligence/objects/{linked_object["id"]})'
                 )
                 new_list_of_objects.append(linked_object)
 
@@ -504,7 +504,7 @@ def get_observable_command(client: Client, args: Dict[str, Any]) -> CommandResul
 
     return CommandResults(
         readable_output=markdown,
-        outputs_prefix="SEKOIAIO.Observable",
+        outputs_prefix="SEKOIAIntelligenceCenter.Observable",
         outputs_key_field="ip",
         outputs=outputs,
     )
@@ -611,7 +611,7 @@ def get_indicator_context_command(
 
     command_results_list.append(
         CommandResults(
-            outputs_prefix="SEKOIAIO.IndicatorContext",
+            outputs_prefix="SEKOIAIntelligenceCenter.IndicatorContext",
             readable_output=markdown,
             outputs=outputs,
             raw_response=indicator_context,
