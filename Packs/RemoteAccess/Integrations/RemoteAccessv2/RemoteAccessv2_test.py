@@ -309,29 +309,50 @@ investigation_data = {'id': 46510, 'systems': [
                          'TerminalType': '', 'TerminalWidth': 0, 'TyISpeed': 0,
                          'TyOSpeed': 0}, 'user': 'ubuntu'}]}
 
+system_found = (['i-0fb7ben3de5e85283'], [], investigation_data, None)
+host_found = ([], ['11.234.1.17'], investigation_data, None)
+system_and_host_found = (['i-0fb7ben3de5e85283'], ['11.234.1.17'], investigation_data, None)
+host_not_found_no_system = ([], ['11.234.1.1'], investigation_data,
+                            "Hosts ['11.234.1.1'] not found on investigation 46510. Available systems by "
+                            "name are ['i-0fb7ben3de5e85283'], and by host are ['11.234.1.17'].")
+host_not_found_with_system = (['i-0fb7ben3de5e85283'], ['11.234.1.1'], investigation_data,
+                              "Hosts ['11.234.1.1'] not found on investigation 46510. Available systems by "
+                              "name are ['i-0fb7ben3de5e85283'], and by host are ['11.234.1.17'].")
+system_not_found_no_host = (['not-0fb7ben3de5e85283'], [], investigation_data,
+                            "Systems ['not-0fb7ben3de5e85283'] not found on investigation 46510. Available systems by "
+                            "name are ['i-0fb7ben3de5e85283'], and by host are ['11.234.1.17'].")
+system_not_found_with_host = (['not-0fb7ben3de5e85283'], ['11.234.1.17'], investigation_data,
+                              "Systems ['not-0fb7ben3de5e85283'] not found on investigation 46510. Available systems by "
+                              "name are ['i-0fb7ben3de5e85283'], and by host are ['11.234.1.17'].")
+system_and_host_not_found = (['not-0fb7ben3de5e85283'], ['11.234.1.1'], investigation_data,
+                             "Systems ['not-0fb7ben3de5e85283'] and Hosts ['11.234.1.1'] not found on investigation 46510. "
+                             "Available systems by name are ['i-0fb7ben3de5e85283'], and by host are ['11.234.1.17'].")
+no_investigation_data = (['i-0fb7ben3de5e85283'], ['11.234.1.17'], {}, None)
 
-@pytest.mark.parametrize('given_system, expected_system, expected_log',
-                         [('i-0fb7ben3de5e85283', ['i-0fb7ben3de5e85283'], ''),
-                          ('11.234.1.17', ['11.234.1.17'], ''),
-                          ('i-0fb7ben3de5e85283,11.234.1.17', ['i-0fb7ben3de5e85283', '11.234.1.17'], ''),
-                          ('11.234.1.1', ['11.234.1.1'],
-                           "System 11.234.1.1 not found on investigation 46510. "
-                           "Available systems by name are ['i-0fb7ben3de5e85283'], and by host are ['11.234.1.17'].")])
-def test_find_systems(mocker, given_system, expected_system, expected_log):
+
+@pytest.mark.parametrize('given_systems, given_hosts, investigation, expected_message',
+                         [system_found,
+                          host_found,
+                          system_and_host_found,
+                          host_not_found_no_system,
+                          host_not_found_with_system,
+                          system_not_found_no_host,
+                          system_not_found_with_host,
+                          system_and_host_not_found,
+                          no_investigation_data
+                          ])
+def test_find_nonexistent_systems(mocker, given_systems, given_hosts, investigation, expected_message):
     """
     Given:
-        A system argument is provided.
+        A system/host argument is provided.
 
     When:
         Running a command.
 
     Then:
-        The system argument is returned and relevant log is written.
+        The system/host are found or not in the investigation data and a relevant message is returned.
     """
-    from RemoteAccessv2 import find_systems
-    mocker.patch.object(demisto, 'investigation', return_value=investigation_data)
-    info_mocker = mocker.patch.object(demisto, 'info')
+    from RemoteAccessv2 import find_nonexistent_systems
+    mocker.patch.object(demisto, 'investigation', return_value=investigation)
 
-    assert find_systems({'system': given_system}) == expected_system
-    if info_mocker.call_args:
-        assert info_mocker.call_args.args[0] == expected_log
+    assert find_nonexistent_systems(given_systems, given_hosts) == expected_message
