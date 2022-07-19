@@ -5,7 +5,7 @@ ignore=BA101
 ignore=BA101
 
 [file:playbook-Detonate_URL_-_Generic.yml]
-ignore=BA101,PB110
+ignore=BA101
 
 [file:playbook-Get_File_Sample_From_Path_-_Generic.yml]
 ignore=BA101
