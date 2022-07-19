@@ -1,5 +1,3 @@
-contentitemexportablefields:
-  contentitemfields: {}
 description: |-
   This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
   This playbook uses the Microsoft Defender For Endpoint Advanced Hunting feature to hunt for host network activity.
@@ -132,26 +130,26 @@ tasks:
     nexttasks:
       '#none#':
       - '4'
-      - '3'
+      - "48"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
       brand: ''
-      id: d34166a3-8643-4e9b-8894-fbb23ab0827a
+      id: f515831a-83ef-457c-8194-a33b4dfc7df3
       iscommand: false
       name: ''
       version: -1
       description: ''
-    taskid: d34166a3-8643-4e9b-8894-fbb23ab0827a
+    taskid: f515831a-83ef-457c-8194-a33b4dfc7df3
     timertriggers: []
     type: start
     view: |-
       {
         "position": {
-          "x": 2720,
-          "y": 220
+          "x": 3340,
+          "y": 180
         }
       }
   '1':
@@ -184,20 +182,20 @@ tasks:
     task:
       brand: ''
       description: Network connections investigation. By selecting a “query_purpose” argument, a designated query template will be used.
-      id: bb1996d2-6ca6-4af1-8df3-2b1f31c7aab0
+      id: 755c707e-54ea-4881-8053-502daea57059
       iscommand: true
       name: Is there any network activity initiated by the file?
       script: '|||microsoft-atp-advanced-hunting-network-connections'
       type: regular
       version: -1
-    taskid: bb1996d2-6ca6-4af1-8df3-2b1f31c7aab0
+    taskid: 755c707e-54ea-4881-8053-502daea57059
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
           "x": 4080,
-          "y": 890
+          "y": 955
         }
       }
   '2':
@@ -228,13 +226,13 @@ tasks:
     task:
       brand: ''
       description: Is there evidence of attempted lateral movement? By selecting a “query_purpose” argument, a designated query template will be used.
-      id: c4d1ddc3-40e5-43b4-8c4b-9a252c81ecdc
+      id: 403fe51f-72ba-4217-811c-bbdc684a5616
       iscommand: true
       name: Any SMB connections from the host?
       script: '|||microsoft-atp-advanced-hunting-lateral-movement-evidence'
       type: regular
       version: -1
-    taskid: c4d1ddc3-40e5-43b4-8c4b-9a252c81ecdc
+    taskid: 403fe51f-72ba-4217-811c-bbdc684a5616
     timertriggers: []
     type: regular
     view: |-
@@ -251,7 +249,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - '48'
+      - '1'
     note: false
     quietmode: 0
     separatecontext: false
@@ -259,19 +257,19 @@ tasks:
     task:
       brand: ''
       description: Retrieves an alert by a specific alert ID. Note - If the alert ID is not part of the results, it was not found.
-      id: 092a6b19-e5e5-4c91-8622-cf3e3f7cd671
+      id: 1bdda7fd-da06-494b-82ea-52fa1a16d378
       iscommand: false
       name: File Network Actions
       type: title
       version: -1
-    taskid: 092a6b19-e5e5-4c91-8622-cf3e3f7cd671
+    taskid: 1bdda7fd-da06-494b-82ea-52fa1a16d378
     timertriggers: []
     type: title
     view: |-
       {
         "position": {
-          "x": 4300,
-          "y": 560
+          "x": 4080,
+          "y": 810
         }
       }
   '4':
@@ -281,21 +279,20 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - '37'
-      - '45'
+      - "45"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
       brand: ''
-      id: 55155bfb-a391-4694-8a1f-3fbb6048e6b4
+      id: 66977852-24d1-4889-8285-763d2863c476
       iscommand: false
       name: Network Connections
       type: title
       version: -1
       description: ''
-    taskid: 55155bfb-a391-4694-8a1f-3fbb6048e6b4
+    taskid: 66977852-24d1-4889-8285-763d2863c476
     timertriggers: []
     type: title
     view: |-
@@ -333,13 +330,13 @@ tasks:
     task:
       brand: ''
       description: Is there evidence of attempted lateral movement? By selecting a “query_purpose” argument, a designated query template will be used.
-      id: d9b0c4ac-6fb8-42a8-8cdf-e1a8f1daa555
+      id: d4990e4d-5bd3-47f2-8757-22a10a69ad84
       iscommand: true
       name: Other RDP atempts?
       script: '|||microsoft-atp-advanced-hunting-lateral-movement-evidence'
       type: regular
       version: -1
-    taskid: d9b0c4ac-6fb8-42a8-8cdf-e1a8f1daa555
+    taskid: d4990e4d-5bd3-47f2-8757-22a10a69ad84
     timertriggers: []
     type: regular
     view: |-
@@ -379,13 +376,13 @@ tasks:
     task:
       brand: ''
       description: Is there evidence of attempted lateral movement. By selecting a “query_purpose” argument, a designated query template will be used.
-      id: b9a3f57e-7b1c-4b7b-88f9-663dcb1d5a75
+      id: 54086ac8-05fb-4102-8292-b1ad7e597e62
       iscommand: true
       name: Enumeration of Network Shares
       script: '|||microsoft-atp-advanced-hunting-lateral-movement-evidence'
       type: regular
       version: -1
-    taskid: b9a3f57e-7b1c-4b7b-88f9-663dcb1d5a75
+    taskid: 54086ac8-05fb-4102-8292-b1ad7e597e62
     timertriggers: []
     type: regular
     view: |-
@@ -421,13 +418,13 @@ tasks:
     task:
       brand: ''
       description: Is there evidence of persistence? By selecting a “query_purpose” argument, a designated query template will be used.
-      id: 232738cb-1574-4389-8f40-84f06404dd50
+      id: 3b47a0ec-7d35-4feb-83bc-2ad62901ea28
       iscommand: true
       name: hosts File Modification?
       script: '|||microsoft-atp-advanced-hunting-persistence-evidence'
       type: regular
       version: -1
-    taskid: 232738cb-1574-4389-8f40-84f06404dd50
+    taskid: 3b47a0ec-7d35-4feb-83bc-2ad62901ea28
     timertriggers: []
     type: regular
     view: |-
@@ -465,13 +462,13 @@ tasks:
     task:
       brand: ''
       description: Is there evidence of persistence? By selecting a “query_purpose” argument, a designated query template will be used.
-      id: 611ec49e-e683-4d24-87b6-37e401967b31
+      id: b9c857ce-b795-4a85-8df1-21baafc03520
       iscommand: true
       name: Any Change in Local FW rules?
       script: '|||microsoft-atp-advanced-hunting-persistence-evidence'
       type: regular
       version: -1
-    taskid: 611ec49e-e683-4d24-87b6-37e401967b31
+    taskid: b9c857ce-b795-4a85-8df1-21baafc03520
     timertriggers: []
     type: regular
     view: |-
@@ -512,20 +509,20 @@ tasks:
     task:
       brand: ''
       description: Network connections investigation. By selecting a “query_purpose” argument, a designated query template will be used.
-      id: 89b8860f-9a10-4d34-826c-e5991ce6f1c3
+      id: 2eac10b0-acf3-4f43-87fe-9b27f8c20df6
       iscommand: true
       name: Are there any DNS requests initiated?
       script: '|||microsoft-atp-advanced-hunting-network-connections'
       type: regular
       version: -1
-    taskid: 89b8860f-9a10-4d34-826c-e5991ce6f1c3
+    taskid: 2eac10b0-acf3-4f43-87fe-9b27f8c20df6
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 1230,
-          "y": 1180
+          "x": 4610,
+          "y": 950
         }
       }
   '10':
@@ -555,19 +552,19 @@ tasks:
     task:
       brand: ''
       description: Was there any traffic?
-      id: 4be8a4d0-6eb0-4033-81a5-9dba1fda5fc6
+      id: 6bd0945d-0de9-409e-8772-a1647f9b2dfa
       iscommand: false
       name: Was there any traffic?
       type: condition
       version: -1
-    taskid: 4be8a4d0-6eb0-4033-81a5-9dba1fda5fc6
+    taskid: 6bd0945d-0de9-409e-8772-a1647f9b2dfa
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
           "x": 4080,
-          "y": 1190
+          "y": 1115
         }
       }
   '11':
@@ -592,13 +589,13 @@ tasks:
     task:
       brand: ''
       description: Checks the reputation of an IP address.
-      id: 8e9ce9af-4247-454d-89f1-ef84e03fc897
+      id: eb1b8c1f-abf4-4a7d-8dab-9daa6c05bf42
       iscommand: true
       name: Enrich IPs
       script: '|||ip'
       type: regular
       version: -1
-    taskid: 8e9ce9af-4247-454d-89f1-ef84e03fc897
+    taskid: eb1b8c1f-abf4-4a7d-8dab-9daa6c05bf42
     timertriggers: []
     type: regular
     view: |-
@@ -636,12 +633,12 @@ tasks:
     task:
       brand: ''
       description: Any suspicious or malicious IPs?
-      id: 92e61de8-13b3-47ce-8a68-032af12a7d43
+      id: 50f08fdb-dfd5-4dcf-895c-23cea03b32f4
       iscommand: false
       name: Any suspicious or malicious IPs
       type: condition
       version: -1
-    taskid: 92e61de8-13b3-47ce-8a68-032af12a7d43
+    taskid: 50f08fdb-dfd5-4dcf-895c-23cea03b32f4
     timertriggers: []
     type: condition
     view: |-
@@ -665,13 +662,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 7e8d3071-aca9-41e0-8d22-83fc88518f8a
+      id: f79d05bd-4369-4c96-8750-c9389d95f822
       iscommand: false
       name: Any IP artifacts to work with
       type: title
       version: -1
       description: ''
-    taskid: 7e8d3071-aca9-41e0-8d22-83fc88518f8a
+    taskid: f79d05bd-4369-4c96-8750-c9389d95f822
     timertriggers: []
     type: title
     view: |-
@@ -703,13 +700,13 @@ tasks:
     task:
       brand: ''
       description: 'Retrieves a file from a device. NOTE: Backslashes in the path must be escaped.'
-      id: 7ec060ca-f51d-49e7-8440-3e63721e35b6
+      id: 4b344b54-73e2-4204-895e-888e62512449
       iscommand: true
       name: Retrieve host file
       script: '|||microsoft-atp-live-response-get-file'
       type: regular
       version: -1
-    taskid: 7ec060ca-f51d-49e7-8440-3e63721e35b6
+    taskid: 4b344b54-73e2-4204-895e-888e62512449
     timertriggers: []
     type: regular
     view: |-
@@ -746,12 +743,12 @@ tasks:
     task:
       brand: ''
       description: Any results?
-      id: 49fe7e92-4627-4c6c-8579-a2a4416d5b97
+      id: 0aa420fa-fab8-4668-8e8b-f05467dbeca6
       iscommand: false
       name: Any results?
       type: condition
       version: -1
-    taskid: 49fe7e92-4627-4c6c-8579-a2a4416d5b97
+    taskid: 0aa420fa-fab8-4668-8e8b-f05467dbeca6
     timertriggers: []
     type: condition
     view: |-
@@ -787,13 +784,13 @@ tasks:
     task:
       brand: ''
       description: Unzips a file using file name or entry ID for specify a file. Unzipped files are loaded to the War Room and names are put into the context.
-      id: f1921faf-86cf-4e09-8e56-fc8276f712ce
+      id: e975494e-cd9f-4c7c-8db5-896bdd915342
       iscommand: false
       name: Unzip the retrieved host file
       scriptName: UnzipFile
       type: regular
       version: -1
-    taskid: f1921faf-86cf-4e09-8e56-fc8276f712ce
+    taskid: e975494e-cd9f-4c7c-8db5-896bdd915342
     timertriggers: []
     type: regular
     view: |-
@@ -825,19 +822,19 @@ tasks:
     task:
       brand: Builtin
       description: Update Tag - 'Malicious IP'
-      id: 45fbb52f-3162-4e81-867e-3d068d699699
+      id: b6dbbe95-1a19-45cb-8ac3-20af54db64b9
       iscommand: true
       name: Update Tag - 'Malicious IP'
       script: Builtin|||setIncident
       type: regular
       version: -1
-    taskid: 45fbb52f-3162-4e81-867e-3d068d699699
+    taskid: b6dbbe95-1a19-45cb-8ac3-20af54db64b9
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 3520,
+          "x": 3560,
           "y": 2025
         }
       }
@@ -873,12 +870,12 @@ tasks:
     task:
       brand: ''
       description: Any results?
-      id: 2c361099-7f90-424f-8cc8-ea9d593d35d1
+      id: 464cfff7-1c5d-4507-8c84-a1e9412ee0d7
       iscommand: false
       name: Any results?
       type: condition
       version: -1
-    taskid: 2c361099-7f90-424f-8cc8-ea9d593d35d1
+    taskid: 464cfff7-1c5d-4507-8c84-a1e9412ee0d7
     timertriggers: []
     type: condition
     view: |-
@@ -912,7 +909,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#default#':
-      - '29'
+      - "28"
       yes:
       - '22'
     note: false
@@ -922,19 +919,19 @@ tasks:
     task:
       brand: ''
       description: Any results?
-      id: 5b68d31b-ffbd-47b8-8972-1b9a6a2b72a1
+      id: 5eed71c8-ad0f-4639-8a9d-726811c9e75e
       iscommand: false
       name: Any results?
       type: condition
       version: -1
-    taskid: 5b68d31b-ffbd-47b8-8972-1b9a6a2b72a1
+    taskid: 5eed71c8-ad0f-4639-8a9d-726811c9e75e
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
-          "x": 1230,
-          "y": 1335
+          "x": 4610,
+          "y": 1115
         }
       }
   '21':
@@ -969,12 +966,12 @@ tasks:
     task:
       brand: ''
       description: Any results?
-      id: 93e44bf7-3d84-471a-8689-38f7def2df42
+      id: 9626a7ea-f558-46ad-85ac-f61722654b2a
       iscommand: false
       name: Any results?
       type: condition
       version: -1
-    taskid: 93e44bf7-3d84-471a-8689-38f7def2df42
+    taskid: 9626a7ea-f558-46ad-85ac-f61722654b2a
     timertriggers: []
     type: condition
     view: |-
@@ -1004,20 +1001,20 @@ tasks:
     task:
       brand: ''
       description: Checks the reputation of a domain.
-      id: 7d225ba5-14c5-4aa9-81d4-e2cc09d7e18a
+      id: af3b1a4f-742f-4d0c-82e2-e3cb2d8951cb
       iscommand: true
       name: Enrich DNS
       script: '|||domain'
       type: regular
       version: -1
-    taskid: 7d225ba5-14c5-4aa9-81d4-e2cc09d7e18a
+    taskid: af3b1a4f-742f-4d0c-82e2-e3cb2d8951cb
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 1230,
-          "y": 1520
+          "x": 4610,
+          "y": 1350
         }
       }
   '23':
@@ -1060,7 +1057,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#default#':
-      - '29'
+      - "28"
       yes:
       - '25'
     note: false
@@ -1070,19 +1067,19 @@ tasks:
     task:
       brand: ''
       description: Any suspicious or malicious DNS?
-      id: 19c0e48d-3418-4240-84c0-c080d3d9455a
+      id: ec60b4ca-f628-4b12-84ae-283238b3b2bb
       iscommand: false
       name: Any suspicious or malicious DNS
       type: condition
       version: -1
-    taskid: 19c0e48d-3418-4240-84c0-c080d3d9455a
+    taskid: ec60b4ca-f628-4b12-84ae-283238b3b2bb
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
-          "x": 1230,
-          "y": 1835
+          "x": 4610,
+          "y": 1765
         }
       }
   '25':
@@ -1092,7 +1089,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - '29'
+      - "28"
     note: false
     quietmode: 0
     scriptarguments:
@@ -1107,20 +1104,20 @@ tasks:
     task:
       brand: Builtin
       description: Update tag - 'Malicious DNS'
-      id: ef4e75f0-6641-41ea-8eb0-f4223d04e894
+      id: 1e2dbd0e-ae4a-4823-82f3-26237d06f6e3
       iscommand: true
       name: Update tag - 'Malicious DNS'
       script: Builtin|||setIncident
       type: regular
       version: -1
-    taskid: ef4e75f0-6641-41ea-8eb0-f4223d04e894
+    taskid: 1e2dbd0e-ae4a-4823-82f3-26237d06f6e3
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 1430,
-          "y": 2030
+          "x": 4610,
+          "y": 2025
         }
       }
   '28':
@@ -1137,50 +1134,20 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: bafdfa2c-e3c4-44e8-8efc-1f00faede674
+      id: 54a9ff87-2d4a-47ae-83c2-a1381e6d5972
       iscommand: false
       name: Done
       type: title
       version: -1
       description: ''
-    taskid: bafdfa2c-e3c4-44e8-8efc-1f00faede674
+    taskid: 54a9ff87-2d4a-47ae-83c2-a1381e6d5972
     timertriggers: []
     type: title
     view: |-
       {
         "position": {
-          "x": 4300,
-          "y": 2200
-        }
-      }
-  '29':
-    id: '29'
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - '33'
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ''
-      id: b20442f9-2c9b-4fca-854f-223146d85d86
-      iscommand: false
-      name: Done
-      type: title
-      version: -1
-      description: ''
-    taskid: b20442f9-2c9b-4fca-854f-223146d85d86
-    timertriggers: []
-    type: title
-    view: |-
-      {
-        "position": {
-          "x": 990,
-          "y": 2200
+          "x": 4350,
+          "y": 2205
         }
       }
   '30':
@@ -1203,13 +1170,13 @@ tasks:
     task:
       brand: Builtin
       description: Update tag - "Remote Connections"
-      id: 1d78848b-ed8c-42ac-83b8-d7382117e0c3
+      id: 32da02d1-f5b2-44cc-8e26-bfd76acbe691
       iscommand: true
       name: Update tag - "Remote Connections"
       script: Builtin|||setIncident
       type: regular
       version: -1
-    taskid: 1d78848b-ed8c-42ac-83b8-d7382117e0c3
+    taskid: 32da02d1-f5b2-44cc-8e26-bfd76acbe691
     timertriggers: []
     type: regular
     view: |-
@@ -1239,13 +1206,13 @@ tasks:
     task:
       brand: Builtin
       description: Update Tag - 'Local FW Rules Change'
-      id: 125cb1d6-a660-4b72-8fe8-8b51281776b2
+      id: 80a34b88-12c5-4535-8d18-f9cadfe7a97a
       iscommand: true
       name: Update Tag - 'Local FW Rules Change'
       script: Builtin|||setIncident
       type: regular
       version: -1
-    taskid: 125cb1d6-a660-4b72-8fe8-8b51281776b2
+    taskid: 80a34b88-12c5-4535-8d18-f9cadfe7a97a
     timertriggers: []
     type: regular
     view: |-
@@ -1266,13 +1233,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 4d9aad21-6c65-4525-8407-5239b2792197
+      id: f99063b4-9d8e-42c7-8049-d62adad8504a
       iscommand: false
       name: Done
       type: title
       version: -1
       description: ''
-    taskid: 4d9aad21-6c65-4525-8407-5239b2792197
+    taskid: f99063b4-9d8e-42c7-8049-d62adad8504a
     timertriggers: []
     type: title
     view: |-
@@ -1297,13 +1264,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 48a0f363-1686-4905-8f7c-ed2520970c41
+      id: e91bd0d5-00ef-4f15-83e7-ceace55d0c9e
       iscommand: false
       name: Remote connections
       type: title
       version: -1
       description: ''
-    taskid: 48a0f363-1686-4905-8f7c-ed2520970c41
+    taskid: e91bd0d5-00ef-4f15-83e7-ceace55d0c9e
     timertriggers: []
     type: title
     view: |-
@@ -1320,27 +1287,27 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - '46'
+      - '9'
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
       brand: ''
-      id: 1c1e5cc8-236e-4ee6-854b-53863725b9af
+      id: 202c67dd-7598-4a01-8467-4dcfe479d7b6
       iscommand: false
       name: 'DNS Queries '
       type: title
       version: -1
       description: ''
-    taskid: 1c1e5cc8-236e-4ee6-854b-53863725b9af
+    taskid: 202c67dd-7598-4a01-8467-4dcfe479d7b6
     timertriggers: []
     type: title
     view: |-
       {
         "position": {
-          "x": 990,
-          "y": 705
+          "x": 4610,
+          "y": 810
         }
       }
   '39':
@@ -1359,13 +1326,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      id: 74c05cd6-3dcc-45b1-85ec-fbdc4a313e6d
+      id: 35ce8a22-ed6c-4683-811a-6d30369bcaf1
       iscommand: false
       name: Local Network Configuration Modification
       type: title
       version: -1
       description: ''
-    taskid: 74c05cd6-3dcc-45b1-85ec-fbdc4a313e6d
+    taskid: 35ce8a22-ed6c-4683-811a-6d30369bcaf1
     timertriggers: []
     type: title
     view: |-
@@ -1395,20 +1362,20 @@ tasks:
     task:
       brand: Builtin
       description: Update tag - 'DNS Requests'
-      id: 1a3c62d2-0ba2-4dd6-8232-62631dc158d1
+      id: e4a4f619-e7ff-4753-893b-e3b5799c58cd
       iscommand: true
       name: Update tag - 'DNS Requests'
       script: Builtin|||setIncident
       type: regular
       version: -1
-    taskid: 1a3c62d2-0ba2-4dd6-8232-62631dc158d1
+    taskid: e4a4f619-e7ff-4753-893b-e3b5799c58cd
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 1230,
-          "y": 1685
+          "x": 4610,
+          "y": 1545
         }
       }
   '41':
@@ -1443,12 +1410,12 @@ tasks:
     task:
       brand: ''
       description: Any results?
-      id: d09c4a2b-6e4f-4e9d-8898-0f28cda243ae
+      id: c2f41c8e-905d-4759-8fc8-b8a3edcd1410
       iscommand: false
       name: Any results?
       type: condition
       version: -1
-    taskid: d09c4a2b-6e4f-4e9d-8898-0f28cda243ae
+    taskid: c2f41c8e-905d-4759-8fc8-b8a3edcd1410
     timertriggers: []
     type: condition
     view: |-
@@ -1478,13 +1445,13 @@ tasks:
     task:
       brand: Builtin
       description: Update Tag - 'Enumeration of Network Shares'
-      id: ec33ebd7-c5c3-48d9-8b78-7d0792e442e1
+      id: 8d089338-9bcb-4d98-829a-050d4b638f3a
       iscommand: true
       name: Update Tag - 'Enumeration of Network Shares'
       script: Builtin|||setIncident
       type: regular
       version: -1
-    taskid: ec33ebd7-c5c3-48d9-8b78-7d0792e442e1
+    taskid: 8d089338-9bcb-4d98-829a-050d4b638f3a
     timertriggers: []
     type: regular
     view: |-
@@ -1514,13 +1481,13 @@ tasks:
     task:
       brand: Builtin
       description: Update Tag - 'Hosts File Modification'
-      id: 6a6d65c3-0267-42da-85a1-11a725bc4755
+      id: bd6efa7b-e3df-4b03-8417-ce14eec457a9
       iscommand: true
       name: Update Tag - 'Hosts File Modification'
       script: Builtin|||setIncident
       type: regular
       version: -1
-    taskid: 6a6d65c3-0267-42da-85a1-11a725bc4755
+    taskid: bd6efa7b-e3df-4b03-8417-ce14eec457a9
     timertriggers: []
     type: regular
     view: |-
@@ -1550,13 +1517,13 @@ tasks:
     task:
       brand: Builtin
       description: Update Tag - 'File External Connections'
-      id: 10abd8ab-14e5-4a89-85ff-352b2529d4bf
+      id: 95d5392e-345a-4f8e-8591-cbafb432edaf
       iscommand: true
       name: Update Tag - 'File External Connections'
       script: Builtin|||setIncident
       type: regular
       version: -1
-    taskid: 10abd8ab-14e5-4a89-85ff-352b2529d4bf
+    taskid: 95d5392e-345a-4f8e-8591-cbafb432edaf
     timertriggers: []
     type: regular
     view: |-
@@ -1566,25 +1533,25 @@ tasks:
           "y": 1360
         }
       }
-  '45':
-    id: '45'
-    taskid: 88124d1e-6223-43c8-89b1-264076f46201
+  "45":
+    id: "45"
+    taskid: 030fc4cc-3cff-426d-83a8-82e3fa1a887c
     type: condition
     task:
-      id: 88124d1e-6223-43c8-89b1-264076f46201
+      id: 030fc4cc-3cff-426d-83a8-82e3fa1a887c
       version: -1
       name: Check if device information was provided
       description: Check if device information was provided
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
-      yes:
-      - '36'
-      - '39'
+      "yes":
+      - "36"
+      - "39"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -1610,26 +1577,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  '46':
-    id: '46'
-    taskid: 3b430e7e-7a24-4e44-8a7c-2938d89f1850
+  "48":
+    id: "48"
+    taskid: 20da1fcc-46df-44f0-8ab7-c4722d848c36
     type: condition
     task:
-      id: 3b430e7e-7a24-4e44-8a7c-2938d89f1850
+      id: 20da1fcc-46df-44f0-8ab7-c4722d848c36
       version: -1
       name: Are DeviceID and FileName provided?
       description: Are DeviceID and FileName provided?
       type: condition
       iscommand: false
-      brand: ''
+      brand: ""
     nexttasks:
       '#default#':
-      - '29'
-      yes:
-      - '9'
+      - "28"
+      "yes":
+      - "3"
+      - "37"
     separatecontext: false
     conditions:
-    - label: yes
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
@@ -1644,53 +1612,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 990,
-          "y": 860
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  '48':
-    id: '48'
-    taskid: fd8e6713-5106-4527-82c0-dc6970184e36
-    type: condition
-    task:
-      id: fd8e6713-5106-4527-82c0-dc6970184e36
-      version: -1
-      name: Are DeviceID and FileName provided?
-      description: Are DeviceID and FileName provided?
-      type: condition
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#default#':
-      - '28'
-      yes:
-      - '1'
-    separatecontext: false
-    conditions:
-    - label: yes
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.FileSha256
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: inputs.DeviceID
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 4300,
-          "y": 690
+          "x": 4350,
+          "y": 640
         }
       }
     note: false
@@ -1710,14 +1633,13 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2195,
-        "width": 3690,
-        "x": 990,
-        "y": 220
+        "height": 2235,
+        "width": 3530,
+        "x": 1460,
+        "y": 180
       }
     }
   }
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
-system: true
