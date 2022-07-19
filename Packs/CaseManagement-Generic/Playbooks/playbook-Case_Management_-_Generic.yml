@@ -3,23 +3,23 @@ id: Case Management - Generic
 inputs: []
 name: Case Management - Generic
 outputs: []
-starttaskid: '0'
+starttaskid: "0"
 tasks:
-  '0':
-    id: '0'
+  "0":
+    id: "0"
     ignoreworker: false
     nexttasks:
       '#none#':
-      - '9'
+      - "9"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
+      brand: ""
       id: 0a7a7db6-410b-44ed-8d73-c32aa6ce2e38
       iscommand: false
-      name: ''
+      name: ""
       version: -1
       description: ''
     taskid: 0a7a7db6-410b-44ed-8d73-c32aa6ce2e38
@@ -34,21 +34,21 @@ tasks:
       }
     isautoswitchedtoquietmode: false
     isoversize: false
-  '7':
+  "7":
     form:
       description: Complete the below items to close this Incident
       expired: false
       questions:
       - defaultrows: []
-        fieldassociated: ''
+        fieldassociated: ""
         gridcolumns: []
-        id: '0'
-        label: ''
+        id: "0"
+        label: ""
         labelarg:
           simple: Close Notes
         options: []
         optionsarg: []
-        placeholder: ''
+        placeholder: ""
         readonly: false
         required: true
         tooltip: Close Notes for this Incident
@@ -56,27 +56,27 @@ tasks:
       - defaultrows: []
         fieldassociated: closereason
         gridcolumns: []
-        id: '1'
-        label: ''
+        id: "1"
+        label: ""
         labelarg:
           simple: Close Reason
         options: []
         optionsarg: []
-        placeholder: ''
+        placeholder: ""
         readonly: false
         required: true
-        tooltip: ''
+        tooltip: ""
         type: singleSelect
       sender: Your SOC team
       title: Close Notes
       totalanswers: 0
-    id: '7'
+    id: "7"
     ignoreworker: false
     message:
       bcc:
       body: {}
       cc:
-      format: ''
+      format: ""
       methods: []
       subject:
       timings:
@@ -89,13 +89,13 @@ tasks:
         simple: ${incident.owner}
     nexttasks:
       '#none#':
-      - '16'
+      - "16"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
+      brand: ""
       description: |+
         ## Investigate
 
@@ -119,12 +119,12 @@ tasks:
       }
     isautoswitchedtoquietmode: false
     isoversize: false
-  '9':
-    id: '9'
+  "9":
+    id: "9"
     ignoreworker: false
     nexttasks:
       '#none#':
-      - '20'
+      - "20"
     note: false
     quietmode: 0
     reputationcalc: 2
@@ -155,15 +155,15 @@ tasks:
       }
     isautoswitchedtoquietmode: false
     isoversize: false
-  '12':
-    id: '12'
+  "12":
+    id: "12"
     ignoreworker: false
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
+      brand: ""
       id: a8ccd6b5-0697-43d6-870b-32abb77a3193
       iscommand: false
       name: Done
@@ -182,12 +182,12 @@ tasks:
       }
     isautoswitchedtoquietmode: false
     isoversize: false
-  '16':
-    id: '16'
+  "16":
+    id: "16"
     ignoreworker: false
     nexttasks:
       '#none#':
-      - '12'
+      - "12"
     note: false
     quietmode: 0
     scriptarguments:
@@ -221,7 +221,7 @@ tasks:
       }
     isautoswitchedtoquietmode: false
     isoversize: false
-  '18':
+  "18":
     conditions:
     - condition:
       - - left:
@@ -229,20 +229,20 @@ tasks:
             value:
               simple: incident.owner
           operator: isNotEmpty
-      label: yes
-    id: '18'
+      label: "yes"
+    id: "18"
     ignoreworker: false
     nexttasks:
       '#default#':
-      - '22'
-      yes:
-      - '23'
+      - "22"
+      "yes":
+      - "23"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
+      brand: ""
       description: Checks to see if there is an Owner assigned to this case.
       id: 4a0f61e9-6774-45c1-87de-191832ff0cba
       iscommand: false
@@ -261,18 +261,18 @@ tasks:
       }
     isautoswitchedtoquietmode: false
     isoversize: false
-  '20':
-    id: '20'
+  "20":
+    id: "20"
     ignoreworker: false
     nexttasks:
       '#none#':
-      - '18'
+      - "18"
     note: false
     quietmode: 0
     separatecontext: true
     skipunavailable: false
     task:
-      brand: ''
+      brand: ""
       id: b38a9fd7-fcdf-4750-8785-3297d38f25b7
       iscommand: false
       name: Calculate Severity - Standard
@@ -292,18 +292,18 @@ tasks:
       }
     isautoswitchedtoquietmode: false
     isoversize: false
-  '22':
-    id: '22'
+  "22":
+    id: "22"
     ignoreworker: false
     nexttasks:
       '#none#':
-      - '7'
+      - "7"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
+      brand: ""
       id: c212687b-cc2e-473a-8b92-7db79fe8a9ee
       iscommand: false
       name: Start Time to Assignment Timer
@@ -324,18 +324,18 @@ tasks:
       }
     isautoswitchedtoquietmode: false
     isoversize: false
-  '23':
-    id: '23'
+  "23":
+    id: "23"
     ignoreworker: false
     nexttasks:
       '#none#':
-      - '7'
+      - "7"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ''
+      brand: ""
       id: 2466a110-804d-41bd-8bf8-3bdbf9725be2
       iscommand: false
       name: Start Remediation SLA Timer
