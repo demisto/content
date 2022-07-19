@@ -713,7 +713,7 @@ tasks:
       name: MDE - Host Advanced Hunting For Powershell Executions
       type: playbook
       version: -1
-      description: This playbook uses the Microsoft Defender For Endpoint Advanced Hunting feature to hunt for host PowerShell executions.
+      description: 'This playbook uses the Microsoft Defender For Endpoint Advanced Hunting feature to hunt for host PowerShell executions.'
       playbookName: MDE - Host Advanced Hunting For Powershell Executions
     taskid: e8cd08d7-1da1-4612-86b0-b219262d8398
     timertriggers: []
@@ -857,7 +857,7 @@ tasks:
       name: MDE - Host Advanced Hunting For Network Activity
       type: playbook
       version: -1
-      description: This playbook uses the Microsoft Defender For Endpoint Advanced Hunting feature to hunt for host network activity.
+      description: 'This playbook uses the Microsoft Defender For Endpoint Advanced Hunting feature to hunt for host network activity.'
       playbookName: MDE - Host Advanced Hunting For Network Activity
     taskid: 61945bd1-c7fd-4fd6-809a-bbfcd32b2f79
     timertriggers: []
@@ -1130,6 +1130,13 @@ tasks:
           left:
             value:
               simple: inputs.FileSha1
+            iscontext: true
+          right:
+            value: {}
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.FileSha256
             iscontext: true
     view: |-
       {
