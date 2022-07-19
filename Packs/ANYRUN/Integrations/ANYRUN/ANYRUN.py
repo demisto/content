@@ -1,7 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from typing import Optional
 
 ''' IMPORTS '''
 
@@ -225,7 +224,7 @@ def generate_dbotscore(response: Dict) -> List:
     Returns
     -------
     List
-        A list of CommandResults objects.
+        A list of Indicator objects based on the Common Class.
     """
     data: dict = response.get('data', {})
     analysis = data.get('analysis', {})
@@ -266,14 +265,14 @@ def generate_dbotscore(response: Dict) -> List:
             dbot_score=dbot_score
         )
     returned_data.append(indicator)
-    
+
     # Check if network information is available in the report
     if 'network' in data:
-        network_data: dict = data.get('network')
+        network_data = data.get('network')
 
         # Then add all the network-related indicators - 'connections'
         if 'connections' in network_data:
-            connections: list = network_data.get('connections')
+            connections = network_data.get('connections')
             for current_connection in connections:
                 reputation = current_connection.get('Reputation')
                 if reputation in reputation_map.keys():
@@ -288,7 +287,6 @@ def generate_dbotscore(response: Dict) -> List:
                         dbot_score=current_dbot_score
                     )
                     returned_data.append(current_indicator)
-                    
 
         # Then add all the network-related indicators - 'dnsRequests'
         if 'dnsRequests' in network_data:
@@ -306,14 +304,13 @@ def generate_dbotscore(response: Dict) -> List:
                         dbot_score=current_dbot_score
                     )
                     returned_data.append(current_indicator)
-                    
 
         # Then add all the network-related indicators - 'httpRequests'
         if 'httpRequests' in network_data:
             for current_httpRequests in network_data.get('httpRequests'):
                 reputation = current_httpRequests['Reputation']
                 if reputation in reputation_map.keys():
-                    current_dbot_score=Common.DBotScore(
+                    current_dbot_score = Common.DBotScore(
                         indicator=current_httpRequests.get('URL'),
                         indicator_type=DBotScoreType.URL,
                         integration_name='ANYRUN',
@@ -831,13 +828,13 @@ def get_history_command(client, args):
     filter = args.pop('filter', None)
     response = get_history(args)
     contents = contents_from_history(filter, response)
-    
-    formatting_funcs = [ underscoreToCamelCase, make_capital, make_singular, make_upper]
+
+    formatting_funcs = [underscoreToCamelCase, make_capital, make_singular, make_upper]
     formatted_contents = travel_object(contents, key_functions=formatting_funcs)
     if contents:
-        reformatted_contents =[]
+        reformatted_contents = []
         for task in formatted_contents:
-            new_task = {k: v for k,v in task.items()}
+            new_task = {k: v for k, v in task.items()}
             related = task.get('Related', '')
             new_task['Related'] = f'[{related}]({related})'
             reformatted_contents.append(new_task)
@@ -848,7 +845,7 @@ def get_history_command(client, args):
             readable_output=tableToMarkdown(
                 f'Task History - Filtered By "{filter}"' if filter else 'Task History',
                 reformatted_contents
-                )
+            )
         )
     else:
         command_results(CommandResults(
@@ -902,7 +899,7 @@ def get_report_command(client, args):
     formatting_funcs = [underscoreToCamelCase, make_capital, make_singular, make_upper]
     formatted_contents = travel_object(contents, key_functions=formatting_funcs)
 
-    dbot_scores = generate_dbotscore(response)
+    dbot_scores: List = generate_dbotscore(response)
 
     command_results = (CommandResults(
         outputs_prefix='ANYRUN.Task',
@@ -912,6 +909,7 @@ def get_report_command(client, args):
             **formatted_contents
         },
         indicators=dbot_scores,
+        indicator="",
         readable_output=tableToMarkdown(
             f'Report for Task {task_id}',
             humanreadable_from_report_contents(formatted_contents),
@@ -988,14 +986,14 @@ def run_analysis_command(client, args):
     task_id = args.get('task_id')
     polling = argToBoolean(args.get('polling', 'false'))
     command_args = {
-        k: v for k,v in args.items() if k not in [
+        k: v for k, v in args.items() if k not in [
             'polling',
             'task_id',
             'interval_in_seconds',
             'timeout',
             'hide_polling_output'
         ]
-        }
+    }
 
     # Create a new file / URL submission
     if not task_id:
@@ -1007,7 +1005,7 @@ def run_analysis_command(client, args):
             'Status': status
         }
         continue_to_poll = polling
-        submit_output=CommandResults(
+        submit_output = CommandResults(
             outputs_prefix='ANYRUN.Task',
             outputs_key_field='ID',
             outputs=outputs,
@@ -1036,7 +1034,7 @@ def run_analysis_command(client, args):
             'Status': status
         }
         images = images_from_report(response)
-        submit_output=[]
+        submit_output = []
         submit_output.append(
             CommandResults(
                 outputs_prefix='ANYRUN.Task',
@@ -1084,17 +1082,17 @@ COMMANDS = {
 def main():
     """Main Execution block"""
 
-    #try:
-    args = demisto.args()
-    cmd_name = demisto.command()
-    LOG('Command being called is {}'.format(cmd_name))
-    handle_proxy()
+    try:
+        args = demisto.args()
+        cmd_name = demisto.command()
+        LOG('Command being called is {}'.format(cmd_name))
+        handle_proxy()
 
-    if cmd_name in COMMANDS.keys():
-        return_results(COMMANDS[cmd_name](None, args))
+        if cmd_name in COMMANDS.keys():
+            return_results(COMMANDS[cmd_name](None, args))
 
-    #except Exception as e:
-    #    return_error(str(e), error=traceback.format_exc())
+    except Exception as e:
+        return_error(str(e), error=traceback.format_exc())
 
 
 # python2 uses __builtin__ python3 uses builtins
