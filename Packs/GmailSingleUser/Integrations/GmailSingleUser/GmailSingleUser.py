@@ -885,14 +885,14 @@ class Client:
         message['cc'] = cc
         message['bcc'] = bcc
         message['from'] = send_as or emailfrom
-        message['subject'] = subject
+        message['subject'] = Header(subject, 'utf-8')
         message['reply-to'] = replyTo
 
         # # The following headers are being used for the reply-mail command.
         if inReplyTo:
-            message['In-Reply-To'] = ' '.join(inReplyTo)
+            message['In-Reply-To'] = Header(' '.join(inReplyTo.split()), 'utf-8')
         if references:
-            message['References'] = ' '.join(references)
+            message['References'] = Header(' '.join(references.split()), 'utf-8')
 
         # if there are any attachments to the mail or both body and htmlBody were given
         if entry_ids or file_names or attach_cid or manualAttachObj or (body and htmlBody):
@@ -998,7 +998,7 @@ def reply_mail_command(client):
     inReplyTo = args.get('inReplyTo')
     references = argToList(args.get('references'))
     body = args.get('body')
-    subject = 'Re: ' + args.get('subject')
+    subject = args.get('subject')
     entry_ids = args.get('attachIDs')
     cc = args.get('cc')
     bcc = args.get('bcc')

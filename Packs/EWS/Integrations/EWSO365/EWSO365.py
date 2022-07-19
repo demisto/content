@@ -373,7 +373,7 @@ class EWSClient:
 
     def reply_mail(self, inReplyTo, to, body, subject, bcc, cc, htmlBody, attachments):
         account = self.get_account()
-        item_to_reply_to = account.inbox.get(id=inReplyTo)  # type: ignore
+        item_to_reply_to = account.inbox.get(id=inReplyTo)
         if isinstance(item_to_reply_to, ErrorItemNotFound):
             raise Exception(item_to_reply_to)
 
@@ -383,7 +383,7 @@ class EWSClient:
                                               cc_recipients=cc,
                                               bcc_recipients=bcc)
         reply = reply.save(account.drafts)
-        m = account.inbox.get(id=reply.id)  # type: ignore
+        m = account.inbox.get(id=reply.id)
 
         for attachment in attachments:
             if not attachment.get('cid'):
