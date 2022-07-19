@@ -1372,7 +1372,7 @@ def test_get_url_category__url_length_gt_1278(mocker):
     assert 'URL Node can be at most 1278 characters.' == return_results_mock.call_args[0][0][1].readable_output
 
 
-def test_get_url_category__multiple_categories_for_url(mocker):
+def test_get_url_category_multiple_categories_for_url(mocker):
     """
     Given:
         - response indicating the url has multiple categories.
@@ -1382,8 +1382,8 @@ def test_get_url_category__multiple_categories_for_url(mocker):
 
     Then:
         - Validate a commandResult is returned with detailed readable output
+        - Validate only a single DBot score is returned for the URL.
     """
-
     # prepare
     import Panorama
     import requests
@@ -1408,12 +1408,13 @@ def test_get_url_category__multiple_categories_for_url(mocker):
     panorama_get_url_category_command(url_cmd='url', url='test_url', additional_suspicious=[], additional_malicious=[])
 
     # validate
-    assert return_results_mock.call_args[0][0][0].outputs[0].get('Category') in ['shareware-and-freeware',
-                                                                                 'online-storage-and-backup',
-                                                                                 'not-resolved']
-    assert return_results_mock.call_args[0][0][0].outputs[1].get('Category') in ['shareware-and-freeware',
-                                                                                 'online-storage-and-backup',
-                                                                                 'not-resolved']
+    for i in range(3):
+        assert return_results_mock.call_args[0][0][0].outputs[i].get('Category') in ['shareware-and-freeware',
+                                                                                     'online-storage-and-backup',
+                                                                                     'low-risk']
+
+    # category with highest dbot-score
+    assert return_results_mock.call_args[0][0][1].indicator.dbot_score.score == 1
 
 
 class TestDevices:
