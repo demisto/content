@@ -1061,3 +1061,93 @@ Submit an Inquiry to request a report on misjudgement by Abnormal Security
 >|---|
 >| Thank you for your feedback! We have sent your inquiry to our support staff. |
 
+### abnormal-security-submit-false-negative-report
+***
+Submit a False Negative Report
+
+
+#### Base Command
+
+`abnormal-security-submit-false-negative-report`
+#### Input
+
+| **Argument Name** | **Description**                 | **Required** |
+|-------------------|---------------------------------| --- |
+| sender_email      | Email address of the sender.    | Required | 
+| recipient_email   | Email address of the recipient. | Required | 
+| subject           | Email subject.                  | Required | 
+
+
+#### Context Output
+
+| **Path**                                          | **Type** | **Description** |
+|---------------------------------------------------| --- | --- |
+| AbnormalSecurity.SubmitFalseNegativeReport.detail | String | Confirmation of inquiry sent | 
+
+
+#### Command Example
+```!abnormal-security-submit-false-negative-report recipient_email=abc@def.com sender_email=def@def.com subject=hello```
+
+#### Context Example
+```json
+{
+    "AbnormalSecurity": {
+        "SubmitInquiry": {
+            "detail": "Thank you for your feedback! We have sent your inquiry to our support staff."
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+>|detail|
+>|---|
+>| Thank you for your feedback! We have sent your inquiry to our support staff. |
+
+
+
+### abnormal-security-submit-false-positive-report
+***
+Submit a False Positive Report
+
+
+#### Base Command
+
+`abnormal-security-submit-false-positive-report`
+#### Input
+
+| **Argument Name** | **Description**                 | **Required** |
+|-------------------|---------------------------------| --- |
+| portal_link       | URL link of threat log in abnormal security portal           | Required |
+
+
+#### Context Output
+
+| **Path**                                          | **Type** | **Description** |
+|---------------------------------------------------| --- | --- |
+| AbnormalSecurity.SubmitFalsePositiveReport.detail | String | Confirmation of inquiry sent | 
+
+
+#### Command Example
+```!abnormal-security-submit-false-positive-report recipient_email=abc@def.com sender_email=def@def.com subject=hello```
+
+#### Context Example
+```json
+{
+    "AbnormalSecurity": {
+        "SubmitInquiry": {
+            "detail": "Thank you for your feedback! We have sent your inquiry to our support staff."
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+>|detail|
+>|---|
+>| Thank you for your feedback! We have sent your inquiry to our support staff. |
+
