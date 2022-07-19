@@ -14,14 +14,6 @@ schema: |-
         "type": "string",
         "is_array": false
       },
-      "category": {
-        "type": "string",
-        "is_array": false
-      },
-      "logVersion": {
-        "type": "string",
-        "is_array": false
-      },
       "context": {
         "type": "string",
         "is_array": false

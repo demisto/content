@@ -44,21 +44,23 @@ class Client(BaseClient):
         query_params = assign_params(marker=marker, since=since)
 
         while fetched_events_count < limit:
+            demisto.debug(f'Fetching new events, {query_params=}')
             raw_response = self._http_request(
                 method='GET',
                 url_suffix='logs',
                 params=query_params,
             )
 
-            events.append(raw_response.get('page', {}).get('items', []))
+            new_fetched_events = raw_response.get('page', {}).get('items', [])
+            events.extend(new_fetched_events)
             marker = raw_response.get('page', {}).get('pageMarker', marker)
             query_params = {'marker': marker}
-            if len(events) < 1000:
+            if len(new_fetched_events) < 1000:
                 break
-            fetched_events_count += len(events)
+            fetched_events_count += len(new_fetched_events)
 
         new_last_run = {'marker': marker}
-
+        demisto.info(f'Done fetching {len(events)} events, Setting {new_last_run=}.')
         return events, new_last_run
 
 
@@ -153,6 +155,7 @@ def main() -> None:
                 return_results(results)
 
             else:  # command == 'fetch-events':
+                demisto.info(f'Command being called is {command}')
                 last_run = demisto.getLastRun()
                 events, last_run = fetch_events_command(client, first_fetch, last_run, limit)
                 demisto.setLastRun(last_run)
