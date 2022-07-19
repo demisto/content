@@ -72,8 +72,8 @@ class Machine(Enum):
         return tuple(machine for machine in Machine if isinstance(machine.value, Version))
 
     @staticmethod
-    def get_suitable_machines(version_range: Optional[VersionRange], run_nightly: bool, run_master: bool) -> tuple[
-        'Machine', ...]:
+    def get_suitable_machines(version_range: Optional[VersionRange], run_nightly: bool, run_master: bool) \
+            -> tuple['Machine', ...]:
         result: list[Machine] = []
 
         if version_range:
@@ -138,7 +138,7 @@ class DictFileBased(DictBased):
             raise FileNotFoundError(path)
         try:
             PackManager.relative_to_packs(path)
-        except NotUnderPackException as e:
+        except NotUnderPackException:
             if is_infrastructure:
                 pass
             else:
@@ -177,7 +177,7 @@ class ContentItem(DictFileBased):
         return self.get('name', default='', warn_if_missing=False, warning_comment=id_)
 
     @property
-    def tests(self):
+    def tests(self) -> list[str]:
         tests = self.get('tests', [], warn_if_missing=False)
         if len(tests) == 1 and 'no tests' in tests[0].lower():
             raise NoTestsConfiguredException(self.id_)

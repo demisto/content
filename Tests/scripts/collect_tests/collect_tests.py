@@ -79,18 +79,22 @@ class CollectedTests:
         elif packs and not tests:
             tests = (None,) * len(packs)  # so accessors get a None
 
-        for i in range(len(tests)):
-            self._add_single(tests[i], packs[i], reason, reason_description)
+        if tests:  # to calm mypy down
+            for i in range(len(tests)):
+                self._add_single(tests[i], packs[i], reason, reason_description)
 
     def __or__(self, other: 'CollectedTests') -> 'CollectedTests':
         self.tests.update(other.tests)
         self.packs.update(other.packs)
-        self.version_range = (self.version_range | other.version_range) if self.version_range else other.version_range
+        if self.version_range:
+            self.version_range |= other.version_range
+        else:
+            self.version_range = other.version_range
         return self
 
     @classmethod
     def union(cls, collected_tests: Optional[tuple[Optional['CollectedTests'], ...]]) -> Optional['CollectedTests']:
-        collected_tests = tuple(filter(None, collected_tests))
+        collected_tests = tuple(filter(None, collected_tests or (None,)))
 
         if not collected_tests:
             logger.warning('no tests to union')
@@ -270,6 +274,7 @@ class BranchTestCollector(TestCollector):
             raise FileNotFoundError(f'could not find yml matching {PackManager.relative_to_packs(content_item_path)}')
 
         relative_path = PackManager.relative_to_packs(yml_path)
+        tests: tuple[str, ...]
 
         match actual_content_type := self._find_yml_content_type(yml_path):
             case None:
@@ -314,12 +319,11 @@ class BranchTestCollector(TestCollector):
                 raise RuntimeError(f'Unexpected content type {actual_content_type} for {content_item_path}'
                                    f'(expected `Integrations`, `Scripts` or `Playbooks`)')
         # creating an object for each, as CollectedTests require #packs==#tests
-        if tests:
-            return CollectedTests.union(
-                tuple(CollectedTests(tests=(test,), packs=yml.pack_folder_name_tuple, reason=reason,
-                                     version_range=yml.version_range,
-                                     reason_description=f'{yml.id_=} ({relative_path})')
-                      for test in tests))
+        if tests and (collected := CollectedTests.union(
+                tuple(CollectedTests(
+                    tests=(test,), packs=yml.pack_folder_name_tuple, reason=reason, version_range=yml.version_range,
+                    reason_description=f'{yml.id_=} ({relative_path})') for test in tests))):
+            return collected
         else:
             raise NothingToCollectException(yml.path, 'no tests were found')
 
