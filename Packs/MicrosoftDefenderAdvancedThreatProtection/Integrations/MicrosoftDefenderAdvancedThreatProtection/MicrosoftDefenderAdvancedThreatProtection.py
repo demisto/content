@@ -1129,6 +1129,20 @@ class MsClient:
         kwargs.pop('should_use_security_center')
         return self.ms_client.http_request(*args, **kwargs)
 
+    def offboard_machine(self, machine_id, comment):
+        """ Offboard machine from defender.
+
+         Args:
+            machine_id (str): Machine ID
+            comment (str): Comment to associate with the
+        """
+        cmd_url = f'/machines/{machine_id}/offboard'
+        json_data = {
+            "Comment": comment
+        }
+        response = self.ms_client.http_request(method='POST', url_suffix=cmd_url, json_data=json_data)
+        return response
+
     def isolate_machine(self, machine_id, comment, isolation_type):
         """Isolates a machine from accessing external network.
 
@@ -1981,6 +1995,43 @@ def get_user_data(user_response):
         'NetworkUser': user_response.get('isOnlyNetworkUser')
     }
     return user_data
+
+
+def offboard_machine_command(client: MsClient, args: dict):
+    """Offboard machine from defender.
+
+    Returns:
+       CommandResults. Human readable, context, raw response
+    """
+    if not args.get('machine_id') or not args.get('comment'):
+        raise ValueError("Not all mandatory arguments are provided. Provide both machine_id and comment.")
+    headers = ['ID', 'Type', 'Requestor', 'RequestorComment', 'Status', 'MachineID', 'ComputerDNSName']
+    machine_ids = remove_duplicates_from_list_arg(args, 'machine_id')
+    comment = args.get('comment')
+    machines_action_data = []
+    raw_response = []
+    failed_machines = {}  # if we got an error, we will return the machine ids that failed
+    for machine_id in machine_ids:
+        try:
+            machine_action_response = client.offboard_machine(machine_id, comment)
+            raw_response.append(machine_action_response)
+            machines_action_data.append(get_machine_action_data(machine_action_response))
+        except Exception as e:
+            # if we got an error for a machine, we want to get result for the other ones
+            failed_machines[machine_id] = e
+            continue
+
+    human_readable = tableToMarkdown("The offboard request has been submitted successfully:", machines_action_data,
+                                     headers=headers, removeNull=True)
+    human_readable += add_error_message(failed_machines, machine_ids)
+
+    return CommandResults(
+        outputs=machines_action_data,
+        outputs_prefix="MicrosoftATP.OffboardMachine",
+        outputs_key_field=["ID", "MachineID"],
+        readable_output=human_readable,
+        raw_response=raw_response
+    )
 
 
 def isolate_machine_command(client: MsClient, args: dict):
@@ -4961,6 +5012,8 @@ def main():  # pragma: no cover
             return_results(tampering_command(client, args))
         elif command == 'microsoft-atp-advanced-hunting-cover-up':
             return_results(cover_up_command(client, args))
+        elif command == 'microsoft-atp-offboard-machine':
+            return_results(offboard_machine_command(client, args))
         elif command == 'microsoft-atp-get-machine-users':
             return_results(get_machine_users_command(client, args))
         elif command == 'microsoft-atp-get-machine-alerts':
