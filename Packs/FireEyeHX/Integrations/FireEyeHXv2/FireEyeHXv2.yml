@@ -436,7 +436,7 @@ script:
       type: number
     - contextPath: FireEyeHX.HostSets._revision
       description: The number of the host set revision.
-      type: string
+      type: date
     - contextPath: FireEyeHX.HostSets.name
       description: The name of the host set.
       type: string
@@ -2190,8 +2190,8 @@ script:
       description: The host set name.
       type: String
     - contextPath: FireEyeHX.HostSets._revision
-      description: Timestamp of last update. Used for preventing updates with obsolete data. If _revision in the request body does not match _revision in the databse, the update will fail.
-      type: String
+      description: Date of last update. Used for preventing updates with obsolete data. If _revision in the request body does not match _revision in the databse, the update will fail.
+      type: Date
     - contextPath: FireEyeHX.HostSets.deleted
       description: Was the host set deleted.
       type: Boolean
@@ -2267,8 +2267,8 @@ script:
       description: The host set name.
       type: String
     - contextPath: FireEyeHX.HostSets._revision
-      description: Timestamp of last update. Used for preventing updates with obsolete data. If _revision in the request body does not match _revision in the databse, the update will fail.
-      type: String
+      description: Date of last update. Used for preventing updates with obsolete data. If _revision in the request body does not match _revision in the databse, the update will fail.
+      type: Date
     - contextPath: FireEyeHX.HostSets.deleted
       description: Was the host set deleted.
       type: Boolean
@@ -2312,8 +2312,8 @@ script:
       description: The host set name.
       type: String
     - contextPath: FireEyeHX.HostSets._revision
-      description: Timestamp of last update. Used for preventing updates with obsolete data. If _revision in the request body does not match _revision in the databse, the update will fail.
-      type: String
+      description: Date of last update. Used for preventing updates with obsolete data. If _revision in the request body does not match _revision in the databse, the update will fail.
+      type: Date
     - contextPath: FireEyeHX.HostSets.deleted
       description: Was the host set deleted.
       type: Boolean
@@ -2395,8 +2395,8 @@ script:
       description: The host set name.
       type: String
     - contextPath: FireEyeHX.HostSets._revision
-      description: Timestamp of last update. Used for preventing updates with obsolete data. If _revision in the request body does not match _revision in the databse, the update will fail.
-      type: String
+      description: Date of last update. Used for preventing updates with obsolete data. If _revision in the request body does not match _revision in the databse, the update will fail.
+      type: Date
     - contextPath: FireEyeHX.HostSets.deleted
       description: Was the host set deleted.
       type: Boolean

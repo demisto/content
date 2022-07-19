@@ -2156,6 +2156,11 @@
             "timeout": 200
         },
         {
+            "integrations": "FireEye HX",
+            "playbookID": "FireEye HX Test",
+            "timeout": 800
+        },
+        {
             "integrations": "FireEyeFeed",
             "playbookID": "playbook-FeedFireEye_test",
             "memory_threshold": 110
@@ -5447,7 +5452,7 @@
         "Salesforce Event Collector": "XSIAM integration",
         "Github Event Collector" : "XSIAM integration",
         "Microsoft Defender for Cloud Apps Event Collector": "XSIAM integration",
-        "FireEye HX Test": "the integration is deprecated as we released FireEyeHX v2"
+        "FireEye HX": "the integration is deprecated as we released FireEyeHX v2"
     },
     "nightly_integrations": [
         "Laline v2",

@@ -2077,13 +2077,16 @@ def create_static_host_set_command(client: Client, args: Dict[str, Any]) -> Comm
         response = client.create_static_host_set_request(host_set_name, hosts_ids)
         if data := response.get('data'):
             data['deleted'] = False
+            date = datetime.strptime(data['_revision'][:-6], '%Y%m%d%H%M%S%f')
+            data['_revision'] = date.strftime("%m/%d/%Y, %H:%M:%S.%f")
             host_set_id = data.get('_id')
             message = f'Static Host Set {host_set_name} with id {host_set_id} was created successfully.'
     except Exception as e:
+        response = {}
         if '409' in str(e):
             message = 'Another host set with the same name was found, please use a different one.'
         elif 'Referenced entity not found' in str(e):
-            message = "Referenced entity not found, Check if one of the host ids that were given does not exists."
+            message = "Referenced entity not found, check if one of the host ids that were given does not exists."
         else:
             demisto.debug(str(e))
             message = 'Creating Host Set failed, check if you have the necessary permissions.'
@@ -2092,7 +2095,8 @@ def create_static_host_set_command(client: Client, args: Dict[str, Any]) -> Comm
         outputs_prefix='FireEyeHX.HostSets',
         outputs_key_field='_id',
         outputs=data,
-        readable_output=message
+        readable_output=message,
+        raw_response=response
     )
 
 
@@ -2111,8 +2115,11 @@ def update_static_host_set_command(client: Client, args: Dict[str, Any]) -> Comm
         response = client.update_static_host_set_request(host_set_id, host_set_name, add_host_ids, remove_host_ids)
         if data := response.get('data'):
             data['deleted'] = False
+            date = datetime.strptime(data['_revision'][:-6], '%Y%m%d%H%M%S%f')
+            data['_revision'] = date.strftime("%m/%d/%Y, %H:%M:%S.%f")
             message = f'Static Host Set {host_set_name} was updated successfully.'
     except Exception as e:
+        response = {}
         if '409' in str(e):
             message = 'Another host set with the same name was found, please use a different one.'
         elif 'Referenced entity not found' in str(e):
@@ -2127,7 +2134,8 @@ def update_static_host_set_command(client: Client, args: Dict[str, Any]) -> Comm
         outputs_prefix='FireEyeHX.HostSets',
         outputs_key_field="_id",
         outputs=data,
-        readable_output=message
+        readable_output=message,
+        raw_response=response
     )
 
 
@@ -2148,9 +2156,12 @@ def create_dynamic_host_set_command(client: Client, args: Dict[str, Any]) -> Com
         response = client.create_dynamic_host_set_request(host_set_name, query, query_key, query_value, query_operator)
         if data := response.get('data'):
             data['deleted'] = False
+            date = datetime.strptime(data['_revision'][:-6], '%Y%m%d%H%M%S%f')
+            data['_revision'] = date.strftime("%m/%d/%Y, %H:%M:%S.%f")
             host_set_id = data.get('_id')
             message = f'Dynamic Host Set {host_set_name} with id {host_set_id} was created successfully.'
     except Exception as e:
+        response = {}
         if '409' in str(e):
             message = 'Another host set with the same name was found, please use a different one.'
         else:
@@ -2161,7 +2172,8 @@ def create_dynamic_host_set_command(client: Client, args: Dict[str, Any]) -> Com
         outputs_prefix='FireEyeHX.HostSets',
         outputs_key_field="_id",
         outputs=data,
-        readable_output=message
+        readable_output=message,
+        raw_response=response
     )
 
 
@@ -2184,8 +2196,11 @@ def update_dynamic_host_set_command(client: Client, args: Dict[str, Any]) -> Com
                                                           query_operator)
         if data := response.get('data'):
             data['deleted'] = False
+            date = datetime.strptime(data['_revision'][:-6], '%Y%m%d%H%M%S%f')
+            data['_revision'] = date.strftime("%m/%d/%Y, %H:%M:%S.%f")
             message = f'Dynamic Host Set {host_set_name} was updated successfully.'
     except Exception as e:
+        response = {}
         if '409' in str(e):
             message = 'Another host set with the same name was found, please use a different one.'
         elif '404' in str(e):
@@ -2198,7 +2213,8 @@ def update_dynamic_host_set_command(client: Client, args: Dict[str, Any]) -> Com
         outputs_prefix='FireEyeHX.HostSets',
         outputs_key_field="_id",
         outputs=data,
-        readable_output=message
+        readable_output=message,
+        raw_response=response
     )
 
 
