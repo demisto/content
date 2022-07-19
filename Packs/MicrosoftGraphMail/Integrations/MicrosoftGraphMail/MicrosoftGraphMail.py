@@ -1515,10 +1515,11 @@ def send_email_command(client: MsGraphClient, args):
 
 def prepare_outputs_for_reply_mail_command(reply, email_to, message_id):
     reply.pop('attachments', None)
-    to_recipients, cc_recipients, bcc_recipients, _ = build_recipients_human_readable(reply)
+    to_recipients, cc_recipients, bcc_recipients, reply_to_recipients = build_recipients_human_readable(reply)
     reply['toRecipients'] = to_recipients
     reply['ccRecipients'] = cc_recipients
     reply['bccRecipients'] = bcc_recipients
+    reply['replyTo'] = reply_to_recipients
     reply['ID'] = message_id
 
     message_content = assign_params(**reply)
@@ -1540,7 +1541,7 @@ def reply_email_command(client: MsGraphClient, args):
     email_to = argToList(args.get('to'))
     email_from = args.get('from', client._mailbox_to_fetch)
     message_id = args.get('inReplyTo')
-    reply_to = argToList(args.get('replyTo')),
+    reply_to = argToList(args.get('replyTo'))
     email_body = args.get('body', "")
     email_subject = args.get('subject', "")
     email_subject = f'Re: {email_subject}'

@@ -1139,6 +1139,7 @@ Replies to an email using Graph Mail.
 | MicrosoftGraph.SentMail.ccRecipients | String | The CC recipients of the email. |
 | MicrosoftGraph.SentMail.bccRecipients | String | The BCC recipients of the email. |
 | MicrosoftGraph.SentMail.ID | String | The immutable ID of the message. |
+| MicrosoftGraph.SentMail.replyTo | String | The replyTo recipients of the email. |
 
 
 #### Command Example
