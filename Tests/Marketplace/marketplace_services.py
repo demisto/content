@@ -2188,7 +2188,9 @@ class Pack(object):
                             'id': content_item.get('id', ''),
                             'name': content_item.get('name', ''),
                             'description': content_item.get('description', ''),
-                            'dependency_packs': content_item.get('dependency_packs', {})
+                            'dependency_packs': content_item.get('dependency_packs', {}),
+                            'fromVersion': content_item.get('fromVersion', ''),
+                            'toVersion': content_item.get('toVersion', ''),
                         })
 
                     else:
