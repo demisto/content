@@ -685,12 +685,6 @@ def panorama_commit_command(args: dict):
                     readable_output=tableToMarkdown('Commit Status:', commit_output, removeNull=True)
                 ),
             continue_to_poll=commit_status.get('job', {}).get('status') != 'FIN',  # continue polling if job isn't done
-            args_for_next_run={
-                'commit_job_id': job_id,
-                'description': commit_description,
-                'hide_polling_output': True,
-                'polling': True
-            }
         )
     else:  # either no polling is required or this is the first run
         result = panorama_commit(args)
@@ -701,7 +695,7 @@ def panorama_commit_command(args: dict):
                 'Description': commit_description,
                 'Status': 'Pending'
             }
-            continue_to_poll = argToBoolean(args.get('polling', 'false'))
+            continue_to_poll = True
             commit_output = CommandResults(  # type: ignore[assignment]
                 outputs_prefix='Panorama.Commit',
                 outputs_key_field='JobID',
@@ -715,7 +709,11 @@ def panorama_commit_command(args: dict):
         return PollResult(
             response=commit_output,
             continue_to_poll=continue_to_poll,
-            args_for_next_run={'commit_job_id': job_id, 'description': commit_description, 'polling': True},
+            args_for_next_run={
+                'commit_job_id': job_id,
+                'description': commit_description,
+                'polling': argToBoolean(args.get('polling'))
+            },
             partial_result=CommandResults(
                 readable_output=f'Waiting for commit "{commit_description}" with job ID {job_id} to finish...'
                 if commit_description else f'Waiting for commit job ID {job_id} to finish...'
