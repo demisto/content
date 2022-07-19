@@ -150,6 +150,28 @@ class Client(BaseClient):
 
         return response
 
+    def submit_false_negative_report_request(self, recipient_email, sender_email, subject):
+        headers = self._headers
+        json_data = {
+            "report_type": "false-negative",
+            "recipient_email": recipient_email,
+            "sender_email": sender_email,
+            "subject": subject
+        }
+        response = self._http_request('post', 'detection360/reports', json_data=json_data, headers=headers)
+
+        return response
+
+    def submit_false_positive_report_request(self, portal_link):
+        headers = self._headers
+        json_data = {
+            "report_type": "false-positive",
+            'portal_link': portal_link,
+        }
+        response = self._http_request('post', 'detection360/reports', json_data=json_data, headers=headers)
+
+        return response
+
 
 def check_the_status_of_an_action_requested_on_a_case_command(client, args):
     case_id = str(args.get('case_id', ''))
@@ -483,6 +505,34 @@ def submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_security_c
     return command_results
 
 
+def submit_false_negative_report_command(client, args):
+    recipient_email = str(args.get('recipient_email;', ''))
+    sender_email = str(args.get('sender_email', ''))
+    subject = str(args.get('subject', ''))
+    response = client.submit_false_negative_report_request(recipient_email, sender_email, subject)
+    command_results = CommandResults(
+        outputs_prefix='AbnormalSecurity.SubmitFalseNegativeReport',
+        outputs_key_field='',
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
+
+
+def submit_false_positive_report_command(client, args):
+    portal_link = str(args.get('portal_link;', ''))
+    response = client.submit_false_positive_report_request(portal_link)
+    command_results = CommandResults(
+        outputs_prefix='AbnormalSecurity.SubmitFalsePositiveReport',
+        outputs_key_field='',
+        outputs=response,
+        raw_response=response
+    )
+
+    return command_results
+
+
 def test_module(client):
     # Run a sample request to retrieve mock data
     client.get_a_list_of_threats_request(None, None, None, None)
@@ -546,6 +596,10 @@ def main():
             # Detection 360 commands
             'abnormal-security-submit-inquiry-to-request-a-report-on-misjudgement':
                 submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_security_command,
+            'abnormal-security-submit-false-negative-report':
+                submit_false_negative_report_command,
+            'abnormal-security-submit-false-positive-report':
+                submit_false_positive_report_command,
         }
 
         if command == 'test-module':

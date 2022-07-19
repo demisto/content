@@ -544,6 +544,39 @@ script:
     - contextPath: AbnormalSecurity.SubmitInquiry.detail
       description: Confirmation of inquiry sent
       type: String
+
+  - arguments:
+    - description: Email address of the sender
+      isArray: false
+      name: sender_email
+      required: true
+    - description: Email address of the recipient
+      isArray: false
+      name: recipient_email
+      required: true
+    - description: Subject of email
+      isArray: false
+      name: subject
+      required: true
+    description: Submit a False Negative Report
+    name: abnormal-security-submit-false-negative-report
+    outputs:
+      - contextPath: AbnormalSecurity.SubmitFalseNegativeReport.detail
+        description: Confirmation of report sent
+        type: String
+
+  - arguments:
+    - description: URL link of threat log in abnormal security portal
+      isArray: false
+      name: portal_link
+      required: true
+    description: Submit a False Positive Report
+    name: abnormal-security-submit-false-positive-report
+    outputs:
+      - contextPath: AbnormalSecurity.SubmitFalsePositiveReport.detail
+        description: Confirmation of report sent
+        type: String
+
   - arguments:
     - description: Returns test data if set to `True`
       isArray: false
