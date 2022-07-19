@@ -1,35 +1,41 @@
-id: MDE - Retrieve File
-version: 9
 contentitemexportablefields:
-  contentitemfields:
-    packID: MicrosoftDefenderAdvancedThreatProtection
-    packName: Microsoft Defender for Endpoint
-    itemVersion: 1.11.4
-    fromServerVersion: 6.5.0
-    toServerVersion: ""
-    definitionid: ""
-vcShouldKeepItemLegacyProdMachine: false
-name: MDE - Retrieve File
+  contentitemfields: {}
 description: |-
   This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
   This playbook uses the Live Response feature to retrieve a file from an endpoint./nNote that the endpoint id will be set from the incident field "DeviceID".
-starttaskid: "0"
+id: MDE - Retrieve File
+inputs:
+- description: The file paths to be provided.
+  key: paths
+  playbookInputQuery:
+  required: false
+  value: {}
+name: MDE - Retrieve File
+outputs: []
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
-    taskid: 94cc3210-9c2d-4a3b-8959-b1f377dccbb0
-    type: start
-    task:
-      id: 94cc3210-9c2d-4a3b-8959-b1f377dccbb0
-      version: -1
-      name: ""
-      iscommand: false
-      brand: ""
+  '0':
+    id: '0'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
-      - "5"
+      - '5'
+    note: false
+    quietmode: 0
     separatecontext: false
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 94cc3210-9c2d-4a3b-8959-b1f377dccbb0
+      iscommand: false
+      name: ''
+      version: -1
+      description: ''
+    taskid: 94cc3210-9c2d-4a3b-8959-b1f377dccbb0
+    timertriggers: []
+    type: start
     view: |-
       {
         "position": {
@@ -37,30 +43,17 @@ tasks:
           "y": -140
         }
       }
-    note: false
-    timertriggers: []
+  '1':
+    continueonerror: true
+    id: '1'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
     isautoswitchedtoquietmode: false
-  "1":
-    id: "1"
-    taskid: 3a524860-88b6-411d-82b8-dfc9ae5263d8
-    type: regular
-    task:
-      id: 3a524860-88b6-411d-82b8-dfc9ae5263d8
-      version: -1
-      name: Retrieve File From MDE Live Response
-      description: 'Collect a file from a device. NOTE: Backslashes in the path must
-        be escaped.'
-      script: '|||microsoft-atp-live-response-get-file'
-      type: regular
-      iscommand: true
-      brand: ""
+    isoversize: false
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
+    note: false
+    quietmode: 0
     scriptarguments:
       comment:
         simple: Retrieving file - XSOAR PB ${incident.id}
@@ -69,8 +62,19 @@ tasks:
       path:
         simple: ${inputs.paths}
     separatecontext: false
-    continueonerror: true
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: ''
+      description: 'Collect a file from a device. NOTE: Backslashes in the path must be escaped.'
+      id: 3a524860-88b6-411d-82b8-dfc9ae5263d8
+      iscommand: true
+      name: Retrieve File From MDE Live Response
+      script: '|||microsoft-atp-live-response-get-file'
+      type: regular
+      version: -1
+    taskid: 3a524860-88b6-411d-82b8-dfc9ae5263d8
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -78,26 +82,26 @@ tasks:
           "y": 185
         }
       }
-    note: false
-    timertriggers: []
+  '2':
+    id: '2'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
     isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
-    taskid: 8a7e0229-c76b-4de6-8166-2f693b1ff2c2
-    type: title
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
     task:
+      brand: ''
       id: 8a7e0229-c76b-4de6-8166-2f693b1ff2c2
-      version: -1
+      iscommand: false
       name: Done
       type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    continueonerrortype: ""
+      version: -1
+      description: ''
+    taskid: 8a7e0229-c76b-4de6-8166-2f693b1ff2c2
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
@@ -105,44 +109,34 @@ tasks:
           "y": 730
         }
       }
-    note: false
-    timertriggers: []
+  '3':
+    evidencedata:
+      customfields: {}
+      description:
+        simple: Retrieved Files
+    id: '3'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
     isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
-    taskid: e2ab0b64-e4e8-464c-848c-5e1e182224d0
-    type: regular
-    task:
-      id: e2ab0b64-e4e8-464c-848c-5e1e182224d0
-      version: -1
-      name: Unzip results
-      description: Unzips a file using file name or entry ID to specify a file. Unzipped
-        files are loaded to the War Room and names are put into the context.
-      scriptName: UnzipFile
-      type: regular
-      iscommand: false
-      brand: ""
+    isoversize: false
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
+    note: false
+    quietmode: 0
     scriptarguments:
       entryID:
         complex:
-          root: File
+          accessor: EntryID
           filters:
-          - - operator: containsString
+          - - ignorecase: true
               left:
+                iscontext: true
                 value:
                   simple: File.Extension
-                iscontext: true
+              operator: containsString
               right:
                 value:
                   simple: gz
-              ignorecase: true
           - - operator: containsString
               left:
                 value:
@@ -152,11 +146,23 @@ tasks:
                 value:
                   simple: Response Result
               ignorecase: true
-          accessor: EntryID
+          root: File
           transformers:
           - operator: LastArrayElement
     separatecontext: false
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Unzips a file using file name or entry ID to specify a file. Unzipped files are loaded to the War Room and names are put into the context.
+      id: e2ab0b64-e4e8-464c-848c-5e1e182224d0
+      iscommand: false
+      name: Unzip results
+      scriptName: UnzipFile
+      type: regular
+      version: -1
+    taskid: e2ab0b64-e4e8-464c-848c-5e1e182224d0
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
@@ -164,40 +170,33 @@ tasks:
           "y": 550
         }
       }
-    note: false
-    evidencedata:
-      description:
-        simple: Retrieved Files
-      customfields: {}
-    timertriggers: []
+  '4':
+    id: '4'
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
     isautoswitchedtoquietmode: false
-  "4":
-    id: "4"
-    taskid: 801e51fe-c520-4660-8dc9-65dc9d5b3721
-    type: condition
-    task:
-      id: 801e51fe-c520-4660-8dc9-65dc9d5b3721
-      version: -1
-      name: Any errors from the retrieval?
-      description: Checks whether specific entries returned an error. Use ${lastCompletedTaskEntries}
-        to check the previous task entries. If an array is provided, will return 'yes'
-        if one of the entries returned an error.
-      scriptName: isError
-      type: condition
-      iscommand: false
-      brand: ""
+    isoversize: false
     nexttasks:
-      "no":
-      - "3"
+      no:
+      - '3'
+    note: false
+    quietmode: 0
     scriptarguments:
       entryId:
         simple: ${lastCompletedTaskEntries}
     separatecontext: false
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Checks whether specific entries returned an error. Use ${lastCompletedTaskEntries} to check the previous task entries. If an array is provided, will return 'yes' if one of the entries returned an error.
+      id: 801e51fe-c520-4660-8dc9-65dc9d5b3721
+      iscommand: false
+      name: Any errors from the retrieval?
+      scriptName: isError
+      type: condition
+      version: -1
+    taskid: 801e51fe-c520-4660-8dc9-65dc9d5b3721
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -205,50 +204,49 @@ tasks:
           "y": 360
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
-    taskid: a682d3e4-e248-4b3e-8106-95fb3cb2d377
-    type: condition
-    task:
-      id: a682d3e4-e248-4b3e-8106-95fb3cb2d377
-      version: -1
-      name: File Path was provided?
-      description: Was file path provided?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "2"
-      "yes":
-      - "1"
-    separatecontext: false
+  '5':
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               simple: inputs.paths
-            iscontext: true
+          operator: isNotEmpty
           right:
             value: {}
-      - - operator: match
-          left:
+      - - left:
+            iscontext: true
             value:
               simple: inputs.paths
-            iscontext: true
+          operator: match
           right:
             value:
               simple: ^[a-zA-Z]:(\\[\w_\d-])*([\\]|[.]*[a-zA-Z0-9_-])*?$
-    continueonerrortype: ""
+      label: yes
+    id: '5'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '2'
+      yes:
+      - '1'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Was file path provided?
+      id: a682d3e4-e248-4b3e-8106-95fb3cb2d377
+      iscommand: false
+      name: File Path was provided?
+      type: condition
+      version: -1
+    taskid: a682d3e4-e248-4b3e-8106-95fb3cb2d377
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
@@ -256,14 +254,7 @@ tasks:
           "y": 10
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-system: true
+version: -1
 view: |-
   {
     "linkLabelsPosition": {},
@@ -276,10 +267,7 @@ view: |-
       }
     }
   }
-inputs:
-- key: paths
-  value: {}
-  required: false
-  description: The file paths to be provided.
-  playbookInputQuery: null
-outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
+system: true
