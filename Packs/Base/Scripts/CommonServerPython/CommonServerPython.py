@@ -9969,9 +9969,9 @@ def polling_function(name, interval=30, timeout=600, poll_message='Fetching Resu
         def inner(args, *arguments, **kwargs):
             """
             Args:
-                args (dict): command arguments.
-                *arguments: additional command arguments.
-                **kwargs: additional keyword arguments.
+                args (dict): command arguments (demisto.args()).
+                *arguments: any additional arguments to the command function.
+                **kwargs: additional keyword arguments to the command function.
             """
             if not requires_polling_arg or args.get(polling_arg_name):
                 ScheduledCommand.raise_error_if_not_supported()
