@@ -2402,17 +2402,17 @@ Creates static host set.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | host_set_name | The host set name. | Required | 
-| hosts_ids | The hosts ids to add to the host set. | Required | 
+| hosts_ids | The hosts IDs to add to the host set. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FireEyeHX.HostSets._id | String | The host set id | 
+| FireEyeHX.HostSets._id | String | The host set ID. | 
 | FireEyeHX.HostSets.url | String | URI to retrieve data for this record. | 
 | FireEyeHX.HostSets.name | String | The host set name. | 
-| FireEyeHX.HostSets._revision | String | Timestamp of last update. Used for preventing updates with obsolete data. If _revision in the request body does not match _revision in the databse, the update will fail. | 
+| FireEyeHX.HostSets._revision | String | Timestamp of last update. Used for preventing updates with obsolete data. If _revision in the request body does not match _revision in the database, the update will fail. | 
 | FireEyeHX.HostSets.deleted | Boolean | Was the host set deleted. | 
 
 #### Command example
@@ -2432,20 +2432,20 @@ Updates a static host set.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| host_set_id | The host set id. | Required | 
+| host_set_id | The host set ID. | Required | 
 | host_set_name | The host set name. | Required | 
-| add_host_ids | The host sets ids to add. | Optional | 
-| remove_host_ids | The host set ids to remove. | Optional | 
+| add_host_ids | The host sets IDs to add. | Optional | 
+| remove_host_ids | The host set IDs to remove. | Optional | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FireEyeHX.HostSets._id | String | The host set id. | 
+| FireEyeHX.HostSets._id | String | The host set ID. | 
 | FireEyeHX.HostSets.url | String | URI to retrieve data for this record. | 
 | FireEyeHX.HostSets.name | String | The host set name. | 
-| FireEyeHX.HostSets._revision | String | Timestamp of last update. Used for preventing updates with obsolete data. If _revision in the request body does not match _revision in the databse, the update will fail. | 
+| FireEyeHX.HostSets._revision | String | Timestamp of last update. Used for preventing updates with obsolete data. If _revision in the request body does not match _revision in the database, the update will fail. | 
 | FireEyeHX.HostSets.deleted | Boolean | Was the host set deleted. | 
 
 #### Command example
@@ -2476,10 +2476,10 @@ Creates dynamic host set.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FireEyeHX.HostSets._id | String | The host set id. | 
+| FireEyeHX.HostSets._id | String | The host set ID. | 
 | FireEyeHX.HostSets.url | String | URI to retrieve data for this record. | 
 | FireEyeHX.HostSets.name | String | The host set name. | 
-| FireEyeHX.HostSets._revision | String | Timestamp of last update. Used for preventing updates with obsolete data. If _revision in the request body does not match _revision in the databse, the update will fail. | 
+| FireEyeHX.HostSets._revision | String | Timestamp of last update. Used for preventing updates with obsolete data. If _revision in the request body does not match _revision in the database, the update will fail. | 
 | FireEyeHX.HostSets.deleted | Boolean | Was the host set deleted. | 
 
 #### Command example
@@ -2501,8 +2501,8 @@ Updates dynamic host set.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | host_set_name | The host set name. | Required | 
-| host_set_id | The host set id. | Required | 
-| query | free text query. Cannot be used with the other query arguments. | Optional | 
+| host_set_id | The host set ID. | Required | 
+| query | Free text query. Cannot be used with the other query arguments. | Optional | 
 | query_key | The query key. Must be provided with the query_value and query_operator. Possible values are: domain, product_name, patch_level, timezone, os_bitness, cloud_provider, app_version, hostname, server_time, gmt_offset_seconds, primary-ip_address, normalized_app_version, litmus_script_id, app_config_hash, platform. | Optional | 
 | query_value | The query value. Must be provided with the query_key and query_operator. | Optional | 
 | query_operator | The query operator. Must be provided with the query_value and query_key. Possible values are: eq, gt, lt, lte, gte, exists, cidr. | Optional | 
@@ -2512,10 +2512,10 @@ Updates dynamic host set.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FireEyeHX.HostSets._id | String | The host set id. | 
+| FireEyeHX.HostSets._id | String | The host set ID. | 
 | FireEyeHX.HostSets.url | String | URI to retrieve data for this record. | 
 | FireEyeHX.HostSets.name | String | The host set name. | 
-| FireEyeHX.HostSets._revision | String | Timestamp of last update. Used for preventing updates with obsolete data. If _revision in the request body does not match _revision in the databse, the update will fail. | 
+| FireEyeHX.HostSets._revision | String | Timestamp of last update. Used for preventing updates with obsolete data. If _revision in the request body does not match _revision in the database, the update will fail. | 
 | FireEyeHX.HostSets.deleted | Boolean | Was the host set deleted. | 
 
 #### Command example
@@ -2536,14 +2536,14 @@ Deletes a host set.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| host_set_id | The host set id. | Required | 
+| host_set_id | The host set ID. | Required | 
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FireEyeHX.HostSets._id | String | The host set id. | 
+| FireEyeHX.HostSets._id | String | The host set ID. | 
 | FireEyeHX.HostSets.deleted | Boolean | Was the host set deleted. | 
 
 #### Command example
