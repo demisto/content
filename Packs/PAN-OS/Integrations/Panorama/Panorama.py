@@ -678,7 +678,7 @@ def panorama_commit_command(args: dict):
             'Status': 'Success' if job_result == 'OK' else 'Failure'
         }
         return PollResult(
-            response=CommandResults(
+            response=CommandResults(  # this is what the response will be in case job has finished
                     outputs_prefix='Panorama.Commit',
                     outputs_key_field='JobID',
                     outputs=commit_output,
