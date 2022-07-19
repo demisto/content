@@ -108,15 +108,6 @@ create-instances:
     - cp "./Tests/conf.json" "$ARTIFACTS_FOLDER/conf.json"
     - section_end "Create Content Artifacts and Update Conf"
 
-    - section_start "Collect Tests and Content Packs"
-    - |
-      if [ -n "${INSTANCE_TESTS}" ]; then
-        echo "Skipping - not running in INSTANCE_TESTS build"
-      else
-        [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-        python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY --marketplace "xsoar" --service_account $GCS_MARKET_KEY
-      fi
-    - section_end "Collect Tests and Content Packs"
     - section_start "Collect Tests V2"
     - |
       if [ -n "${INSTANCE_TESTS}" ]; then
@@ -185,12 +176,6 @@ prepare-testing-bucket-mpv2:
     - rm -rf content_packs all_content content_new content_test
     - popd
     - section_end "Replace Cortex XSOAR"
-
-    - section_start "Collect Tests and Content Packs"
-    - |
-      [ -n "${NIGHTLY}" ] && IS_NIGHTLY=true || IS_NIGHTLY=false
-      python3 ./Tests/scripts/collect_tests_and_content_packs.py -n $IS_NIGHTLY --marketplace "marketplacev2" --service_account $GCS_MARKET_KEY
-    - section_end "Collect Tests and Content Packs"
 
     - section_start "Collect Tests V2"
     - |
