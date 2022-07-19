@@ -233,7 +233,7 @@ def test_crowdstrike_scan_command_polling_false(requests_mock):
       - Get a 404 result
     """
     requests_mock.post(BASE_URL + '/search/hashes', json=[])
-    response = crowdstrike_scan_command({"file": "filehash"}, client)
+    response = crowdstrike_scan_command({"file": "filehash", 'polling': 'false'}, client)
     assert len(response) == 1
     assert response[0].scheduled_command is None
     assert response[0].outputs == []

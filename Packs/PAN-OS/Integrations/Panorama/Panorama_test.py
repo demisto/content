@@ -1039,7 +1039,7 @@ class TestPanoramaCommitCommand:
 
     @pytest.mark.parametrize('args, expected_request_params, request_result, expected_demisto_result',
                              [pytest.param({'device-group': 'some_device', 'admin_name': 'some_admin_name',
-                                            'description': 'a simple commit'},
+                                            'description': 'a simple commit', 'polling': 'false'},
                                            {'action': 'partial',
                                             'cmd': '<commit><device-group><entry '
                                                    'name="some_device"/></device-group><partial><admin>'
@@ -1052,7 +1052,7 @@ class TestPanoramaCommitCommand:
                                                           reason=''),
                                            {'Description': "a simple commit", 'JobID': '19420', 'Status': 'Pending'},
                                            id='only admin changes commit'),
-                              pytest.param({'device-group': 'some_device', 'force_commit': 'true'},
+                              pytest.param({'device-group': 'some_device', 'force_commit': 'true', 'polling': 'false'},
                                            {'cmd': '<commit><device-group><entry name="some_device"/>'
                                                    '</device-group><force>''</force></commit>',
                                             'key': 'thisisabogusAPIKEY!',
@@ -1064,7 +1064,7 @@ class TestPanoramaCommitCommand:
                                            {'Description': '', 'JobID': '19420', 'Status': 'Pending'},
                                            id="force commit"),
                               pytest.param({'device-group': 'some_device',
-                                            'exclude_device_network_configuration': 'true'},
+                                            'exclude_device_network_configuration': 'true', 'polling': 'false'},
                                            {'action': 'partial',
                                             'cmd': '<commit><device-group><entry name="some_device"/></device-group>'
                                                    '<partial><device-and-network>excluded</'
@@ -1077,7 +1077,8 @@ class TestPanoramaCommitCommand:
                                                           reason=''),
                                            {'Description': '', 'JobID': '19420', 'Status': 'Pending'},
                                            id="device and network excluded"),
-                              pytest.param({'device-group': 'some_device', 'exclude_shared_objects': 'true'},
+                              pytest.param({'device-group': 'some_device',
+                                            'exclude_shared_objects': 'true', 'polling': 'false'},
                                            {'action': 'partial',
                                             'cmd': '<commit><device-group><entry name="some_device"/></device-group>'
                                                    '<partial><shared-object>excluded'
@@ -1090,7 +1091,7 @@ class TestPanoramaCommitCommand:
                                                           reason=''),
                                            {'Description': '', 'JobID': '19420', 'Status': 'Pending'},
                                            id="exclude shared objects"),
-                              pytest.param({'device-group': 'some_device'},
+                              pytest.param({'device-group': 'some_device', 'polling': 'false'},
                                            {'cmd': '<commit><device-group><entry name="some_device"/></device-group>'
                                                    '</commit>',
                                             'key': 'thisisabogusAPIKEY!',
