@@ -8,6 +8,8 @@ from typing import Dict, Any, Tuple
 requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+
 ''' CLIENT CLASS '''
 
 
@@ -16,44 +18,54 @@ class Client(BaseClient):
     Client will implement the service API, and should not contain any Demisto logic.
     Should only do requests and return data.
     """
-
-    # Sends request to API Endpoint URL using _http_request() method.
-    def http_request(self, method, url_suffix, data=None, headers=None, json_data=None, params=None, full_url=None,
-                     resp_type='response'):
-
-        return self._http_request(
-            method=method,
-            url_suffix=url_suffix,
-            data=data,
-            headers=headers,
-            resp_type=resp_type,
-            json_data=json_data,
-            params=params,
-            full_url=full_url
-        )
-
-    def test(self) -> dict:
-        return self.get_logs()[0]
-
     def get_logs(self, marker=None, since=None, until=None):
+        since = since.strftime(DATE_FORMAT)[:-4] + 'Z' if since else None
+        until = until.strftime(DATE_FORMAT)[:-4] + 'Z' if until else None
         query_params = assign_params(marker=marker, since=since, until=until)
 
-        raw_response = self.http_request(
+        raw_response = self._http_request(
             method='GET',
             url_suffix='logs',
             params=query_params,
-        ).json()
+        )
 
         events = raw_response.get('page', {}).get('items')
         marker = raw_response.get('page', {}).get('pageMarker')
 
         return raw_response, events, marker
 
+    def get_logs_fetch_events(self, last_run, limit, first_fetch):
+        marker = last_run.get('marker')
+        since = None
+        events = []
+        fetched_events_count = 0
+        if not marker and first_fetch:
+            since = first_fetch.strftime(DATE_FORMAT)[:-4] + 'Z'
+        query_params = assign_params(marker=marker, since=since)
+
+        while fetched_events_count < limit:
+            raw_response = self._http_request(
+                method='GET',
+                url_suffix='logs',
+                params=query_params,
+            )
+
+            events.append(raw_response.get('page', {}).get('items', []))
+            marker = raw_response.get('page', {}).get('pageMarker', marker)
+            query_params = {'marker': marker}
+            if len(events) < 1000:
+                break
+            fetched_events_count += len(events)
+
+        new_last_run = {'marker': marker}
+
+        return events, new_last_run
+
 
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client, limit, first_fetch) -> str:
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -66,15 +78,19 @@ def test_module(client: Client) -> str:
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
     """
+    if (limit % 1000 != 0) or (limit > 10000):
+        raise Exception(f'Limit parameter should be multiple of 1000 and not greater than 10,000.')
 
-    client.test()
+    client.get_logs(since=first_fetch)
     return 'ok'
 
 
-def fetch_events_command(client: Client, last_run: dict) -> CommandResults:
+def fetch_events_command(client: Client, first_fetch, last_run: dict, limit=1000) -> Tuple[list, dict]:
+    if (limit % 1000 != 0) or (limit > 10000):
+        raise Exception(f'Limit parameter should be multiple of 1000 and not greater than 10,000.')
 
-    result = client.get_logs(last_run)
-    return result
+    events, new_last_run = client.get_logs_fetch_events(last_run, limit, first_fetch)
+    return events, new_last_run
 
 
 def get_events_command(client: Client, args: Dict[str, Any]) -> Tuple[list, CommandResults]:
@@ -109,6 +125,8 @@ def main() -> None:
     base_url = urljoin(urljoin(params['url'], 'api/v1/tenants/'), demisto.params()['tenant_code'])
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
+    limit = arg_to_number(params.get('limit'))
+    first_fetch = arg_to_datetime(params.get('first_fetch'))
 
     demisto.debug(f'Command being called is {command}')
     try:
@@ -126,7 +144,7 @@ def main() -> None:
             ok_codes=(200, 201, 204))
 
         if command == 'test-module':
-            return_results(test_module(client))
+            return_results(test_module(client, limit, first_fetch))
 
         elif command in ('sta-get-events', 'fetch-events'):
 
@@ -136,14 +154,14 @@ def main() -> None:
 
             else:  # command == 'fetch-events':
                 last_run = demisto.getLastRun()
-                events, last_run = fetch_events_command(client, last_run)
+                events, last_run = fetch_events_command(client, first_fetch, last_run, limit)
                 demisto.setLastRun(last_run)
 
             if argToBoolean(args.get('should_push_events', 'true')):
                 send_events_to_xsiam(
                     events,
                     params.get('vendor', 'safenet'),
-                    params.get('product', 'safenet')
+                    params.get('product', 'trusted_access')
                 )
 
     # Log exceptions and return errors

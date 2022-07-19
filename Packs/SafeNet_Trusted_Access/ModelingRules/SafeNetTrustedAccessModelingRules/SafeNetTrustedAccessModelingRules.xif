@@ -1,0 +1,13 @@
+[MODEL: dataset="safenet_trusted_access_raw", model="Audit"]
+filter json_extract_scalar(details, "$.type") not in ("AUTHENTICATION")
+| alter
+    XDM.Audit.original_event_id = id,
+    XDM.Audit.event_timestamp = parse_timestamp("%Y-%m-%dT%H:%M:%S.%fZ", timeStamp),
+    XDM.Audit.TriggeredBy.ipv4 = json_extract_scalar(context, "$.originatingAddress"),
+    XDM.Audit.TriggeredBy.identity.name = json_extract_scalar(context, "$.principalId"),
+    XDM.Audit.original_event_type = json_extract_scalar(details, "$.type"),
+    XDM.Audit.original_event_description = json_extract_scalar(details, "$.description"),
+    XDM.Audit.operation_type = json_extract_scalar(details, "$.operationType"),
+    XDM.Audit.audited_resource.type = json_extract_scalar(details, "$.operationObjectType"),
+    XDM.Audit.audited_resource.name = json_extract_scalar(details, "$.operationObjectName");
+

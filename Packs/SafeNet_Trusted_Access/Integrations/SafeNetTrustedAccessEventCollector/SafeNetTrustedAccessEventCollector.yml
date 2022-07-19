@@ -20,7 +20,7 @@ configuration:
   type: 9
   required: true
   hiddenusername: true
-- defaultvalue: safenet
+- defaultvalue: trusted_access
   display: The product name corresponding to the integration that originated the events
   name: product
   required: false
@@ -30,11 +30,11 @@ configuration:
   name: vendor
   required: false
   type: 0
-- display: The maximum number of audit logs to fetch
+- display: The maximum number of audit logs to fetch. Valid limit is multiples of 1000 and less than 10,000.
   name: limit
   type: 0
   defaultvalue: 1000
-  required: false
+  required: true
 - display: First fetch timestamp
   name: first_fetch
   type: 0
