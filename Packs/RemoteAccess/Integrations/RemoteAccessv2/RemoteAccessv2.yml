@@ -72,7 +72,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Port to run the command on. Argument "port" is supported only when providing "host" argument.
+      description: Port to run the command on.
       isArray: false
       name: port
       required: false
@@ -149,7 +149,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Port to run the command on. Argument "port" is supported only when providing "host" argument.
+      description: Port to run the command on.
       isArray: false
       name: port
       required: false
@@ -206,7 +206,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Port to run the command on. Argument "port" is supported only when providing "host" argument.
+      description: Port to run the command on.
       isArray: false
       name: port
       required: false

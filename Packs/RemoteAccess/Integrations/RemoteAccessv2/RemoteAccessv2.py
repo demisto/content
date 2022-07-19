@@ -130,43 +130,40 @@ def create_paramiko_ssh_client(
     return client
 
 
-def find_systems(args: Dict[str, Any]):
-    given_systems = argToList(args.get('system'))
-    if not given_systems:
-        return ''
-
+def find_nonexistent_systems(given_systems: List[str], given_hosts: List[str]):
     investigation = demisto.investigation()
     systems = investigation.get('systems')
-    demisto.debug(f'Available systems are {systems}.')
+    investigation_id = investigation.get('id')
+    demisto.debug(f'Available systems on investigation {investigation_id} are {systems}.')
+    if not systems:
+        return None
+
     systems_names = [system_properties.get('name') for system_properties in systems]
-    systems_hosts = [system_properties.get('host') for system_properties in systems]
-
+    not_found_systems = []
     for given_system in given_systems:
-        if not systems or (given_system not in systems_names and given_system not in systems_hosts):
-            demisto.info(f'System {given_system} not found on investigation {investigation.get("id")}. '
-                         f'Available systems by name are {systems_names}, and by host are {systems_hosts}.')
+        if given_system not in systems_names:
+            not_found_systems.append(given_system)
 
-    return given_systems
+    systems_hosts = [system_properties.get('host') for system_properties in systems]
+    not_found_hosts = []
+    for given_host in given_hosts:
+        if given_host not in systems_hosts:
+            not_found_hosts.append(given_host)
+
+    if not not_found_hosts and not not_found_systems:
+        return None
+
+    return f'{f"Systems {not_found_systems}" if not_found_systems else ""}' \
+           f'{" and " if not_found_systems and not_found_hosts else ""}' \
+           f'{f"Hosts {not_found_hosts}" if not_found_hosts else ""} ' \
+           f'not found on investigation {investigation_id}. ' \
+           f'Available systems by name are {systems_names}, and by host are {systems_hosts}.'
 
 
 def create_clients(host_name: str, user: str, password: str, ciphers: Set[str], key_algorithms: Set[str], certificate: str,
-                   args: Dict[str, Any]) -> List[SSHClient]:
-    clients = []
-
-    if systems := find_systems(args):
-        for system in systems:
-            client = create_paramiko_ssh_client(system, user, password, ciphers, key_algorithms, certificate)
-            clients.append(client)
-
-    hosts = argToList(args.get('host'))
-    port = args.get('port')
-    if port and not hosts:
-        raise DemistoException('Argument "port" is supported only when providing "host" argument.')
-    if hosts:
-        for host in hosts:
-            client = create_paramiko_ssh_client(host, user, password, ciphers, key_algorithms, certificate,
-                                                port=port or DEFAULT_PORT)
-            clients.append(client)
+                   systems: List[str], hosts: List[str], port: int = DEFAULT_PORT) -> List[SSHClient]:
+    clients = [create_paramiko_ssh_client(system, user, password, ciphers, key_algorithms, certificate, port)
+               for system in systems + hosts]
 
     if not clients and host_name:
         client = create_paramiko_ssh_client(host_name, user, password, ciphers, key_algorithms, certificate)
@@ -313,9 +310,15 @@ def main() -> None:
             raise DemistoException('Additional password to use the module have been supplied.\n'
                                    'Please supply "additional_password" argument that matches the "Additional Password"'
                                    ' parameter value.')
+
+    systems = argToList(args.get('system'))
+    hosts = argToList(args.get('host'))
+    port = args.get('port') or DEFAULT_PORT
+
     clients = []
     try:
-        clients = create_clients(host_name, user, password, ciphers, key_algorithms, certificate, args)
+        nonexistent_systems_result = find_nonexistent_systems(systems, hosts)
+        clients = create_clients(host_name, user, password, ciphers, key_algorithms, certificate, systems, hosts, port)
 
         commands = {
             'ssh': execute_shell_command,
@@ -336,16 +339,18 @@ def main() -> None:
                     results.append(future.result())
 
             return_results(results)
+            if nonexistent_systems_result:
+                return_error(nonexistent_systems_result)
 
         else:
             raise NotImplementedError(f'''Command '{command}' is not implemented.''')
-        close_clients(clients)
 
     # Log exceptions and return errors
     except Exception as e:
-        if clients:
-            close_clients(clients)
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+
+    finally:
+        close_clients(clients)
 
 
 ''' ENTRY POINT '''
