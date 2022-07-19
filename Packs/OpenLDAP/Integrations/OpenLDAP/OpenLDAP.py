@@ -7,7 +7,7 @@ from ldap3 import Server, Connection, Tls, BASE
 from ldap3.utils.dn import parse_dn
 from ldap3.core.exceptions import LDAPBindError, LDAPInvalidDnError, LDAPSocketOpenError, LDAPInvalidPortError
 from ssl import CERT_REQUIRED
-from typing import Tuple
+from typing import Tuple, List
 
 ''' OpenLDAP CLIENT '''
 
@@ -28,6 +28,7 @@ class LdapClient:
     SUPPORTED_BUILD_NUMBER = 57352  # required server build number
 
     def __init__(self, kwargs):
+        self._ldap_server_type = kwargs.get('ldap_server_type', 'OpenLDAP')  # OpenLDAP or Active Directory
         self._host = kwargs.get('host')
         self._port = int(kwargs.get('port')) if kwargs.get('port') else None
         self._username = kwargs.get('credentials', {}).get('identifier', '')
@@ -44,6 +45,8 @@ class LdapClient:
         self._user_filter_class = kwargs.get('user_filter_class', 'posixAccount')
         self._user_identifier_attribute = kwargs.get('user_identifier_attribute', 'uid')
         self._custom_attributes = kwargs.get('custom_attributes', '')
+        # TODO: need to check if we can change the instance configuration params according to the selected server type.
+        # TODO: if not - worth adding explanation to the descriptions of the params that are relevant only to OpenLDAP.
 
     @property
     def GROUPS_OBJECT_CLASS(self):
@@ -121,6 +124,28 @@ class LdapClient:
                 for ldap_group in ldap_group_entries]
 
     @staticmethod
+    def _parse_ldap_group_entries_and_referrals(ldap_group_entries: List[dict]) -> Tuple[List[str], List[dict]]:
+        """
+            Returns parsed ldap groups entries and referrals.
+        """
+        referrals = []
+        entries = []
+
+        for ldap_group in ldap_group_entries:
+            if ldap_group_type := ldap_group.get('type'):
+                if ldap_group_type == 'searchResRef':  # a referral
+                    referrals.extend(ldap_group.get('uri'))
+
+                elif ldap_group_type == 'searchResEntry':  # an entry
+                    entries.append(
+                        {'DN': ldap_group.get('dn'),
+                         'Attributes': [{'Name': LdapClient.GROUPS_TOKEN,
+                                         'Values': [str(ldap_group.get('attributes', {}).get(LdapClient.GROUPS_TOKEN))]}
+                                        ]
+                         })
+        return referrals, entries
+
+    @staticmethod
     def _parse_ldap_users_groups_entries(ldap_group_entries: List[dict]) -> List[Optional[Any]]:
         """
             Returns parsed user's group entries.
@@ -128,7 +153,8 @@ class LdapClient:
         return [ldap_group.get('dn') for ldap_group in ldap_group_entries]
 
     @staticmethod
-    def _build_entry_for_user(user_groups: str, user_data: dict, mail_attribute: str, name_attribute: str) -> dict:
+    def _build_entry_for_user(user_groups: str, user_data: dict,
+                              mail_attribute: str, name_attribute: str, phone_attribute: str) -> dict:
         """
             Returns entry for specific ldap user.
         """
@@ -140,6 +166,8 @@ class LdapClient:
             attributes.append({'Name': name_attribute, 'Values': [user_data['name']]})
         if 'email' in user_data:
             attributes.append({'Name': mail_attribute, 'Values': [user_data['email']]})
+        if 'mobile' in user_data:
+            attributes.append({'Name': phone_attribute, 'Values': [user_data['mobile']]})
 
         return {
             'DN': user_data['dn'],
@@ -169,17 +197,39 @@ class LdapClient:
             Fetches all ldap groups under given base DN.
         """
         with Connection(self._ldap_server, self._username, self._password) as ldap_conn:
-            search_filter = f'(objectClass={self.GROUPS_OBJECT_CLASS})'
-            ldap_group_entries = ldap_conn.extend.standard.paged_search(search_base=self._base_dn,
-                                                                        search_filter=search_filter,
-                                                                        attributes=[self.GROUPS_IDENTIFIER_ATTRIBUTE],
-                                                                        paged_size=self._page_size)
+            if self._ldap_server_type == 'Active Directory':
+                search_filter = '(&(objectClass=group)(objectCategory=group))'
+                ldap_group_entries = ldap_conn.extend.standard.paged_search(search_base=self._base_dn,
+                                                                            search_filter=search_filter,
+                                                                            attributes=[LdapClient.GROUPS_TOKEN],
+                                                                            paged_size=self._page_size)
 
-            return {
-                'Controls': None,
-                'Referrals': ldap_conn.result.get('referrals'),
-                'Entries': LdapClient._parse_ldap_group_entries(ldap_group_entries, self.GROUPS_IDENTIFIER_ATTRIBUTE)
-            }
+                referrals, entries = LdapClient._parse_ldap_group_entries_and_referrals(ldap_group_entries)
+
+                # Reverse the lists to conform Active Directory Authentication integration's output:
+                referrals.reverse()
+                entries.reverse()
+
+                return {
+                    'Controls': None,
+                    'Referrals': referrals,
+                    'Entries': entries
+                }
+
+            else:  # ldap server is OpenLDAP
+                search_filter = f'(objectClass={self.GROUPS_OBJECT_CLASS})'
+                ldap_group_entries = ldap_conn.extend.standard.paged_search(search_base=self._base_dn,
+                                                                            search_filter=search_filter,
+                                                                            attributes=[
+                                                                                self.GROUPS_IDENTIFIER_ATTRIBUTE],
+                                                                            paged_size=self._page_size)
+
+                return {
+                    'Controls': None,
+                    'Referrals': ldap_conn.result.get('referrals'),
+                    'Entries': LdapClient._parse_ldap_group_entries(ldap_group_entries,
+                                                                    self.GROUPS_IDENTIFIER_ATTRIBUTE)
+                }
 
     def _get_formatted_custom_attributes(self) -> str:
         """
@@ -204,24 +254,62 @@ class LdapClient:
         """
         dn_list = [group.strip() for group in argToList(specific_groups, separator="#")]
         with Connection(self._ldap_server, self._username, self._password) as ldap_conn:
-            parsed_ldap_entries = []
+            if self._ldap_server_type == 'Active Directory':
+                dns_filter = ''
+                for dn in dn_list:
+                    dns_filter += f'(distinguishedName={dn})'
+                search_filter = f'(&(objectClass=group)(objectCategory=group)(|{dns_filter}))'
 
-            for dn in dn_list:
-                search_filter = f'(objectClass={self.GROUPS_OBJECT_CLASS})'
-                ldap_group_entries = ldap_conn.extend.standard.paged_search(search_base=dn,
+                ldap_group_entries = ldap_conn.extend.standard.paged_search(search_base=self._base_dn,
                                                                             search_filter=search_filter,
-                                                                            attributes=[
-                                                                                self.GROUPS_IDENTIFIER_ATTRIBUTE],
-                                                                            paged_size=self._page_size,
-                                                                            search_scope=BASE)
-                parsed_ldap_entries.append(
-                    self._parse_ldap_group_entries(ldap_group_entries, self.GROUPS_IDENTIFIER_ATTRIBUTE))
+                                                                            attributes=[LdapClient.GROUPS_TOKEN],
+                                                                            paged_size=self._page_size)
 
-            return {
-                'Controls': None,
-                'Referrals': ldap_conn.result.get('referrals'),
-                'Entries': parsed_ldap_entries
-            }
+                referrals, entries = LdapClient._parse_ldap_group_entries_and_referrals(ldap_group_entries)
+
+                # Reverse the lists to conform Active Directory Authentication integration's output:
+                referrals.reverse()
+                entries.reverse()
+
+                return {
+                    'Controls': None,
+                    'Referrals': referrals,
+                    'Entries': entries
+                }
+
+            else:  # ldap server is OpenLDAP
+
+                parsed_ldap_entries = []
+
+                for dn in dn_list:
+                    search_filter = f'(objectClass={self.GROUPS_OBJECT_CLASS})'
+                    ldap_group_entries = ldap_conn.extend.standard.paged_search(search_base=dn,
+                                                                                search_filter=search_filter,
+                                                                                attributes=[
+                                                                                    self.GROUPS_IDENTIFIER_ATTRIBUTE],
+                                                                                paged_size=self._page_size,
+                                                                                search_scope=BASE)
+                    parsed_ldap_entries.append(
+                        self._parse_ldap_group_entries(ldap_group_entries, self.GROUPS_IDENTIFIER_ATTRIBUTE))
+
+                return {
+                    'Controls': None,
+                    'Referrals': ldap_conn.result.get('referrals'),
+                    'Entries': parsed_ldap_entries
+                }
+
+    @staticmethod
+    def _get_ad_username(username: str) -> str:
+        """
+            Returns the Active Directory username for XSOAR.
+        """
+        x_username = username
+        if '\\' in username:
+            x_username = username.split('\\')[1]
+        elif '@' in username:
+            x_username = username.split('@')[0]
+
+        return x_username
 
     def get_ldap_groups(self, specific_group: str = '') -> dict:
         """
@@ -234,7 +322,7 @@ class LdapClient:
 
         searched_results = self._fetch_specific_groups(
             specific_group) if not self._fetch_groups else self._fetch_all_groups()
-        demisto.info(f'Retrieved {len(searched_results["Entries"])} groups from OpenLDAP {instance_name}')
+        demisto.info(f'Retrieved {len(searched_results["Entries"])} groups from LDAP Authentication {instance_name}')
 
         return searched_results
 
@@ -248,10 +336,12 @@ class LdapClient:
             ldap_conn.unbind()
             return "Done"
         else:
-            raise Exception("OpenLDAP authentication connection failed")
+            raise Exception(f"LDAP Authentication - authentication connection failed,"
+                            f" server type is: {self._ldap_server_type}")
 
-    def get_user_data(self, username: str, pull_name: bool, pull_mail: bool,
-                      name_attribute: str, mail_attribute: str, search_user_by_dn: bool = False) -> dict:
+    def get_user_data(self, username: str, pull_name: bool, pull_mail: bool, pull_phone: bool,
+                      name_attribute: str, mail_attribute: str, phone_attribute: str,
+                      search_user_by_dn: bool = False) -> dict:
         """
             Returns data for given ldap user.
         """
@@ -262,6 +352,8 @@ class LdapClient:
                 attributes.append(name_attribute)
             if pull_mail:
                 attributes.append(mail_attribute)
+            if pull_phone:
+                attributes.append(phone_attribute)
 
             if search_user_by_dn:
                 search_filter = f'(&(objectClass={self.USER_OBJECT_CLASS})' +\
@@ -276,12 +368,12 @@ class LdapClient:
                                  attributes=attributes)
 
             if not ldap_conn.entries:
-                raise Exception("OpenLDAP user not found")
+                raise Exception("LDAP Authentication - OpenLDAP user not found")
             entry = ldap_conn.entries[0]
 
             if self.GROUPS_IDENTIFIER_ATTRIBUTE not in entry \
                     or not entry[self.GROUPS_IDENTIFIER_ATTRIBUTE].value:
-                raise Exception(f"OpenLDAP user's {self.GROUPS_IDENTIFIER_ATTRIBUTE} not found")
+                raise Exception(f"LDAP Authentication - OpenLDAP user's {self.GROUPS_IDENTIFIER_ATTRIBUTE} not found")
 
             user_data = {'dn': entry.entry_dn, 'gid_number': [str(entry[self.GROUPS_IDENTIFIER_ATTRIBUTE].value)],
                          'referrals': ldap_conn.result.get('referrals')}
@@ -290,6 +382,8 @@ class LdapClient:
                 user_data['name'] = ldap_conn.entries[0][name_attribute].value
             if mail_attribute in entry and entry[mail_attribute].value:
                 user_data['email'] = ldap_conn.entries[0][mail_attribute].value
+            if phone_attribute in entry and entry[phone_attribute].value:
+                user_data['mobile'] = ldap_conn.entries[0][phone_attribute].value
 
             return user_data
 
@@ -307,15 +401,16 @@ class LdapClient:
                                                                         paged_size=self._page_size)
             return LdapClient._parse_ldap_users_groups_entries(ldap_group_entries)
 
-    def authenticate_and_roles(self, username: str, password: str, pull_name: bool = True, pull_mail: bool = True,
-                               mail_attribute: str = 'mail', name_attribute: str = 'name') -> dict:
+    def authenticate_and_roles_openldap(self, username: str, password: str, pull_name: bool = True,
+                                        pull_mail: bool = True, pull_phone: bool = False, mail_attribute: str = 'mail',
+                                        name_attribute: str = 'name', phone_attribute: str = 'mobile') -> dict:
         """
-            Implements authenticate and roles command.
+            Implements authenticate and roles command for OpenLDAP.
         """
         search_user_by_dn, user_identifier = LdapClient._is_valid_dn(username, self.USER_IDENTIFIER_ATTRIBUTE)
         user_data = self.get_user_data(username=username, search_user_by_dn=search_user_by_dn, pull_name=pull_name,
-                                       pull_mail=pull_mail, mail_attribute=mail_attribute,
-                                       name_attribute=name_attribute)
+                                       pull_mail=pull_mail, pull_phone=pull_phone, mail_attribute=mail_attribute,
+                                       name_attribute=name_attribute, phone_attribute=phone_attribute)
         self.authenticate_ldap_user(user_data['dn'], password)
         user_groups = self.get_user_groups(user_identifier)
 
@@ -323,8 +418,82 @@ class LdapClient:
             'Controls': None,
             'Referrals': user_data['referrals'],
             'Entries': [LdapClient._build_entry_for_user(user_groups=user_groups, user_data=user_data,
-                                                         mail_attribute=mail_attribute, name_attribute=name_attribute)]
+                                                         mail_attribute=mail_attribute, name_attribute=name_attribute,
+                                                         phone_attribute=phone_attribute)]
         }
+
+    def authenticate_and_roles_active_directory(self, username: str, password: str, pull_name: bool = True,
+                                                pull_mail: bool = True, pull_phone: bool = False,
+                                                mail_attribute: str = 'mail', name_attribute: str = 'name',
+                                                phone_attribute: str = 'mobile') -> dict:
+        """
+            Implements authenticate and roles command for Active Directory.
+        """
+        referrals = []
+        entries = []
+
+        xsoar_username = self._get_ad_username(username)
+        with Connection(self._ldap_server, self._username, self._password) as ldap_conn:
+            attributes = [self.GROUPS_MEMBER, self.GROUPS_PRIMARY_ID]
+            if pull_name:
+                attributes.append(name_attribute)
+            if pull_mail:
+                attributes.append(mail_attribute)
+            if pull_phone:
+                attributes.append(phone_attribute)
+
+            search_filter = f'(|(sAMAccountName={xsoar_username})(userPrincipalName={username}))'
+            ldap_conn_entries = ldap_conn.extend.standard.paged_search(search_base=self._base_dn,
+                                                                       search_filter=search_filter,
+                                                                       attributes=attributes,
+                                                                       paged_size=self._page_size,
+                                                                       generator=False)
+            if not ldap_conn_entries:
+                raise Exception("LDAP Authentication - LDAP user not found")
+
+            for entry in ldap_conn_entries:
+                if entry_type := entry.get('type'):
+                    if entry_type == 'searchResRef':  # a referral
+                        referrals.extend(entry.get('uri'))
+
+                    elif entry_type == 'searchResEntry':  # an entry
+                        entry_dn = entry.get('dn')
+                        entry_attributes = entry.get('attributes')
+                        relevant_entry_attributes = []
+                        for attr in entry_attributes:
+                            if attr_value := entry_attributes.get(attr):
+                                if not isinstance(attr_value, list):
+                                    attr_value = [str(attr_value)]
+                                relevant_entry_attributes.append({'Name': attr, 'Values': attr_value})
+
+                        entries.append({'DN': entry_dn, 'Attributes': relevant_entry_attributes})
+                        self.authenticate_ldap_user(entry_dn, password)
+
+        return {
+            'Controls': None,
+            'Referrals': referrals,
+            'Entries': entries
+        }
+
+    def authenticate_and_roles(self, username: str, password: str, pull_name: bool = True, pull_mail: bool = True,
+                               pull_phone: bool = False, mail_attribute: str = 'mail', name_attribute: str = 'name',
+                               phone_attribute: str = 'mobile') -> dict:
+        """
+            Implements authenticate and roles command.
+        """
+        # TODO: need to better understand what is the different between AD usernames and OpenLDAP usernames.
+        #  is it possible to use DN as a username in AD?
+        if self._ldap_server_type == 'Active Directory':
+            return self.authenticate_and_roles_active_directory(username=username, password=password,
+                                                                pull_name=pull_name, pull_mail=pull_mail,
+                                                                pull_phone=pull_phone, mail_attribute=mail_attribute,
+                                                                name_attribute=name_attribute,
+                                                                phone_attribute=phone_attribute)
+        else:  # ldap server is OpenLDAP
+            return self.authenticate_and_roles_openldap(username=username, password=password,
+                                                        pull_name=pull_name, pull_mail=pull_mail, pull_phone=pull_phone,
+                                                        mail_attribute=mail_attribute, name_attribute=name_attribute,
+                                                        phone_attribute=phone_attribute)
 
     def test_module(self):
         """
@@ -351,9 +520,9 @@ def main():
     command = demisto.command()
     args = demisto.args()
 
-    LOG(f'Command being called is {command}')
+    demisto.info(f'Command being called is {command}')
     try:
-        # initialized OpenLDAP client
+        # initialized LDAP Authentication client
         client = LdapClient(params)
 
         if command == 'test-module':
@@ -362,32 +531,39 @@ def main():
             username = args.get('username')
             password = args.get('password')
             authentication_result = client.authenticate_ldap_user(username, password)
+            demisto.info(f'ad-authenticate command - authentication result: {authentication_result}')
             demisto.results(authentication_result)
         elif command == 'ad-groups':
             specific_group = args.get('specific-groups')
             searched_results = client.get_ldap_groups(specific_group)
+            demisto.info(f'ad-groups command - searched results: {searched_results}')
             demisto.results(searched_results)
         elif command == 'ad-authenticate-and-roles':
             username = args.get('username')
             password = args.get('password')
             mail_attribute = args.get('attribute-mail', 'mail')
             name_attribute = args.get('attribute-name', 'name')
+            phone_attribute = args.get('attribute-phone', 'mobile')
             pull_name = argToBoolean(args.get('attribute-name-pull', True))
             pull_mail = argToBoolean(args.get('attribute-mail-pull', True))
+            pull_phone = argToBoolean(args.get('attribute-phone-pull', False))
             entry_result = client.authenticate_and_roles(username=username, password=password, pull_name=pull_name,
-                                                         pull_mail=pull_mail, mail_attribute=mail_attribute,
-                                                         name_attribute=name_attribute)
+                                                         pull_mail=pull_mail, pull_phone=pull_phone,
+                                                         mail_attribute=mail_attribute, name_attribute=name_attribute,
+                                                         phone_attribute=phone_attribute)
+            demisto.info(f'ad-authenticate-and-roles command - entry results: {entry_result}')
             demisto.results(entry_result)
 
     # Log exceptions
     except Exception as e:
         msg = str(e)
         if isinstance(e, LDAPBindError):
-            msg = f'OpenLDAP authentication connection failed. Additional details: {msg}'
+            msg = f'LDAP Authentication - authentication connection failed. Additional details: {msg}'
         elif isinstance(e, LDAPSocketOpenError):
-            msg = f'Failed to connect to OpenLDAP server. Additional details: {msg}'
+            msg = f'LDAP Authentication - Failed to connect to LDAP server. Additional details: {msg}'
         elif isinstance(e, LDAPInvalidPortError):
-            msg = 'Not valid ldap server input. Check that server input is of form: ip or ldap://ip'
+            msg = 'LDAP Authentication - Not valid ldap server input.' \
+                  ' Check that server input is of form: ip or ldap://ip'
         return_error(str(msg))
 
 

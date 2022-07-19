@@ -1,6 +1,6 @@
 {
-    "name": "OpenLDAP",
-    "description": "Authenticate using Open LDAP",
+    "name": "LDAP Authentication",
+    "description": "Authenticate using Open LDAP or Active Directory",
     "support": "xsoar",
     "currentVersion": "1.0.8",
     "author": "Cortex XSOAR",
@@ -12,7 +12,10 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "OpenLDAP",
+        "Active Directory Authentication"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
