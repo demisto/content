@@ -40,7 +40,7 @@ ENTITIES_RETENTION_PERIOD_MESSAGE = '\nNotice that in the current Azure Sentinel
 
 DEFAULT_LIMIT = 50
 
-DEFAULT_SOURCE = 'Azure Sentinel'
+DEFAULT_SOURCE = 'Microsoft Sentinel'
 
 THREAT_INDICATORS_HEADERS = ['Name', 'DisplayName', 'Values', 'Types', 'Source', 'Confidence', 'Tags']
 
