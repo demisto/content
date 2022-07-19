@@ -1207,7 +1207,6 @@ def query_threat_indicators_command(client, args):
     threat_indicators = []
 
     if result.get('value') is not None:
-        print("girue")
         threat_indicators = [threat_indicators_data_to_xsoar_format(ind) for ind in result.get('value')]
         num_of_threat_indicators = len(threat_indicators)
 
