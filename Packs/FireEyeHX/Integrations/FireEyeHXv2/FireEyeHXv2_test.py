@@ -1706,7 +1706,9 @@ def test_create_static_host_set_command(mocker):
             'hosts_ids': 'hosts_ids'}
 
     mocker.patch.object(Client, 'get_token_request', return_value='')
-    mocker.patch.object(Client, 'create_static_host_set_request', return_value={'data': {'_id': 'host_set_id'}})
+    mocker.patch.object(Client, 'create_static_host_set_request', return_value={'data':
+                                                                                 {'_id': 'host_set_id',
+                                                                                  '_revision': '20220719071022107807465576'}})
 
     client = Client(base_url)
     command_result = create_static_host_set_command(client, args)
@@ -1730,7 +1732,9 @@ def test_create_dynamic_host_set_command(mocker):
             'query': 'query'}
 
     mocker.patch.object(Client, 'get_token_request', return_value='')
-    mocker.patch.object(Client, 'create_dynamic_host_set_request', return_value={'data': {'_id': 'host_set_id'}})
+    mocker.patch.object(Client, 'create_dynamic_host_set_request', return_value={'data':
+                                                                                 {'_id': 'host_set_id',
+                                                                                  '_revision': '20220719071022107807465576'}})
 
     client = Client(base_url)
     command_result = create_dynamic_host_set_command(client, args)
@@ -1785,7 +1789,9 @@ def test_update_static_host_set_command(mocker):
     }
 
     mocker.patch.object(Client, 'get_token_request', return_value='')
-    mocker.patch.object(Client, 'update_static_host_set_request', return_value={'data': {'_id': 'host_set_id'}})
+    mocker.patch.object(Client, 'update_static_host_set_request', return_value={'data':
+                                                                                 {'_id': 'host_set_id',
+                                                                                  '_revision': '20220719071022107807465576'}})
 
     client = Client(base_url)
     command_result = update_static_host_set_command(client, args)
@@ -1810,7 +1816,9 @@ def test_update_dynamic_host_set_command(mocker):
             'query': 'query'}
 
     mocker.patch.object(Client, 'get_token_request', return_value='')
-    mocker.patch.object(Client, 'update_dynamic_host_set_request', return_value={'data': {'_id': 'host_set_id'}})
+    mocker.patch.object(Client, 'update_dynamic_host_set_request', return_value={'data':
+                                                                                 {'_id': 'host_set_id',
+                                                                                  '_revision': '20220719071022107807465576'}})
 
     client = Client(base_url)
     command_result = update_dynamic_host_set_command(client, args)
