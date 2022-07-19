@@ -1203,7 +1203,7 @@ class TestPanoramaCommitCommand:
 
         command_result = panorama_commit_command(polling_args)
         while command_result.scheduled_command:  # if scheduled_command is set, it means that command should still poll
-            assert not command_result.readable_output  # make sure that indication of polling is printed only one
+            assert not command_result.readable_output  # make sure that indication of polling is printed only once
             assert not command_result.outputs  # make sure no context output is being returned to war-room during polling
             command_result = panorama_commit_command(polling_args)
 
