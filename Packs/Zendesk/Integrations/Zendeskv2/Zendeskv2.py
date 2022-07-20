@@ -1,3 +1,4 @@
+from ast import arg
 from copy import copy
 from functools import lru_cache
 from urllib.parse import urlencode
@@ -61,18 +62,17 @@ class CacheManager:
         if self._data:
             demisto.setIntegrationContext(self._data)
 
-    def replace_ids_change(self, obj, organization_fields: Optional[List[str]] = [], user_fields: Optional[List[str]] = []):
+    def replace_ids_change(self, data, organization_fields: Optional[List[str]] = [], user_fields: Optional[List[str]] = []):
         for fields, get_func in [(organization_fields, self.organization), (user_fields, self.user)]:
             for field in fields:
-                obj_id = obj.get(field)
+                obj_id = data.get(field)
                 if obj_id:
                     field = field.replace('_id', '')
                     if isinstance(obj_id, List):
-                        obj = list(map(get_func, obj_id))
+                        data[field] = list(map(get_func, obj_id))
                     else:
-                        obj = get_func(obj_id)
-                    obj[field] = obj
-        return obj
+                        data[field] = get_func(obj_id)
+        return data
 
     @property
     def data(self):
@@ -110,10 +110,8 @@ class CacheManager:
             user_email = data_get(obj_id)[val_field] or obj_id
             self.data[data_type][obj_id] = user_email
             return user_email
-        except:  # noqa
-            pass
-
-        return obj_id
+        except:  # noqa # lgtm[py/]
+            return obj_id
 
 
 def datetime_to_iso(date: datetime) -> str:
@@ -153,6 +151,14 @@ def prepare_kwargs(kwargs: Dict[str, Any], ignore_args: Optional[Union[str, List
             return_kwargs[arg] = json.loads(kwargs[arg])
 
     return return_kwargs
+
+
+def error_entry(error_msg: str) -> Dict[str, Any]:
+    return {
+        'Type': EntryType.ERROR,
+        'ContentsFormat': EntryFormat.TEXT,
+        'Contents': error_msg,
+    }
 
 
 class Validators:
@@ -273,7 +279,7 @@ class ZendeskClient(BaseClient):
     # ---- user releated functions ---- #
 
     @staticmethod
-    def _return_results_zendesk_users(users: List[Dict]):
+    def _command_results_zendesk_users(users: List[Dict]):
         role_types_reverse = {int_k: str_k for str_k, int_k in ROLE_TYPES.items()}
 
         def _iter_context(user):
@@ -286,8 +292,8 @@ class ZendeskClient(BaseClient):
         context = list(map(_iter_context, users))
         readable_outputs = tableToMarkdown(name='Zendek users:', t=context, headers=USERS_HEADERS,
                                            headerTransform=lambda x: x.replace('_', ' '))
-        return_results(CommandResults(outputs_prefix=USER_CONTEXT_PATH, outputs=context,
-                       readable_output=readable_outputs, raw_response=raw_results))
+        return CommandResults(outputs_prefix=USER_CONTEXT_PATH, outputs=context,
+                              readable_output=readable_outputs, raw_response=raw_results)
 
     def _get_user_by_id(self, user_id: str):
         return self._http_request('GET', f'users/{user_id}')['user']
@@ -317,13 +323,10 @@ class ZendeskClient(BaseClient):
                 params['role'] = role
             users_list = list(self._paged_request('users', 'users', params=params, **kwargs))
 
-        if users_list:
-            self._return_results_zendesk_users(users_list)
+        results = self._command_results_zendesk_users(users_list) if users_list else 'No outputs.'
         if error_msgs:
-            return_error('\n'.join(error_msgs))
-
-        if not users_list:
-            return_results('No outputs.')
+            results = [results, error_entry('\n'.join(error_msgs))]
+        return results
 
     @staticmethod
     def _handle_role_argument(role: Optional[str] = None, role_type: Optional[str] = None) -> Dict[str, Any]:
@@ -360,7 +363,7 @@ class ZendeskClient(BaseClient):
         ))
         user_body.update(self._handle_role_argument(role=role, role_type=role_type))
 
-        self._return_results_zendesk_users([
+        return self._command_results_zendesk_users([
             self._http_request('POST', url_suffix=url_suffix, json_data={'user': user_body})['user']
         ])
 
@@ -379,22 +382,22 @@ class ZendeskClient(BaseClient):
         )
         user_body.update(self._handle_role_argument(role=role or 'agent', role_type=role_type))
 
-        self._return_results_zendesk_users([
+        return self._command_results_zendesk_users([
             self._http_request('PUT', url_suffix=f'users/{user_id}', json_data={'user': user_body})['user']
         ])
 
     def zendesk_user_delete(self, user_id: str):
         self._http_request('DELETE', url_suffix=f'users/{user_id}')
-        return_results(f'User deleted. (id: {user_id})')
+        return f'User deleted. (id: {user_id})'
 
     # ---- organization releated functions ---- #
 
     @staticmethod
-    def __return_results_zendesk_organizations(organizations: List[Dict]):
+    def __command_results_zendesk_organizations(organizations: List[Dict]):
         readable_outputs = tableToMarkdown(name='Zendek organizations:', t=organizations, headers=ORGANIZATIONS_HEADERS,
                                            headerTransform=lambda x: x.replace('_', ' '))
-        return_results(CommandResults(outputs_prefix="Zendesk.Organization",
-                       outputs=organizations, readable_output=readable_outputs))
+        return CommandResults(outputs_prefix="Zendesk.Organization",
+                              outputs=organizations, readable_output=readable_outputs)
 
     def _get_organization_by_id(self, organization_id: str) -> Dict[str, Any]:
         return self._http_request('GET', f'organizations/{organization_id}')['organization']
@@ -409,7 +412,7 @@ class ZendeskClient(BaseClient):
         else:
             organizations = list(self._paged_request(url_suffix='organizations', data_field_name='organizations', **kwargs))
 
-        self.__return_results_zendesk_organizations(organizations)
+        return self.__command_results_zendesk_organizations(organizations)
 
     # ---- ticket releated functions ---- #
 
@@ -419,13 +422,13 @@ class ZendeskClient(BaseClient):
                                         user_fields=['assignee_id', 'collaborator_ids', 'email_cc_ids', 'follower_ids', 'requester_id', 'submitter_id'])
 
     @staticmethod
-    def __return_results_zendesk_tickets(tickets: List[Dict]):
+    def __command_results_zendesk_tickets(tickets: List[Dict]):
         raw = tickets
         context = list(map(ZendeskClient.__ticket_context, tickets))
         readable_outputs = tableToMarkdown(name='Zendek tickets:', t=context, headers=TICKETS_HEADERS,
                                            headerTransform=lambda x: x.replace('_', ' '))
-        return_results(CommandResults(outputs_prefix="Zendesk.Ticket",
-                       outputs=tickets, readable_output=readable_outputs, raw_response=raw))
+        return CommandResults(outputs_prefix="Zendesk.Ticket",
+                              outputs=tickets, readable_output=readable_outputs, raw_response=raw)
 
     def _get_ticket_by_id(self, ticket_id: str):
         return self._http_request('GET', f'tickets/{ticket_id}')['ticket']
@@ -447,9 +450,9 @@ class ZendeskClient(BaseClient):
             match filter:
                 case None:
                     url_suffix = 'tickets'
-                case 'recent':
+                case 'recent':  # lgtm[py/unreachable-statement]
                     url_suffix = 'tickets/recent'
-                case _:
+                case _:  # lgtm[py/unreachable-statement]
                     assert user_id, f"user_id is required when using '{filter}' as filter."
                     Validators.validate_ticket_filter(filter)
                     url_suffix = f'/users/{user_id}/tickets/{filter}'
@@ -472,13 +475,10 @@ class ZendeskClient(BaseClient):
             tickets = list(self._paged_request(url_suffix=url_suffix, data_field_name='tickets',
                            parms=sort_params, page_number=page_number, **kwargs))
 
-        if tickets:
-            self.__return_results_zendesk_tickets(tickets)
+        command_results = self.__command_results_zendesk_tickets(tickets) if tickets else 'No outputs.'
         if error_msgs:
-            return_error('\n'.join(error_msgs))
-
-        if not tickets:
-            return_results('No outputs.')
+            command_results = [command_results, error_entry('\n'.join(error_msgs))]
+        return command_results
 
     class Ticket:
 
@@ -550,7 +550,7 @@ class ZendeskClient(BaseClient):
         for argument in ['subject', 'type', 'requester', 'description']:
             assert argument in kwargs, f"'{argument}' is a required argument."
         kwargs['comment'] = kwargs.pop('description')
-        self.__return_results_zendesk_tickets([
+        return self.__command_results_zendesk_tickets([
             self._http_request('POST', url_suffix='tickets', json_data={'ticket': dict(self.Ticket(**kwargs))})['ticket']
         ])
 
@@ -558,13 +558,13 @@ class ZendeskClient(BaseClient):
         res = self._http_request('PUT', url_suffix=f'tickets/{ticket_id}',
                                  json_data={'ticket': dict(self.Ticket(**kwargs))})
         if results:
-            self.__return_results_zendesk_tickets([
+            return self.__command_results_zendesk_tickets([
                 res['ticket']
             ])
 
     def zendesk_ticket_delete(self, ticket_id: str):
         self._http_request('DELETE', url_suffix=f'tickets/{ticket_id}', return_empty_response=True)
-        return_results(f'ticket: {ticket_id} deleted.')
+        return f'ticket: {ticket_id} deleted.'
 
     @staticmethod
     def _map_comment_attachments(comment: Dict):
@@ -582,12 +582,12 @@ class ZendeskClient(BaseClient):
         return copy_comment
 
     @staticmethod
-    def __return_results_zendesk_ticket_comments(comments: List[Dict]):
+    def __command_results_zendesk_ticket_comments(comments: List[Dict]):
         readable_pre_proces = list(map(ZendeskClient._map_comment_attachments, comments))
         readable_outputs = tableToMarkdown(name='Zendek comments:', t=readable_pre_proces, headers=COMMENTS_HEADERS,
                                            headerTransform=lambda x: x.replace('_', ' '), is_auto_json_transform=True)
-        return_results(CommandResults(outputs_prefix="Zendesk.Ticket.Comment",
-                       outputs=comments, readable_output=readable_outputs))
+        return CommandResults(outputs_prefix="Zendesk.Ticket.Comment",
+                              outputs=comments, readable_output=readable_outputs)
 
     def _get_comments(self, ticket_id: str, **kwargs):
         for comment in self._paged_request(url_suffix=f'tickets/{ticket_id}/comments', data_field_name='comments', **kwargs):
@@ -596,7 +596,7 @@ class ZendeskClient(BaseClient):
             yield CACHE.replace_ids_change(comment, user_fields=['author_id'])
 
     def zendesk_ticket_comment_list(self, ticket_id: str, **kwargs):
-        self.__return_results_zendesk_ticket_comments(list(self._get_comments(ticket_id, **kwargs)))
+        return self.__command_results_zendesk_ticket_comments(list(self._get_comments(ticket_id, **kwargs)))
 
      # ---- attachment releated functions ---- #
 
@@ -620,7 +620,7 @@ class ZendeskClient(BaseClient):
         self._http_request('PUT', url_suffix=f'tickets/{ticket_id}',
                            json_data={'ticket': {'comment': {'uploads': file_tokens, 'body': comment}}})
 
-        return_results(f'file: {", ".join(uploaded_files)} attached to ticket: {ticket_id}')
+        return f'file: {", ".join(uploaded_files)} attached to ticket: {ticket_id}'
 
     def zendesk_attachment_get(self, attachment_id: int):
         attachments = [
@@ -634,11 +634,14 @@ class ZendeskClient(BaseClient):
         attachments = list(map(filter_thumbnails, attachments))
         readable_output = tableToMarkdown(name='Zendesk attachments', t=attachments,
                                           headers=ATTACHMENTS_HEADERS, headerTransform=lambda x: x.replace('_', ' '))
-        return_results(CommandResults(outputs_prefix='Zendesk.Attachment', outputs=attachments, readable_output=readable_output))
+        results = [CommandResults(outputs_prefix='Zendesk.Attachment',
+                                  outputs=attachments, readable_output=readable_output)]
         for attachment_link, attachment_name in map(lambda x: (x['content_url'], x['file_name']), attachments):
             res = self._http_request('GET', full_url=attachment_link, resp_type='response')
             res.raise_for_status()
-            return_results(fileResult(filename=attachment_name, data=res.content, file_type=EntryType.ENTRY_INFO_FILE))
+            results.append(fileResult(filename=attachment_name, data=res.content, file_type=EntryType.ENTRY_INFO_FILE))
+
+        return results
 
     # ---- search releated functions ---- #
 
@@ -659,8 +662,8 @@ class ZendeskClient(BaseClient):
                 current_page += 1
             # results = results[:limit]
 
-        return_results(CommandResults(outputs_prefix="Zendesk.Search",
-                       outputs=results))
+        return CommandResults(outputs_prefix="Zendesk.Search",
+                              outputs=results)
 
     # ---- articles releated functions ---- #
 
@@ -679,15 +682,15 @@ class ZendeskClient(BaseClient):
         for title, body in map(lambda x: (x['title'], x['body']), articles):
             readable_output.append(f'<h1>{title}</h1>\n{body}')
 
-        return_results(CommandResults(outputs_prefix='Zendesk.Article',
-                       outputs=articles, readable_output='\n\n\n'.join(readable_output)))
+        return CommandResults(outputs_prefix='Zendesk.Article',
+                              outputs=articles, readable_output='\n\n\n'.join(readable_output))
 
     # ---- demisto releated functions ---- #
 
     def test_module(self):
         for data_type in ['tickets', 'users', 'organizations']:
             self._paged_request(url_suffix=data_type, data_field_name=data_type, limit=1)
-        return_results('ok')
+        return 'ok'
 
     class TicketEvents:
 
@@ -747,7 +750,7 @@ class ZendeskClient(BaseClient):
                 res = self._get_all(**(self.query_params | params))
 
         def new_tickets(self, ticket_types: Optional[List[str]] = None):
-            limit = self._demisto_params.get('max_fetch', 50)
+            limit = int(self._demisto_params.get('max_fetch', 50))
 
             def filter_updated_ticket(ticket):
                 return ticket['id'] > self._latest_ticket_id and \
@@ -850,6 +853,10 @@ class ZendeskClient(BaseClient):
     #     return_results(GetMappingFieldsResponse([zendesk_ticket_scheme]))
 
 
+def zendesk_add_comment(client, **kwargs):
+    kwargs['ticket_id'] = kwargs.pop('id') if 'id' in kwargs else dict_safe_get(demisto.incident()(), [''])
+
+
 def main():
     params = demisto.params()
     verify = not params.get('insecure', False)
@@ -864,6 +871,9 @@ def main():
     )
     global CACHE
     CACHE = CacheManager(client)
+    command = demisto.command()
+    args = demisto.args()
+    old_commands = {}
     commands = {
         # demisto commands
         'test-module': client.test_module,
@@ -872,6 +882,7 @@ def main():
         # 'get-remote-data': client.get_remote_data,
         # 'update-remote-system': client.update_remote_system,
         # 'get-mapping-fields': client.get_mapping_fields,
+        'zendesk-clear-cache': None,
 
         # user commands
         'zendesk-user-list': client.zendesk_user_list,
@@ -899,9 +910,18 @@ def main():
         # articles command
         'zendesk-article-list': client.zendesk_article_list,
     }
-    command = demisto.command()
     demisto.debug(f'command {command} called')
-    commands[command](**demisto.args())
+    if command in old_commands:
+        command_res = old_commands[command](**args)
+
+    elif command in commands:
+        command_res = commands[command](**args)
+    else:
+        raise NotImplementedError(command)
+
+    if command_res:
+        return_results(command_res)
+
     CACHE.save()
 
 

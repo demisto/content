@@ -1,5 +1,5 @@
 {
-    "description": "",
+    "description": "Zendesk - Incoming Mapper",
     "feed": false,
     "id": "Zendesk - Incoming Mapper",
     "mapping": {
