@@ -1016,27 +1016,13 @@
             "fromversion": "6.1.0",
             "timeout": 1500,
             "nightly": true
-        },
-        {
-            "integrations": "Panorama",
-            "instance_names": "palo_alto_firewall",
-            "playbookID": "palo_alto_firewall_test_pb",
-            "fromversion": "6.1.0",
-            "timeout": 1000
-        },
+        }
         {
             "integrations": "Panorama",
             "instance_names": "palo_alto_firewall_9.1",
             "playbookID": "palo_alto_firewall_test_pb",
             "fromversion": "6.1.0",
             "timeout": 1000
-        },
-        {
-            "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama",
-            "playbookID": "palo_alto_panorama_test_pb",
-            "fromversion": "6.1.0",
-            "timeout": 2400
         },
         {
             "integrations": "Panorama",
