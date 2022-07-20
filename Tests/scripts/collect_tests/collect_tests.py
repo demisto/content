@@ -79,7 +79,7 @@ class CollectedTests:
         elif packs and not tests:
             tests = (None,) * len(packs)  # so accessors get a None
 
-        if tests:  # to calm mypy down
+        if tests:
             for i in range(len(tests)):
                 self._add_single(tests[i], packs[i], reason, reason_description)
 
@@ -100,7 +100,7 @@ class CollectedTests:
             logger.warning('no tests to union')
             return None
 
-        return reduce(lambda a, b: a | b, collected_tests)
+        return reduce(lambda a, b: a | b, collected_tests)  # todo replace | with +, remove classmethod
 
     def _add_single(
             self,
@@ -140,7 +140,6 @@ class TestCollector(ABC):
         self.marketplace = marketplace
         self.id_set = IdSet(marketplace, PATHS.debug_id_set_path)  # todo change
         self.conf = TestConf(PATHS.debug_conf_path)  # todo change
-        # todo FAILED_
 
     @property
     def sanity_tests(self) -> CollectedTests:
@@ -179,10 +178,10 @@ class TestCollector(ABC):
 
         collected.machines = Machine.get_suitable_machines(collected.version_range, run_nightly, run_master)
 
-        if collected and collected.machines is None:  # todo reconsider
+        if collected and collected.machines is None:
             raise EmptyMachineListException()
 
-        # collected |= self._add_packs_used(collected.tests)  # todo should we use it?
+        #  todo check tpbs that use optional dependencies, e.g EDL performance test
         self._validate_tests_in_id_set(collected.tests)
         return collected
 
@@ -191,26 +190,8 @@ class TestCollector(ABC):
             not_found_string = ', '.join(sorted(not_found))
             logger.warning(f'{len(not_found)} tests were not found in id-set: \n{not_found_string}')
 
-    # def _add_packs_used(self, tests: set[str]) -> list[CollectedTests]:  # todo is used?
-    #     return self._add_packs_from_tested_integrations(tests) + self._add_packs_from_test_playbooks(tests)
-    #
-    # def _add_packs_from_tested_integrations(self, tests: set[str]) -> list[CollectedTests]:
-    #     # only called in _add_packs_used
-    #     # todo is it used in the new version?
-    #     logger.info(f'searching for integrations used in test playbooks, '
-    #                 f'to make sure the integration pack_name_to_pack_metadata are installed')
-    #     collected = []
-    #
-    #     for test in tests:
-    #         for integration in self.conf.tests_to_integrations.get(test, ()):
-    #             if pack := self.id_set.integration_to_pack.get(integration):  # todo what if not?
-    #                 collected.append(self._collect_pack(pack, CollectionReason.PACK_MATCHES_INTEGRATION,
-    #                                                     reason_description=f'{integration=}'))
-    #     return collected
-
     @staticmethod
     def _collect_pack(name: str, reason: CollectionReason, reason_description: str) -> CollectedTests:
-        # todo decide whether we also want to collect all tests related to the pack (Dean)
         return CollectedTests(
             tests=None,
             packs=(name,),
@@ -218,21 +199,6 @@ class TestCollector(ABC):
             version_range=PACK_MANAGER[name].version_range,
             reason_description=reason_description,
         )
-
-    # def _add_packs_from_test_playbooks(self, tests: set[str]) -> list[CollectedTests]:
-    # only called in _add_packs_used # todo reconsider
-    #     logger.info('searching for pack_name_to_pack_metadata under which test playbooks are saved,'
-    #                 ' to make sure they are installed')
-    #     collected = []
-    #
-    #     for test in tests:
-    #         if test not in self.id_set.test_playbooks_to_pack_id:
-    #             raise ValueError(f'test {test} is missing from id-set, stopping collection.')
-    #         if pack := self.id_set.test_playbooks_to_pack_id[test]:
-    #             collected.append(
-    #                 self._collect_pack(pack, reason=CollectionReason.PACK_MATCHES_TEST, reason_description='')
-    #             )
-    #     return collected
 
 
 class BranchTestCollector(TestCollector):
@@ -254,8 +220,8 @@ class BranchTestCollector(TestCollector):
 
         return CollectedTests.union(tuple(collected))
 
-    @classmethod
-    def _find_yml_content_type(cls, yml_path: Path):
+    @staticmethod
+    def _find_yml_content_type(yml_path: Path):
         if result := ({'Playbooks': FileType.PLAYBOOK,
                        'TestPlaybooks': FileType.TEST_PLAYBOOK,
                        }.get(yml_path.parent.name)):
@@ -341,7 +307,7 @@ class BranchTestCollector(TestCollector):
         except NotUnderPackException:
             if path in PATHS.excluded_files:
                 raise NothingToCollectException(path, 'not under a pack')  # infrastructure files that are ignored
-            raise  # todo is this the expected behavior?
+            raise
 
         if file_type in {FileType.PACK_IGNORE, FileType.SECRET_IGNORE, FileType.DOC_FILE, FileType.README}:
             raise NothingToCollectException(path, f'ignored type {file_type}')
@@ -385,8 +351,7 @@ class BranchTestCollector(TestCollector):
                 version_range=content_item.version_range,
                 reason_description=reason_description,
             )
-        else:
-            raise NotImplementedError('todo')  # todo when is this reached?
+        raise RuntimeError(f'content item {path} not collected ')  # todo
 
     def _get_changed_files(self) -> tuple[str, ...]:
         contrib_diff = None  # overridden on contribution branches, added to the git diff.
@@ -440,7 +405,7 @@ class NightlyTestCollector(TestCollector, ABC):
                 continue
 
             if self.marketplace in playbook_marketplaces:
-                collected.append(CollectedTests(tests=(playbook.name,), packs=(playbook.pack_id,),
+                collected.append(CollectedTests(tests=(playbook.name,), packs=playbook.pack_name_tuple,
                                                 reason=CollectionReason.ID_SET_MARKETPLACE_VERSION,
                                                 reason_description=f'({self.marketplace.value})',
                                                 version_range=VersionRange(playbook.from_version, playbook.to_version)))
@@ -512,14 +477,8 @@ class NightlyTestCollector(TestCollector, ABC):
 
                 except NotUnderPackException:
                     if path.name in SKIPPED_CONTENT_ITEMS:
-                        logger.info(f'skipping unsupported content item: {str(path)}')
+                        logger.info(f'skipping unsupported content item: {str(path)}, not under a pack')
                         continue
-
-                # todo check if the following can be replaced by the previous 2 lines
-                # if not item.pack:
-                #     logger.error('can not collect pack for items without a pack value')  # todo fix in id_set
-                #     continue  # todo remove, fix in id_set
-                # packs.append(item.pack)
         return CollectedTests.union(tuple(collected))
 
 
@@ -547,16 +506,11 @@ class XSOARNightlyTestCollector(NightlyTestCollector):
 
 
 class UploadCollector(BranchTestCollector):
-    # todo is necessary? Or can we just use a BranchTestCollector instead?
     def _collect(self) -> Optional[CollectedTests]:
         # same as BranchTestCollector, but without tests.
-        collected = super()._collect()
-        if collected:
+        if collected := super()._collect():
             collected.tests = set()
         return collected
-
-
-# todo install_logging, see destroy_instances
 
 
 if __name__ == '__main__':
@@ -578,7 +532,7 @@ if __name__ == '__main__':
         case _:
             raise ValueError(f"unexpected values of (either) {marketplace=}, {options.nightly=}")
 
-    collected = collector.collect(run_nightly=options.nightly, run_master=True)  # todo what to put in master?
+    collected = collector.collect(run_nightly=options.nightly, run_master=True)
     if not collected:
         logger.error('done collecting, no tests or packs were collected.')
 
