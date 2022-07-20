@@ -23,7 +23,3 @@ There are no inputs for this playbook.
 ## Playbook Outputs
 ---
 There are no outputs for this playbook.
-
-## Playbook Image
----
-![Create Incident and get Active Tasks](../doc_files/Create_Incident_and_get_Active_Tasks.png)
