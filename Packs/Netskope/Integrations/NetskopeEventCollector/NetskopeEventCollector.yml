@@ -62,21 +62,6 @@ name: NetskopeEventCollector
 script:
   commands:
   - arguments:
-    - auto: PREDEFINED
-      default: false
-      defaultValue: Last 24 Hours
-      description: Get alerts for certain time period.
-      isArray: false
-      name: timeperiod
-      predefined:
-      - Last 60 Minutes
-      - Last 24 Hours
-      - Last 7 Days
-      - Last 30 Days
-      - Last 60 Days
-      - Last 90 Days
-      required: false
-      secret: false
     - default: false
       description: The maxismun number of alerts to return (maximum value - 10000).
       isArray: false

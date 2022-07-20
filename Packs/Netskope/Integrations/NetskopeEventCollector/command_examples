@@ -1,1 +1,1 @@
-!netskope-get-alerts limit=1 timeperiod="Last 7 Days"
+!netskope-get-events limit=1

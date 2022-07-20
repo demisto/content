@@ -1,8 +1,8 @@
-## BaseIntegration Help
+### Netskope Event Collector
 
-Markdown file for integration configuration  help snippet. In this file add:
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
+- Collects the events extracted from SaaS traffic and or logs.
+- To generate the api token, go to Netskope UI -> Settings -> Tools -> Rest API v1 or v2
+- Visit the  visit the [Netskope API Overview](https://docs.netskope.com/en/rest-api-v2-overview-312207.html) for more information.
 
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
+
 

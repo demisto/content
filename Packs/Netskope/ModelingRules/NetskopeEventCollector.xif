@@ -1,0 +1,17 @@
+[MODEL: dataset=netskope_netskope_raw, model=Network]
+| alter XDM.Network.original_event_type=action,
+        XDM.Network.Destination.host.os_family=device,
+        XDM.Network.Destination.host.hostname=dsthost,
+        XDM.Network.Destination.ipv4=dstip,
+        XDM.Network.Destination.port=dstport,
+        XDM.Network.Destination.host.hostname=hostname,
+        XDM.Network.ip_protocol=ip_protocol,
+        XDM.Network.Source.host.os=os,
+        XDM.Network.protocol_layers=protocol,
+        XDM.Network.duration=session_duration,
+        XDM.Network.Source.ipv4=srcip,
+        XDM.Network.Source.port=srcport,
+        XDM.Network.event_timestamp=timestamp,
+        XDM.Network.Source.packets=total_packets,
+        XDM.Network.Destination.user.username=user,
+        XDM.Network.Destination.user.identifier=userkey
