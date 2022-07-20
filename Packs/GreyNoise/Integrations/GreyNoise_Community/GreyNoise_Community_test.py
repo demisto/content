@@ -1,11 +1,13 @@
 import pytest
 import json
+import demistomock as demisto
 import GreyNoise_Community
 from test_data.input_data import (  # type: ignore
     get_ip_reputation_score_data,
     test_module_data,
     ip_reputation_command_data,
     get_ip_context_data_data,
+    main_data
 )
 
 
@@ -92,3 +94,16 @@ def test_get_ip_context_data(input_data, expected_output):
     """
     response = GreyNoise_Community.get_ip_context_data(input_data)
     assert response == expected_output
+
+
+def test_main_success(mocker):
+    """
+    When main function called test function should call.
+    """
+    import GreyNoise_Community
+
+    mocker.patch.object(demisto, 'params', return_value={})
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(GreyNoise_Community, 'test_module', return_value='ok')
+    GreyNoise_Community.main()
+    assert GreyNoise_Community.test_module.called
