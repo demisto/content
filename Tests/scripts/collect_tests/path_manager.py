@@ -93,7 +93,4 @@ def _glob(content_path: Path, paths: Iterable[str]) -> set[Path]:
             continue
         else:  # file without *s
             result.append(path)
-
-        result_string = '\n'.join(sorted(str(r) for r in result))
-        logging.debug(f'globbed {str(path)}, result = {result_string}')
     return set(result)
