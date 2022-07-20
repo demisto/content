@@ -44,7 +44,14 @@ Get access, authentication, and audit logs from SafeNet Trusted Access.
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!sta-get-events should_push_events=false since="10 seconds"```
+#### Human Readable Output
 
-#### Command Example
-```!sta-get-events should_push_events=false```
+>### Event Logs
+>Marker: 111111
+>|category|context|details|id|logVersion|timeStamp|
+>|---|---|---|---|---|---|
+>| AUDIT | tenantId: TENENTID<br/>originatingAddress: 1.1.1.1<br/>principalId: ID<br/>globalAccessId: ID | type: AUTHENTICATION<br/>serial: SERIAL<br/>action: 0<br/>actionText: AUTH_ATTEMPT<br/>result: 1<br/>resultText: AUTH_SUCCESS<br/>agentId: ID<br/>message: MSG <br/>credentialType: TYPE | $ID | 1.0 | 2022-01-01T00:00:00.00000Z |
+>| AUDIT | tenantId: TENENTID<br/>originatingAddress: 1.1.1.1<br/>principalId: ID<br/>globalAccessId: ID | type: AUTHENTICATION<br/>serial: SERIAL<br/>action: 0<br/>actionText: AUTH_ATTEMPT<br/>result: 2<br/>resultText: CHALLENGE<br/>agentId: ID<br/>message: MSG <br/>usedName: NAME<br/>credentialType: TYPE | $ID | 1.0 | 2022-01-01T00:00:00.00000Z |
 
