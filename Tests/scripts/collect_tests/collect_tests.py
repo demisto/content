@@ -321,10 +321,8 @@ class BranchTestCollector(TestCollector):
             )
 
         elif file_type in {FileType.PYTHON_FILE, FileType.POWERSHELL_FILE, FileType.JAVASCRIPT_FILE}:
-            if path.name.lower().endswith('_test.py'):
+            if path.name.lower().endswith(('_test.py', 'tests.ps1')):  # todo make sure we should skip them
                 raise NothingToCollectException(path, 'unit tests changed')
-            elif path.name.endswith('Tests.ps1'):
-                path = path.with_name(path.name.replace('.Tests.ps1', '.ps1'))
             return self._collect_yml(path)
 
         elif file_type == FileType.REPUTATION:
