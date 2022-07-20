@@ -1073,7 +1073,7 @@ def build_query_filter(args):
     return filtering_args
 
 
-def build_threat_indicator_data(args):
+def build_threat_indicator_data(args, source):
     value = args.get('value')
 
     data = {
@@ -1083,6 +1083,7 @@ def build_threat_indicator_data(args):
         'confidence': arg_to_number(args.get('confidence')),
         'threatTypes': argToList(args.get('threat_types')),
         'includeDisabled': args.get('include_disabled', ''),
+        'source': source or DEFAULT_SOURCE,
         'threatIntelligenceTags': argToList(args.get('tags')),
         'validFrom': format_date(args.get('valid_from', '')),
         'validUntil': format_date(args.get('valid_until', '')),
@@ -1122,7 +1123,8 @@ def build_threat_indicator_data(args):
 
 def build_updated_indicator_data(new_ind_data, original_ind_data):
     original_extracted_data = extract_original_data_from_indicator(original_ind_data.get('properties'))
-    new_data = build_threat_indicator_data(new_ind_data)
+    source = original_extracted_data.get('source')
+    new_data = build_threat_indicator_data(new_ind_data, source)
 
     original_extracted_data.update(new_data)
 
@@ -1202,6 +1204,7 @@ def query_threat_indicators_command(client, args):
     else:
 
         result = client.http_request('POST', url_suffix, params={'$top': limit}, data=data)
+
     num_of_threat_indicators = 0
     threat_indicators = []
 
@@ -1231,7 +1234,7 @@ def query_threat_indicators_command(client, args):
 def create_threat_indicator_command(client, args):
     url_suffix = 'threatIntelligence/main/createIndicator'
 
-    data = {'kind': 'indicator', 'properties': build_threat_indicator_data(args)}
+    data = {'kind': 'indicator', 'properties': build_threat_indicator_data(args, source=None)}
 
     result = client.http_request('POST', url_suffix, data=data)
 
