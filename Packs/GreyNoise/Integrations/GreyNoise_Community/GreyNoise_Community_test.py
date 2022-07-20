@@ -7,7 +7,6 @@ from test_data.input_data import (  # type: ignore
     test_module_data,
     ip_reputation_command_data,
     get_ip_context_data_data,
-    main_data
 )
 
 
@@ -102,7 +101,7 @@ def test_main_success(mocker):
     """
     import GreyNoise_Community
 
-    mocker.patch.object(demisto, 'params', return_value={})
+    mocker.patch.object(demisto, 'params', return_value={'api_key': 'abc123'})
     mocker.patch.object(demisto, 'command', return_value='test-module')
     mocker.patch.object(GreyNoise_Community, 'test_module', return_value='ok')
     GreyNoise_Community.main()
