@@ -776,5 +776,5 @@ data_test_batch = [
 
 
 @pytest.mark.parametrize('input_enumerator, batch_size, expected_output', data_test_batch)
-def test_batch(input_enumerator, batch_size, expected_output):
-    assert list(batch(input_enumerator, batch_size=batch_size)) == expected_output
+def test_batch_iocs(input_enumerator, batch_size, expected_output):
+    assert list(batch_iocs(input_enumerator, batch_size=batch_size)) == expected_output

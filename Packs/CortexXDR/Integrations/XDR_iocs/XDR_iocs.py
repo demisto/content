@@ -30,7 +30,7 @@ demisto_score_to_xdr: Dict[int, str] = {
 }
 
 
-def batch(generator, batch_size=200):
+def batch_iocs(generator, batch_size=200):
     current_batch = []
     for indicator in generator:
         current_batch.append(indicator)
@@ -305,7 +305,7 @@ def tim_insert_jsons(client: Client):
         iocs = get_indicators(indicators)
     if iocs:
         path = 'tim_insert_jsons/'
-        for i, batch_iocs in enumerate(batch(iocs)):
+        for i, batch_iocs in enumerate(batch_iocs(iocs)):
             demisto.debug(f'push batch: {i}')
             requests_kwargs: Dict = get_requests_kwargs(_json=list(map(demisto_ioc_to_xdr, batch_iocs)))
             client.http_request(url_suffix=path, requests_kwargs=requests_kwargs)
