@@ -1011,13 +1011,6 @@
         },
         {
             "integrations": "Panorama",
-            "instance_names": "palo_alto_firewall",
-            "playbookID": "palo_alto_firewall_test_pb",
-            "fromversion": "6.1.0",
-            "timeout": 1000
-        },
-        {
-            "integrations": "Panorama",
             "instance_names": "palo_alto_firewall_9.0",
             "playbookID": "Panorama Query Logs - Test",
             "fromversion": "6.1.0",
