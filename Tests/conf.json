@@ -1016,7 +1016,7 @@
             "fromversion": "6.1.0",
             "timeout": 1500,
             "nightly": true
-        }
+        },
         {
             "integrations": "Panorama",
             "instance_names": "palo_alto_firewall_9.1",
