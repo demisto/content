@@ -1,0 +1,38 @@
+{
+	"autorun": false,
+	"cacheVersn": 0,
+	"closureScript": "",
+	"color": "#FBBA3B",
+	"days": 0,
+	"daysR": 0,
+	"default": false,
+	"definitionId": "",
+	"detached": false,
+	"disabled": false,
+	"extractSettings": {
+		"fieldCliNameToExtractSettings": {},
+		"mode": "Specific"
+	},
+	"fromServerVersion": "",
+	"hours": 0,
+	"hoursR": 0,
+	"id": "XDR Best Practice Assessment",
+	"itemVersion": "",
+	"layout": "95384b8d-a4dd-4358-8dfa-7eaad223b892",
+	"locked": false,
+	"name": "XDR Best Practice Assessment",
+	"onChangeRepAlg": 0,
+	"packID": "5d16c081-6603-438c-8265-ae42c757d072",
+	"packName": "XDR Best Practice Assessment",
+	"preProcessingScript": "",
+	"propagationLabels": [
+		"all"
+	],
+	"readonly": false,
+	"reputationCalc": 0,
+	"system": false,
+	"toServerVersion": "",
+	"version": -1,
+	"weeks": 0,
+	"weeksR": 0
+}

@@ -1,0 +1,1568 @@
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: 5d16c081-6603-438c-8265-ae42c757d072
+    packName: XDR Best Practice Assessment
+    propagationLabels:
+    - all
+    toServerVersion: ""
+description: "This playbook covers an XDR Best Practice Assessment for existing XDR
+  deployments. It provides surveys for each domain of the assessment. \n\nThe assessment
+  covers the following domains: Configurations, Agent Management, Policy and Profiles,
+  Profile Extensions, Incident Management, and Incident Response. "
+id: eedddaec-5758-4ed1-8271-b905fa41c193
+inputs: []
+name: 'XDR Best Practice Assessment '
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+      - "1"
+      - "2"
+      - "4"
+      - "5"
+      - "6"
+      - "21"
+      - "29"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6ca7ec25-208a-4f6f-8552-1b2dd0d99285
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: 6ca7ec25-208a-4f6f-8552-1b2dd0d99285
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": -660
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0769e59b-dbc1-4e78-8422-4e97e80837ce
+      iscommand: false
+      name: Configurations
+      type: title
+      version: -1
+    taskid: 0769e59b-dbc1-4e78-8422-4e97e80837ce
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -370,
+          "y": -270
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f63afb08-aa9c-4267-8559-4bdc3c1253b3
+      iscommand: false
+      name: Agent Management
+      type: title
+      version: -1
+    taskid: f63afb08-aa9c-4267-8559-4bdc3c1253b3
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": -270
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b5850087-071d-493a-8b36-7264b8907d5a
+      iscommand: false
+      name: Policy and Profiles
+      type: title
+      version: -1
+    taskid: b5850087-071d-493a-8b36-7264b8907d5a
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": -270
+        }
+      }
+  "4":
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: cce109da-f882-4309-85e9-abd2432cf3c7
+      iscommand: false
+      name: Profile Extensions
+      type: title
+      version: -1
+    taskid: cce109da-f882-4309-85e9-abd2432cf3c7
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": -270
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7f1270f9-b7c9-4666-866b-9075e2f7e2c6
+      iscommand: false
+      name: Incident Management
+      type: title
+      version: -1
+    taskid: 7f1270f9-b7c9-4666-866b-9075e2f7e2c6
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": -270
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 7fbaa688-0977-44c9-85c8-c0471ecf4e06
+      iscommand: false
+      name: Incident Response
+      type: title
+      version: -1
+    taskid: 7fbaa688-0977-44c9-85c8-c0471ecf4e06
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": -270
+        }
+      }
+  "14":
+    continueonerrortype: ""
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: "How are General Settings used? \n\n1. Is Identity Analytics enabled?
+            \n2. Are notifications enabled? \n3. Is threat intel enabled? \n4. Is
+            Informative Behavioral Alerts enabled? "
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: longText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "1"
+        label: ""
+        labelarg:
+          simple: Are Broker VMs being utilized in this XDR environment? If so, please
+            list them below. If not, please write No.
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: longText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "2"
+        label: ""
+        labelarg:
+          simple: Are any integrations being leveraged in this XDR environment? If
+            so, please list them here. If not, please write No.
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: longText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "3"
+        label: ""
+        labelarg:
+          simple: Are we using user roles in this XDR environment? If so, please list
+            them here. If not, please write No.
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: longText
+      sender: ""
+      title: XDR Best Practice Assessment Configuration Survey
+      totalanswers: 0
+    id: "14"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body:
+        simple: "Please answer the questions in the following survey as a part of
+          the manual information gathering step for your XDR Best Practice Assessment.
+          \n\n-Cortex XSOAR"
+      cc: null
+      format: ""
+      methods:
+      - email
+      subject:
+        simple: XDR Best Practice Assessment Questions - Configuration
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to:
+        simple: ${incident.owner}
+    nexttasks:
+      '#none#':
+      - "22"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 27e60a2d-7fca-4c18-8e28-fe2e787be939
+      iscommand: false
+      name: Configuration Survey
+      type: collection
+      version: -1
+    taskid: 27e60a2d-7fca-4c18-8e28-fe2e787be939
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": -370,
+          "y": -140
+        }
+      }
+  "15":
+    continueonerrortype: ""
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: 'Please share the general strategy used for deploying and updating
+            agents on endpoints. '
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: longText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "1"
+        label: ""
+        labelarg:
+          simple: 'Are agent install packages properly maintained? Are installation
+            packages that are not in use deleted? '
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: longText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "2"
+        label: ""
+        labelarg:
+          simple: Is VDI technology currently in use?
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: shortText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "3"
+        label: ""
+        labelarg:
+          simple: Are agent groups in use? If so, please list them here. If not, please
+            write No.
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: longText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "4"
+        label: ""
+        labelarg:
+          simple: What version(s) of the XDR agent is in use?
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: longText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "5"
+        label: ""
+        labelarg:
+          simple: What content versions are in use?
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: longText
+      sender: ""
+      title: Agent Management Survey
+      totalanswers: 0
+    id: "15"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body:
+        simple: "Please answer the questions in the following survey as a part of
+          the manual information gathering step for your XDR Best Practice Assessment.
+          \n\n-Cortex XSOAR"
+      cc: null
+      format: ""
+      methods:
+      - email
+      subject:
+        simple: XDR Best Practice Assessment Questions - Agent Management
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to:
+        simple: ${incident.owner}
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b1c90318-815b-4021-894d-f4e5240d75fd
+      iscommand: false
+      name: Agent Management Survey
+      type: collection
+      version: -1
+    taskid: b1c90318-815b-4021-894d-f4e5240d75fd
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": -140
+        }
+      }
+  "16":
+    continueonerrortype: ""
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: How are policies applied to target systems? Please describe below.
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: longText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "1"
+        label: ""
+        labelarg:
+          simple: How are agent functions being managed? Please describe below.
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: longText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "2"
+        label: ""
+        labelarg:
+          simple: Are malware profiles in use?
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: longText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "3"
+        label: ""
+        labelarg:
+          simple: 'Are exploit profiles in use? '
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: longText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "4"
+        label: ""
+        labelarg:
+          simple: Are restriction profiles in use?
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: longText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "5"
+        label: ""
+        labelarg:
+          simple: Are exception profiles in use?
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: longText
+      sender: ""
+      title: Policy and Profiles
+      totalanswers: 0
+    id: "16"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body:
+        simple: "Please answer the questions in the following survey as a part of
+          the manual information gathering step for your XDR Best Practice Assessment.
+          \n\n-Cortex XSOAR"
+      cc: null
+      format: ""
+      methods:
+      - email
+      subject:
+        simple: XDR Best Practice Assessment Questions - Policy and Profiles
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to:
+        simple: ${incident.owner}
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0a4f70a6-4acf-4755-8a01-4883c6fc9afe
+      iscommand: false
+      name: Policy and Profiles Survey
+      type: collection
+      version: -1
+    taskid: 0a4f70a6-4acf-4755-8a01-4883c6fc9afe
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": -140
+        }
+      }
+  "17":
+    continueonerrortype: ""
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Is Device Control currently in use?
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: longText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "1"
+        label: ""
+        labelarg:
+          simple: Are Device Exceptions currently in use?
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: longText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "2"
+        label: ""
+        labelarg:
+          simple: Is the Host Firewall currently in use?
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: longText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "3"
+        label: ""
+        labelarg:
+          simple: Is Disk Encryption currently in use?
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: longText
+      sender: ""
+      title: Profile Extensions Survey
+      totalanswers: 0
+    id: "17"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body:
+        simple: "Please answer the questions in the following survey as a part of
+          the manual information gathering step for your XDR Best Practice Assessment.
+          \n\n-Cortex XSOAR"
+      cc: null
+      format: ""
+      methods:
+      - email
+      subject:
+        simple: XDR Best Practice Assessment Questions - Profile Extensions
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to:
+        simple: ${incident.owner}
+    nexttasks:
+      '#none#':
+      - "25"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b8cabbc9-749f-4389-81b1-64cfec757f04
+      iscommand: false
+      name: Profile Extensions Survey
+      type: collection
+      version: -1
+    taskid: b8cabbc9-749f-4389-81b1-64cfec757f04
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": -140
+        }
+      }
+  "18":
+    continueonerrortype: ""
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: 'How are incidents currently managed? '
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: longText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "1"
+        label: ""
+        labelarg:
+          simple: 'How are alerts received? '
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: longText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "2"
+        label: ""
+        labelarg:
+          simple: Are alert exclusions in use?
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: longText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "3"
+        label: ""
+        labelarg:
+          simple: How are process exceptions utilized?
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: longText
+      sender: ""
+      title: Incident Management Survey
+      totalanswers: 0
+    id: "18"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body:
+        simple: "Please answer the questions in the following survey as a part of
+          the manual information gathering step for your XDR Best Practice Assessment.
+          \n\n-Cortex XSOAR"
+      cc: null
+      format: ""
+      methods:
+      - email
+      subject:
+        simple: XDR Best Practice Assessment Questions - Incident Management
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to:
+        simple: ${incident.owner}
+    nexttasks:
+      '#none#':
+      - "26"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4bb83d07-a3ce-47cd-8ce2-d858b49ec287
+      iscommand: false
+      name: Incident Management Survey
+      type: collection
+      version: -1
+    taskid: 4bb83d07-a3ce-47cd-8ce2-d858b49ec287
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": -140
+        }
+      }
+  "19":
+    continueonerrortype: ""
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: What response actions are used when an incident is confirmed?
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: longText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "1"
+        label: ""
+        labelarg:
+          simple: Is Host Isolation currently in use?
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: longText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "2"
+        label: ""
+        labelarg:
+          simple: Is Live Terminal currently in use?
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: longText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "3"
+        label: ""
+        labelarg:
+          simple: What other response actions are used in incident response?
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: longText
+      sender: ""
+      title: Incident Response Survey
+      totalanswers: 0
+    id: "19"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body:
+        simple: "Please answer the questions in the following survey as a part of
+          the manual information gathering  step for your XDR Best Practice Assessment.
+          \n\n-Cortex XSOAR"
+      cc: null
+      format: ""
+      methods:
+      - email
+      subject:
+        simple: XDR Best Practice Assessment Questions - Incident Response
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to:
+        simple: ${incident.owner}
+    nexttasks:
+      '#none#':
+      - "27"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: eb941959-9709-417e-897d-2b8c4f585068
+      iscommand: false
+      name: Incident Response Survey
+      type: collection
+      version: -1
+    taskid: eb941959-9709-417e-897d-2b8c4f585068
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": -140
+        }
+      }
+  "20":
+    continueonerrortype: ""
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Are Dashboards currently in use?
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: longText
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "1"
+        label: ""
+        labelarg:
+          simple: Are Reports currently in use?
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: true
+        tooltip: ""
+        type: longText
+      sender: ""
+      title: Reporting Survey
+      totalanswers: 0
+    id: "20"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body:
+        simple: "Please answer the questions in the following survey as a part of
+          the manual information gathering step for your XDR Best Practice Assessment.
+          \n\n-Cortex XSOAR"
+      cc: null
+      format: ""
+      methods:
+      - email
+      subject:
+        simple: XDR Best Practice Assessment Questions - Reporting
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to:
+        simple: ${incident.owner}
+    nexttasks:
+      '#none#':
+      - "28"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0702594d-4d2c-4e8b-836f-43402a6bbde8
+      iscommand: false
+      name: Reporting Survey
+      type: collection
+      version: -1
+    taskid: 0702594d-4d2c-4e8b-836f-43402a6bbde8
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 2250,
+          "y": -140
+        }
+      }
+  "21":
+    continueonerrortype: ""
+    id: "21"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4f234b9e-b582-460b-8888-14ea6f73d81c
+      iscommand: false
+      name: Reporting
+      type: title
+      version: -1
+    taskid: 4f234b9e-b582-460b-8888-14ea6f73d81c
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 2250,
+          "y": -270
+        }
+      }
+  "22":
+    continueonerrortype: ""
+    id: "22"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "30"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      accessmanagementrecommendation:
+        simple: 'Consider using roles to implement the practice of least privilege
+          in XDR. '
+      brokervmrecommendation:
+        simple: Monitor communications and Broker VM usage to ensure agent content
+          update is being distributed successfully.
+      generalsettingsrecommendation:
+        simple: |-
+          Enable alert notifications for Incidents that warrant immediate attention.
+
+          https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-pro-admin/logs/create-notifications.html
+
+          Consider adjusting the agent status configuration to reclaim licenses faster in XDR.  The default is 30 days in a "connection lost" state will result in a license being reclaimed.  A device enters this state when it has been disconnected for 30+ days.
+      integrationsrecommendation:
+        simple: |-
+          Enable API integrations for AutoFocus and VirusTotal to aid Incident investigations.
+
+          Enable Directory Sync to bring in AD group information:  https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-pro-admin/get-started-with-cortex-xdr-pro/set-up-dir-sync.html
+      xdrbpaaccessmanagement:
+        simple: ${XDR Best Practice Assessment Configuration Survey.Answers.3}
+      xdrbpabrokervm:
+        simple: ${XDR Best Practice Assessment Configuration Survey.Answers.1}
+      xdrbpageneralsettings:
+        simple: ${XDR Best Practice Assessment Configuration Survey.Answers.0}
+      xdrbpaintegrations:
+        simple: ${XDR Best Practice Assessment Configuration Survey.Answers.2}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: a20b6d01-c571-4260-850e-0e94bf472071
+      iscommand: true
+      name: Set Configuration Survey Answers and Recommendations
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: a20b6d01-c571-4260-850e-0e94bf472071
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -370,
+          "y": 40
+        }
+      }
+  "23":
+    continueonerrortype: ""
+    id: "23"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "30"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      agentgroupsrecommendation:
+        simple: Ensure that agent groups are being reviewed to verify they are kept
+          to the minimum number required.
+      agentinstallrecommendation:
+        simple: 'Ensure only agent installation packages that are not in use are deleted. '
+      agentvdiflagrecommendation:
+        simple: |-
+          Leverage the VDI installation switch if VDI deployment are used.
+
+          https://docs.paloaltonetworks.com/cortex/cortex-xdr/7-0/cortex-xdr-agent-admin/cortex-xdr-agent-for-windows/cortex-agent-for-virtual-environments-and-desktops.html
+      agentversionsrecommendation:
+        simple: Consider automatically updating minor bug release updates, starting
+          with workstations.
+      contentversionsrecommendation:
+        simple: Monitor endpoints running older versions of the content releases and
+          mitigate those as they are found.
+      deploymentstrategyrecommendation:
+        simple: 'Consider automating the upgrade of minor versions of approved stable
+          releases.  '
+      xdrbpaagentgroups:
+        simple: ${Agent Management Survey.Answers.3}
+      xdrbpaagentinstallpackages:
+        simple: ${Agent Management Survey.Answers.1}
+      xdrbpaagentvdiflag:
+        simple: ${Agent Management Survey.Answers.2}
+      xdrbpaagentversions:
+        simple: ${Agent Management Survey.Answers.4}
+      xdrbpacontentversions:
+        simple: ${Agent Management Survey.Answers.5}
+      xdrbpadeploymentstrategy:
+        simple: ${Agent Management Survey.Answers.0}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: c17a761c-7bcf-4468-87cb-4f2436342259
+      iscommand: true
+      name: Set Agent Management Survey Answers and Recommendations
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: c17a761c-7bcf-4468-87cb-4f2436342259
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 40,
+          "y": 40
+        }
+      }
+  "24":
+    continueonerrortype: ""
+    id: "24"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "30"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      agentprofilerecommendation:
+        simple: 'Enable tamper protection on all agent profiles.  This ensures malware
+          is unable to disable protection.  If it needs to be disabled to remove agents,
+          either do so temporarily or create a new profile/policy to be used for uninstalls. '
+      exceptionprofilerecommendation:
+        simple: When process exceptions are needed (exploit or behavioral), work with
+          Palo Alto Networks support to generate a "support exception" due to being
+          more granular in nature.
+      exploitprofilerecommendation:
+        simple: Review all exploit profiles that are in use and ensure they are configured
+          to block exploit attempts as detected.
+      malwareprofilerecommendation:
+        simple: Review all malware profiles that are in use and ensure they are configured
+          to block threats as detected.
+      policystrategyrecommendation:
+        simple: Remove overlapping policies to ensure systems are receiving the correct
+          profile configurations.
+      restrictionprofilerecommendation:
+        simple: |-
+          Consider leveraging restrictions to control which applications can be run on systems.  This can aid in preventing unknown/malicious software from executing.
+
+          https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-pro-admin/endpoint-security/endpoint-security-profiles/add-restrictions-profile.html
+      xdrbpaagentprofile:
+        simple: ${Policy and Profiles.Answers.1}
+      xdrbpaexceptionprofile:
+        simple: ${Policy and Profiles.Answers.5}
+      xdrbpaexploitprofile:
+        simple: ${Policy and Profiles.Answers.3}
+      xdrbpamalwareprofile:
+        simple: ${Policy and Profiles.Answers.2}
+      xdrbpapolicystrategy:
+        simple: ${Policy and Profiles.Answers.0}
+      xdrbparestrictionprofile:
+        simple: ${Policy and Profiles.Answers.4}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 3aa73d7a-9ed1-4fd1-8591-8cd62f10deb6
+      iscommand: true
+      name: Set Policy and Profiles Survey Answers and Recommendations
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 3aa73d7a-9ed1-4fd1-8591-8cd62f10deb6
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 40
+        }
+      }
+  "25":
+    continueonerrortype: ""
+    id: "25"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "30"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      devicecontrolrecommendation:
+        simple: Consider leveraging device control if there are any applicable threat
+          vectors that would warrant the control of which devices can be used to copy
+          data to/from removable media.
+      deviceexceptionsrecommendation:
+        simple: If a specific removable device is in use, you can allow that device
+          manufacturer, but no others.
+      diskencryptionrecommendation:
+        simple: Consider leveraging the Cortex XDR Disk Encryption as a simpler, alternative
+          method to Group Policy management.
+      hostfirewallrecommendation:
+        simple: Consider leveraging the Cortex XDR Host Firewall as a simpler, alternative
+          method to Group Policy management.
+      xdrbpadevicecontrolprofile:
+        simple: ${Profile Extensions Survey.Answers.0}
+      xdrbpadeviceexceptions:
+        simple: ${Profile Extensions Survey.Answers.1}
+      xdrbpadiskencryption:
+        simple: ${Profile Extensions Survey.Answers.3}
+      xdrbpahostfirewall:
+        simple: ${Profile Extensions Survey.Answers.2}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: ddaad9d0-32a3-4a55-8cc7-fd44a92f9199
+      iscommand: true
+      name: Set Profile Extensions Survey Answers and Recommendations
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: ddaad9d0-32a3-4a55-8cc7-fd44a92f9199
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 40
+        }
+      }
+  "26":
+    continueonerrortype: ""
+    id: "26"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "30"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      alertexclusionsrecommendation:
+        simple: |-
+          Use Alert Exclusions to prevent noisy alerts from generating Incidents.
+
+          https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-pro-admin/investigation-and-response/investigate-endpoint-alerts/alert-exclusions/add-an-alert-exclusion.html
+      alertingrecommendation:
+        simple: Establish notifications for high risk incidents.
+      managementoverviewrecommendation:
+        simple: Ensure the team is using allow lists (malware profiles), exceptions
+          and alert exclusions properly to reduce the number of Incidents produced.  The
+          goal should be receiving alerts on Incidents that warrant an investigation.
+      processexceptionsrecommendation:
+        simple: Leverage support-based process exceptions as often as possible to
+          minimize broadly implemented exceptions.
+      xdrbpaalertexclusions:
+        simple: ${Incident Management Survey.Answers.2}
+      xdrbpaalerting:
+        simple: ${Incident Management Survey.Answers.1}
+      xdrbpamanagementoverview:
+        simple: ${Incident Management Survey.Answers.0}
+      xdrbpaprocessexceptions:
+        simple: ${Incident Management Survey.Answers.3}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 6b2b5ad2-137f-4829-8d34-0bf98152c084
+      iscommand: true
+      name: Set Incident Management Survey Answers and Recommendations
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 6b2b5ad2-137f-4829-8d34-0bf98152c084
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1330,
+          "y": 40
+        }
+      }
+  "27":
+    continueonerrortype: ""
+    id: "27"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "30"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      hostisolationrecommendation:
+        simple: If unusual Incidents occur that appear to be malicious activity, consider
+          leveraging Host Isolation to contain the host until the malware is cleaned
+          and/or host is reimaged.
+      liveterminalrecommendation:
+        simple: 'Ensure resources are opened as described in the following guide:  https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-pro-admin/get-started-with-cortex-xdr-pro/set-up-endpoint-protection/enable-access-to-cortex-xdr.html'
+      otheractionsrecommendation:
+        simple: Develop a plan for when available response actions should be leveraged
+          during an active Incident.
+      responseoverviewrecommendation:
+        simple: |-
+          Establish a process to handle alerts.  This should include:
+          1) Tuning for known expected/false positives
+          2) How to determine what led to the Incident
+          3) Corrective action that needs taken (isolation, re-image, etc...)
+      xdrbpahostisolation:
+        simple: ${Incident Response Survey.Answers.1}
+      xdrbpaliveterminal:
+        simple: ${Incident Response Survey.Answers.2}
+      xdrbpaotheractions:
+        simple: ${Incident Response Survey.Answers.3}
+      xdrbparesponseoverview:
+        simple: ${Incident Response Survey.Answers.0}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: f8026dd2-a0d2-4fc2-862c-2688f4efde6e
+      iscommand: true
+      name: Set Incident Response Survey Answers and Recommendations
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: f8026dd2-a0d2-4fc2-862c-2688f4efde6e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1770,
+          "y": 40
+        }
+      }
+  "28":
+    continueonerrortype: ""
+    id: "28"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "30"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      dashboardsrecommendations:
+        simple: Leverage XDR's customizable dashboards to track key metrics within
+          your environment.
+      reportsrecommendation:
+        simple: Continue to leverage, but work through notifications for high-risk
+          Incidents as well.
+      xdrbpadashboards:
+        simple: ${Reporting Survey.Answers.0}
+      xdrbpareports:
+        simple: ${Reporting Survey.Answers.1}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 828919c9-e66a-4643-806e-8aeec9c22698
+      iscommand: true
+      name: Set Reporting Survey Answers and Recommendations
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 828919c9-e66a-4643-806e-8aeec9c22698
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 2250,
+          "y": 40
+        }
+      }
+  "29":
+    continueonerrortype: ""
+    id: "29"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      severity:
+        simple: Informational
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.set.incident
+      id: 41c2f345-4076-4218-851d-648896f1f41c
+      iscommand: true
+      name: Set Incident Severity Informational
+      script: Builtin|||setIncident
+      type: regular
+      version: -1
+    taskid: 41c2f345-4076-4218-851d-648896f1f41c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1470,
+          "y": -460
+        }
+      }
+  "30":
+    continueonerrortype: ""
+    id: "30"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    scriptarguments:
+      closeReason:
+        simple: Resolved
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 191849c5-a606-43fb-8434-ce71a5459732
+      iscommand: true
+      name: Close Incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 191849c5-a606-43fb-8434-ce71a5459732
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 270
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1025,
+        "width": 3000,
+        "x": -370,
+        "y": -660
+      }
+    }
+  }
