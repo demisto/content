@@ -13,13 +13,13 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Default Hostname or IP Address |  | True |
+    | Default Hostname or IP Address | If not provided, "host" or "system" should be provided in the command's arguments. | False |
     | User | For example, "root". | False |
     | Password | The password of the remote machine. | False |
     | sshKey | The private RSA key to authenticate to the remote machine, should be configured within the credentials object. | False
     | Additional Password | Requires an additional password as an argument to run any command of this module. | False |
     | Ciphers | A comma-separated list of ciphers to use. If none of the specified ciphers are agreed to by the server, an error message specifying the supported ciphers is returned. | False |
-    | Key Algorithms | A comma-separated list of key algorithms to use. If none of the specified key algorithms are agreed to by the server, an error specifying the supported key algorithms is returned. | False |
+    | Key Algorithms | A comma-separated list of key algorithms to use. If none of the specified key algorithms are agreed to by the server, an error message specifying the supported key algorithms is returned. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -52,6 +52,9 @@ Run the specified command on the remote system with SSH.
 | cmd | Command to run on the remote machine. | Required | 
 | additional_password | Password required to match the Additional Password parameter if it was supplied to run the command. | Optional | 
 | timeout | Timeout for command in seconds. | Optional | 
+| system | System to run the command on. | Optional | 
+| host | Host name to run the command on. | Optional | 
+| port | Port to run the command on. | Optional | 
 
 
 #### Context Output
@@ -110,6 +113,9 @@ Copies the given file from Cortex XSOAR to the remote machine.
 | timeout             | Timeout for command in seconds. Default is 10.0 seconds.                                                                                                                                                                                         | Optional     |
 | dest-dir            | Destination of the directory to copy the file to in the remote machine. The file name of the `entry_id` will be used as the file name in the destination directory. Creates the destination directory in the remote machine if it does not exist. | Optional     | 
 | entry               | This input is deprecated. Please use the `entry_id` input instead.                                                                                                                                                                                | Optional     | 
+| system              | System to run the command on. | Optional | 
+| host                | Host name to run the command on. | Optional | 
+| port                | Port to run the command on. | Optional | 
 
 
 #### Context Output
@@ -140,6 +146,9 @@ Copies the given file from the remote machine to Cortex XSOAR.
 | additional_password | Password required to match the Additional Password parameter if it was supplied to run the command.                                                                      | Optional     | 
 | timeout | Timeout for command, in seconds. Default is 10.0 seconds.                                                                                                                          | Optional     |
 | file | This input is deprecated. Please use the `file_path` input instead.                                                                                                                | Optional     | 
+| system | System to run the command on. | Optional | 
+| host | Host name to run the command on. | Optional | 
+| port | Port to run the command on. | Optional | 
 
 
 #### Context Output
@@ -191,12 +200,8 @@ Copies the given file from the remote machine to Cortex XSOAR.
 #### The following argument names were changed, added, or removed in this version
 | Remote Access Command Name | Old Command Argument Name | New Command Name |
 | --- | --- | --- |
-| ssh | system | **Argument was removed** |
-| copy-to | system | **Argument was removed** |
 | copy-to | fileID | **Argument was removed** |
-| copy-to | system | **Argument was removed** |
-| copy-from | **Argument did not exist** | copy-from | file_name |
-| copy-from | system | **Argument was removed** |
+| copy-from | **Argument did not exist** | file_name |
 
 ### Outputs
 #### The following outputs were removed in this version:
