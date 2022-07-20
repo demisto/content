@@ -133,7 +133,7 @@ def create_paramiko_ssh_client(
 def find_nonexistent_systems(given_systems: List[str], given_hosts: List[str]):
     investigation = demisto.investigation()
     if not investigation:
-        return
+        return None
 
     systems = investigation.get('systems')
     investigation_id = investigation.get('id')
@@ -323,7 +323,7 @@ def main() -> None:
     clients = []
     try:
         if nonexistent_systems_result := find_nonexistent_systems(systems, hosts):
-            return_error(nonexistent_systems_result)
+            raise DemistoException(nonexistent_systems_result)
         clients = create_clients(host_name, user, password, ciphers, key_algorithms, certificate, systems, hosts, port)
 
         commands = {
