@@ -20,6 +20,13 @@ class Client:
         return RESPONSE
 
 
+class AWSClient:
+    @staticmethod
+    def aws_session():
+        client = Client
+        return client
+
+
 def test_get_members(mocker):
     """
     Given
@@ -31,8 +38,8 @@ def test_get_members(mocker):
     Then
     - Ensure that empty map is not returned to the context
     """
-    client = Client
-    mocker.patch.object(client, 'aws_session', return_value=client)
+
+    client = AWSClient
     members_res = get_members(client, {})
     assert members_res['Contents'] == [{'AccountId': 1, 'DetectorId': 1, 'MasterId': 1}]
 
