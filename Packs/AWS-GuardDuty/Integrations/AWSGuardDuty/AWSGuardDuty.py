@@ -693,7 +693,7 @@ def test_function(aws_client):
         return raise_error(e)
 
 
-def main():
+def main():   # pragma: no cover
     params = demisto.params()
     aws_default_region = params.get('defaultRegion')
     aws_role_arn = params.get('roleArn')
