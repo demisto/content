@@ -552,7 +552,7 @@ if __name__ == '__main__':
         logger.error('done collecting, no tests or packs were collected.')
 
     else:
-        logger.info(f'done collecting, got ({len(collected.tests)} tests and {len(collected.packs)} packs')
+        logger.info(f'done collecting, got {len(collected.tests)} tests and {len(collected.packs)} packs')
 
         logger.info(f'writing output to {str(PATHS.output_tests_file)}, {str(PATHS.output_packs_file)}')
         PATHS.output_tests_file.write_text('\n'.join(collected.tests))
