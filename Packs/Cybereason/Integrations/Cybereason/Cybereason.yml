@@ -212,52 +212,52 @@ script:
     execution: false
     name: cybereason-query-processes
     outputs:
-    - contextPath: Process.Name
+    - contextPath: Cybereason.Process.Name
       description: The process name
       type: Unknown
-    - contextPath: Process.Malicious
+    - contextPath: Cybereason.Process.Malicious
       description: Malicious status of the process
       type: Unknown
-    - contextPath: Process.CreationTime
+    - contextPath: Cybereason.Process.CreationTime
       description: The process creation time
       type: Unknown
-    - contextPath: Process.EndTime
+    - contextPath: Cybereason.Process.EndTime
       description: The process end time
       type: Unknown
-    - contextPath: Process.CommandLine
+    - contextPath: Cybereason.Process.CommandLine
       description: The command line of the process
       type: Unknown
-    - contextPath: Process.SignedAndVerified
+    - contextPath: Cybereason.Process.SignedAndVerified
       description: Is the process signed and verified
       type: Unknown
-    - contextPath: Process.ProductType
+    - contextPath: Cybereason.Process.ProductType
       description: The product type
       type: Unknown
-    - contextPath: Process.Children
+    - contextPath: Cybereason.Process.Children
       description: Children of the process
       type: Unknown
-    - contextPath: Process.Parent
+    - contextPath: Cybereason.Process.Parent
       description: The parent process
       type: Unknown
-    - contextPath: Process.OwnerMachine
+    - contextPath: Cybereason.Process.OwnerMachine
       description: The machine's hostname
       type: Unknown
-    - contextPath: Process.User
+    - contextPath: Cybereason.Process.User
       description: The user who ran the process
       type: Unknown
-    - contextPath: Process.ImageFile
+    - contextPath: Cybereason.Process.ImageFile
       description: Image file of the process
       type: Unknown
-    - contextPath: Process.SHA1
+    - contextPath: Cybereason.Process.SHA1
       description: SHA1 of the process file
       type: Unknown
-    - contextPath: Process.MD5
+    - contextPath: Cybereason.Process.MD5
       description: MD5 of the process file
       type: Unknown
-    - contextPath: Process.CompanyName
+    - contextPath: Cybereason.Process.CompanyName
       description: The company's name
       type: Unknown
-    - contextPath: Process.ProductName
+    - contextPath: Cybereason.Process.ProductName
       description: The product's name
       type: Unknown
   - arguments:
@@ -307,40 +307,40 @@ script:
     execution: false
     name: cybereason-query-connections
     outputs:
-    - contextPath: Connection.Name
+    - contextPath: Cybereason.Connection.Name
       description: The connection's name
       type: Unknown
-    - contextPath: Connection.Direction
+    - contextPath: Cybereason.Connection.Direction
       description: OUTGOING/INCOMING
       type: Unknown
-    - contextPath: Connection.ServerAddress
+    - contextPath: Cybereason.Connection.ServerAddress
       description: Address of the Cybereason machine
       type: Unknown
-    - contextPath: Connection.ServerPort
+    - contextPath: Cybereason.Connection.ServerPort
       description: Port of the Cybereason machine
       type: Unknown
-    - contextPath: Connection.PortType
+    - contextPath: Cybereason.Connection.PortType
       description: Type of the connection
       type: Unknown
-    - contextPath: Connection.ReceivedBytes
+    - contextPath: Cybereason.Connection.ReceivedBytes
       description: Received bytes count
       type: Unknown
-    - contextPath: Connection.TransmittedBytes
+    - contextPath: Cybereason.Connection.TransmittedBytes
       description: Transmitted bytes count
       type: Unknown
-    - contextPath: Connection.RemoteCountry
+    - contextPath: Cybereason.Connection.RemoteCountry
       description: The connection's remote country
       type: Unknown
-    - contextPath: Connection.OwnerMachine
+    - contextPath: Cybereason.Connection.OwnerMachine
       description: The machine's hostname
       type: Unknown
-    - contextPath: Connection.OwnerProcess
+    - contextPath: Cybereason.Connection.OwnerProcess
       description: The process which performed the connection
       type: Unknown
-    - contextPath: Connection.CreationTime
+    - contextPath: Cybereason.Connection.CreationTime
       description: Creation time of the connection
       type: Unknown
-    - contextPath: Connection.EndTime
+    - contextPath: Cybereason.Connection.EndTime
       description: End time of the connection
       type: Unknown
   - arguments:
@@ -500,52 +500,52 @@ script:
     execution: false
     name: cybereason-malop-processes
     outputs:
-    - contextPath: Process.Name
+    - contextPath: Cybereason.Process.Name
       description: The process name
       type: string
-    - contextPath: Process.Malicious
+    - contextPath: Cybereason.Process.Malicious
       description: Malicious status of the process
       type: Unknown
-    - contextPath: Process.CreationTime
+    - contextPath: Cybereason.Process.CreationTime
       description: The process creation time
       type: date
-    - contextPath: Process.EndTime
+    - contextPath: Cybereason.Process.EndTime
       description: The process end time
       type: date
-    - contextPath: Process.CommandLine
+    - contextPath: Cybereason.Process.CommandLine
       description: The command line of the process
       type: string
-    - contextPath: Process.SignedAndVerified
+    - contextPath: Cybereason.Process.SignedAndVerified
       description: Is the process signed and verified
       type: Unknown
-    - contextPath: Process.ProductType
+    - contextPath: Cybereason.Process.ProductType
       description: The product type
       type: Unknown
-    - contextPath: Process.Children
+    - contextPath: Cybereason.Process.Children
       description: Children of the process
       type: Unknown
-    - contextPath: Process.Parent
+    - contextPath: Cybereason.Process.Parent
       description: The parent process
       type: Unknown
-    - contextPath: Process.OwnerMachine
+    - contextPath: Cybereason.Process.OwnerMachine
       description: The machine's hostname
       type: Unknown
-    - contextPath: Process.User
+    - contextPath: Cybereason.Process.User
       description: The user who ran the process
       type: string
-    - contextPath: Process.ImageFile
+    - contextPath: Cybereason.Process.ImageFile
       description: Image file of the process
       type: Unknown
-    - contextPath: Process.SHA1
+    - contextPath: Cybereason.Process.SHA1
       description: SHA1 of the process file
       type: string
-    - contextPath: Process.MD5
+    - contextPath: Cybereason.Process.MD5
       description: MD5 of the process file
       type: string
-    - contextPath: Process.CompanyName
+    - contextPath: Cybereason.Process.CompanyName
       description: The company's name
       type: string
-    - contextPath: Process.ProductName
+    - contextPath: Cybereason.Process.ProductName
       description: The product's name
       type: string
   - arguments:
@@ -609,10 +609,10 @@ script:
     execution: false
     name: cybereason-prevent-file
     outputs:
-    - contextPath: Process.MD5
+    - contextPath: Cybereason.Process.MD5
       description: Process file MD5
       type: string
-    - contextPath: Process.Prevent
+    - contextPath: Cybereason.Process.Prevent
       description: True if process file is prevented, else false
       type: boolean
   - arguments:
@@ -627,10 +627,10 @@ script:
     execution: false
     name: cybereason-unprevent-file
     outputs:
-    - contextPath: Process.MD5
+    - contextPath: Cybereason.Process.MD5
       description: Process file MD5
       type: string
-    - contextPath: Process.Prevent
+    - contextPath: Cybereason.Process.Prevent
       description: True if process file is prevented, else false
       type: boolean
   - arguments:
@@ -793,11 +793,11 @@ script:
     description: Return a batch id for files waiting for download
     name: cybereason-fetchfile-progress
     outputs:
-    - contextPath: Download.progress.fileName
+    - contextPath: Cybereason.Download.Progress.fileName
       description: Filename for tha given malop
-    - contextPath: Download.progress.status
+    - contextPath: Cybereason.Download.Progress.status
       description: Status for batch ID
-    - contextPath: Download.progress.batchID
+    - contextPath: Cybereason.Download.Progress.batchID
       description: Unique batch id
   - arguments:
     - default: true

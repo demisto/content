@@ -189,7 +189,7 @@ Searches for connections.
             "CreationTime": "2021-04-20T03:38:56.386000",
             "Direction": "OUTGOING",
             "EndTime": "2021-04-20T03:40:04.466000",
-            "Name": "172.30.201.181:50755 > 192.168.1.103:137",
+            "Name": "<connection_ip_addresses>",
             "OwnerMachine": "siemplify-cyber",
             "OwnerProcess": "nbtscan.exe",
             "PortType": "SERVICE_WINDOWS",
@@ -208,7 +208,7 @@ Searches for connections.
 >### Cybereason Connections for: 192.168.1.103
 >|Creation Time|Direction|End Time|Name|Owner Machine|Owner Process|Port Type|Received Bytes|Remote Country|Server Address|Server Port|Transmitted Bytes|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
->| 2021-04-20T03:38:56.386000 | OUTGOING | 2021-04-20T03:40:04.466000 | 172.30.201.181:50755 > 192.168.1.103:137 | siemplify-cyber | nbtscan.exe | SERVICE_WINDOWS | 0 |  | 192.168.1.103 | 137 | 50 |
+>| 2021-04-20T03:38:56.386000 | OUTGOING | 2021-04-20T03:40:04.466000 | connection_ip_addresses | siemplify-cyber | nbtscan.exe | SERVICE_WINDOWS | 0 |  | 192.168.1.103 | 137 | 50 |
 
 ### cybereason-isolate-machine
 ***
@@ -361,7 +361,7 @@ Returns a list of all Malops and details on the Malops.
 >### Cybereason Malops
 >|GUID|Link|CreationTime|Status|LastUpdateTime|DecisionFailure|Suspects|AffectedMachine|InvolvedHash|
 >|---|---|---|---|---|---|---|---|---|
->| 11.3651150229438589171 | https:<span>//</span>integration.cybereason.net:8443/#/malop/11.3651150229438589171 | 2021-07-12T09:11:42.641000 | OPEN | 2021-08-28T23:19:12.430000 | blackListedFileHash | Process: viagra_.exe | win10-cybereaso,<br/>marketing | 1 |
+>| 11.3651150229438589171 | https:<span>//</span>integration.cybereason.net:8443/#/malop/11.3651150229438589171 | 2021-07-12T09:11:42.641000 | OPEN | 2021-08-28T23:19:12.430000 | blackListedFileHash | Process: viagra_.exe | affected_machine_name | 1 |
 
 ### cybereason-malop-processes
 ***
@@ -402,7 +402,7 @@ Returns a list of malops
 | Process.ProductName | string | The product's name | 
 
 #### Command example
-```!cybereason-malop-processes malopGuids=11.-7780537507363356527```
+```!cybereason-malop-processes malopGuids=<malop_id>```
 #### Context Example
 ```json
 {
@@ -413,10 +413,10 @@ Returns a list of malops
             "CompanyName": "Alexander Roshal",
             "CreationTime": "2022-03-14T13:25:56.309000",
             "EndTime": "2022-03-14T13:26:01.712000",
-            "ImageFile": "winrar-x64-602.pdf.exe",
+            "ImageFile": "<image_file_name>",
             "MD5": "fc61fdcad5a9d52a01bd2d596f2c92b9",
             "Malicious": "indifferent",
-            "Name": "winrar-x64-602.pdf.exe",
+            "Name": "<file_name>",
             "OwnerMachine": "desktop-vg9ke2u",
             "Parent": "explorer.exe",
             "ProductName": "WinRAR",
@@ -456,7 +456,7 @@ Add new comment to malop
 
 There is no context output for this command.
 #### Command example
-```!cybereason-add-comment comment=NewComment malopGuid=11.-7780537507363356527```
+```!cybereason-add-comment comment=NewComment malopGuid=<malop_id>```
 #### Human Readable Output
 
 >Comment added successfully
@@ -485,7 +485,7 @@ Updates malop status
 | Cybereason.Malops.Status | string | Malop status: To Review,Unread,Remediated,Not Relevant | 
 
 #### Command example
-```!cybereason-update-malop-status malopGuid=11.-7780537507363356527 status="To Review"```
+```!cybereason-update-malop-status malopGuid=<malop_id> status="To Review"```
 #### Context Example
 ```json
 {
@@ -621,7 +621,7 @@ Query files as part of investigation
 | File.Path | string | File path | 
 
 #### Command example
-```!cybereason-query-file file_hash=77ab1e20c685e716b82c7c90b373316fc84cde23```
+```!cybereason-query-file file_hash=<file_hash>```
 #### Context Example
 ```json
 {
@@ -635,7 +635,7 @@ Query files as part of investigation
             "Machine": "desktop-vg9ke2u",
             "Malicious": false,
             "ModifiedTime": "2022-05-09T16:21:18.000Z",
-            "Name": "winrar-x64-602.pdf.exe",
+            "Name": "<file_name>",
             "OSVersion": null,
             "Path": "c:\\users\\prase\\downloads\\winrar-x64-602.pdf.exe",
             "SHA1": "77ab1e20c685e716b82c7c90b373316fc84cde23",
@@ -866,7 +866,7 @@ Start fetching the file to download
 
 There is no context output for this command.
 #### Command example
-```!cybereason-start-fetchfile malopGUID=11.-7780537507363356527 userName=prashant@metronlabs.com```
+```!cybereason-start-fetchfile malopGUID=<malop_id> userName=<user_name>```
 #### Human Readable Output
 
 >Successfully started fetching file for the given malop
@@ -895,7 +895,7 @@ Return a batch id for files waiting for download
 | Download.progress.batchID | unknown | Unique batch id | 
 
 #### Command example
-```!cybereason-fetchfile-progress malopGuid=11.-7780537507363356527```
+```!cybereason-fetchfile-progress malopGuid=<malop_id>```
 #### Context Example
 ```json
 {
@@ -906,7 +906,7 @@ Return a batch id for files waiting for download
                 -796720096
             ],
             "fileName": [
-                "winrar-x64-602.pdf.exe"
+                "<file_name>"
             ],
             "status": [
                 true
@@ -952,7 +952,7 @@ There is no context output for this command.
         "SHA1": "9d5ef11989f0294929b572fdd4be2aefae94810d",
         "SHA256": "532fd3122f405471f48077bf0c24bfbd2b6fa13decb9916530b86f2f8802a827",
         "SHA512": "59a9649736c464546cc582128a2694ec797b34d558b7e845485b7688f6a536d7acac3bf5912b0725a77c02177445ec90da9982d955e5d393ff40af7109586e3b",
-        "SSDeep": "49152:PkGHRBEjJ9ui4nMSThv4TdRBdUPHy+OjtHgPiszD/Uh1Dkhru9Ly:PdHDE6ISTgbBkS+IkiADMhCru4",
+        "SSDeep": "<SSDeep_value>",
         "Size": 3168792,
         "Type": "Zip archive data, at least v2.0 to extract"
     }
@@ -1007,7 +1007,7 @@ Get all remediation action details whatever available for that malop
 
 There is no context output for this command.
 #### Command example
-```!cybereason-available-remediation-actions malopGuid=11.-7780537507363356527```
+```!cybereason-available-remediation-actions malopGuid=<malop_id>```
 #### Human Readable Output
 
 >```
@@ -1034,7 +1034,7 @@ There is no context output for this command.
 >            "malopType": "MalopProcess",
 >            "remediationType": "UNQUARANTINE_FILE",
 >            "targetId": "-1845090846.-4034595808369608762",
->            "targetName": "winrar-x64-602.pdf.exe",
+>            "targetName": "<target_name>",
 >            "uniqueId": "UNQUARANTINE_FILE::-1845090846.-4034595808369608762"
 >        }
 >    ],
@@ -1067,7 +1067,7 @@ Kill a processes for the malicious file. (User will get inputs by executing the 
 
 There is no context output for this command.
 #### Command example
-```!cybereason-kill-process machine=desktop-vg9ke2u malopGuid=11.-8663995271209729248 targetId=-1845090846.-4009552791065461433 userName=prashant@metronlabs.com comment="Kill the Process" timeout=60```
+```!cybereason-kill-process machine=desktop-vg9ke2u malopGuid=<malop_id> targetId=<target_id> userName=<user_name> comment="Kill the Process" timeout=60```
 #### Human Readable Output
 
 >Kill process remediation action status is: SUCCESS
@@ -1097,7 +1097,7 @@ Quarantine the detected malicious file in a secure location. (User will get inpu
 
 There is no context output for this command.
 #### Command example
-```!cybereason-quarantine-file machine=desktop-vg9ke2u malopGuid=11.-7780537507363356527 targetId=-1845090846.-1424333057657783286 userName=prashant@metronlabs.com comment="Quarantine the File" timeout=60```
+```!cybereason-quarantine-file machine=desktop-vg9ke2u malopGuid=<malop_id> targetId=<target_id> userName=<user_name> comment="Quarantine the File" timeout=60```
 #### Human Readable Output
 
 >Quarantine file remediation action status is: SUCCESS
@@ -1127,7 +1127,7 @@ Unquarantine the detected malicious file in a secure location. (User will get in
 
 There is no context output for this command.
 #### Command example
-```!cybereason-unquarantine-file machine=desktop-vg9ke2u malopGuid=11.-7780537507363356527 targetId=-1845090846.-8162972223469398301 userName=prashant@metronlabs.com comment="Unquarantine the File" timeout=60```
+```!cybereason-unquarantine-file machine=desktop-vg9ke2u malopGuid=<malop_id> targetId=<target_id> userName=<user_name> comment="Unquarantine the File" timeout=60```
 #### Human Readable Output
 
 >Unquarantine file remediation action status is: SUCCESS
@@ -1157,7 +1157,7 @@ Block a file only in particular machine. (User will get inputs by executing the 
 
 There is no context output for this command.
 #### Command example
-```!cybereason-block-file machine=desktop-vg9ke2u malopGuid=11.-7780537507363356527 targetId=-1845090846.-1424333057657783286 userName=prashant@metronlabs.com comment="Block a File" timeout=60```
+```!cybereason-block-file machine=desktop-vg9ke2u malopGuid=<malop_id> targetId=<target_id> userName=<user_name> comment="Block a File" timeout=60```
 #### Human Readable Output
 
 >Block file remediation action status is: SUCCESS
@@ -1187,7 +1187,7 @@ Delete a registry entry associated with a malicious process. (User will get inpu
 
 There is no context output for this command.
 #### Command example
-```!cybereason-delete-registry-key machine=desktop-vg9ke2u malopGuid=11.-7780537507363356527 targetId=-1845090846.-1424333057657783286 userName=prashant@metronlabs.com comment="Remove the registry key" timeout=30```
+```!cybereason-delete-registry-key machine=desktop-vg9ke2u malopGuid=<malop_id> targetId=<target_id> userName=<user_name> comment="Remove the registry key" timeout=30```
 #### Human Readable Output
 
 >Delete registry key remediation action status is: SUCCESS
@@ -1217,7 +1217,7 @@ Prevent detected ransomware from running on the machine. (User will get inputs b
 
 There is no context output for this command.
 #### Command example
-```!cybereason-kill-prevent-unsuspend machine=desktop-vg9ke2u malopGuid=11.-8663995271209729248 targetId=-1845090846.3240952457134939180 userName=prashant@metronlabs.com comment="Kill Prevent" timeout=30```
+```!cybereason-kill-prevent-unsuspend machine=desktop-vg9ke2u malopGuid=<malop_id> targetId=<target_id> userName=<user_name> comment="Kill Prevent" timeout=30```
 #### Human Readable Output
 
 >Kill prevent unsuspend remediation action status is: SUCCESS
@@ -1247,7 +1247,7 @@ Prevent a file associated with ransomware. (User will get inputs by executing th
 
 There is no context output for this command.
 #### Command example
-```!cybereason-unsuspend-process machine=desktop-vg9ke2u malopGuid=11.-8663995271209729248 targetId=-1845090846.3240952457134939180 userName=prashant@metronlabs.com comment="Unsuspend Process" timeout=60```
+```!cybereason-unsuspend-process machine=desktop-vg9ke2u malopGuid=<malop_id> targetId=<target_id> userName=<user_name> comment="Unsuspend Process" timeout=60```
 #### Human Readable Output
 
 >Unsuspend process remediation action status is: SUCCESS
@@ -1354,7 +1354,7 @@ There is no context output for this command.
 >    ],
 >    "actionType": "SchedulerScan",
 >    "batchId": -1112786456,
->    "creatorUser": "prashant@metronlabs.com",
+>    "creatorUser": "<user_name>",
 >    "finalState": true,
 >    "globalStats": {
 >        "stats": {
@@ -1398,7 +1398,7 @@ There is no context output for this command.
 >            "partialResponse": 0
 >        }
 >    },
->    "initiatorUser": "prashant@metronlabs.com",
+>    "initiatorUser": "<user_name>",
 >    "startTime": 1652279731232,
 >    "totalNumberOfProbes": 1
 >}

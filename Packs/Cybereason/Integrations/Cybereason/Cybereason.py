@@ -61,6 +61,13 @@ PROCESS_FIELDS = [element['field'] for element in PROCESS_INFO]
 
 PROCESS_HEADERS = [element['header'] for element in PROCESS_INFO]
 
+MALOP_HEADERS=['GUID', 'Link', 'CreationTime', 'Status', 'LastUpdateTime', 'DecisionFailure', 'Suspects', 'AffectedMachine', 'InvolvedHash']
+
+DOMAIN_HEADERS = ['Name', 'Reputation', 'IsInternalDomain', 'WasEverResolved', 
+                    'WasEverResolvedAsASecondLevelDomain', 'Malicious', 'SuspicionsCount']
+
+USER_HEADERS = ['Username', 'Domain', 'LastMachineLoggedInTo', 'Organization', 'LocalSystem']
+
 CONNECTION_INFO = [
     {'field': 'elementDisplayName', 'header': 'Name', 'type': 'simple'},
     {'field': 'direction', 'header': 'Direction', 'type': 'simple'},
@@ -106,38 +113,52 @@ def build_query(query_fields: list, path: list, template_context: str = 'SPECIFI
     return query
 
 
-def http_request(
-    method: str, url_suffix: str, data: dict = None, json_body: Any = None, headers: dict = HEADERS, return_json: bool = True,
-        custom_response: bool = False) -> Any:
-    LOG('running request with url=%s' % (SERVER + url_suffix))
-    try:
-        res = session.request(
-            method,
-            SERVER + url_suffix,
-            headers=headers,
-            data=data,
-            json=json_body,
-            verify=USE_SSL
-        )
-        if custom_response:
-            return res
-        if res.status_code not in {200, 204}:
-            raise Exception('Your request failed with the following error: ' + str(res.content) + '. Response Status code: '
-                            + str(res.status_code))
+class Client(BaseClient):
+    def __init__(self, base_url, verify, headers, proxy):
+        super().__init__(base_url=base_url, verify=verify, headers=headers, proxy=proxy)
 
-    except Exception as e:
-        LOG(e)
-        raise
-
-    if return_json:
+    def cybereason_api_call(
+        self, method: str, url_suffix: str, data: dict = None, json_body: Any = None, headers: dict = HEADERS, return_json: bool = True, 
+            custom_response: bool = False) -> Any:
+        LOG('running request with url=%s' % (SERVER + url_suffix))
         try:
-            return res.json()
+            res = self._http_request(
+                method,
+                url_suffix=url_suffix,
+                data=data,
+                json_data=json_body,
+                resp_type='response',
+                headers=headers,
+                error_handler=self.error_handler
+            )
+            if custom_response:
+                return res
+            if res.status_code not in [200, 204]:
+                raise Exception('Your request failed with the following error: ' + str(res.content) + '. Response Status code: '
+                                + str(res.status_code))
+
         except Exception as e:
-            error_content = res.content
-            error_msg = ''
-            if 'Login' in str(error_content):
-                error_msg = 'Authentication failed, verify the credentials are correct.'
-            raise ValueError('Failed to process the API response. {} {} - {}'.format(str(error_msg), str(error_content), str(e)))
+            LOG(e)
+            raise
+
+        if return_json:
+            try:
+                return res.json()
+            except Exception as e:
+                error_content = res.content
+                error_msg = ''
+                if 'Login' in str(error_content):
+                    error_msg = 'Authentication failed, verify the credentials are correct.'
+                raise ValueError('Failed to process the API response. {} {} - {}'.format(str(error_msg), str(error_content), str(e)))
+
+    def error_handler(self, res: requests.Response):
+        # Handle error responses gracefully
+        command = demisto.command()
+        if res.status_code == 500:
+            if command == 'cybereason-download-file':
+                raise Exception('The given Batch ID has expired')
+            elif command == 'cybereason-close-file-batch-id':
+                raise Exception('The given Batch ID does not exist')
 
 
 def translate_timestamp(timestamp: str) -> str:
@@ -162,7 +183,7 @@ def update_output(output: dict, simple_values: dict, element_values: dict, info_
     return output
 
 
-def get_pylum_id(machine: str) -> str:
+def get_pylum_id(client: Client, machine: str) -> str:
     query_fields = ['pylumId']
     path = [
         {
@@ -174,7 +195,7 @@ def get_pylum_id(machine: str) -> str:
         }
     ]
     json_body = build_query(query_fields, path)
-    response = http_request('POST', '/rest/visualsearch/query/simple', json_body=json_body)
+    response = client.cybereason_api_call('POST', '/rest/visualsearch/query/simple', json_body=json_body)
     data = dict_safe_get(response, ['data', 'resultIdToElementDataMap'], default_return_value={}, return_type=dict)
     pylum_id = dict_safe_get(list(data.values()), [0, 'simpleValues', 'pylumId', 'values', 0])
     if not pylum_id:
@@ -183,7 +204,7 @@ def get_pylum_id(machine: str) -> str:
     return pylum_id
 
 
-def get_machine_guid(machine_name: str) -> str:
+def get_machine_guid(client: Client, machine_name: str) -> str:
     query_fields = ['elementDisplayName']
     path = [
         {
@@ -195,7 +216,7 @@ def get_machine_guid(machine_name: str) -> str:
         }
     ]
     json_body = build_query(query_fields, path)
-    response = http_request('POST', '/rest/visualsearch/query/simple', json_body=json_body)
+    response = client.cybereason_api_call('POST', '/rest/visualsearch/query/simple', json_body=json_body)
     data = dict_safe_get(response, ['data', 'resultIdToElementDataMap'], default_return_value={}, return_type=dict)
 
     return dict_safe_get(list(data.keys()), [0])
@@ -204,11 +225,11 @@ def get_machine_guid(machine_name: str) -> str:
 ''' FUNCTIONS '''
 
 
-def is_probe_connected_command(is_remediation_commmand: bool = False) -> Any:
-    machine = demisto.getArg('machine')
+def is_probe_connected_command(client: Client, args, is_remediation_commmand: bool = False) -> Any:
+    machine = args.get('machine')
     is_connected = False
 
-    response = is_probe_connected(machine)
+    response = is_probe_connected(client, machine)
 
     elements = dict_safe_get(response, ['data', 'resultIdToElementDataMap'], default_return_value={}, return_type=dict)
 
@@ -228,17 +249,14 @@ def is_probe_connected_command(is_remediation_commmand: bool = False) -> Any:
             'Name': machine
         }
     }
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': response,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': is_connected,
-        'EntryContext': ec
-    })
+    return CommandResults(
+        readable_output='{}'.format(is_connected),
+        outputs_prefix='Cybereason.Machine',
+        outputs_key_field='Name',
+        outputs=ec)
 
 
-def is_probe_connected(machine: str) -> dict:
+def is_probe_connected(client: Client, machine: str) -> dict:
     query_fields = ['elementDisplayName']
     path = [
         {
@@ -252,22 +270,22 @@ def is_probe_connected(machine: str) -> dict:
     ]
     json_body = build_query(query_fields, path)
 
-    return http_request('POST', '/rest/visualsearch/query/simple', json_body=json_body)
+    return client.cybereason_api_call('POST', '/rest/visualsearch/query/simple', json_body=json_body)
 
 
-def query_processes_command():
-    machine = demisto.getArg('machine')
-    process_name = demisto.getArg('processName')
-    only_suspicious = demisto.getArg('onlySuspicious')
-    has_incoming_connection = demisto.getArg('hasIncomingConnection')
-    has_outgoing_connection = demisto.getArg('hasOutgoingConnection')
-    has_external_connection = demisto.getArg('hasExternalConnection')
-    unsigned_unknown_reputation = demisto.getArg('unsignedUnknownReputation')
-    from_temporary_folder = demisto.getArg('fromTemporaryFolder')
-    privileges_escalation = demisto.getArg('privilegesEscalation')
-    maclicious_psexec = demisto.getArg('maliciousPsExec')
+def query_processes_command(client: Client, args):
+    machine = args.get('machine')
+    process_name = args.get('processName')
+    only_suspicious = args.get('onlySuspicious')
+    has_incoming_connection = args.get('hasIncomingConnection')
+    has_outgoing_connection = args.get('hasOutgoingConnection')
+    has_external_connection = args.get('hasExternalConnection')
+    unsigned_unknown_reputation = args.get('unsignedUnknownReputation')
+    from_temporary_folder = args.get('fromTemporaryFolder')
+    privileges_escalation = args.get('privilegesEscalation')
+    maclicious_psexec = args.get('maliciousPsExec')
 
-    response = query_processes(machine, process_name, only_suspicious, has_incoming_connection, has_outgoing_connection,
+    response = query_processes(client, machine, process_name, only_suspicious, has_incoming_connection, has_outgoing_connection,
                                has_external_connection, unsigned_unknown_reputation, from_temporary_folder,
                                privileges_escalation, maclicious_psexec)
     elements = dict_safe_get(response, ['data', 'resultIdToElementDataMap'], default_return_value={}, return_type=dict)
@@ -293,20 +311,17 @@ def query_processes_command():
         context.append({key.translate({32: None}): value for key, value in output.items()})
 
     ec = {
-        'Process': context
+        'Cybereason.Process': context
     }
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': response,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Cybereason Processes', outputs, PROCESS_HEADERS),
-        'EntryContext': ec
-    })
+    return CommandResults(
+        readable_output=tableToMarkdown('Cybereason Processes', outputs, headers=PROCESS_HEADERS),
+        outputs_prefix='Cybereason.Process',
+        outputs_key_field='Name',
+        outputs=ec)
 
 
-def query_processes(machine: str, process_name: Any, only_suspicious: str = None, has_incoming_connection: str = None,
+def query_processes(client: Client, machine: str, process_name: Any, only_suspicious: str = None, has_incoming_connection: str = None,
                     has_outgoing_connection: str = None, has_external_connection: str = None,
                     unsigned_unknown_reputation: str = None, from_temporary_folder: str = None,
                     privileges_escalation: str = None, maclicious_psexec: str = None) -> dict:
@@ -358,12 +373,12 @@ def query_processes(machine: str, process_name: Any, only_suspicious: str = None
 
     json_body = build_query(PROCESS_FIELDS, path)
 
-    return http_request('POST', '/rest/visualsearch/query/simple', json_body=json_body)
+    return client.cybereason_api_call('POST', '/rest/visualsearch/query/simple', json_body=json_body)
 
 
-def query_connections_command():
-    machine = demisto.getArg('machine')
-    ip = demisto.getArg('ip')
+def query_connections_command(client: Client, args):
+    machine = args.get('machine')
+    ip = args.get('ip')
 
     if ip and machine:
         raise Exception('Too many arguments given.')
@@ -376,7 +391,7 @@ def query_connections_command():
         input_list = ip.split(",")
 
     for filter_input in input_list:
-        response = query_connections(machine, ip, filter_input)
+        response = query_connections(client, machine, ip, filter_input)
         elements = dict_safe_get(response, ['data', 'resultIdToElementDataMap'], default_return_value={}, return_type=dict)
         outputs = []
 
@@ -393,20 +408,17 @@ def query_connections_command():
             context.append({key.translate({32: None}): value for key, value in output.items()})
 
         ec = {
-            'Connection': context
+            'Cybereason.Connection': context
         }
 
-        demisto.results({
-            'Type': entryTypes['note'],
-            'Contents': response,
-            'ContentsFormat': formats['json'],
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': tableToMarkdown('Cybereason Connections for: {}'.format(filter_input), outputs),
-            'EntryContext': ec
-        })
+        return CommandResults(
+            readable_output=tableToMarkdown('Cybereason Connections for: {}'.format(filter_input), outputs),
+            outputs_prefix='Cybereason.Connection',
+            outputs_key_field='Name',
+            outputs=ec)
 
 
-def query_connections(machine: str, ip: str, filter_input: str) -> dict:
+def query_connections(client: Client, machine: str, ip: str, filter_input: str) -> dict:
     if machine:
         path = [
             {
@@ -443,18 +455,18 @@ def query_connections(machine: str, ip: str, filter_input: str) -> dict:
         path = [{}]
 
     json_body = build_query(CONNECTION_FIELDS, path)
-    response = http_request('POST', '/rest/visualsearch/query/simple', json_body=json_body)
+    response = client.cybereason_api_call('POST', '/rest/visualsearch/query/simple', json_body=json_body)
 
     return response
 
 
-def query_malops_command():
-    total_result_limit = demisto.getArg('totalResultLimit')
-    per_group_limit = demisto.getArg('perGroupLimit')
-    template_context = demisto.getArg('templateContext')
-    filters = json.loads(demisto.getArg('filters')) if demisto.getArg('filters') else []
-    within_last_days = demisto.getArg('withinLastDays')
-    guid_list = argToList(demisto.getArg('malopGuid'))
+def query_malops_command(client: Client, args):
+    total_result_limit = args.get('totalResultLimit')
+    per_group_limit = args.get('perGroupLimit')
+    template_context = args.get('templateContext')
+    filters = json.loads(args.get('filters')) if args.get('filters') else []
+    within_last_days = args.get('withinLastDays')
+    guid_list = argToList(args.get('malopGuid'))
 
     if within_last_days:
         current_timestamp = time.time()
@@ -469,7 +481,7 @@ def query_malops_command():
             'filterType': 'GreaterThan'
         })
 
-    malop_process_type, malop_loggon_session_type = query_malops(total_result_limit, per_group_limit,
+    malop_process_type, malop_loggon_session_type = query_malops(client, total_result_limit, per_group_limit,
                                                                  template_context, filters, guid_list=guid_list)
     outputs = []
 
@@ -532,22 +544,15 @@ def query_malops_command():
         'Cybereason.Malops(val.GUID && val.GUID === obj.GUID)': outputs
     }
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': data,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Cybereason Malops',
-                                         outputs,
-                                         ['GUID', 'Link', 'CreationTime', 'Status',
-                                          'LastUpdateTime', 'DecisionFailure', 'Suspects',
-                                          'AffectedMachine', 'InvolvedHash']) if outputs else 'No malops found',
-        'EntryContext': ec
-    })
+    return CommandResults(
+        readable_output=tableToMarkdown('Cybereason Malops', outputs, headers=MALOP_HEADERS) if outputs else 'No malops found',
+        outputs_prefix='Cybereason.Malops',
+        outputs_key_field='GUID',
+        outputs=ec)
 
 
 def query_malops(
-    total_result_limit: int = None, per_group_limit: int = None, template_context: str = None, filters: list = None,
+    client: Client, total_result_limit: int = None, per_group_limit: int = None, template_context: str = None, filters: list = None,
         guid_list: str = None) -> Any:
     json_body = {
         'totalResultLimit': int(total_result_limit) if total_result_limit else 10000,
@@ -566,17 +571,17 @@ def query_malops(
     # By Cybereason documentation - Inorder to get all malops, The client should send 2 requests as follow:
     # First request - "MalopProcess"
     json_body['queryPath'][0]['requestedType'] = "MalopProcess"  # type: ignore
-    malop_process_type = http_request('POST', '/rest/crimes/unified', json_body=json_body)
+    malop_process_type = client.cybereason_api_call('POST', '/rest/crimes/unified', json_body=json_body)
     # Second request - "MalopLogonSession"
     json_body['queryPath'][0]['requestedType'] = "MalopLogonSession"  # type: ignore
-    malop_loggon_session_type = http_request('POST', '/rest/crimes/unified', json_body=json_body)
+    malop_loggon_session_type = client.cybereason_api_call('POST', '/rest/crimes/unified', json_body=json_body)
 
     return malop_process_type, malop_loggon_session_type
 
 
-def isolate_machine_command():
-    machine = demisto.getArg('machine')
-    response, pylum_id = isolate_machine(machine)
+def isolate_machine_command(client: Client, args):
+    machine = args.get('machine')
+    response, pylum_id = isolate_machine(client, machine)
     result = response.get(pylum_id)
     if result == 'Succeeded':
         ec = {
@@ -588,34 +593,31 @@ def isolate_machine_command():
                 'Hostname': machine
             }
         }
-        demisto.results({
-            'ContentsFormat': formats['json'],
-            'Type': entryTypes['note'],
-            'Contents': response,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': 'Machine was isolated successfully.',
-            'EntryContext': ec
-        })
+        return CommandResults(
+            readable_output='Machine was isolated successfully.',
+            outputs_prefix='Cybereason',
+            outputs_key_field='Machine',
+            outputs=ec)
     else:
         raise Exception('Failed to isolate machine.')
 
 
-def isolate_machine(machine: str) -> Any:
-    pylum_id = get_pylum_id(machine)
+def isolate_machine(client: Client, machine: str) -> Any:
+    pylum_id = get_pylum_id(client, machine)
 
     cmd_url = '/rest/monitor/global/commands/isolate'
     json_body = {
         'pylumIds': [pylum_id]
 
     }
-    response = http_request('POST', cmd_url, json_body=json_body)
+    response = client.cybereason_api_call('POST', cmd_url, json_body=json_body)
 
     return response, pylum_id
 
 
-def unisolate_machine_command():
-    machine = demisto.getArg('machine')
-    response, pylum_id = unisolate_machine(machine)
+def unisolate_machine_command(client: Client, args):
+    machine = args.get('machine')
+    response, pylum_id = unisolate_machine(client, machine)
     result = response.get(pylum_id)
     if result == 'Succeeded':
         ec = {
@@ -627,34 +629,31 @@ def unisolate_machine_command():
                 'Hostname': machine
             }
         }
-        demisto.results({
-            'ContentsFormat': formats['json'],
-            'Type': entryTypes['note'],
-            'Contents': response,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': 'Machine was un-isolated successfully.',
-            'EntryContext': ec
-        })
+        return CommandResults(
+            readable_output='Machine was un-isolated successfully.',
+            outputs_prefix='Cybereason',
+            outputs_key_field='Machine',
+            outputs=ec)
     else:
         raise Exception('Failed to un-isolate machine.')
 
 
-def unisolate_machine(machine: str) -> Any:
-    pylum_id = get_pylum_id(machine)
+def unisolate_machine(client: Client, machine: str) -> Any:
+    pylum_id = get_pylum_id(client, machine)
     cmd_url = '/rest/monitor/global/commands/un-isolate'
     json_body = {
         'pylumIds': [pylum_id]
 
     }
-    response = http_request('POST', cmd_url, json_body=json_body)
+    response = client.cybereason_api_call('POST', cmd_url, json_body=json_body)
 
     return response, pylum_id
 
 
-def malop_processes_command():
-    malop_guids = demisto.getArg('malopGuids')
-    machine_name = demisto.getArg('machineName')
-    date_time = demisto.getArg('dateTime')
+def malop_processes_command(client: Client, args):
+    malop_guids = args.get('malopGuids')
+    machine_name = args.get('machineName')
+    date_time = args.get('dateTime')
 
     filter_input = []
     if date_time:
@@ -670,7 +669,7 @@ def malop_processes_command():
 
     machine_name_list = [machine.lower() for machine in argToList(machine_name)]
 
-    response = malop_processes(malop_guids, filter_input)
+    response = malop_processes(client, malop_guids, filter_input)
     elements = dict_safe_get(response, ['data', 'resultIdToElementDataMap'], default_return_value={}, return_type=dict)
     outputs = []
 
@@ -705,20 +704,17 @@ def malop_processes_command():
         context.append({key.translate({32: None}): value for key, value in output.items()})
 
     ec = {
-        'Process': context
+        'Cybereason.Process': context
     }
 
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': response,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Cybereason Malop Processes', outputs, PROCESS_HEADERS, removeNull=True),
-        'EntryContext': ec
-    })
+    return CommandResults(
+        readable_output=tableToMarkdown('Cybereason Malop Processes', outputs, headers=PROCESS_HEADERS, removeNull=True),
+        outputs_prefix='Cybereason.Process',
+        outputs_key_field='Name',
+        outputs=ec)
 
 
-def malop_processes(malop_guids: list, filter_value: list) -> dict:
+def malop_processes(client: Client, malop_guids: list, filter_value: list) -> dict:
     json_body = {
         'queryPath': [
             {
@@ -743,33 +739,33 @@ def malop_processes(malop_guids: list, filter_value: list) -> dict:
         'queryTimeout': None
     }
 
-    return http_request('POST', '/rest/visualsearch/query/simple', json_body=json_body)
+    return client.cybereason_api_call('POST', '/rest/visualsearch/query/simple', json_body=json_body)
 
 
-def add_comment_command():
-    comment = demisto.getArg('comment') if demisto.getArg('comment') else ''
-    malop_guid = demisto.getArg('malopGuid')
+def add_comment_command(client: Client, args):
+    comment = args.get('comment') if args.get('comment') else ''
+    malop_guid = args.get('malopGuid')
     try:
-        add_comment(malop_guid, comment.encode('utf-8'))
-        demisto.results('Comment added successfully')
+        add_comment(client, malop_guid, comment.encode('utf-8'))
+        return CommandResults(readable_output='Comment added successfully')
     except Exception as e:
         raise Exception('Failed to add new comment. Orignal Error: ' + str(e))
 
 
-def add_comment(malop_guid: str, comment: Any) -> None:
+def add_comment(client: Client, malop_guid: str, comment: Any) -> None:
     cmd_url = '/rest/crimes/comment/' + malop_guid
-    http_request('POST', cmd_url, data=comment, return_json=False)
+    client.cybereason_api_call('POST', cmd_url, data=comment, return_json=False)
 
 
-def update_malop_status_command():
-    status = demisto.getArg('status')
-    malop_guid = demisto.getArg('malopGuid')
+def update_malop_status_command(client: Client, args):
+    status = args.get('status')
+    malop_guid = args.get('malopGuid')
 
     if status not in STATUS_MAP:
         raise Exception(
             'Invalid status. Given status must be one of the following: To Review,Unread,Remediated or Not Relevant')
 
-    update_malop_status(malop_guid, status)
+    update_malop_status(client, malop_guid, status)
 
     ec = {
         'Cybereason.Malops(val.GUID && val.GUID == {})'.format(malop_guid): {
@@ -777,49 +773,44 @@ def update_malop_status_command():
             'Status': status
         }
     }
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': 'Successfully updated malop {0} to status {1}'.format(malop_guid, status),
-        'ContentsFormat': formats['text'],
-        'EntryContext': ec
-    })
+    return CommandResults(
+        readable_output='Successfully updated malop {0} to status {1}'.format(malop_guid, status),
+        outputs_prefix='Cybereason.Malops',
+        outputs_key_field='GUID',
+        outputs=ec)
 
 
-def update_malop_status(malop_guid: str, status: str) -> None:
+def update_malop_status(client: Client, malop_guid: str, status: str) -> None:
     api_status = STATUS_MAP[status]
 
     json_body = {malop_guid: api_status}
 
-    response = http_request('POST', '/rest/crimes/status', json_body=json_body)
+    response = client.cybereason_api_call('POST', '/rest/crimes/status', json_body=json_body)
     if response['status'] != 'SUCCESS':
         raise Exception('Failed to update malop {0} status to {1}. Message: {2}'.format(malop_guid, status,
                                                                                         response['message']))
 
 
-def prevent_file_command():
-    file_hash = demisto.getArg('md5') if demisto.getArg('md5') else ''
-    response = prevent_file(file_hash)
+def prevent_file_command(client: Client, args):
+    file_hash = args.get('md5') if args.get('md5') else ''
+    response = prevent_file(client, file_hash)
     if response['outcome'] == 'success':
         ec = {
-            'Process(val.MD5 && val.MD5 === obj.MD5)': {
+            'Cybereason.Process(val.MD5 && val.MD5 === obj.MD5)': {
                 'MD5': file_hash,
                 'Prevent': True
             }
         }
-        entry = {
-            'ContentsFormat': formats['json'],
-            'Type': entryTypes['note'],
-            'Contents': response,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': 'File was prevented successfully',
-            'EntryContext': ec
-        }
-        demisto.results(entry)
+        return CommandResults(
+            readable_output='File was prevented successfully',
+            outputs_prefix='Cybereason.Process',
+            outputs_key_field='MD5',
+            outputs=ec)
     else:
         raise Exception('Failed to prevent file')
 
 
-def prevent_file(file_hash: str) -> dict:
+def prevent_file(client: Client, file_hash: str) -> dict:
     json_body = [{
         'keys': [file_hash],
         'maliciousType': 'blacklist',
@@ -827,230 +818,240 @@ def prevent_file(file_hash: str) -> dict:
         'prevent': True
     }]
 
-    return http_request('POST', '/rest/classification/update', json_body=json_body)
+    return client.cybereason_api_call('POST', '/rest/classification/update', json_body=json_body)
 
 
-def unprevent_file_command():
-    file_hash = demisto.getArg('md5')
-    response = unprevent_file(file_hash)
+def unprevent_file_command(client: Client, args):
+    file_hash = args.get('md5')
+    response = unprevent_file(client, file_hash)
     if response['outcome'] == 'success':
         ec = {
-            'Process(val.MD5 && val.MD5 === obj.MD5)': {
+            'Cybereason.Process(val.MD5 && val.MD5 === obj.MD5)': {
                 'MD5': file_hash,
                 'Prevent': False
             }
         }
-        entry = {
-            'ContentsFormat': formats['json'],
-            'Type': entryTypes['note'],
-            'Contents': response,
-            'ReadableContentsFormat': formats['markdown'],
-            'HumanReadable': 'File was unprevented successfully',
-            'EntryContext': ec
-        }
-        demisto.results(entry)
+        return CommandResults(
+            readable_output='File was unprevented successfully',
+            outputs_prefix='Cybereason.Process',
+            outputs_key_field='MD5',
+            outputs=ec)
     else:
         raise Exception('Failed to unprevent file')
 
 
-def unprevent_file(file_hash: str) -> dict:
+def unprevent_file(client: Client, file_hash: str) -> dict:
     json_body = [{
         'keys': [str(file_hash)],
         'remove': True,
         'prevent': False
     }]
 
-    return http_request('POST', '/rest/classification/update', json_body=json_body)
+    return client.cybereason_api_call('POST', '/rest/classification/update', json_body=json_body)
 
 
-def available_remediation_actions_command():
-    malop_guid = demisto.getArg('malopGuid')
+def available_remediation_actions_command(client: Client, args):
+    malop_guid = args.get('malopGuid')
     json_body = {
         "detectionEventMalopGuids": [],
         "processMalopGuids": [malop_guid]
     }
 
-    response = http_request('POST', '/rest/detection/custom-remediation', json_body=json_body)
-    demisto.results(response)
+    response = client.cybereason_api_call('POST', '/rest/detection/custom-remediation', json_body=json_body)
+    return CommandResults(raw_response=response)
 
 
-def kill_process_command():
-    malop_guid = demisto.getArg('malopGuid')
-    machine_name = demisto.getArg('machine')
-    target_id = demisto.getArg('targetId')
-    user_name = demisto.getArg('userName')
-    timeout_second = demisto.getArg('timeout')
-    comment = demisto.getArg('comment') if demisto.getArg('comment') else 'Kill Process Remediation Action Succeeded'
+def kill_process_command(client: Client, args):
+    malop_guid = args.get('malopGuid')
+    machine_name = args.get('machine')
+    target_id = args.get('targetId')
+    user_name = args.get('userName')
+    timeout_second = args.get('timeout')
+    comment = args.get('comment') if args.get('comment') else 'Kill Process Remediation Action Succeeded'
     remediation_action = 'KILL_PROCESS'
-    is_machine_conntected = is_probe_connected_command(is_remediation_commmand=True)
+    is_machine_conntected = is_probe_connected_command(client, args, is_remediation_commmand=True)
     if is_machine_conntected is True:
-        response = get_remediation_action(malop_guid, machine_name, target_id, remediation_action)
-        action_status = get_remediation_action_status(user_name, malop_guid, response, timeout_second, comment)
+        response = get_remediation_action(client, malop_guid, machine_name, target_id, remediation_action)
+        action_status = get_remediation_action_status(client, user_name, malop_guid, response, timeout_second, comment)
         if dict_safe_get(action_status, ['Remediation status']) == 'SUCCESS':
-            demisto.results("Kill process remediation action status is: {}".format(dict_safe_get(
+            success_response = "Kill process remediation action status is: {}".format(dict_safe_get(
                 action_status, ['Remediation status'])) + "\n" + "Remediation ID: {}".format(dict_safe_get(
-                    action_status, ['Remediation ID'])))
+                    action_status, ['Remediation ID']))
+            return CommandResults(readable_output=success_response)
         elif dict_safe_get(action_status, ['Remediation status']) == 'FAILURE':
-            demisto.results("Kill process remediation action status is: {}".format(dict_safe_get(
+            failure_response = "Kill process remediation action status is: {}".format(dict_safe_get(
                 action_status, ['Remediation status'])) + "\n" + "Reason: {}".format(dict_safe_get(
                     action_status, ['Reason'])) + "\n" + "Remediation ID: {}".format(dict_safe_get(
-                        action_status, ['Remediation ID'])))
+                        action_status, ['Remediation ID']))
+            return CommandResults(readable_output=failure_response)
     else:
-        demisto.results('Machine must be connected to Cybereason in order to perform this action.')
+        return CommandResults(readable_output='Machine must be connected to Cybereason in order to perform this action.')
 
 
-def quarantine_file_command():
-    malop_guid = demisto.getArg('malopGuid')
-    machine_name = demisto.getArg('machine')
-    target_id = demisto.getArg('targetId')
-    user_name = demisto.getArg('userName')
-    timeout_second = demisto.getArg('timeout')
-    comment = demisto.getArg('comment') if demisto.getArg('comment') else 'Quarantine File Remediation Action Succeeded'
+def quarantine_file_command(client: Client, args):
+    malop_guid = args.get('malopGuid')
+    machine_name = args.get('machine')
+    target_id = args.get('targetId')
+    user_name = args.get('userName')
+    timeout_second = args.get('timeout')
+    comment = args.get('comment') if args.get('comment') else 'Quarantine File Remediation Action Succeeded'
     remediation_action = 'QUARANTINE_FILE'
-    is_machine_conntected = is_probe_connected_command(is_remediation_commmand=True)
+    is_machine_conntected = is_probe_connected_command(client, args, is_remediation_commmand=True)
     if is_machine_conntected is True:
-        response = get_remediation_action(malop_guid, machine_name, target_id, remediation_action)
-        action_status = get_remediation_action_status(user_name, malop_guid, response, timeout_second, comment)
+        response = get_remediation_action(client, malop_guid, machine_name, target_id, remediation_action)
+        action_status = get_remediation_action_status(client, user_name, malop_guid, response, timeout_second, comment)
         if dict_safe_get(action_status, ['Remediation status']) == 'SUCCESS':
-            demisto.results("Quarantine file remediation action status is: {}".format(dict_safe_get(
+            success_response = "Quarantine file remediation action status is: {}".format(dict_safe_get(
                 action_status, ['Remediation status'])) + "\n" + "Remediation ID: {}".format(dict_safe_get(
-                    action_status, ['Remediation ID'])))
+                    action_status, ['Remediation ID']))
+            return CommandResults(readable_output=success_response)
         elif dict_safe_get(action_status, ['Remediation status']) == 'FAILURE':
-            demisto.results("Quarantine file remediation action status is: {}".format(dict_safe_get(
+            failure_response = "Quarantine file remediation action status is: {}".format(dict_safe_get(
                 action_status, ['Remediation status'])) + "\n" + "Reason: {}".format(dict_safe_get(
                     action_status, ['Reason'])) + "\n" + "Remediation ID: {}".format(dict_safe_get(
-                        action_status, ['Remediation ID'])))
+                        action_status, ['Remediation ID']))
+            return CommandResults(readable_output=failure_response)
     else:
-        demisto.results('Machine must be connected to Cybereason in order to perform this action.')
+        return CommandResults(readable_output='Machine must be connected to Cybereason in order to perform this action.')
 
 
-def unquarantine_file_command():
-    malop_guid = demisto.getArg('malopGuid')
-    machine_name = demisto.getArg('machine')
-    target_id = demisto.getArg('targetId')
-    user_name = demisto.getArg('userName')
-    timeout_second = demisto.getArg('timeout')
-    comment = demisto.getArg('comment') if demisto.getArg('comment') else 'Unquarantine File Remediation Action Succeded'
+def unquarantine_file_command(client: Client, args):
+    malop_guid = args.get('malopGuid')
+    machine_name = args.get('machine')
+    target_id = args.get('targetId')
+    user_name = args.get('userName')
+    timeout_second = args.get('timeout')
+    comment = args.get('comment') if args.get('comment') else 'Unquarantine File Remediation Action Succeded'
     remediation_action = 'UNQUARANTINE_FILE'
-    is_machine_conntected = is_probe_connected_command(is_remediation_commmand=True)
+    is_machine_conntected = is_probe_connected_command(client, args, is_remediation_commmand=True)
     if is_machine_conntected is True:
-        response = get_remediation_action(malop_guid, machine_name, target_id, remediation_action)
-        action_status = get_remediation_action_status(user_name, malop_guid, response, timeout_second, comment)
+        response = get_remediation_action(client, malop_guid, machine_name, target_id, remediation_action)
+        action_status = get_remediation_action_status(client, user_name, malop_guid, response, timeout_second, comment)
         if dict_safe_get(action_status, ['Remediation status']) == 'SUCCESS':
-            demisto.results("Unquarantine file remediation action status is: {}".format(dict_safe_get(
+            success_response = "Unquarantine file remediation action status is: {}".format(dict_safe_get(
                 action_status, ['Remediation status'])) + "\n" + "Remediation ID: {}".format(dict_safe_get(
-                    action_status, ['Remediation ID'])))
+                    action_status, ['Remediation ID']))
+            return CommandResults(readable_output=success_response)
         elif dict_safe_get(action_status, ['Remediation status']) == 'FAILURE':
-            demisto.results("Unquarantine file remediation action status is: {}".format(dict_safe_get(
+            failure_response = "Unquarantine file remediation action status is: {}".format(dict_safe_get(
                 action_status, ['Remediation status'])) + "\n" + "Reason: {}".format(dict_safe_get(
                     action_status, ['Reason'])) + "\n" + "Remediation ID: {}".format(dict_safe_get(
-                        action_status, ['Remediation ID'])))
+                        action_status, ['Remediation ID']))
+            return CommandResults(readable_output=failure_response)
     else:
-        demisto.results('Machine must be connected to Cybereason in order to perform this action.')
+        return CommandResults(readable_output='Machine must be connected to Cybereason in order to perform this action.')
 
 
-def block_file_command():
-    malop_guid = demisto.getArg('malopGuid')
-    machine_name = demisto.getArg('machine')
-    target_id = demisto.getArg('targetId')
-    user_name = demisto.getArg('userName')
-    timeout_second = demisto.getArg('timeout')
-    comment = demisto.getArg('comment') if demisto.getArg('comment') else 'Block File Remediation Action Succeeded'
+def block_file_command(client: Client, args):
+    malop_guid = args.get('malopGuid')
+    machine_name = args.get('machine')
+    target_id = args.get('targetId')
+    user_name = args.get('userName')
+    timeout_second = args.get('timeout')
+    comment = args.get('comment') if args.get('comment') else 'Block File Remediation Action Succeeded'
     remediation_action = 'BLOCK_FILE'
-    is_machine_conntected = is_probe_connected_command(is_remediation_commmand=True)
+    is_machine_conntected = is_probe_connected_command(client, args, is_remediation_commmand=True)
     if is_machine_conntected is True:
-        response = get_remediation_action(malop_guid, machine_name, target_id, remediation_action)
-        action_status = get_remediation_action_status(user_name, malop_guid, response, timeout_second, comment)
+        response = get_remediation_action(client, malop_guid, machine_name, target_id, remediation_action)
+        action_status = get_remediation_action_status(client, user_name, malop_guid, response, timeout_second, comment)
         if dict_safe_get(action_status, ['Remediation status']) == 'SUCCESS':
-            demisto.results("Block file remediation action status is: {}".format(dict_safe_get(
+            success_response = "Block file remediation action status is: {}".format(dict_safe_get(
                 action_status, ['Remediation status'])) + "\n" + "Remediation ID: {}".format(dict_safe_get(
-                    action_status, ['Remediation ID'])))
+                    action_status, ['Remediation ID']))
+            return CommandResults(readable_output=success_response)
         elif dict_safe_get(action_status, ['Remediation status']) == 'FAILURE':
-            demisto.results("Block file remediation action status is: {}".format(dict_safe_get(
+            failure_response ="Block file remediation action status is: {}".format(dict_safe_get(
                 action_status, ['Remediation status'])) + "\n" + "Reason: {}".format(dict_safe_get(
                     action_status, ['Reason'])) + "\n" + "Remediation ID: {}".format(dict_safe_get(
-                        action_status, ['Remediation ID'])))
+                        action_status, ['Remediation ID']))
+            return CommandResults(readable_output=failure_response)
     else:
-        demisto.results('Machine must be connected to Cybereason in order to perform this action.')
+        return CommandResults(readable_output='Machine must be connected to Cybereason in order to perform this action.')
 
 
-def delete_registry_key_command():
-    malop_guid = demisto.getArg('malopGuid')
-    machine_name = demisto.getArg('machine')
-    target_id = demisto.getArg('targetId')
-    user_name = demisto.getArg('userName')
-    timeout_second = demisto.getArg('timeout')
-    comment = demisto.getArg('comment') if demisto.getArg('comment') else 'Delete Registry Key Remediation Action Succeeded'
+def delete_registry_key_command(client: Client, args):
+    malop_guid = args.get('malopGuid')
+    machine_name = args.get('machine')
+    target_id = args.get('targetId')
+    user_name = args.get('userName')
+    timeout_second = args.get('timeout')
+    comment = args.get('comment') if args.get('comment') else 'Delete Registry Key Remediation Action Succeeded'
     remediation_action = 'DELETE_REGISTRY_KEY'
-    is_machine_conntected = is_probe_connected_command(is_remediation_commmand=True)
+    is_machine_conntected = is_probe_connected_command(client, args, is_remediation_commmand=True)
     if is_machine_conntected is True:
-        response = get_remediation_action(malop_guid, machine_name, target_id, remediation_action)
-        action_status = get_remediation_action_status(user_name, malop_guid, response, timeout_second, comment)
+        response = get_remediation_action(client, malop_guid, machine_name, target_id, remediation_action)
+        action_status = get_remediation_action_status(client, user_name, malop_guid, response, timeout_second, comment)
         if dict_safe_get(action_status, ['Remediation status']) == 'SUCCESS':
-            demisto.results("Delete registry key remediation action status is: {}".format(dict_safe_get(
+            success_response = "Delete registry key remediation action status is: {}".format(dict_safe_get(
                 action_status, ['Remediation status'])) + "\n" + "Remediation ID: {}".format(dict_safe_get(
-                    action_status, ['Remediation ID'])))
+                    action_status, ['Remediation ID']))
+            return CommandResults(readable_output=success_response)
         elif dict_safe_get(action_status, ['Remediation status']) == 'FAILURE':
-            demisto.results("Delete registry key remediation action status is: {}".format(dict_safe_get(
+            failure_response = "Delete registry key remediation action status is: {}".format(dict_safe_get(
                 action_status, ['Remediation status'])) + "\n" + "Reason: {}".format(dict_safe_get(
                     action_status, ['Reason'])) + "\n" + "Remediation ID: {}".format(dict_safe_get(
-                        action_status, ['Remediation ID'])))
+                        action_status, ['Remediation ID']))
+            return CommandResults(readable_output=failure_response)
     else:
-        demisto.results('Machine must be connected to Cybereason in order to perform this action.')
+        return CommandResults(readable_output='Machine must be connected to Cybereason in order to perform this action.')
 
 
-def kill_prevent_unsuspend_command():
-    malop_guid = demisto.getArg('malopGuid')
-    machine_name = demisto.getArg('machine')
-    target_id = demisto.getArg('targetId')
-    user_name = demisto.getArg('userName')
-    timeout_second = demisto.getArg('timeout')
-    comment = demisto.getArg('comment') if demisto.getArg('comment') else 'Kill Prevent Unsuspend Remediation Action Succeeded'
+def kill_prevent_unsuspend_command(client: Client, args):
+    malop_guid = args.get('malopGuid')
+    machine_name = args.get('machine')
+    target_id = args.get('targetId')
+    user_name = args.get('userName')
+    timeout_second = args.get('timeout')
+    comment = args.get('comment') if args.get('comment') else 'Kill Prevent Unsuspend Remediation Action Succeeded'
     remediation_action = 'KILL_PREVENT_UNSUSPEND'
-    is_machine_conntected = is_probe_connected_command(is_remediation_commmand=True)
+    is_machine_conntected = is_probe_connected_command(client, args, is_remediation_commmand=True)
     if is_machine_conntected is True:
-        response = get_remediation_action(malop_guid, machine_name, target_id, remediation_action)
-        action_status = get_remediation_action_status(user_name, malop_guid, response, timeout_second, comment)
+        response = get_remediation_action(client, malop_guid, machine_name, target_id, remediation_action)
+        action_status = get_remediation_action_status(client, user_name, malop_guid, response, timeout_second, comment)
         if dict_safe_get(action_status, ['Remediation status']) == 'SUCCESS':
-            demisto.results("Kill prevent unsuspend remediation action status is: {}".format(dict_safe_get(
+            success_response = "Kill prevent unsuspend remediation action status is: {}".format(dict_safe_get(
                 action_status, ['Remediation status'])) + "\n" + "Remediation ID: {}".format(dict_safe_get(
-                    action_status, ['Remediation ID'])))
+                    action_status, ['Remediation ID']))
+            return CommandResults(readable_output=success_response)
         elif dict_safe_get(action_status, ['Remediation status']) == 'FAILURE':
-            demisto.results("Kill prevent unsuspend remediation action status is: {}".format(dict_safe_get(
+            failure_response = "Kill prevent unsuspend remediation action status is: {}".format(dict_safe_get(
                 action_status, ['Remediation status'])) + "\n" + "Reason: {}".format(dict_safe_get(
                     action_status, ['Reason'])) + "\n" + "Remediation ID: {}".format(dict_safe_get(
-                        action_status, ['Remediation ID'])))
+                        action_status, ['Remediation ID']))
+            return CommandResults(readable_output=failure_response)
     else:
-        demisto.results('Machine must be connected to Cybereason in order to perform this action.')
+        return CommandResults(readable_output='Machine must be connected to Cybereason in order to perform this action.')
 
 
-def unsuspend_process_command():
-    malop_guid = demisto.getArg('malopGuid')
-    machine_name = demisto.getArg('machine')
-    target_id = demisto.getArg('targetId')
-    user_name = demisto.getArg('userName')
-    timeout_second = demisto.getArg('timeout')
-    comment = demisto.getArg('comment') if demisto.getArg('comment') else 'Unsuspend Process Remediation Action Succeeded'
+def unsuspend_process_command(client: Client, args):
+    malop_guid = args.get('malopGuid')
+    machine_name = args.get('machine')
+    target_id = args.get('targetId')
+    user_name = args.get('userName')
+    timeout_second = args.get('timeout')
+    comment = args.get('comment') if args.get('comment') else 'Unsuspend Process Remediation Action Succeeded'
     remediation_action = 'UNSUSPEND_PROCESS'
-    is_machine_conntected = is_probe_connected_command(is_remediation_commmand=True)
+    is_machine_conntected = is_probe_connected_command(client, args, is_remediation_commmand=True)
     if is_machine_conntected is True:
-        response = get_remediation_action(malop_guid, machine_name, target_id, remediation_action)
-        action_status = get_remediation_action_status(user_name, malop_guid, response, timeout_second, comment)
+        response = get_remediation_action(client, malop_guid, machine_name, target_id, remediation_action)
+        action_status = get_remediation_action_status(client, user_name, malop_guid, response, timeout_second, comment)
         if dict_safe_get(action_status, ['Remediation status']) == 'SUCCESS':
-            demisto.results("Unsuspend process remediation action status is: {}".format(dict_safe_get(
+            success_response = "Unsuspend process remediation action status is: {}".format(dict_safe_get(
                 action_status, ['Remediation status'])) + "\n" + "Remediation ID: {}".format(dict_safe_get(
-                    action_status, ['Remediation ID'])))
+                    action_status, ['Remediation ID']))
+            return CommandResults(readable_output=success_response)
         elif dict_safe_get(action_status, ['Remediation status']) == 'FAILURE':
-            demisto.results("Unsuspend process remediation action status is: {}".format(dict_safe_get(
+            failure_response = "Unsuspend process remediation action status is: {}".format(dict_safe_get(
                 action_status, ['Remediation status'])) + "\n" + "Reason: {}".format(dict_safe_get(
                     action_status, ['Reason'])) + "\n" + "Remediation ID: {}".format(dict_safe_get(
-                        action_status, ['Remediation ID'])))
+                        action_status, ['Remediation ID']))
+            return CommandResults(readable_output=failure_response)
     else:
-        demisto.results('Machine must be connected to Cybereason in order to perform this action.')
+        return CommandResults(readable_output='Machine must be connected to Cybereason in order to perform this action.')
 
 
-def get_remediation_action(malop_guid: str, machine_name: str, target_id: str, remediation_action: str) -> dict:
-    machine_guid = get_machine_guid(machine_name)
+def get_remediation_action(client: Client, malop_guid: str, machine_name: str, target_id: str, remediation_action: str) -> dict:
+    machine_guid = get_machine_guid(client, machine_name)
     json_body = {
         'malopId': malop_guid,
         'actionsByMachine': {
@@ -1063,20 +1064,20 @@ def get_remediation_action(malop_guid: str, machine_name: str, target_id: str, r
         }
     }
 
-    return http_request('POST', '/rest/remediate', json_body=json_body)
+    return client.cybereason_api_call('POST', '/rest/remediate', json_body=json_body)
 
 
-def get_remediation_action_status(user_name: str, malop_guid: str, response: dict, timeout_second: str, comment: str) -> dict:
+def get_remediation_action_status(client: Client, user_name: str, malop_guid: str, response: dict, timeout_second: str, comment: str) -> dict:
     remediation_id = dict_safe_get(response, ['remediationId'])
-    progress_api_response = get_remediation_action_progress(user_name, malop_guid, remediation_id, timeout_second)
+    progress_api_response = get_remediation_action_progress(client, user_name, malop_guid, remediation_id, timeout_second)
     status = dict_safe_get(progress_api_response, ['Remediation status'])
     if status == 'SUCCESS':
-        add_comment(malop_guid, comment.encode('utf-8'))
+        add_comment(client, malop_guid, comment.encode('utf-8'))
     progress_api_response["Remediation ID"] = remediation_id
     return progress_api_response
 
 
-def get_remediation_action_progress(username: str, malop_id: str, remediation_id: str, timeout_second: str) -> dict:
+def get_remediation_action_progress(client: Client, username: str, malop_id: str, remediation_id: str, timeout_second: str) -> dict:
     timeout_sec = int(timeout_second)
     interval_sec = 10
     final_response = ''
@@ -1084,7 +1085,7 @@ def get_remediation_action_progress(username: str, malop_id: str, remediation_id
         raise Exception("Timeout second value should not be less than 10 seconds")
     else:
         while timeout_sec > 0:
-            final_response = http_request(
+            final_response = client.cybereason_api_call(
                 'GET', '/rest/remediate/progress/' + username + '/' + str(malop_id) + '/' + remediation_id)
             time.sleep(interval_sec)
             timeout_sec = timeout_sec - interval_sec
@@ -1101,8 +1102,8 @@ def get_remediation_action_progress(username: str, malop_id: str, remediation_id
                 return {"Remediation status": statusLog_final_status, "Reason": dict_safe_get(statusLog_final_error, ['message'])}
 
 
-def query_file_command():
-    file_hash_input = demisto.getArg('file_hash')
+def query_file_command(client: Client, args):
+    file_hash_input = args.get('file_hash')
     file_hash_list = file_hash_input.split(",")
     for file_hash in file_hash_list:
 
@@ -1124,7 +1125,7 @@ def query_file_command():
         else:
             raise Exception('Hash type is not supported.')
 
-        data = query_file(filters)
+        data = query_file(client, filters)
 
         if data:
             cybereason_outputs = []
@@ -1132,7 +1133,7 @@ def query_file_command():
             endpoint_outputs = []
             files = dict_safe_get(data, ['resultIdToElementDataMap'], {}, dict)
             for fname, fstat in files.items():
-                raw_machine_details = dict_safe_get(get_file_machine_details(fname), ['data', 'resultIdToElementDataMap'],
+                raw_machine_details = dict_safe_get(get_file_machine_details(client, fname), ['data', 'resultIdToElementDataMap'],
                                                     default_return_value={}, return_type=dict)
                 machine_details = dict_safe_get(raw_machine_details, dict_safe_get(list(raw_machine_details.keys()), [0]),
                                                 default_return_value={}, return_type=dict)
@@ -1213,20 +1214,17 @@ def query_file_command():
                 'Cybereason.File(val.MD5 && val.MD5===obj.MD5 || val.SHA1 && val.SHA1===obj.SHA1)': cybereason_outputs,
                 'Endpoint(val.Hostname===obj.Hostname)': endpoint_outputs, outputPaths['file']: file_outputs}
 
-            demisto.results({
-                'ContentsFormat': formats['json'],
-                'Type': entryTypes['note'],
-                'Contents': data,
-                'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': tableToMarkdown(
+            return CommandResults(
+                readable_output=tableToMarkdown(
                     'Cybereason file query results for the file hash: {}'.format(file_hash), cybereason_outputs, removeNull=True),
-                'EntryContext': ec
-            })
+                outputs_prefix='Cybereason.File',
+                outputs_key_field='Name',
+                outputs=ec)
         else:
-            demisto.results('No results found.')
+            return CommandResults(readable_output='No results found.')
 
 
-def query_file(filters: list) -> dict:
+def query_file(client: Client, filters: list) -> dict:
     query_fields = ['md5String', 'ownerMachine', 'avRemediationStatus', 'isSigned', 'signatureVerified',
                     'sha1String', 'maliciousClassificationType', 'createdTime', 'modifiedTime', 'size', 'correctedPath',
                     'productName', 'productVersion', 'companyName', 'internalName', 'elementDisplayName']
@@ -1238,14 +1236,14 @@ def query_file(filters: list) -> dict:
         }
     ]
     json_body = build_query(query_fields, path)
-    response = http_request('POST', '/rest/visualsearch/query/simple', json_body=json_body)
+    response = client.cybereason_api_call('POST', '/rest/visualsearch/query/simple', json_body=json_body)
     if response.get('status') == 'SUCCESS' and 'data' in response:
         return response['data']
     else:
         raise Exception('Error occurred while trying to query the file.')
 
 
-def get_file_machine_details(file_guid: str) -> dict:
+def get_file_machine_details(client: Client, file_guid: str) -> dict:
     query_fields = ["ownerMachine", "self", "elementDisplayName", "correctedPath", "canonizedPath", "mount",
                     "mountedAs", "createdTime", "modifiedTime", "md5String", "sha1String", "productType", "companyName",
                     "productName", "productVersion", "signerInternalOrExternal", "signedInternalOrExternal",
@@ -1266,11 +1264,11 @@ def get_file_machine_details(file_guid: str) -> dict:
     ]
     json_body = build_query(query_fields, path, template_context='DETAILS')
 
-    return http_request('POST', '/rest/visualsearch/query/simple', json_body=json_body)
+    return client.cybereason_api_call('POST', '/rest/visualsearch/query/simple', json_body=json_body)
 
 
-def query_domain_command():
-    domain_input_value = demisto.getArg('domain')
+def query_domain_command(client: Client, args):
+    domain_input_value = args.get('domain')
     domain_list = domain_input_value.split(",")
     for domain_input in domain_list:
 
@@ -1280,7 +1278,7 @@ def query_domain_command():
             'filterType': 'ContainsIgnoreCase'
         }]
 
-        data = query_domain(filters)
+        data = query_domain(client, filters)
 
         if data:
             cybereason_outputs = []
@@ -1315,23 +1313,17 @@ def query_domain_command():
             ec = {
                 'Cybereason.Domain(val.Name && val.Name===obj.Name)': cybereason_outputs, outputPaths['domain']: domain_outputs}
 
-            demisto.results({
-                'ContentsFormat': formats['json'],
-                'Type': entryTypes['note'],
-                'Contents': data,
-                'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': tableToMarkdown(
-                    'Cybereason domain query results for the domain: {}'.format(domain_input), cybereason_outputs,
-                    ['Name', 'Reputation', 'IsInternalDomain', 'WasEverResolved',
-                        'WasEverResolvedAsASecondLevelDomain', 'Malicious',
-                        'SuspicionsCount']),
-                'EntryContext': ec
-            })
+            return CommandResults(
+                readable_output=tableToMarkdown(
+                    'Cybereason domain query results for the domain: {}'.format(domain_input), cybereason_outputs, headers=DOMAIN_HEADERS),
+                outputs_prefix='Cybereason.Domain',
+                outputs_key_field='Name',
+                outputs=ec)
         else:
-            demisto.results('No results found.')
+            return CommandResults(readable_output='No results found.')
 
 
-def query_domain(filters: list) -> dict:
+def query_domain(client: Client, filters: list) -> dict:
     query_fields = ['maliciousClassificationType', 'isInternalDomain',
                     'everResolvedDomain', 'everResolvedSecondLevelDomain', 'elementDisplayName']
     path = [
@@ -1342,15 +1334,15 @@ def query_domain(filters: list) -> dict:
         }
     ]
     json_body = build_query(query_fields, path)
-    response = http_request('POST', '/rest/visualsearch/query/simple', json_body=json_body)
+    response = client.cybereason_api_call('POST', '/rest/visualsearch/query/simple', json_body=json_body)
     if response.get('status', '') == 'SUCCESS' and 'data' in response:
         return response['data']
     else:
         raise Exception('Error occurred while trying to query the file.')
 
 
-def query_user_command():
-    username_input = demisto.getArg('username')
+def query_user_command(client: Client, args):
+    username_input = args.get('username')
     username_list = username_input.split(",")
     for username in username_list:
 
@@ -1360,7 +1352,7 @@ def query_user_command():
             'filterType': 'ContainsIgnoreCase'
         }]
 
-        data = query_user(filters)
+        data = query_user(client, filters)
 
         if data:
             cybereason_outputs = []
@@ -1387,21 +1379,17 @@ def query_user_command():
                     'Cybereason.User(val.Username && val.Username===obj.Username)': cybereason_outputs
                 }
 
-                demisto.results({
-                    'ContentsFormat': formats['json'],
-                    'Type': entryTypes['note'],
-                    'Contents': data,
-                    'ReadableContentsFormat': formats['markdown'],
-                    'HumanReadable': tableToMarkdown(
-                        'Cybereason user query results for the username: {}'.format(username), cybereason_outputs,
-                        ['Username', 'Domain', 'LastMachineLoggedInTo', 'Organization', 'LocalSystem']),
-                    'EntryContext': ec
-                })
+                return CommandResults(
+                    readable_output=tableToMarkdown(
+                        'Cybereason user query results for the username: {}'.format(username), cybereason_outputs, headers=USER_HEADERS),
+                    outputs_prefix='Cybereason.User',
+                    outputs_key_field='Username',
+                    outputs=ec)
         else:
-            demisto.results('No results found.')
+            return CommandResults(readable_output='No results found.')
 
 
-def query_user(filters: list) -> dict:
+def query_user(client: Client, filters: list) -> dict:
     query_fields = ['domain', 'ownerMachine', 'ownerOrganization', 'isLocalSystem', 'elementDisplayName']
     path = [
         {
@@ -1413,22 +1401,22 @@ def query_user(filters: list) -> dict:
 
     json_body = build_query(query_fields, path)
 
-    response = http_request('POST', '/rest/visualsearch/query/simple', json_body=json_body)
+    response = client.cybereason_api_call('POST', '/rest/visualsearch/query/simple', json_body=json_body)
     if response.get('status', '') == 'SUCCESS' and 'data' in response:
         return response['data']
     else:
         raise Exception('Error occurred while trying to query the file.')
 
 
-def archive_sensor():
-    sensor_id = demisto.getArg('sensorID')
-    archive_reason = demisto.getArg('archiveReason')
+def archive_sensor_command(client: Client, args):
+    sensor_id = args.get('sensorID')
+    archive_reason = args.get('archiveReason')
 
     data = {
         "sensorsIds": [sensor_id],
         "argument": archive_reason
     }
-    response = http_request('POST', '/rest/sensors/action/archive', json_body=data, return_json=False, custom_response=True)
+    response = client.cybereason_api_call('POST', '/rest/sensors/action/archive', json_body=data, return_json=False, custom_response=True)
 
     if response.status_code == 204:
         output = "The selected Sensor with Sensor ID: {sensor_id} is not available for archive.".format(sensor_id=sensor_id)
@@ -1449,17 +1437,17 @@ def archive_sensor():
             raise Exception(
                 'Your request failed with the following error: ' + response.content + '. Response Status code: ' + str(
                     response.status_code))
-    demisto.results(output)
+    return CommandResults(readable_output=output)
 
 
-def unarchive_sensor():
-    sensor_id = demisto.getArg('sensorID')
-    unarchive_reason = demisto.getArg('unarchiveReason')
+def unarchive_sensor_command(client: Client, args):
+    sensor_id = args.get('sensorID')
+    unarchive_reason = args.get('unarchiveReason')
     data = {
         "sensorsIds": [sensor_id],
         "argument": unarchive_reason
     }
-    response = http_request('POST', '/rest/sensors/action/unarchive', json_body=data, return_json=False, custom_response=True)
+    response = client.cybereason_api_call('POST', '/rest/sensors/action/unarchive', json_body=data, return_json=False, custom_response=True)
     if response.status_code == 204:
         output = "The selected Sensor with Sensor ID: {sensor_id} is not available for unarchive.".format(sensor_id=sensor_id)
     elif response.status_code == 200:
@@ -1479,16 +1467,16 @@ def unarchive_sensor():
             raise Exception(
                 'Your request failed with the following error: ' + response.content + '. Response Status code: ' + str(
                     response.status_code))
-    demisto.results(output)
+    return CommandResults(readable_output=output)
 
 
-def delete_sensor():
-    sensor_id = demisto.getArg('sensorID')
+def delete_sensor_command(client: Client, args):
+    sensor_id = args.get('sensorID')
 
     data = {
         "sensorsIds": [sensor_id]
     }
-    response = http_request('POST', '/rest/sensors/action/delete', json_body=data, return_json=False, custom_response=True)
+    response = client.cybereason_api_call('POST', '/rest/sensors/action/delete', json_body=data, return_json=False, custom_response=True)
 
     if response.status_code == 204:
         output = "The selected Sensor with Sensor ID: {sensor_id} is not available for deleting.".format(sensor_id=sensor_id)
@@ -1502,7 +1490,7 @@ def delete_sensor():
             raise Exception(
                 'Your request failed with the following error: ' + response.content + '. Response Status code: ' + str(
                     response.status_code))
-    demisto.results(output)
+    return CommandResults(readable_output=output)
 
 
 def malop_to_incident(malop: str) -> dict:
@@ -1518,7 +1506,7 @@ def malop_to_incident(malop: str) -> dict:
     return incident
 
 
-def fetch_incidents():
+def fetch_incidents(client: Client):
     last_run = demisto.getLastRun()
 
     if last_run and last_run.get('creation_time'):
@@ -1544,7 +1532,7 @@ def fetch_incidents():
     else:
         raise Exception('Given filter to fetch by is invalid.')
 
-    malop_process_type, malop_loggon_session_type = query_malops(total_result_limit=10000, per_group_limit=10000,
+    malop_process_type, malop_loggon_session_type = query_malops(client, total_result_limit=10000, per_group_limit=10000,
                                                                  filters=filters)
     incidents = []
 
@@ -1570,7 +1558,7 @@ def fetch_incidents():
     demisto.incidents(incidents)
 
 
-def login():
+def login(client: Client):
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
         'Connection': 'close'
@@ -1579,7 +1567,7 @@ def login():
         'username': USERNAME,
         'password': PASSWORD
     }
-    http_request('POST', '/login.html', data=data, headers=headers, return_json=False)
+    client.cybereason_api_call('POST', '/login.html', data=data, headers=headers, return_json=False)
 
 
 def client_certificate():
@@ -1619,8 +1607,8 @@ def client_certificate():
         raise Exception("Failed to login with certificate. Expected response 200. Got: " + str(response.status_code))
 
 
-def logout():
-    http_request('GET', '/logout', return_json=False)
+def logout(client: Client):
+    client.cybereason_api_call('GET', '/logout', return_json=False)
 
 
 ''' EXECUTION CODE '''
@@ -1630,14 +1618,14 @@ LOG('command is %s' % (demisto.command(),))
 session = requests.session()
 
 
-def get_file_guids(malop_id: str) -> dict:
+def get_file_guids(client: Client, malop_id: str) -> dict:
     """Get all File GUIDs for the given malop"""
-    processes = fetch_malop_processes(malop_id)
-    img_file_guids = fetch_imagefile_guids(processes)
+    processes = fetch_malop_processes(client, malop_id)
+    img_file_guids = fetch_imagefile_guids(client, processes)
     return img_file_guids
 
 
-def fetch_malop_processes(malop_id: str) -> list:
+def fetch_malop_processes(client: Client, malop_id: str) -> list:
     json_body = {
         "queryPath": [
             {
@@ -1667,7 +1655,7 @@ def fetch_malop_processes(malop_id: str) -> list:
             "elementDisplayName"
         ]
     }
-    response = http_request('POST', '/rest/visualsearch/query/simple', json_body=json_body)
+    response = client.cybereason_api_call('POST', '/rest/visualsearch/query/simple', json_body=json_body)
     try:
         result = response['data']['resultIdToElementDataMap']
     except Exception as e:
@@ -1675,7 +1663,7 @@ def fetch_malop_processes(malop_id: str) -> list:
     return list(result.keys())
 
 
-def fetch_imagefile_guids(processes: list) -> dict:
+def fetch_imagefile_guids(client: Client, processes: list) -> dict:
     json_body = {
         "queryPath": [
             {
@@ -1715,7 +1703,7 @@ def fetch_imagefile_guids(processes: list) -> dict:
             "unresolvedDnsQueriesFromIp", "unresolvedDnsQueriesFromDomain", "cpuTime", "memoryUsage", "hasVisibleWindows",
             "integrity", "isHidden", "logonSession", "remoteSession", "isWhiteListClassification", "matchedWhiteListRuleIds"]
     }
-    response = http_request('POST', '/rest/visualsearch/query/simple', json_body=json_body)
+    response = client.cybereason_api_call('POST', '/rest/visualsearch/query/simple', json_body=json_body)
     img_file_guids = dict()
     result = response['data']['resultIdToElementDataMap']
     try:
@@ -1729,33 +1717,33 @@ def fetch_imagefile_guids(processes: list) -> dict:
     return img_file_guids
 
 
-def start_fetchfile_command():
-    malop_id = demisto.getArg('malopGUID')
-    user_name = demisto.getArg('userName')
-    response = get_file_guids(malop_id)
+def start_fetchfile_command(client: Client, args):
+    malop_id = args.get('malopGUID')
+    user_name = args.get('userName')
+    response = get_file_guids(client,malop_id)
     for filename, file_guid in list(response.items()):
-        api_response = start_fetchfile(file_guid, user_name)
+        api_response = start_fetchfile(client, file_guid, user_name)
         try:
             if api_response['status'] == "SUCCESS":
-                demisto.results("Successfully started fetching file for the given malop")
+                return CommandResults(readable_output="Successfully started fetching file for the given malop")
         except Exception:
             raise Exception("Failed to start fetch file process")
 
 
-def start_fetchfile(element_id: str, user_name: str) -> dict:
+def start_fetchfile(client: Client, element_id: str, user_name: str) -> dict:
     json_body = {
         'elementGuids': [element_id],
         'initiatorUserName': user_name
     }
-    return http_request('POST', '/rest/fetchfile/start', json_body=json_body)
+    return client.cybereason_api_call('POST', '/rest/fetchfile/start', json_body=json_body)
 
 
-def fetchfile_progress_command():
-    malop_id = demisto.getArg('malopGuid')
-    response = get_file_guids(malop_id)
+def fetchfile_progress_command(client: Client, args):
+    malop_id = args.get('malopGuid')
+    response = get_file_guids(client, malop_id)
     timeout_sec = 60
     interval_sec = 10
-    new_malop_comments = get_batch_id(response, timeout_sec, interval_sec)
+    new_malop_comments = get_batch_id(client, response, timeout_sec, interval_sec)
     filename = []
     status = []
     message = []
@@ -1764,27 +1752,24 @@ def fetchfile_progress_command():
         status.append(new_malop_comments[item].get("isSuccess"))
         message.append(new_malop_comments[item].get("message"))
     ec = {
-        'Download.progress(val.MalopID && val.MalopID === obj.MalopID)': {
+        'Cybereason.Download.Progress(val.MalopID && val.MalopID === obj.MalopID)': {
             'fileName': filename,
             'status': status,
             'batchID': message,
             'MalopID': malop_id
         }
     }
-    demisto.results({
-        'Type': entryTypes['note'],
-        'Contents': new_malop_comments,
-        'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['text'],
-        'HumanReadable': 'Filename: ' + str(filename) + ' Status: ' + str(status) + ' Batch ID: ' + str(message),
-        'EntryContext': ec
-    })
+    return CommandResults(
+        readable_output='Filename: ' + str(filename) + ' Status: ' + str(status) + ' Batch ID: ' + str(message),
+        outputs_prefix='Cybereason.Download.Progress',
+        outputs_key_field='fileName',
+        outputs=ec)
 
 
-def get_batch_id(suspect_files_guids: dict, timeout_seconds: int, interval_seconds: int) -> list:
+def get_batch_id(client: Client, suspect_files_guids: dict, timeout_seconds: int, interval_seconds: int) -> list:
     new_malop_comments = []
     passed_seconds = timeout_seconds
-    progress_response = fetchfile_progress()
+    progress_response = fetchfile_progress(client)
     while passed_seconds > 0:
         result = progress_response
         for file_status in result['data']:
@@ -1802,123 +1787,123 @@ def get_batch_id(suspect_files_guids: dict, timeout_seconds: int, interval_secon
     return new_malop_comments
 
 
-def fetchfile_progress():
-    return http_request('GET', '/rest/fetchfile/downloads/progress')
+def fetchfile_progress(client: Client):
+    return client.cybereason_api_call('GET', '/rest/fetchfile/downloads/progress')
 
 
-def download_fetchfile_command():
-    batch_id = demisto.getArg('batchID')
+def download_fetchfile_command(client: Client, args):
+    batch_id = args.get('batchID')
     demisto.log('Downloading the file with this Batch ID: {}'.format(batch_id))
-    response = download_fetchfile(batch_id)
+    response = download_fetchfile(client, batch_id)
     if response.status_code == 200:
         file_download = fileResult('download.zip', response.content)
-        demisto.results(file_download)
-    elif response.status_code == 500:
-        demisto.results('The given Batch ID has expired')
+        return file_download
     else:
-        demisto.results('Your request failed with the following error: ' + response.content + '. Response Status code: ' + str(
-            response.status_code))
+        return CommandResults(
+            readable_output='Your request failed with the following error: ' + response.content + '. Response Status code: ' + str(
+                response.status_code))
 
 
-def download_fetchfile(batch_id: str) -> Any:
+def download_fetchfile(client: Client, batch_id: str) -> Any:
     url = '/rest/fetchfile/getfiles/{batch_id}'.format(batch_id=batch_id)
-    return http_request('GET', url, custom_response=True, return_json=False)
+    return client.cybereason_api_call('GET', url, custom_response=True, return_json=False)
 
 
-def close_fetchfile_command():
-    batch_id = demisto.getArg('batchID')
-    response = close_fetchfile(batch_id)
+def close_fetchfile_command(client: Client, args):
+    batch_id = args.get('batchID')
+    response = close_fetchfile(client, batch_id)
     try:
         if response.json()['status'] == 'SUCCESS':
-            demisto.results('Successfully aborts a file download operation that is in progress.')
+            return CommandResults(readable_output='Successfully aborts a file download operation that is in progress.')
     except Exception:
         raise Exception('The given Batch ID does not exist')
 
 
-def close_fetchfile(batch_id: str) -> Any:
+def close_fetchfile(client: Client, batch_id: str) -> Any:
     url = '/rest/fetchfile/close/{batch_id}'.format(batch_id=batch_id)
-    return http_request('GET', url, custom_response=True, return_json=False)
+    return client.cybereason_api_call('GET', url, custom_response=True, return_json=False)
 
 
-def malware_query_command():
-    needs_attention = demisto.getArg('needsAttention')
-    malware_type = demisto.getArg('type')
-    malware_status = demisto.getArg('status')
-    time_stamp = demisto.getArg('timestamp')
-    limit_range = demisto.getArg('limit')
+def malware_query_command(client: Client, args):
+    needs_attention = argToBoolean(args.get('needsAttention')) if args.get('needsAttention') else False
+    malware_type = args.get('type')
+    malware_status = args.get('status')
+    time_stamp = args.get('timestamp')
+    limit_range = args.get('limit')
     limit_range = int(limit_range)
     if limit_range > 0:
-        filter_response = malware_query_filter(needs_attention, malware_type, malware_status, time_stamp, limit_range)
-        demisto.results(filter_response)
+        filter_response = malware_query_filter(client, needs_attention, malware_type, malware_status, time_stamp, limit_range)
+        return CommandResults(raw_response=filter_response)
     else:
-        raise Exception("Limit cannot be zero or a negative number.")
+        return CommandResults(readable_output="Limit cannot be zero or a negative number.")
 
 
-def malware_query_filter(needs_attention: str, malware_type: str, malware_status: str, time_stamp: str, limit_range: int) -> dict:
+def malware_query_filter(client: Client, needs_attention: str, malware_type: str, malware_status: str, time_stamp: str, limit_range: int) -> dict:
     query = []
-    if bool(needs_attention) is True:
+    if needs_attention:
         query.append({"fieldName": "needsAttention", "operator": "Is", "values": [bool(needs_attention)]})
-    if bool(malware_type) is True:
+    if malware_type:
         types = malware_type.split(",")
         query.append({"fieldName": "type", "operator": "Equals", "values": types})
-    if bool(malware_status) is True:
+    if malware_status:
         is_status = malware_status.split(",")
         query.append({"fieldName": "status", "operator": "Equals", "values": is_status})
-    if bool(time_stamp) is True:
+    if time_stamp:
         query.append({"fieldName": "timestamp", "operator": "GreaterThan", "values": [int(time_stamp)]})
-    response = malware_query(query, limit_range)
+    response = malware_query(client, query, limit_range)
     return response
 
 
-def malware_query(action_values: list, limit: int) -> dict:
+def malware_query(client, action_values: list, limit: int) -> dict:
     json_body = {"filters": action_values, "sortingFieldName": "timestamp", "sortDirection": "DESC", "limit": limit, "offset": 0}
 
-    return http_request('POST', '/rest/malware/query', json_body=json_body)
+    return client.cybereason_api_call('POST', '/rest/malware/query', json_body=json_body)
 
 
-def start_host_scan_command():
-    sensor_id = demisto.getArg('sensorID')
+def start_host_scan_command(client: Client, args):
+    sensor_id = args.get('sensorID')
     sensor_ids = sensor_id.split(",")
-    argument = demisto.getArg('scanType')
+    argument = args.get('scanType')
     json_body = {
         "sensorsIds": sensor_ids,
         "argument": argument
     }
-    response = http_request(
+    response = client.cybereason_api_call(
         'POST', '/rest/sensors/action/schedulerScan', json_body=json_body, return_json=False, custom_response=True)
     if response.status_code == 204:
-        demisto.results("Given Sensor ID/ID's {sensor_ids} is/are not available for scanning.".format(sensor_ids=sensor_ids))
+        return CommandResults(
+            readable_output="Given Sensor ID/ID's {sensor_ids} is/are not available for scanning.".format(sensor_ids=sensor_ids))
     elif response.status_code == 200:
         try:
             response_json = response.json()
             batch_id = dict_safe_get(response_json, ['batchId'])
-            demisto.results("Scanning initiation successful. Batch ID: {}".format(batch_id))
+            return CommandResults(readable_output='Scanning initiation successful. Batch ID: {}'.format(batch_id))
         except Exception as e:
             raise Exception("Exception occurred while processing response for scanning a host: " + str(e))
     else:
         try:
             json_response = response.json()
-            demisto.results(
-                "Could not scan the host. The received response is {json_response}".format(json_response=json_response))
+            return CommandResults(
+                readable_output='Could not scan the host. The received response is {json_response}'.format(json_response=json_response))
         except Exception:
             raise Exception(
                 'Your request failed with the following error: ' + response.content + '. Response Status code: ' + str(
                     response.status_code))
 
 
-def fetch_scan_status_command():
-    batch_id = demisto.getArg('batchID')
-    action_response = http_request('GET', '/rest/sensors/allActions')
+def fetch_scan_status_command(client: Client, args):
+    batch_id = args.get('batchID')
+    action_response = client.cybereason_api_call('GET', '/rest/sensors/allActions')
     output = "The given batch ID does not match with any actions on sensors."
     for item in action_response:
         if dict_safe_get(item, ['batchId']) == int(batch_id):
             output = item
             break
-    demisto.results(output)
+    return CommandResults(raw_response=output)
 
 
-def get_sensor_id_command():
-    machine_name = demisto.getArg('machineName')
+def get_sensor_id_command(client: Client, args):
+    machine_name = args.get('machineName')
     json_body = {}
     if machine_name:
         json_body = {
@@ -1930,146 +1915,158 @@ def get_sensor_id_command():
                 }
             ]
         }
-    response = http_request('POST', '/rest/sensors/query', json_body=json_body)
+    response = client.cybereason_api_call('POST', '/rest/sensors/query', json_body=json_body)
     if dict_safe_get(response, ['sensors']) == []:
-        demisto.results("Could not found any Sensor ID for the machine '{}'".format(machine_name))
+        return CommandResults(readable_output="Could not found any Sensor ID for the machine '{}'".format(machine_name))
     else:
         output = {}
         for single_sensor in response['sensors']:
             output[single_sensor['machineName']] = single_sensor['sensorId']
-        demisto.results(f"Available Sensor IDs are {output}")
+        return CommandResults(readable_output=f"Available Sensor IDs are {output}")
 
 
 def main():
     auth = ''
+    params = demisto.params()
+    args = demisto.args()
+    proxy=params.get('proxy', False)
+    demisto.debug(f'Command being called is {demisto.command()}')
+    
     try:
+        client = Client(
+            base_url=SERVER,
+            verify=USE_SSL,
+            headers=HEADERS,
+            proxy=proxy
+        )
+
         if CERTIFICATE:
             client_certificate()
             auth = 'CERT'
         elif USERNAME and PASSWORD:
-            login()
+            login(client)
             auth = 'BASIC'
         else:
             raise Exception('No credentials were provided')
 
         if demisto.command() == 'test-module':
             # Tests connectivity and credentails on login
-            query_user([])
-            demisto.results('ok')
+            query_user(client,[])
+            return_results('ok')
 
         elif demisto.command() == 'fetch-incidents':
-            fetch_incidents()
+            fetch_incidents(client)
 
         elif demisto.command() == 'cybereason-is-probe-connected':
-            is_probe_connected_command()
+            return_results(is_probe_connected_command(client, args))
 
         elif demisto.command() == 'cybereason-query-processes':
-            query_processes_command()
+            return_results(query_processes_command(client, args))
 
         elif demisto.command() == 'cybereason-query-malops':
-            query_malops_command()
+            return_results(query_malops_command(client, args))
 
         elif demisto.command() == 'cybereason-query-connections':
-            query_connections_command()
+            return_results(query_connections_command(client, args))
 
         elif demisto.command() == 'cybereason-isolate-machine':
-            isolate_machine_command()
+            return_results(isolate_machine_command(client, args))
 
         elif demisto.command() == 'cybereason-unisolate-machine':
-            unisolate_machine_command()
+            return_results(unisolate_machine_command(client, args))
 
         elif demisto.command() == 'cybereason-malop-processes':
-            malop_processes_command()
+            return_results(malop_processes_command(client, args))
 
         elif demisto.command() == 'cybereason-add-comment':
-            add_comment_command()
+            return_results(add_comment_command(client, args))
 
         elif demisto.command() == 'cybereason-update-malop-status':
-            update_malop_status_command()
+            return_results(update_malop_status_command(client, args))
 
         elif demisto.command() == 'cybereason-prevent-file':
-            prevent_file_command()
+            return_results(prevent_file_command(client, args))
 
         elif demisto.command() == 'cybereason-unprevent-file':
-            unprevent_file_command()
+            return_results(unprevent_file_command(client, args))
 
         elif demisto.command() == 'cybereason-available-remediation-actions':
-            available_remediation_actions_command()
+            return_results(available_remediation_actions_command(client, args))
 
         elif demisto.command() == 'cybereason-kill-process':
-            kill_process_command()
+            return_results(kill_process_command(client, args))
 
         elif demisto.command() == 'cybereason-quarantine-file':
-            quarantine_file_command()
+            return_results(quarantine_file_command(client, args))
 
         elif demisto.command() == 'cybereason-unquarantine-file':
-            unquarantine_file_command()
+            return_results(unquarantine_file_command(client, args))
 
         elif demisto.command() == 'cybereason-block-file':
-            block_file_command()
+            return_results(block_file_command(client, args))
 
         elif demisto.command() == 'cybereason-delete-registry-key':
-            delete_registry_key_command()
+            return_results(delete_registry_key_command(client, args))
 
         elif demisto.command() == 'cybereason-kill-prevent-unsuspend':
-            kill_prevent_unsuspend_command()
+            return_results(kill_prevent_unsuspend_command(client, args))
 
         elif demisto.command() == 'cybereason-unsuspend-process':
-            unsuspend_process_command()
+            return_results(unsuspend_process_command(client, args))
 
         elif demisto.command() == 'cybereason-query-file':
-            query_file_command()
+            return_results(query_file_command(client, args))
 
         elif demisto.command() == 'cybereason-query-domain':
-            query_domain_command()
+            return_results(query_domain_command(client, args))
 
         elif demisto.command() == 'cybereason-query-user':
-            query_user_command()
+            return_results(query_user_command(client, args))
 
         elif demisto.command() == 'cybereason-start-fetchfile':
-            start_fetchfile_command()
+            return_results(start_fetchfile_command(client, args))
 
         elif demisto.command() == 'cybereason-fetchfile-progress':
-            fetchfile_progress_command()
+            return_results(fetchfile_progress_command(client, args))
 
         elif demisto.command() == 'cybereason-download-file':
-            download_fetchfile_command()
+            return_results(download_fetchfile_command(client, args))
 
         elif demisto.command() == 'cybereason-close-file-batch-id':
-            close_fetchfile_command()
+            return_results(close_fetchfile_command(client, args))
 
         elif demisto.command() == 'cybereason-archive-sensor':
-            archive_sensor()
+            return_results(archive_sensor_command(client, args))
 
         elif demisto.command() == 'cybereason-unarchive-sensor':
-            unarchive_sensor()
+            return_results(unarchive_sensor_command(client, args))
 
         elif demisto.command() == 'cybereason-delete-sensor':
-            delete_sensor()
+            return_results(delete_sensor_command(client, args))
 
         elif demisto.command() == 'cybereason-malware-query':
-            malware_query_command()
+            return_results(malware_query_command(client, args))
 
         elif demisto.command() == 'cybereason-start-host-scan':
-            start_host_scan_command()
+            return_results(start_host_scan_command(client, args))
 
         elif demisto.command() == 'cybereason-fetch-scan-status':
-            fetch_scan_status_command()
+            return_results(fetch_scan_status_command(client, args))
 
         elif demisto.command() == 'cybereason-get-sensor-id':
-            get_sensor_id_command()
+            return_results(get_sensor_id_command(client, args))
 
         else:
             raise NotImplementedError(f'Command {demisto.command()} is not implemented.')
 
     except Exception as e:
-        return_error(str(e))
+        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
     finally:
-        logout()
+        logout(client)
         if auth and auth == 'CERT':
             os.remove(os.path.abspath('client.pem'))
             os.remove(os.path.abspath('client.cert'))
 
 
-if __name__ in ('__builtin__', 'builtins'):
+if __name__ in ('__main__', 'builtin', 'builtins'):
     main()

@@ -1,6 +1,6 @@
-id: Search Endpoints By Hash - Cybereason
+id: Cybereason - Search Endpoints By Hash
 version: -1
-name: Search Endpoints By Hash - Cybereason
+name: Cybereason - Search Endpoints By Hash
 fromversion: 5.0.0
 description: Hunt for endpoint activity involving hash, using Cybereason.
 starttaskid: '0'

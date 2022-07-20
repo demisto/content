@@ -1,9 +1,9 @@
-id: Isolate Endpoint - Cybereason
+id: Cybereason - Isolate Endpoint
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
-name: Isolate Endpoint - Cybereason
-description: This playbook isolates an endpoint based on the hostname provided.
+name: Cybereason - Isolate Endpoint
+description: This playbook isolates a machine based on the hostname provided.
 starttaskid: '0'
 tasks:
   '0':

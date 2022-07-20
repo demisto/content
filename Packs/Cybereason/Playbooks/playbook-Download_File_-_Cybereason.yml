@@ -1,8 +1,7 @@
-id: Download_File
+id: Cybereason - Download File
 version: -1
-name: Download_File
-description: This playbook starts the file download operation and finally give an
-  option to download the file if possible based on the Malop ID and username provided.
+name: Cybereason - Download File
+description: This playbook downloads a file from Cybereason platform, based on the Malop ID and username provided.
 starttaskid: "0"
 tasks:
   "0":
@@ -52,9 +51,9 @@ tasks:
       - "2"
     scriptarguments:
       malopGUID:
-        simple: ${incident.agentid}
+        simple: ${inputs.malopGUID}
       userName:
-        simple: ${incident.sourceusername}
+        simple: ${inputs.Username}
     separatecontext: false
     view: |-
       {
@@ -88,7 +87,7 @@ tasks:
       - "3"
     scriptarguments:
       malopGuid:
-        simple: ${incident.agentid}
+        simple: ${inputs.malopGUID}
     separatecontext: false
     view: |-
       {
@@ -117,9 +116,12 @@ tasks:
       type: regular
       iscommand: true
       brand: Cybereason
+    nexttasks:
+      '#none#':
+      - "4"
     scriptarguments:
       batchID:
-        simple: ${Download.progress.batchID}
+        simple: ${Cybereason.Download.Progress.batchID}
     separatecontext: false
     view: |-
       {
@@ -135,19 +137,57 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: eeada645-264c-404e-8d7d-cd6ee0381737
+    type: title
+    task:
+      id: eeada645-264c-404e-8d7d-cd6ee0381737
+      version: -1
+      name: Done
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 635,
+        "height": 805,
         "width": 380,
         "x": 450,
         "y": 50
       }
     }
   }
-inputs: []
+inputs:
+- key: malopGUID
+  value: {}
+  required: false
+  description: The unique ID assigned by the Cybereason platform for the Malop.
+  playbookInputQuery: null
+- key: Username
+  value: {}
+  required: false
+  description: The complete Cybereason user name string for the user performing the
+    request.
+  playbookInputQuery: null
 outputs: []
 fromversion: 6.5.0
 tests:
