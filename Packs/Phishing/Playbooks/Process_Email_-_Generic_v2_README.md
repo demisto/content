@@ -23,11 +23,12 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any integrations.
 
 ### Scripts
-* ParseEmailFiles
-* Set
 * SetGridField
-* IdentifyAttachedEmail
+* DemistoUploadFileV2
+* Set
 * SetAndHandleEmpty
+* ParseEmailFilesV2
+* IdentifyAttachedEmail
 
 ### Commands
 * setIncident
@@ -51,7 +52,8 @@ This playbook does not use any integrations.
 | MessageID | The original email message ID to retrieve. Holds the value of the "Message-ID" header of the original email. This value is passed as an input to the "Get Original Email - Generic v2" playbook. | incident.emailmessageid | Optional |
 | UserID | The user's email address to retrieve the original email. This value is passed as an input to the "Get Original Email - Generic v2" playbook. | incident.emailto | Optional |
 | Thread-Topic | The value of the "Thread-Topic" header which holds the original email subject, needed for forwarded email scenarios. It is passed as an input to the "Get Original Email - Generic v2" playbook to use in the relevant sub-playbooks. | incident.emailsubject | Optional |
-| EmailBrand | If this value is provided, only the relevant playbook runs. If no value is provided, all sub-playbooks are run. Possible values: - Gmail - EWS v2 - MicrosoftGraphMail - EmailSecurityGateway<br/>Choosing the EmailSecurityGateway executes the following if enabled: - FireEye EX \(Email Security\) - Proofpoint TAP - Mimecast. |  | Optional |
+| EmailBrand | If this value is provided, only the relevant playbook runs. If no value is provided, all sub-playbooks are run.<br/>Possible values:<br/>- Gmail<br/>- EWS v2<br/>- MicrosoftGraphMail<br/>- EmailSecurityGateway<br/>Choosing the EmailSecurityGateway executes the following if enabled: - FireEye EX \(Email Security\) - Proofpoint TAP - Mimecast. |  | Optional |
+| EmailFileToExtract | Reported emails and emails retrieved during playbook execution can contain multiple nested email files. For example, an EML nested inside another EML file.<br/>If multiple level files are detected, this field determines which file represents the phishing email.<br/><br/>For example:<br/>User1 receives an email from Attacker. User1 attaches the email as an EML file and sends the email to User2.<br/>User2 also attaches that email as a file, and reports it as phishing. In this case, the phishing email would be the "inner file" \(as opposed to "outer file"\).<br/><br/>Possible values are: Inner file, Outer file, All files.<br/>Inner file: The file at the deepest level is parsed. If there is only one file, that file is parsed.<br/>Outer file: The file at the first level is parsed.<br/>All files: All files are parsed. Do not use this option in the phishing playbook, as there should only be one phishing email per playbook run. | Inner file | Optional |
 
 ## Playbook Outputs
 ---

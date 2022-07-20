@@ -130,14 +130,14 @@ tasks:
                 iscontext: true
   '3':
     id: '3'
-    taskid: b8e367d0-8147-4369-8216-acb86b53c088
+    taskid: 9b7f8f49-fdef-40bb-8ad3-0fda21e0b65d
     type: regular
     task:
-      id: b8e367d0-8147-4369-8216-acb86b53c088
+      id: 9b7f8f49-fdef-40bb-8ad3-0fda21e0b65d
       version: -1
       name: Extract and save email details
-      description: Parse an email from an eml or msg file and populate all relevant context data to investigate the email. Also extracts inner attachments and returns them to the war room. The incident labels themselves are preserved and not modified - only the "Label/x" context items that originated from the labels, and the best practice is to rely on these for the remainder of the playbook.
-      scriptName: ParseEmailFiles
+      description: Parse an email from an eml or msg file and populate all relevant context data to investigate the email. Also extracts inner attachments and returns them to the war room. The incident labels themselves are preserved and not modified - only the "Label/x" context items that originated from the labels, and the best practice is to rely on these for the remainder of the playbook. This script is based on the parse-emails XSOAR python package, check the script documentation for more info
+      scriptName: ParseEmailFilesV2
       type: regular
       iscommand: false
       brand: ''
@@ -153,8 +153,6 @@ tasks:
       nesting_level_to_return:
         simple: Inner file
     reputationcalc: 2
-    results:
-    - AttachmentName
     separatecontext: false
     view: |-
       {
@@ -1081,7 +1079,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -1206,5 +1203,6 @@ outputs:
   description: The file object.
   type: unknown
 tests:
-- Phishing - Core - Test - Incident Starter
+- Phishing v3 - DomainSquatting+EML+MaliciousIndicators - Test
+- Phishing v3 - Get Original Email + Search & Delete - Test
 fromversion: 6.0.0

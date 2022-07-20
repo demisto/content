@@ -10,6 +10,12 @@ ignore=BA101
 [file:Process_Email_-_Generic.yml]
 ignore=BA101
 
+[file:Process_Email_-_Generic_v2.yml]
+ignore=RM106
+
+[file:Process_Email_-_Generic_v2_README.md]
+ignore=RM106
+
 [file:Get_Original_Email_-_Gmail.yml]
 ignore=BA101
 
@@ -143,3 +149,7 @@ ignore=IF116
 CheckEmailAuthenticity
 DeleteReportedEmail
 GetBrandDeleteReportedEmail
+PhishingDedupPreprocessingRule
+FindDuplicateEmailIncidents
+LinkToPhishingCampaign
+ParseEmailFiles
