@@ -1,22 +1,22 @@
-id: Detonate URL - ANYRUN - Test
+id: Detonate URL - ANYRUN V2 - Test
 version: -1
-name: Detonate URL - ANYRUN - Test
-deprecated: true
-starttaskid: "0"
+name: Detonate URL - ANYRUN V2 - Test
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 248bd6ce-5cc0-4382-8989-cf6ac3feb46c
     type: start
     task:
       id: 248bd6ce-5cc0-4382-8989-cf6ac3feb46c
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "4"
+      - '4'
     separatecontext: false
     view: |-
       {
@@ -28,8 +28,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "1":
-    id: "1"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
     taskid: 0b881e68-330b-4f99-8f33-5fc9279317fb
     type: regular
     task:
@@ -40,12 +44,11 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '5'
     scriptarguments:
-      append: {}
       key:
         simple: URL.Data
       value:
@@ -61,34 +64,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "2":
-    id: "2"
-    taskid: 8b84aacf-859e-40e6-8a32-aba6235fb93a
-    type: playbook
-    task:
-      id: 8b84aacf-859e-40e6-8a32-aba6235fb93a
-      version: -1
-      name: Detonate URL - ANYRUN
-      playbookName: Detonate URL - ANYRUN
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "3":
-    id: "3"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '3':
+    id: '3'
     taskid: cb75cebc-5bf4-4f2f-8d2e-4530cc730701
     type: title
     task:
@@ -97,7 +78,8 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -109,8 +91,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "4":
-    id: "4"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '4':
+    id: '4'
     taskid: e110d4c9-2b47-4ec8-8f6e-3632b039742c
     type: regular
     task:
@@ -121,17 +107,13 @@ tasks:
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     scriptarguments:
       all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
+        simple: yes
     separatecontext: false
     view: |-
       {
@@ -143,6 +125,42 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '5':
+    id: '5'
+    taskid: 48858c51-9f89-4c74-8cad-98e80189c46b
+    type: playbook
+    task:
+      id: 48858c51-9f89-4c74-8cad-98e80189c46b
+      version: -1
+      name: Detonate URL - ANYRUN V2
+      playbookName: Detonate URL - ANYRUN V2
+      type: playbook
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
@@ -157,4 +175,5 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 5.0.0
+fromversion: 6.2.0
+description: ''

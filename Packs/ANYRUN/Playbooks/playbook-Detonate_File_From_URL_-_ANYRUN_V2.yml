@@ -1,43 +1,47 @@
-id: Detonate File From URL - ANYRUN
+id: Detonate File From URL - ANYRUN V2
 version: -1
-name: Detonate File From URL - ANYRUN
+name: Detonate File From URL - ANYRUN V2
 description: |-
-  Deprecated. Use Detonate File From URL - ANYRUN V2 instead..
-deprecated: true
-fromversion: 5.0.0
-starttaskid: "0"
+  Detonates one or more remote files using the ANYRUN sandbox integration.
+  Returns relevant reports to the War Room and file reputations to the context data.
+  This type of analysis works only for direct download links.
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: b04c121d-294e-4dd0-8148-d9fe0f44be04
     type: start
     task:
       id: b04c121d-294e-4dd0-8148-d9fe0f44be04
       version: -1
-      name: ""
+      name: ''
       description: Start
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "7"
+      - '7'
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 50,
           "y": 50
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "1":
-    id: "1"
-    taskid: 1abf1e54-1633-41fb-80b5-00a994d7c4b5
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
+    taskid: f7bcffdc-ba6d-4549-814c-1c2b3bda9eda
     type: regular
     task:
-      id: 1abf1e54-1633-41fb-80b5-00a994d7c4b5
+      id: f7bcffdc-ba6d-4549-814c-1c2b3bda9eda
       version: -1
       name: ANYRUN Submit File from URL for Analysis
       description: Submit a file or url for analysis.
@@ -47,77 +51,50 @@ tasks:
       brand: ANYRUN
     nexttasks:
       '#none#':
-      - "2"
+      - '5'
     scriptarguments:
-      env_bitness: {}
-      env_type: {}
-      env_version: {}
-      file: {}
+      interval_in_seconds:
+        complex:
+          root: inputs.Interval
       obj_type:
         simple: download
       obj_url:
         complex:
           root: inputs.URL
           accessor: Data
-      opt_kernel_heavyevasion: {}
-      opt_network_connect: {}
-      opt_privacy_type: {}
+      polling:
+        simple: 'true'
+      timeout:
+        complex:
+          root: inputs.Timeout
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 275,
           "y": 545
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-  "2":
-    id: "2"
-    taskid: faf98979-d9b0-4fcd-86e5-0004f3b98603
-    type: playbook
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '5':
+    id: '5'
+    taskid: 7e59cb60-98d6-49a0-8c7f-522c1247ee73
+    type: title
     task:
-      id: faf98979-d9b0-4fcd-86e5-0004f3b98603
+      id: 7e59cb60-98d6-49a0-8c7f-522c1247ee73
       version: -1
-      name: GenericPolling
-      description: |-
-        Use as a sub-playbook to block execution of the master playbook until a remote action is complete.
-        This playbook implements polling by continually running the command in Step #2 until the operation completes.
-        The remote action should have the following structure:
-
-        1. Initiate the operation.
-        2. Poll to check if the operation completed.
-        3. (optional) Get the results of the operation.
-      playbookName: GenericPolling
-      type: playbook
+      name: Done
+      description: Done
+      type: title
       iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      Ids:
-        complex:
-          root: ANYRUN
-          accessor: Task.ID
-      Interval:
-        complex:
-          root: inputs.Interval
-      PollingCommandArgName:
-        simple: task
-      PollingCommandName:
-        simple: anyrun-get-report
-      Timeout:
-        complex:
-          root: inputs.Timeout
-      dt:
-        simple: ANYRUN.Task(val.Status != 'done').ID
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
+      brand: ''
+    separatecontext: false
     view: |-
       {
         "position": {
@@ -128,63 +105,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "3":
-    id: "3"
-    taskid: 371e111a-9263-4708-86ae-961495255ff9
-    type: regular
-    task:
-      id: 371e111a-9263-4708-86ae-961495255ff9
-      version: -1
-      name: ANYRUN Get Report
-      description: Get the report for a task created for a submitted file or url.
-      script: ANYRUN|||anyrun-get-report
-      type: regular
-      iscommand: true
-      brand: ANYRUN
-    nexttasks:
-      '#none#':
-      - "5"
-    scriptarguments:
-      task:
-        complex:
-          root: ANYRUN
-          accessor: Task.ID
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "5":
-    id: "5"
-    taskid: 7e59cb60-98d6-49a0-8c7f-522c1247ee73
-    type: title
-    task:
-      id: 7e59cb60-98d6-49a0-8c7f-522c1247ee73
-      version: -1
-      name: Done
-      description: Done
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 275,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "6":
-    id: "6"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '6':
+    id: '6'
     taskid: a1d00028-5388-4ea3-8877-cb5b7fb2a5d0
     type: condition
     task:
@@ -194,15 +120,15 @@ tasks:
       description: Look for file URLs to detonate
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "5"
-      "yes":
-      - "1"
+      - '5'
+      yes:
+      - '1'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isExists
           left:
@@ -219,8 +145,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "7":
-    id: "7"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '7':
+    id: '7'
     taskid: 57c1be55-35b0-4527-83e8-66cc23fc33c9
     type: condition
     task:
@@ -230,15 +160,15 @@ tasks:
       description: Check if integration instance is enabled
       type: condition
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#default#':
-      - "5"
-      "yes":
-      - "6"
+      - '5'
+      yes:
+      - '6'
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: yes
       condition:
       - - operator: isEqualString
           left:
@@ -267,19 +197,24 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 275,
+          "x": 50,
           "y": 195
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1085,
+        "height": 735,
         "width": 605,
         "x": 50,
         "y": 50
@@ -293,16 +228,19 @@ inputs:
       root: URL
   required: false
   description: URL of the web file to detonate.
+  playbookInputQuery:
 - key: Interval
   value:
-    simple: "1"
+    simple: '20'
   required: false
-  description: Duration for executing the pooling (in minutes)
+  description: Duration for executing the polling (in seconds)
+  playbookInputQuery:
 - key: Timeout
   value:
-    simple: "15"
+    simple: '1300'
   required: false
-  description: The duration after which to stop pooling and to resume the playbook (in minutes)
+  description: The duration after which to stop polling and to resume the playbook (in seconds)
+  playbookInputQuery:
 outputs:
 - contextPath: ANYRUN.Task.AnalysisDate
   description: Date and time the analysis was executed.
@@ -512,4 +450,5 @@ outputs:
   description: Task analysis status.
   type: String
 tests:
-- Detonate File From URL - ANYRUN - Test
+- Detonate File From URL - ANYRUN V2 - Test
+fromversion: 6.2.0

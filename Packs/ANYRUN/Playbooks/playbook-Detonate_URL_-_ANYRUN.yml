@@ -2,8 +2,8 @@ id: Detonate URL - ANYRUN
 version: -1
 name: Detonate URL - ANYRUN
 description: |-
-  Detonates one or more URLs using the ANYRUN sandbox integration.
-  Returns relevant reports to the War Room and url reputations to the context data.
+  Deprecated. Use Detonate URL - ANYRUN V2 instead..
+deprecated: true
 fromversion: 5.0.0
 starttaskid: "0"
 tasks:

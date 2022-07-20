@@ -1,22 +1,22 @@
-id: Detonate File From URL - ANYRUN - Test
+id: Detonate File From URL - ANYRUN V2 - Test
 version: -1
-name: Detonate File From URL - ANYRUN - Test
-deprecated: true
-starttaskid: "0"
+name: Detonate File From URL - ANYRUN V2 - Test
+starttaskid: '0'
 tasks:
-  "0":
-    id: "0"
+  '0':
+    id: '0'
     taskid: 65a8b522-11bf-4dca-890e-0fc61cdc3852
     type: start
     task:
       id: 65a8b522-11bf-4dca-890e-0fc61cdc3852
       version: -1
-      name: ""
+      name: ''
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - '1'
     separatecontext: false
     view: |-
       {
@@ -28,8 +28,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "1":
-    id: "1"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
     taskid: b858cb72-1de4-4f27-8e89-67e729b4304f
     type: regular
     task:
@@ -40,17 +44,13 @@ tasks:
       scriptName: DeleteContext
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "2"
+      - '2'
     scriptarguments:
       all:
-        simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
+        simple: yes
     separatecontext: false
     view: |-
       {
@@ -62,8 +62,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "2":
-    id: "2"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '2':
+    id: '2'
     taskid: 34668430-83bc-4ce8-88be-05737b7b6645
     type: regular
     task:
@@ -74,16 +78,15 @@ tasks:
       scriptName: Set
       type: regular
       iscommand: false
-      brand: ""
+      brand: ''
     nexttasks:
       '#none#':
-      - "3"
+      - '5'
     scriptarguments:
-      append: {}
       key:
         simple: URL.Data
       value:
-        simple: https://www.python.org/downloads/release/python-373/ # disable-secrets-detection
+        simple: https://www.python.org/downloads/release/python-373/
     separatecontext: false
     view: |-
       {
@@ -95,34 +98,12 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-  "3":
-    id: "3"
-    taskid: 1b0d1800-9bfe-486d-84c5-b8c6a736d2c2
-    type: playbook
-    task:
-      id: 1b0d1800-9bfe-486d-84c5-b8c6a736d2c2
-      version: -1
-      name: Detonate File From URL - ANYRUN
-      playbookName: Detonate File From URL - ANYRUN
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  "4":
-    id: "4"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '4':
+    id: '4'
     taskid: 8f393862-0c9d-46b4-89a0-afc033fb523f
     type: title
     task:
@@ -131,7 +112,8 @@ tasks:
       name: Done
       type: title
       iscommand: false
-      brand: ""
+      brand: ''
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -143,6 +125,42 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '5':
+    id: '5'
+    taskid: 3a519d65-66d9-4655-8380-8bcd3502a449
+    type: playbook
+    task:
+      id: 3a519d65-66d9-4655-8380-8bcd3502a449
+      version: -1
+      name: Detonate File From URL - ANYRUN V2
+      playbookName: Detonate File From URL - ANYRUN V2
+      type: playbook
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    separatecontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
@@ -157,4 +175,5 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 5.0.0
+fromversion: 6.2.0
+description: ''
