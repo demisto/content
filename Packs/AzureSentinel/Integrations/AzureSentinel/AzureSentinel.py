@@ -1083,7 +1083,7 @@ def build_threat_indicator_data(args, source):
         'confidence': arg_to_number(args.get('confidence')),
         'threatTypes': argToList(args.get('threat_types')),
         'includeDisabled': args.get('include_disabled', ''),
-        'source': source or DEFAULT_SOURCE,
+        'source': source,
         'threatIntelligenceTags': argToList(args.get('tags')),
         'validFrom': format_date(args.get('valid_from', '')),
         'validUntil': format_date(args.get('valid_until', '')),
@@ -1123,6 +1123,7 @@ def build_threat_indicator_data(args, source):
 
 def build_updated_indicator_data(new_ind_data, original_ind_data):
     original_extracted_data = extract_original_data_from_indicator(original_ind_data.get('properties'))
+    # When updating an indicator, one can not change the original source
     source = original_extracted_data.get('source')
     new_data = build_threat_indicator_data(new_ind_data, source)
 
@@ -1234,7 +1235,7 @@ def query_threat_indicators_command(client, args):
 def create_threat_indicator_command(client, args):
     url_suffix = 'threatIntelligence/main/createIndicator'
 
-    data = {'kind': 'indicator', 'properties': build_threat_indicator_data(args, source=None)}
+    data = {'kind': 'indicator', 'properties': build_threat_indicator_data(args, source=DEFAULT_SOURCE)}
 
     result = client.http_request('POST', url_suffix, data=data)
 
