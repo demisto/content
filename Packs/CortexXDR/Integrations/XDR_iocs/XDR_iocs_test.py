@@ -763,3 +763,18 @@ def test_file_deleted(mocker, method_to_test, iner_method):
     with pytest.raises(DemistoException):
         method_to_test(None)
     assert os.path.exists(file_path) is False
+
+
+data_test_batch = [
+    ([], 200, []),
+    ([], 1, []),
+    (range(3), 200, [[0, 1, 2]]),
+    (range(3), 2, [[0, 1], [2]]),
+    (range(4), 2, [[0, 1], [2, 3]]),
+    (range(4), 1, [[0], [1], [2], [3]]),
+]
+
+
+@pytest.mark.parametrize('input_enumerator, batch_size, expected_output', data_test_batch)
+def test_batch(input_enumerator, batch_size, expected_output):
+    assert list(batch(input_enumerator, batch_size=batch_size)) == expected_output
