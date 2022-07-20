@@ -124,10 +124,6 @@
             "timeout": 500
         },
         {
-            "integrations": "FireEyeNX",
-            "playbookID": "FireEyeNX-Test"
-        },
-        {
             "integrations": "FireEyeHX v2",
             "playbookID": "FireEyeHX_v2",
             "fromversion": "6.2.0",
@@ -5451,8 +5447,7 @@
         "Alibaba Action Trail Event Collector": "XSIAM integration",
         "Salesforce Event Collector": "XSIAM integration",
         "Github Event Collector" : "XSIAM integration",
-        "Microsoft Defender for Cloud Apps Event Collector": "XSIAM integration",
-        "FireEye HX": "the integration is deprecated as we released FireEyeHX v2"
+        "Microsoft Defender for Cloud Apps Event Collector": "XSIAM integration"
     },
     "nightly_integrations": [
         "Laline v2",

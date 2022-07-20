@@ -1852,7 +1852,16 @@ def test_update_dynamic_host_set_command_failed(args, expected_results):
 
 
 def test_create_dynamic_host_request_body(mocker):
+    """
+    Given:
+        - Host set name, query or query arguments
 
+    When:
+        - Calling the update_dynamic_host_set command
+
+    Then:
+        - ensure the command ran successfully
+    """
     from FireEyeHXv2 import Client
     host_set_name = 'host_set_name'
     query = {'query': 'query'}
@@ -1873,7 +1882,16 @@ def test_create_dynamic_host_request_body(mocker):
 
 
 def test_create_static_host_request_body(mocker):
+    """
+    Given:
+        - Host set name, host set id, hosts set to add and host sets to remove
 
+    When:
+        - Calling the create_static_host_request_body
+
+    Then:
+        - ensure the command ran successfully
+    """
     from FireEyeHXv2 import Client
     host_set_name = 'host_set_name'
     host_ids_to_add = 'host_ids_to_add'

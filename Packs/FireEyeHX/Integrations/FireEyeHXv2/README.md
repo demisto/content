@@ -2213,6 +2213,15 @@ Deletes a Host Set policy.
 | hostSetId | The host set ID. | Required | 
 | policyId | The policy ID. | Required | 
 
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!fireeye-hx-delete-host-set-policy hostSetId=1005 policyId=YYYXXXYYY```
+#### Human Readable Output
+>Success
+
+
 ### fireeye-hx-delete-data-acquisition
 ***
 Deletes data acquisition.
