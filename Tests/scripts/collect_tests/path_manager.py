@@ -55,35 +55,14 @@ def _calculate_excluded_files(content_path: Path) -> set[Path]:
     :return: set of Paths that should be excluded from test collection
     """
 
-    def glob(paths: Iterable[str]):
-        result: list[Path] = []
-        for partial_path in paths:
-            path = content_path / partial_path
-
-            if path.is_dir():
-                result.extend(path.glob('*'))
-            elif '*' in path.name:
-                result.extend(path.parent.rglob(path.name))
-            elif not path.exists():
-                logging.warning(
-                    f'could not find {path} for calculating excluded paths'
-                )
-                continue
-            else:
-                result.append(path)
-
-            result_string = ','.join(sorted(str(r) for r in result))
-            logging.debug(f'globbed {str(path)}, result = {result_string}')
-        return set(result)
-
-    excluded = glob(
-        (
-            'Tests',
-            '.gitlab',
-            'Documentation',
-        )
+    excluded = _glob(
+        content_path,
+        ('Tests',
+         '.gitlab',
+         'Documentation')
     )
-    not_excluded = glob(
+    not_excluded = _glob(
+        content_path,
         (
             'Tests/scripts/infrastructure_tests',
             'Tests/Marketplace/Tests',
@@ -98,3 +77,23 @@ def _calculate_excluded_files(content_path: Path) -> set[Path]:
     logging.debug(f'not excluded: {not_excluded}')
     logging.debug(f'excluded paths: {excluded - not_excluded}')
     return excluded - not_excluded
+
+
+def _glob(content_path: Path, paths: Iterable[str]) -> set[Path]:
+    result: list[Path] = []
+    for partial_path in paths:
+        path = content_path / partial_path
+
+        if path.is_dir():
+            result.extend((_ for _ in path.rglob('*') if _.is_file()))
+        elif '*' in path.name:
+            result.extend((_ for _ in path.rglob(path.name) if _.is_file()))
+        elif not path.exists():
+            logging.warning(f'could not find {path} for calculating excluded paths')
+            continue
+        else:  # file without *s
+            result.append(path)
+
+        result_string = '\n'.join(sorted(str(r) for r in result))
+        logging.debug(f'globbed {str(path)}, result = {result_string}')
+    return set(result)
