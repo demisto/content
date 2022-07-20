@@ -1350,7 +1350,7 @@ class TestHappyPath:
                 }
 
         # run
-        output = build_threat_indicator_data(args, source=None)
+        output = build_threat_indicator_data(args, source=DEFAULT_SOURCE)
 
         # validate
 
