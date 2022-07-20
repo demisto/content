@@ -1,6 +1,7 @@
 import pytest
 import json
-from ANYRUN import underscore_to_camel_case, images_from_report
+from ANYRUN import Client
+from ANYRUN import underscore_to_camel_case
 from ANYRUN import make_capital, make_singular, make_upper
 from ANYRUN import generate_dbotscore
 from ANYRUN import taskid_from_url
@@ -99,30 +100,29 @@ class TestMakeUpper(object):
 class TestGenerateDBotScore(object):
     def test_generate_dbotscore_1(self, get_response):
         response1, response2, response3 = get_response
-
-        dbot_score = generate_dbotscore(response1).get('DBotScore')
         main_object = response1.get('data', {}).get('analysis', {}).get('content', {}).get('mainObject', {})
         sha_256 = main_object.get('hashes', {}).get('sha256')
-        assert dbot_score.get('Indicator') == sha_256
-        assert dbot_score.get('Score') == 3
-        assert dbot_score.get('Type') == 'hash'
-        assert dbot_score.get('Vendor') == 'ANYRUN'
+        dbot_score = generate_dbotscore(response1)[0].dbot_score
+        assert dbot_score.indicator == sha_256
+        assert dbot_score.score == 3
+        assert dbot_score.indicator_type == 'file'
+        assert dbot_score.integration_name == 'ANYRUN'
 
-        dbot_score = generate_dbotscore(response2).get('DBotScore')
+        dbot_score = generate_dbotscore(response2)[0].dbot_score
         main_object = response2.get('data', {}).get('analysis', {}).get('content', {}).get('mainObject', {})
         sha_256 = main_object.get('hashes', {}).get('sha256')
-        assert dbot_score.get('Indicator') == sha_256
-        assert dbot_score.get('Score') == 2
-        assert dbot_score.get('Type') == 'hash'
-        assert dbot_score.get('Vendor') == 'ANYRUN'
+        assert dbot_score.indicator == sha_256
+        assert dbot_score.score == 2
+        assert dbot_score.indicator_type == 'file'
+        assert dbot_score.integration_name == 'ANYRUN'
 
-        dbot_score = generate_dbotscore(response3).get('DBotScore')
+        dbot_score = generate_dbotscore(response3)[0].dbot_score
         main_object = response3.get('data', {}).get('analysis', {}).get('content', {}).get('mainObject', {})
         url = main_object.get('url')
-        assert dbot_score.get('Indicator') == url
-        assert dbot_score.get('Score') == 1
-        assert dbot_score.get('Type') == 'url'
-        assert dbot_score.get('Vendor') == 'ANYRUN'
+        assert dbot_score.indicator == url
+        assert dbot_score.score == 1
+        assert dbot_score.indicator_type == 'url'
+        assert dbot_score.integration_name == 'ANYRUN'
 
 
 class TestTaskIDFromURL(object):
@@ -143,4 +143,10 @@ def test_get_image(requests_mock):
     """
     response = {'data': {'analysis': {'content': {'screenshots': [{'permanentUrl': ' http://www.test.com'}]}}}}
     requests_mock.get('http://www.test.com', request_headers=HEADERS)
-    images_from_report(response)  # the command will fail if a header is not provided with the GET request.
+    client = Client(
+        base_url="https://api.any.run/v1/",
+        verify=False,
+        proxy=False,
+        headers=HEADERS
+    )
+    client.get_images_from_report(response)  # the command will fail if a header is not provided with the GET request.
