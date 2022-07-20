@@ -177,6 +177,11 @@ configuration:
   name: feedTags
   required: false
   type: 0
+- additionalinfo: The Default API Root to use (e.g. taxii2, public).
+  display: Default API Root to use
+  name: default_api_root
+  required: false
+  type: 0
 description: Ingests indicator feeds from TAXII 2.0 and 2.1 servers.
 display: TAXII 2 Feed
 name: TAXII 2 Feed
