@@ -420,34 +420,38 @@ def generate_dbotscore(response: Dict) -> List:
         "suspicious": Common.DBotScore.SUSPICIOUS
     }
     returned_data = []
+    indicator = None
 
     # Add the hash or URL first
     if submission_type == 'hash':
         hashes = main_object.get('hashes', {})
-        dbot_score = Common.DBotScore(
-            indicator=hashes.get('sha256') or hashes.get('sha1') or hashes.get('md5'),
-            indicator_type=DBotScoreType.FILE,
-            integration_name='ANYRUN',
-            score=THREAT_TEXT_TO_DBOTSCORE.get(threat_text) or Common.DBotScore.NONE
-        )
-        indicator = Common.File(
-            dbot_score=dbot_score,
-            md5=hashes.get('md5'),
-            sha1=hashes.get('sha1'),
-            sha256=hashes.get('sha256')
-        )
+        if (hashes.get('sha256') or hashes.get('sha1') or hashes.get('md5')) and threat_text:
+            dbot_score = Common.DBotScore(
+                indicator=hashes.get('sha256') or hashes.get('sha1') or hashes.get('md5'),
+                indicator_type=DBotScoreType.FILE,
+                integration_name='ANYRUN',
+                score=THREAT_TEXT_TO_DBOTSCORE.get(threat_text) or Common.DBotScore.NONE
+            )
+            indicator = Common.File(
+                dbot_score=dbot_score,
+                md5=hashes.get('md5'),
+                sha1=hashes.get('sha1'),
+                sha256=hashes.get('sha256')
+            )
     else:
-        dbot_score = Common.DBotScore(
-            indicator=main_object.get('url'),
-            indicator_type=DBotScoreType.URL,
-            integration_name='ANYRUN',
-            score=THREAT_TEXT_TO_DBOTSCORE.get(threat_text) or Common.DBotScore.NONE
-        )
-        indicator = Common.URL(
-            url=main_object.get('url'),
-            dbot_score=dbot_score
-        )
-    returned_data.append(indicator)
+        if main_object.get('url') and threat_text:
+            dbot_score = Common.DBotScore(
+                indicator=main_object.get('url'),
+                indicator_type=DBotScoreType.URL,
+                integration_name='ANYRUN',
+                score=THREAT_TEXT_TO_DBOTSCORE.get(threat_text) or Common.DBotScore.NONE
+            )
+            indicator = Common.URL(
+                url=main_object.get('url'),
+                dbot_score=dbot_score
+            )
+    if indicator:
+        returned_data.append(indicator)
 
     # Check if network information is available in the report
     if 'network' in data:
