@@ -1,0 +1,376 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Maltiverse
+  version: -1
+configuration:
+- defaultvalue: https://api.maltiverse.com
+  display: Server URL
+  name: server_url
+  required: false
+  type: 0
+- display: API Key
+  name: api_key
+  required: false
+  type: 4
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: C - Fairly reliable
+  display: Source Reliability
+  name: integrationReliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+description: Use the Maltiverse integration to analyze suspicious hashes, URLs, domains and IP addresses.
+display: Maltiverse
+name: Maltiverse
+script:
+  commands:
+  - arguments:
+    - default: true
+      description: IP address to check
+      name: ip
+      required: true
+      isArray: false
+    - defaultValue: '5'
+      description: If the number of positives is higher than the threshold, the IP address will be considered malicious. If the threshold is not specified, the default IP threshold, as configured in the instance settings, will be used.
+      name: threshold
+    description: Checks the reputation of an IP address.
+    name: ip
+    outputs:
+    - contextPath: IP.Address
+      description: The checked IP address.
+      type: String
+    - contextPath: IP.Geo.Country
+      description: The country code of the IP address.
+      type: String
+    - contextPath: IP.Malicious.Description
+      description: Describes the reason why the IP address is in the blacklist.
+      type: Unknown
+    - contextPath: IP.PositiveDetections
+      description: The number of sources that positively reported the indicator as blacklist.
+      type: Number
+    - contextPath: DBotScore.Score
+      description: The DBot score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The type of indicator.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: Maltiverse.IP.Address
+      description: The checked IP address.
+      type: String
+    - contextPath: Maltiverse.IP.Classification
+      description: Qualitative maliciousness classification for an IoC. Possible values are malicious, suspicious, neutral, and whitelisted.
+      type: Unknown
+    - contextPath: Maltiverse.IP.Blacklist.FirstSeen
+      description: First time that the IoC was seen.
+      type: Date
+    - contextPath: Maltiverse.IP.Blacklist.LastSeen
+      description: Last time that the IoC was seen.
+      type: Date
+    - contextPath: Maltiverse.IP.Blacklist.Description
+      description: Describes the reason why the IP is in the blacklist.
+      type: String
+    - contextPath: Maltiverse.IP.Blacklist.Source
+      description: The name of sources that reported the indicator.
+      type: String
+    - contextPath: Maltiverse.IP.Tags
+      description: The type of indicator.
+      type: String
+    - contextPath: IP.ThreatTypes
+      description: A list with the description of the elements in the blacklist.
+      type: Unknown
+    - contextPath: IP.Tags
+      description: The type of indicator.
+      type: String
+  - arguments:
+    - default: true
+      description: Domain address to check.
+      name: domain
+      required: true
+      isArray: false
+    - defaultValue: '5'
+      description: If the number of positives is higher than the threshold, the domain will be considered malicious. If the threshold is not specified, the default domain threshold, as configured in the instance settings, will be used.
+      name: threshold
+    description: Checks the reputation of a domain.
+    name: domain
+    outputs:
+    - contextPath: Domain.Name
+      description: The domain name.
+      type: String
+    - contextPath: Domain.CreationDate
+      description: Date when the IoC was created in the system.
+      type: Date
+    - contextPath: Domain.ModificationDate
+      description: Date when the IoC was last updated.
+      type: Date
+    - contextPath: Domain.TLD
+      description: Top Level Domain of the hostname
+      type: Number
+    - contextPath: Domain.ASName
+      description: Autonomous system name of the domain.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The DBot score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The type of indicator.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: Maltiverse.Domain.Address
+      description: The domain name.
+      type: String
+    - contextPath: Maltiverse.Domain.Classification
+      description: Qualitative maliciousness classification for an IoC. Possible value are malicious, suspicious, neutral, and whitelist.
+      type: String
+    - contextPath: Maltiverse.Domain.Blacklist.Firstseen
+      description: First time that the IoC was seen.
+      type: Date
+    - contextPath: Maltiverse.Domain.Blacklist.LastSeen
+      description: Last time that the IoC was seen.
+      type: Date
+    - contextPath: Maltiverse.Domain.Blacklist.Description
+      description: Describes the reason why the domain is in the blacklist.
+      type: Unknown
+    - contextPath: Maltiverse.Domain.Blacklist.Source
+      description: The name of sources that reported the indicator.
+      type: String
+    - contextPath: Maltiverse.Domain.Tags
+      description: Attribute to label an IoC.
+      type: String
+    - contextPath: Maltiverse.Domain.ModificationTime
+      description: Date when the IoC was last updated.
+      type: Date
+    - contextPath: Maltiverse.Domain.CreationTime
+      description: Date when the IoC was created in the system.
+      type: Date
+    - contextPath: Maltiverse.Domain.TLD
+      description: Top-level domain of the hostname.
+      type: String
+    - contextPath: Maltiverse.Domain.ResolvedIP.IP
+      description: Stores an IP that was resolved by the domain.
+      type: String
+    - contextPath: Maltiverse.Domain.ResolvedIP.Timestamp
+      description: Stores a timestamp when an IP address has been resolved by the domain.
+      type: Date
+    - contextPath: Domain.ThreatTypes
+      description: A list with the description of the elements in the blacklist.
+      type: Unknown
+    - contextPath: Domain.Tags
+      description: Attribute to label an IoC.
+      type: String
+  - arguments:
+    - default: true
+      description: URL address to check.
+      name: url
+      required: true
+      isArray: false
+    - defaultValue: '5'
+      description: If the number of positives is higher than the threshold, the URL address will be considered malicious. If the threshold is not specified, the default URL threshold, as configured in the instance settings, will be used.
+      name: threshold
+    description: Checks the reputation of an URL.
+    name: url
+    outputs:
+    - contextPath: URL.Data
+      description: The URL that was checked.
+      type: String
+    - contextPath: URL.Malicious.Description
+      description: Describes the reason why the URL is in the blacklist.
+      type: String
+    - contextPath: URL.Malicious.Vendor
+      description: The vendor that sends the indicator for reputation check.
+      type: String
+    - contextPath: URL.PositiveDetections
+      description: The number of sources that positively reported the indicator as blacklist.
+      type: Number
+    - contextPath: DBotScore.Score
+      description: The DBot score
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The type of indicator.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: Maltiverse.URL.Address
+      description: The checked URL.
+      type: String
+    - contextPath: Maltiverse.URL.Classification
+      description: Qualitative maliciousness classification for an IoC. Possible values are malicious, suspicious, neutral, and whitelist.
+      type: String
+    - contextPath: Maltiverse.URL.Blacklist.FirstSeen
+      description: First time that the IoC was seen.
+      type: Date
+    - contextPath: Maltiverse.URL.Blacklist.LastSeen
+      description: Last time that the IoC was seen.
+      type: Date
+    - contextPath: Maltiverse.URL.Blacklist.Description
+      description: Describes the reason why the URL is in the blacklist.
+      type: Date
+    - contextPath: Maltiverse.URL.Blacklist.Source
+      description: The name of sources that reported the indicator.
+      type: String
+    - contextPath: Maltiverse.URL.Tags
+      description: Attribute to label an IoC.
+      type: String
+    - contextPath: Maltiverse.URL.ModificationTime
+      description: Date when the IOC was last updated.
+      type: Date
+    - contextPath: Maltiverse.URL.CreationTime
+      description: Date when the IOC was created in the system.
+      type: Date
+    - contextPath: Maltiverse.URL.Hostname
+      description: Stores the hostname to which the URL belongs.
+      type: String
+    - contextPath: Maltiverse.URL.Domain
+      description: Stores the domain to which the hostname belongs. Hostname and domain can match on level 2 hostnames
+      type: String
+    - contextPath: Maltiverse.URL.TLD
+      description: Top-level domain of the hostname.
+      type: String
+    - contextPath: URL.ThreatTypes
+      description: A list with the description of the elements in the blacklist.
+      type: Unknown
+    - contextPath: URL.Tags
+      description: Attribute to label an IoC.
+      type: String
+  - arguments:
+    - default: true
+      description: SHA256 hash to check.
+      name: file
+      required: true
+      isArray: false
+    - defaultValue: '5'
+      description: If the number of positives AV detection is higher than the threshold, the file will be considered malicious. If the threshold is not specified, the default file threshold, as configured in the instance settings, will be used.
+      name: threshold
+    description: Checks the reputation of a file by file hash.
+    name: file
+    outputs:
+    - contextPath: File.Name
+      description: The full file name (including file extension).
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Size
+      description: The size of the file in bytes.
+      type: Number
+    - contextPath: File.Extension
+      description: The extension of the file.
+      type: String
+    - contextPath: File.Type
+      description: Description of the file type based on its magic numbers.
+      type: String
+    - contextPath: File.Path
+      description: The path of the file.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The DBot score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The type of indicator.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: Maltiverse.File.Score
+      description: Qualitative scoring of the maliciousness of the file. Values from 0 to 100.
+      type: Number
+    - contextPath: Maltiverse.File.Tags
+      description: Attribute to label an IOC.
+      type: String
+    - contextPath: Maltiverse.File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision.
+      type: String
+    - contextPath: Maltiverse.File.Malicious.Description
+      description: For malicious files, describes the reason for the file to be malicious.
+      type: String
+    - contextPath: Maltiverse.File.PositiveDetections
+      description: The number of sources that positively reported the indicator as blacklist.
+      type: Number
+    - contextPath: Maltiverse.File.Name
+      description: The file name.
+      type: String
+    - contextPath: Maltiverse.File.Classification
+      description: Qualitative maliciousness classification for an IoC. Possible values are malicious, suspicious, neutral, and whitelist.
+      type: String
+    - contextPath: Maltiverse.File.Blacklist.FirstSeen
+      description: First time that the IoC was seen.
+      type: Date
+    - contextPath: Maltiverse.File.Blacklist.LastSeen
+      description: Last time that the IoC was seen.
+      type: Date
+    - contextPath: Maltiverse.File.Blacklist.Description
+      description: Describes the reason why the URL is in the blacklist.
+      type: String
+    - contextPath: Maltiverse.File.Blacklist.Source
+      description: The name of sources that reported the indicator.
+      type: String
+    - contextPath: Maltiverse.File.ModificationTime
+      description: Date when the IOC was last updated.
+      type: Date
+    - contextPath: Maltiverse.File.CreationTime
+      description: Date when the IOC was created in the system.
+      type: Date
+    - contextPath: Maltiverse.File.Size
+      description: Size of the file in bytes.
+      type: Number
+    - contextPath: Maltiverse.File.ProcessList
+      description: List of processes raised by the file in runtime.
+      type: String
+    - contextPath: Maltiverse.File.ContactedHost
+      description: List of the IP addresses contacted by the sample in runtime.
+      type: String
+    - contextPath: Maltiverse.File.DNSRequest
+      description: List of hostnames resolved by the sample in runtime.
+      type: String
+    - contextPath: File.ThreatTypes
+      description: A list with the description of the elements in the blacklist.
+      type: Unknown
+    - contextPath: File.Tags
+      description: Attribute to label an IoC.
+      type: String
+  dockerimage: demisto/python3:3.10.5.31928
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.2.0
+tests:
+- No tests (auto formatted)

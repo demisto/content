@@ -9,6 +9,8 @@ urllib3.disable_warnings()
 
 """HELPER FUNCTIONS"""
 
+# update to script - check two packs
+
 
 def parse_filter_field(filter_str):
     filters = []
@@ -3197,7 +3199,6 @@ def main():
 
 
 from AWSApiModule import *  # noqa: E402
-
 
 if __name__ in ['__builtin__', 'builtins', '__main__']:
     main()
