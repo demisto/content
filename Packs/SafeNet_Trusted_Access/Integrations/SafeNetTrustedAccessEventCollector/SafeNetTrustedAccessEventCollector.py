@@ -155,7 +155,6 @@ def main() -> None:
                 return_results(results)
 
             else:  # command == 'fetch-events':
-                demisto.info(f'Command being called is {command}')
                 last_run = demisto.getLastRun()
                 events, last_run = fetch_events_command(client, first_fetch, last_run, limit)
                 demisto.setLastRun(last_run)
