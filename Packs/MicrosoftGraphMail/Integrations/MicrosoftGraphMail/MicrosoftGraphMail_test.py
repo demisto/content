@@ -594,7 +594,7 @@ def test_reply_mail_command(client, mocker):
 
     """
     args = {'to': ['ex@example.com'], 'body': "test body", 'subject': "test subject", "inReplyTo": "id",
-            'from': "ex1@example.com", 'replyTo': "ex2@example.com"}
+            'from': "ex1@example.com", 'replyTo': ["ex2@example.com"]}
     mocker.patch.object(MicrosoftClient, 'http_request')
 
     reply_message = reply_email_command(client, args)
