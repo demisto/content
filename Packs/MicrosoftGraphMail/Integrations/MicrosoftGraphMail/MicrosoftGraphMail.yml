@@ -1035,7 +1035,7 @@ script:
     - default: false
       description: Email addresses that need to be used to reply to the message. Supports
         comma-separated values.
-      isArray: false
+      isArray: true
       name: replyTo
       required: false
       secret: false
