@@ -321,7 +321,9 @@ class BranchTestCollector(TestCollector):
             )
 
         elif file_type in {FileType.PYTHON_FILE, FileType.POWERSHELL_FILE, FileType.JAVASCRIPT_FILE}:
-            if path.name.endswith('Tests.ps1'):
+            if path.name.lower().endswith('_test.py'):
+                raise NothingToCollectException(path, 'unit tests changed')
+            elif path.name.endswith('Tests.ps1'):
                 path = path.with_name(path.name.replace('.Tests.ps1', '.ps1'))
             return self._collect_yml(path)
 
@@ -342,16 +344,18 @@ class BranchTestCollector(TestCollector):
             return self._collect_yml(path)  # checks for containing folder (content item type)
 
         else:
-            raise ValueError(f'Unexpected filetype {file_type}, {relative_path}')
-        if content_item:
-            return CollectedTests(
-                tests=tests,
-                packs=content_item.pack_folder_name_tuple,
-                reason=reason,
-                version_range=content_item.version_range,
-                reason_description=reason_description,
-            )
-        raise RuntimeError(f'content item {path} not collected ')  # todo
+            raise ValueError(f'Unexpected {file_type=} for {relative_path}')
+
+        if not content_item:
+            raise RuntimeError(f'failed collecting {path} for an unknown reason')
+
+        return CollectedTests(
+            tests=tests,
+            packs=content_item.pack_folder_name_tuple,
+            reason=reason,
+            version_range=content_item.version_range,
+            reason_description=reason_description,
+        )
 
     def _get_changed_files(self) -> tuple[str, ...]:
         contrib_diff = None  # overridden on contribution branches, added to the git diff.

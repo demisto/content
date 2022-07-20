@@ -64,5 +64,5 @@ class NotUnderPackException(Exception):
 
 class NothingToCollectException(Exception):
     def __init__(self, path: Path, reason: str):
-        self.message = f'No tests or packs to collect for {str(path)}: {reason}'
+        self.message = f'Not collecting tests or packs for {str(path)}, {reason=}'
         super().__init__(self.message)
