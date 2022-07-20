@@ -45,4 +45,3 @@ def test_oleid_decrypted(caplog):
     cr = ole_client.run()
     assert cr.outputs == oleid_decrypted_output
     assert cr.readable_output == read_file('test_data/oleid_decrypted_readable.md')
-
