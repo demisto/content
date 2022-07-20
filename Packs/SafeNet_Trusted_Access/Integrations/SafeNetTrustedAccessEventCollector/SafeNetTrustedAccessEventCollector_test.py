@@ -16,48 +16,58 @@ BASE_URL = 'https://sta.example.com/tenant_code'
 def test_fetch_events(requests_mock):
     """
     Given:
-        - fetch-events call, where oldest = 1521214343, last_id = 1
+        - fetch-events call
     When:
-        - Three following results are retrieved from the API:
-            1. id = 1, date_create = 1521214343
-            2. id = 2, date_create = 1521214343
-            3. id = 3, date_create = 1521214345
+        - Calling fetch events:
+                1. without marking, but with first_fetch
+                2. only marking from last_run
     Then:
-        - Make sure only events 2 and 3 are returned (1 should not).
+        - Make sure 3 events returned.
         - Verify the new lastRun is calculated correctly.
     """
     from SafeNetTrustedAccessEventCollector import fetch_events_command
 
     last_run = {'marker': '22222'}
+    requests_mock.get(
+        f'{BASE_URL}/logs',
+        json=MOCK_ENTRY
+    )
 
-    events, new_last_run = fetch_events_command(Client(base_url=''),
+    events, new_last_run = fetch_events_command(Client(base_url=BASE_URL),
                                                 last_run=last_run,
                                                 first_fetch=datetime.strptime("2020-01-01", "%Y-%m-%d"),
-                                                limit=1000)
+                                                limit=2000)
 
-    assert len(events) == 2
-    assert events[0].get('id') != '1'
-    assert new_last_run['last_id'] == '3'
+    assert len(events) == 3
+    assert events[0].get('id') == 'ID1'
+    assert new_last_run['marker'] == 11111111111
 
 
 def test_get_events(requests_mock):
     """
     Given:
-        - slack-get-events call
+        - sta-get-events call
     When:
-        - Three following results are retrieved from the API:
-            1. id = 1, date_create = 1521214343
-            2. id = 2, date_create = 1521214343
-            3. id = 3, date_create = 1521214345
+        - Running the command with since, until and marker parameters
     Then:
         - Make sure all of the events are returned as part of the CommandResult.
     """
     from SafeNetTrustedAccessEventCollector import get_events_command
 
-    _, results = get_events_command(Client(base_url=''), args={})
+    requests_mock.get(
+        f'{BASE_URL}/logs',
+        json=MOCK_ENTRY
+    )
+    args = {
+        'marker': 11111,
+        'since': '01.01.2022',
+        'until': 'today'
+    }
 
-    assert len(results.raw_response.get('entries', [])) == 3
-    assert results.raw_response == mock_response.json()
+    events, results = get_events_command(Client(base_url=BASE_URL), args=args)
+
+    assert len(events) == 3
+    assert results.raw_response == MOCK_ENTRY
 
 
 def test_test_module(requests_mock):
@@ -71,8 +81,8 @@ def test_test_module(requests_mock):
     """
     from SafeNetTrustedAccessEventCollector import test_module
 
-    requests_mock.post(
-        BASE_URL,
+    requests_mock.get(
+        f'{BASE_URL}/logs',
         json=MOCK_ENTRY
     )
     assert test_module(Client(base_url=BASE_URL)) == 'ok'

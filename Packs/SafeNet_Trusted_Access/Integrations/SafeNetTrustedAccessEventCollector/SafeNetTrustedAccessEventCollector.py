@@ -67,7 +67,7 @@ class Client(BaseClient):
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client, limit, first_fetch) -> str:
+def test_module(client: Client, limit=1000, first_fetch=None) -> str:
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -81,7 +81,7 @@ def test_module(client: Client, limit, first_fetch) -> str:
     :rtype: ``str``
     """
     if (limit % 1000 != 0) or (limit > 10000):
-        raise Exception(f'Limit parameter should be multiple of 1000 and not greater than 10,000.')
+        raise Exception('Limit parameter should be multiple of 1000 and not greater than 10,000.')
 
     client.get_logs(since=first_fetch)
     return 'ok'
@@ -89,7 +89,7 @@ def test_module(client: Client, limit, first_fetch) -> str:
 
 def fetch_events_command(client: Client, first_fetch, last_run: dict, limit=1000) -> Tuple[list, dict]:
     if (limit % 1000 != 0) or (limit > 10000):
-        raise Exception(f'Limit parameter should be multiple of 1000 and not greater than 10,000.')
+        raise Exception('Limit parameter should be multiple of 1000 and not greater than 10,000.')
 
     events, new_last_run = client.get_logs_fetch_events(last_run, limit, first_fetch)
     return events, new_last_run
