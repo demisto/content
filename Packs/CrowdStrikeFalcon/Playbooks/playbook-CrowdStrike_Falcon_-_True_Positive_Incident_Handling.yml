@@ -286,7 +286,7 @@ tasks:
       indicatorsValues:
         simple: ${Indicators to block.Answers.0}
       tags:
-        simple: ${inputs.BlockTagName}
+        simple: ${inputs.BlockIOCTagName}
     separatecontext: false
     view: |-
       {
@@ -853,7 +853,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: inputs.IsolationAllowed
+              simple: inputs.AutoIsolation
             iscontext: true
           right:
             value:
@@ -925,7 +925,7 @@ tasks:
           root: inputs.Description
       projectKey:
         complex:
-          root: inputs.ProjectKey
+          root: inputs.TicketProjectName
       summary:
         simple: ${inputs.TicketDescription}
     separatecontext: false
