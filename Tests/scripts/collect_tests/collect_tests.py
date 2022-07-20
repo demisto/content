@@ -5,8 +5,9 @@ from argparse import ArgumentParser
 from enum import Enum
 from functools import reduce
 from pathlib import Path
-from typing import Iterable, Optional, Sequence
+from typing import Iterable, Optional
 
+from Tests.scripts.collect_tests.utils import find_yml_content_type
 from constants import (DEFAULT_MARKETPLACE_WHEN_MISSING,
                        DEFAULT_REPUTATION_TESTS, ONLY_INSTALL_PACK,
                        SKIPPED_CONTENT_ITEMS, XSOAR_SANITY_TEST_NAMES)
@@ -202,35 +203,41 @@ class TestCollector(ABC):
 
 
 class BranchTestCollector(TestCollector):
-    def __init__(self, branch_name: str,
-                 marketplace: MarketplaceVersions,
-                 service_account: Optional[str]):
+    def __init__(
+            self,
+            branch_name: str,
+            marketplace: MarketplaceVersions,
+            service_account: Optional[str],
+            private_pack_path: Optional[Path] = None,
+    ):
+        """
+
+        :param branch_name: branch name
+        :param marketplace: marketplace value
+        :param service_account: used for comparing with the latest upload bucket
+        :param private_pack_path: path to a pack, only used for content-private.
+        """
         super().__init__(marketplace)
         self.branch_name = branch_name
         self.repo = Repo(PATHS.content_path)
         self.service_account = service_account
+        self.private_pack_path: Optional[Path] = private_pack_path
+
+    def _get_private_pack_files(self) -> tuple[Path, ...]:
+        if not self.private_pack_path:
+            raise RuntimeError('private_pack_path cannot be empty')
+        return tuple(path for path in self.private_pack_path.rglob('*') if path.is_file())
 
     def _collect(self) -> Optional[CollectedTests]:
         collected = []
-        for path in self._get_changed_files():
+        paths = self._get_private_pack_files() if self.private_pack_path else self._get_changed_files()
+        for path in paths:
             try:
                 collected.append(self._collect_single(PATHS.content_path / path))
             except NothingToCollectException as e:
                 logger.warning(e.message)
 
         return CollectedTests.union(tuple(collected))
-
-    @staticmethod
-    def _find_yml_content_type(yml_path: Path):
-        if result := ({'Playbooks': FileType.PLAYBOOK,
-                       'TestPlaybooks': FileType.TEST_PLAYBOOK,
-                       }.get(yml_path.parent.name)):
-            return result
-
-        if result := ({'Integrations': FileType.INTEGRATION,
-                       'Scripts': FileType.SCRIPT,
-                       }.get(yml_path.parents[1].name)):
-            return result
 
     def _collect_yml(self, content_item_path: Path) -> CollectedTests:
         yml_path = content_item_path.with_suffix('.yml')
@@ -242,7 +249,7 @@ class BranchTestCollector(TestCollector):
         relative_path = PackManager.relative_to_packs(yml_path)
         tests: tuple[str, ...]
 
-        match actual_content_type := self._find_yml_content_type(yml_path):
+        match actual_content_type := find_yml_content_type(yml_path):
             case None:
                 raise ValueError(f'could not detect type for {yml_path}')
 
@@ -523,16 +530,22 @@ if __name__ == '__main__':
     parser.add_argument('-mp', '--marketplace', type=MarketplaceVersions, help='marketplace version', default='xsoar')
     parser.add_argument('--service_account', help="Path to gcloud service account")
     options = parser.parse_args()
+    marketplace = MarketplaceVersions(options.marketplace)
+
     collector: TestCollector
-    match (options.nightly, marketplace := MarketplaceVersions(options.marketplace)):
-        case False, _:  # not nightly
-            collector = BranchTestCollector('master', marketplace, options.service_account)
-        case True, MarketplaceVersions.XSOAR:
-            collector = XSOARNightlyTestCollector()
-        case True, MarketplaceVersions.MarketplaceV2:
-            collector = XSIAMNightlyTestCollector()
-        case _:
-            raise ValueError(f"unexpected values of (either) {marketplace=}, {options.nightly=}")
+
+    if options.changed_pack_path:
+        collector = BranchTestCollector('master', marketplace, options.service_account, options.changed_pack_path)
+    else:
+        match (options.nightly, marketplace):
+            case False, _:  # not nightly
+                collector = BranchTestCollector('master', marketplace, options.service_account)
+            case True, MarketplaceVersions.XSOAR:
+                collector = XSOARNightlyTestCollector()
+            case True, MarketplaceVersions.MarketplaceV2:
+                collector = XSIAMNightlyTestCollector()
+            case _:
+                raise ValueError(f"unexpected values of (either) {marketplace=}, {options.nightly=}")
 
     collected = collector.collect(run_nightly=options.nightly, run_master=True)
     if not collected:

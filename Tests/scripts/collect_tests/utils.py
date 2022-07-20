@@ -3,7 +3,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Optional
 
-from demisto_sdk.commands.common.constants import MarketplaceVersions
+from demisto_sdk.commands.common.constants import MarketplaceVersions, FileType
 from demisto_sdk.commands.common.tools import json, yaml
 from exceptions import (DeprecatedPackException, InvalidPackNameException,
                         NonDictException, NonexistentPackException,
@@ -252,3 +252,13 @@ def to_tuple(value: Optional[str | list]) -> Optional[tuple]:
     if isinstance(value, str):
         return value,
     return tuple(value)
+
+
+def find_yml_content_type(yml_path: Path):
+    return {
+               'Playbooks': FileType.PLAYBOOK,
+               'TestPlaybooks': FileType.TEST_PLAYBOOK,
+           }.get(yml_path.parent.name) or {
+               'Integrations': FileType.INTEGRATION,
+               'Scripts': FileType.SCRIPT,
+           }.get(yml_path.parents[1].name)

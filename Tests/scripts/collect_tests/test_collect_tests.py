@@ -310,4 +310,4 @@ def test_invalid_content_item(mocker, monkeypatch):
             expected_machines=None,
             collector_class_args=XSOAR_BRANCH_ARGS
         )
-    assert 'Unexpected filetype None' in str(e.value)
+    assert 'Unexpected file_type=None' in str(e.value)
