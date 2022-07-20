@@ -218,6 +218,7 @@ class MicrosoftClient(BaseClient):
             str: Access token that will be added to authorization header.
         """
         integration_context = get_integration_context()
+        demisto.debug(f'got {integration_context=}')
         refresh_token = integration_context.get('current_refresh_token', '')
         # Set keywords. Default without the scope prefix.
         access_token_keyword = f'{scope}_access_token' if scope else 'access_token'
@@ -263,6 +264,7 @@ class MicrosoftClient(BaseClient):
             integration_context.update(self.resource_to_access_token)
 
         set_integration_context(integration_context)
+        demisto.debug(f'setting {integration_context=}')
 
         if self.multi_resource:
             return self.resource_to_access_token[resource]
